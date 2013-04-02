@@ -9,14 +9,14 @@
 namespace ncv
 {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Logging object that can use any std::ostream (standard streaming & text files).
+        // logging object that can use any std::ostream (standard streaming & text files).
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         class logger
         {
         public:
 
-                // Constructor
+                // constructor
                 logger(std::ostream& stream, const char* header, bool flush = true)
                         :       m_stream(stream), m_flush(flush)
                 {
@@ -24,13 +24,13 @@ namespace ncv
                         m_stream << "[" << header << "] ";
                 }
 
-                // Destructor
+                // destructor
                 ~logger()
                 {
                         m_flush ? endl() : newl();
                 }
 
-                // Stream data
+                // stream data
                 template <typename T>
                 logger& operator<<(const T& data)
                 {
@@ -43,7 +43,7 @@ namespace ncv
                         return *this;
                 }
 
-                // Stream tags
+                // stream tags
                 logger& operator<<(std::ostream& (*pf)(std::ostream&))
                 {
                         (*pf)(m_stream);
@@ -80,7 +80,7 @@ namespace ncv
 
         private:
 
-                // Log current time
+                // log current time
                 void log_time()
                 {
                         std::time_t t = std::time(nullptr);
@@ -97,18 +97,18 @@ namespace ncv
 
         private:
 
-                // Attributes
+                // attributes
                 std::ostream&   m_stream;
                 bool            m_flush;
         };
 
-        // Streaming particular tags
+        // streaming particular tags
         inline logger& newl(logger& logger)         { return logger.newl(); }
         inline logger& endl(logger& logger)         { return logger.endl(); }
         inline logger& done(logger& logger)         { return logger.done(); }
         inline logger& flush(logger& logger)        { return logger.flush(); }
 
-        // Specific [information, warning, error] line loggers
+        // specific [information, warning, error] line loggers
         inline logger log_info(std::ostream& os = std::cout, bool flush_at_destruction = false)
         {
                 return logger(os, "info", flush_at_destruction);

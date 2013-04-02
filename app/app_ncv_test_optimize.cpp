@@ -1,11 +1,7 @@
-#include "ncv_optimize.h"
-#include "ncv_logger.h"
-#include "ncv_random.h"
-#include "ncv_timer.h"
-#include "ncv_string.h"
+#include "ncv.h"
 #include <boost/program_options.hpp>
 
-// Display the formatted optimization history
+// display the formatted optimization history
 template
 <
         typename thistory
@@ -71,7 +67,7 @@ int main(int argc, char *argv[])
                         op_fval_grad_t,
                         op_fval_grad_hess_t>            problem_t;
 
-        // Parse the command line
+        // parse the command line
         boost::program_options::options_description po_desc("", 160);
         po_desc.add_options()("help,h", "help message");
         po_desc.add_options()("iters,i",
@@ -87,7 +83,7 @@ int main(int argc, char *argv[])
                 po_vm);
         boost::program_options::notify(po_vm);
 
-        // Check arguments and options
+        // check arguments and options
         if (	po_vm.empty() ||
                 po_vm.count("help"))
         {
@@ -144,7 +140,7 @@ int main(int argc, char *argv[])
                                         rosenbrock_fval_grad_hess,
                                         cmd_iters, cmd_eps);
 
-                // Intial solutions to test
+                // intial solutions to test
                 vector_t x(2);
                 vectors_t x0s;
                 {
@@ -152,7 +148,7 @@ int main(int argc, char *argv[])
                         x0s.push_back(x);
                 }
 
-                // Run optimization starting from each initial solution
+                // run optimization starting from each initial solution
                 for (index_t i = 0; i < x0s.size(); i ++)
                 {
                         history_t history;
@@ -216,7 +212,7 @@ int main(int argc, char *argv[])
                                         himmelblau_fval_grad_hess,
                                         cmd_iters, cmd_eps);
 
-                // Intial solutions to test
+                // initial solutions to test
                 vector_t x(2);
                 vectors_t x0s;
                 {
@@ -236,7 +232,7 @@ int main(int argc, char *argv[])
                         x0s.push_back(x);
                 }
 
-                // Run optimization starting from each initial solution
+                // run optimization starting from each initial solution
                 for (index_t i = 0; i < x0s.size(); i ++)
                 {
                         history_t history;

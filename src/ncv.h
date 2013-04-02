@@ -1,19 +1,22 @@
 #ifndef NANOCV_H
 #define NANOCV_H
 
-// TODO: add here tasks, models
-#include "ncv_string.h"
+#include "ncv_optimize.h"
 #include "ncv_logger.h"
+#include "ncv_random.h"
 #include "ncv_timer.h"
+#include "ncv_thread.h"
+#include "ncv_image.h"
+#include "ncv_stats.h"
 
 namespace ncv
 {
-        // Machine Learning protocol
+        // machine learning protocol
         enum class ml_protocol : int
         {
-                train = 0,            // Training
-                valid,                // Validation
-                test                  // Testing
+                train = 0,            // training
+                valid,                // validation
+                test                  // testing
         };
 
         namespace text
@@ -41,7 +44,7 @@ namespace ncv
                 }
         }
 
-        // Initialize library (register objects, start worker pool ...)
+        // initialize library (register objects, start worker pool ...)
         void init();
 
 //        // Labeling convention for classification

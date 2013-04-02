@@ -12,9 +12,9 @@
 namespace ncv
 {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Utility functions to process a loop using multiple threads.
+        // utility functions to process a loop using multiple threads.
         //
-        // Assuming a function <op(i)> to process the i-th element out of N total,
+        // assuming a function <op(i)> to process the i-th element out of N total,
         // then instead of:
         //
         // for (size_t i = 0; i < N; i ++)
@@ -35,30 +35,30 @@ namespace ncv
                 typedef std::unique_lock<mutex_t>       lock_t;
                 typedef std::condition_variable         condition_t;
 
-                // Return the number of threads available on the system
+                // return the number of threads available on the system
                 inline size_t n_threads()
                 {
                         return static_cast<size_t>(std::thread::hardware_concurrency());
                 }
 
-                // Worker pool
+                // worker pool
                 class worker_pool : public singleton<worker_pool>
                 {
                 public:
-                        // Destructor
+                        // destructor
                         ~worker_pool();
 
-                        // Add a new worker to execute
+                        // add a new worker to execute
                         template<class F>
                         void enqueue(F f)
                         {
                                 _enqueue(f);
                         }
 
-                        // Wait for all workers to finish
+                        // wait for all workers to finish
                         void wait();
 
-                        // Access functions
+                        // access functions
                         size_t n_threads() const { return m_workers.size(); }
                         size_t n_jobs() const { return m_data.m_tasks.size(); }
 
@@ -66,21 +66,21 @@ namespace ncv
 
                         friend class singleton<worker_pool>;
 
-                        // Constructor
+                        // constructor
                         worker_pool();
 
                 private:
 
-                        // Task collection
+                        // task collection
                         struct data_t
                         {
-                                // Constructor
+                                // constructor
                                 data_t() :      m_running(0),
                                                 m_stop(false)
                                 {
                                 }
 
-                                // Attributes
+                                // attributes
                                 std::deque<task_t>      m_tasks;                // Tasks (functors) to execute
                                 index_t                 m_running;              // #running taks
                                 mutex_t                 m_mutex;                // Synchronize task access
@@ -88,24 +88,24 @@ namespace ncv
                                 bool                    m_stop;                 // Stop requested
                         };
 
-                        // Worker
+                        // worker
                         class worker
                         {
                         public:
 
-                                // Constructor
+                                // constructor
                                 worker(data_t& data) : m_data(data) {}
 
-                                // Execute tasks when available
+                                // execute tasks when available
                                 void operator()();
 
                         private:
 
-                                // Attributes
+                                // attributes
                                 data_t&         m_data;                 // Tasks
                         };
 
-                        // Add a new task to execute
+                        // add a new task to execute
                         template<class F>
                         void _enqueue(F f)
                         {
@@ -118,14 +118,13 @@ namespace ncv
 
                 private:
 
-                        // Attributes
-                        std::vector<thread_t>   m_workers;              // Worker threads
-                        data_t                  m_data;                 // Tasks to execute + synchronization
+                        // attributes
+                        std::vector<thread_t>   m_workers;              // worker threads
+                        data_t                  m_data;                 // tasks to execute + synchronization
                 };
         }
 
-        // Split a loop computation of the given size using multiple threads
-        // NB: Stateless workerss running <op(begin, end)>
+        // split a loop computation of the given size using multiple threads
         template
         <
                 typename tsize,

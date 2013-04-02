@@ -7,7 +7,7 @@
 namespace ncv
 {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Uniform random number generator in the [min, max] range.
+        // uniform random number generator in the [min, max] range.
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // FIXME: Can this be expressed in a simpler way?!
@@ -17,7 +17,7 @@ namespace ncv
         >
         struct uniform_distribution
         {
-                // Only integral types are allowed!
+                // only integral types are allowed!
                 typedef typename std::is_integral<T>::type
                         uniform_distribution_should_use_integral_type_t;
 
@@ -42,7 +42,7 @@ namespace ncv
         {
         public:
                 
-                // Constructor
+                // constructor
                 random(trange min, trange max)
                         :       m_gen(0),//std::random_device()),
                                 m_die(min, max)
@@ -51,13 +51,13 @@ namespace ncv
                         m_gen = gen_t(rd());
                 }
                 
-                // Generate a random value
+                // generate a random value
                 trange operator()()
                 {
                         return m_die(m_gen);
                 }
                 
-                // Fill the [begin, end) range with random values
+                // fill the [begin, end) range with random values
                 template <class TIterator>
                 void operator()(TIterator begin, TIterator end)
                 {
@@ -67,7 +67,7 @@ namespace ncv
                         }
                 }
 
-                // Access functions
+                // access functions
                 trange min() const { return m_die.min(); }
                 trange max() const { return m_die.max(); }
                 
@@ -76,7 +76,7 @@ namespace ncv
                 typedef std::mt19937                                    gen_t;
                 typedef typename uniform_distribution<trange>::type_t   die_t;
 
-                // Attributes
+                // attributes
                 gen_t           m_gen;
                 die_t           m_die;
         };

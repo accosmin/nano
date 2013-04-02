@@ -7,12 +7,12 @@
 namespace ncv
 {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Image class & utility functions to:
+        // image class & utility functions to:
         //      - load/save from/to disk RGBA images
         //      - convert to/from RGBA from/to RGB and Y channels
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        // Color channels
+        // color channels
         enum class channel : int
         {
                 red = 0,                // R
@@ -52,11 +52,11 @@ namespace ncv
         typedef int32_t                         rgba_t;
         typedef matrix<rgba_t>::matrix_t        rgba_matrix_t;
 
-        // Pixel channel data (e.g. red, green, blue, luma) [0, 255]
+        // pixel channel data (e.g. red, green, blue, luma) [0, 255]
         typedef int32_t                         pixel_t;
         typedef matrix<pixel_t>::matrix_t       pixel_matrix_t;
 
-        // Manipulate RGBA color space
+        // manipulate RGBA color space
         namespace color
         {
                 inline rgba_t red(rgba_t rgba)     { return (rgba >> 24) & 0xFF; }
@@ -86,16 +86,16 @@ namespace ncv
                 inline rgba_t max() { return 255; }
         }
 
-        // Image
+        // image
         class image
         {
         public:
 
-                // Constructors
+                // constructors
                 image(size_t rows = 0, size_t cols = 0, const string_t& name = "");
                 image(const rgba_matrix_t& rgba, const string_t& name = "");
 
-                // Load image from file or memory
+                // load image from file or memory
                 bool load(const string_t& path);
                 bool load(const rgba_matrix_t& rgba);                
 
@@ -113,7 +113,7 @@ namespace ncv
                         return _load<tchannel>(chr, chg, chb);
                 }
 
-                // Save image to file or memory
+                // save image to file or memory
                 bool save(const string_t& path) const;
                 bool save(const string_t& path, channel ch) const;
 
@@ -123,10 +123,10 @@ namespace ncv
                         return _save<tchannel>(chd, che);
                 }
 
-                // Rename image
+                // rename image
                 void rename(const string_t& name) { m_name = name; }
 
-                // Access functions
+                // access functions
                 size_t rows() const { return math::cast<size_t>(m_rgba.rows()); }
                 size_t cols() const { return math::cast<size_t>(m_rgba.cols()); }
                 size_t size() const { return math::cast<size_t>(m_rgba.size()); }
@@ -260,7 +260,7 @@ namespace ncv
 
         private:
 
-                // Attributes
+                // attributes
                 rgba_matrix_t                   m_rgba;
                 string_t                        m_name;
         };

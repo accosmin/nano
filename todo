@@ -1,18 +1,12 @@
-- replace shared_ptr with std::make_shared
-- more "= default" and "= delete" for the default & forbidden implementations of constructors and destructors
-- use boost::math::equals to check for equality for floating point variables
-- use std::begin & std::end instead of std::vector.begin/end
-- learning: if the samples have weights than instead of update (-grad * weight) do weight-times (-grad) updates!!!
-        (otherwise it may overshoot)
-- learning: feature normalization, updates should be scale invariant
+- implement the CIELab transform + new channels for CIELab:
+        - remove pixel_t & pixel_matrix_t
+        - scalar_matrix_t -> matrix_t
+        - scalar_t image::min/max(channel) including CIELab
+        - update the test program: use scalar_matrix_t & normalize to min/max ?!
 
 - optimization:
         - LBFGS
         - maybe some other modifications that converge faster
-
-- remove the image filters (and focus more on learning, but keep the scaling, normalization and color channels):
-        - replace with a test program to load/save images, scale and select color channels
-        - implement the CIELab transform + new channels for CIELab
 
 - redo tasks (iterate, sample):
         - modify dataset to store the inputs as image patches + vector of scalars

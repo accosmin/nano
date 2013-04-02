@@ -8,7 +8,7 @@
 namespace ncv
 {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Computes statistics: average, standard deviation etc.
+        // computes statistics: average, standard deviation etc.
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
         template
@@ -19,13 +19,13 @@ namespace ncv
 	{
 	public:
 		
-		// Constructor
+                // constructor
                 stats() { _clear(); }
 		
-		// Reset statistics
+                // reset statistics
 		void clear() { _clear(); }
                 
-                // Add new values
+                // add new values
                 void add(tscalar value) { _add(value); }
 
                 template <typename tscalar_other>
@@ -40,7 +40,7 @@ namespace ncv
                         }
 		}
 		
-		// Access functions
+                // access functions
 		bool            valid() const { return count() != 0; }
                 size_t          count() const { return m_count; }
                 tscalar         min() const { return m_min; }
@@ -52,7 +52,7 @@ namespace ncv
 		
 	private:
                 
-                // Reset statistics
+                // reset statistics
                 void _clear()
                 { 
                         m_min = std::numeric_limits<tscalar>::max();
@@ -62,7 +62,7 @@ namespace ncv
                         m_count = 0;
                 }
                 
-                // Add new values
+                // add new values
                 void _add(tscalar value)
                 {
                         m_min = std::min(m_min, value);
@@ -82,7 +82,7 @@ namespace ncv
                         m_count += other.m_count;
                 }
                 
-                // Access functions
+                // access functions
                 tscalar _avg() const
                 {
                         return math::inverse(count()) * sum();
@@ -97,7 +97,7 @@ namespace ncv
                 
         private:
 		 
-		// Attributes
+                // attributes
                 tscalar         m_min, m_max;
                 tscalar         m_sum1, m_sum2;
                 size_t          m_count;

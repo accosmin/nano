@@ -10,13 +10,15 @@
 
 namespace ncv
 {
-        // Vector
+        // vector
         template
         <
                 typename tvalue
         >
         struct vector
         {
+                typedef tvalue                                  type_t;
+
                 typedef Eigen::Matrix
                 <
                         tvalue,
@@ -29,13 +31,15 @@ namespace ncv
                 typedef typename vectors_t::iterator            vectors_it;
         };
 
-        // Matrix
+        // matrix
         template
         <
                 typename tvalue
         >
         struct matrix
         {
+                typedef tvalue                                  type_t;
+
                 typedef Eigen::Matrix
                 <       tvalue,
                         Eigen::Dynamic,
@@ -48,7 +52,7 @@ namespace ncv
                 typedef typename matrix_t::Index                index_t;
         };
 
-        // Numerical types
+        // numerical types
         typedef std::size_t                     size_t;
         typedef std::size_t                     index_t;
         typedef std::size_t                     count_t;
@@ -64,18 +68,18 @@ namespace ncv
         typedef matrix<scalar_t>::matrix_t      scalar_matrix_t;
         typedef matrix<scalar_t>::matrices_t    scalar_matrices_t;
 
-        // Strings
+        // strings
         typedef std::string                     string_t;
         typedef std::vector<string_t>           strings_t;
         typedef std::map<string_t, string_t>    string_map_t;
 
-        // Lambda
+        // lambda
         using std::placeholders::_1;
         using std::placeholders::_2;
         using std::placeholders::_3;
         using std::placeholders::_4;
 
-        // Alignment options
+        // alignment options
         enum class align : int
         {
                 left,

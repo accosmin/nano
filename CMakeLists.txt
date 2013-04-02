@@ -40,8 +40,6 @@ file(GLOB NANOCV_SOURCES
         src/*.cpp
         src/core/*.h
         src/core/*.cpp
-        src/filters/*.h
-        src/filters/*.cpp
 #        src/tasks/ncv_*.h
 #        src/tasks/ncv_*.cpp
 #        src/losses/ncv_*.h
@@ -61,7 +59,6 @@ add_library(nanocv
 set(NANOCV_INCLUDES
         src/
         src/core/
-        src/filters/
 #        src/tasks/
 #        src/losses/
 #        src/models/
@@ -90,6 +87,9 @@ target_link_libraries   (ncv_test_thread_pool   ${libs})
 
 add_executable          (ncv_test_optimize      app/app_ncv_test_optimize.cpp)
 target_link_libraries   (ncv_test_optimize      ${libs})
+
+add_executable          (ncv_test_image         app/app_ncv_test_image.cpp)
+target_link_libraries   (ncv_test_image         ${libs})
 
 # Build utility programs
 #TODO: image loading & saving & scaling & channel extraction

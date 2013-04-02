@@ -7,7 +7,7 @@ namespace ncv
         
         string_t text::trim(const string_t& str, const char* trim_chars)
 	{
-		// Find the beginning of the trimmed string
+                // find the beginning of the trimmed string
                 const size_t pos_beg = str.find_first_not_of(trim_chars);
 		if (pos_beg == string_t::npos)
 		{
@@ -15,7 +15,7 @@ namespace ncv
 		}
 		else
 		{
-			// Also the end of the trimmed string
+                        // also the end of the trimmed string
                         const size_t pos_end = str.find_last_not_of(trim_chars);
 			return str.substr(pos_beg, pos_end - pos_beg + 1);
 		}

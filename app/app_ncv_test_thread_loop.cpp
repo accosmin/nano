@@ -1,12 +1,7 @@
-#include "ncv_thread.h"
-#include "ncv_logger.h"
-#include "ncv_random.h"
-#include "ncv_stats.h"
-#include "ncv_timer.h"
-#include "ncv_string.h"
+#include "ncv.h"
 #include <omp.h>
 
-// Run loop for the given number of trials using no threads
+// run loop for the given number of trials using no threads
 template
 <
         typename toperator
@@ -29,7 +24,7 @@ ncv::stats<> test(int size, int trials, const toperator& op)
         return timings;
 }
 
-// Run loop for the given number of trials using OpenMP
+// run loop for the given number of trials using OpenMP
 template
 <
         typename toperator
@@ -53,7 +48,7 @@ ncv::stats<> test_omp(int size, int trials, const toperator& op)
         return timings;
 }
 
-// Run loop for the given number of trials using ncv::thread_loop
+// run loop for the given number of trials using ncv::thread_loop
 template
 <
         typename toperator
@@ -80,7 +75,7 @@ ncv::string_t to_string(const ncv::stats<>& timings, ncv::index_t col_size)
                 col_size);
 }
 
-// Display the formatted timing statistics
+// display the formatted timing statistics
 void print(const ncv::string_t& header,
            const ncv::stats<>& timings,
            const ncv::stats<>& timings_omp,
@@ -108,12 +103,12 @@ int main(int argc, char *argv[])
                         100000000
                       };
 
-        // Test for different problems size
+        // test for different problems size
         std::for_each(std::begin(sizes), std::end(sizes), [&] (int size)
         {
                 ncv::scalars_t results(size);
 
-                // Operator for test
+                // operator to test
                 auto op = [&](int i)
                 {
                         results[i] = std::cos(i + 0.0) + std::sin(i + 0.0);

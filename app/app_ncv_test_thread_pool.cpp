@@ -1,6 +1,4 @@
-#include "ncv_thread.h"
-#include "ncv_logger.h"
-#include "ncv_random.h"
+#include "ncv.h"
 
 int main(int argc, char *argv[])
 {
@@ -9,7 +7,7 @@ int main(int argc, char *argv[])
         const ncv::size_t n_tests = 8;
         const ncv::size_t n_max_jobs = pool.n_threads() * 16;
 
-        // Run multiple tests ...
+        // run multiple tests ...
         for (ncv::index_t t = 0; t < n_tests; t ++)
         {
                 ncv::random<ncv::size_t> rnd(1, n_max_jobs);

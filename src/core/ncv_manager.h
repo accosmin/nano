@@ -7,12 +7,12 @@
 namespace ncv
 {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Manager: used to manage different object types associated with ID strings.
-	// The clonable interface to be used with a manager:
+        // manager: used to manage different object types associated with ID strings.
+        // the clonable interface to be used with a manager:
         //      ::clone(const string_t&)        - create a new object (with the given parameters)
 	//      ::name()                        - details the associated ID
 	//      ::desc()                        - short description (parameters included)
-        // Hint: use register_object<base, derived> to register objects to the manager.
+        // hint: use register_object<base, derived> to register objects to the manager.
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         
         template <typename tobject>
@@ -22,10 +22,10 @@ namespace ncv
 
                 typedef std::shared_ptr<tobject>        robject_t;
         
-                // Create an object clone
+                // create an object clone
                 virtual robject_t clone(const string_t& params) const = 0;
                 
-                // Describe the object
+                // describe the object
                 virtual const char* name() const = 0;
                 virtual const char* desc() const = 0;
         };
@@ -46,7 +46,7 @@ namespace ncv
 
                 typedef typename clonable<tobject>::robject_t   robject_t;
 
-                // Manage prototypes
+                // manage prototypes
                 bool add(const string_t& id, const tobject& proto)
                 {
                         return _add(id, proto);
@@ -68,12 +68,12 @@ namespace ncv
 
                 friend class singleton<manager<tobject> >;
 
-                // Constructor
+                // constructor
                 manager() {}
 
         private:
 
-                // Object prototypes
+                // object prototypes
                 typedef std::map<string_t, robject_t>       	protos_t;
                 typedef typename protos_t::const_iterator       protos_const_it;
                 typedef typename protos_t::iterator		protos_it;
@@ -153,11 +153,11 @@ namespace ncv
 		
 	private:
 
-                // Attributes
+                // attributes
                 protos_t        m_protos;
         };
         
-        // Register a type tderived to the tbase manager
+        // register a type tderived to the tbase manager
         template <class tbase, class tderived>
         struct register_object
         {

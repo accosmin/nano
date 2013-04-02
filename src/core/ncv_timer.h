@@ -11,19 +11,19 @@
 namespace ncv
 {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Timer with milisecond resolution.
+        // timer with milisecond resolution.
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         class timer
         {
         public:
 
-                // Constructor
+                // constructor
                 timer() : m_start(now())
                 {
                 }
 
-                // Measure time
+                // measure time
                 void start()
                 {
                         m_start = now();
@@ -43,13 +43,13 @@ namespace ncv
                 typedef std::chrono::steady_clock::time_point           time_t;
                 typedef std::chrono::duration<size_t, std::milli>       milliseconds_t;
 
-                // Current time point
+                // current time point
                 static time_t now()
                 {
                         return std::chrono::steady_clock::now();
                 }
 
-                // Transform miliseconds to string (days, hours, minutes, seconds, miliseconds)
+                // transform miliseconds to string (days, hours, minutes, seconds, miliseconds)
                 static string_t miliseconds_to_string(index_t count)
                 {
                         static const size_t size_second = 1000;
@@ -90,7 +90,7 @@ namespace ncv
 
         private:
 
-                // Attributes
+                // attributes
                 time_t          m_start;
         };	
 }

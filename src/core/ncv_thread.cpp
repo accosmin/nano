@@ -9,7 +9,7 @@ namespace ncv
                 thread_impl::task_t task;
                 while (true)
                 {
-                        // Wait for a new task to be available in the queue
+                        // wait for a new task to be available in the queue
                         {
                                 thread_impl::lock_t lock(m_data.m_mutex);
 
@@ -28,10 +28,10 @@ namespace ncv
                                 m_data.m_running ++;
                         }
 
-                        // Execute the task
+                        // execute the task
                         task();
 
-                        // Announce that a task was completed
+                        // announce that a task was completed
                         {
                                 thread_impl::lock_t lock(m_data.m_mutex);
 
@@ -56,7 +56,7 @@ namespace ncv
 
         thread_impl::worker_pool::~worker_pool()
         {
-                // Stop & join
+                // stop & join
                 m_data.m_stop = true;
                 m_data.m_condition.notify_all();
 
@@ -70,7 +70,7 @@ namespace ncv
 
         void thread_impl::worker_pool::wait()
         {
-                // Wait for all tasks to be taken and the workers to finish
+                // wait for all tasks to be taken and the workers to finish
                 thread_impl::lock_t lock(m_data.m_mutex);
 
                 while (!m_data.m_tasks.empty() || m_data.m_running > 0)
