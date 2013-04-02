@@ -1,0 +1,92 @@
+- replace shared_ptr with std::make_shared
+- more "= default" and "= delete" for the default & forbidden implementations of constructors and destructors
+- use boost::math::equals to check for equality for floating point variables
+- use std::begin & std::end instead of std::vector.begin/end
+- learning: if the samples have weights than instead of update (-grad * weight) do weight-times (-grad) updates!!!
+        (otherwise it may overshoot)
+- learning: feature normalization, updates should be scale invariant
+
+- optimization:
+        - LBFGS
+        - maybe some other modifications that converge faster
+
+- remove the image filters (and focus more on learning, but keep the scaling, normalization and color channels):
+        - replace with a test program to load/save images, scale and select color channels
+        - implement the CIELab transform + new channels for CIELab
+
+- redo tasks (iterate, sample):
+        - modify dataset to store the inputs as image patches + vector of scalars
+        - modify dataset to also use unknown samples
+        - update the sampling and the description test programs
+        + load STL-10 dataset
+        - ncv_describe: save random images
+
+- redo the dependencies between files, re-design msize
+
+- train/test & optimization:
+        - learning: boosting nn layers - add more complex weak learners / layers when the loss does not decrease sufficiently fast
+        
+        - redesign losses and the optimization part
+
+optimization part: also implement trust region algorithms
+          
+        - implement stochastic and batch gradient descent
+        - implement non-linear conjugate gradient descent:
+        http://en.wikipedia.org/wiki/Nonlinear_conjugate_gradient
+
+        & LBFGS as optimization techniques using a function_t object
+
+        OPTIMIZATION potential:
+        A Stochastic Gradient Method with an Exponential Convergence Rate for Finite Training Sets
+
+- 2D widgets:
+        - try to create a flat set of widget similar to these ones:
+        http://timotheegiet.com/blog/illust/krita-sketch-release.html
+
+        Wrap the mainwindow and the events into a xdesktop class.
+        All the widgets should be added to this xdesktop class
+        
+        - nicer task viewer: - thumbnail-based, - caching 256 images, - iterator added to task for off-memory tasks
+        - gui: 
+                - display the image pyramid: implement bilinear & nearest neighbour scaling for arbitrary matrices, image_t::scale(0.9)
+                - display edges & gradients: image_t::edges(), image_t::grads() scaled to [0, 255]
+                - display histogram for a particular channel: implement a generic histogram class (count - contiguous & sparse, value binning) with formated text print
+                - display histogram for a selected region
+                        - should also load datasets and apply filters to them
+                - zooming buttons
+                - display the current zooming level (in percentage)
+                - display the output of various filters
+
+- need to think about an useful application of nanocv:
+        - template matching:
+                - given a gradient template match it with an image:
+                        min(template - scale * grad(image) + beta)
+        - template learning (unsupervised):
+                - cluster gradient templates from the training dataset
+
+- add INRIA car and person datasets
+
+- run experiments on cifar and mnist:
+        - multiple runs -> avg + stdev error rate
+
+- add other datasets:
+	- CIFAR10, CIFAR100, NORB, STL10, inria pedestrian detection, inria human detection, dymlerchrysler human
+		detection, face detection, PASCALVoc2011, CALTECH101...
+
+	- support for unlabeled samples: dataset_t::has_target(index_t)
+
+- how to generate samples ?!
+
+- may revive/improve the bootstrapping idea:
+        - also bootstrap the background of the images containing faces
+                => many billions of samples (may require removing some profile faces or some animals 
+                        that look very much like frontal faces)
+
+- annotation system:
+	- working vocabulary (keypoints name, object names)
+	- keypoints (location + name), name objects (type + id + pose)
+		connect keypoints to form an object (specified by type, id and pose)
+		
+- add webcam support to VGUI!
+	http://qt-apps.org/content/show.php/Qt+Opencv+webcam+viewer?content=89995
+
