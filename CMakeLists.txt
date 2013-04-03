@@ -91,6 +91,9 @@ target_link_libraries   (ncv_test_optimize      ${libs})
 add_executable          (ncv_test_image         app/app_ncv_test_image.cpp)
 target_link_libraries   (ncv_test_image         ${libs})
 
+add_executable          (ncv_test_color         app/app_ncv_test_color.cpp)
+target_link_libraries   (ncv_test_color         ${libs})
+
 # Build utility programs
 #TODO: image loading & saving & scaling & channel extraction
 

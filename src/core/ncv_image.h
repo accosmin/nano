@@ -50,40 +50,75 @@ namespace ncv
 
         // RGBA data
         typedef int32_t                         rgba_t;
+        typedef int32_t                         rgb_t;
         typedef matrix<rgba_t>::matrix_t        rgba_matrix_t;
 
         // pixel channel data (e.g. red, green, blue, luma) [0, 255]
         typedef int32_t                         pixel_t;
-        typedef matrix<pixel_t>::matrix_t       pixel_matrix_t;
+        typedef matrix<pixel_t>::matrix_t       pixel_matrix_t; // FIXME: TO BE REMOVED!
 
-        // manipulate RGBA color space
+        // manipulate color space
         namespace color
         {
-                inline rgba_t red(rgba_t rgba)     { return (rgba >> 24) & 0xFF; }
-                inline rgba_t green(rgba_t rgba)   { return (rgba >> 16) & 0xFF; }
-                inline rgba_t blue(rgba_t rgba)    { return (rgba >>  8) & 0xFF; }
-                inline rgba_t alpha(rgba_t rgba)   { return (rgba >>  0) & 0xFF; }
+                // RGBA transform
+                inline rgba_t rgba2r(rgba_t rgba)       { return (rgba >> 24) & 0xFF; }
+                inline rgba_t rgba2g(rgba_t rgba)       { return (rgba >> 16) & 0xFF; }
+                inline rgba_t rgba2b(rgba_t rgba)       { return (rgba >>  8) & 0xFF; }
+                inline rgba_t rgba2a(rgba_t rgba)       { return (rgba >>  0) & 0xFF; }
 
-                inline rgba_t luma(rgba_t r, rgba_t g, rgba_t b)
+                inline rgba_t rgba2l(rgba_t r, rgba_t g, rgba_t b)
                 {
                         return (r * 11 + g * 16 + b * 5) / 32;
                 }
-                inline rgba_t luma(rgba_t rgba)
+                inline rgba_t rgba2l(rgba_t rgba)
                 {
-                        return luma(red(rgba), green(rgba), blue(rgba));
+                        return rgba2l(rgba2r(rgba), rgba2g(rgba), rgba2b(rgba));
                 }
 
-                inline rgba_t rgba(rgba_t r, rgba_t g, rgba_t b, rgba_t a = 255)
+                inline rgba_t make_rgba(rgba_t r, rgba_t g, rgba_t b, rgba_t a = 255)
                 {
                         return ((r & 0xFF) << 24) | ((g & 0xFF) << 16) | ((b & 0xFF) << 8) | (a & 0xFF);
                 }
-                inline rgba_t rgba(rgba_t luma)
+                inline rgba_t make_rgba(rgba_t luma)
                 {
-                        return rgba(luma, luma, luma);
+                        return make_rgba(luma, luma, luma);
                 }
 
-                inline rgba_t min() { return 0; }
-                inline rgba_t max() { return 255; }
+                // CIELab transform
+                void rgb2lab(rgb_t rgb_r, rgb_t rgb_g, rgb_t rgb_b, scalar_t& cie_l, scalar_t& cie_a, scalar_t& cie_b);
+                void lab2rgb(scalar_t cie_l, scalar_t cie_a, scalar_t cie_b, rgb_t& rgb_r, rgb_t& rgb_g, rgb_t& rgb_b);
+
+                // color channel range
+                inline scalar_t min(channel ch)
+                {
+                        switch (ch)
+                        {
+                        case channel::red:      return 0.0;
+                        case channel::green:    return 0.0;
+                        case channel::blue:     return 0.0;
+                        case channel::luma:     return 0.0;
+                        default:                return 0.0;
+                                // TODO: CIELab
+                        }
+                }
+
+                inline scalar_t max(channel ch)
+                {
+                        switch (ch)
+                        {
+                        case channel::red:      return 255.0;
+                        case channel::green:    return 255.0;
+                        case channel::blue:     return 255.0;
+                        case channel::luma:     return 255.0;
+                        default:                return 255.0;
+                                // TODO: CIELab
+                        }
+                }
+
+                // TODO: functions to return an RGBA encoder/decoder based on the channel type
+                //      to simplify image::load/save!!!
+                // TODO: functions to return the min/max for a channel type
+
         }
 
         // image
@@ -151,21 +186,21 @@ namespace ncv
                         case channel::red:
                                 for (size_t i = 0; i < size; i ++)
                                 {
-                                        m_rgba(i) = color::rgba(math::cast<rgba_t>(chd(i)), 0, 0);
+                                        m_rgba(i) = color::make_rgba(math::cast<rgba_t>(chd(i)), 0, 0);
                                 }
                                 break;
 
                         case channel::green:
                                 for (size_t i = 0; i < size; i ++)
                                 {
-                                        m_rgba(i) = color::rgba(0, math::cast<rgba_t>(chd(i)), 0);
+                                        m_rgba(i) = color::make_rgba(0, math::cast<rgba_t>(chd(i)), 0);
                                 }
                                 break;
 
                         case channel::blue:
                                 for (size_t i = 0; i < size; i ++)
                                 {
-                                        m_rgba(i) = color::rgba(0, 0, math::cast<rgba_t>(chd(i)));
+                                        m_rgba(i) = color::make_rgba(0, 0, math::cast<rgba_t>(chd(i)));
                                 }
                                 break;
 
@@ -173,7 +208,7 @@ namespace ncv
                                 for (size_t i = 0; i < size; i ++)
                                 {
                                         const rgba_t val = math::cast<rgba_t>(chd(i));
-                                        m_rgba(i) = color::rgba(val, val, val);
+                                        m_rgba(i) = color::make_rgba(val, val, val);
                                 }
                                 break;
                         }
@@ -205,7 +240,7 @@ namespace ncv
 
                         for (size_t i = 0; i < size; i ++)
                         {
-                                m_rgba(i) = color::rgba(math::cast<rgba_t>(chr(i)),
+                                m_rgba(i) = color::make_rgba(math::cast<rgba_t>(chr(i)),
                                                         math::cast<rgba_t>(chg(i)),
                                                         math::cast<rgba_t>(chb(i)));
                         }
@@ -227,28 +262,28 @@ namespace ncv
                         case channel::red:
                                 for (size_t i = 0; i < size; i ++)
                                 {
-                                        chd(i) = math::cast<tchannel>(color::red(m_rgba(i)));
+                                        chd(i) = math::cast<tchannel>(color::rgba2r(m_rgba(i)));
                                 }
                                 break;
 
                         case channel::green:
                                 for (size_t i = 0; i < size; i ++)
                                 {
-                                        chd(i) = math::cast<tchannel>(color::green(m_rgba(i)));
+                                        chd(i) = math::cast<tchannel>(color::rgba2g(m_rgba(i)));
                                 }
                                 break;
 
                         case channel::blue:
                                 for (size_t i = 0; i < size; i ++)
                                 {
-                                        chd(i) = math::cast<tchannel>(color::blue(m_rgba(i)));
+                                        chd(i) = math::cast<tchannel>(color::rgba2b(m_rgba(i)));
                                 }
                                 break;
 
                         case channel::luma:
                                 for (size_t i = 0; i < size; i ++)
                                 {
-                                        chd(i) = math::cast<tchannel>(color::luma(m_rgba(i)));
+                                        chd(i) = math::cast<tchannel>(color::rgba2l(m_rgba(i)));
                                 }
                                 break;
                         }

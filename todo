@@ -1,8 +1,12 @@
 - implement the CIELab transform + new channels for CIELab:
+        - make it faster!!!
+
         - remove pixel_t & pixel_matrix_t
         - scalar_matrix_t -> matrix_t
         - scalar_t image::min/max(channel) including CIELab
         - update the test program: use scalar_matrix_t & normalize to min/max ?!
+
+        - ncv_test_color program: test CIELab (print range, check bijection), test R,g,b to RGB
 
 - optimization:
         - LBFGS

@@ -20,5 +20,4 @@ Dependencies: Boost, Eigen, Qt.
 
 Operating system: Linux.
 
-Status: work in progress.
 
