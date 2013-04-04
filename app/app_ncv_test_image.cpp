@@ -17,7 +17,10 @@ int main(int argc, char *argv[])
                 ncv::text::to_string(ncv::channel::red) + ", " +
                 ncv::text::to_string(ncv::channel::green) + ", " +
                 ncv::text::to_string(ncv::channel::blue) + ", " +
-                ncv::text::to_string(ncv::channel::luma) + ")").c_str());
+                ncv::text::to_string(ncv::channel::luma) + ", " +
+                ncv::text::to_string(ncv::channel::cielab_l) + ", " +
+                ncv::text::to_string(ncv::channel::cielab_a) + ", " +
+                ncv::text::to_string(ncv::channel::cielab_b) + ")").c_str());
         po_desc.add_options()("scale,s",
                 boost::program_options::value<ncv::scalar_t>()->default_value(1.0),
                 "scaling factor [0.1, 10.0]");
@@ -88,7 +91,7 @@ int main(int argc, char *argv[])
 
         // save output image
         timer.start();
-        if (    image.load<ncv::pixel_t>(odata, cmd_channel) == false ||
+        if (    image.load<ncv::pixel_t>(odata, odata, odata) == false ||
                 image.save(cmd_output) == false)
         {
                 ncv::log_error() << ">>> failed to save image <" << cmd_output << ">!";

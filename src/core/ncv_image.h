@@ -69,6 +69,8 @@ namespace ncv
         // manipulate color space
         namespace color
         {
+                // FIXME: better names for these functions!
+
                 // RGBA transform
                 inline rgba_t rgba2r(rgba_t rgba)       { return (rgba >> 24) & 0xFF; }
                 inline rgba_t rgba2g(rgba_t rgba)       { return (rgba >> 16) & 0xFF; }
@@ -143,13 +145,7 @@ namespace ncv
 
                 // load image from file or memory
                 bool load(const string_t& path);
-                bool load(const rgba_matrix_t& rgba);                
-
-                template <typename tchannel>
-                bool load(const typename matrix<tchannel>::matrix_t& chd, channel che)
-                {
-                        return _load<tchannel>(chd, che);
-                }
+                bool load(const rgba_matrix_t& rgba);
 
                 template <typename tchannel>
                 bool load(const typename matrix<tchannel>::matrix_t& chr,
@@ -161,7 +157,6 @@ namespace ncv
 
                 // save image to file or memory
                 bool save(const string_t& path) const;
-                bool save(const string_t& path, channel ch) const;
 
                 template <typename tchannel>
                 bool save(typename matrix<tchannel>::matrix_t& chd, channel che) const
@@ -180,52 +175,6 @@ namespace ncv
                 const string_t& name() const { return m_name; }
 
         private:
-
-                //-------------------------------------------------------------------------------------------------
-
-                template <typename tchannel>
-                bool _load(const typename matrix<tchannel>::matrix_t& chd, channel che)
-                {
-                        const size_t rows = math::cast<size_t>(chd.rows());
-                        const size_t cols = math::cast<size_t>(chd.cols());
-                        const size_t size = rows * cols;
-
-                        m_rgba.resize(rows, cols);
-
-                        switch (che)
-                        {
-                        case channel::red:
-                                for (size_t i = 0; i < size; i ++)
-                                {
-                                        m_rgba(i) = color::make_rgba(math::cast<rgba_t>(chd(i)), 0, 0);
-                                }
-                                break;
-
-                        case channel::green:
-                                for (size_t i = 0; i < size; i ++)
-                                {
-                                        m_rgba(i) = color::make_rgba(0, math::cast<rgba_t>(chd(i)), 0);
-                                }
-                                break;
-
-                        case channel::blue:
-                                for (size_t i = 0; i < size; i ++)
-                                {
-                                        m_rgba(i) = color::make_rgba(0, 0, math::cast<rgba_t>(chd(i)));
-                                }
-                                break;
-
-                        case channel::luma:
-                                for (size_t i = 0; i < size; i ++)
-                                {
-                                        const rgba_t val = math::cast<rgba_t>(chd(i));
-                                        m_rgba(i) = color::make_rgba(val, val, val);
-                                }
-                                break;
-                        }
-
-                        return true;
-                }
 
                 //-------------------------------------------------------------------------------------------------
 
@@ -251,9 +200,10 @@ namespace ncv
 
                         for (size_t i = 0; i < size; i ++)
                         {
-                                m_rgba(i) = color::make_rgba(math::cast<rgba_t>(chr(i)),
-                                                        math::cast<rgba_t>(chg(i)),
-                                                        math::cast<rgba_t>(chb(i)));
+                                m_rgba(i) = color::make_rgba(
+                                                math::cast<rgba_t>(chr(i)),
+                                                math::cast<rgba_t>(chg(i)),
+                                                math::cast<rgba_t>(chb(i)));
                         }
 
                         return true;
