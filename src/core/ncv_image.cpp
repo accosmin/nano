@@ -10,16 +10,34 @@ namespace ncv
 
                 //-------------------------------------------------------------------------------------------------
 
+//                scalar_t fn_pow_4(scalar_t x)
+//                {
+//                        const scalar_t x2 = x * x;
+//                        return x2 * x2;
+//                }
+
+//                scalar_t fn_pow_5(scalar_t x)
+//                {
+//                        return x * fn_pow_4(x);
+//                }
+
+//                scalar_t fn_pow_1_5(scalar_t a)
+//                {
+//                        scalar_t x = a, last_x = x;
+//                        do
+//                        {
+//                                last_x = x;
+//                                x = 0.8 * last_x + 0.2 * a / fn_pow_4(last_x);
+//                        }
+//                        while (std::fabs(x - last_x) > 1e-8);
+
+//                        return x;
+//                }
+
                 scalar_t fn_pow_12_5(scalar_t x)
                 {
-                        // 12/5 = 2 + 2/5
-//                        2.4 = 12/5 = 1/3+1/4*1/3
-
-//                        double xpow512 (double x) {
-//                          double cbrtx = cbrt(x);
-//                          return cbrtx*sqrt(sqrt(cbrtx));
-//                        }
-
+//                        const scalar_t r = x * fn_pow_1_5(x);
+//                        return r * r;
                         return std::pow(x, 2.4);
                 }
 
@@ -28,7 +46,6 @@ namespace ncv
                 scalar_t fn_pow_5_12(scalar_t x)
                 {
                         // 5/12 = 1/3 + 1/2 * 1/2 * 1/3;
-
                         const scalar_t cbx = std::cbrt(x);
                         return cbx * std::sqrt(std::sqrt(cbx));
                 }
@@ -38,20 +55,29 @@ namespace ncv
                 scalar_t fn_xyz2lab(scalar_t t)
                 {
                         if (t > 0.008856)
-                                return std::cbrt(t);//std::pow(t, 1.0 / 3.0);
+                        {
+                                return std::cbrt(t);
+                        }
                         else
+                        {
                                 return 7.787 * t + 16.0 / 116.0;
+                        }
                 }
 
                 //-------------------------------------------------------------------------------------------------
 
                 scalar_t fn_lab2xyz(scalar_t t)
                 {
-                        const scalar_t t3 = t * t * t;
-                        if (t3 > 0.008856)
-                                return t3;
+                        static const scalar_t thres = std::cbrt(0.008856);
+
+                        if (t > thres)
+                        {
+                                return t * t * t;
+                        }
                         else
+                        {
                                 return (t - 16.0 / 116.0) / 7.787;
+                        }
                 }
 
                 //-------------------------------------------------------------------------------------------------
@@ -59,9 +85,13 @@ namespace ncv
                 scalar_t fn_rgb2xyz(scalar_t t)
                 {
                         if (t > 0.04045)
-                                return fn_pow_12_5((t + 0.055 ) / 1.055);//std::pow((t + 0.055 ) / 1.055, 2.4);
+                        {
+                                return fn_pow_12_5((t + 0.055 ) / 1.055);
+                        }
                         else
+                        {
                                 return t / 12.92;
+                        }
                 }
 
                 //-------------------------------------------------------------------------------------------------
@@ -69,9 +99,13 @@ namespace ncv
                 scalar_t fn_xyz2rgb(scalar_t t)
                 {
                         if (t > 0.0031308)
-                                return 1.055 * fn_pow_5_12(t) - 0.055;//std::pow(t, 1.0 / 2.4) - 0.055;
+                        {
+                                return 1.055 * fn_pow_5_12(t) - 0.055;
+                        }
                         else
+                        {
                                 return 12.92 * t;
+                        }
                 }
 
                 //-------------------------------------------------------------------------------------------------
@@ -142,13 +176,9 @@ namespace ncv
                 void xyz2rgb(scalar_t xyz_x, scalar_t xyz_y, scalar_t xyz_z,
                              rgb_t& rgb_r, rgb_t& rgb_g, rgb_t& rgb_b)
                 {
-                        const scalar_t var_x = xyz_x / 100.0;
-                        const scalar_t var_y = xyz_y / 100.0;
-                        const scalar_t var_z = xyz_z / 100.0;
-
-                        const scalar_t var_r = var_x *  3.2406 + var_y * -1.5372 + var_z * -0.4986;
-                        const scalar_t var_g = var_x * -0.9689 + var_y *  1.8758 + var_z *  0.0415;
-                        const scalar_t var_b = var_x *  0.0557 + var_y * -0.2040 + var_z *  1.0570;
+                        const scalar_t var_r = (xyz_x *  3.2406 + xyz_y * -1.5372 + xyz_z * -0.4986) / 100.0;
+                        const scalar_t var_g = (xyz_x * -0.9689 + xyz_y *  1.8758 + xyz_z *  0.0415) / 100.0;
+                        const scalar_t var_b = (xyz_x *  0.0557 + xyz_y * -0.2040 + xyz_z *  1.0570) / 100.0;
 
                         rgb_r = math::clamp(math::cast<rgb_t>(255.0 * fn_xyz2rgb(var_r)), 0, 255);
                         rgb_g = math::clamp(math::cast<rgb_t>(255.0 * fn_xyz2rgb(var_g)), 0, 255);
