@@ -166,7 +166,6 @@ namespace ncv
                                 typename tproblem::scalar_t beta = math::cast<typename tproblem::scalar_t>(0.7))
                         {
                                 typedef typename tproblem::scalar_t     scalar_t;
-                                typedef typename tproblem::vector_t     vector_t;
 
                                 const scalar_t f0 = fx;
                                 const scalar_t d0 = alpha * gx.dot(d);

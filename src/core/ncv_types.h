@@ -62,11 +62,11 @@ namespace ncv
         typedef double                          scalar_t;
         typedef std::vector<double>             scalars_t;
 
-        typedef vector<scalar_t>::vector_t      scalar_vector_t;
-        typedef vector<scalar_t>::vectors_t     scalar_vectors_t;
+        typedef vector<scalar_t>::vector_t      vector_t;
+        typedef vector<scalar_t>::vectors_t     vectors_t;
 
-        typedef matrix<scalar_t>::matrix_t      scalar_matrix_t;
-        typedef matrix<scalar_t>::matrices_t    scalar_matrices_t;
+        typedef matrix<scalar_t>::matrix_t      matrix_t;
+        typedef matrix<scalar_t>::matrices_t    matrices_t;
 
         // strings
         typedef std::string                     string_t;

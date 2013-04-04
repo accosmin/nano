@@ -2,8 +2,9 @@
 
 int main(int argc, char *argv[])
 {
+        ncv::log_info() << "testing RGBA transform ...";
+
         // test RGBA transform
-        ncv::count_t errors = 0;
         for (ncv::rgba_t r = 0; r < 256; r ++)
         {
                 for (ncv::rgba_t g = 0; g < 256; g++)
@@ -15,20 +16,21 @@ int main(int argc, char *argv[])
                                         ncv::color::rgba2g(rgba) != g ||
                                         ncv::color::rgba2b(rgba) != b)
                                 {
-                                        errors ++;
+                                        ncv::log_error() << "failed!";
+                                        return EXIT_FAILURE;
                                 }
                         }
                 }
         }
 
-        ncv::log_info() << "RGBA transform: "
-                        << (errors < 1 ? "no errors." : "found " + ncv::text::to_string(errors) + " errors!");
+        ncv::log_info() << ">>> done.";
+
+        ncv::log_info() << "testing CIELab transform ...";
 
         // test CIELab transform
         ncv::scalar_t min_cie_l = +1e100, min_cie_a = min_cie_l, min_cie_b = min_cie_l;
         ncv::scalar_t max_cie_l = -min_cie_l, max_cie_a = max_cie_l, max_cie_b = max_cie_l;
 
-        errors = 0;
         for (ncv::rgba_t r = 0; r < 256; r ++)
         {
                 for (ncv::rgba_t g = 0; g < 256; g++)
@@ -45,7 +47,8 @@ int main(int argc, char *argv[])
                                         rgb_g != g ||
                                         rgb_b != b)
                                 {
-                                        errors ++;
+                                        ncv::log_error() << "failed!";
+                                        return EXIT_FAILURE;
                                 }
 
                                 min_cie_l = std::min(min_cie_l, cie_l);
@@ -59,10 +62,9 @@ int main(int argc, char *argv[])
                 }
         }
 
-        ncv::log_info() << "CIELab transform: "
-                        << (errors < 1 ? "no errors." : "found " + ncv::text::to_string(errors) + " errors!");
+        ncv::log_info() << ">>> done.";
 
-        ncv::log_info() << "CIELab transform: L = [" << min_cie_l << ", " << max_cie_l
+        ncv::log_info() << "CIELab range: L = [" << min_cie_l << ", " << max_cie_l
                         << "], a = [" << min_cie_a << ", " << max_cie_a
                         << "], b = [" << min_cie_b << ", " << max_cie_b << "].";
 

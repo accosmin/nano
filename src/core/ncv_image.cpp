@@ -6,14 +6,39 @@ namespace ncv
         namespace impl
         {
                 // note: the RGB - XYZ - CIELab color transformations are taken from:
-                //      --- http://www.easyrgb.com/ ---
+                //      --- http://www.easyrgb.com/ ---                
+
+                //-------------------------------------------------------------------------------------------------
+
+                scalar_t fn_pow_12_5(scalar_t x)
+                {
+                        // 12/5 = 2 + 2/5
+//                        2.4 = 12/5 = 1/3+1/4*1/3
+
+//                        double xpow512 (double x) {
+//                          double cbrtx = cbrt(x);
+//                          return cbrtx*sqrt(sqrt(cbrtx));
+//                        }
+
+                        return std::pow(x, 2.4);
+                }
+
+                //-------------------------------------------------------------------------------------------------
+
+                scalar_t fn_pow_5_12(scalar_t x)
+                {
+                        // 5/12 = 1/3 + 1/2 * 1/2 * 1/3;
+
+                        const scalar_t cbx = std::cbrt(x);
+                        return cbx * std::sqrt(std::sqrt(cbx));
+                }
 
                 //-------------------------------------------------------------------------------------------------
 
                 scalar_t fn_xyz2lab(scalar_t t)
                 {
                         if (t > 0.008856)
-                                return std::pow(t, 1.0 / 3.0);
+                                return std::cbrt(t);//std::pow(t, 1.0 / 3.0);
                         else
                                 return 7.787 * t + 16.0 / 116.0;
                 }
@@ -34,7 +59,7 @@ namespace ncv
                 scalar_t fn_rgb2xyz(scalar_t t)
                 {
                         if (t > 0.04045)
-                                return std::pow((t + 0.055 ) / 1.055, 2.4);
+                                return fn_pow_12_5((t + 0.055 ) / 1.055);//std::pow((t + 0.055 ) / 1.055, 2.4);
                         else
                                 return t / 12.92;
                 }
@@ -44,25 +69,72 @@ namespace ncv
                 scalar_t fn_xyz2rgb(scalar_t t)
                 {
                         if (t > 0.0031308)
-                                return 1.055 * std::pow(t, 1.0 / 2.4) - 0.055;
+                                return 1.055 * fn_pow_5_12(t) - 0.055;//std::pow(t, 1.0 / 2.4) - 0.055;
                         else
                                 return 12.92 * t;
                 }
 
                 //-------------------------------------------------------------------------------------------------
 
+                class rgb2xyz_map
+                {
+                public:
+
+                        // constructor
+                        rgb2xyz_map()
+                        {
+                                for (rgb_t rgb = 0; rgb < 256; rgb ++)
+                                {
+                                        const scalar_t var = fn_rgb2xyz(rgb / 255.0) * 100.0;
+
+                                        m_r2xs[rgb] = var * 0.4124;
+                                        m_g2xs[rgb] = var * 0.3576;
+                                        m_b2xs[rgb] = var * 0.1805;
+
+                                        m_r2ys[rgb] = var * 0.2126;
+                                        m_g2ys[rgb] = var * 0.7152;
+                                        m_b2ys[rgb] = var * 0.0722;
+
+                                        m_r2zs[rgb] = var * 0.0193;
+                                        m_g2zs[rgb] = var * 0.1192;
+                                        m_b2zs[rgb] = var * 0.9505;
+
+                                }
+                        }
+
+                        //
+                        void operator()(rgb_t rgb_r, rgb_t rgb_g, rgb_t rgb_b,
+                                        scalar_t& xyz_x, scalar_t& xyz_y, scalar_t& xyz_z) const
+                        {
+                                xyz_x = m_r2xs[rgb_r] + m_g2xs[rgb_g] + m_b2xs[rgb_b];
+                                xyz_y = m_r2ys[rgb_r] + m_g2ys[rgb_g] + m_b2ys[rgb_b];
+                                xyz_z = m_r2zs[rgb_r] + m_g2zs[rgb_g] + m_b2zs[rgb_b];
+                        }
+
+                private:
+
+                        // attributes
+                        scalar_t        m_r2xs[256];
+                        scalar_t        m_r2ys[256];
+                        scalar_t        m_r2zs[256];
+
+                        scalar_t        m_g2xs[256];
+                        scalar_t        m_g2ys[256];
+                        scalar_t        m_g2zs[256];
+
+                        scalar_t        m_b2xs[256];
+                        scalar_t        m_b2ys[256];
+                        scalar_t        m_b2zs[256];
+                };
+
+                static const rgb2xyz_map the_rgb2xyz_map;
+
+                //-------------------------------------------------------------------------------------------------
+
                 void rgb2xyz(rgb_t rgb_r, rgb_t rgb_g, rgb_t rgb_b,
                              scalar_t& xyz_x, scalar_t& xyz_y, scalar_t& xyz_z)
                 {
-                        static const scalar_t inv_term1 = 1.0 / 255.0;
-
-                        const scalar_t var_r = fn_rgb2xyz(rgb_r * inv_term1) * 100.0;
-                        const scalar_t var_g = fn_rgb2xyz(rgb_g * inv_term1) * 100.0;
-                        const scalar_t var_b = fn_rgb2xyz(rgb_b * inv_term1) * 100.0;
-
-                        xyz_x = var_r * 0.4124 + var_g * 0.3576 + var_b * 0.1805;
-                        xyz_y = var_r * 0.2126 + var_g * 0.7152 + var_b * 0.0722;
-                        xyz_z = var_r * 0.0193 + var_g * 0.1192 + var_b * 0.9505;
+                        the_rgb2xyz_map(rgb_r, rgb_g, rgb_b, xyz_x, xyz_y, xyz_z);
                 }
 
                 //-------------------------------------------------------------------------------------------------
@@ -70,11 +142,9 @@ namespace ncv
                 void xyz2rgb(scalar_t xyz_x, scalar_t xyz_y, scalar_t xyz_z,
                              rgb_t& rgb_r, rgb_t& rgb_g, rgb_t& rgb_b)
                 {
-                        static const scalar_t inv_term1 = 1.0 / 100.0;
-
-                        const scalar_t var_x = xyz_x * inv_term1;
-                        const scalar_t var_y = xyz_y * inv_term1;
-                        const scalar_t var_z = xyz_z * inv_term1;
+                        const scalar_t var_x = xyz_x / 100.0;
+                        const scalar_t var_y = xyz_y / 100.0;
+                        const scalar_t var_z = xyz_z / 100.0;
 
                         const scalar_t var_r = var_x *  3.2406 + var_y * -1.5372 + var_z * -0.4986;
                         const scalar_t var_g = var_x * -0.9689 + var_y *  1.8758 + var_z *  0.0415;
@@ -95,13 +165,9 @@ namespace ncv
                         static const scalar_t y_n = 100.000;
                         static const scalar_t z_n = 108.883;
 
-                        static const scalar_t inv_x_n = 1.0 / x_n;
-                        static const scalar_t inv_y_n = 1.0 / y_n;
-                        static const scalar_t inv_z_n = 1.0 / z_n;
-
-                        const scalar_t var_x = fn_xyz2lab(xyz_x * inv_x_n);
-                        const scalar_t var_y = fn_xyz2lab(xyz_y * inv_y_n);
-                        const scalar_t var_z = fn_xyz2lab(xyz_z * inv_z_n);
+                        const scalar_t var_x = fn_xyz2lab(xyz_x / x_n);
+                        const scalar_t var_y = fn_xyz2lab(xyz_y / y_n);
+                        const scalar_t var_z = fn_xyz2lab(xyz_z / z_n);
 
                         cie_l = 116.0 * var_y - 16.0;
                         cie_a = 500.0 * (var_x - var_y);
@@ -118,14 +184,10 @@ namespace ncv
                         static const scalar_t y_n = 100.000;
                         static const scalar_t z_n = 108.883;
 
-                        static const scalar_t inv_term1 = 1.0 / 116.0;
-                        static const scalar_t inv_term2 = 1.0 / 500.0;
-                        static const scalar_t inv_term3 = 1.0 / 200.0;
-
                         // CIELab to XYZ
-                        const scalar_t var_y = (cie_l + 16.0) * inv_term1;
-                        const scalar_t var_x = cie_a * inv_term2 + var_y;
-                        const scalar_t var_z = var_y - cie_b * inv_term3;
+                        const scalar_t var_y = (cie_l + 16.0) / 116.0;
+                        const scalar_t var_x = cie_a / 500.0 + var_y;
+                        const scalar_t var_z = var_y - cie_b / 200.0;
 
                         xyz_x = x_n * fn_lab2xyz(var_x);
                         xyz_y = y_n * fn_lab2xyz(var_y);

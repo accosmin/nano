@@ -1,7 +1,6 @@
 - implement the CIELab transform + new channels for CIELab:
-        - make it faster!!!
+        - the RGB to CIELab is still too slow
 
-        - remove pixel_t & pixel_matrix_t
         - scalar_matrix_t -> matrix_t
         - scalar_t image::min/max(channel) including CIELab
         - update the test program: use scalar_matrix_t & normalize to min/max ?!

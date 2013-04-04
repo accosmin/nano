@@ -18,7 +18,10 @@ namespace ncv
                 red = 0,                // R
                 green,                  // G
                 blue,                   // B
-                luma                    // Y/L
+                luma,                   // Y/L
+                cielab_l,               // CIELab L
+                cielab_a,               // CIELab a
+                cielab_b                // CIELab b
         };
 
         namespace text
@@ -32,6 +35,9 @@ namespace ncv
                         case channel::green:            return "green";
                         case channel::blue:             return "blue";
                         case channel::luma:             return "luma";
+                        case channel::cielab_l:         return "cielab_l";
+                        case channel::cielab_a:         return "cielab_a";
+                        case channel::cielab_b:         return "cielab_b";
                         default:                        return "luma";
                         }
                 }
@@ -43,6 +49,9 @@ namespace ncv
                         if (string == "green")          return channel::green;
                         if (string == "blue")           return channel::blue;
                         if (string == "luma")           return channel::luma;
+                        if (string == "cielab_l")       return channel::cielab_l;
+                        if (string == "cielab_a")       return channel::cielab_a;
+                        if (string == "cielab_b")       return channel::cielab_b;
                         throw std::invalid_argument("Invalid channel type <" + string + ">!");
                         return channel::luma;
                 }
@@ -97,8 +106,10 @@ namespace ncv
                         case channel::green:    return 0.0;
                         case channel::blue:     return 0.0;
                         case channel::luma:     return 0.0;
+                        case channel::cielab_l: return 0.0;
+                        case channel::cielab_a: return -86.1846;
+                        case channel::cielab_b: return -107.864;
                         default:                return 0.0;
-                                // TODO: CIELab
                         }
                 }
 
@@ -110,15 +121,15 @@ namespace ncv
                         case channel::green:    return 255.0;
                         case channel::blue:     return 255.0;
                         case channel::luma:     return 255.0;
+                        case channel::cielab_l: return 100.0;
+                        case channel::cielab_a: return 98.2542;
+                        case channel::cielab_b: return 94.4825;
                         default:                return 255.0;
-                                // TODO: CIELab
                         }
                 }
 
                 // TODO: functions to return an RGBA encoder/decoder based on the channel type
                 //      to simplify image::load/save!!!
-                // TODO: functions to return the min/max for a channel type
-
         }
 
         // image

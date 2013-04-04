@@ -133,7 +133,7 @@ namespace ncv
                         typename tmatrix,
                         typename toperator
                 >
-                void foreach(const tmatrix& src, tmatrix& dst, const toperator& op)
+                void for_each(const tmatrix& src, tmatrix& dst, const toperator& op)
                 {
                         typedef typename tmatrix::Scalar tvalue;
 
@@ -269,8 +269,6 @@ namespace ncv
                 >
                 void scale(const tmatrix& src, tmatrix& dst, tsize max_rows, tsize max_cols)
                 {
-                        typedef typename tmatrix::Scalar tvalue;
-
                         const tsize rows = cast<tsize>(src.rows());
                         const tsize cols = cast<tsize>(src.cols());
 

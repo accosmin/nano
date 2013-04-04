@@ -50,9 +50,9 @@ int main(int argc, char *argv[])
         typedef ncv::index_t                            index_t;
         typedef ncv::size_t                             size_t;
         typedef ncv::scalar_t                           scalar_t;
-        typedef ncv::scalar_vector_t                    vector_t;
-        typedef ncv::scalar_vectors_t                   vectors_t;
-        typedef ncv::scalar_matrix_t                    matrix_t;
+        typedef ncv::vector_t                           vector_t;
+        typedef ncv::vectors_t                          vectors_t;
+        typedef ncv::matrix_t                           matrix_t;
         typedef ncv::optimize::history<scalar_t>        history_t;
 
         typedef std::function<size_t(void)>                                     op_size_t;
