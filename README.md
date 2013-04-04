@@ -2,7 +2,7 @@
 programming skills and to play with cool algorithms.
 
 The programming style is inspired by STL and boost and hopefully consistent across the library. Also C++11 is heavily used because it makes coding fun and 
-easier. Finally, the library is written more to be generic, clear and easy to use than to be the fastest.
+easier. Finally, the library is written to be cross-platform, generic, clear and easy to use.
 
 NanoCV consists of three modules: 
 
@@ -14,10 +14,6 @@ NanoCV consists of three modules:
 
 Command line programs are supplied for testing various components and for interfacing with the library.
 
-Development environment: ArchLinux x64, gcc >4.7, QtCreator. 
-
 Dependencies: Boost, Eigen, Qt.
-
-Operating system: Linux.
 
 
