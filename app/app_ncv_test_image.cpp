@@ -11,16 +11,6 @@ int main(int argc, char *argv[])
         po_desc.add_options()("input,i",
                 boost::program_options::value<ncv::string_t>(),
                 "input image path");
-        po_desc.add_options()("channel,c",
-                boost::program_options::value<ncv::string_t>()->default_value("luma"),
-                ("color channel (" +
-                ncv::text::to_string(ncv::channel::red) + ", " +
-                ncv::text::to_string(ncv::channel::green) + ", " +
-                ncv::text::to_string(ncv::channel::blue) + ", " +
-                ncv::text::to_string(ncv::channel::luma) + ", " +
-                ncv::text::to_string(ncv::channel::cielab_l) + ", " +
-                ncv::text::to_string(ncv::channel::cielab_a) + ", " +
-                ncv::text::to_string(ncv::channel::cielab_b) + ")").c_str());
         po_desc.add_options()("scale,s",
                 boost::program_options::value<ncv::scalar_t>()->default_value(1.0),
                 "scaling factor [0.1, 10.0]");
@@ -51,7 +41,6 @@ int main(int argc, char *argv[])
         }
 
         const ncv::string_t cmd_input = po_vm["input"].as<ncv::string_t>();
-        const ncv::channel cmd_channel = ncv::text::from_string<ncv::channel>(po_vm["channel"].as<ncv::string_t>());
         const ncv::scalar_t cmd_scale = ncv::math::clamp(po_vm["scale"].as<ncv::scalar_t>(), 0.1, 10.0);
         const ncv::index_t cmd_width = ncv::math::clamp(po_vm["width"].as<ncv::index_t>(), 0, 4096);
         const ncv::index_t cmd_height = ncv::math::clamp(po_vm["height"].as<ncv::index_t>(), 0, 4096);
@@ -60,12 +49,11 @@ int main(int argc, char *argv[])
         ncv::timer timer;
 
         // load input image
-        ncv::image image;
-        ncv::pixel_matrix_t idata, odata;
+        ncv::rgba_matrix_t rgba_image;
+        ncv::cielab_matrix_t cielab_image, cielab_image_scaled;
 
         timer.start();
-        if (    image.load(cmd_input) == false ||
-                image.save<ncv::pixel_t>(idata, cmd_channel) == false)
+        if (!ncv::load_image(cmd_input, rgba_image))
         {
                 ncv::log_error() << "<<< failed to load image <" << cmd_input << ">!";
                 return EXIT_FAILURE;
@@ -75,24 +63,33 @@ int main(int argc, char *argv[])
                 ncv::log_info() << "<<< loaded image <" << cmd_input << "> in " << timer.elapsed_string() << ".";
         }
 
-        // scale image
+        // transform RGBA to CIELab
+        timer.start();
+        ncv::math::transform(rgba_image, cielab_image, ncv::color::decode_cielab);
+        ncv::log_info() << "transformed RGBA to CIELab in " << timer.elapsed_string() << ".";
+
+        // resize image
         timer.start();
         if (cmd_width > 0 && cmd_height > 0)
         {
-                ncv::math::scale(idata, odata, cmd_width, cmd_height);
+                ncv::math::bilinear(cielab_image, cielab_image_scaled, cmd_width, cmd_height);
         }
         else
         {
-                ncv::math::scale(idata, odata, cmd_scale);
+                ncv::math::bilinear(cielab_image, cielab_image_scaled, cmd_scale);
         }
-        ncv::log_info() << "scaled image from <" << idata.cols() << "x" << idata.rows()
-                        << "> to <" << odata.cols() << "x" << odata.rows()
+        ncv::log_info() << "scaled image from <" << cielab_image.cols() << "x" << cielab_image.rows()
+                        << "> to <" << cielab_image_scaled.cols() << "x" << cielab_image_scaled.rows()
                         << "> in " << timer.elapsed_string() << ".";
+
+        // transform CIELab to RGBA
+        timer.start();
+        ncv::math::transform(cielab_image_scaled, rgba_image, ncv::color::encode_cielab);
+        ncv::log_info() << "transformed CIELab to RGBA in " << timer.elapsed_string() << ".";
 
         // save output image
         timer.start();
-        if (    image.load<ncv::pixel_t>(odata, odata, odata) == false ||
-                image.save(cmd_output) == false)
+        if (!ncv::save_image(cmd_output, rgba_image))
         {
                 ncv::log_error() << ">>> failed to save image <" << cmd_output << ">!";
                 return EXIT_FAILURE;

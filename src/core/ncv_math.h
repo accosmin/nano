@@ -127,33 +127,58 @@ namespace ncv
                                 tvalue, std::is_integral<tvalue>::value>::dispatch(value);
                 }
 
+                // transform coefficient-wise a matrix: op(&in)
+                template
+                <
+                        typename tmatrix,
+                        typename toperator
+                >
+                void for_each(tmatrix& in, const toperator& op)
+                {
+                        std::for_each(in.data(), in.data() + in.size(), op);
+                }
+
                 // transform coefficient-wise a matrix: out = op(in)
                 template
                 <
-                        typename tmatrix,
+                        typename tin_matrix,
+                        typename tout_matrix,
                         typename toperator
                 >
-                void for_each(const tmatrix& src, tmatrix& dst, const toperator& op)
+                void transform(const tin_matrix& in, tout_matrix& out, const toperator& op)
                 {
-                        typedef typename tmatrix::Scalar tvalue;
-
-                        dst.resize(src.rows(), src.cols());
-                        std::transform(src.data(), src.data() + src.size(), dst.data(),
-                                       [&op] (tvalue i) { return cast<tvalue>(op(i)); });
+                        out.resize(in.rows(), in.cols());
+                        std::transform(in.data(), in.data() + in.size(), out.data(), op);
                 }
 
-                // transform coefficient-wise a matrix: out = op(in, out)
+                // transform coefficient-wise a matrix: out = op(in1, in2)
                 template
                 <
-                        typename tmatrix,
+                        typename tin1_matrix,
+                        typename tin2_matrix,
+                        typename tout_matrix,
                         typename toperator
                 >
-                void transform(const tmatrix& src, tmatrix& dst, const toperator& op)
+                void transform(const tin1_matrix& in1, const tin2_matrix& in2, tout_matrix& out, const toperator& op)
                 {
-                        typedef typename tmatrix::Scalar tvalue;
+                        out.resize(in1.rows(), in1.cols());
+                        std::transform(in1.data(), in1.data() + in1.size(), in2.data(), out.data(), op);
+                }
 
-                        std::transform(src.data(), src.data() + src.size(), dst.data(), dst.data(),
-                                       [&op] (tvalue i, tvalue o) { return cast<tvalue>(op(i, o)); });
+                // transform coefficient-wise a matrix: out = op(in1, in2, in3)
+                template
+                <
+                        typename tin1_matrix,
+                        typename tin2_matrix,
+                        typename tin3_matrix,
+                        typename tout_matrix,
+                        typename toperator
+                >
+                void transform(const tin1_matrix& in1, const tin2_matrix& in2, const tin3_matrix& in3,
+                               tout_matrix& out, const toperator& op)
+                {
+                        out.resize(in1.rows(), in1.cols());
+                        std::transform(in1.data(), in1.data() + in1.size(), in2.data(), in3.data(), out.data(), op);
                 }
 
                 // cast a matrix type to another one
@@ -213,12 +238,12 @@ namespace ncv
                         norm(src, dst, cast<tscalar>(src.minCoeff()), cast<tscalar>(src.maxCoeff()), omin, omax);
                 }
 
-                // scale the input matrix by the given factor (using bilinear interpolation)
+                // resize the input matrix by the given factor (using bilinear interpolation)
                 template
                 <       typename tmatrix,
                         typename tscalar = double
                 >
-                void scale(const tmatrix& src, tmatrix& dst, tscalar factor)
+                void bilinear(const tmatrix& src, tmatrix& dst, tscalar factor)
                 {
                         typedef typename tmatrix::Scalar tvalue;
 
@@ -261,13 +286,13 @@ namespace ncv
                         }
                 }
 
-                // scale the input matrix to the given maximum size
+                // resize the input matrix to the given maximum matrix size
                 template
                 <
                         typename tmatrix,
                         typename tsize = int
                 >
-                void scale(const tmatrix& src, tmatrix& dst, tsize max_rows, tsize max_cols)
+                void bilinear(const tmatrix& src, tmatrix& dst, tsize max_rows, tsize max_cols)
                 {
                         const tsize rows = cast<tsize>(src.rows());
                         const tsize cols = cast<tsize>(src.cols());
@@ -281,7 +306,7 @@ namespace ncv
                         {
                                 const double srows = cast<double>(max_rows) / cast<double>(rows);
                                 const double scols = cast<double>(max_cols) / cast<double>(cols);
-                                scale(src, dst, std::min(srows, scols));
+                                bilinear(src, dst, std::min(srows, scols));
                         }
                 }
         }

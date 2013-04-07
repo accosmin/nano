@@ -23,15 +23,23 @@ namespace ncv
 
                 typedef std::uniform_int_distribution<T>        type_t;
         };
+
         template <>
         struct uniform_distribution<float>
         {
                 typedef std::uniform_real_distribution<float>   type_t;
         };
+
         template <>
         struct uniform_distribution<double>
         {
                 typedef std::uniform_real_distribution<double>  type_t;
+        };
+
+        template <>
+        struct uniform_distribution<long double>
+        {
+                typedef std::uniform_real_distribution<long double>  type_t;
         };
 
         template

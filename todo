@@ -1,13 +1,10 @@
-- implement the CIELab transform + new channels for CIELab:
-        - the RGB to CIELab is still too slow
-
-        - scalar_matrix_t -> matrix_t
-        - scalar_t image::min/max(channel) including CIELab
-        - update the test program: use scalar_matrix_t & normalize to min/max ?!
-
-        - ncv_test_color program: test CIELab (print range, check bijection), test R,g,b to RGB
+- faster RGB to CIELab transform (goal: 1s single thread version of the color testing program)
 
 - optimization:
+        - more test functions & high dimensional: do not print the current vector, but only the current function value
+                vs. the target
+
+        - initial line-search step: 1 (for NR and LBFGS), adaptive (for GD, CGD like described in Nocedal & Wright)
         - LBFGS
         - maybe some other modifications that converge faster
 
