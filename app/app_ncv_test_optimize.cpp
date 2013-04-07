@@ -6,25 +6,20 @@ template
 <
         typename thistory
 >
-void print(const ncv::string_t& header, ncv::index_t t, ncv::size_t n,
-           const thistory& history)
+void print(const ncv::string_t& header, ncv::index_t t, ncv::size_t n, const thistory& history)
 {
         static const ncv::index_t col_size = 32;
+        static const ncv::string_t del_line(3 * col_size + 4, '-');
 
         const ncv::string_t test =
                 " [" + ncv::text::to_string(t + 1) + "/" + ncv::text::to_string(n) + "]";
 
+        std::cout << del_line << std::endl;
         std::cout << ncv::text::resize(header + test, col_size) << " "
-                  << ncv::text::resize("x", col_size) << " "
                   << ncv::text::resize("f(x)", col_size) << " "
                   << ncv::text::resize("|f'(x)|", col_size)
                   << std::endl;
-
-        std::cout << ncv::text::resize(ncv::string_t(col_size, '-'), col_size) << " "
-                  << ncv::text::resize(ncv::string_t(col_size, '-'), col_size) << " "
-                  << ncv::text::resize(ncv::string_t(col_size, '-'), col_size) << " "
-                  << ncv::text::resize(ncv::string_t(col_size, '-'), col_size)
-                  << std::endl;
+        std::cout << del_line << std::endl;
 
         for (ncv::index_t i = 0; i < history.size(); i ++)
         {
@@ -32,17 +27,17 @@ void print(const ncv::string_t& header, ncv::index_t t, ncv::size_t n,
                         " [" + ncv::text::to_string(i + 1) + "/" + ncv::text::to_string(history.size()) + "]";
 
                 std::cout << ncv::text::resize(header + test + iter, col_size) + "" << " "
-                          << ncv::text::resize(ncv::text::vto_string<ncv::scalar_t>(history.x(i)), col_size) << " "
                           << ncv::text::resize(ncv::text::to_string(history.fx(i)), col_size) << " "
                           << ncv::text::resize(ncv::text::to_string(history.gn(i)), col_size)
                           << std::endl;
         }
 
-        std::cout << ncv::text::resize(ncv::string_t(col_size, '-'), col_size) << " "
-                  << ncv::text::resize(ncv::string_t(col_size, '-'), col_size) << " "
-                  << ncv::text::resize(ncv::string_t(col_size, '-'), col_size) << " "
-                  << ncv::text::resize(ncv::string_t(col_size, '-'), col_size)
+        std::cout << del_line << std::endl;
+        std::cout << header << ": #fevals = " << history.fevals()
+                  << ", #gevals = " << history.gevals()
+                  << ", #hevals = " << history.hevals()
                   << std::endl;
+        std::cout << del_line << std::endl;
 }
 
 int main(int argc, char *argv[])
@@ -71,7 +66,7 @@ int main(int argc, char *argv[])
         boost::program_options::options_description po_desc("", 160);
         po_desc.add_options()("help,h", "help message");
         po_desc.add_options()("iters,i",
-                boost::program_options::value<size_t>()->default_value(40),
+                boost::program_options::value<size_t>()->default_value(10),
                 "number of iterations [8, 1024]");
         po_desc.add_options()("eps,e",
                 boost::program_options::value<scalar_t>()->default_value(1e-6),

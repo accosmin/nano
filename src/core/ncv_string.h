@@ -20,8 +20,22 @@ namespace ncv
                 // align a string to fill the given size
                 string_t resize(const string_t& str, size_t size, align alignment = align::left);
 
-                // compact a list of strings using the given glue string
-                string_t concatenate(const strings_t& strs, const string_t& glue = ",");
+                // compact a list of values into a string using the given glue string
+                template
+                <
+                        typename tvalue
+                >
+                string_t concatenate(const std::vector<tvalue>& values, const string_t& glue = ",")
+                {
+                        string_t ret;
+                        std::for_each(std::begin(values), std::end(values), [&] (const tvalue& val)
+                        {
+                                ret += to_string(val);
+                                ret += glue;
+                        });
+
+                        return ret.empty() ? ret : ret.substr(0, ret.size() - glue.size());
+                }
 
                 // to lower & upper string
                 string_t to_lower(const string_t& str);
@@ -44,29 +58,6 @@ namespace ncv
                 tvalue from_string(const string_t& str)
                 {
                         return boost::lexical_cast<tvalue>(str);
-                }
-
-                // string cast for vectors
-                // FIXME: can write it like to_string ?!
-                template
-                <
-                        typename tvalue
-                >
-                string_t vto_string(const typename vector<tvalue>::vector_t& v)
-                {
-                        const index_t size = static_cast<index_t>(v.size());
-
-                        string_t ret;
-                        for (index_t i = 0; i < size; i ++)
-                        {
-                                ret += to_string<tvalue>(v(i));
-                                if (i + 1 != size)
-                                {
-                                        ret += ", ";
-                                }
-                        }
-
-                        return ret;
                 }
 
                 // decode parameter by name: [name1=value1[,name2=value2[...]]

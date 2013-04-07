@@ -27,10 +27,21 @@ namespace ncv
                         typedef typename matrix<tscalar>::matrix_t      matrix_t;
                         typedef typename matrix<tscalar>::matrices_t    matrices_t;
 
+                        // Constructor
+                        history()
+                                :       m_f_evals(0),
+                                        m_g_evals(0),
+                                        m_h_evals(0)
+                        {
+                        }
+
                         // manage history
                         void clear()
                         {
                                 m_history.clear();
+                                m_f_evals = 0;
+                                m_g_evals = 0;
+                                m_h_evals = 0;
                         }
 
                         void memo(const vector_t& x, tscalar fx, tscalar gg)
@@ -38,12 +49,24 @@ namespace ncv
                                 m_history.push_back(std::make_tuple(x, fx, gg));
                         }
 
+                        void memo(count_t fc, count_t gc, count_t hc)
+                        {
+                                m_f_evals += fc;
+                                m_g_evals += gc;
+                                m_h_evals += hc;
+                        }
+
                         // access functions
                         bool empty() const { return m_history.empty(); }
                         size_t size() const { return m_history.size(); }
+
                         const vector_t& x(index_t i) const { return std::get<0>(m_history[i]); }
                         tscalar fx(index_t i) const { return std::get<1>(m_history[i]); }
                         tscalar gn(index_t i) const { return std::get<2>(m_history[i]); }
+
+                        count_t fevals() const { return m_f_evals; }
+                        count_t gevals() const { return m_g_evals; }
+                        count_t hevals() const { return m_h_evals; }
 
                 private:
 
@@ -53,6 +76,9 @@ namespace ncv
 
                         // attributes
                         stats_t         m_history;
+                        count_t         m_f_evals;      // #function value evaluations
+                        count_t         m_g_evals;      // #function gradient evaluations
+                        count_t         m_h_evals;      // #function hessian evaluations
                 };
 
                 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -141,6 +167,8 @@ namespace ncv
                                 const tscalar gnorm = math::cast<tscalar>(g.norm());
                                 return gnorm < eps;
                         }
+
+                        // FIXME: new convergence criteria: line-search step is too small
                 }
 
                 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,6 +180,9 @@ namespace ncv
 
                 namespace impl
                 {
+                        // FIXME: line-search starting from the previous scaled line-search step
+                        //      (except for NR)
+
                         template
                         <
                                 typename tproblem
@@ -162,7 +193,8 @@ namespace ncv
                                 const typename tproblem::vector_t& d,
                                 const typename tproblem::scalar_t& fx,
                                 const typename tproblem::vector_t& gx,
-                                typename tproblem::scalar_t alpha = math::cast<typename tproblem::scalar_t>(0.2),
+                                typename tproblem::history_t& history,
+                                typename tproblem::scalar_t alpha = math::cast<typename tproblem::scalar_t>(0.3),
                                 typename tproblem::scalar_t beta = math::cast<typename tproblem::scalar_t>(0.7))
                         {
                                 typedef typename tproblem::scalar_t     scalar_t;
@@ -171,45 +203,12 @@ namespace ncv
                                 const scalar_t d0 = alpha * gx.dot(d);
 
                                 scalar_t t = math::cast<scalar_t>(1.0);
-                                while (problem.f(x + t * d) > f0 + t * d0)
+                                while (problem.f(x + t * d) > f0 + t * d0)      // Armijo (sufficient decrease) condition
                                 {
                                         t = beta * t;
+                                        history.memo(1, 0, 0);
                                 }
-
-                                return t;
-                        }
-
-                        template
-                        <
-                                typename tproblem
-                        >
-                        typename tproblem::scalar_t line_search_curvature(
-                                const tproblem& problem,
-                                const typename tproblem::vector_t& x,
-                                const typename tproblem::vector_t& d,
-                                const typename tproblem::scalar_t& fx,
-                                const typename tproblem::vector_t& gx,
-                                typename tproblem::scalar_t c1 = math::cast<typename tproblem::scalar_t>(1e-4),
-                                typename tproblem::scalar_t c2 = math::cast<typename tproblem::scalar_t>(0.9),
-                                typename tproblem::scalar_t beta = math::cast<typename tproblem::scalar_t>(0.7))
-                        {
-                                typedef typename tproblem::scalar_t     scalar_t;
-                                typedef typename tproblem::vector_t     vector_t;
-
-                                const scalar_t f0 = fx;
-                                const scalar_t d0 = d.dot(gx);
-                                const scalar_t step = c1 * d0;
-                                const scalar_t curv = c2 * d0;
-                                vector_t g;
-
-                                // FIXME: this is not working well with GD, CGD, NR!!!
-
-                                scalar_t t = math::cast<scalar_t>(1.0);
-                                while ( problem.f(x + t * d, g) > f0 + t * step ||
-                                        d.dot(g) < curv)
-                                {
-                                        t = beta * t;
-                                }
+                                history.memo(1, 0, 0);
 
                                 return t;
                         }
@@ -245,6 +244,7 @@ namespace ncv
                         {
                                 const scalar_t fx = problem.f(x, gx);
                                 history.memo(x, fx, gx.norm());
+                                history.memo(1, 1, 0);
 
                                 // check convergence
                                 if (impl::converged(gx, problem.eps()))
@@ -256,7 +256,7 @@ namespace ncv
                                 d = -gx;
 
                                 // update solution
-                                const scalar_t t = impl::line_search(problem, x, d, fx, gx);
+                                const scalar_t t = impl::line_search(problem, x, d, fx, gx, history);
                                 x.noalias() += t * d;
                         }
 
@@ -293,6 +293,7 @@ namespace ncv
                         {
                                 const scalar_t fx = problem.f(x, gx);
                                 history.memo(x, fx, gx.norm());
+                                history.memo(1, 1, 0);
 
                                 // check convergence
                                 if (impl::converged(gx, problem.eps()))
@@ -314,7 +315,7 @@ namespace ncv
                                 }
 
                                 // update solution
-                                const scalar_t t = impl::line_search(problem, x, d, fx, gx);
+                                const scalar_t t = impl::line_search(problem, x, d, fx, gx, history);
                                 x.noalias() += t * d;
 
                                 gx_prv = gx;
@@ -356,6 +357,7 @@ namespace ncv
                         {
                                 const scalar_t fx = problem.f(x, gx, hx);
                                 history.memo(x, fx, gx.norm());
+                                history.memo(1, 1, 1);
 
                                 // check convergence
                                 if (impl::converged(gx, problem.eps()))
@@ -374,7 +376,7 @@ namespace ncv
                                 }
 
                                 // update solution
-                                const scalar_t t = impl::line_search(problem, x, d, fx, gx);
+                                const scalar_t t = impl::line_search(problem, x, d, fx, gx, history);
                                 x.noalias() += t * d;
                         }
 

@@ -50,21 +50,7 @@ namespace ncv
 		}
 	}
 
-	//-------------------------------------------------------------------------------------------------
-	
-        string_t text::concatenate(const strings_t& strs, const string_t& glue)
-        {
-                string_t ret;                
-                std::for_each(std::begin(strs), std::end(strs), [&] (const string_t& str)
-                {
-                        ret += str;
-                        ret += glue;
-                });
-
-                return ret.empty() ? ret : ret.substr(0, ret.size() - glue.size());
-        }
-	
-	//-------------------------------------------------------------------------------------------------
+        //-------------------------------------------------------------------------------------------------
 	
         string_t text::to_lower(const string_t& str)
         {
