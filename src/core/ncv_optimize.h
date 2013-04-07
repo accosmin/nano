@@ -180,9 +180,6 @@ namespace ncv
 
                 namespace impl
                 {
-                        // FIXME: line-search starting from the previous scaled line-search step
-                        //      (except for NR)
-
                         template
                         <
                                 typename tproblem
@@ -190,6 +187,7 @@ namespace ncv
                         typename tproblem::scalar_t line_search(
                                 const tproblem& problem,
                                 const typename tproblem::vector_t& x,
+                                typename tproblem::scalar_t t0,                 // Intial step size
                                 const typename tproblem::vector_t& d,
                                 const typename tproblem::scalar_t& fx,
                                 const typename tproblem::vector_t& gx,
@@ -202,13 +200,15 @@ namespace ncv
                                 const scalar_t f0 = fx;
                                 const scalar_t d0 = alpha * gx.dot(d);
 
-                                scalar_t t = math::cast<scalar_t>(1.0);
+                                scalar_t t = t0;
                                 while (problem.f(x + t * d) > f0 + t * d0)      // Armijo (sufficient decrease) condition
                                 {
                                         t = beta * t;
                                         history.memo(1, 0, 0);
                                 }
                                 history.memo(1, 0, 0);
+
+                                std::cout << "t0 = " << t0 << ", t = " << t << std::endl;
 
                                 return t;
                         }
@@ -238,6 +238,7 @@ namespace ncv
                         history.clear();
 
                         vector_t x = x0, gx, d;
+                        scalar_t t = 1.0, dg_prv = -1.0;
 
                         // iterate until convergence
                         for (index_t i = 0; i < problem.iters(); i ++)
@@ -256,8 +257,17 @@ namespace ncv
                                 d = -gx;
 
                                 // update solution
-                                const scalar_t t = impl::line_search(problem, x, d, fx, gx, history);
+                                const scalar_t dg = d.dot(gx);
+                                if (i > 0)
+                                {
+                                        // line-search initial step guess
+                                        t *= dg_prv / dg;
+                                }
+
+                                t = impl::line_search(problem, x, t, d, fx, gx, history);
                                 x.noalias() += t * d;
+
+                                dg_prv = dg;
                         }
 
                         return !history.empty();
@@ -287,6 +297,7 @@ namespace ncv
                         history.clear();
 
                         vector_t x = x0, gx, gx_prv, d, d_prv;
+                        scalar_t t = 1.0, dg_prv = -1.0;
 
                         // iterate until convergence
                         for (index_t i = 0; i < problem.iters(); i ++)
@@ -315,11 +326,19 @@ namespace ncv
                                 }
 
                                 // update solution
-                                const scalar_t t = impl::line_search(problem, x, d, fx, gx, history);
+                                const scalar_t dg = d.dot(gx);
+                                if (i > 0)
+                                {
+                                        // line-search initial step guess
+                                        t *= dg_prv / dg;
+                                }
+
+                                t = impl::line_search(problem, x, 1.0/*t*/, d, fx, gx, history);
                                 x.noalias() += t * d;
 
                                 gx_prv = gx;
                                 d_prv = d;
+                                dg_prv = dg;
                         }
 
                         return !history.empty();
@@ -375,8 +394,8 @@ namespace ncv
                                         d = -gx;
                                 }
 
-                                // update solution
-                                const scalar_t t = impl::line_search(problem, x, d, fx, gx, history);
+                                // update solution (line-search initial step is always 1)
+                                const scalar_t t = impl::line_search(problem, x, 1.0, d, fx, gx, history);
                                 x.noalias() += t * d;
                         }
 

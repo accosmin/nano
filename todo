@@ -1,6 +1,12 @@
 - faster RGB to CIELab transform (goal: 1s single thread version of the color testing program)
 
+- may replace the text::tabulate functions to a new tabulate_logger:
+	- <<(tvalue) -> resize, align and display the column, put the separator, newline if needed!
+	- could be used for testing the optimization procedure
+
 - optimization:
+	- reduce the number of function evaluations during line-search for the GD and CGD methods
+
         - more test functions & high dimensional: do not print the current vector, but only the current function value
                 vs. the target
 

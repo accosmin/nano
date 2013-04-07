@@ -66,10 +66,10 @@ int main(int argc, char *argv[])
         boost::program_options::options_description po_desc("", 160);
         po_desc.add_options()("help,h", "help message");
         po_desc.add_options()("iters,i",
-                boost::program_options::value<size_t>()->default_value(10),
+                boost::program_options::value<size_t>()->default_value(40),
                 "number of iterations [8, 1024]");
         po_desc.add_options()("eps,e",
-                boost::program_options::value<scalar_t>()->default_value(1e-6),
+                boost::program_options::value<scalar_t>()->default_value(1e-5),
                 "convergence accuracy [1e-20, 1e-1]");
 
         boost::program_options::variables_map po_vm;
