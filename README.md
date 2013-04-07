@@ -1,8 +1,4 @@
-**NanoCV** is a small (nano) library consisting of (non-linear) optimization, machine learning and computer vision utilities. The goal is to improve my C++(11) 
-programming skills and to play with cool algorithms.
-
-The programming style is inspired by STL and boost and hopefully consistent across the library. Also C++11 is heavily used because it makes coding fun and 
-easier. Finally, the library is written to be cross-platform, generic, clear and easy to use.
+**NanoCV** is a small (nano) library consisting of (non-linear) optimization, machine learning and image processing utilities. 
 
 NanoCV consists of three modules: 
 
@@ -14,6 +10,7 @@ NanoCV consists of three modules:
 
 Command line programs are supplied for testing various components and for interfacing with the library.
 
-Dependencies: Boost, Eigen, Qt.
+The programming style is inspired by STL and boost and hopefully consistent across the library. Also C++11 is heavily used because it makes coding fun and 
+easier. The library is written to be cross-platform (having only Boost, Eigen and Qt as dependencies), generic (via templates) and easy to use.
 
 
