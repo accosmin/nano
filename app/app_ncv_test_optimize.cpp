@@ -85,14 +85,14 @@ int main(int argc, char *argv[])
         boost::program_options::options_description po_desc("", 160);
         po_desc.add_options()("help,h", "help message");
         po_desc.add_options()("iters,i",
-                boost::program_options::value<size_t>()->default_value(40),
+                boost::program_options::value<size_t>()->default_value(128),
                 "number of iterations [8, 16000]");
         po_desc.add_options()("eps,e",
                 boost::program_options::value<scalar_t>()->default_value(0.00001),
                 "convergence accuracy [1e-20, 1e-1]");
-        po_desc.add_options()("eps,e",
-                boost::program_options::value<scalar_t>()->default_value(0.00001),
-                "convergence accuracy [1e-20, 1e-1]");
+        po_desc.add_options()("dim,d",
+                boost::program_options::value<size_t>()->default_value(16),
+                "maximum dimension [2, 1024]");
 
         boost::program_options::variables_map po_vm;
         boost::program_options::store(
@@ -109,11 +109,12 @@ int main(int argc, char *argv[])
         }
 
         const size_t cmd_iters = ncv::math::clamp(po_vm["iters"].as<size_t>(), 8, 16000);
-        const size_t cmd_trials = 16;
         const scalar_t cmd_eps = ncv::math::clamp(po_vm["eps"].as<scalar_t>(), 1e-20, 1e-1);
+        const size_t cmd_dims = ncv::math::clamp(po_vm["dim"].as<size_t>(), 2, 1024);
+        const size_t cmd_trials = 16;
 
         // sphere function
-        for (size_t n = 2; n <= 1024; n *= 2)
+        for (size_t n = 2; n <= cmd_dims; n *= 2)
         {
                 const auto op_size = [=] ()
                 {
@@ -154,11 +155,63 @@ int main(int argc, char *argv[])
                 test(problem, "sphere [" + ncv::text::to_string(n) + "D]", cmd_trials);
         }
 
-        // Rosenbrock problem
-        for (size_t n = 2; n <= 1024; n *= 2)
+        // ellipsoidal function
+        for (size_t n = 2; n <= cmd_dims; n *= 2)
         {
-                using ncv::math::square;
+                const auto op_size = [=] ()
+                {
+                        return n;
+                };
 
+                const auto op_fval = [=] (const vector_t& x)
+                {
+                        scalar_t f = 0.0;
+                        for (size_t i = 0; i < n; i ++)
+                        {
+                                f += (i + 1.0) * ncv::math::square(x[i]);
+                        }
+                        return f;
+                };
+
+                const auto op_grad = [=] (const vector_t& x, vector_t& g)
+                {
+                        g.resize(n);
+                        for (size_t i = 0; i < n; i ++)
+                        {
+                                g(i) = 2.0 * (i + 1.0) * x[i];
+                        }
+                };
+
+                const auto op_hess = [=] (const vector_t& x, matrix_t& h)
+                {
+                        h.resize(n, n);
+                        h.setZero();
+                        for (size_t i = 0; i < n; i ++)
+                        {
+                                h(i, i) = 2.0 * (i + 1.0);
+                        }
+                };
+
+                const auto op_fval_grad = [=] (const vector_t& x, vector_t& g)
+                {
+                        op_grad(x, g);
+                        return op_fval(x);
+                };
+
+                const auto op_fval_grad_hess = [=] (const vector_t& x, vector_t& g, matrix_t& h)
+                {
+                        op_grad(x, g);
+                        op_hess(x, h);
+                        return op_fval(x);
+                };
+
+                const problem_t problem(op_size, op_fval, op_fval_grad, op_fval_grad_hess, cmd_iters, cmd_eps);
+                test(problem, "ellipsoidal [" + ncv::text::to_string(n) + "D]", cmd_trials);
+        }
+
+        // Rosenbrock problem
+        for (size_t n = 2; n <= cmd_dims; n *= 2)
+        {
                 const auto op_size = [=] ()
                 {
                         return n;
@@ -169,8 +222,8 @@ int main(int argc, char *argv[])
                         scalar_t f = 0.0;
                         for (size_t i = 0; i + 1 < n; i ++)
                         {
-                                f += 100.0 * square(x[i + 1] - square(x[i])) +
-                                     square(x[i] - 1.0);
+                                f += 100.0 * ncv::math::square(x[i + 1] - ncv::math::square(x[i])) +
+                                     ncv::math::square(x[i] - 1.0);
                         }
 
                         return f;
