@@ -97,46 +97,6 @@ namespace ncv
 
                         return default_value;
                 }
-
-                // tabulate the given columns: [header, column values, alignment, column ending]+
-                template
-                <
-                        class... tcolumns
-                >
-                string_t tabulate(tcolumns... data);
-
-                namespace impl
-                {
-                        // concatenate two columns
-                        strings_t tabulate_concatenate(const strings_t& col1, const strings_t& col2);
-
-                        // tabulate the given columns: [header, column values, alignment, column ending]+
-                        strings_t tabulate_column(
-                                const string_t& header, const strings_t& values, align alignment, const string_t& end);
-
-                        template
-                        <
-                                class... tcolumns
-                        >
-                        strings_t tabulate_column(
-                                const string_t& header, const strings_t& values, align alignment, const string_t& end,
-                                tcolumns... others)
-                        {
-                                return  tabulate_concatenate(
-                                        tabulate_column(header, values, alignment, end),
-                                        tabulate_column(others...));
-                        }
-                }
-
-                // tabulate the given columns: [header, column values, alignment, column ending]+
-                template
-                <
-                        class... tcolumns
-                >
-                string_t tabulate(tcolumns... data)
-                {
-                        return concatenate(impl::tabulate_column(data...), "\n");
-                }
         }
 }
 

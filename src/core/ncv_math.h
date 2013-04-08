@@ -58,6 +58,16 @@ namespace ncv
                         return static_cast<tvalue>(-1);
                 }
 
+                // square a value
+                template
+                <
+                        typename tvalue
+                >
+                tvalue square(tvalue value)
+                {
+                        return value * value;
+                }
+
                 // safely invert a value
                 template
                 <

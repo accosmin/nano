@@ -10,78 +10,6 @@ namespace ncv
         namespace optimize
         {
                 /////////////////////////////////////////////////////////////////////////////////////////////
-                // the set of values & function values & gradient magnitudes evaluated during optimization.
-                /////////////////////////////////////////////////////////////////////////////////////////////
-
-                template
-                <
-                        typename tscalar
-                >
-                class history
-                {
-                public:
-
-                        typedef typename vector<tscalar>::vector_t      vector_t;
-                        typedef typename vector<tscalar>::vectors_t     vectors_t;
-
-                        typedef typename matrix<tscalar>::matrix_t      matrix_t;
-                        typedef typename matrix<tscalar>::matrices_t    matrices_t;
-
-                        // Constructor
-                        history()
-                                :       m_f_evals(0),
-                                        m_g_evals(0),
-                                        m_h_evals(0)
-                        {
-                        }
-
-                        // manage history
-                        void clear()
-                        {
-                                m_history.clear();
-                                m_f_evals = 0;
-                                m_g_evals = 0;
-                                m_h_evals = 0;
-                        }
-
-                        void memo(const vector_t& x, tscalar fx, tscalar gg)
-                        {
-                                m_history.push_back(std::make_tuple(x, fx, gg));
-                        }
-
-                        void memo(count_t fc, count_t gc, count_t hc)
-                        {
-                                m_f_evals += fc;
-                                m_g_evals += gc;
-                                m_h_evals += hc;
-                        }
-
-                        // access functions
-                        bool empty() const { return m_history.empty(); }
-                        size_t size() const { return m_history.size(); }
-
-                        const vector_t& x(index_t i) const { return std::get<0>(m_history[i]); }
-                        tscalar fx(index_t i) const { return std::get<1>(m_history[i]); }
-                        tscalar gn(index_t i) const { return std::get<2>(m_history[i]); }
-
-                        count_t fevals() const { return m_f_evals; }
-                        count_t gevals() const { return m_g_evals; }
-                        count_t hevals() const { return m_h_evals; }
-
-                private:
-
-                        // <value = x, function value = f(x), gradient magnitude>
-                        typedef std::tuple<vector_t, tscalar, tscalar>  stat_t;
-                        typedef std::vector<stat_t>                     stats_t;
-
-                        // attributes
-                        stats_t         m_history;
-                        count_t         m_f_evals;      // #function value evaluations
-                        count_t         m_g_evals;      // #function gradient evaluations
-                        count_t         m_h_evals;      // #function hessian evaluations
-                };
-
-                /////////////////////////////////////////////////////////////////////////////////////////////
                 // describes a multivariate optimization problem.
                 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -97,57 +25,202 @@ namespace ncv
                 {
                 public:
 
-                        typedef tscalar                         scalar_t;
-                        typedef history<tscalar>                history_t;
-                        typedef typename history_t::vector_t    vector_t;
-                        typedef typename history_t::vectors_t   vectors_t;
-                        typedef typename history_t::matrix_t    matrix_t;
-                        typedef typename history_t::matrices_t  matrices_t;
+                        typedef tscalar                                 scalar_t;
+                        typedef typename vector<scalar_t>::vector_t     vector_t;
+                        typedef typename vector<scalar_t>::vectors_t    vectors_t;
+
+                        typedef typename matrix<scalar_t>::matrix_t     matrix_t;
+                        typedef typename matrix<scalar_t>::matrices_t   matrices_t;
 
                         // constructor
                         problem(const top_size& op_size,
                                 const top_fval& op_fval,
                                 const top_fval_grad& op_fval_grad,
                                 const top_fval_grad_hess& op_fval_grad_hess,
-                                size_t iters,           // maximum number of iterations (stopping criteria)
-                                scalar_t eps)           // desired precision (stopping criteria)
+                                size_t max_iterations,  // maximum number of iterations (stopping criteria)
+                                scalar_t epsilon)       // desired precision (stopping criteria)
 
-                                :       m_iters(iters), m_eps(eps),
+                                :       m_max_iterations(max_iterations),
+                                        m_epsilon(epsilon),
                                         m_op_size(op_size),
                                         m_op_fval(op_fval),
                                         m_op_fval_grad(op_fval_grad),
-                                        m_op_fval_grad_hess(op_fval_grad_hess)
+                                        m_op_fval_grad_hess(op_fval_grad_hess),
+                                        m_has_op_grad(true),
+                                        m_has_op_hess(true)
                         {
+                                clear();
+                        }
+
+                        // constructor
+                        problem(const top_size& op_size,
+                                const top_fval& op_fval,
+                                // no gradient provided!
+                                // no hessian provided!
+                                size_t max_iterations,  // maximum number of iterations (stopping criteria)
+                                scalar_t epsilon)       // desired precision (stopping criteria)
+
+                                :       m_max_iterations(max_iterations),
+                                        m_epsilon(epsilon),
+                                        m_op_size(op_size),
+                                        m_op_fval(op_fval),
+                                        m_has_op_grad(false),
+                                        m_has_op_hess(false)
+                        {
+                                clear();
+                        }
+
+                        // clear history
+                        void clear() const
+                        {
+                                m_opt_x.resize(size()); m_opt_x.setZero();
+                                m_opt_fx = std::numeric_limits<scalar_t>::max();
+                                m_opt_gn = std::numeric_limits<scalar_t>::max();
+                                m_f_evals = 0;
+                                m_g_evals = 0;
+                                m_h_evals = 0;
+                                m_iterations = 0;
                         }
 
                         // compute function value & gradient & Hessian
                         scalar_t f(const vector_t& x) const
                         {
+                                m_f_evals ++;
                                 return m_op_fval(x);
                         }
                         scalar_t f(const vector_t x, vector_t& g) const
                         {
-                                return m_op_fval_grad(x, g);
+                                if (m_has_op_grad)
+                                {
+                                        m_f_evals ++;
+                                        m_g_evals ++;
+                                        return m_op_fval_grad(x, g);
+                                }
+                                else
+                                {
+                                        eval_grad(x, g);
+                                        return f(x);
+                                }
                         }
                         scalar_t f(const vector_t x, vector_t& g, matrix_t& h) const
                         {
-                                return m_op_fval_grad_hess(x, g, h);
+                                if (m_has_op_hess)
+                                {
+                                        m_f_evals ++;
+                                        m_g_evals ++;
+                                        m_h_evals ++;
+                                        m_op_fval_grad_hess(x, g, h);
+                                }
+                                else
+                                {
+                                        eval_grad(x, g);
+                                        eval_hess(x, h);
+                                        return f(x);
+                                }
+                        }
+
+                        // update optimal
+                        void update(const vector_t& x, scalar_t fx, scalar_t gn) const
+                        {
+                                m_iterations ++;
+                                m_opt_x = x;
+                                m_opt_fx = fx;
+                                m_opt_gn = gn;
                         }
 
                         // access functions
                         size_t size() const { return m_op_size(); }
-                        size_t iters() const { return m_iters; }
-                        scalar_t eps() const { return m_eps; }
+
+                        size_t max_iterations() const { return m_max_iterations; }
+                        scalar_t epsilon() const { return m_epsilon; }
+
+                        const vector_t& opt_x() const { return m_opt_x; }
+                        scalar_t opt_fx() const { return m_opt_fx; }
+                        scalar_t opt_gn() const { return m_opt_gn; }
+
+                        count_t fevals() const { return m_f_evals; }
+                        count_t gevals() const { return m_g_evals; }
+                        count_t hevals() const { return m_h_evals; }
+                        count_t iterations() const { return m_iterations; }
+
+                private:
+
+                        // evaluate gradient (if not provided)
+                        void eval_grad(const vector_t x, vector_t& g) const
+                        {
+                                const size_t n = size();
+                                const scalar_t d = epsilon();
+
+                                vector_t xp = x, xn = x;
+
+                                g.resize(n);
+                                for (size_t i = 0; i < n; i ++)
+                                {
+                                        if (i > 0)
+                                        {
+                                                xp(i - 1) -= d;
+                                                xn(i - 1) += d;
+                                        }
+
+                                        xp(i) += d;
+                                        xn(i) -= d;
+
+                                        g(i) = f(xp) - f(xn);
+                                }
+
+                                g /= 2.0 * d;
+                        }
+
+                        // evaluate hessian (if not provided)
+                        void eval_hess(const vector_t x, matrix_t& h) const
+                        {
+                                throw std::runtime_error("eval_hess not implemented!");
+
+//                                const size_t n = size();
+//                                const scalar_t d = eps(), d2 = d * d;
+
+//                                vector_t xp = x, xn = x;
+
+//                                h.resize(n, n);
+//                                for (size_t i = 0; i < n; i ++)
+//                                {
+//                                        if (i > 0)
+//                                        {
+//                                                xp(i - 1) -= d;
+//                                                xn(i - 1) += d;
+//                                        }
+
+//                                        xp(i) += d;
+//                                        xn(i) -= d;
+
+//                                        g(i) = dd * (op_fval(xp) - op_fval(xn));
+//                                }
+
+//                                h /= 4.0 * d2;
+                        }
 
                 private:
 
                         // attributes
-                        size_t                  m_iters;
-                        scalar_t                m_eps;
+                        size_t                  m_max_iterations;
+                        scalar_t                m_epsilon;
+
                         top_size                m_op_size;
                         top_fval                m_op_fval;
                         top_fval_grad           m_op_fval_grad;
                         top_fval_grad_hess      m_op_fval_grad_hess;
+
+                        bool                    m_has_op_grad;
+                        bool                    m_has_op_hess;
+
+                        mutable vector_t        m_opt_x;                // optimal value
+                        mutable scalar_t        m_opt_fx;               // optimal function value
+                        mutable scalar_t        m_opt_gn;               // optimal function gradient norm
+
+                        mutable count_t         m_f_evals;              // #function value evaluations
+                        mutable count_t         m_g_evals;              // #function gradient evaluations
+                        mutable count_t         m_h_evals;              // #function hessian evaluations
+                        mutable count_t         m_iterations;           // #iterations
                 };
 
                 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -162,20 +235,27 @@ namespace ncv
                                 typename tvector,
                                 typename tscalar
                         >
-                        bool converged(const tvector& g, tscalar eps)
+                        bool converged(const tvector& g, const tvector& g_prv, tscalar eps)
                         {
-                                const tscalar gnorm = math::cast<tscalar>(g.norm());
-                                return gnorm < eps;
+                                if (g.size() != g_prv.size())
+                                {
+                                        return  math::cast<tscalar>(g.norm()) < eps;
+                                }
+                                else
+                                {
+                                        return  math::cast<tscalar>(g.norm()) < eps ||
+                                                math::cast<tscalar>((g - g_prv).norm()) < eps;
+                                }
                         }
-
-                        // FIXME: new convergence criteria: line-search step is too small
                 }
 
                 /////////////////////////////////////////////////////////////////////////////////////////////
-                // Backtracking line-search searches for the scalar
+                // backtracking line-search searches for the scalar
                 // that reduces the function value (the most) along the direction d:
                 //
                 //      argmin(t) f(x + t * d).
+                //
+                // NB: the direction is set automatically to -gradient if it is not a descent direction.
                 /////////////////////////////////////////////////////////////////////////////////////////////
 
                 namespace impl
@@ -187,30 +267,48 @@ namespace ncv
                         typename tproblem::scalar_t line_search(
                                 const tproblem& problem,
                                 const typename tproblem::vector_t& x,
-                                typename tproblem::scalar_t t0,                 // Intial step size
-                                const typename tproblem::vector_t& d,
+                                typename tproblem::scalar_t t0,                 // Initial step size
+                                typename tproblem::vector_t& d,
                                 const typename tproblem::scalar_t& fx,
                                 const typename tproblem::vector_t& gx,
-                                typename tproblem::history_t& history,
-                                typename tproblem::scalar_t alpha = math::cast<typename tproblem::scalar_t>(0.3),
+                                typename tproblem::scalar_t alpha = math::cast<typename tproblem::scalar_t>(0.2),
                                 typename tproblem::scalar_t beta = math::cast<typename tproblem::scalar_t>(0.7))
                         {
                                 typedef typename tproblem::scalar_t     scalar_t;
 
-                                const scalar_t f0 = fx;
-                                const scalar_t d0 = alpha * gx.dot(d);
-
-                                scalar_t t = t0;
-                                while (problem.f(x + t * d) > f0 + t * d0)      // Armijo (sufficient decrease) condition
+                                // Reset to gradient descent if the current direction is not
+                                if (-d.dot(gx) < 2.0 * problem.epsilon())
                                 {
-                                        t = beta * t;
-                                        history.memo(1, 0, 0);
+                                        d = -gx;
                                 }
-                                history.memo(1, 0, 0);
 
-                                std::cout << "t0 = " << t0 << ", t = " << t << std::endl;
+                                const scalar_t f0 = fx;
+                                const scalar_t d0 = d.dot(gx);
+                                t0 = math::clamp(t0, 1e-6, 1.0);
 
-                                return t;
+                                const index_t max_steps = 8;
+                                const index_t max_trials = 64;
+
+                                // Try various sufficient decrease steps ...
+                                for (index_t step = 0; step < max_steps; step ++, alpha *= 0.1)
+                                {
+                                        index_t trials = 0;
+
+                                        // Armijo (sufficient decrease) condition
+                                        scalar_t t = t0;
+                                        while ((++ trials) < max_trials &&
+                                               problem.f(x + t * d) > f0 + t * alpha * d0)
+                                        {
+                                                t = beta * t;
+                                        }
+
+                                        if (trials < max_trials)
+                                        {
+                                                return t;
+                                        }
+                                }
+
+                                return 0.0;
                         }
                 }
 
@@ -224,8 +322,7 @@ namespace ncv
                 >
                 bool gradient_descent(
                         const tproblem& problem,
-                        const typename tproblem::vector_t& x0,
-                        typename tproblem::history_t& history)
+                        const typename tproblem::vector_t& x0)
                 {
                         typedef typename tproblem::scalar_t     scalar_t;
                         typedef typename tproblem::vector_t     vector_t;
@@ -235,20 +332,19 @@ namespace ncv
                                 return false;
                         }
 
-                        history.clear();
+                        problem.clear();
 
-                        vector_t x = x0, gx, d;
-                        scalar_t t = 1.0, dg_prv = -1.0;
+                        vector_t x = x0, gx, gx_prv, d;
+                        scalar_t t = 1.0, dt = 1.0, dt_prv = 1.0;
 
                         // iterate until convergence
-                        for (index_t i = 0; i < problem.iters(); i ++)
+                        for (index_t i = 0; i < problem.max_iterations(); i ++, gx_prv = gx, dt_prv = dt)
                         {
                                 const scalar_t fx = problem.f(x, gx);
-                                history.memo(x, fx, gx.norm());
-                                history.memo(1, 1, 0);
+                                problem.update(x, fx, gx.norm());
 
                                 // check convergence
-                                if (impl::converged(gx, problem.eps()))
+                                if (impl::converged(gx, gx_prv, problem.epsilon()))
                                 {
                                         break;
                                 }
@@ -257,20 +353,17 @@ namespace ncv
                                 d = -gx;
 
                                 // update solution
-                                const scalar_t dg = d.dot(gx);
+                                dt = gx.norm();
                                 if (i > 0)
                                 {
-                                        // line-search initial step guess
-                                        t *= dg_prv / dg;
+                                        t *= dt_prv / dt;
                                 }
 
-                                t = impl::line_search(problem, x, t, d, fx, gx, history);
+                                t = impl::line_search(problem, x, t, d, fx, gx, 0.2, 0.7);
                                 x.noalias() += t * d;
-
-                                dg_prv = dg;
                         }
 
-                        return !history.empty();
+                        return true;
                 }
 
                 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -283,8 +376,7 @@ namespace ncv
                 >
                 bool conjugate_gradient_descent(
                         const tproblem& problem,
-                        const typename tproblem::vector_t& x0,
-                        typename tproblem::history_t& history)
+                        const typename tproblem::vector_t& x0)
                 {
                         typedef typename tproblem::scalar_t     scalar_t;
                         typedef typename tproblem::vector_t     vector_t;
@@ -294,54 +386,46 @@ namespace ncv
                                 return false;
                         }
 
-                        history.clear();
+                        problem.clear();
 
                         vector_t x = x0, gx, gx_prv, d, d_prv;
-                        scalar_t t = 1.0, dg_prv = -1.0;
+                        scalar_t t = 1.0, dt = 1.0, dt_prv = 1.0;
 
                         // iterate until convergence
-                        for (index_t i = 0; i < problem.iters(); i ++)
+                        for (index_t i = 0; i < problem.max_iterations(); i ++, gx_prv = gx, d_prv = d, dt_prv = dt)
                         {
                                 const scalar_t fx = problem.f(x, gx);
-                                history.memo(x, fx, gx.norm());
-                                history.memo(1, 1, 0);
+                                problem.update(x, fx, gx.norm());
 
                                 // check convergence
-                                if (impl::converged(gx, problem.eps()))
+                                if (impl::converged(gx, gx_prv, problem.epsilon()))
                                 {
                                         break;
                                 }
 
-                                // descent direction
+                                // descent direction (Polak–Ribière updates)
                                 if (i == 0)
                                 {
-                                        // initial: gradient descent
                                         d = -gx;
                                 }
                                 else
                                 {
-                                        // next: Polak–Ribière updates
                                         const scalar_t beta = gx.dot(gx - gx_prv) / (gx_prv.dot(gx_prv));
                                         d = -gx + std::max(static_cast<scalar_t>(0.0), beta) * d_prv;
                                 }
 
                                 // update solution
-                                const scalar_t dg = d.dot(gx);
+                                dt = gx.norm();
                                 if (i > 0)
                                 {
-                                        // line-search initial step guess
-                                        t *= dg_prv / dg;
+                                        t *= dt_prv / dt;
                                 }
 
-                                t = impl::line_search(problem, x, 1.0/*t*/, d, fx, gx, history);
+                                t = impl::line_search(problem, x, t, d, fx, gx, 0.2, 0.7);
                                 x.noalias() += t * d;
-
-                                gx_prv = gx;
-                                d_prv = d;
-                                dg_prv = dg;
                         }
 
-                        return !history.empty();
+                        return true;
                 }
 
                 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -354,8 +438,7 @@ namespace ncv
                 >
                 bool newton_raphson(
                         const tproblem& problem,
-                        const typename tproblem::vector_t& x0,
-                        typename tproblem::history_t& history)
+                        const typename tproblem::vector_t& x0)
                 {
                         typedef typename tproblem::scalar_t     scalar_t;
                         typedef typename tproblem::vector_t     vector_t;
@@ -366,20 +449,19 @@ namespace ncv
                                 return false;
                         }
 
-                        history.clear();
+                        problem.clear();
 
-                        vector_t x = x0, gx, d;
+                        vector_t x = x0, gx, gx_prv, d;
                         matrix_t hx;
 
                         // iterate until convergence
-                        for (index_t i = 0; i < problem.iters(); i ++)
+                        for (index_t i = 0; i < problem.max_iterations(); i ++, gx_prv = gx)
                         {
                                 const scalar_t fx = problem.f(x, gx, hx);
-                                history.memo(x, fx, gx.norm());
-                                history.memo(1, 1, 1);
+                                problem.update(x, fx, gx.norm());
 
                                 // check convergence
-                                if (impl::converged(gx, problem.eps()))
+                                if (impl::converged(gx, gx_prv, problem.epsilon()))
                                 {
                                         break;
                                 }
@@ -387,19 +469,12 @@ namespace ncv
                                 // descent direction
                                 d = hx.fullPivLu().solve(-gx);
 
-                                const scalar_t desc = -d.dot(gx);
-                                if (desc < 2.0 * problem.eps())
-                                {
-                                        // switch to GD if the step direction is not a descent direction!
-                                        d = -gx;
-                                }
-
-                                // update solution (line-search initial step is always 1)
-                                const scalar_t t = impl::line_search(problem, x, 1.0, d, fx, gx, history);
+                                // update solution
+                                const scalar_t t = impl::line_search(problem, x, 1.0, d, fx, gx, 1e-4, 0.7);
                                 x.noalias() += t * d;
                         }
 
-                        return !history.empty();
+                        return true;
                 }
         }
 }

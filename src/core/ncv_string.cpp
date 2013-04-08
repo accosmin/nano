@@ -74,48 +74,7 @@ namespace ncv
                 });
                 
                 return ret;
-        }
-        
-        //-------------------------------------------------------------------------------------------------
-        
-        strings_t text::impl::tabulate_concatenate(const strings_t& col1, const strings_t& col2)
-        {
-                const size_t rows = std::max(col1.size(), col2.size());
-                const size_t col_size1 = col1.empty() ? 0 : col1.cbegin()->size();
-                const size_t col_size2 = col2.empty() ? 0 : col2.cbegin()->size();
-                
-                strings_t cols(rows);
-                for (size_t i = 0; i < rows; i ++)
-                {
-                        cols[i] =       (i < col1.size() ? col1[i] : resize("", col_size1, align::left)) +
-                                        (i < col2.size() ? col2[i] : resize("", col_size2, align::left));
-                }
-                
-                return cols;
-        }
-        
-        //-------------------------------------------------------------------------------------------------
-        
-        strings_t text::impl::tabulate_column(
-                const string_t& header, const strings_t& values, align alignment, const string_t& ending)
-        {
-                size_t col_size = header.size();
-                for (const string_t& value : values) 
-                { 
-                        col_size = std::max(col_size, value.size()); 
-                }
-                
-                strings_t cols(values.size() + 3);
-                cols[0] = string_t(col_size + ending.size(), '-');
-                cols[1] = resize(header, col_size, alignment) + resize("", ending.size(), alignment);
-                cols[2] = string_t(col_size + ending.size(), '-');
-                for (size_t i = 0; i < values.size(); i ++)
-                {
-                        cols[i + 3] = resize(values[i], col_size, alignment) + ending;
-                }
-                
-                return cols;
-        }
-	
+        }        
+
 	//-------------------------------------------------------------------------------------------------
 }
