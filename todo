@@ -1,15 +1,12 @@
-- specialize optimize::problem:
-	- to estimate the gradients/hessian if no function is provided
-	- check the hessian estimation that works properly
+- implement LBFGS and other quasi-newton methods
 
-- more high-dimensional functions to test:
-http://www.it.lut.fi/ip/evo/functions/node1.html
+- print statistics for each function & rank methods:
+	- #times it ranked first, second, third
+	- average number of iterations & average time per problem per dimension
+
+	- may implement the tabulator object as discussed
 
 - faster RGB to CIELab transform (goal: 1s single thread version of the color testing program)
-
-- may replace the text::tabulate functions to a new tabulator (text::):
-	- <<(tvalue) -> resize, align and display the column, put the separator, newline if needed!
-	- could be used for testing the optimization procedure
 
 could use std::isgreater & std::isless to compare floating point values
 

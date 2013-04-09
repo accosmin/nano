@@ -2,8 +2,6 @@
 #define NANOCV_OPTIMIZE_H
 
 #include "ncv_math.h"
-#include <utility>
-#include <eigen3/Eigen/LU>
 
 namespace ncv
 {
@@ -18,8 +16,7 @@ namespace ncv
                         typename tscalar,               // input type
                         typename top_size,              // dimensionality:              N = top_size()
                         typename top_fval,              // function value:              fx = top_fval(x)
-                        typename top_fval_grad,         //  & gradient:                 fx = top_fval_grad(x, gx)
-                        typename top_fval_grad_hess     //  & gradient & hessian:       fx = top_fval_grad_hess(x, gx, hx)
+                        typename top_fval_grad          //  & gradient:                 fx = top_fval_grad(x, gx)
                 >
                 class problem
                 {
@@ -29,14 +26,10 @@ namespace ncv
                         typedef typename vector<scalar_t>::vector_t     vector_t;
                         typedef typename vector<scalar_t>::vectors_t    vectors_t;
 
-                        typedef typename matrix<scalar_t>::matrix_t     matrix_t;
-                        typedef typename matrix<scalar_t>::matrices_t   matrices_t;
-
                         // constructor
                         problem(const top_size& op_size,
                                 const top_fval& op_fval,
                                 const top_fval_grad& op_fval_grad,
-                                const top_fval_grad_hess& op_fval_grad_hess,
                                 size_t max_iterations,  // maximum number of iterations (stopping criteria)
                                 scalar_t epsilon)       // desired precision (stopping criteria)
 
@@ -45,9 +38,7 @@ namespace ncv
                                         m_op_size(op_size),
                                         m_op_fval(op_fval),
                                         m_op_fval_grad(op_fval_grad),
-                                        m_op_fval_grad_hess(op_fval_grad_hess),
-                                        m_has_op_grad(true),
-                                        m_has_op_hess(true)
+                                        m_has_op_grad(true)
                         {
                                 clear();
                         }
@@ -56,7 +47,6 @@ namespace ncv
                         problem(const top_size& op_size,
                                 const top_fval& op_fval,
                                 // no gradient provided!
-                                // no hessian provided!
                                 size_t max_iterations,  // maximum number of iterations (stopping criteria)
                                 scalar_t epsilon)       // desired precision (stopping criteria)
 
@@ -64,8 +54,7 @@ namespace ncv
                                         m_epsilon(epsilon),
                                         m_op_size(op_size),
                                         m_op_fval(op_fval),
-                                        m_has_op_grad(false),
-                                        m_has_op_hess(false)
+                                        m_has_op_grad(false)
                         {
                                 clear();
                         }
@@ -78,11 +67,10 @@ namespace ncv
                                 m_opt_gn = std::numeric_limits<scalar_t>::max();
                                 m_f_evals = 0;
                                 m_g_evals = 0;
-                                m_h_evals = 0;
                                 m_iterations = 0;
                         }
 
-                        // compute function value & gradient & Hessian
+                        // compute function value & gradient
                         scalar_t f(const vector_t& x) const
                         {
                                 m_f_evals ++;
@@ -99,22 +87,6 @@ namespace ncv
                                 else
                                 {
                                         eval_grad(x, g);
-                                        return f(x);
-                                }
-                        }
-                        scalar_t f(const vector_t x, vector_t& g, matrix_t& h) const
-                        {
-                                if (m_has_op_hess)
-                                {
-                                        m_f_evals ++;
-                                        m_g_evals ++;
-                                        m_h_evals ++;
-                                        m_op_fval_grad_hess(x, g, h);
-                                }
-                                else
-                                {
-                                        eval_grad(x, g);
-                                        eval_hess(x, h);
                                         return f(x);
                                 }
                         }
@@ -140,7 +112,6 @@ namespace ncv
 
                         count_t fevals() const { return m_f_evals; }
                         count_t gevals() const { return m_g_evals; }
-                        count_t hevals() const { return m_h_evals; }
                         count_t iterations() const { return m_iterations; }
 
                 private:
@@ -171,34 +142,6 @@ namespace ncv
                                 g /= 2.0 * d;
                         }
 
-                        // evaluate hessian (if not provided)
-                        void eval_hess(const vector_t x, matrix_t& h) const
-                        {
-                                throw std::runtime_error("eval_hess not implemented!");
-
-//                                const size_t n = size();
-//                                const scalar_t d = eps(), d2 = d * d;
-
-//                                vector_t xp = x, xn = x;
-
-//                                h.resize(n, n);
-//                                for (size_t i = 0; i < n; i ++)
-//                                {
-//                                        if (i > 0)
-//                                        {
-//                                                xp(i - 1) -= d;
-//                                                xn(i - 1) += d;
-//                                        }
-
-//                                        xp(i) += d;
-//                                        xn(i) -= d;
-
-//                                        g(i) = dd * (op_fval(xp) - op_fval(xn));
-//                                }
-
-//                                h /= 4.0 * d2;
-                        }
-
                 private:
 
                         // attributes
@@ -208,10 +151,7 @@ namespace ncv
                         top_size                m_op_size;
                         top_fval                m_op_fval;
                         top_fval_grad           m_op_fval_grad;
-                        top_fval_grad_hess      m_op_fval_grad_hess;
-
                         bool                    m_has_op_grad;
-                        bool                    m_has_op_hess;
 
                         mutable vector_t        m_opt_x;                // optimal value
                         mutable scalar_t        m_opt_fx;               // optimal function value
@@ -219,7 +159,6 @@ namespace ncv
 
                         mutable count_t         m_f_evals;              // #function value evaluations
                         mutable count_t         m_g_evals;              // #function gradient evaluations
-                        mutable count_t         m_h_evals;              // #function hessian evaluations
                         mutable count_t         m_iterations;           // #iterations
                 };
 
@@ -422,55 +361,6 @@ namespace ncv
                                 }
 
                                 t = impl::line_search(problem, x, t, d, fx, gx, 0.2, 0.7);
-                                x.noalias() += t * d;
-                        }
-
-                        return true;
-                }
-
-                /////////////////////////////////////////////////////////////////////////////////////////////
-                // Newton-Raphson method starting from the initial value (guess) x0.
-                /////////////////////////////////////////////////////////////////////////////////////////////
-
-                template
-                <
-                        class tproblem
-                >
-                bool newton_raphson(
-                        const tproblem& problem,
-                        const typename tproblem::vector_t& x0)
-                {
-                        typedef typename tproblem::scalar_t     scalar_t;
-                        typedef typename tproblem::vector_t     vector_t;
-                        typedef typename tproblem::matrix_t     matrix_t;
-
-                        if (problem.size() != math::cast<size_t>(x0.size()))
-                        {
-                                return false;
-                        }
-
-                        problem.clear();
-
-                        vector_t x = x0, gx, gx_prv, d;
-                        matrix_t hx;
-
-                        // iterate until convergence
-                        for (index_t i = 0; i < problem.max_iterations(); i ++, gx_prv = gx)
-                        {
-                                const scalar_t fx = problem.f(x, gx, hx);
-                                problem.update(x, fx, gx.norm());
-
-                                // check convergence
-                                if (impl::converged(gx, gx_prv, problem.epsilon()))
-                                {
-                                        break;
-                                }
-
-                                // descent direction
-                                d = hx.fullPivLu().solve(-gx);
-
-                                // update solution
-                                const scalar_t t = impl::line_search(problem, x, 1.0, d, fx, gx, 1e-4, 0.7);
                                 x.noalias() += t * d;
                         }
 

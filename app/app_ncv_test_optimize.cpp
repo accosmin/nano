@@ -25,7 +25,6 @@ void print(const tproblem& problem,
         std::cout << header << test
                   << ": #fevals = " << problem.fevals()
                   << ", #gevals = " << problem.gevals()
-                  << ", #hevals = " << problem.hevals()
                   << ", #iterations = " << problem.iterations() << "/" << problem.max_iterations()
                   << " [done in " << time << "]." << std::endl;
         std::cout << del_line << std::endl;
@@ -55,10 +54,6 @@ void test(const tproblem& problem, const ncv::string_t& name, ncv::size_t trials
                 timer.start();
                 ncv::optimize::conjugate_gradient_descent(problem, x0);
                 print(problem, name + " (CGD)", trial, trials, timer.elapsed_string());
-
-//                timer.start();
-//                ncv::optimize::newton_raphson(problem, x0);
-//                print(problem, name + " (NR)", trial, trials, timer.elapsed_string());
         }
 }
 
@@ -67,19 +62,16 @@ int main(int argc, char *argv[])
         typedef ncv::size_t                             size_t;
         typedef ncv::scalar_t                           scalar_t;
         typedef ncv::vector_t                           vector_t;
-        typedef ncv::matrix_t                           matrix_t;
 
         typedef std::function<size_t(void)>                                     op_size_t;
         typedef std::function<scalar_t(const vector_t&)>                        op_fval_t;
         typedef std::function<scalar_t(const vector_t&, vector_t&)>             op_fval_grad_t;
-        typedef std::function<scalar_t(const vector_t&, vector_t&, matrix_t&)>  op_fval_grad_hess_t;
 
         typedef ncv::optimize::problem<
                         scalar_t,
                         op_size_t,
                         op_fval_t,
-                        op_fval_grad_t,
-                        op_fval_grad_hess_t>            problem_t;
+                        op_fval_grad_t>                 problem_t;
 
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
@@ -113,49 +105,101 @@ int main(int argc, char *argv[])
         const size_t cmd_dims = ncv::math::clamp(po_vm["dim"].as<size_t>(), 2, 1024);
         const size_t cmd_trials = 16;
 
-        // sphere function
-        for (size_t n = 2; n <= cmd_dims; n *= 2)
-        {
-                const auto op_size = [=] ()
-                {
-                        return n;
-                };
+//        // sphere function
+//        for (size_t n = 2; n <= cmd_dims; n *= 2)
+//        {
+//                const auto op_size = [=] ()
+//                {
+//                        return n;
+//                };
 
-                const auto op_fval = [=] (const vector_t& x)
-                {
-                        return x.dot(x);
-                };
+//                const auto op_fval = [=] (const vector_t& x)
+//                {
+//                        return x.dot(x);
+//                };
 
-                const auto op_grad = [=] (const vector_t& x, vector_t& g)
-                {
-                        g = 2.0 * x;
-                };
+//                const auto op_grad = [=] (const vector_t& x, vector_t& g)
+//                {
+//                        g = 2.0 * x;
+//                };
 
-                const auto op_hess = [=] (const vector_t& x, matrix_t& h)
-                {
-                        h.resize(n, n);
-                        h.setIdentity();
-                        h *= 2.0;
-                };
+//                const auto op_fval_grad = [=] (const vector_t& x, vector_t& g)
+//                {
+//                        op_grad(x, g);
+//                        return op_fval(x);
+//                };
 
-                const auto op_fval_grad = [=] (const vector_t& x, vector_t& g)
-                {
-                        op_grad(x, g);
-                        return op_fval(x);
-                };
+//                const problem_t problem(op_size, op_fval, op_fval_grad, cmd_iters, cmd_eps);
+//                test(problem, "sphere [" + ncv::text::to_string(n) + "D]", cmd_trials);
+//        }
 
-                const auto op_fval_grad_hess = [=] (const vector_t& x, vector_t& g, matrix_t& h)
-                {
-                        op_grad(x, g);
-                        op_hess(x, h);
-                        return op_fval(x);
-                };
+//        // ellipsoidal function
+//        for (size_t n = 2; n <= cmd_dims; n *= 2)
+//        {
+//                const auto op_size = [=] ()
+//                {
+//                        return n;
+//                };
 
-                const problem_t problem(op_size, op_fval, op_fval_grad, op_fval_grad_hess, cmd_iters, cmd_eps);
-                test(problem, "sphere [" + ncv::text::to_string(n) + "D]", cmd_trials);
-        }
+//                const auto op_fval = [=] (const vector_t& x)
+//                {
+//                        scalar_t f = 0.0;
+//                        for (size_t i = 0; i < n; i ++)
+//                        {
+//                                f += (i + 1.0) * ncv::math::square(x[i]);
+//                        }
+//                        return f;
+//                };
 
-        // ellipsoidal function
+//                const auto op_grad = [=] (const vector_t& x, vector_t& g)
+//                {
+//                        g.resize(n);
+//                        for (size_t i = 0; i < n; i ++)
+//                        {
+//                                g(i) = 2.0 * (i + 1.0) * x[i];
+//                        }
+//                };
+
+//                const auto op_fval_grad = [=] (const vector_t& x, vector_t& g)
+//                {
+//                        op_grad(x, g);
+//                        return op_fval(x);
+//                };
+
+//                const problem_t problem(op_size, op_fval, op_fval_grad, cmd_iters, cmd_eps);
+//                test(problem, "ellipsoidal [" + ncv::text::to_string(n) + "D]", cmd_trials);
+//        }
+
+//        // rotated ellipsoidal function
+//        for (size_t n = 2; n <= cmd_dims; n *= 2)
+//        {
+//                const auto op_size = [=] ()
+//                {
+//                        return n;
+//                };
+
+//                const auto op_fval = [=] (const vector_t& x)
+//                {
+//                        scalar_t f = 0.0;
+
+//                        for (size_t i = 0; i < n; i ++)
+//                        {
+//                                scalar_t s = 0.0;
+//                                for (size_t j = 0; j <= i; j ++)
+//                                {
+//                                        s += x[j];
+//                                }
+
+//                                f += ncv::math::square(s);
+//                        }
+//                        return f;
+//                };
+
+//                const problem_t problem(op_size, op_fval, cmd_iters, cmd_eps);
+//                test(problem, "rotated ellipsoidal [" + ncv::text::to_string(n) + "D]", cmd_trials);
+//        }
+
+        // Whitley's function
         for (size_t n = 2; n <= cmd_dims; n *= 2)
         {
                 const auto op_size = [=] ()
@@ -168,45 +212,19 @@ int main(int argc, char *argv[])
                         scalar_t f = 0.0;
                         for (size_t i = 0; i < n; i ++)
                         {
-                                f += (i + 1.0) * ncv::math::square(x[i]);
+                                for (size_t j = 0; j < n; j ++)
+                                {
+                                        const scalar_t d = 100.0 * ncv::math::square(x[i] * x[i] - x[j]) +
+                                                           ncv::math::square(1.0 - x[j]);
+                                        f += d * d / 4000.0 - std::cos(d) + 1.0;
+                                }
                         }
+
                         return f;
                 };
 
-                const auto op_grad = [=] (const vector_t& x, vector_t& g)
-                {
-                        g.resize(n);
-                        for (size_t i = 0; i < n; i ++)
-                        {
-                                g(i) = 2.0 * (i + 1.0) * x[i];
-                        }
-                };
-
-                const auto op_hess = [=] (const vector_t& x, matrix_t& h)
-                {
-                        h.resize(n, n);
-                        h.setZero();
-                        for (size_t i = 0; i < n; i ++)
-                        {
-                                h(i, i) = 2.0 * (i + 1.0);
-                        }
-                };
-
-                const auto op_fval_grad = [=] (const vector_t& x, vector_t& g)
-                {
-                        op_grad(x, g);
-                        return op_fval(x);
-                };
-
-                const auto op_fval_grad_hess = [=] (const vector_t& x, vector_t& g, matrix_t& h)
-                {
-                        op_grad(x, g);
-                        op_hess(x, h);
-                        return op_fval(x);
-                };
-
-                const problem_t problem(op_size, op_fval, op_fval_grad, op_fval_grad_hess, cmd_iters, cmd_eps);
-                test(problem, "ellipsoidal [" + ncv::text::to_string(n) + "D]", cmd_trials);
+                const problem_t problem(op_size, op_fval, cmd_iters, cmd_eps);
+                test(problem, "whitley [" + ncv::text::to_string(n) + "D]", cmd_trials);
         }
 
         // Rosenbrock problem
@@ -252,28 +270,13 @@ int main(int argc, char *argv[])
                         g[1] = 2.0 * (x[0] * x[0] + x[1] - 11.0) + 4.0 * x[1] * (x[0] + x[1] * x[1] - 7.0);
                 };
 
-                const auto op_hess = [&] (const vector_t& x, matrix_t& h)
-                {
-                        h.resize(2, 2);
-                        h(0, 0) = 12.0 * x[0] * x[0] + 4.0 * x[1] - 42.0;
-                        h(0, 1) = h(1, 0) = 4.0 * x[0] + 4.0 * x[1];
-                        h(1, 1) = 12.0 * x[1] * x[1] + 4.0 * x[0] + 2.0;;
-                };
-
                 const auto op_fval_grad = [=] (const vector_t& x, vector_t& g)
                 {
                         op_grad(x, g);
                         return op_fval(x);
                 };
 
-                const auto op_fval_grad_hess = [=] (const vector_t& x, vector_t& g, matrix_t& h)
-                {
-                        op_grad(x, g);
-                        op_hess(x, h);
-                        return op_fval(x);
-                };
-
-                const problem_t problem(op_size, op_fval, op_fval_grad, op_fval_grad_hess, cmd_iters, cmd_eps);
+                const problem_t problem(op_size, op_fval, op_fval_grad, cmd_iters, cmd_eps);
                 test(problem, "himmelblau [2D]", cmd_trials);
         }
 
