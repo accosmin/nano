@@ -30,6 +30,10 @@ could use std::isgreater & std::isless to compare floating point values
         - LBFGS
         - maybe some other modifications that converge faster
 
+- also test global optimization methods:
+	http://en.wikipedia.org/wiki/Global_optimization
+	- simulated annealing, graduated optimization (smoothing the function) & monte-carlo like methods look the most interesting
+
 - redo tasks (iterate, sample):
         - modify dataset to store the inputs as image patches + vector of scalars
         - modify dataset to also use unknown samples
