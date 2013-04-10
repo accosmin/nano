@@ -1,7 +1,9 @@
 - implement LBFGS and other quasi-newton methods
 
+- GD/CGD should return true only if the convergence is reached (e.g. |grad| < eps)
+
 - print statistics for each function & rank methods:
-	- convergence speed: log(speed) = 1/#iterations * log((f0 - fn)/eps=1e-5 + 1)	
+	- power: pow(1 - (fN - f0)/eps, 1/N), where eps = 1e-5 (default), N = #iterations run
 	- speed: time / #iterations
 
 	- #times it ranked first, second, third
