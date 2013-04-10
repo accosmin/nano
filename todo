@@ -1,3 +1,7 @@
+- line search:
+	- check if using alpha = 1e-4 and beta = 0.7-0.8 works OK
+	(may not need to test various alpha values)
+
 - implement LBFGS and other quasi-newton methods
 
 - GD/CGD should return true only if the convergence is reached (e.g. |grad| < eps)
