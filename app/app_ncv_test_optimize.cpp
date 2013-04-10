@@ -207,6 +207,8 @@ int main(int argc, char *argv[])
                         return n;
                 };
 
+                TODO: this does not converge nicely!
+
                 const auto op_fval = [=] (const vector_t& x)
                 {
                         scalar_t f = 0.0;
