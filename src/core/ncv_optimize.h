@@ -13,7 +13,6 @@ namespace ncv
 
                 template
                 <
-                        typename tscalar,               // input type
                         typename top_size,              // dimensionality:              N = top_size()
                         typename top_fval,              // function value:              fx = top_fval(x)
                         typename top_fval_grad          //  & gradient:                 fx = top_fval_grad(x, gx)
@@ -21,10 +20,6 @@ namespace ncv
                 class problem
                 {
                 public:
-
-                        typedef tscalar                                 scalar_t;
-                        typedef typename vector<scalar_t>::vector_t     vector_t;
-                        typedef typename vector<scalar_t>::vectors_t    vectors_t;
 
                         // constructor
                         problem(const top_size& op_size,
@@ -135,7 +130,6 @@ namespace ncv
 
                                         xp(i) += d;
                                         xn(i) -= d;
-
                                         g(i) = f(xp) - f(xn);
                                 }
 
@@ -169,22 +163,9 @@ namespace ncv
 
                 namespace impl
                 {
-                        template
-                        <
-                                typename tvector,
-                                typename tscalar
-                        >
-                        bool converged(const tvector& g, const tvector& g_prv, tscalar eps)
+                        inline bool converged(const vector_t& g, scalar_t f, scalar_t eps)
                         {
-                                if (g.size() != g_prv.size())
-                                {
-                                        return  math::cast<tscalar>(g.norm()) < eps;
-                                }
-                                else
-                                {
-                                        return  math::cast<tscalar>(g.norm()) < eps ||
-                                                math::cast<tscalar>((g - g_prv).norm()) < eps;
-                                }
+                                return g.lpNorm<Eigen::Infinity>() < eps * (1.0 + std::fabs(f));
                         }
                 }
 
@@ -193,8 +174,6 @@ namespace ncv
                 // that reduces the function value (the most) along the direction d:
                 //
                 //      argmin(t) f(x + t * d).
-                //
-                // NB: the direction is set automatically to -gradient if it is not a descent direction.
                 /////////////////////////////////////////////////////////////////////////////////////////////
 
                 namespace impl
@@ -203,51 +182,52 @@ namespace ncv
                         <
                                 typename tproblem
                         >
-                        typename tproblem::scalar_t line_search(
+                        scalar_t line_search_armijo(
                                 const tproblem& problem,
-                                const typename tproblem::vector_t& x,
-                                typename tproblem::scalar_t t0,                 // Initial step size
-                                typename tproblem::vector_t& d,
-                                const typename tproblem::scalar_t& fx,
-                                const typename tproblem::vector_t& gx,
-                                typename tproblem::scalar_t alpha = math::cast<typename tproblem::scalar_t>(0.2),
-                                typename tproblem::scalar_t beta = math::cast<typename tproblem::scalar_t>(0.7))
+                                const vector_t& x,
+                                scalar_t t0,
+                                const vector_t& d,
+                                const scalar_t f,
+                                const vector_t& g,
+                                scalar_t alpha = 0.2, scalar_t beta = 0.7)
                         {
-                                typedef typename tproblem::scalar_t     scalar_t;
+                                const scalar_t dg = d.dot(g);
 
-                                // Reset to gradient descent if the current direction is not
-                                if (-d.dot(gx) < 2.0 * problem.epsilon())
+                                // Armijo (sufficient decrease) condition
+                                scalar_t t = t0;
+                                while (problem.f(x + t * d) > f + t * alpha * dg)
                                 {
-                                        d = -gx;
+                                        t = beta * t;
                                 }
 
-                                const scalar_t f0 = fx;
-                                const scalar_t d0 = d.dot(gx);
-                                t0 = math::clamp(t0, 1e-6, 1.0);
+                                return t;
+                        }
 
-                                const index_t max_steps = 8;
-                                const index_t max_trials = 64;
+                        template
+                        <
+                                typename tproblem
+                        >
+                        scalar_t line_search_strong_wolfe(
+                                const tproblem& problem,
+                                const vector_t& x,
+                                scalar_t t0,
+                                const vector_t& d,
+                                const scalar_t f,
+                                const vector_t& g,
+                                scalar_t c1 = 1e-4, scalar_t c2 = 0.1)
+                        {
+                                const scalar_t dg = d.dot(g);
+                                vector_t gt;
 
-                                // Try various sufficient decrease steps ...
-                                for (index_t step = 0; step < max_steps; step ++, alpha *= 0.1)
+                                // strong Wolfe (sufficient decrease and curvature) conditions
+                                scalar_t t = t0;
+                                while (problem.f(x + t * d, gt) > f + t * c1 * dg ||
+                                       std::fabs(gt.dot(d)) < c2 * dg)
                                 {
-                                        index_t trials = 0;
-
-                                        // Armijo (sufficient decrease) condition
-                                        scalar_t t = t0;
-                                        while ((++ trials) < max_trials &&
-                                               problem.f(x + t * d) > f0 + t * alpha * d0)
-                                        {
-                                                t = beta * t;
-                                        }
-
-                                        if (trials < max_trials)
-                                        {
-                                                return t;
-                                        }
+                                        t = c2 * t;
                                 }
 
-                                return 0.0;
+                                return t;
                         }
                 }
 
@@ -261,11 +241,8 @@ namespace ncv
                 >
                 bool gradient_descent(
                         const tproblem& problem,
-                        const typename tproblem::vector_t& x0)
+                        const vector_t& x0)
                 {
-                        typedef typename tproblem::scalar_t     scalar_t;
-                        typedef typename tproblem::vector_t     vector_t;
-
                         if (problem.size() != math::cast<size_t>(x0.size()))
                         {
                                 return false;
@@ -273,36 +250,36 @@ namespace ncv
 
                         problem.clear();
 
-                        vector_t x = x0, gx, gx_prv, d;
-                        scalar_t t = 1.0, dt = 1.0, dt_prv = 1.0;
+                        vector_t x = x0, g, pg, d;
+                        scalar_t t = 1.0, dt = -1.0, pdt = -1.0;
 
                         // iterate until convergence
-                        for (index_t i = 0; i < problem.max_iterations(); i ++, gx_prv = gx, dt_prv = dt)
+                        for (index_t i = 0; i < problem.max_iterations(); i ++, pg = g, pdt = dt)
                         {
-                                const scalar_t fx = problem.f(x, gx);
-                                problem.update(x, fx, gx.norm());
+                                const scalar_t f = problem.f(x, g);
+                                problem.update(x, f, g.norm());
 
                                 // check convergence
-                                if (impl::converged(gx, gx_prv, problem.epsilon()))
+                                if (impl::converged(g, f, problem.epsilon()))
                                 {
-                                        break;
+                                        return true;
                                 }
 
                                 // descent direction
-                                d = -gx;
+                                d = -g;
 
                                 // update solution
-                                dt = gx.norm();
+                                dt = g.dot(d);
                                 if (i > 0)
                                 {
-                                        t *= dt_prv / dt;
+                                        t *= pdt / dt;
                                 }
 
-                                t = impl::line_search(problem, x, t, d, fx, gx, 0.2, 0.7);
+                                t = impl::line_search_armijo(problem, x, t, d, f, g);
                                 x.noalias() += t * d;
                         }
 
-                        return true;
+                        return false;
                 }
 
                 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -315,11 +292,8 @@ namespace ncv
                 >
                 bool conjugate_gradient_descent(
                         const tproblem& problem,
-                        const typename tproblem::vector_t& x0)
+                        const vector_t& x0)
                 {
-                        typedef typename tproblem::scalar_t     scalar_t;
-                        typedef typename tproblem::vector_t     vector_t;
-
                         if (problem.size() != math::cast<size_t>(x0.size()))
                         {
                                 return false;
@@ -327,44 +301,104 @@ namespace ncv
 
                         problem.clear();
 
-                        vector_t x = x0, gx, gx_prv, d, d_prv;
-                        scalar_t t = 1.0, dt = 1.0, dt_prv = 1.0;
+                        vector_t x = x0, g, pg, d, pd;
+                        scalar_t t = 1.0, dt = -1.0, pdt = -1.0;
 
                         // iterate until convergence
-                        for (index_t i = 0; i < problem.max_iterations(); i ++, gx_prv = gx, d_prv = d, dt_prv = dt)
+                        for (index_t i = 0; i < problem.max_iterations(); i ++, pg = g, pd = d, pdt = dt)
                         {
-                                const scalar_t fx = problem.f(x, gx);
-                                problem.update(x, fx, gx.norm());
+                                const scalar_t f = problem.f(x, g);
+                                problem.update(x, f, g.norm());
 
                                 // check convergence
-                                if (impl::converged(gx, gx_prv, problem.epsilon()))
+                                if (impl::converged(g, f, problem.epsilon()))
                                 {
-                                        break;
+                                        return true;
                                 }
 
                                 // descent direction (Polak–Ribière updates)
                                 if (i == 0)
                                 {
-                                        d = -gx;
+                                        d = -g;
                                 }
                                 else
                                 {
-                                        const scalar_t beta = gx.dot(gx - gx_prv) / (gx_prv.dot(gx_prv));
-                                        d = -gx + std::max(static_cast<scalar_t>(0.0), beta) * d_prv;
+                                        const scalar_t beta = g.dot(g - pg) / (pg.dot(pg));
+                                        d = -g + std::max(static_cast<scalar_t>(0.0), beta) * pd;
+                                }
+
+                                if (d.dot(g) > std::numeric_limits<scalar_t>::min())
+                                {
+                                        d = -g;
                                 }
 
                                 // update solution
-                                dt = gx.norm();
+                                dt = g.dot(d);
                                 if (i > 0)
                                 {
-                                        t *= dt_prv / dt;
+                                        t *= pdt / dt;
                                 }
 
-                                t = impl::line_search(problem, x, t, d, fx, gx, 0.2, 0.7);
+                                t = impl::line_search_strong_wolfe(problem, x, t, d, f, g);
                                 x.noalias() += t * d;
                         }
 
-                        return true;
+                        return false;
+                }
+
+                /////////////////////////////////////////////////////////////////////////////////////////////
+                // limited memory bfgs (l-bfgs) starting from the initial value (guess) x0.
+                /////////////////////////////////////////////////////////////////////////////////////////////
+
+                template
+                <
+                        class tproblem
+                >
+                bool lbfgs(
+                        const tproblem& problem,
+                        const vector_t& x0,
+                        size_t history_size = 6)
+                {
+                        if (problem.size() != math::cast<size_t>(x0.size()))
+                        {
+                                return false;
+                        }
+
+                        problem.clear();
+
+                        vector_t x = x0, px, g, pg, d, pd;
+                        scalar_t t = 1.0;
+                        matrix_t dxs(problem.size(), history_size);
+                        matrix_t dgs(problem.size(), history_size);
+
+                        // iterate until convergence
+                        for (index_t i = 0; i < problem.max_iterations(); i ++, px = x, pg = g, pd = d)
+                        {
+                                const scalar_t f = problem.f(x, g);
+                                problem.update(x, f, g.norm());
+
+                                // check convergence
+                                if (impl::converged(g, f, problem.epsilon()))
+                                {
+                                        return true;
+                                }
+
+                                // descent direction (LBFGS)
+                                if (i == 0)
+                                {
+                                        d = -g;
+                                }
+                                else
+                                {
+                                        d = -g;
+                                }
+
+                                // update solution
+                                t = impl::line_search_strong_wolfe(problem, x, 1.0, d, f, g);
+                                x.noalias() += t * d;
+                        }
+
+                        return false;
                 }
         }
 }
