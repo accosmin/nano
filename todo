@@ -1,6 +1,15 @@
+- line search:
+	- check if using alpha = 1e-4 and beta = 0.7-0.8 works OK
+	(may not need to test various alpha values)
+
 - implement LBFGS and other quasi-newton methods
 
+- GD/CGD should return true only if the convergence is reached (e.g. |grad| < eps)
+
 - print statistics for each function & rank methods:
+	- power: pow(1 - (fN - f0)/eps, 1/N), where eps = 1e-5 (default), N = #iterations run
+	- speed: time / #iterations
+
 	- #times it ranked first, second, third
 	- average number of iterations & average time per problem per dimension
 
@@ -20,6 +29,10 @@ could use std::isgreater & std::isless to compare floating point values
         - initial line-search step: 1 (for NR and LBFGS), adaptive (for GD, CGD like described in Nocedal & Wright)
         - LBFGS
         - maybe some other modifications that converge faster
+
+- also test global optimization methods:
+	http://en.wikipedia.org/wiki/Global_optimization
+	- simulated annealing, graduated optimization (smoothing the function) & monte-carlo like methods look the most interesting
 
 - redo tasks (iterate, sample):
         - modify dataset to store the inputs as image patches + vector of scalars
