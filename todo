@@ -26,6 +26,9 @@
 	- add support for installing and packaging
 	- install the binaries and the library (as shared library) and set correctly the rpath
 
+- functions to draw into a RGBA matrix:
+	- line, circles, 2D plots
+
 - faster RGB to CIELab transform (goal: 1s single thread version of the color testing program)
 
 - redo tasks (iterate, sample):
