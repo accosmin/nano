@@ -28,6 +28,7 @@
 
 - functions to draw into a RGBA matrix:
 	- line, circles, 2D plots
+	- may use an opengl context for plotting, have a look at: http://www.glfw.org/
 
 - faster RGB to CIELab transform (goal: 1s single thread version of the color testing program)
 
