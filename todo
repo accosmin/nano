@@ -32,6 +32,9 @@
 
 - faster RGB to CIELab transform (goal: 1s single thread version of the color testing program)
 
+- ncv::text:
+	- using boost::algorithm
+
 - redo tasks (iterate, sample):
         - modify dataset to store the inputs as image patches + vector of scalars
         - modify dataset to also use unknown samples
