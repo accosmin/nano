@@ -2,11 +2,39 @@
 #define NANOCV_OPTIMIZE_H
 
 #include "ncv_math.h"
+#include <deque>
 
 namespace ncv
 {
         namespace optimize
         {
+                /////////////////////////////////////////////////////////////////////////////////////////////
+                // optimization state: current point, function value, gradient and descent direction.
+                ////////////////////////////////////////////////////////////////////////////////////////////////
+
+                struct state
+                {
+                        // constructor
+                        template <class tproblem>
+                        state(const tproblem& problem, const vector_t& x0)
+                        {
+                                x = x0;
+                                f = problem.f(x, g);
+                        }
+
+                        // update current point
+                        template <class tproblem>
+                        void update(const tproblem& problem, scalar_t t)
+                        {
+                                x.noalias() += t * d;
+                                f = problem.f(x, g);
+                        }
+
+                        // attributes
+                        vector_t x, g, d;
+                        scalar_t f;
+                };
+
                 /////////////////////////////////////////////////////////////////////////////////////////////
                 // describes a multivariate optimization problem.
                 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -87,12 +115,12 @@ namespace ncv
                         }
 
                         // update optimal
-                        void update(const vector_t& x, scalar_t fx, scalar_t gn) const
+                        void update(const state& st) const
                         {
                                 m_iterations ++;
-                                m_opt_x = x;
-                                m_opt_fx = fx;
-                                m_opt_gn = gn;
+                                m_opt_x = st.x;
+                                m_opt_fx = st.f;
+                                m_opt_gn = st.g.norm();
                         }
 
                         // access functions
@@ -163,9 +191,13 @@ namespace ncv
 
                 namespace impl
                 {
-                        inline bool converged(const vector_t& g, scalar_t f, scalar_t eps)
+                        template
+                        <
+                                class tproblem
+                        >
+                        inline bool converged(const tproblem& problem, const state& st)
                         {
-                                return g.lpNorm<Eigen::Infinity>() < eps * (1.0 + std::fabs(f));
+                                return st.g.lpNorm<Eigen::Infinity>() < problem.epsilon() * (1.0 + std::fabs(st.f));
                         }
                 }
 
@@ -183,19 +215,20 @@ namespace ncv
                                 typename tproblem
                         >
                         scalar_t line_search_armijo(
-                                const tproblem& problem,
-                                const vector_t& x,
-                                scalar_t t0,
-                                const vector_t& d,
-                                const scalar_t f,
-                                const vector_t& g,
+                                const tproblem& problem, state& st, scalar_t t0,
                                 scalar_t alpha = 0.2, scalar_t beta = 0.7)
                         {
-                                const scalar_t dg = d.dot(g);
+                                // Check if descent direction
+                                scalar_t dg = st.d.dot(st.g);
+                                if (dg > std::numeric_limits<scalar_t>::min())
+                                {
+                                        st.d = -st.g;
+                                        dg = st.d.dot(st.g);
+                                }
 
                                 // Armijo (sufficient decrease) condition
                                 scalar_t t = t0;
-                                while (problem.f(x + t * d) > f + t * alpha * dg)
+                                while (problem.f(st.x + t * st.d) > st.f + t * alpha * dg)
                                 {
                                         t = beta * t;
                                 }
@@ -208,21 +241,23 @@ namespace ncv
                                 typename tproblem
                         >
                         scalar_t line_search_strong_wolfe(
-                                const tproblem& problem,
-                                const vector_t& x,
-                                scalar_t t0,
-                                const vector_t& d,
-                                const scalar_t f,
-                                const vector_t& g,
+                                const tproblem& problem, state& st, scalar_t t0,
                                 scalar_t c1 = 1e-4, scalar_t c2 = 0.1)
                         {
-                                const scalar_t dg = d.dot(g);
+                                // Check if descent direction
+                                scalar_t dg = st.d.dot(st.g);
+                                if (dg > std::numeric_limits<scalar_t>::min())
+                                {
+                                        st.d = -st.g;
+                                        dg = st.d.dot(st.g);
+                                }
+
                                 vector_t gt;
 
                                 // strong Wolfe (sufficient decrease and curvature) conditions
                                 scalar_t t = t0;
-                                while (problem.f(x + t * d, gt) > f + t * c1 * dg ||
-                                       std::fabs(gt.dot(d)) < c2 * dg)
+                                while (problem.f(st.x + t * st.d, gt) > st.f + t * c1 * dg ||
+                                       std::fabs(gt.dot(st.d)) < c2 * dg)
                                 {
                                         t = c2 * t;
                                 }
@@ -250,34 +285,33 @@ namespace ncv
 
                         problem.clear();
 
-                        vector_t x = x0, g, pg, d;
+                        state cstate(problem, x0);
                         scalar_t t = 1.0, dt = -1.0, pdt = -1.0;
 
                         // iterate until convergence
-                        for (index_t i = 0; i < problem.max_iterations(); i ++, pg = g, pdt = dt)
+                        for (index_t i = 0; i < problem.max_iterations(); i ++)
                         {
-                                const scalar_t f = problem.f(x, g);
-                                problem.update(x, f, g.norm());
+                                problem.update(cstate);
 
                                 // check convergence
-                                if (impl::converged(g, f, problem.epsilon()))
+                                if (impl::converged(problem, cstate))
                                 {
                                         return true;
                                 }
 
                                 // descent direction
-                                d = -g;
+                                cstate.d = -cstate.g;
 
                                 // update solution
-                                dt = g.dot(d);
+                                dt = cstate.g.dot(cstate.d);
                                 if (i > 0)
                                 {
                                         t *= pdt / dt;
                                 }
 
-                                t = impl::line_search_armijo(problem, x, t, d, f, g);
-                                x.noalias() += t * d;
-                        }
+                                t = impl::line_search_armijo(problem, cstate, t, 0.2, 0.7);
+                                cstate.update(problem, t);
+                        }                        
 
                         return false;
                 }
@@ -301,17 +335,16 @@ namespace ncv
 
                         problem.clear();
 
-                        vector_t x = x0, g, pg, d, pd;
+                        state cstate(problem, x0), pstate = cstate;
                         scalar_t t = 1.0, dt = -1.0, pdt = -1.0;
 
                         // iterate until convergence
-                        for (index_t i = 0; i < problem.max_iterations(); i ++, pg = g, pd = d, pdt = dt)
+                        for (index_t i = 0; i < problem.max_iterations(); i ++)
                         {
-                                const scalar_t f = problem.f(x, g);
-                                problem.update(x, f, g.norm());
+                                problem.update(cstate);
 
                                 // check convergence
-                                if (impl::converged(g, f, problem.epsilon()))
+                                if (impl::converged(problem, cstate))
                                 {
                                         return true;
                                 }
@@ -319,28 +352,26 @@ namespace ncv
                                 // descent direction (Polak–Ribière updates)
                                 if (i == 0)
                                 {
-                                        d = -g;
+                                        cstate.d = -cstate.g;
                                 }
                                 else
                                 {
-                                        const scalar_t beta = g.dot(g - pg) / (pg.dot(pg));
-                                        d = -g + std::max(static_cast<scalar_t>(0.0), beta) * pd;
-                                }
-
-                                if (d.dot(g) > std::numeric_limits<scalar_t>::min())
-                                {
-                                        d = -g;
+                                        const scalar_t beta = cstate.g.dot(cstate.g - pstate.g) /
+                                                              pstate.g.dot(pstate.g);
+                                        cstate.d = -cstate.g +
+                                                   std::max(0.0, beta) * pstate.d;
                                 }
 
                                 // update solution
-                                dt = g.dot(d);
+                                dt = cstate.g.dot(cstate.d);
                                 if (i > 0)
                                 {
                                         t *= pdt / dt;
                                 }
 
-                                t = impl::line_search_strong_wolfe(problem, x, t, d, f, g);
-                                x.noalias() += t * d;
+                                t = impl::line_search_strong_wolfe(problem, cstate, t, 1e-4, 0.1);
+                                pstate = cstate;
+                                cstate.update(problem, t);
                         }
 
                         return false;
@@ -366,36 +397,77 @@ namespace ncv
 
                         problem.clear();
 
-                        vector_t x = x0, px, g, pg, d, pd;
-                        scalar_t t = 1.0;
-                        matrix_t dxs(problem.size(), history_size);
-                        matrix_t dgs(problem.size(), history_size);
+                        std::deque<vector_t> ss, ys;
+                        state cstate(problem, x0), pstate = cstate;
+
+                        vector_t q, r;
 
                         // iterate until convergence
-                        for (index_t i = 0; i < problem.max_iterations(); i ++, px = x, pg = g, pd = d)
+                        for (index_t i = 0; i < problem.max_iterations(); i ++)
                         {
-                                const scalar_t f = problem.f(x, g);
-                                problem.update(x, f, g.norm());
+                                problem.update(cstate);
 
                                 // check convergence
-                                if (impl::converged(g, f, problem.epsilon()))
+                                if (impl::converged(problem, cstate))
                                 {
                                         return true;
                                 }
 
-                                // descent direction (LBFGS)
+                                // descent direction
+                                //      (LBFGS - Nocedal & Wright (numerical optimization 2nd) notations @ p.178)
+                                q = cstate.g;
+
+                                std::deque<vector_t>::const_reverse_iterator itr_s = ss.rbegin();
+                                std::deque<vector_t>::const_reverse_iterator itr_y = ys.rbegin();
+                                scalars_t alphas;
+                                for (index_t j = 1; j <= history_size && i >= j; j ++)
+                                {
+                                        const vector_t& s = (*itr_s ++);
+                                        const vector_t& y = (*itr_y ++);
+
+                                        const scalar_t alpha = s.dot(q) / s.dot(y);
+                                        q.noalias() -= alpha * y;
+                                        alphas.push_back(alpha);
+                                }
+
                                 if (i == 0)
                                 {
-                                        d = -g;
+                                        r = q;
                                 }
                                 else
                                 {
-                                        d = -g;
+                                        const vector_t& s = *ss.rbegin();
+                                        const vector_t& y = *ys.rbegin();
+                                        r = s.dot(y) / y.dot(y) * q;
                                 }
 
+                                std::deque<vector_t>::const_iterator it_s = ss.begin();
+                                std::deque<vector_t>::const_iterator it_y = ys.begin();
+                                scalars_t::const_reverse_iterator itr_alpha = alphas.rbegin();
+                                for (index_t j = 1; j <= history_size && i >= j; j ++)
+                                {
+                                        const vector_t& s = (*it_s ++);
+                                        const vector_t& y = (*it_y ++);
+
+                                        const scalar_t alpha = *(itr_alpha ++);
+                                        const scalar_t beta = y.dot(r) / s.dot(y);
+                                        r.noalias() += s * (alpha - beta);
+                                }
+
+                                cstate.d = -r;
+
                                 // update solution
-                                t = impl::line_search_strong_wolfe(problem, x, 1.0, d, f, g);
-                                x.noalias() += t * d;
+                                const scalar_t t = impl::line_search_strong_wolfe(problem, cstate, 1.0, 1e-4, 0.9);
+                                pstate = cstate;
+                                cstate.update(problem, t);
+
+                                ss.push_back(cstate.x - pstate.x);
+                                ys.push_back(cstate.g - pstate.g);
+                                if (ss.size() > history_size)
+                                {
+                                        ss.pop_front();
+                                        ys.pop_front();
+                                }
                         }
 
                         return false;

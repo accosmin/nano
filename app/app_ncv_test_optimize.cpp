@@ -55,9 +55,9 @@ void test(const tproblem& problem, const ncv::string_t& name, ncv::size_t trials
                 ncv::optimize::conjugate_gradient_descent(problem, x0);
                 print(problem, name + " (CGD)", trial, trials, timer.elapsed_string());
 
-//                timer.start();
-//                ncv::optimize::lbfgs(problem, x0);
-//                print(problem, name + " (LBFGS)", trial, trials, timer.elapsed_string());
+                timer.start();
+                ncv::optimize::lbfgs(problem, x0);
+                print(problem, name + " (LBFGS)", trial, trials, timer.elapsed_string());
         }
 }
 
