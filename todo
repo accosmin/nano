@@ -1,14 +1,8 @@
-- investigate CGD:
-	- it takes too long to converge
+- BUG:
+	- sometimes LBFGS does not converge
 
-- print statistics for each function & rank methods:
-	- power: pow(1 - (fN - f0)/eps, 1/N), where eps = 1e-5 (default), N = #iterations run
-	- number of times it converged
-
-	- #times it ranked first, second, third
-	- average number of iterations & average time per problem per dimension
-
-	- may implement the tabulator object as discussed
+- better rank methods in the optimization test program:
+	- number of times it converged or it produced lower function values
 
 - cmake:
 	- add support for installing and packaging

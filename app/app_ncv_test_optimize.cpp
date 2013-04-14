@@ -47,10 +47,6 @@ void test(const tproblem& problem, const ncv::string_t& name, ncv::size_t trials
                 print(problem, name + " (GD)" + name_trial, timer.elapsed_string());
 
                 timer.start();
-                ncv::optimize::conjugate_gradient_descent(problem, x0);
-                print(problem, name + " (CGD)" + name_trial, timer.elapsed_string());
-
-                timer.start();
                 ncv::optimize::lbfgs(problem, x0);
                 print(problem, name + " (LBFGS)" + name_trial, timer.elapsed_string());
         }
@@ -81,7 +77,7 @@ int main(int argc, char *argv[])
                 boost::program_options::value<scalar_t>()->default_value(1e-6),
                 "convergence accuracy [1e-20, 1e-1]");
         po_desc.add_options()("dim,d",
-                boost::program_options::value<size_t>()->default_value(16),
+                boost::program_options::value<size_t>()->default_value(256),
                 "maximum dimension [2, 1024]");
 
         boost::program_options::variables_map po_vm;
@@ -103,70 +99,70 @@ int main(int argc, char *argv[])
         const size_t cmd_dims = ncv::math::clamp(po_vm["dim"].as<size_t>(), 2, 1024);
         const size_t cmd_trials = 16;
 
-        // sphere function
-        for (size_t n = 2; n <= cmd_dims; n *= 2)
-        {
-                const auto op_size = [=] ()
-                {
-                        return n;
-                };
+//        // sphere function
+//        for (size_t n = 2; n <= cmd_dims; n *= 2)
+//        {
+//                const auto op_size = [=] ()
+//                {
+//                        return n;
+//                };
 
-                const auto op_fval = [=] (const vector_t& x)
-                {
-                        return x.dot(x);
-                };
+//                const auto op_fval = [=] (const vector_t& x)
+//                {
+//                        return x.dot(x);
+//                };
 
-                const auto op_grad = [=] (const vector_t& x, vector_t& g)
-                {
-                        g = 2.0 * x;
-                };
+//                const auto op_grad = [=] (const vector_t& x, vector_t& g)
+//                {
+//                        g = 2.0 * x;
+//                };
 
-                const auto op_fval_grad = [=] (const vector_t& x, vector_t& g)
-                {
-                        op_grad(x, g);
-                        return op_fval(x);
-                };
+//                const auto op_fval_grad = [=] (const vector_t& x, vector_t& g)
+//                {
+//                        op_grad(x, g);
+//                        return op_fval(x);
+//                };
 
-                const problem_t problem(op_size, op_fval, op_fval_grad, cmd_iters, cmd_eps);
-                test(problem, "sphere [" + ncv::text::to_string(n) + "D]", cmd_trials);
-        }
+//                const problem_t problem(op_size, op_fval, op_fval_grad, cmd_iters, cmd_eps);
+//                test(problem, "sphere [" + ncv::text::to_string(n) + "D]", cmd_trials);
+//        }
 
-        // ellipsoidal function
-        for (size_t n = 2; n <= cmd_dims; n *= 2)
-        {
-                const auto op_size = [=] ()
-                {
-                        return n;
-                };
+//        // ellipsoidal function
+//        for (size_t n = 2; n <= cmd_dims; n *= 2)
+//        {
+//                const auto op_size = [=] ()
+//                {
+//                        return n;
+//                };
 
-                const auto op_fval = [=] (const vector_t& x)
-                {
-                        scalar_t f = 0.0;
-                        for (size_t i = 0; i < n; i ++)
-                        {
-                                f += (i + 1.0) * ncv::math::square(x[i]);
-                        }
-                        return f;
-                };
+//                const auto op_fval = [=] (const vector_t& x)
+//                {
+//                        scalar_t f = 0.0;
+//                        for (size_t i = 0; i < n; i ++)
+//                        {
+//                                f += (i + 1.0) * ncv::math::square(x[i]);
+//                        }
+//                        return f;
+//                };
 
-                const auto op_grad = [=] (const vector_t& x, vector_t& g)
-                {
-                        g.resize(n);
-                        for (size_t i = 0; i < n; i ++)
-                        {
-                                g(i) = 2.0 * (i + 1.0) * x[i];
-                        }
-                };
+//                const auto op_grad = [=] (const vector_t& x, vector_t& g)
+//                {
+//                        g.resize(n);
+//                        for (size_t i = 0; i < n; i ++)
+//                        {
+//                                g(i) = 2.0 * (i + 1.0) * x[i];
+//                        }
+//                };
 
-                const auto op_fval_grad = [=] (const vector_t& x, vector_t& g)
-                {
-                        op_grad(x, g);
-                        return op_fval(x);
-                };
+//                const auto op_fval_grad = [=] (const vector_t& x, vector_t& g)
+//                {
+//                        op_grad(x, g);
+//                        return op_fval(x);
+//                };
 
-                const problem_t problem(op_size, op_fval, op_fval_grad, cmd_iters, cmd_eps);
-                test(problem, "ellipsoidal [" + ncv::text::to_string(n) + "D]", cmd_trials);
-        }
+//                const problem_t problem(op_size, op_fval, op_fval_grad, cmd_iters, cmd_eps);
+//                test(problem, "ellipsoidal [" + ncv::text::to_string(n) + "D]", cmd_trials);
+//        }
 
         // rotated ellipsoidal function
         for (size_t n = 2; n <= cmd_dims; n *= 2)
