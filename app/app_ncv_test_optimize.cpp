@@ -47,6 +47,10 @@ void test(const tproblem& problem, const ncv::string_t& name, ncv::size_t trials
                 print(problem, name + " (GD)" + name_trial, timer.elapsed_string());
 
                 timer.start();
+                ncv::optimize::conjugate_gradient_descent(problem, x0);
+                print(problem, name + " (CGD)" + name_trial, timer.elapsed_string());
+
+                timer.start();
                 ncv::optimize::lbfgs(problem, x0);
                 print(problem, name + " (LBFGS)" + name_trial, timer.elapsed_string());
         }
@@ -71,13 +75,13 @@ int main(int argc, char *argv[])
         boost::program_options::options_description po_desc("", 160);
         po_desc.add_options()("help,h", "help message");
         po_desc.add_options()("iters,i",
-                boost::program_options::value<size_t>()->default_value(256),
+                boost::program_options::value<size_t>()->default_value(2048),
                 "number of iterations [8, 16000]");
         po_desc.add_options()("eps,e",
                 boost::program_options::value<scalar_t>()->default_value(1e-6),
                 "convergence accuracy [1e-20, 1e-1]");
         po_desc.add_options()("dim,d",
-                boost::program_options::value<size_t>()->default_value(256),
+                boost::program_options::value<size_t>()->default_value(1024),
                 "maximum dimension [2, 1024]");
 
         boost::program_options::variables_map po_vm;
@@ -164,62 +168,62 @@ int main(int argc, char *argv[])
 //                test(problem, "ellipsoidal [" + ncv::text::to_string(n) + "D]", cmd_trials);
 //        }
 
-        // rotated ellipsoidal function
-        for (size_t n = 2; n <= cmd_dims; n *= 2)
-        {
-                const auto op_size = [=] ()
-                {
-                        return n;
-                };
+//        // rotated ellipsoidal function
+//        for (size_t n = 2; n <= cmd_dims; n *= 2)
+//        {
+//                const auto op_size = [=] ()
+//                {
+//                        return n;
+//                };
 
-                const auto op_fval = [=] (const vector_t& x)
-                {
-                        scalar_t f = 0.0;
+//                const auto op_fval = [=] (const vector_t& x)
+//                {
+//                        scalar_t f = 0.0;
 
-                        for (size_t i = 0; i < n; i ++)
-                        {
-                                scalar_t s = 0.0;
-                                for (size_t j = 0; j <= i; j ++)
-                                {
-                                        s += x[j];
-                                }
+//                        for (size_t i = 0; i < n; i ++)
+//                        {
+//                                scalar_t s = 0.0;
+//                                for (size_t j = 0; j <= i; j ++)
+//                                {
+//                                        s += x[j];
+//                                }
 
-                                f += ncv::math::square(s);
-                        }
-                        return f;
-                };
+//                                f += ncv::math::square(s);
+//                        }
+//                        return f;
+//                };
 
-                const problem_t problem(op_size, op_fval, cmd_iters, cmd_eps);
-                test(problem, "rotated ellipsoidal [" + ncv::text::to_string(n) + "D]", cmd_trials);
-        }
+//                const problem_t problem(op_size, op_fval, cmd_iters, cmd_eps);
+//                test(problem, "rotated ellipsoidal [" + ncv::text::to_string(n) + "D]", cmd_trials);
+//        }
 
-        // Whitley's function
-        for (size_t n = 2; n <= cmd_dims; n *= 2)
-        {
-                const auto op_size = [=] ()
-                {
-                        return n;
-                };
+//        // Whitley's function
+//        for (size_t n = 2; n <= cmd_dims; n *= 2)
+//        {
+//                const auto op_size = [=] ()
+//                {
+//                        return n;
+//                };
 
-                const auto op_fval = [=] (const vector_t& x)
-                {
-                        scalar_t f = 0.0;
-                        for (size_t i = 0; i < n; i ++)
-                        {
-                                for (size_t j = 0; j < n; j ++)
-                                {
-                                        const scalar_t d = 100.0 * ncv::math::square(x[i] * x[i] - x[j]) +
-                                                           ncv::math::square(1.0 - x[j]);
-                                        f += d * d / 4000.0 - std::cos(d) + 1.0;
-                                }
-                        }
+//                const auto op_fval = [=] (const vector_t& x)
+//                {
+//                        scalar_t f = 0.0;
+//                        for (size_t i = 0; i < n; i ++)
+//                        {
+//                                for (size_t j = 0; j < n; j ++)
+//                                {
+//                                        const scalar_t d = 100.0 * ncv::math::square(x[i] * x[i] - x[j]) +
+//                                                           ncv::math::square(1.0 - x[j]);
+//                                        f += d * d / 4000.0 - std::cos(d) + 1.0;
+//                                }
+//                        }
 
-                        return f;
-                };
+//                        return f;
+//                };
 
-                const problem_t problem(op_size, op_fval, cmd_iters, cmd_eps);
-                test(problem, "whitley [" + ncv::text::to_string(n) + "D]", cmd_trials);
-        }
+//                const problem_t problem(op_size, op_fval, cmd_iters, cmd_eps);
+//                test(problem, "whitley [" + ncv::text::to_string(n) + "D]", cmd_trials);
+//        }
 
         // Rosenbrock problem
         for (size_t n = 2; n <= cmd_dims; n *= 2)

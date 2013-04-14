@@ -151,7 +151,7 @@ namespace ncv
                         void eval_grad(const vector_t x, vector_t& g) const
                         {
                                 const size_t n = size();
-                                const scalar_t d = epsilon() * epsilon();
+                                const scalar_t d = epsilon();
 
                                 vector_t xp = x, xn = x;
 
@@ -321,6 +321,67 @@ namespace ncv
                                 t = impl::line_search_armijo(problem, cstate, t, 0.2, 0.7);
                                 cstate.update(problem, t);
                         }                        
+
+                        return false;
+                }
+
+                /////////////////////////////////////////////////////////////////////////////////////////////
+                // conjugate gradient descent starting from the initial value (guess) x0.
+                /////////////////////////////////////////////////////////////////////////////////////////////
+
+                template
+                <
+                        class tproblem
+                >
+                bool conjugate_gradient_descent(
+                        const tproblem& problem,
+                        const vector_t& x0)
+                {
+                        if (problem.size() != math::cast<size_t>(x0.size()))
+                        {
+                                return false;
+                        }
+
+                        problem.clear();
+
+                        state cstate(problem, x0), pstate = cstate;
+                        scalar_t t = 1.0, dt = -1.0, pdt = -1.0;
+
+                        // iterate until convergence
+                        for (index_t i = 0; i < problem.max_iterations(); i ++)
+                        {
+                                problem.update(cstate);
+
+                                // check convergence
+                                if (impl::converged(problem, cstate))
+                                {
+                                        return true;
+                                }
+
+                                // descent direction (Polak–Ribière updates)
+                                if (i == 0)
+                                {
+                                        cstate.d = -cstate.g;
+                                }
+                                else
+                                {
+                                        const scalar_t beta = cstate.g.dot(cstate.g - pstate.g) /
+                                                              pstate.g.dot(pstate.g);
+                                        cstate.d = -cstate.g +
+                                                   std::max(0.0, beta) * pstate.d;
+                                }
+
+                                // update solution
+                                dt = cstate.g.dot(cstate.d);
+                                if (i > 0)
+                                {
+                                        t *= pdt / dt;
+                                }
+
+                                t = impl::line_search_strong_wolfe(problem, cstate, t, 1e-4, 0.1);
+                                pstate = cstate;
+                                cstate.update(problem, t);
+                        }
 
                         return false;
                 }
