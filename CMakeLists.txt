@@ -35,38 +35,29 @@ include_directories(./)
 # Build the library
 ######################################################################
 
-file(GLOB NANOCV_SOURCES
+file(GLOB nanocv_sources
         src/*.h
         src/*.cpp
         src/core/*.h
         src/core/*.cpp
-#        src/tasks/ncv_*.h
-#        src/tasks/ncv_*.cpp
-#        src/losses/ncv_*.h
-#        src/losses/ncv_*.cpp
-#        src/models/ncv_*.h
-#        src/models/ncv_*.cpp
         )
 
 add_library(nanocv
         SHARED
-        ${NANOCV_SOURCES})
+        ${nanocv_sources})
 
 ######################################################################
 # Build projects
 ######################################################################
 
 # Set the include directories and linking libraries
-set(NANOCV_INCLUDES
+set(nanocv_includes
         src/
         src/core/
-#        src/tasks/
-#        src/losses/
-#        src/models/
         )
 
 include_directories(
-        ${NANOCV_INCLUDES})
+        ${nanocv_includes})
 
 set(libs "nanocv;")
 set(libs "${libs};${Boost_THREAD_LIBRARY_RELEASE}")
@@ -102,15 +93,24 @@ target_link_libraries   (ncv_test_color         ${libs})
 # Installing
 ######################################################################
 
-install(TARGETS
+# executables
+set(nanocv_programs
         ncv_max_threads
         ncv_test_thread_loop
         ncv_test_thread_pool
         ncv_test_optimize
         ncv_test_image
-        ncv_test_color
+        ncv_test_color)
+
+install(TARGETS
+        ${nanocv_programs}
         DESTINATION bin)
 
+set_target_properties(
+        ${nanocv_programs}
+        PROPERTIES INSTALL_RPATH "../lib:./")
+
+# libraries
 install(TARGETS
         nanocv
         DESTINATION lib)
@@ -118,12 +118,12 @@ install(TARGETS
 ## http://www.cmake.org/Wiki/CMake_RPATH_handling
 #set(CMAKE_SKIP_BUILD_RPATH  FALSE)
 #set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-#set(CMAKE_INSTALL_RPATH "../lib")
+#set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 #set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-#list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "../lib" isSystemDir)
+#list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
 #if("${isSystemDir}" STREQUAL "-1")
-#        set(CMAKE_INSTALL_RPATH "../lib")
+#        set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 #endif("${isSystemDir}" STREQUAL "-1")
 
 ######################################################################
