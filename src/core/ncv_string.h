@@ -30,8 +30,7 @@ namespace ncv
                         string_t ret;
                         std::for_each(std::begin(values), std::end(values), [&] (const tvalue& val)
                         {
-                                ret += to_string(val);
-                                ret += glue;
+                                ret += to_string(val) + glue;
                         });
 
                         return ret.empty() ? ret : ret.substr(0, ret.size() - glue.size());

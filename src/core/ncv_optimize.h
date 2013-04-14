@@ -2,6 +2,7 @@
 #define NANOCV_OPTIMIZE_H
 
 #include "ncv_math.h"
+#include "ncv_stats.h"
 #include <deque>
 
 namespace ncv
@@ -91,6 +92,7 @@ namespace ncv
                                 m_f_evals = 0;
                                 m_g_evals = 0;
                                 m_iterations = 0;
+                                m_speed_stats.clear();
                         }
 
                         // compute function value & gradient
@@ -117,10 +119,17 @@ namespace ncv
                         // update optimal
                         void update(const state& st) const
                         {
+                                if (m_iterations > 0)
+                                {
+                                        const scalar_t df = std::fabs(m_opt_fx - st.f);
+                                        m_speed_stats.add(df / std::max(1.0, std::fabs(m_opt_fx)));
+                                }
+
                                 m_iterations ++;
                                 m_opt_x = st.x;
                                 m_opt_fx = st.f;
                                 m_opt_gn = st.g.norm();
+
                         }
 
                         // access functions
@@ -136,6 +145,8 @@ namespace ncv
                         count_t fevals() const { return m_f_evals; }
                         count_t gevals() const { return m_g_evals; }
                         count_t iterations() const { return m_iterations; }
+                        scalar_t speed_avg() const { return m_speed_stats.avg(); }
+                        scalar_t speed_stdev() const { return m_speed_stats.stdev(); }
 
                 private:
 
@@ -182,6 +193,7 @@ namespace ncv
                         mutable count_t         m_f_evals;              // #function value evaluations
                         mutable count_t         m_g_evals;              // #function gradient evaluations
                         mutable count_t         m_iterations;           // #iterations
+                        mutable stats<scalar_t> m_speed_stats;          // convergence speed statistics
                 };
 
                 /////////////////////////////////////////////////////////////////////////////////////////////

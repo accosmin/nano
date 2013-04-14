@@ -6,27 +6,19 @@ template
 <
         typename tproblem
 >
-void print(const tproblem& problem,
-           const ncv::string_t& header,
-           ncv::size_t trial,
-           ncv::size_t trials,
-           const ncv::string_t& time)
+void print(const tproblem& problem, const ncv::string_t& header, const ncv::string_t& time)
 {
         static const ncv::index_t col_size = 32;
         static const ncv::string_t del_line(4 * col_size + 4, '-');
 
-        const ncv::string_t test =
-                " [" + ncv::text::to_string(trial + 1) + "/" + ncv::text::to_string(trials) + "]";
-
         std::cout << del_line << std::endl;
-        std::cout << header << test << ": x  = " << problem.opt_x().transpose() << std::endl;
-        std::cout << header << test << ": fx = " << problem.opt_fx() << std::endl;
-        std::cout << header << test << ": gn = " << problem.opt_gn() << std::endl;
-        std::cout << header << test
-                  << ": #fevals = " << problem.fevals()
-                  << ", #gevals = " << problem.gevals()
-                  << ", #iterations = " << problem.iterations() << "/" << problem.max_iterations()
-                  << " [done in " << time << "]." << std::endl;
+        std::cout << header << ": x  = [" << problem.opt_x().transpose() << "]" << std::endl;
+        std::cout << header << ": fx = [" << problem.opt_fx() << "]" << std::endl;
+        std::cout << header << ": gn = [" << problem.opt_gn() << "]" << std::endl;
+        std::cout << header << ": evaluations = [" << problem.fevals() << " + " << problem.gevals()
+                  << "], iterations = [" << problem.iterations() << "/" << problem.max_iterations()
+                  << "], speed = [" << problem.speed_avg() << " +/- " << problem.speed_stdev()
+                  << "], time = [" << time << "]." << std::endl;
         std::cout << del_line << std::endl;
 }
 
@@ -45,19 +37,22 @@ void test(const tproblem& problem, const ncv::string_t& name, ncv::size_t trials
                 ncv::vector_t x0(size);
                 rgen(x0.data(), x0.data() + x0.size());
 
+                const ncv::string_t name_trial =
+                        " [" + ncv::text::to_string(trial + 1) + "/" + ncv::text::to_string(trials) + "]";
+
                 ncv::timer timer;
 
                 timer.start();
                 ncv::optimize::gradient_descent(problem, x0);
-                print(problem, name + " (GD)", trial, trials, timer.elapsed_string());
+                print(problem, name + " (GD)" + name_trial, timer.elapsed_string());
 
                 timer.start();
                 ncv::optimize::conjugate_gradient_descent(problem, x0);
-                print(problem, name + " (CGD)", trial, trials, timer.elapsed_string());
+                print(problem, name + " (CGD)" + name_trial, timer.elapsed_string());
 
                 timer.start();
                 ncv::optimize::lbfgs(problem, x0);
-                print(problem, name + " (LBFGS)", trial, trials, timer.elapsed_string());
+                print(problem, name + " (LBFGS)" + name_trial, timer.elapsed_string());
         }
 }
 
