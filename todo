@@ -1,9 +1,3 @@
-- BUG:
-	- sometimes LBFGS does not converge
-
-- better rank methods in the optimization test program:
-	- number of times it converged or it produced lower function values
-
 - cmake:
 	- add support for installing and packaging
 	- install the binaries and the library (as shared library) and set correctly the rpath

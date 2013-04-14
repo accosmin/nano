@@ -345,7 +345,6 @@ namespace ncv
                         problem.clear();
 
                         state cstate(problem, x0), pstate = cstate;
-                        scalar_t t = 1.0, dt = -1.0, pdt = -1.0;
 
                         // iterate until convergence
                         for (index_t i = 0; i < problem.max_iterations(); i ++)
@@ -372,13 +371,7 @@ namespace ncv
                                 }
 
                                 // update solution
-                                dt = cstate.g.dot(cstate.d);
-                                if (i > 0)
-                                {
-                                        t *= pdt / dt;
-                                }
-
-                                t = impl::line_search_strong_wolfe(problem, cstate, t, 1e-4, 0.1);
+                                const scalar_t t = impl::line_search_strong_wolfe(problem, cstate, 1.0, 1e-4, 0.1);
                                 pstate = cstate;
                                 cstate.update(problem, t);
                         }
@@ -397,7 +390,7 @@ namespace ncv
                 bool lbfgs(
                         const tproblem& problem,
                         const vector_t& x0,
-                        size_t history_size = 6)
+                        size_t history_size = 8)
                 {
                         if (problem.size() != math::cast<size_t>(x0.size()))
                         {

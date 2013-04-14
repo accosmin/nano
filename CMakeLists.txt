@@ -49,6 +49,7 @@ file(GLOB NANOCV_SOURCES
         )
 
 add_library(nanocv
+        SHARED
         ${NANOCV_SOURCES})
 
 ######################################################################
@@ -95,7 +96,35 @@ add_executable          (ncv_test_color         app/app_ncv_test_color.cpp)
 target_link_libraries   (ncv_test_color         ${libs})
 
 # Build utility programs
-#TODO: image loading & saving & scaling & channel extraction
+#TODO: sample, train and test models
+
+######################################################################
+# Installing
+######################################################################
+
+install(TARGETS
+        ncv_max_threads
+        ncv_test_thread_loop
+        ncv_test_thread_pool
+        ncv_test_optimize
+        ncv_test_image
+        ncv_test_color
+        DESTINATION bin)
+
+install(TARGETS
+        nanocv
+        DESTINATION lib)
+
+## http://www.cmake.org/Wiki/CMake_RPATH_handling
+#set(CMAKE_SKIP_BUILD_RPATH  FALSE)
+#set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+#set(CMAKE_INSTALL_RPATH "../lib")
+#set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+#list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "../lib" isSystemDir)
+#if("${isSystemDir}" STREQUAL "-1")
+#        set(CMAKE_INSTALL_RPATH "../lib")
+#endif("${isSystemDir}" STREQUAL "-1")
 
 ######################################################################
 # Debugging

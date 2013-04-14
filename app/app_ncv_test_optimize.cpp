@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
                 boost::program_options::value<scalar_t>()->default_value(1e-6),
                 "convergence accuracy [1e-20, 1e-1]");
         po_desc.add_options()("dim,d",
-                boost::program_options::value<size_t>()->default_value(1024),
+                boost::program_options::value<size_t>()->default_value(128),
                 "maximum dimension [2, 1024]");
 
         boost::program_options::variables_map po_vm;
