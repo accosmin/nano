@@ -1,3 +1,6 @@
+- implement some gradient-free optimization methods:
+	- modify problem::update() to store the current state only if the function value is smaller
+
 - functions to draw into a RGBA matrix:
 	- line, circles, 2D plots
 	- may use an opengl context for plotting, have a look at: http://www.glfw.org/
