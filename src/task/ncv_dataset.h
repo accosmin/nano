@@ -6,12 +6,13 @@
 namespace ncv
 {
         ////////////////////////////////////////////////////////////////////////////////
-        // dataset where the feature values and the targets are stored in memory.
-        //      - data stored as [n_samples() x [input: n_inputs() x 1]]
-        //      - targets stored as [n_samples() x [target: n_outputs() x 1]]
-        //      - if a target is not provided the samples is flaged as not annotated
+        // dataset of samples where the inputs (e.g. feature values)
+        //      and the targets (for the annotated samples) are stored in memory.
         ////////////////////////////////////////////////////////////////////////////////
-	
+
+        // TODO: store inputs as tensors (may define the tensor object)
+        // TODO: functions to save/load tensors to file
+
         class dataset
         {
         public:
