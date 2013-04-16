@@ -1,12 +1,3 @@
-- implement some gradient-free optimization methods:
-	- modify problem::update() to store the current state only if the function value is smaller
-
-- functions to draw into a RGBA matrix:
-	- line, circles, 2D plots
-	- may use an opengl context for plotting, have a look at: http://www.glfw.org/
-
-- faster RGB to CIELab transform (goal: 1s single thread version of the color testing program)
-
 - redo tasks (iterate, sample):
         - modify dataset to store the inputs as image patches + vector of scalars
         - modify dataset to also use unknown samples
@@ -14,6 +5,12 @@
         + load STL-10 dataset: http://www.stanford.edu/~acoates//stl10/
         - other datasets: http://deeplearning.net/datasets/
 	- ncv_describe: save random images
+
+- functions to draw into a RGBA matrix:
+	- line, circles, 2D plots
+	- may use an opengl context for plotting, have a look at: http://www.glfw.org/
+
+- faster RGB to CIELab transform (goal: 1s single thread version of the color testing program)
 
 - redo the dependencies between files, re-design msize
 - replace Qt with imagemagick or libpng/libtiff
