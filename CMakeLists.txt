@@ -40,6 +40,8 @@ file(GLOB nanocv_sources
         src/*.cpp
         src/core/*.h
         src/core/*.cpp
+        src/task/*.h
+        src/task/*.cpp
         )
 
 add_library(nanocv
@@ -54,6 +56,7 @@ add_library(nanocv
 set(nanocv_includes
         src/
         src/core/
+        src/task/
         )
 
 include_directories(

@@ -88,5 +88,46 @@ namespace ncv
         };
 }
 
+// serialize matrices and vectors
+namespace boost
+{
+        namespace serialization
+        {
+                template
+                <
+                        class tarchive,
+                        class tvalue,
+                        int Rows,
+                        int Cols,
+                        int Options
+                >
+                void serialize(tarchive& ar, Eigen::Matrix<tvalue, Rows, Cols, Options>& mat, const unsigned int)
+                {
+                        if (tarchive::is_saving::value)
+                        {
+                                int rows = mat.rows(), cols = mat.cols();
+                                ar & rows; ar & cols;
+
+                                for (int i = 0; i < mat.size(); i ++)
+                                {
+                                        ar & mat(i);
+                                }
+                        }
+
+                        else
+                        {
+                                int rows, cols;
+                                ar & rows; ar & cols;
+
+                                mat.resize(rows, cols);
+                                for (int i = 0; i < mat.size(); i ++)
+                                {
+                                        ar & mat(i);
+                                }
+                        }
+                }
+        }
+}
+
 #endif // NANOCV_TYPES_H
 
