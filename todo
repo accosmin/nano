@@ -13,22 +13,11 @@
 	- ncv_describe: save random images
 
 - redo the dependencies between files, re-design msize
+- replace Qt with imagemagick or libpng/libtiff
 
-- train/test & optimization:
-        - learning: boosting nn layers - add more complex weak learners / layers when the loss does not decrease sufficiently fast
-        
+- train/test modes:
         - redesign losses and the optimization part
-
-optimization part: also implement trust region algorithms
-          
-        - implement stochastic and batch gradient descent
-        - implement non-linear conjugate gradient descent:
-        http://en.wikipedia.org/wiki/Nonlinear_conjugate_gradient
-
-        & LBFGS as optimization techniques using a function_t object
-
-        OPTIMIZATION potential:
-        A Stochastic Gradient Method with an Exponential Convergence Rate for Finite Training Sets
+        - multiple runs -> avg + stdev error rate
 
 - 2D widgets:
         - try to create a flat set of widget similar to these ones:
@@ -48,19 +37,8 @@ optimization part: also implement trust region algorithms
                 - display the current zooming level (in percentage)
                 - display the output of various filters
 
-- need to think about an useful application of nanocv:
-        - template matching:
-                - given a gradient template match it with an image:
-                        min(template - scale * grad(image) + beta)
-        - template learning (unsupervised):
-                - cluster gradient templates from the training dataset
-
-- add INRIA car and person datasets
-
-- run experiments on cifar and mnist:
-        - multiple runs -> avg + stdev error rate
-
 - add other datasets:
+	- add INRIA car and person datasets
 	- CIFAR10, CIFAR100, NORB, STL10, inria pedestrian detection, inria human detection, dymlerchrysler human
 		detection, face detection, PASCALVoc2011, CALTECH101...
 
@@ -72,12 +50,4 @@ optimization part: also implement trust region algorithms
         - also bootstrap the background of the images containing faces
                 => many billions of samples (may require removing some profile faces or some animals 
                         that look very much like frontal faces)
-
-- annotation system:
-	- working vocabulary (keypoints name, object names)
-	- keypoints (location + name), name objects (type + id + pose)
-		connect keypoints to form an object (specified by type, id and pose)
-		
-- add webcam support to VGUI!
-	http://qt-apps.org/content/show.php/Qt+Opencv+webcam+viewer?content=89995
 

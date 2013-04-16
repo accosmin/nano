@@ -124,9 +124,12 @@ namespace ncv
                                 }
 
                                 m_iterations ++;
-                                m_opt_x = st.x;
-                                m_opt_fx = st.f;
-                                m_opt_gn = st.g.norm();
+                                if (st.f < m_opt_fx)
+                                {
+                                        m_opt_x = st.x;
+                                        m_opt_fx = st.f;
+                                        m_opt_gn = st.g.norm();
+                                }
                         }
 
                         // access functions
