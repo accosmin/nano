@@ -1,4 +1,6 @@
 - redo tasks (iterate, sample):
+	- specify how much memory to use (e.g. 4GB - store/cache as many tensors as fits)
+
         - modify dataset to store the inputs as image patches + vector of scalars
         - modify dataset to also use unknown samples
         - update the sampling and the description test programs
