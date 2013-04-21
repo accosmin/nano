@@ -9,34 +9,8 @@ namespace ncv
 
                 //-------------------------------------------------------------------------------------------------
 
-//                scalar_t fn_pow_4(scalar_t x)
-//                {
-//                        const scalar_t x2 = x * x;
-//                        return x2 * x2;
-//                }
-
-//                scalar_t fn_pow_5(scalar_t x)
-//                {
-//                        return x * fn_pow_4(x);
-//                }
-
-//                scalar_t fn_pow_1_5(scalar_t a)
-//                {
-//                        scalar_t x = a, last_x = x;
-//                        do
-//                        {
-//                                last_x = x;
-//                                x = 0.8 * last_x + 0.2 * a / fn_pow_4(last_x);
-//                        }
-//                        while (std::fabs(x - last_x) > 1e-8);
-
-//                        return x;
-//                }
-
                 scalar_t fn_pow_12_5(scalar_t x)
                 {
-//                        const scalar_t r = x * fn_pow_1_5(x);
-//                        return r * r;
                         return std::pow(x, 2.4);
                 }
 

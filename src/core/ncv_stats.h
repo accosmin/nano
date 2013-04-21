@@ -85,14 +85,12 @@ namespace ncv
                 // access functions
                 tscalar _avg() const
                 {
-                        return math::inverse(count()) * sum();
+                        return  count() < 1 ? sum() : sum() / count();
                 }                
                 tscalar _stdev() const
                 {
                         return  count() < 2 ? 
-                                0 :
-                                std::sqrt(math::inverse(count() - 1) *
-                                (sumsq() - math::inverse(count()) * sum() * sum()));
+                                0.0l : std::sqrt((sumsq() - sum() * sum() / count()) / (count() - 1));
                 }                
                 
         private:

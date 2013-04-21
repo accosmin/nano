@@ -56,7 +56,13 @@ namespace ncv
         typedef matrix<rgba_t>::matrix_t        rgba_matrix_t;
 
         // CIELab
-        typedef Eigen::Vector3d                 cielab_t;
+        typedef Eigen::Matrix
+        <
+                scalar_t,
+                3,
+                1,
+                Eigen::ColMajor
+        >                                       cielab_t;
         typedef matrix<cielab_t>::matrix_t      cielab_matrix_t;
 
         // manipulate color space

@@ -6,7 +6,7 @@ template
 <
         typename toperator
 >
-ncv::stats<> test(int size, int trials, const toperator& op)
+ncv::stats<> test(int size, int trials, toperator op)
 {
         ncv::stats<> timings;
         for (int t = 0; t < trials; t ++)
@@ -29,7 +29,7 @@ template
 <
         typename toperator
 >
-ncv::stats<> test_omp(int size, int trials, const toperator& op)
+ncv::stats<> test_omp(int size, int trials, toperator op)
 {
         ncv::stats<> timings;
         for (int t = 0; t < trials; t ++)
@@ -53,7 +53,7 @@ template
 <
         typename toperator
 >
-ncv::stats<> test_ncv(int size, int trials, const toperator& op)
+ncv::stats<> test_ncv(int size, int trials, toperator op)
 {
         ncv::stats<> timings;
         for (int t = 0; t < trials; t ++)

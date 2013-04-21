@@ -149,15 +149,7 @@ namespace ncv
                 pool.wait();
         }
 
-//        TODO: policy here (non-overlapping, interleaving memory access),
-
-        // TODO: add also state workers: result = op(begin, end)
-
-//        thread_loop with state:
-//        pass two additional policies, one to initialize the result, the other to accumulate the result
-
-//        accumulate the result for the [begin, end) region of the thread
-//        accumulate the partial results for all the threads
+        // TODO: policy based split (non-overlapping, interleaving memory access)
 }
 
 #endif // NANOCV_THREAD_H

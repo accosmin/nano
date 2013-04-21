@@ -120,7 +120,7 @@ namespace ncv
                                 if (m_iterations > 0)
                                 {
                                         const scalar_t df = std::fabs(m_opt_fx - st.f);
-                                        m_speed_stats.add(df / std::max(1.0, std::fabs(m_opt_fx)));
+                                        m_speed_stats.add(df / std::max(1.0l, std::fabs(m_opt_fx)));
                                 }
 
                                 m_iterations ++;
@@ -172,7 +172,7 @@ namespace ncv
                                         g(i) = f(xp) - f(xn);
                                 }
 
-                                g /= 2.0 * d;
+                                g /= 2.0l * d;
                         }
 
                 private:
@@ -209,7 +209,7 @@ namespace ncv
                         >
                         inline bool converged(const tproblem& problem, const state& st)
                         {
-                                return st.g.lpNorm<Eigen::Infinity>() < problem.epsilon() * (1.0 + std::fabs(st.f));
+                                return st.g.lpNorm<Eigen::Infinity>() < problem.epsilon() * (1.0l + std::fabs(st.f));
                         }
                 }
 
@@ -228,7 +228,7 @@ namespace ncv
                         >
                         scalar_t line_search_armijo(
                                 const tproblem& problem, state& st, scalar_t t0,
-                                scalar_t alpha = 0.2, scalar_t beta = 0.7)
+                                scalar_t alpha = 0.2l, scalar_t beta = 0.7l)
                         {
                                 // Check if descent direction
                                 scalar_t dg = st.d.dot(st.g);
@@ -254,7 +254,7 @@ namespace ncv
                         >
                         scalar_t line_search_strong_wolfe(
                                 const tproblem& problem, state& st, scalar_t t0,
-                                scalar_t c1 = 1e-4, scalar_t c2 = 0.1)
+                                scalar_t c1 = 1e-4l, scalar_t c2 = 0.1l)
                         {
                                 // Check if descent direction
                                 scalar_t dg = st.d.dot(st.g);
@@ -298,7 +298,7 @@ namespace ncv
                         problem.clear();
 
                         state cstate(problem, x0);
-                        scalar_t t = 1.0, dt = -1.0, pdt = -1.0;
+                        scalar_t t = 1.0l, dt = -1.0l, pdt = -1.0l;
 
                         // iterate until convergence
                         for (index_t i = 0; i < problem.max_iterations(); i ++)
@@ -321,7 +321,7 @@ namespace ncv
                                         t *= pdt / dt;
                                 }
 
-                                t = impl::line_search_armijo(problem, cstate, t, 0.2, 0.7);
+                                t = impl::line_search_armijo(problem, cstate, t, 0.2l, 0.7l);
                                 cstate.update(problem, t);
                         }                        
 
@@ -370,11 +370,11 @@ namespace ncv
                                         const scalar_t beta = cstate.g.dot(cstate.g - pstate.g) /
                                                               pstate.g.dot(pstate.g);
                                         cstate.d = -cstate.g +
-                                                   std::max(0.0, beta) * pstate.d;
+                                                   std::max(0.0l, beta) * pstate.d;
                                 }
 
                                 // update solution
-                                const scalar_t t = impl::line_search_strong_wolfe(problem, cstate, 1.0, 1e-4, 0.1);
+                                const scalar_t t = impl::line_search_strong_wolfe(problem, cstate, 1.0l, 1e-4l, 0.1l);
                                 pstate = cstate;
                                 cstate.update(problem, t);
                         }
@@ -462,7 +462,7 @@ namespace ncv
                                 cstate.d = -r;
 
                                 // update solution
-                                const scalar_t t = impl::line_search_strong_wolfe(problem, cstate, 1.0, 1e-4, 0.9);
+                                const scalar_t t = impl::line_search_strong_wolfe(problem, cstate, 1.0l, 1e-4l, 0.9l);
                                 pstate = cstate;
                                 cstate.update(problem, t);
 

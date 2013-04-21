@@ -59,6 +59,28 @@ namespace ncv
                         return boost::lexical_cast<tvalue>(str);
                 }
 
+                template <>
+                inline string_t to_string(protocol type)
+                {
+                        switch (type)
+                        {
+                        case protocol::train:           return "train";
+                        case protocol::valid:           return "valid";
+                        case protocol::test:            return "test";
+                        default:                        return "train";
+                        }
+                }
+
+                template <>
+                inline protocol from_string<protocol>(const string_t& string)
+                {
+                        if (string == "train")          return protocol::train;
+                        if (string == "valid")          return protocol::valid;
+                        if (string == "test")           return protocol::test;
+                        throw std::invalid_argument("Invalid data type <" + string + ">!");
+                        return protocol::train;
+                }
+
                 // decode parameter by name: [name1=value1[,name2=value2[...]]
                 // the default value is returned if the parameter cannot be found or is invalid.
                 template

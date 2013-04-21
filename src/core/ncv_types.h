@@ -59,8 +59,8 @@ namespace ncv
         typedef std::vector<index_t>            indices_t;
         typedef std::vector<count_t>            counts_t;
 
-        typedef double                          scalar_t;
-        typedef std::vector<double>             scalars_t;
+        typedef long double                     scalar_t;
+        typedef std::vector<scalar_t>           scalars_t;
 
         typedef vector<scalar_t>::vector_t      vector_t;
         typedef vector<scalar_t>::vectors_t     vectors_t;
@@ -85,6 +85,14 @@ namespace ncv
                 left,
                 center,
                 right
+        };
+
+        // machine learning protocol
+        enum class protocol : int
+        {
+                train = 0,            // training
+                valid,                // validation
+                test                  // testing
         };
 }
 

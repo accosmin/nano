@@ -15,7 +15,10 @@ namespace ncv
         // hint: use register_object<base, derived> to register objects to the manager.
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         
-        template <typename tobject>
+        template
+        <
+                typename tobject
+        >
         class clonable
         {        
         public:
@@ -39,7 +42,10 @@ namespace ncv
                 virtual const char* name() const { return str_name; } \
                 virtual const char* desc() const { return str_desc; }
 
-        template <class tobject>
+        template
+        <
+                class tobject
+        >
         class manager : public singleton<manager<tobject> >
 	{
         public:
@@ -158,7 +164,11 @@ namespace ncv
         };
         
         // register a type tderived to the tbase manager
-        template <class tbase, class tderived>
+        template
+        <
+                class tbase,
+                class tderived
+        >
         struct register_object
         {
                 register_object(const string_t& id)

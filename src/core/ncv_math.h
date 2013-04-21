@@ -5,7 +5,6 @@
 #include <type_traits>
 #include <boost/algorithm/clamp.hpp>
 #include <boost/math/constants/constants.hpp>
-#include "ncv_types.h"
 
 namespace ncv
 {
@@ -21,42 +20,7 @@ namespace ncv
 
                 // usefull constants
                 using boost::math::constants::pi;
-
-                template
-                <
-                        typename tvalue
-                >
-                tvalue zero()
-                {
-                        return static_cast<tvalue>(0);
-                }
-
-                template
-                <
-                        typename tvalue
-                >
-                tvalue half()
-                {
-                        return static_cast<tvalue>(0.5);
-                }
-
-                template
-                <
-                        typename tvalue
-                >
-                tvalue plus_one()
-                {
-                        return static_cast<tvalue>(+1);
-                }
-
-                template
-                <
-                        typename tvalue
-                >
-                tvalue minus_one()
-                {
-                        return static_cast<tvalue>(-1);
-                }
+                using namespace boost::math::constants;
 
                 // square a value
                 template
@@ -66,29 +30,6 @@ namespace ncv
                 tvalue square(tvalue value)
                 {
                         return value * value;
-                }
-
-                // safely invert a value
-                template
-                <
-                        typename tvalue,
-                        typename tscalar = double
-                >
-                tscalar inverse(tvalue value)
-                {
-                        return  std::abs(value) > std::numeric_limits<tvalue>::epsilon() ?
-                                plus_one<tscalar>() / value : plus_one<tscalar>();
-                }
-
-                // return the sign of a value
-                template
-                <
-                        typename tscalar = double
-                >
-                inline tscalar sign(tscalar value)
-                {
-                        return  value > zero<tscalar>() ? plus_one<tscalar>() :
-                                (value < zero<tscalar>() ? minus_one<tscalar>() : zero<tscalar>());
                 }
 
                 namespace impl
@@ -117,9 +58,7 @@ namespace ncv
                         {
                                 static tround dispatch(tvalue value)
                                 {
-                                        return  static_cast<tround>(
-                                                value < zero<tvalue>() ? value - half<tvalue>() :
-                                                (value > zero<tvalue>() ? value + half<tvalue>() : value));
+                                        return static_cast<tround>(std::nearbyint(value));
                                 }
                         };
                 }
@@ -143,7 +82,7 @@ namespace ncv
                         typename tmatrix,
                         typename toperator
                 >
-                void for_each(tmatrix& in, const toperator& op)
+                void for_each(tmatrix& in, toperator op)
                 {
                         std::for_each(in.data(), in.data() + in.size(), op);
                 }
@@ -155,7 +94,7 @@ namespace ncv
                         typename tout_matrix,
                         typename toperator
                 >
-                void transform(const tin_matrix& in, tout_matrix& out, const toperator& op)
+                void transform(const tin_matrix& in, tout_matrix& out, toperator op)
                 {
                         out.resize(in.rows(), in.cols());
                         std::transform(in.data(), in.data() + in.size(), out.data(), op);
@@ -169,7 +108,7 @@ namespace ncv
                         typename tout_matrix,
                         typename toperator
                 >
-                void transform(const tin1_matrix& in1, const tin2_matrix& in2, tout_matrix& out, const toperator& op)
+                void transform(const tin1_matrix& in1, const tin2_matrix& in2, tout_matrix& out, toperator op)
                 {
                         out.resize(in1.rows(), in1.cols());
                         std::transform(in1.data(), in1.data() + in1.size(), in2.data(), out.data(), op);
@@ -185,7 +124,7 @@ namespace ncv
                         typename toperator
                 >
                 void transform(const tin1_matrix& in1, const tin2_matrix& in2, const tin3_matrix& in3,
-                               tout_matrix& out, const toperator& op)
+                               tout_matrix& out, toperator op)
                 {
                         out.resize(in1.rows(), in1.cols());
                         std::transform(in1.data(), in1.data() + in1.size(), in2.data(), in3.data(), out.data(), op);
@@ -306,9 +245,10 @@ namespace ncv
                 {
                         const tsize rows = cast<tsize>(src.rows());
                         const tsize cols = cast<tsize>(src.cols());
+                        const tsize one = static_cast<tsize>(1);
 
-                        if (    rows < plus_one<tsize>() || max_rows < plus_one<tsize>() ||
-                                cols < plus_one<tsize>() || max_cols < plus_one<tsize>())
+                        if (    rows < one || max_rows < one ||
+                                cols < one || max_cols < one)
                         {
                                 dst = src;
                         }

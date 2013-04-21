@@ -1,81 +1,166 @@
 #ifndef NANOCV_TENSOR_H
 #define NANOCV_TENSOR_H
 
+#include "ncv_math.h"
 #include "ncv_types.h"
+
+namespace Eigen
+{
+        template<>
+        struct NumTraits<ncv::vector_t> : NumTraits<ncv::scalar_t>
+                        // permits to get the epsilon, dummy_precision, lowest, highest functions
+        {
+                typedef ncv::vector_t Real;
+                typedef ncv::vector_t NonInteger;
+                typedef ncv::vector_t Nested;
+                enum
+                {
+                        IsComplex = 0,
+                        IsInteger = 0,
+                        IsSigned = 1,
+                        RequireInitialization = 1,
+                        ReadCost = 1,
+                        AddCost = 3,
+                        MulCost = 3
+                };
+        };
+
+        template<>
+        struct NumTraits<ncv::matrix_t> : NumTraits<ncv::scalar_t>
+                        // permits to get the epsilon, dummy_precision, lowest, highest functions
+        {
+                typedef ncv::matrix_t Real;
+                typedef ncv::matrix_t NonInteger;
+                typedef ncv::matrix_t Nested;
+                enum
+                {
+                        IsComplex = 0,
+                        IsInteger = 0,
+                        IsSigned = 1,
+                        RequireInitialization = 1,
+                        ReadCost = 1,
+                        AddCost = 3,
+                        MulCost = 3
+                };
+        };
+}
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-	// 
-	/////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////
+        // 3D/4D tensors are used for storing and processing 2D data (e.g. image patch).
+        // the 3D tensors map various vectorial attributes (e.g. colors channels),
+        // while the 4D tensors transform some input vectorial attributes to
+        // another set of attributes (of possible different number).
+        ////////////////////////////////////////////////////////////////////////////////
 
-	typedef matrix<vector_t>	tensor_t;
-	typedef matrix<matrix_t>	tensor_kernel_t;
+        // 3D data tensor:
+        //      (row, col) = Ix1 (e.g. I can be number of color/data channels)
+        typedef matrix<vector_t>::matrix_t      tensor_data_t;
 
-	matrices_t to_matrix(const tensor_t& tensor);
-	tensor_t to_tensor(const matrix_t& input);
-	tensor_t to_tensor(const matrices_t& inputs);
+        // 4D kernel tensor:
+        //      (row, col) = OxI (transforms I data channels to O data channels)
+        typedef matrix<matrix_t>::matrix_t	tensor_kernel_t;
 
-	bool conv(const tensor_t& input, const tensor_kernel_t& kernel, tensor_t& output);
+        namespace tensor
+        {
+                // create tensors
+                tensor_data_t make(size_t rows, size_t cols, size_t i);
+                tensor_kernel_t make(size_t rows, size_t cols, size_t o, size_t i);
 
+                // initialize tensors (using a scalar generator)
+                template
+                <
+                        typename ttensor,
+                        typename tgenerator
+                >
+                void set_generator(ttensor& tensor, tgenerator gen)
+                {
+                        math::for_each(tensor, [&] (typename ttensor::Scalar& content)
+                        {
+                                math::for_each(content, [&] (scalar_t& v)
+                                {
+                                        v = gen();
+                                });
+                        });
+                }
 
-//        class sampler_t
-//        {
-//        public:
-                
-//                // Constructor
-//                sampler_t(size_t n_labels = 0)
-//                        :       m_values(n_labels, 0.0),
-//                                m_probs(n_labels, 0.0),
-//                                m_n_samples(0),
-//                                m_scounts(n_labels, 0),
-//                                m_rgen(0.0, 1.0)
-//                {
-//                }
-                
-//                // Reset statistics
-//                void clear()
-//                {
-//                        std::fill(m_values.begin(), m_values.end(), 0.0);
-//                        std::fill(m_probs.begin(), m_probs.end(), 0.0);
-//                        m_n_samples = 0;
-//                }
-                
-//                // Add new samples
-//                void add(index_t label, scalar_t value = 1.0)
-//                {
-//                        m_values[label] += value;
-//                        m_n_samples ++;
-//                }
-//                void add(const sampler_t& other)
-//                {
-//                        std::transform(m_values.begin(), m_values.end(), other.m_values.begin(),
-//                                       m_values.begin(), std::plus<scalar_t>());
-//                        m_n_samples += other.m_n_samples;
-//                }
-                
-//                // Specify the desired number of samples to be selected
-//                void norm(size_t n_samples);
-                
-//                // Sampling: return the number of times a sample to be selected
-//                size_t select(index_t label, scalar_t value = 1.0) const;
-                
-//                // Access functions
-//                size_t n_labels() const { return m_values.size(); }
-//                size_t n_samples() const { return m_n_samples; }
-//                scalar_t value(index_t label) const { return m_values[label]; }
-//                scalar_t prob(index_t label) const { return m_probs[label]; }
-//                size_t scount(index_t label) const { return m_scounts[label]; }
-                
-//        private:
-                
-//                // Attributes
-//                scalars_t                       m_values;               // Cumulated values / label
-//                scalars_t                       m_probs;                // Base probability / label
-//                size_t                          m_n_samples;            // #samples (total)
-//                mutable counts_t                m_scounts;              // #selected samples / label
-//                mutable random_t<scalar_t>      m_rgen;                 // Random number generator (for sampling)
-//        };
+                // initialize tensors (using a scalar constant)
+                template
+                <
+                        typename ttensor
+                >
+                void set_constant(ttensor& tensor, scalar_t val)
+                {
+                        set_generator(tensor, [&] ()
+                        {
+                                return val;
+                        });
+                }
+
+                // transform tensors (for each scalar value)
+                template
+                <
+                        typename ttensor,
+                        typename toperator
+                >
+                void for_each_value(ttensor& tensor, toperator op)
+                {
+                        math::for_each(tensor, [&] (typename ttensor::Scalar& content)
+                        {
+                                math::for_each(content, [&] (scalar_t& v)
+                                {
+                                        v = op(v);
+                                });
+                        });
+                }
+
+                // transform tensors (for each 1D/2D element)
+                template
+                <
+                        typename ttensor,
+                        typename toperator
+                >
+                void for_each_element(ttensor& tensor, toperator op)
+                {
+                        math::for_each(tensor, [&] (typename ttensor::Scalar& content)
+                        {
+                                op(content);
+                        });
+                }
+
+                // convolve the input tensor (Ix1) with the kernel (OxI) to produce the output tensor (Ox1)
+                // NB: the ouput is assumed to be correctly resized!
+                template
+                <
+                        typename ttensor_data
+                >
+                void conv(const tensor_data_t& input,
+                          const tensor_kernel_t& kernel,
+                          tensor_data_t& output)
+                {
+                        tensor::set_constant(output, 0.0);
+
+                        const int rows = math::cast<int>(input.rows()), krows = math::cast<int>(kernel.rows());
+                        const int cols = math::cast<int>(input.cols()), kcols = math::cast<int>(kernel.cols());
+                        const int rmin = 0, rmax = rows - krows;
+                        const int cmin = 0, cmax = cols - kcols;
+                        const int ksize = krows * kcols;
+
+                        for (int r = rmin; r < rmax; r ++)
+                        {
+                                for (int c = cmin; c < cmax; c ++)
+                                {
+                                        const auto& iblock = input.block(r, c, krows, kcols);
+
+                                        for (int k = 0; k < ksize; k ++)
+                                        {
+                                                output(r, c).noalias() += kernel(k) * iblock(k);
+                                        }
+                                }
+                        }
+                }
+        }
 }
 
 #endif // NANOCV_TENSOR_H

@@ -1,84 +1,42 @@
-#ifndef NANOCV_DATASET_H
-#define NANOCV_DATASET_H
+#ifndef NANOCV_TASK_H
+#define NANOCV_TASK_H
 
-#include "ncv_types.h"
+#include "ncv_manager.h"
+#include "ncv_color.h"
+#include "ncv_sample.h"
 
 namespace ncv
 {
         ////////////////////////////////////////////////////////////////////////////////
-        // dataset of samples where the inputs (e.g. feature values)
-        //      and the targets (for the annotated samples) are stored in memory.
-        ////////////////////////////////////////////////////////////////////////////////
-
-        // TODO: store inputs as tensors (may define the tensor object)
-        // TODO: functions to save/load tensors to file
-
-        class dataset
-        {
+        // describes a generic computer vision task consisting
+        //      of a set of images with annotations
+        //      and a protocol (training + validation + testing).
+        //
+        // samples for training & testing models can be drawn from these image.
+	////////////////////////////////////////////////////////////////////////////////
+	
+        class task : public clonable<task>
+	{
         public:
-
-                // constructor
-                dataset();
-
-                // remove all samples
-                void clear();
-
-                // add new samples
-                bool add(const matrix_t& input, const vector_t& target, const string_t& label);
-                bool add(const matrix_t& input, const vector_t& target);
-                bool add(const matrix_t& input);
-		
-                // save/load from file
-                bool save(const string_t& path) const;
-                bool load(const string_t& path);
                 
+                // destructor
+                virtual ~task() {}
+                
+                // load data from disk
+                virtual bool load(const string_t& dir) = 0;
+
                 // access functions
-                bool empty() const { return m_samples.empty(); }
-                bool valid() const { return !empty() && irows() > 0 && icols() > 0 && tsize() > 0; }
-
-                size_t size() const { return m_samples.size(); }
-                size_t irows() const { return m_irows; }
-                size_t icols() const { return m_icols; }
-                size_t tsize() const { return m_tsize; }
+                virtual size_t n_images() const = 0;
+                virtual size_t n_images(protocol dtype) const = 0;
+                virtual const cielab_matrix_t& image(protocol dtype, index_t i) const = 0;
                 
-                const matrix_t& input(index_t s) const { return m_samples[s].m_input; }
-                const vector_t& target(index_t s) const { return m_samples[s].m_target; }
-                const string_t& label(index_t s) const { return m_samples[s].m_label; }
-
-                bool has_input(index_t s) const;
-                bool has_target(index_t s) const;
-                bool has_label(index_t s) const;
-
-        private:
-
-                // data sample
-                struct sample
-                {
-                        friend class boost::serialization::access;
-                        template
-                        <
-                                class tarchive
-                        >
-                        void serialize(tarchive& ar, unsigned int /*version*/)
-                        {
-                                ar & m_input;
-                                ar & m_target;
-                                ar & m_label;
-                        }
-
-                        matrix_t        m_input;        // input data
-                        vector_t        m_target;       // prediction target (if available)
-                        string_t        m_label;        // label (if available)
-                };
-		
-        private:
-		
-                // attributes
-                std::vector<sample>     m_samples;      // samples
-                size_t                  m_irows;        // #input rows
-                size_t                  m_icols;        // #input cols
-                size_t                  m_tsize;        // #targets
+                virtual size_t n_samples() const = 0;
+                virtual size_t n_samples(protocol dtype) const = 0;
+                virtual sample operator()(protocol dtype, index_t i) const = 0;
+                
+                virtual size_t n_labels() const = 0;
+                virtual const strings_t& labels() const = 0;
         };
 }
 
-#endif // NANOCV_DATASET_H
+#endif // NANOCV_TASK_H

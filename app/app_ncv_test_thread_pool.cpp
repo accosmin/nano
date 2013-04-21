@@ -21,13 +21,13 @@ int main(int argc, char *argv[])
                 {
                         pool.enqueue([=]()
                         {
-                                const ncv::size_t sleep1 = ncv::random<ncv::size_t>(10, 100).operator()();
+                                const ncv::size_t sleep1 = ncv::random<ncv::size_t>(10, 100)();
                                 std::this_thread::sleep_for(std::chrono::milliseconds(sleep1));
 
                                 ncv::log_info() << "#job [" << (j + 1) << "/" << n_jobs << "@"
                                                 << (t + 1) << "/" << n_tests << "] started ...";
 
-                                const ncv::size_t sleep2 = ncv::random<ncv::size_t>(10, 500).operator()();
+                                const ncv::size_t sleep2 = ncv::random<ncv::size_t>(10, 500)();
                                 std::this_thread::sleep_for(std::chrono::milliseconds(sleep2));
 
                                 ncv::log_info() << "#job [" << (j + 1) << "/" << n_jobs << "@"
