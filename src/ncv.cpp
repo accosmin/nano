@@ -1,28 +1,12 @@
 #include "ncv.h"
 
-//#include "ncv_filter_edge.h"
-//#include "ncv_filter_gauss.h"
-//#include "ncv_filter_custom.h"
-//#include "ncv_filter_sharpen.h"
-//#include "ncv_filter_emboss.h"
-//#include "ncv_filter_median.h"
-//#include "ncv_filter_scale.h"
-//#include "ncv_filter_mshift.h"
-
-//#include "ncv_dataset.h"
-//#include "ncv_math.h"
-
-//#include "ncv_registerer.h"
-
 //#include "ncv_task_cifar10.h"
 //#include "ncv_task_mnist.h"
 
-////#include "ncv_loss_classnll.h"
-////#include "ncv_loss_hinge.h"
-////#include "ncv_loss_logistic.h"
-////#include "ncv_loss_square.h"
-
-////#include "ncv_model_linear.h"
+#include "ncv_loss_classnll.h"
+#include "ncv_loss_hinge.h"
+#include "ncv_loss_logistic.h"
+#include "ncv_loss_square.h"
 
 namespace ncv
 {
@@ -30,26 +14,15 @@ namespace ncv
 
         void init()
         {
-//                // Initialize image filters
-//                filter_manager::instance().add("grad_dx", grad_dx_filter());
-//                filter_manager::instance().add("grad_dy", grad_dy_filter());
-//                filter_manager::instance().add("grad_ld", grad_ld_filter());
-//                filter_manager::instance().add("grad_rd", grad_rd_filter());
+                // register tasks
+//                task_manager::instance().add("mnist", mnist_task());
+//                task_manager::instance().add("cifar10", cifar10_task());
 
-//                filter_manager::instance().add("edgeo", edgeo_filter());
-//                filter_manager::instance().add("edgem", edgem_filter());
-//                filter_manager::instance().add("gauss", gauss_filter());
-
-//                filter_manager::instance().add("sharp_strong", sharp_strong_filter());
-//                filter_manager::instance().add("sharp_smooth", sharp_smooth_filter());
-
-//                filter_manager::instance().add("emboss", emboss_filter());
-//                filter_manager::instance().add("median", median_filter());
-
-//                filter_manager::instance().add("custom", custom_conv_filter());
-
-//                filter_manager::instance().add("scale", scale_filter());
-//                filter_manager::instance().add("mshift", mshift_filter());
+                // register losses
+                loss_manager::instance().add("classnll", classnll_loss());
+                loss_manager::instance().add("hinge", hinge_loss());
+                loss_manager::instance().add("logistic", logistic_loss());
+                loss_manager::instance().add("square", square_loss());
         }
 
 //        //-------------------------------------------------------------------------------------------------
@@ -70,21 +43,6 @@ namespace ncv
 //                lvalue *= inversedata.n_samples());
 //                lerror *= inversedata.n_samples());
 //	}
-
-//        //-------------------------------------------------------------------------------------------------
-
-//        void register_objects()
-//        {
-//                ncv::register_task("mnist", mnist_task_t());
-//                ncv::register_task("cifar10", cifar10_task_t());
-
-//                ncv::register_loss("classnll", classnll_loss_t());
-//                ncv::register_loss("hinge", hinge_loss_t());
-//                ncv::register_loss("logistic", logistic_loss_t());
-//                ncv::register_loss("square", square_loss_t());
-
-//                ncv::register_model("linear", linear_model_t());
-//        }
 
         //-------------------------------------------------------------------------------------------------
 }
