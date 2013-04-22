@@ -1,4 +1,5 @@
 #include "ncv.h"
+#include <cfenv>
 
 //#include "ncv_task_cifar10.h"
 //#include "ncv_task_mnist.h"
@@ -14,6 +15,9 @@ namespace ncv
 
         void init()
         {
+                // round to nearest integer
+                std::fesetround(FE_TONEAREST);
+
                 // register tasks
 //                task_manager::instance().add("mnist", mnist_task());
 //                task_manager::instance().add("cifar10", cifar10_task());

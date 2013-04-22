@@ -1,36 +1,60 @@
 #ifndef NANOCV_TASK_MNIST_H
 #define NANOCV_TASK_MNIST_H
 
-#include "ncv_task_class.h"
+#include "ncv_task.h"
 
 namespace ncv
 {
-//	////////////////////////////////////////////////////////////////////////////////
-//	// MNIST task:
-//        //      - digit classification
-//        //      - 28x28 inputs
-//        //      - 10 outputs (10 labels)
-//	////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////
+        // MNIST task:
+        //      - digit classification
+        //      - 28x28 grayscale images as inputs
+        //      - 10 outputs (10 labels)
+        ////////////////////////////////////////////////////////////////////////////////
 	
-//        class mnist_task_t : public class_task_t
-//	{
-//	public:
+        class mnist_task : public task
+        {
+        public:
                 
-//                // Constructor
-//                mnist_task_t();
+                // constructor
+                mnist_task();
 
-//                // Clone the object
-//                virtual rtask_t clone() const { return rtask_t(new mnist_task_t(*this)); }
-                
-//                // Load data
-//                virtual bool load(const string_t& dir);
+                // destructor
+                virtual ~mnist_task();
+
+                // load samples from disk to fit in the given memory amount
+                virtual bool load(
+                        const string_t& dir,
+                        size_t ram_gb,
+                        samples_t& train_samples,
+                        samples_t& valid_samples,
+                        samples_t& test_samples);
+
+                // create an object clone
+                virtual rtask clone(const string_t& /*params*/) const
+                {
+                        return rtask(new mnist_task(*this));
+                }
+
+                // describe the object
+                virtual const char* name() const { return "mnist"; }
+                virtual const char* desc() const { return "mnist (digit classification)"; }
+
+                // access functions
+                virtual size_t n_labels() const { return m_labels.size(); }
+                virtual const strings_t& labels() const { return m_labels; }
                                                    
-//	private:
+        private:
                                                    
-//                // Read binary file into either <dtype1> or <dtype2> datasets with the given probability
-//                bool load(const string_t& basename, const string_t& ifile, const string_t& gfile,
-//                        data_enum dtype1, data_enum dtype2, scalar_t prob);
-//	};
+                // read binary file into either <dtype1> or <dtype2> datasets with the given probability
+                bool load(const string_t& basename, const string_t& ifile, const string_t& gfile,
+                        samples_t& samples1, samples_t& samples2, scalar_t prob);
+
+        private:
+
+                // attributes
+                strings_t       m_labels;
+        };
 }
 
 #endif // NANOCV_TASK_MNIST_H

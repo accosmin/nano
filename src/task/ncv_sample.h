@@ -5,6 +5,9 @@
 
 namespace ncv
 {
+        struct sample;
+        typedef std::vector<sample>     samples_t;
+
         ////////////////////////////////////////////////////////////////////////////////
         // data sample consisting of:
         //      - input 3D tensor (row, cols, feature vector/scalar - e.g. color channels)
