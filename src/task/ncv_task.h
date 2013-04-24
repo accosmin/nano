@@ -34,6 +34,10 @@ namespace ncv
                         samples_t& test_samples) = 0;
 
                 // access functions
+                virtual size_t n_rows() const = 0;
+                virtual size_t n_cols() const = 0;
+                virtual size_t n_inputs() const { return n_rows() * n_cols(); }
+                virtual size_t n_outputs() const = 0;
                 virtual size_t n_labels() const = 0;
                 virtual const strings_t& labels() const = 0;
         };

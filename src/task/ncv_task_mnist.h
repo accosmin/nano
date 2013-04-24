@@ -41,13 +41,16 @@ namespace ncv
                 virtual const char* desc() const { return "mnist (digit classification)"; }
 
                 // access functions
+                virtual size_t n_rows() const { return 28; }
+                virtual size_t n_cols() const { return 28; }
+                virtual size_t n_outputs() const { return 10; }
                 virtual size_t n_labels() const { return m_labels.size(); }
                 virtual const strings_t& labels() const { return m_labels; }
                                                    
         private:
                                                    
                 // read binary file into either <dtype1> or <dtype2> datasets with the given probability
-                bool load(const string_t& basename, const string_t& ifile, const string_t& gfile,
+                bool load(const string_t& ifile, const string_t& gfile,
                         samples_t& samples1, samples_t& samples2, scalar_t prob);
 
         private:

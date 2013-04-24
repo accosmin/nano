@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 
         // transform RGBA to CIELab
         timer.start();
-        ncv::math::transform(rgba_image, cielab_image, ncv::color::decode_cielab);
+        ncv::math::transform(rgba_image, cielab_image, ncv::color::make_cielab);
         ncv::log_info() << "transformed RGBA to CIELab in " << timer.elapsed_string() << ".";
 
         // resize image
@@ -84,7 +84,8 @@ int main(int argc, char *argv[])
 
         // transform CIELab to RGBA
         timer.start();
-        ncv::math::transform(cielab_image_scaled, rgba_image, ncv::color::encode_cielab);
+        ncv::math::transform(cielab_image_scaled, rgba_image,
+                             [](const ncv::cielab_t& cielab) { return ncv::color::make_rgba(cielab); });
         ncv::log_info() << "transformed CIELab to RGBA in " << timer.elapsed_string() << ".";
 
         // save output image

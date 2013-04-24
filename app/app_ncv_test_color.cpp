@@ -12,10 +12,10 @@ int main(int argc, char *argv[])
                         {
                                 for (ncv::rgba_t b = 0; b < 256; b ++)
                                 {
-                                        const ncv::rgba_t rgba = ncv::color::encode_rgba(r, g, b);
-                                        if (    ncv::color::decode_red(rgba) != r ||
-                                                ncv::color::decode_green(rgba) != g ||
-                                                ncv::color::decode_blue(rgba) != b)
+                                        const ncv::rgba_t rgba = ncv::color::make_rgba(r, g, b);
+                                        if (    ncv::color::make_red(rgba) != r ||
+                                                ncv::color::make_green(rgba) != g ||
+                                                ncv::color::make_blue(rgba) != b)
                                         {
                                                 ncv::log_error() << "failed!";
                                                 return EXIT_FAILURE;
@@ -40,10 +40,10 @@ int main(int argc, char *argv[])
                         {
                                 for (ncv::rgba_t b = 0; b < 256; b ++)
                                 {
-                                        const ncv::rgba_t rgba = ncv::color::encode_rgba(r, g, b);
-                                        const ncv::cielab_t cielab = ncv::color::decode_cielab(rgba);
+                                        const ncv::rgba_t rgba = ncv::color::make_rgba(r, g, b);
+                                        const ncv::cielab_t cielab = ncv::color::make_cielab(rgba);
 
-                                        if (ncv::color::encode_cielab(cielab) != rgba)
+                                        if (ncv::color::make_rgba(cielab) != rgba)
                                         {
                                                 ncv::log_error() << "failed!";
                                                 return EXIT_FAILURE;

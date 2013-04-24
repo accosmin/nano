@@ -69,31 +69,29 @@ namespace ncv
         namespace color
         {
                 // RGBA decoding (R, G, B, A, L(uma), CIELab)
-                inline rgba_t decode_red(rgba_t rgba)     { return (rgba >> 24) & 0xFF; }
-                inline rgba_t decode_green(rgba_t rgba)   { return (rgba >> 16) & 0xFF; }
-                inline rgba_t decode_blue(rgba_t rgba)    { return (rgba >>  8) & 0xFF; }
-                inline rgba_t decode_alpha(rgba_t rgba)   { return (rgba >>  0) & 0xFF; }
+                inline rgba_t make_red(rgba_t rgba)     { return (rgba >> 24) & 0xFF; }
+                inline rgba_t make_green(rgba_t rgba)   { return (rgba >> 16) & 0xFF; }
+                inline rgba_t make_blue(rgba_t rgba)    { return (rgba >>  8) & 0xFF; }
+                inline rgba_t make_alpha(rgba_t rgba)   { return (rgba >>  0) & 0xFF; }
 
-                inline rgba_t decode_luma(rgba_t r, rgba_t g, rgba_t b)
+                inline rgba_t make_luma(rgba_t r, rgba_t g, rgba_t b)
                 {
                         return (r * 11 + g * 16 + b * 5) / 32;
                 }
-                inline rgba_t decode_luma(rgba_t rgba)
+                inline rgba_t make_luma(rgba_t rgba)
                 {
-                        return decode_luma(decode_red(rgba),
-                                           decode_green(rgba),
-                                           decode_blue(rgba));
+                        return make_luma(make_red(rgba), make_green(rgba), make_blue(rgba));
                 }
 
-                cielab_t decode_cielab(rgba_t rgba);
+                cielab_t make_cielab(rgba_t rgba);
 
                 // RGBA encoding (R, G, B, A, CIELab)
-                inline rgba_t encode_rgba(rgba_t r, rgba_t g, rgba_t b, rgba_t a = 255)
+                inline rgba_t make_rgba(rgba_t r, rgba_t g, rgba_t b, rgba_t a = 255)
                 {
                         return ((r & 0xFF) << 24) | ((g & 0xFF) << 16) | ((b & 0xFF) << 8) | (a & 0xFF);
                 }
 
-                rgba_t encode_cielab(const cielab_t& cielab);
+                rgba_t make_rgba(const cielab_t& cielab);
 
                 // color channel range
                 inline scalar_t min(channel ch)

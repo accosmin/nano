@@ -200,12 +200,12 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        cielab_t color::decode_cielab(rgba_t rgba)
+        cielab_t color::make_cielab(rgba_t rgba)
         {
                 cielab_t cielab;
                 scalar_t x, y, z;
 
-                impl::rgb2xyz(decode_red(rgba), decode_green(rgba), decode_blue(rgba), x, y, z);
+                impl::rgb2xyz(make_red(rgba), make_green(rgba), make_blue(rgba), x, y, z);
                 impl::xyz2lab(x, y, z, cielab(0), cielab(1), cielab(2));
 
                 return cielab;
@@ -213,7 +213,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        rgba_t color::encode_cielab(const cielab_t& cielab)
+        rgba_t color::make_rgba(const cielab_t& cielab)
         {
                 rgba_t r, g, b;
                 scalar_t x, y, z;
@@ -221,7 +221,7 @@ namespace ncv
                 impl::lab2xyz(cielab(0), cielab(1), cielab(2), x, y, z);
                 impl::xyz2rgb(x, y, z, r, g, b);
 
-                return encode_rgba(r, g, b);
+                return make_rgba(r, g, b);
         }
 
         //-------------------------------------------------------------------------------------------------

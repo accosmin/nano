@@ -22,7 +22,7 @@ namespace ncv
                         for (int c = 0; c < cols; c ++)
                         {
                                 const QRgb color = image.pixel(c, r);
-                                rgba(r, c) = color::encode_rgba(qRed(color), qGreen(color), qBlue(color), qAlpha(color));
+                                rgba(r, c) = color::make_rgba(qRed(color), qGreen(color), qBlue(color), qAlpha(color));
                         }
                 }
                 
@@ -44,10 +44,10 @@ namespace ncv
                         {
                                 const rgba_t color = rgba(r, c);
                                 image.setPixel(c, r, qRgba(
-                                        color::decode_red(color),
-                                        color::decode_green(color),
-                                        color::decode_blue(color),
-                                        color::decode_alpha(color)));
+                                        color::make_red(color),
+                                        color::make_green(color),
+                                        color::make_blue(color),
+                                        color::make_alpha(color)));
                         }
                 }
                 

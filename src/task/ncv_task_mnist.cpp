@@ -1,5 +1,7 @@
 #include "ncv_task_mnist.h"
 #include "ncv_random.h"
+#include "ncv_loss.h"
+#include "ncv_color.h"
 #include <fstream>
 
 namespace ncv
@@ -52,71 +54,69 @@ namespace ncv
                 //            10 * sizeof(scalar_t) +
                 //             1 * sizeof(scalar_t)) < 1GB
 
-                return  load("train", train_ifile, train_lfile, train_samples, valid_samples, 0.84) &&
-                        load("test", test_ifile, test_lfile, test_samples, test_samples, 2.0) &&
+                // TODO: set costs!
+                return  load(train_ifile, train_lfile, train_samples, valid_samples, 0.84) &&
+                        load(test_ifile, test_lfile, test_samples, test_samples, 2.0) &&
 
                         train_samples.size() + valid_samples.size() == train_n_samples &&
                         test_samples.size() == test_n_samples;
-
-                // TODO: set costs!
-
-                return true;
         }
 
         //-------------------------------------------------------------------------------------------------
         
-        bool mnist_task::load(const string_t& basename, const string_t& ifile, const string_t& gfile,
+        bool mnist_task::load(const string_t& ifile, const string_t& gfile,
                 samples_t& samples1, samples_t& samples2, scalar_t prob)
         {
+                static const index_t n_inputs = n_rows() * n_cols();
+
+                char buffer[2048];
+                char label[2];
+
                 random<scalar_t> rgen(0.0, 1.0);
                 
-                // Image and label data streams
+                // image and label data streams
                 std::ifstream fimage(ifile.c_str(), std::ios::in | std::ios::binary);
                 std::ifstream flabel(gfile.c_str(), std::ios::in | std::ios::binary);
                 
                 if (!fimage.is_open() || !flabel.is_open())
                 {
                         return false;
-                }
-                
-                // Create buffers
-                static const int BUF_SIZE = 2048;
-                char buffer[BUF_SIZE];
-                char label[2];
+                }                
 
-                image_t image(0, 255);
-                channel_t grays(n_cols(), n_rows());
-        
-                // Read headers
+                // read headers
                 fimage.read(buffer, 16);
                 flabel.read(buffer, 8);
                 
-                // Load the images in the dataset
-                int cnt = 0;
-                while (flabel.read(label, 1) && fimage.read(buffer, n_inputs()))
+                // load images
+                while ( flabel.read(label, 1) &&
+                        fimage.read(buffer, n_inputs))
                 {
-                        ++ cnt;
-
-                        // Setup label
-                        const index_t ilabel = cast<index_t>(label[0]);
+                        // setup label
+                        const index_t ilabel = static_cast<index_t>(label[0]);
                         if (ilabel >= n_labels())
                         {
                                 continue;
                         }
 
-                        // Setup image
+                        // setup sample
+                        sample s;
+                        s.m_label = m_labels[ilabel];
+                        s.m_weight = 1.0;
+                        s.m_input.resize(n_rows(), n_cols());
+                        s.m_target = ncv::class_target(ilabel, n_labels());
+
                         for (index_t y = 0, i = 0; y < n_rows(); y ++)
                         {
                                 for (index_t x = 0; x < n_cols(); x ++, i ++)
                                 {
-                                        grays(y, x) = cast<pixel_t>(buffer[i]);
+                                        const rgba_t rgba = color::make_rgba(buffer[i], buffer[i], buffer[i]);
+                                        const cielab_t cielab = color::make_cielab(rgba);
+                                        s.m_input(y, x) = cielab(0);
                                 }
                         }
-                        image.load(grays, to_string(channel_enum::luma));
-                        image.rename(basename + "_" + to_string(cnt) + "_" + labels()[ilabel]);
 
-                        // OK, add image
-                        add_image(rgen() < prob ? dtype1 : dtype2, image, ilabel);
+                        // OK, add sample
+                        (rgen() < prob ? samples1 : samples2).push_back(s);
                 }
                 
                 // OK

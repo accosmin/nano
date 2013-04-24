@@ -1,7 +1,7 @@
 #ifndef NANOCV_DATASET_H
 #define NANOCV_DATASET_H
 
-#include "ncv_tensor.h"
+#include "ncv_types.h"
 
 namespace ncv
 {
@@ -10,7 +10,7 @@ namespace ncv
 
         ////////////////////////////////////////////////////////////////////////////////
         // data sample consisting of:
-        //      - input 3D tensor (row, cols, feature vector/scalar - e.g. color channels)
+        //      - input (row, cols, feature - e.g. color channel)
         //      - target vector (if annotated)
         //      - label (if annotated)
         //      - scalar weight
@@ -50,7 +50,7 @@ namespace ncv
                 }
 
                 // attributes
-                tensor_data_t   m_input;        // input tensor data
+                matrix_t        m_input;        // input tensor data
                 vector_t        m_target;       // prediction target (if available)
                 string_t        m_label;        // label (if available)
                 scalar_t        m_weight;
