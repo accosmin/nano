@@ -3,6 +3,7 @@
 
 #include "ncv_manager.h"
 #include "ncv_sample.h"
+#include "ncv_annotation.h"
 
 namespace ncv
 {

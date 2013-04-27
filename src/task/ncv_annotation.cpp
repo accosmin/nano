@@ -1,4 +1,4 @@
-#include "ncv_sample.h"
+#include "ncv_annotation.h"
 
 namespace ncv
 {
