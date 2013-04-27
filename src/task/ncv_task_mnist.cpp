@@ -1,5 +1,4 @@
 #include "ncv_task_mnist.h"
-#include "ncv_random.h"
 #include "ncv_loss.h"
 #include "ncv_color.h"
 #include <fstream>
@@ -8,119 +7,89 @@ namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
-        mnist_task::mnist_task()
+        bool mnist_task::load(const string_t& dir)
         {
-                for (size_t i = 0; i < 10; i ++)
-                {
-                        m_labels.push_back("digit-" + text::to_string(i));
-                }
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        mnist_task::~mnist_task()
-        {
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        bool mnist_task::load(
-                const string_t& dir,
-                size_t ram_gb,
-                samples_t& train_samples,
-                samples_t& valid_samples,
-                samples_t& test_samples)
-        {
-                if (ram_gb < 1)
-                {
-                        return false;
-                }
-
                 const string_t test_ifile = dir + "/t10k-images-idx3-ubyte";
-                const string_t test_lfile = dir + "/t10k-labels-idx1-ubyte";
+                const string_t test_gfile = dir + "/t10k-labels-idx1-ubyte";
                 const size_t test_n_samples = 10000;
 
                 const string_t train_ifile = dir + "/train-images-idx3-ubyte";
-                const string_t train_lfile = dir + "/train-labels-idx1-ubyte";
+                const string_t train_gfile = dir + "/train-labels-idx1-ubyte";
                 const size_t train_n_samples = 60000;
 
-                // clear
-                train_samples.clear();
-                valid_samples.clear();
-                test_samples.clear();
+                m_images.clear();
 
-                // (60000 + 10000) *
-                //      (28 * 28 * sizeof(scalar_t) +
-                //            10 * sizeof(scalar_t) +
-                //             1 * sizeof(scalar_t)) < 1GB
+                return  load(train_ifile, train_gfile, protocol::train) == train_n_samples &&
 
-                // TODO: set costs!
-                return  load(train_ifile, train_lfile, train_samples, valid_samples, 0.84) &&
-                        load(test_ifile, test_lfile, test_samples, test_samples, 2.0) &&
-
-                        train_samples.size() + valid_samples.size() == train_n_samples &&
-                        test_samples.size() == test_n_samples;
+                        load(test_ifile, test_gfile, protocol::test) == test_n_samples;
         }
 
         //-------------------------------------------------------------------------------------------------
-        
-        bool mnist_task::load(const string_t& ifile, const string_t& gfile,
-                samples_t& samples1, samples_t& samples2, scalar_t prob)
-        {
-                static const index_t n_inputs = n_rows() * n_cols();
 
-                char buffer[2048];
+        size_t mnist_task::fold_size(index_t /*f*/, protocol p) const
+        {
+                switch (p)
+                {
+                case protocol::train:
+                        return 0;
+                }
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        bool mnist_task::fold_sample(index_t /*f*/, protocol p, index_t s, sample& ss) const
+        {
+
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        size_t mnist_task::load(const string_t& ifile, const string_t& gfile, protocol p)
+        {
+                char buffer[n_inputs()];
                 char label[2];
 
-                random<scalar_t> rgen(0.0, 1.0);
-                
                 // image and label data streams
                 std::ifstream fimage(ifile.c_str(), std::ios::in | std::ios::binary);
                 std::ifstream flabel(gfile.c_str(), std::ios::in | std::ios::binary);
-                
+
                 if (!fimage.is_open() || !flabel.is_open())
                 {
-                        return false;
-                }                
+                        return 0;
+                }
 
                 // read headers
                 fimage.read(buffer, 16);
                 flabel.read(buffer, 8);
-                
-                // load images
+
+                // load annotations and images
+                size_t cnt = 0;
                 while ( flabel.read(label, 1) &&
-                        fimage.read(buffer, n_inputs))
+                        fimage.read(buffer, n_inputs()))
                 {
-                        // setup label
                         const index_t ilabel = static_cast<index_t>(label[0]);
-                        if (ilabel >= n_labels())
+                        if (ilabel >= n_outputs())
                         {
                                 continue;
                         }
 
-                        // setup sample
-                        sample s;
-                        s.m_label = m_labels[ilabel];
-                        s.m_weight = 1.0;
-                        s.m_input.resize(n_rows(), n_cols());
-                        s.m_target = ncv::class_target(ilabel, n_labels());
+                        annotation anno(static_cast<coord_t>(0),
+                                        static_cast<coord_t>(0),
+                                        static_cast<coord_t>(n_cols()),
+                                        static_cast<coord_t>(n_rows()),
+                                        "digit" + text::to_string(ilabel),
+                                        ncv::class_target(ilabel, n_outputs()));
 
-                        for (index_t y = 0, i = 0; y < n_rows(); y ++)
-                        {
-                                for (index_t x = 0; x < n_cols(); x ++, i ++)
-                                {
-                                        const rgba_t rgba = color::make_rgba(buffer[i], buffer[i], buffer[i]);
-                                        const cielab_t cielab = color::make_cielab(rgba);
-                                        s.m_input(y, x) = cielab(0);
-                                }
-                        }
+                        annotated_image aimage;
+                        aimage.m_protocol = p;
+                        aimage.m_annotations.push_back(anno);
+                        aimage.load_gray(buffer, n_rows(), n_cols());
 
-                        // OK, add sample
-                        (rgen() < prob ? samples1 : samples2).push_back(s);
+                        m_images.push_back(aimage);
+                        ++ cnt;
                 }
-                
-                // OK
-                return true;
+
+                return cnt;
         }
 
         //-------------------------------------------------------------------------------------------------

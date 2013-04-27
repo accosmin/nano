@@ -91,7 +91,6 @@ namespace ncv
         enum class protocol : int
         {
                 train = 0,            // training
-                valid,                // validation
                 test                  // testing
         };
 }

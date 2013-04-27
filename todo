@@ -1,12 +1,19 @@
 - redo tasks (iterate, sample):
-	- specify how much memory to use (e.g. 4GB - store/cache as many tensors as fits)
-
-        - modify dataset to store the inputs as image patches + vector of scalars
-        - modify dataset to also use unknown samples
-        - update the sampling and the description test programs
         + load STL-10 dataset: http://www.stanford.edu/~acoates//stl10/
-        - other datasets: http://deeplearning.net/datasets/
-	- ncv_describe: save random images
+	- load cmu-faces
+
+- finish tasks:
+	- ::fold* functions -> think of a general method to store the samples / fold
+	- statistics: #train/#test per fold
+
+test program:
+- measure the loading time
+- measure the sampling time (rgba to cielab)
+- display #rows, cols, inputs, outputs, images, fold statistics
+
+- use openscenegraph:
+	- load/save images (replace Qt)
+	- display the images from a task
 
 - functions to draw into a RGBA matrix:
 	- line, circles, 2D plots
@@ -14,10 +21,10 @@
 
 - faster RGB to CIELab transform (goal: 1s single thread version of the color testing program)
 
-- redo the dependencies between files, re-design msize
 - replace Qt with imagemagick or libpng/libtiff
 
 - train/test modes:
+	- a model should be a set of linear layers with various activation functions: tanh, 2x/(1+x^2), identity
         - redesign losses and the optimization part
         - multiple runs -> avg + stdev error rate
 

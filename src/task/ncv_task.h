@@ -6,15 +6,14 @@
 
 namespace ncv
 {
-        // manage the losses (register new ones, query and clone them)
+        // manage tasks (register new ones, query and clone them)
         class task;
         typedef manager<task>                   task_manager;
         typedef task_manager::robject_t         rtask;
 
         ////////////////////////////////////////////////////////////////////////////////
-        // describes a generic computer vision task consisting
-        //      of a set of images with annotations
-        //      and a protocol (training + validation + testing).
+        // generic computer vision task consisting of a set of (annotated) images
+        //      and a protocol (training + testing).
         // samples for training & testing models can be drawn from these image.
 	////////////////////////////////////////////////////////////////////////////////
 	
@@ -24,22 +23,23 @@ namespace ncv
                 
                 // destructor
                 virtual ~task() {}
-                
-                // load samples from disk to fit in the given memory amount
-                virtual bool load(
-                        const string_t& dir,
-                        size_t ram_gb,
-                        samples_t& train_samples,
-                        samples_t& valid_samples,
-                        samples_t& test_samples) = 0;
+
+                // load images from the given directory
+                virtual bool load(const string_t& dir) = 0;
+
+                // sample training & testing samples
+                virtual size_t n_folds() const = 0;
+                virtual size_t fold_size(index_t f, protocol p) const = 0;
+                virtual bool fold_sample(index_t f, protocol p, index_t s, sample& ss) const = 0;
 
                 // access functions
                 virtual size_t n_rows() const = 0;
                 virtual size_t n_cols() const = 0;
-                virtual size_t n_inputs() const { return n_rows() * n_cols(); }
+                virtual size_t n_inputs() const = 0;
                 virtual size_t n_outputs() const = 0;
-                virtual size_t n_labels() const = 0;
-                virtual const strings_t& labels() const = 0;
+
+                virtual size_t n_images() const = 0;
+                virtual const annotated_image& image(index_t i) const = 0;
         };
 }
 

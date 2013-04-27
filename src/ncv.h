@@ -9,6 +9,7 @@
 #include "ncv_image.h"
 #include "ncv_stats.h"
 #include "ncv_loss.h"
+#include "ncv_task.h"
 
 namespace ncv
 {

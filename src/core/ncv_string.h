@@ -11,34 +11,8 @@ namespace ncv
         {
                 using namespace boost::algorithm;
 
-                // trim a string
-                string_t trim(const string_t& str, const char* trim_chars = " \n\t\r");
-
-                // split a string given some separator characters
-                strings_t tokenize(const string_t& str, const char* delim_chars = " \n\t\r");
-
                 // align a string to fill the given size
                 string_t resize(const string_t& str, size_t size, align alignment = align::left);
-
-                // compact a list of values into a string using the given glue string
-                template
-                <
-                        typename tvalue
-                >
-                string_t concatenate(const std::vector<tvalue>& values, const string_t& glue = ",")
-                {
-                        string_t ret;
-                        std::for_each(std::begin(values), std::end(values), [&] (const tvalue& val)
-                        {
-                                ret += to_string(val) + glue;
-                        });
-
-                        return ret.empty() ? ret : ret.substr(0, ret.size() - glue.size());
-                }
-
-                // to lower & upper string
-                string_t to_lower(const string_t& str);
-                string_t to_upper(const string_t& str);
 
                 // string cast for built-in types
                 template
@@ -48,6 +22,11 @@ namespace ncv
                 string_t to_string(tvalue value)
                 {
                         return std::to_string(value);
+                }
+                template <>
+                inline string_t to_string(string_t value)
+                {
+                        return value;
                 }
 
                 template
@@ -65,7 +44,6 @@ namespace ncv
                         switch (type)
                         {
                         case protocol::train:           return "train";
-                        case protocol::valid:           return "valid";
                         case protocol::test:            return "test";
                         default:                        return "train";
                         }
@@ -75,10 +53,25 @@ namespace ncv
                 inline protocol from_string<protocol>(const string_t& string)
                 {
                         if (string == "train")          return protocol::train;
-                        if (string == "valid")          return protocol::valid;
                         if (string == "test")           return protocol::test;
-                        throw std::invalid_argument("Invalid data type <" + string + ">!");
+                        throw std::invalid_argument("invalid data type <" + string + ">!");
                         return protocol::train;
+                }
+
+                // compact a list of values into a string using the given glue string
+                template
+                <
+                        typename tvalue
+                >
+                string_t concatenate(const std::vector<tvalue>& values, const string_t& glue = ",")
+                {
+                        string_t ret;
+                        std::for_each(std::begin(values), std::end(values), [&] (const tvalue& val)
+                        {
+                                ret += to_string(val) + glue;
+                        });
+
+                        return ret.empty() ? ret : ret.substr(0, ret.size() - glue.size());
                 }
 
                 // decode parameter by name: [name1=value1[,name2=value2[...]]
@@ -89,17 +82,17 @@ namespace ncv
                 >
                 tvalue from_params(const string_t& params, const string_t& param_name, tvalue default_value)
                 {
-                        const strings_t tokens = tokenize(params, ",");
-                        const size_t tsize = tokens.size();
+                        strings_t tokens, dual;
 
-                        for (size_t i = 0; i < tsize; i ++)
+                        boost::algorithm::split(tokens, params, ",");
+                        for (size_t i = 0; i < tokens.size(); i ++)
                         {
-                                const strings_t dual = tokenize(tokens[i], "=");
+                                boost::algorithm::split(dual, tokens[i], "=");
                                 if (dual.size() == 2 && dual[0] == param_name)
                                 {
                                         string_t value = dual[1];
                                         for (   size_t j = i + 1;
-                                                j < tsize && tokens[j].find("=") == string_t::npos;
+                                                j < tokens.size() && tokens[j].find("=") == string_t::npos;
                                                 j ++)
                                         {
                                                 value += "," + tokens[j];

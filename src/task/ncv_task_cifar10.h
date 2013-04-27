@@ -1,7 +1,7 @@
 #ifndef NANOCV_TASK_CIFAR10_H
 #define NANOCV_TASK_CIFAR10_H
 
-#include "ncv_task_class.h"
+#include "ncv_task.h"
 
 namespace ncv
 {
@@ -15,20 +15,6 @@ namespace ncv
         class cifar10_task : public task
         {
         public:
-                
-                // constructor
-                cifar10_task();
-
-                // destructor
-                virtual ~cifar10_task();
-
-                // load samples from disk to fit in the given memory amount
-                virtual bool load(
-                        const string_t& dir,
-                        size_t ram_gb,
-                        samples_t& train_samples,
-                        samples_t& valid_samples,
-                        samples_t& test_samples);
 
                 // create an object clone
                 virtual rtask clone(const string_t& /*params*/) const
@@ -40,23 +26,32 @@ namespace ncv
                 virtual const char* name() const { return "cifar10"; }
                 virtual const char* desc() const { return "cifar 10 (object classification)"; }
 
+                // load images from the given directory
+                virtual bool load(const string_t& dir);
+
+                // sample training & testing samples
+                virtual size_t n_folds() const { return 1; }
+                virtual size_t fold_size(index_t f, protocol p) const;
+                virtual bool fold_sample(index_t f, protocol p, index_t s, sample& ss) const;
+
                 // access functions
                 virtual size_t n_rows() const { return 32; }
                 virtual size_t n_cols() const { return 32; }
+                virtual size_t n_inputs() const { return n_rows() * n_cols() * 3; }
                 virtual size_t n_outputs() const { return 10; }
-                virtual size_t n_labels() const { return m_labels.size(); }
-                virtual const strings_t& labels() const { return m_labels; }
+
+                virtual size_t n_images() const { return m_images.size(); }
+                virtual const annotated_image& image(index_t i) const { return m_images[i]; }
 
         private:
 
-                // read binary file into either <dtype1> or <dtype2> datasets with the given probability
-                bool load(const string_t& bfile,
-                        samples_t& samples1, samples_t& samples2, scalar_t prob);
+                // load binary file
+                size_t load(const string_t& bfile, protocol p);
 
         private:
 
                 // attributes
-                strings_t       m_labels;
+                annotated_images_t      m_images;
         };
 }
 

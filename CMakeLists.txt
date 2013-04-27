@@ -73,41 +73,27 @@ set(libs "${libs};${Boost_SYSTEM_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_FILESYSTEM_LIBRARY_RELEASE}")
 set(libs "${libs};${QT_LIBRARIES}")
 
-# Build test programs
-add_executable          (ncv_max_threads        app/app_ncv_max_threads.cpp)
-target_link_libraries   (ncv_max_threads        ${libs})
-
-add_executable          (ncv_test_thread_loop   app/app_ncv_test_thread_loop.cpp)
-target_link_libraries   (ncv_test_thread_loop   ${libs})
-
-add_executable          (ncv_test_thread_pool   app/app_ncv_test_thread_pool.cpp)
-target_link_libraries   (ncv_test_thread_pool   ${libs})
-
-add_executable          (ncv_test_optimize      app/app_ncv_test_optimize.cpp)
-target_link_libraries   (ncv_test_optimize      ${libs})
-
-add_executable          (ncv_test_image         app/app_ncv_test_image.cpp)
-target_link_libraries   (ncv_test_image         ${libs})
-
-add_executable          (ncv_test_color         app/app_ncv_test_color.cpp)
-target_link_libraries   (ncv_test_color         ${libs})
-
-# Build utility programs
-#TODO: sample, train and test models
-
-######################################################################
-# Installing
-######################################################################
-
-# executables
+# Set the executables
 set(nanocv_programs
         ncv_max_threads
         ncv_test_thread_loop
         ncv_test_thread_pool
         ncv_test_optimize
         ncv_test_image
-        ncv_test_color)
+        ncv_test_color
+        ncv_test_task)
 
+# Build executables
+foreach(proj ${nanocv_programs})
+        add_executable(${proj} app/app_${proj}.cpp)
+        target_link_libraries(${proj} ${libs})
+endforeach()
+
+######################################################################
+# Installing
+######################################################################
+
+# executables
 install(TARGETS
         ${nanocv_programs}
         DESTINATION bin)

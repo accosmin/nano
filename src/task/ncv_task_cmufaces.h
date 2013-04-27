@@ -1,30 +1,30 @@
-#ifndef NANOCV_TASK_MNIST_H
-#define NANOCV_TASK_MNIST_H
+#ifndef NANOCV_TASK_CMUFACES_H
+#define NANOCV_TASK_CMUFACES_H
 
 #include "ncv_task.h"
 
 namespace ncv
 {
         ////////////////////////////////////////////////////////////////////////////////
-        // MNIST task:
-        //      - digit classification
-        //      - 28x28 grayscale images as inputs
-        //      - 10 outputs (10 labels)
+        // CMU-faces task:
+        //      - face/non-face classification
+        //      - 19x19 grayscale images as inputs
+        //      - 2 outputs (binary classification)
         ////////////////////////////////////////////////////////////////////////////////
 	
-        class mnist_task : public task
+        class cmufaces_task : public task
         {
         public:
 
                 // create an object clone
                 virtual rtask clone(const string_t& /*params*/) const
                 {
-                        return rtask(new mnist_task(*this));
+                        return rtask(new cmufaces_task(*this));
                 }
 
                 // describe the object
-                virtual const char* name() const { return "mnist"; }
-                virtual const char* desc() const { return "mnist (digit classification)"; }
+                virtual const char* name() const { return "cmu-faces"; }
+                virtual const char* desc() const { return "cmu faces (face/non-face classification)"; }
 
                 // load images from the given directory
                 virtual bool load(const string_t& dir);
@@ -35,18 +35,18 @@ namespace ncv
                 virtual bool fold_sample(index_t f, protocol p, index_t s, sample& ss) const;
 
                 // access functions
-                virtual size_t n_rows() const { return 28; }
-                virtual size_t n_cols() const { return 28; }
+                virtual size_t n_rows() const { return 19; }
+                virtual size_t n_cols() const { return 19; }
                 virtual size_t n_inputs() const { return n_rows() * n_cols() * 1; }
-                virtual size_t n_outputs() const { return 10; }
+                virtual size_t n_outputs() const { return 2; }
 
                 virtual size_t n_images() const { return m_images.size(); }
                 virtual const annotated_image& image(index_t i) const { return m_images[i]; }
 
         private:
 
-                // load binary file
-                size_t load(const string_t& ifile, const string_t& gfile, protocol p);
+                // load files from the given directory
+                size_t load(const string_t& dir, bool is_face, protocol p);
 
         private:
 
@@ -55,4 +55,4 @@ namespace ncv
         };
 }
 
-#endif // NANOCV_TASK_MNIST_H
+#endif // NANOCV_TASK_CMUFACES_H

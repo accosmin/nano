@@ -5,7 +5,7 @@
 
 namespace ncv
 {
-        // manage the losses (register new ones, query and clone them)
+        // manage losses (register new ones, query and clone them)
         class loss;
         typedef manager<loss>                   loss_manager;
         typedef loss_manager::robject_t         rloss;
