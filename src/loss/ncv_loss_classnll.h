@@ -9,14 +9,14 @@ namespace ncv
         // multi-class negative log-likelihood loss.
         ////////////////////////////////////////////////////////////////////////////////
         
-        class classnll_loss : public loss
+        class classnll_loss_t : public loss_t
         {
         public:
 
                 // create an object clone
-                virtual rloss clone(const string_t& /*params*/) const
+                virtual rloss_t clone(const string_t& /*params*/) const
                 {
-                        return rloss(new classnll_loss(*this));
+                        return rloss_t(new classnll_loss_t(*this));
                 }
 
                 // describe the object

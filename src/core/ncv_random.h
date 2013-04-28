@@ -15,7 +15,7 @@ namespace ncv
         <
                 typename T
         >
-        struct uniform_distribution
+        struct uniform_distribution_t
         {
                 // only integral types are allowed!
                 typedef typename std::is_integral<T>::type
@@ -25,19 +25,19 @@ namespace ncv
         };
 
         template <>
-        struct uniform_distribution<float>
+        struct uniform_distribution_t<float>
         {
                 typedef std::uniform_real_distribution<float>   type_t;
         };
 
         template <>
-        struct uniform_distribution<double>
+        struct uniform_distribution_t<double>
         {
                 typedef std::uniform_real_distribution<double>  type_t;
         };
 
         template <>
-        struct uniform_distribution<long double>
+        struct uniform_distribution_t<long double>
         {
                 typedef std::uniform_real_distribution<long double>  type_t;
         };
@@ -46,12 +46,12 @@ namespace ncv
         <
                 typename trange
         >
-        class random
+        class random_t
         {
         public:
                 
                 // constructor
-                random(trange min, trange max)
+                random_t(trange min, trange max)
                         :       m_gen(0),//std::random_device()),
                                 m_die(min, max)
                 {
@@ -81,8 +81,8 @@ namespace ncv
                 
         private:
 
-                typedef std::mt19937                                    gen_t;
-                typedef typename uniform_distribution<trange>::type_t   die_t;
+                typedef std::mt19937                                            gen_t;
+                typedef typename uniform_distribution_t<trange>::type_t         die_t;
 
                 // attributes
                 gen_t           m_gen;

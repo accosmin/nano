@@ -14,12 +14,12 @@ namespace ncv
         // timer with milisecond resolution.
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        class timer
+        class timer_t
         {
         public:
 
                 // constructor
-                timer() : m_start(now())
+                timer_t() : m_start(now())
                 {
                 }
 

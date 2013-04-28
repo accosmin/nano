@@ -12,14 +12,14 @@ namespace ncv
         //      - 10 outputs (10 labels)
         ////////////////////////////////////////////////////////////////////////////////
 	
-        class mnist_task : public task
+        class mnist_task_t : public task_t
         {
         public:
 
                 // create an object clone
-                virtual rtask clone(const string_t& /*params*/) const
+                virtual rtask_t clone(const string_t& /*params*/) const
                 {
-                        return rtask(new mnist_task(*this));
+                        return rtask_t(new mnist_task_t(*this));
                 }
 
                 // describe the object
@@ -29,11 +29,6 @@ namespace ncv
                 // load images from the given directory
                 virtual bool load(const string_t& dir);
 
-                // sample training & testing samples
-                virtual size_t n_folds() const { return 1; }
-                virtual size_t fold_size(index_t f, protocol p) const;
-                virtual bool fold_sample(index_t f, protocol p, index_t s, sample& ss) const;
-
                 // access functions
                 virtual size_t n_rows() const { return 28; }
                 virtual size_t n_cols() const { return 28; }
@@ -41,17 +36,24 @@ namespace ncv
                 virtual size_t n_outputs() const { return 10; }
 
                 virtual size_t n_images() const { return m_images.size(); }
-                virtual const annotated_image& image(index_t i) const { return m_images[i]; }
+                virtual const annotated_image_t& image(index_t i) const { return m_images[i]; }
+
+                virtual size_t n_folds() const { return 1; }
+                virtual const image_samples_t& fold(const fold_t& fold) const { return m_folds.find(fold)->second; }
 
         private:
 
                 // load binary file
                 size_t load(const string_t& ifile, const string_t& gfile, protocol p);
 
+                // build folds
+                bool build_folds(size_t n_train_images, size_t n_test_images);
+
         private:
 
                 // attributes
                 annotated_images_t      m_images;
+                fold_image_samples_t    m_folds;
         };
 }
 

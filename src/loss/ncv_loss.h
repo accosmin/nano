@@ -6,9 +6,9 @@
 namespace ncv
 {
         // manage losses (register new ones, query and clone them)
-        class loss;
-        typedef manager<loss>                   loss_manager;
-        typedef loss_manager::robject_t         rloss;
+        class loss_t;
+        typedef manager_t<loss_t>               loss_manager_t;
+        typedef loss_manager_t::robject_t       rloss_t;
 
         // classification convention
         inline scalar_t pos_target() { return +1.0; }
@@ -27,7 +27,7 @@ namespace ncv
         //      the true (usually non-smooth) error function to minimize.
         ////////////////////////////////////////////////////////////////////////////////
 	
-        class loss : public clonable<loss>
+        class loss_t : public clonable_t<loss_t>
         {
         public:
                 

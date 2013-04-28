@@ -9,14 +9,14 @@ namespace ncv
         // square loss.
 	////////////////////////////////////////////////////////////////////////////////
 	
-        class square_loss : public loss
+        class square_loss_t : public loss_t
 	{
 	public:
                 
                 // create an object clone
-                virtual rloss clone(const string_t& /*params*/) const
+                virtual rloss_t clone(const string_t& /*params*/) const
                 {
-                        return rloss(new square_loss(*this));
+                        return rloss_t(new square_loss_t(*this));
                 }
 
                 // describe the object

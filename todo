@@ -11,6 +11,8 @@ test program:
 - measure the sampling time (rgba to cielab)
 - display #rows, cols, inputs, outputs, images, fold statistics
 
+- remove the required "friend" part from the singleton
+
 - use openscenegraph:
 	- load/save images (replace Qt)
 	- display the images from a task

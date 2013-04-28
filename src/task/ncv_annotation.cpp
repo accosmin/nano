@@ -4,7 +4,7 @@ namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
-        void annotated_image::load_gray(const char* buffer, size_t rows, size_t cols)
+        void annotated_image_t::load_gray(const char* buffer, size_t rows, size_t cols)
         {
                 m_image.resize(rows, cols);
 
@@ -19,7 +19,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void annotated_image::load_rgba(const char* buffer, size_t rows, size_t cols)
+        void annotated_image_t::load_rgba(const char* buffer, size_t rows, size_t cols)
         {
                 m_image.resize(rows, cols);
 

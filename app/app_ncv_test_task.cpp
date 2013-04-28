@@ -5,7 +5,7 @@ int main(int argc, char *argv[])
 {
         ncv::init();
 
-        const ncv::strings_t& task_names = ncv::task_manager::instance().names();
+        const ncv::strings_t& task_names = ncv::task_manager_t::instance().names();
         
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
@@ -36,10 +36,10 @@ int main(int argc, char *argv[])
         const ncv::string_t cmd_task = po_vm["task"].as<ncv::string_t>();
         const ncv::string_t cmd_dir = po_vm["dir"].as<ncv::string_t>();
 
-        ncv::timer timer;
+        ncv::timer_t timer;
 
         // create task
-        ncv::rtask rtask = ncv::task_manager::instance().get(cmd_task, "");
+        ncv::rtask_t rtask = ncv::task_manager_t::instance().get(cmd_task, "");
         if (!rtask)
         {
                 ncv::log_error() << "<<< failed to load task <" << cmd_task << ">!";
@@ -66,7 +66,15 @@ int main(int argc, char *argv[])
                         << ", #inputs = " << rtask->n_inputs()
                         << ", #outputs = " << rtask->n_outputs() << ".";
 
-        // TODO: describe folds: #training samples, #test samples, #samples with annotations
+        for (ncv::index_t f = 0; f < rtask->n_folds(); f ++)
+        {
+                const ncv::fold_t train_fold = std::make_pair(f, ncv::protocol::train);
+                const ncv::fold_t test_fold = std::make_pair(f, ncv::protocol::test);
+
+                ncv::log_info() << "fold [" << (f + 1) << "/" << rtask->n_folds()
+                                << "]: #train samples = " << rtask->fold(train_fold).size()
+                                << ", #test samples = " << rtask->fold(test_fold).size() << ".";
+        }
 		
         // OK
         ncv::log_info() << ncv::done;

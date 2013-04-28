@@ -21,16 +21,16 @@ namespace ncv
                 std::fesetround(FE_TONEAREST);
 
                 // register losses
-                loss_manager::instance().add("classnll", classnll_loss());
-                loss_manager::instance().add("hinge", hinge_loss());
-                loss_manager::instance().add("logistic", logistic_loss());
-                loss_manager::instance().add("square", square_loss());
+                loss_manager_t::instance().add("classnll", classnll_loss_t());
+                loss_manager_t::instance().add("hinge", hinge_loss_t());
+                loss_manager_t::instance().add("logistic", logistic_loss_t());
+                loss_manager_t::instance().add("square", square_loss_t());
 
                 // register tasks
-                task_manager::instance().add("mnist", mnist_task());
-                task_manager::instance().add("cifar10", cifar10_task());
-                task_manager::instance().add("stl10", stl10_task());
-                task_manager::instance().add("cmufaces", cmufaces_task());
+                task_manager_t::instance().add("mnist", mnist_task_t());
+                task_manager_t::instance().add("cifar10", cifar10_task_t());
+                task_manager_t::instance().add("stl10", stl10_task_t());
+                task_manager_t::instance().add("cmufaces", cmufaces_task_t());
         }
 
 //        //-------------------------------------------------------------------------------------------------

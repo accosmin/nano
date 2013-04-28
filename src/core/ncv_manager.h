@@ -19,7 +19,7 @@ namespace ncv
         <
                 typename tobject
         >
-        class clonable
+        class clonable_t
         {        
         public:
 
@@ -46,11 +46,11 @@ namespace ncv
         <
                 class tobject
         >
-        class manager : public singleton<manager<tobject> >
+        class manager_t : public singleton_t<manager_t<tobject> >
 	{
         public:
 
-                typedef typename clonable<tobject>::robject_t   robject_t;
+                typedef typename clonable_t<tobject>::robject_t         robject_t;
 
                 // manage prototypes
                 bool add(const string_t& id, const tobject& proto)
@@ -72,10 +72,10 @@ namespace ncv
 
         protected:
 
-                friend class singleton<manager<tobject> >;
+                friend class singleton_t<manager_t<tobject> >;
 
                 // constructor
-                manager() {}
+                manager_t() {}
 
         private:
 
@@ -173,7 +173,7 @@ namespace ncv
         {
                 register_object(const string_t& id)
                 {
-                        manager<tbase>::instance().add(id, tderived());
+                        manager_t<tbase>::instance().add(id, tderived());
                 }
         };
 }

@@ -11,7 +11,7 @@ ncv::stats<> test(int size, int trials, toperator op)
         ncv::stats<> timings;
         for (int t = 0; t < trials; t ++)
         {
-                const ncv::timer timer;
+                const ncv::timer_t timer;
 
                 for (int i = 0; i < size; i ++)
                 {
@@ -34,7 +34,7 @@ ncv::stats<> test_omp(int size, int trials, toperator op)
         ncv::stats<> timings;
         for (int t = 0; t < trials; t ++)
         {
-                const ncv::timer timer;
+                const ncv::timer_t timer;
 
                 #pragma omp parallel for
                 for (int i = 0; i < size; i ++)
@@ -58,7 +58,7 @@ ncv::stats<> test_ncv(int size, int trials, toperator op)
         ncv::stats<> timings;
         for (int t = 0; t < trials; t ++)
         {
-                const ncv::timer timer;
+                const ncv::timer_t timer;
 
                 ncv::thread_loop(size, op);
 

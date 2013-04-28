@@ -31,7 +31,7 @@ void test(const tproblem& problem, const ncv::string_t& name, ncv::size_t trials
 {
         const ncv::size_t size = problem.size();
 
-        ncv::random<ncv::scalar_t> rgen(-1.0, 1.0);
+        ncv::random_t<ncv::scalar_t> rgen(-1.0, 1.0);
         for (size_t trial = 0; trial < trials; trial ++)
         {
                 ncv::vector_t x0(size);
@@ -40,7 +40,7 @@ void test(const tproblem& problem, const ncv::string_t& name, ncv::size_t trials
                 const ncv::string_t name_trial =
                         " [" + ncv::text::to_string(trial + 1) + "/" + ncv::text::to_string(trials) + "]";
 
-                ncv::timer timer;
+                ncv::timer_t timer;
 
                 timer.start();
                 ncv::optimize::gradient_descent(problem, x0);
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
         typedef std::function<scalar_t(const vector_t&)>                        op_fval_t;
         typedef std::function<scalar_t(const vector_t&, vector_t&)>             op_fval_grad_t;
 
-        typedef ncv::optimize::problem<
+        typedef ncv::optimize::problem_t<
                         op_size_t,
                         op_fval_t,
                         op_fval_grad_t>                 problem_t;

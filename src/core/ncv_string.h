@@ -84,10 +84,10 @@ namespace ncv
                 {
                         strings_t tokens, dual;
 
-                        boost::algorithm::split(tokens, params, ",");
+                        boost::algorithm::split(tokens, params, boost::algorithm::is_any_of(","));
                         for (size_t i = 0; i < tokens.size(); i ++)
                         {
-                                boost::algorithm::split(dual, tokens[i], "=");
+                                boost::algorithm::split(dual, tokens[i], boost::algorithm::is_any_of("="));
                                 if (dual.size() == 2 && dual[0] == param_name)
                                 {
                                         string_t value = dual[1];

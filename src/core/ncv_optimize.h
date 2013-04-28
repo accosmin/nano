@@ -13,18 +13,24 @@ namespace ncv
                 // optimization state: current point, function value, gradient and descent direction.
                 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-                struct state
+                struct state_t
                 {
                         // constructor
-                        template <class tproblem>
-                        state(const tproblem& problem, const vector_t& x0)
+                        template
+                        <
+                                class tproblem
+                        >
+                        state_t(const tproblem& problem, const vector_t& x0)
                         {
                                 x = x0;
                                 f = problem.f(x, g);
                         }
 
                         // update current point
-                        template <class tproblem>
+                        template
+                        <
+                                class tproblem
+                        >
                         void update(const tproblem& problem, scalar_t t)
                         {
                                 x.noalias() += t * d;
@@ -46,12 +52,12 @@ namespace ncv
                         typename top_fval,              // function value:              fx = top_fval(x)
                         typename top_fval_grad          //  & gradient:                 fx = top_fval_grad(x, gx)
                 >
-                class problem
+                class problem_t
                 {
                 public:
 
                         // constructor
-                        problem(const top_size& op_size,
+                        problem_t(const top_size& op_size,
                                 const top_fval& op_fval,
                                 const top_fval_grad& op_fval_grad,
                                 size_t max_iterations,  // maximum number of iterations (stopping criteria)
@@ -67,7 +73,7 @@ namespace ncv
                         }
 
                         // constructor
-                        problem(const top_size& op_size,
+                        problem_t(const top_size& op_size,
                                 const top_fval& op_fval,
                                 // no gradient provided!
                                 size_t max_iterations,  // maximum number of iterations (stopping criteria)
@@ -115,7 +121,7 @@ namespace ncv
                         }
 
                         // update optimal
-                        void update(const state& st) const
+                        void update(const state_t& st) const
                         {
                                 if (m_iterations > 0)
                                 {
@@ -207,7 +213,7 @@ namespace ncv
                         <
                                 class tproblem
                         >
-                        inline bool converged(const tproblem& problem, const state& st)
+                        inline bool converged(const tproblem& problem, const state_t& st)
                         {
                                 return st.g.lpNorm<Eigen::Infinity>() < problem.epsilon() * (1.0l + std::fabs(st.f));
                         }
@@ -227,7 +233,7 @@ namespace ncv
                                 typename tproblem
                         >
                         scalar_t line_search_armijo(
-                                const tproblem& problem, state& st, scalar_t t0,
+                                const tproblem& problem, state_t& st, scalar_t t0,
                                 scalar_t alpha = 0.2l, scalar_t beta = 0.7l)
                         {
                                 // Check if descent direction
@@ -253,7 +259,7 @@ namespace ncv
                                 typename tproblem
                         >
                         scalar_t line_search_strong_wolfe(
-                                const tproblem& problem, state& st, scalar_t t0,
+                                const tproblem& problem, state_t& st, scalar_t t0,
                                 scalar_t c1 = 1e-4l, scalar_t c2 = 0.1l)
                         {
                                 // Check if descent direction
@@ -297,7 +303,7 @@ namespace ncv
 
                         problem.clear();
 
-                        state cstate(problem, x0);
+                        state_t cstate(problem, x0);
                         scalar_t t = 1.0l, dt = -1.0l, pdt = -1.0l;
 
                         // iterate until convergence
@@ -347,7 +353,7 @@ namespace ncv
 
                         problem.clear();
 
-                        state cstate(problem, x0), pstate = cstate;
+                        state_t cstate(problem, x0), pstate = cstate;
 
                         // iterate until convergence
                         for (index_t i = 0; i < problem.max_iterations(); i ++)
@@ -403,7 +409,7 @@ namespace ncv
                         problem.clear();
 
                         std::deque<vector_t> ss, ys;
-                        state cstate(problem, x0), pstate = cstate;
+                        state_t cstate(problem, x0), pstate = cstate;
 
                         vector_t q, r;
 

@@ -23,50 +23,33 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        bool cifar10_task::load(const string_t& dir)
+        bool cifar10_task_t::load(const string_t& dir)
         {
                 const string_t train_bfile1 = dir + "/cifar-10-batches-bin/data_batch_1.bin";
                 const string_t train_bfile2 = dir + "/cifar-10-batches-bin/data_batch_2.bin";
                 const string_t train_bfile3 = dir + "/cifar-10-batches-bin/data_batch_3.bin";
                 const string_t train_bfile4 = dir + "/cifar-10-batches-bin/data_batch_4.bin";
                 const string_t train_bfile5 = dir + "/cifar-10-batches-bin/data_batch_5.bin";
-                const size_t train_n_samples = 50000;
+                const size_t n_train_images = 50000;
 
                 const string_t test_bfile = dir + "/cifar-10-batches-bin/test_batch.bin";
-                const size_t test_n_samples = 10000;
+                const size_t n_test_images = 10000;
 
                 m_images.clear();
+                m_folds.clear();
 
                 return  load(train_bfile1, protocol::train) +
                         load(train_bfile2, protocol::train) +
                         load(train_bfile3, protocol::train) +
                         load(train_bfile4, protocol::train) +
-                        load(train_bfile5, protocol::train) == train_n_samples &&
-
-                        load(test_bfile, protocol::test) == test_n_samples;
+                        load(train_bfile5, protocol::train) == n_train_images &&
+                        load(test_bfile, protocol::test) == n_test_images &&
+                        build_folds(n_train_images, n_test_images);
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        size_t cifar10_task::fold_size(index_t /*f*/, protocol p) const
-        {
-                switch (p)
-                {
-                case protocol::train:
-                        return 0;
-                }
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        bool cifar10_task::fold_sample(index_t /*f*/, protocol p, index_t s, sample& ss) const
-        {
-
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        size_t cifar10_task::load(const string_t& bfile, protocol p)
+        size_t cifar10_task_t::load(const string_t& bfile, protocol p)
         {
                 std::ifstream istream(bfile.c_str(), std::ios::in | std::ios::binary);
                 if (!istream.is_open())
@@ -88,14 +71,15 @@ namespace ncv
                                 continue;
                         }
 
-                        annotation anno(static_cast<coord_t>(0),
-                                        static_cast<coord_t>(0),
-                                        static_cast<coord_t>(n_cols()),
-                                        static_cast<coord_t>(n_rows()),
-                                        labels[ilabel],
-                                        ncv::class_target(ilabel, n_outputs()));
+                        const annotation_t anno(
+                                static_cast<coord_t>(0),
+                                static_cast<coord_t>(0),
+                                static_cast<coord_t>(n_cols()),
+                                static_cast<coord_t>(n_rows()),
+                                labels[ilabel],
+                                ncv::class_target(ilabel, n_outputs()));
 
-                        annotated_image aimage;
+                        annotated_image_t aimage;
                         aimage.m_protocol = p;
                         aimage.m_annotations.push_back(anno);
                         aimage.load_rgba(buffer, n_rows(), n_cols());
@@ -105,6 +89,19 @@ namespace ncv
                 }
 
                 return cnt;
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        bool cifar10_task_t::build_folds(size_t n_train_images, size_t n_test_images)
+        {
+                const fold_t train_fold = std::make_pair(0, protocol::train);
+                m_folds[train_fold] = make_image_samples(0, n_train_images, 0, 0);
+
+                const fold_t test_fold = std::make_pair(0, protocol::test);
+                m_folds[test_fold] = make_image_samples(n_train_images, n_test_images, 0, 0);
+
+                return true;
         }
 
         //-------------------------------------------------------------------------------------------------

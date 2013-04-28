@@ -42,7 +42,7 @@ namespace ncv
                 }
 
                 // worker pool
-                class worker_pool : public singleton<worker_pool>
+                class worker_pool : public singleton_t<worker_pool>
                 {
                 public:
                         // destructor
@@ -64,7 +64,7 @@ namespace ncv
 
                 protected:
 
-                        friend class singleton<worker_pool>;
+                        friend class singleton_t<worker_pool>;
 
                         // constructor
                         worker_pool();

@@ -9,14 +9,14 @@ namespace ncv
         // hinge loss.
         ////////////////////////////////////////////////////////////////////////////////
         
-        class hinge_loss : public loss
+        class hinge_loss_t : public loss_t
         {
         public:
                 
                 // create an object clone
-                virtual rloss clone(const string_t& /*params*/) const
+                virtual rloss_t clone(const string_t& /*params*/) const
                 {
-                        return rloss(new hinge_loss(*this));
+                        return rloss_t(new hinge_loss_t(*this));
                 }
 
                 // describe the object

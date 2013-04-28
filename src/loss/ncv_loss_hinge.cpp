@@ -4,7 +4,7 @@ namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
-        scalar_t hinge_loss::value(const vector_t& targets, const vector_t& scores) const
+        scalar_t hinge_loss_t::value(const vector_t& targets, const vector_t& scores) const
         {
                 scalar_t value = 0.0l;
                 for (int o = 0; o < targets.rows(); o ++)
@@ -17,7 +17,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
         
-        scalar_t hinge_loss::vgrad(const vector_t& targets, const vector_t& scores, vector_t& grads) const
+        scalar_t hinge_loss_t::vgrad(const vector_t& targets, const vector_t& scores, vector_t& grads) const
         {
                 scalar_t value = 0.0l;
                 for (int o = 0; o < targets.rows(); o ++)

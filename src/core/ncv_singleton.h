@@ -14,7 +14,7 @@ namespace ncv
         <
                 class tobject
         >
-        class singleton
+        class singleton_t
 	{
         public:
 
@@ -33,19 +33,19 @@ namespace ncv
                 }
 
                 // destructor
-                virtual ~singleton() {}
+                virtual ~singleton_t() {}
 
         protected:
 
                 // donstructor
-                singleton() {}
+                singleton_t() {}
 
         private:
 
                 // disable copying
-                singleton(const singleton& other) = delete;
-                singleton(singleton&& other) = delete;
-                singleton& operator=(const singleton& other) = delete;
+                singleton_t(const singleton_t& other) = delete;
+                singleton_t(singleton_t&& other) = delete;
+                singleton_t& operator=(const singleton_t& other) = delete;
 		
 	private:
 
@@ -55,10 +55,10 @@ namespace ncv
 	};
         
         template <class tobject>
-        typename singleton<tobject>::this_instance_t    singleton<tobject>::m_instance = nullptr;
+        typename singleton_t<tobject>::this_instance_t    singleton_t<tobject>::m_instance = nullptr;
         
         template <class tobject>
-        typename singleton<tobject>::this_mutex_t       singleton<tobject>::m_once_flag;
+        typename singleton_t<tobject>::this_mutex_t       singleton_t<tobject>::m_once_flag;
 }
 
 #endif // NANOCV_SINGLETON_H

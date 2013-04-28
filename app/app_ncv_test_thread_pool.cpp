@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
         // run multiple tests ...
         for (ncv::index_t t = 0; t < n_tests; t ++)
         {
-                ncv::random<ncv::size_t> rnd(1, n_max_jobs);
+                ncv::random_t<ncv::size_t> rnd(1, n_max_jobs);
 
                 // ... enqueue jobs
                 const ncv::size_t n_jobs = rnd();
@@ -21,13 +21,13 @@ int main(int argc, char *argv[])
                 {
                         pool.enqueue([=]()
                         {
-                                const ncv::size_t sleep1 = ncv::random<ncv::size_t>(10, 100)();
+                                const ncv::size_t sleep1 = ncv::random_t<ncv::size_t>(10, 100)();
                                 std::this_thread::sleep_for(std::chrono::milliseconds(sleep1));
 
                                 ncv::log_info() << "#job [" << (j + 1) << "/" << n_jobs << "@"
                                                 << (t + 1) << "/" << n_tests << "] started ...";
 
-                                const ncv::size_t sleep2 = ncv::random<ncv::size_t>(10, 500)();
+                                const ncv::size_t sleep2 = ncv::random_t<ncv::size_t>(10, 500)();
                                 std::this_thread::sleep_for(std::chrono::milliseconds(sleep2));
 
                                 ncv::log_info() << "#job [" << (j + 1) << "/" << n_jobs << "@"

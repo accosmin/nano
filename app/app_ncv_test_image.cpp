@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
         const ncv::index_t cmd_height = ncv::math::clamp(po_vm["height"].as<ncv::index_t>(), 0, 4096);
         const ncv::string_t cmd_output = po_vm["output"].as<ncv::string_t>();
 
-        ncv::timer timer;
+        ncv::timer_t timer;
 
         // load input image
         ncv::rgba_matrix_t rgba_image;

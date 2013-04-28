@@ -8,9 +8,9 @@
 namespace ncv
 {
         // manage tasks (register new ones, query and clone them)
-        class task;
-        typedef manager<task>                   task_manager;
-        typedef task_manager::robject_t         rtask;
+        class task_t;
+        typedef manager_t<task_t>               task_manager_t;
+        typedef task_manager_t::robject_t       rtask_t;
 
         ////////////////////////////////////////////////////////////////////////////////
         // generic computer vision task consisting of a set of (annotated) images
@@ -18,20 +18,15 @@ namespace ncv
         // samples for training & testing models can be drawn from these image.
 	////////////////////////////////////////////////////////////////////////////////
 	
-        class task : public clonable<task>
+        class task_t : public clonable_t<task_t>
 	{
         public:
                 
                 // destructor
-                virtual ~task() {}
+                virtual ~task_t() {}
 
                 // load images from the given directory
                 virtual bool load(const string_t& dir) = 0;
-
-                // sample training & testing samples
-                virtual size_t n_folds() const = 0;
-                virtual size_t fold_size(index_t f, protocol p) const = 0;
-                virtual bool fold_sample(index_t f, protocol p, index_t s, sample& ss) const = 0;
 
                 // access functions
                 virtual size_t n_rows() const = 0;
@@ -40,7 +35,10 @@ namespace ncv
                 virtual size_t n_outputs() const = 0;
 
                 virtual size_t n_images() const = 0;
-                virtual const annotated_image& image(index_t i) const = 0;
+                virtual const annotated_image_t& image(index_t i) const = 0;
+
+                virtual size_t n_folds() const = 0;
+                virtual const image_samples_t& fold(const fold_t& fold) const = 0;
         };
 }
 
