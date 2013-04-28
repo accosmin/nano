@@ -12,7 +12,10 @@ namespace ncv
         typedef boost::geometry::model::d2::point_xy<coord_t>   point_t;
         typedef boost::geometry::model::box<point_t>            rect_t;
 
+        ////////////////////////////////////////////////////////////////////////////////
         // image annotation
+        ////////////////////////////////////////////////////////////////////////////////
+
         struct annotation_t
         {
                 // constructor
@@ -33,7 +36,10 @@ namespace ncv
 
         typedef std::vector<annotation_t>       annotations_t;
 
+        ////////////////////////////////////////////////////////////////////////////////
         // image with its annotations
+        ////////////////////////////////////////////////////////////////////////////////
+
         struct annotated_image_t
         {
                 // load gray image from buffer

@@ -24,7 +24,7 @@ namespace ncv
 
                 // describe the object
                 virtual const char* name() const { return "cmu-faces"; }
-                virtual const char* desc() const { return "cmu faces (face/non-face classification)"; }
+                virtual const char* desc() const { return "CMU faces (face/non-face classification)"; }
 
                 // load images from the given directory
                 virtual bool load(const string_t& dir);

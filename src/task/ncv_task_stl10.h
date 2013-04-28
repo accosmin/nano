@@ -25,7 +25,7 @@ namespace ncv
 
                 // describe the object
                 virtual const char* name() const { return "stl10"; }
-                virtual const char* desc() const { return "stl 10 (object classification)"; }
+                virtual const char* desc() const { return "STL-10 (object classification)"; }
 
                 // load images from the given directory
                 virtual bool load(const string_t& dir);

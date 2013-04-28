@@ -1,15 +1,8 @@
-- redo tasks (iterate, sample):
-        + load STL-10 dataset: http://www.stanford.edu/~acoates//stl10/
-	- load cmu-faces
-
 - finish tasks:
-	- ::fold* functions -> think of a general method to store the samples / fold
-	- statistics: #train/#test per fold
+	- transform from image_sample_t to sample_t
 
-test program:
-- measure the loading time
-- measure the sampling time (rgba to cielab)
-- display #rows, cols, inputs, outputs, images, fold statistics
+- test program:
+	- measure the sample transformation
 
 - remove the required "friend" part from the singleton
 

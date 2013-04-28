@@ -5,24 +5,27 @@
 
 namespace ncv
 {
+        ////////////////////////////////////////////////////////////////////////////////
         // image-indexed sample
+        ////////////////////////////////////////////////////////////////////////////////
+
         struct image_sample_t
         {
                 // constructor
-                image_sample_t(index_t image = 0, index_t row = 0, index_t col = 0)
-                        :       m_image(image), m_row(row), m_col(col)
+                image_sample_t(index_t image = 0, index_t annotation = 0)
+                        :       m_image(image), m_annotation(annotation)
                 {
                 }
 
                 // attributes
                 index_t         m_image;        // image index
-                index_t         m_row, m_col;   // starting row, column in the image
+                index_t         m_annotation;   // annotation index
         };
 
         typedef std::vector<image_sample_t>     image_samples_t;
 
         // construct image-indexed samples [istart, istart + icount)
-        image_samples_t make_image_samples(index_t istart, index_t icount, index_t row = 0, index_t col = 0);
+        image_samples_t make_image_samples(index_t istart, index_t icount, index_t annotation);
 
         // fold image-indexed samples
         typedef std::pair<index_t, protocol>    fold_t;
@@ -30,7 +33,10 @@ namespace ncv
                 fold_t,
                 image_samples_t>                fold_image_samples_t;
 
+        ////////////////////////////////////////////////////////////////////////////////
         // sample data
+        ////////////////////////////////////////////////////////////////////////////////
+
         struct sample_t
         {
                 // check if annotated

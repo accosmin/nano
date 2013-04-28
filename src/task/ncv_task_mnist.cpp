@@ -81,10 +81,10 @@ namespace ncv
         bool mnist_task_t::build_folds(size_t n_train_images, size_t n_test_images)
         {
                 const fold_t train_fold = std::make_pair(0, protocol::train);
-                m_folds[train_fold] = make_image_samples(0, n_train_images, 0, 0);
+                m_folds[train_fold] = make_image_samples(0, n_train_images, 0);
 
                 const fold_t test_fold = std::make_pair(0, protocol::test);
-                m_folds[test_fold] = make_image_samples(n_train_images, n_test_images, 0, 0);
+                m_folds[test_fold] = make_image_samples(n_train_images, n_test_images, 0);
 
                 return true;
         }
