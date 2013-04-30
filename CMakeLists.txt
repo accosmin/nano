@@ -12,11 +12,10 @@ set(Boost_USE_MULTITHREADED ON)
 find_package(Boost COMPONENTS thread serialization program_options filesystem system)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
-# Qt4
-set(QT_QMAKE_EXECUTABLE qmake-qt4)
-find_package(Qt4 REQUIRED)
-include(${QT_USE_FILE})
-add_definitions(${QT_DEFINITIONS})
+# OpenSceneGraph
+find_package(OpenSceneGraph)
+find_package(osgDB)
+include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 
 # Set the compiler flags
 set(extra_cxx_flags                    "-Wall -std=c++11 -fopenmp")
@@ -72,6 +71,8 @@ set(libs "${libs};${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_SYSTEM_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_FILESYSTEM_LIBRARY_RELEASE}")
 set(libs "${libs};${QT_LIBRARIES}")
+set(libs "${libs};${OPENSCENEGRAPH_LIBRARIES}")
+set(libs "${libs};${OSGDB_LIBRARY}")
 
 # Set the executables
 set(nanocv_programs

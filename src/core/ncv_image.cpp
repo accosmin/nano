@@ -1,5 +1,6 @@
 #include "ncv_image.h"
-#include <QImage>
+#include <osgDB/ReadFile>
+#include <osgDB/WriteFile>
 
 namespace ncv
 {
@@ -7,26 +8,55 @@ namespace ncv
 
         bool load_image(const string_t& path, rgba_matrix_t& rgba)
         {
-                QImage image;
-                if (!image.load(path.c_str()))
+                const osg::Image* image = osgDB::readImageFile(path);
+                if (!image)
                 {
                         return false;
                 }
-                
-                const int rows = image.height();
-                const int cols = image.width();
-                
+
+                const int rows = image->t();
+                const int cols = image->s();
                 rgba.resize(rows, cols);
-                for (int r = 0; r < rows; r ++)
+
+                const int channels = image->getImageSizeInBytes() / rows / cols;
+                switch (channels)
                 {
-                        for (int c = 0; c < cols; c ++)
+                case 1:
+                        for (int r = 0; r < rows; r ++)
                         {
-                                const QRgb color = image.pixel(c, r);
-                                rgba(r, c) = color::make_rgba(qRed(color), qGreen(color), qBlue(color), qAlpha(color));
+                                for (int c = 0; c < cols; c ++)
+                                {
+                                        const unsigned char* data = image->data(c, rows - r - 1);
+                                        rgba(r, c) = color::make_rgba(data[0], data[0], data[0], 255);
+                                }
                         }
+                        return true;
+
+                case 3:
+                        for (int r = 0; r < rows; r ++)
+                        {
+                                for (int c = 0; c < cols; c ++)
+                                {
+                                        const unsigned char* data = image->data(c, rows - r - 1);
+                                        rgba(r, c) = color::make_rgba(data[0], data[1], data[2], 255);
+                                }
+                        }
+                        return true;
+
+                case 4:
+                        for (int r = 0; r < rows; r ++)
+                        {
+                                for (int c = 0; c < cols; c ++)
+                                {
+                                        const unsigned char* data = image->data(c, rows - r - 1);
+                                        rgba(r, c) = color::make_rgba(data[0], data[1], data[2], data[3]);
+                                }
+                        }
+                        return true;
+
+                default:
+                        return false;
                 }
-                
-                return true;
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -36,22 +66,45 @@ namespace ncv
                 const int rows = math::cast<int>(rgba.rows());
                 const int cols = math::cast<int>(rgba.cols());
 
-                QImage image(cols, rows, QImage::Format_RGB32);
+                osg::Image* image = new osg::Image;
 
-                for (int r = 0; r < rows; r ++)
+                // RGBA
+                if (text::iends_with(path, ".png"))
                 {
-                        for (int c = 0; c < cols; c ++)
+                        image->allocateImage(cols, rows, 1, GL_RGBA, GL_UNSIGNED_BYTE);
+
+                        for (int r = 0; r < rows; r ++)
                         {
-                                const rgba_t color = rgba(r, c);
-                                image.setPixel(c, r, qRgba(
-                                        color::make_red(color),
-                                        color::make_green(color),
-                                        color::make_blue(color),
-                                        color::make_alpha(color)));
+                                for (int c = 0; c < cols; c ++)
+                                {
+                                        const rgba_t color = rgba(r, c);
+                                        unsigned char* data = image->data(c, rows - r - 1);
+                                        data[0] = color::make_red(color);
+                                        data[1] = color::make_green(color);
+                                        data[2] = color::make_blue(color);
+                                        data[3] = color::make_alpha(color);
+                                }
                         }
                 }
-                
-                return image.save(path.c_str());
+
+                // RGB
+                else
+                {
+                        image->allocateImage(cols, rows, 1, GL_RGB, GL_UNSIGNED_BYTE);
+                        for (int r = 0; r < rows; r ++)
+                        {
+                                for (int c = 0; c < cols; c ++)
+                                {
+                                        const rgba_t color = rgba(r, c);
+                                        unsigned char* data = image->data(c, rows - r - 1);
+                                        data[0] = color::make_red(color);
+                                        data[1] = color::make_green(color);
+                                        data[2] = color::make_blue(color);
+                                }
+                        }
+                }
+
+                return osgDB::writeImageFile(*image, path);
         }
 
         //-------------------------------------------------------------------------------------------------

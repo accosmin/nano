@@ -7,7 +7,6 @@
 - remove the required "friend" part from the singleton
 
 - use openscenegraph:
-	- load/save images (replace Qt)
 	- display the images from a task
 
 - functions to draw into a RGBA matrix:
@@ -15,8 +14,6 @@
 	- may use an opengl context for plotting, have a look at: http://www.glfw.org/
 
 - faster RGB to CIELab transform (goal: 1s single thread version of the color testing program)
-
-- replace Qt with imagemagick or libpng/libtiff
 
 - train/test modes:
 	- a model should be a set of linear layers with various activation functions: tanh, 2x/(1+x^2), identity
