@@ -1,13 +1,14 @@
+- remove the required "friend" part from the singleton
+
 - finish tasks:
 	- transform from image_sample_t to sample_t
 
 - test program:
 	- measure the sample transformation
 
-- remove the required "friend" part from the singleton
-
 - use openscenegraph:
-	- display the images from a task
+	- display the images from a task (draw label and annotation bounding box)
+	- simple menu/widgets to select between training and test images
 
 - functions to draw into a RGBA matrix:
 	- line, circles, 2D plots

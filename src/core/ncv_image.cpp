@@ -8,7 +8,7 @@ namespace ncv
 
         bool load_image(const string_t& path, rgba_matrix_t& rgba)
         {
-                const osg::Image* image = osgDB::readImageFile(path);
+                const osg::ref_ptr<osg::Image> image = osgDB::readImageFile(path);
                 if (!image)
                 {
                         return false;
@@ -66,7 +66,7 @@ namespace ncv
                 const int rows = math::cast<int>(rgba.rows());
                 const int cols = math::cast<int>(rgba.cols());
 
-                osg::Image* image = new osg::Image;
+                const osg::ref_ptr<osg::Image> image = new osg::Image;
 
                 // RGBA
                 if (text::iends_with(path, ".png"))
