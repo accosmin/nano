@@ -4,14 +4,6 @@ namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
-        namespace thread_impl
-        {
-                typename worker_pool_t::this_instance_t    worker_pool_t::m_instance = nullptr;
-                typename worker_pool_t::this_mutex_t       worker_pool_t::m_once_flag;
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
         void thread_impl::worker_pool_t::worker::operator()()
         {
                 thread_impl::task_t task;
