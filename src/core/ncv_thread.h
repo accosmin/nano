@@ -1,13 +1,13 @@
 #ifndef NANOCV_THREAD_H
 #define NANOCV_THREAD_H
 
-#include "ncv_singleton.h"
 #include "ncv_types.h"
 #include <thread>
 #include <mutex>
 #include <condition_variable>
 #include <vector>
 #include <deque>
+#include <memory>
 
 namespace ncv
 {
@@ -42,11 +42,26 @@ namespace ncv
                 }
 
                 // worker pool
-                class worker_pool : public singleton_t<worker_pool>
+                class worker_pool_t
                 {
                 public:
+
+                        typedef worker_pool_t                           this_object;
+                        typedef std::unique_ptr<this_object>            this_instance_t;
+                        typedef std::once_flag                          this_mutex_t;
+
+                        // access the only instance
+                        static this_object& instance()
+                        {
+                                std::call_once(m_once_flag, []()
+                                {
+                                        m_instance.reset(new this_object());
+                                });
+                                return *m_instance.get();
+                        }
+
                         // destructor
-                        ~worker_pool();
+                        ~worker_pool_t();
 
                         // add a new worker to execute
                         template<class F>
@@ -62,12 +77,15 @@ namespace ncv
                         size_t n_threads() const { return m_workers.size(); }
                         size_t n_jobs() const { return m_data.m_tasks.size(); }
 
-                protected:
-
-                        friend class singleton_t<worker_pool>;
+                private:
 
                         // constructor
-                        worker_pool();
+                        worker_pool_t();
+
+                        // disable copying
+                        worker_pool_t(const worker_pool_t& other) = delete;
+                        worker_pool_t(worker_pool_t&& other) = delete;
+                        worker_pool_t& operator=(const worker_pool_t& other) = delete;
 
                 private:
 
@@ -121,6 +139,8 @@ namespace ncv
                         // attributes
                         std::vector<thread_t>   m_workers;              // worker threads
                         data_t                  m_data;                 // tasks to execute + synchronization
+                        static this_instance_t  m_instance;
+                        static this_mutex_t     m_once_flag;
                 };
         }
 
@@ -132,7 +152,7 @@ namespace ncv
         >
         void thread_loop(tsize N, toperator op)
         {
-                thread_impl::worker_pool& pool = thread_impl::worker_pool::instance();
+                thread_impl::worker_pool_t& pool = thread_impl::worker_pool_t::instance();
 
                 const tsize n_tasks = static_cast<tsize>(pool.n_threads());
                 for (tsize t = 0; t < n_tasks; t ++)

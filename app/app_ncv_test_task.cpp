@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
         ncv::init();
 
         const ncv::strings_t& task_names = ncv::task_manager_t::instance().names();
-        
+
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
         po_desc.add_options()("help,h", "help message");

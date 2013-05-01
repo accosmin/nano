@@ -2,7 +2,7 @@
 
 int main(int argc, char *argv[])
 {
-        ncv::thread_impl::worker_pool& pool = ncv::thread_impl::worker_pool::instance();
+        ncv::thread_impl::worker_pool_t& pool = ncv::thread_impl::worker_pool_t::instance();
 
         const ncv::size_t n_tests = 8;
         const ncv::size_t n_max_jobs = pool.n_threads() * 16;

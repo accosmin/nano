@@ -1,5 +1,3 @@
-- remove the required "friend" part from the singleton
-
 - finish tasks:
 	- transform from image_sample_t to sample_t
 
@@ -20,6 +18,10 @@
 	- a model should be a set of linear layers with various activation functions: tanh, 2x/(1+x^2), identity
         - redesign losses and the optimization part
         - multiple runs -> avg + stdev error rate
+
+	- check with different activation functions:
+		- parametrized using a beta parameter: going from almost linear to nonlinear
+		- check if the optimization can be improved by varying beta (linear -> nonlinear loss, for each beta start using the previous solution)
 
 - 2D widgets:
         - try to create a flat set of widget similar to these ones:

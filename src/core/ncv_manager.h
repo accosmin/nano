@@ -2,7 +2,8 @@
 #define NANOCV_MANAGER_H
 
 #include "ncv_string.h"
-#include "ncv_singleton.h"
+#include <memory>
+#include <mutex>
 
 namespace ncv
 {
@@ -46,11 +47,25 @@ namespace ncv
         <
                 class tobject
         >
-        class manager_t : public singleton_t<manager_t<tobject> >
+        class manager_t
 	{
         public:
 
+                typedef manager_t<tobject>                              this_object;
+                typedef std::unique_ptr<this_object>                    this_instance_t;
+                typedef std::once_flag                                  this_mutex_t;
+
                 typedef typename clonable_t<tobject>::robject_t         robject_t;
+
+                // access the only instance
+                static manager_t& instance()
+                {
+                        std::call_once(m_once_flag, []()
+                        {
+                                m_instance.reset(new manager_t());
+                        });
+                        return *m_instance.get();
+                }
 
                 // manage prototypes
                 bool add(const string_t& id, const tobject& proto)
@@ -68,14 +83,17 @@ namespace ncv
 
 		strings_t ids() const { return _ids(); }
 		strings_t names() const { return _names(); }
-		strings_t descs() const { return _descs(); }
+                strings_t descs() const { return _descs(); }
 
-        protected:
-
-                friend class singleton_t<manager_t<tobject> >;
+        private:
 
                 // constructor
                 manager_t() {}
+
+                // disable copying
+                manager_t(const manager_t& other) = delete;
+                manager_t(manager_t&& other) = delete;
+                manager_t& operator=(const manager_t& other) = delete;
 
         private:
 
@@ -160,8 +178,16 @@ namespace ncv
 	private:
 
                 // attributes
-                protos_t        m_protos;
+                protos_t                        m_protos;
+                static this_instance_t          m_instance;
+                static this_mutex_t             m_once_flag;
         };
+
+        template <class tobject>
+        typename manager_t<tobject>::this_instance_t    manager_t<tobject>::m_instance = nullptr;
+
+        template <class tobject>
+        typename manager_t<tobject>::this_mutex_t       manager_t<tobject>::m_once_flag;
         
         // register a type tderived to the tbase manager
         template

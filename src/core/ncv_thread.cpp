@@ -4,7 +4,15 @@ namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
-        void thread_impl::worker_pool::worker::operator()()
+        namespace thread_impl
+        {
+                typename worker_pool_t::this_instance_t    worker_pool_t::m_instance = nullptr;
+                typename worker_pool_t::this_mutex_t       worker_pool_t::m_once_flag;
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void thread_impl::worker_pool_t::worker::operator()()
         {
                 thread_impl::task_t task;
                 while (true)
@@ -43,18 +51,18 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        thread_impl::worker_pool::worker_pool()
+        thread_impl::worker_pool_t::worker_pool_t()
                 :       m_data()
         {
                 for (size_t i = 0; i < thread_impl::n_threads(); i ++)
                 {
-                        m_workers.push_back(std::thread(thread_impl::worker_pool::worker(m_data)));
+                        m_workers.push_back(std::thread(thread_impl::worker_pool_t::worker(m_data)));
                 }
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        thread_impl::worker_pool::~worker_pool()
+        thread_impl::worker_pool_t::~worker_pool_t()
         {
                 // stop & join
                 m_data.m_stop = true;
@@ -68,7 +76,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void thread_impl::worker_pool::wait()
+        void thread_impl::worker_pool_t::wait()
         {
                 // wait for all tasks to be taken and the workers to finish
                 thread_impl::lock_t lock(m_data.m_mutex);
