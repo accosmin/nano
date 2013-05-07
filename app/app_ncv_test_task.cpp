@@ -75,6 +75,28 @@ int main(int argc, char *argv[])
                                 << "]: #train samples = " << rtask->fold(train_fold).size()
                                 << ", #test samples = " << rtask->fold(test_fold).size() << ".";
         }
+
+        // load samples
+        timer.start();
+        ncv::sample_t sample;
+        for (ncv::index_t f = 0; f < rtask->n_folds(); f ++)
+        {
+                const ncv::fold_t train_fold = std::make_pair(f, ncv::protocol::train);
+                const ncv::fold_t test_fold = std::make_pair(f, ncv::protocol::test);
+
+                const ncv::image_samples_t& train_isamples = rtask->fold(train_fold);
+                for (ncv::index_t i = 0; i < train_isamples.size(); i ++)
+                {
+                        rtask->load(train_isamples[i], sample);
+                }
+
+                const ncv::image_samples_t& test_isamples = rtask->fold(test_fold);
+                for (ncv::index_t i = 0; i < test_isamples.size(); i ++)
+                {
+                        rtask->load(test_isamples[i], sample);
+                }
+        }
+        ncv::log_info() << "loaded samples in " << timer.elapsed_string() << ".";
 		
         // OK
         ncv::log_info() << ncv::done;

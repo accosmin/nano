@@ -1,23 +1,21 @@
 - finish tasks:
 	- transform from image_sample_t to sample_t
+	- update the task test program to time sample transformation
 
-- test program:
-	- measure the sample transformation
-
-- faster RGB to CIELab transform (goal: 1s single thread version of the color testing program)
+- faster RGB to CIELab transform (goal: 1s single-thread version of the color testing program)
 
 - train/test modes:
-	- a model should be a set of linear layers with various activation functions: tanh, 2x/(1+x^2), identity
-        - redesign losses and the optimization part
-        - multiple runs -> avg + stdev error rate
+	- implement various activation functions: tanh, 2bx/(b^2+x^2), identity
+	- implement a generic model as a set of linear layers with various activation functions
+	- implement a back-prop like trainer
 
-	- check with different activation functions:
-		- parametrized using a beta parameter: going from almost linear to nonlinear
-		- check if the optimization can be improved by varying beta (linear -> nonlinear loss, for each beta start using the previous solution)
+        - multiple runs (per fold) -> avg + stdev error rate
 
-- SFML test program:
-	- display task images (train/test, flip images), draw annotations and labels
-	- annotations
+	- take into account that some samples are not labeled!
+
+- SFML test programs:
+	- I - display task images (train/test, flip images), draw annotations and labels
+	- II - plot 2D functions
 
 - 2D widgets:
         - try to create a flat set of widget similar to these ones:
@@ -38,13 +36,10 @@
                 - display the output of various filters
 
 - add other datasets:
-	- add INRIA car and person datasets
-	- CIFAR10, CIFAR100, NORB, STL10, inria pedestrian detection, inria human detection, dymlerchrysler human
-		detection, face detection, PASCALVoc2011, CALTECH101...
+	- INRIA car and person datasets
+	- NORB, inria pedestrian detection, inria human detection, dymlerchrysler human detection, face detection, PASCALVoc2011, CALTECH101...
 
-	- support for unlabeled samples: dataset_t::has_target(index_t)
-
-- how to generate samples ?!
+- autoencoders: how to generate samples ?!
 
 - may revive/improve the bootstrapping idea:
         - also bootstrap the background of the images containing faces

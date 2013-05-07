@@ -42,11 +42,13 @@ namespace ncv
 
         struct annotated_image_t
         {
-                // load gray image from buffer
+                // load gray/color image from buffer
                 void load_gray(const char* buffer, size_t rows, size_t cols);
-
-                // load color image from buffer
                 void load_rgba(const char* buffer, size_t rows, size_t cols);
+
+                // save image region to gray/color buffer
+                void save_gray(size_t row, size_t col, size_t rows, size_t cols, vector_t& data) const;
+                void save_rgba(size_t row, size_t col, size_t rows, size_t cols, vector_t& data) const;
 
                 // attributes
                 rgba_matrix_t   m_image;

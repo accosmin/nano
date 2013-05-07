@@ -179,4 +179,12 @@ namespace ncv
         }
 
         //-------------------------------------------------------------------------------------------------
+
+        void stl10_task_t::load(const image_sample_t& isample, sample_t& sample) const
+        {
+                const annotated_image_t& image = this->image(isample.m_image);
+                sample.load_rgba(image, isample);
+        }
+
+        //-------------------------------------------------------------------------------------------------
 }

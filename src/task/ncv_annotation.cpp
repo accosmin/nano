@@ -34,4 +34,38 @@ namespace ncv
         }
 
         //-------------------------------------------------------------------------------------------------
+
+        void annotated_image_t::save_gray(size_t row, size_t col, size_t rows, size_t cols, vector_t& data) const
+        {
+                data.resize(rows * cols);
+
+                for (index_t r = 0, i = 0; r < rows; r ++)
+                {
+                        for (index_t c = 0; c < cols; c ++)
+                        {
+                                const cielab_t cielab = color::make_cielab(m_image(r + row, c + col));
+                                data(i ++) = cielab(0);
+                        }
+                }
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void annotated_image_t::save_rgba(size_t row, size_t col, size_t rows, size_t cols, vector_t& data) const
+        {
+                data.resize(rows * cols * 3);
+
+                for (index_t r = 0, i = 0; r < rows; r ++)
+                {
+                        for (index_t c = 0; c < cols; c ++)
+                        {
+                                const cielab_t cielab = color::make_cielab(m_image(r + row, c + col));
+                                data(i ++) = cielab(0);
+                                data(i ++) = cielab(1);
+                                data(i ++) = cielab(2);
+                        }
+                }
+        }
+
+        //-------------------------------------------------------------------------------------------------
 }

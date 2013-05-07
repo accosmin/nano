@@ -38,10 +38,12 @@ file(GLOB nanocv_sources
         src/*.cpp
         src/core/*.h
         src/core/*.cpp
-        src/task/*.h
-        src/task/*.cpp
         src/loss/*.h
         src/loss/*.cpp
+        src/task/*.h
+        src/task/*.cpp
+        src/model/*.h
+        src/model/*.cpp
         )
 
 add_library(nanocv
@@ -56,8 +58,9 @@ add_library(nanocv
 set(nanocv_includes
         src/
         src/core/
-        src/task/
         src/loss/
+        src/task/
+        src/model/
         )
 
 include_directories(
@@ -69,12 +72,6 @@ set(libs "${libs};${Boost_SERIALIZATION_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_SYSTEM_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_FILESYSTEM_LIBRARY_RELEASE}")
-set(libs "${libs};${QT_LIBRARIES}")
-set(libs "${libs};${OPENSCENEGRAPH_LIBRARIES}")
-set(libs "${libs};${OSG_LIBRARY}")
-set(libs "${libs};${OSGDB_LIBRARY}")
-set(libs "${libs};${OSGUTIL_LIBRARY}")
-set(libs "${libs};${OSGVIEWER_LIBRARY}")
 set(libs "${libs};${SFML_LIBRARIES}")
 
 # Set the executables

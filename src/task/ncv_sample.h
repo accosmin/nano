@@ -24,7 +24,7 @@ namespace ncv
 
         typedef std::vector<image_sample_t>     image_samples_t;
 
-        // construct image-indexed samples [istart, istart + icount)
+        // construct image-indexed samples: [istart, istart + icount) = annotation
         image_samples_t make_image_samples(index_t istart, index_t icount, index_t annotation);
 
         // fold image-indexed samples
@@ -37,10 +37,18 @@ namespace ncv
         // sample data
         ////////////////////////////////////////////////////////////////////////////////
 
+        struct annotated_image_t;
+
         struct sample_t
         {
                 // check if annotated
                 bool has_annotation() const { return m_target.size() > 0; }
+
+                // load from grayscale image
+                void load_gray(const annotated_image_t& aimage, const image_sample_t& isample);
+
+                // load from color image
+                void load_rgba(const annotated_image_t& aimage, const image_sample_t& isample);
 
                 // attributes
                 vector_t        m_data;

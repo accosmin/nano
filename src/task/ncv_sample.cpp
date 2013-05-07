@@ -1,4 +1,5 @@
 #include "ncv_sample.h"
+#include "ncv_annotation.h"
 
 namespace ncv
 {
@@ -14,6 +15,20 @@ namespace ncv
                 }
 
                 return isamples;
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void sample_t::load_gray(const annotated_image_t& aimage, const image_sample_t& isample)
+        {
+
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void sample_t::load_rgba(const annotated_image_t& aimage, const image_sample_t& isample)
+        {
+
         }
 
         //-------------------------------------------------------------------------------------------------

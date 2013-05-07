@@ -28,6 +28,9 @@ namespace ncv
                 // load images from the given directory
                 virtual bool load(const string_t& dir) = 0;
 
+                // load sample patch
+                virtual void load(const image_sample_t& isample, sample_t& sample) const = 0;
+
                 // access functions
                 virtual size_t n_rows() const = 0;
                 virtual size_t n_cols() const = 0;
