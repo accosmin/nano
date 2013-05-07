@@ -4,14 +4,6 @@
 - test program:
 	- measure the sample transformation
 
-- use openscenegraph:
-	- display the images from a task (draw label and annotation bounding box)
-	- simple menu/widgets to select between training and test images
-
-- functions to draw into a RGBA matrix:
-	- line, circles, 2D plots
-	- may use an opengl context for plotting, have a look at: http://www.glfw.org/
-
 - faster RGB to CIELab transform (goal: 1s single thread version of the color testing program)
 
 - train/test modes:
@@ -22,6 +14,10 @@
 	- check with different activation functions:
 		- parametrized using a beta parameter: going from almost linear to nonlinear
 		- check if the optimization can be improved by varying beta (linear -> nonlinear loss, for each beta start using the previous solution)
+
+- SFML test program:
+	- display task images (train/test, flip images), draw annotations and labels
+	- annotations
 
 - 2D widgets:
         - try to create a flat set of widget similar to these ones:

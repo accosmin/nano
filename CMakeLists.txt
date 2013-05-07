@@ -12,10 +12,9 @@ set(Boost_USE_MULTITHREADED ON)
 find_package(Boost COMPONENTS thread serialization program_options filesystem system)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
-# OpenSceneGraph
-find_package(OpenSceneGraph)
-find_package(osgDB)
-include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
+# SFML
+find_package(SFML REQUIRED system window graphics network audio)
+include_directories(${SFML_INCLUDE_DIR})
 
 # Set the compiler flags
 set(extra_cxx_flags                    "-Wall -std=c++11 -fopenmp")
@@ -72,7 +71,11 @@ set(libs "${libs};${Boost_SYSTEM_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_FILESYSTEM_LIBRARY_RELEASE}")
 set(libs "${libs};${QT_LIBRARIES}")
 set(libs "${libs};${OPENSCENEGRAPH_LIBRARIES}")
+set(libs "${libs};${OSG_LIBRARY}")
 set(libs "${libs};${OSGDB_LIBRARY}")
+set(libs "${libs};${OSGUTIL_LIBRARY}")
+set(libs "${libs};${OSGVIEWER_LIBRARY}")
+set(libs "${libs};${SFML_LIBRARIES}")
 
 # Set the executables
 set(nanocv_programs
@@ -82,7 +85,8 @@ set(nanocv_programs
         ncv_test_optimize
         ncv_test_image
         ncv_test_color
-        ncv_test_task)
+        ncv_test_task
+        ncv_test_sfml)
 
 # Build executables
 foreach(proj ${nanocv_programs})

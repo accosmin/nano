@@ -42,8 +42,6 @@ namespace ncv
                         m_stream << str;
                         return *this;
                 }
-
-                // stream tags
                 logger_t& operator<<(std::ostream& (*pf)(std::ostream&))
                 {
                         (*pf)(m_stream);
@@ -55,6 +53,7 @@ namespace ncv
                         return (*pf)(*this);
                 }
 
+                // stream tags
                 logger_t& newl()
                 {
                         m_stream << "\n";

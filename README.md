@@ -4,6 +4,7 @@ implementing and playing with various image classification and object detection 
 As the library evolves, command line programs will be supplied for testing various components and for training and testing models.
 
 The programming style is inspired by STL and boost and hopefully consistent across the library. Also C++11 is heavily used because it makes coding fun and 
-easier. The library is written to be cross-platform (having only Boost, Eigen and Qt as dependencies), to be generic (via templates) and to be easy to use and extend.
+easier. The library is written to be cross-platform (having Boost, Eigen and SFML as dependencies), to be generic and to be easy to use and 
+extend.
 
 
