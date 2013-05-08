@@ -59,7 +59,7 @@ namespace ncv
         typedef std::vector<index_t>            indices_t;
         typedef std::vector<count_t>            counts_t;
 
-        typedef long double                     scalar_t;
+        typedef double                          scalar_t;
         typedef std::vector<scalar_t>           scalars_t;
 
         typedef vector<scalar_t>::vector_t      vector_t;
@@ -123,7 +123,7 @@ namespace boost
 
                         else
                         {
-                                int rows, cols;
+                                int rows = 0, cols = 0;
                                 ar & rows; ar & cols;
 
                                 mat.resize(rows, cols);

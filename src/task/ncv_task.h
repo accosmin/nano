@@ -3,7 +3,6 @@
 
 #include "ncv_manager.h"
 #include "ncv_sample.h"
-#include "ncv_annotation.h"
 
 namespace ncv
 {
@@ -29,19 +28,20 @@ namespace ncv
                 virtual bool load(const string_t& dir) = 0;
 
                 // load sample patch
-                virtual void load(const image_sample_t& isample, sample_t& sample) const = 0;
+                virtual void load(const isample_t& isample, sample_t& sample) const = 0;
 
                 // access functions
                 virtual size_t n_rows() const = 0;
                 virtual size_t n_cols() const = 0;
                 virtual size_t n_inputs() const = 0;
                 virtual size_t n_outputs() const = 0;
+                irect_t region() const { return make_rect(0, 0, n_cols(), n_rows()); }
 
                 virtual size_t n_images() const = 0;
                 virtual const annotated_image_t& image(index_t i) const = 0;
 
                 virtual size_t n_folds() const = 0;
-                virtual const image_samples_t& fold(const fold_t& fold) const = 0;
+                virtual const isamples_t& fold(const fold_t& fold) const = 0;
         };
 }
 

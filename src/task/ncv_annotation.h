@@ -8,9 +8,14 @@
 namespace ncv
 {
         // pixel geometry
-        typedef int                                             coord_t;
-        typedef boost::geometry::model::d2::point_xy<coord_t>   point_t;
-        typedef boost::geometry::model::box<point_t>            rect_t;
+        typedef size_t                                          icoord_t;
+        typedef boost::geometry::model::d2::point_xy<icoord_t>  ipoint_t;
+        typedef boost::geometry::model::box<ipoint_t>           irect_t;
+
+        inline irect_t make_rect(icoord_t x = 0, icoord_t y = 0, icoord_t w = 0, icoord_t h = 0)
+        {
+                return irect_t(ipoint_t(x, y), ipoint_t(x + w, y + h));
+        }
 
         ////////////////////////////////////////////////////////////////////////////////
         // image annotation
@@ -19,17 +24,22 @@ namespace ncv
         struct annotation_t
         {
                 // constructor
-                annotation_t(coord_t x = 0, coord_t y = 0, coord_t w = 0, coord_t h = 0,
+                annotation_t(icoord_t x = 0, icoord_t y = 0, icoord_t w = 0, icoord_t h = 0,
                            const string_t& label = string_t(),
                            const vector_t& target = vector_t())
-                        :       m_region(point_t(x, y), point_t(x + w, y + h)),
+                        :       annotation_t(make_rect(x, y, w, h), label, target)
+                {
+                }
+
+                annotation_t(const irect_t& region, const string_t& label, const vector_t& target)
+                        :       m_region(region),
                                 m_label(label),
                                 m_target(target)
                 {
                 }
 
                 // attributes
-                rect_t          m_region;       // 2D annotated region
+                irect_t         m_region;       // 2D annotated region
                 string_t        m_label;        //
                 vector_t        m_target;       // target vector
         };
@@ -47,8 +57,8 @@ namespace ncv
                 void load_rgba(const char* buffer, size_t rows, size_t cols);
 
                 // save image region to gray/color buffer
-                void save_gray(size_t row, size_t col, size_t rows, size_t cols, vector_t& data) const;
-                void save_rgba(size_t row, size_t col, size_t rows, size_t cols, vector_t& data) const;
+                void save_gray(const irect_t& region, vector_t& data) const;
+                void save_rgba(const irect_t& region, vector_t& data) const;
 
                 // attributes
                 rgba_matrix_t   m_image;

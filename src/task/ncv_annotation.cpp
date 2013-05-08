@@ -35,34 +35,46 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void annotated_image_t::save_gray(size_t row, size_t col, size_t rows, size_t cols, vector_t& data) const
+        void annotated_image_t::save_gray(const irect_t& region, vector_t& data) const
         {
-                data.resize(rows * cols);
+                const icoord_t l = region.min_corner().x(), r = region.max_corner().x();
+                const icoord_t t = region.min_corner().y(), b = region.max_corner().y();
+                const icoord_t rows = b - t, cols = r - l;
 
-                for (index_t r = 0, i = 0; r < rows; r ++)
+                data.resize(rows * cols);
+                for (icoord_t r = 0, i = 0; r < rows; r ++)
                 {
-                        for (index_t c = 0; c < cols; c ++)
+                        for (icoord_t c = 0; c < cols; c ++)
                         {
-                                const cielab_t cielab = color::make_cielab(m_image(r + row, c + col));
-                                data(i ++) = cielab(0);
+//                                const cielab_t cielab = color::make_cielab(m_image(t + r, l + c));
+//                                data(i ++) = cielab(0);
+                                const rgba_t rgba = m_image(t + r, l + c);
+                                data(i ++) = color::make_luma(rgba);
                         }
                 }
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void annotated_image_t::save_rgba(size_t row, size_t col, size_t rows, size_t cols, vector_t& data) const
+        void annotated_image_t::save_rgba(const irect_t& region, vector_t& data) const
         {
-                data.resize(rows * cols * 3);
+                const icoord_t l = region.min_corner().x(), r = region.max_corner().x();
+                const icoord_t t = region.min_corner().y(), b = region.max_corner().y();
+                const icoord_t rows = b - t, cols = r - l;
 
-                for (index_t r = 0, i = 0; r < rows; r ++)
+                data.resize(rows * cols * 3);
+                for (icoord_t r = 0, i = 0; r < rows; r ++)
                 {
-                        for (index_t c = 0; c < cols; c ++)
+                        for (icoord_t c = 0; c < cols; c ++)
                         {
-                                const cielab_t cielab = color::make_cielab(m_image(r + row, c + col));
-                                data(i ++) = cielab(0);
-                                data(i ++) = cielab(1);
-                                data(i ++) = cielab(2);
+//                                const cielab_t cielab = color::make_cielab(m_image(t + r, l + c));
+//                                data(i ++) = cielab(0);
+//                                data(i ++) = cielab(1);
+//                                data(i ++) = cielab(2);
+                                const rgba_t rgba = m_image(t + r, l + c);
+                                data(i ++) = color::make_red(rgba);
+                                data(i ++) = color::make_green(rgba);
+                                data(i ++) = color::make_blue(rgba);
                         }
                 }
         }

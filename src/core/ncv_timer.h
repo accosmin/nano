@@ -80,10 +80,7 @@ namespace ncv
                         {
                                 stream << std::setfill('0') << std::setw(2) << seconds << "s:";
                         }
-                        if (days > 0 || hours > 0 || minutes > 0 || seconds > 0 || miliseconds >= 0)
-                        {
-                                stream << std::setfill('0') << std::setw(3) << miliseconds << "ms";
-                        }
+                        stream << std::setfill('0') << std::setw(3) << miliseconds << "ms";
 
                         return stream.str();
                 }

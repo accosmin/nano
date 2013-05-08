@@ -5,13 +5,13 @@ namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
-        image_samples_t make_image_samples(index_t istart, index_t icount, index_t annotation)
+        isamples_t make_isamples(index_t istart, index_t icount, const irect_t& region)
         {
-                image_samples_t isamples(icount);
+                isamples_t isamples(icount);
                 for (index_t i = 0; i < icount; i ++)
                 {
-                        isamples[i].m_image = istart + i;
-                        isamples[i].m_annotation = annotation;
+                        isamples[i].m_index = istart + i;
+                        isamples[i].m_region = region;
                 }
 
                 return isamples;
@@ -19,16 +19,33 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void sample_t::load_gray(const annotated_image_t& aimage, const image_sample_t& isample)
+        void sample_t::load_gray(const annotated_image_t& aimage, const isample_t& isample)
         {
-
+                aimage.save_gray(isample.m_region, m_data);
+                load_target(aimage, isample);
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void sample_t::load_rgba(const annotated_image_t& aimage, const image_sample_t& isample)
+        void sample_t::load_rgba(const annotated_image_t& aimage, const isample_t& isample)
         {
+                aimage.save_gray(isample.m_region, m_data);
+                load_target(aimage, isample);
+        }
 
+        //-------------------------------------------------------------------------------------------------
+
+        void sample_t::load_target(const annotated_image_t& aimage, const isample_t& /*isample*/)
+        {
+                // FIXME: assuming image classification (max one annotation for the whole image)!
+                if (aimage.m_annotations.empty())
+                {
+                        m_target.resize(0);
+                }
+                else
+                {
+                        m_target = aimage.m_annotations[0].m_target;
+                }
         }
 
         //-------------------------------------------------------------------------------------------------

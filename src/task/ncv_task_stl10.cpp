@@ -70,11 +70,7 @@ namespace ncv
                                 continue;
                         }
 
-                        const annotation_t anno(
-                                static_cast<coord_t>(0),
-                                static_cast<coord_t>(0),
-                                static_cast<coord_t>(n_cols()),
-                                static_cast<coord_t>(n_rows()),
+                        const annotation_t anno(region(),
                                 labels[ilabel],
                                 ncv::class_target(ilabel, n_outputs()));
 
@@ -132,7 +128,7 @@ namespace ncv
                 for (index_t f = 0; f < n_folds(); f ++)
                 {
                         const fold_t train_fold = std::make_pair(f, protocol::train);
-                        m_folds[train_fold] = make_image_samples(n_train_images, n_unlabeled_images, 0);
+                        m_folds[train_fold] = make_isamples(n_train_images, n_unlabeled_images, region());
 
                         string_t line;
                         if (!std::getline(findices, line))
@@ -155,7 +151,7 @@ namespace ncv
                                         const index_t i = text::from_string<index_t>(tokens[t]);
                                         if (i < n_train_images)
                                         {
-                                                m_folds[train_fold].push_back(image_sample_t(i, 0));
+                                                m_folds[train_fold].push_back(isample_t(i, region()));
                                         }
                                         else
                                         {
@@ -172,7 +168,7 @@ namespace ncv
                 for (index_t f = 0; f < n_folds(); f ++)
                 {
                         const fold_t test_fold = std::make_pair(f, protocol::test);
-                        m_folds[test_fold] = make_image_samples(n_train_images + n_unlabeled_images, n_test_images, 0);
+                        m_folds[test_fold] = make_isamples(n_train_images + n_unlabeled_images, n_test_images, region());
                 }
 
                 return true;
@@ -180,9 +176,9 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void stl10_task_t::load(const image_sample_t& isample, sample_t& sample) const
+        void stl10_task_t::load(const isample_t& isample, sample_t& sample) const
         {
-                const annotated_image_t& image = this->image(isample.m_image);
+                const annotated_image_t& image = this->image(isample.m_index);
                 sample.load_rgba(image, isample);
         }
 

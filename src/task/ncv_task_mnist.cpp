@@ -56,11 +56,7 @@ namespace ncv
                                 continue;
                         }
 
-                        const annotation_t anno(
-                                static_cast<coord_t>(0),
-                                static_cast<coord_t>(0),
-                                static_cast<coord_t>(n_cols()),
-                                static_cast<coord_t>(n_rows()),
+                        const annotation_t anno(region(),
                                 "digit" + text::to_string(ilabel),
                                 ncv::class_target(ilabel, n_outputs()));
 
@@ -81,19 +77,19 @@ namespace ncv
         bool mnist_task_t::build_folds(size_t n_train_images, size_t n_test_images)
         {
                 const fold_t train_fold = std::make_pair(0, protocol::train);
-                m_folds[train_fold] = make_image_samples(0, n_train_images, 0);
+                m_folds[train_fold] = make_isamples(0, n_train_images, region());
 
                 const fold_t test_fold = std::make_pair(0, protocol::test);
-                m_folds[test_fold] = make_image_samples(n_train_images, n_test_images, 0);
+                m_folds[test_fold] = make_isamples(n_train_images, n_test_images, region());
 
                 return true;
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void mnist_task_t::load(const image_sample_t& isample, sample_t& sample) const
+        void mnist_task_t::load(const isample_t& isample, sample_t& sample) const
         {
-                const annotated_image_t& image = this->image(isample.m_image);
+                const annotated_image_t& image = this->image(isample.m_index);
                 sample.load_gray(image, isample);
         }
 

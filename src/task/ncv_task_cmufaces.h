@@ -30,7 +30,7 @@ namespace ncv
                 virtual bool load(const string_t& dir);
 
                 // load sample patch
-                virtual void load(const image_sample_t& isample, sample_t& sample) const;
+                virtual void load(const isample_t& isample, sample_t& sample) const;
 
                 // access functions
                 virtual size_t n_rows() const { return 19; }
@@ -42,7 +42,7 @@ namespace ncv
                 virtual const annotated_image_t& image(index_t i) const { return m_images[i]; }
 
                 virtual size_t n_folds() const { return 1; }
-                virtual const image_samples_t& fold(const fold_t& fold) const { return m_folds.find(fold)->second; }
+                virtual const isamples_t& fold(const fold_t& fold) const { return m_folds.find(fold)->second; }
 
         private:
 
@@ -56,7 +56,7 @@ namespace ncv
 
                 // attributes
                 annotated_images_t      m_images;
-                fold_image_samples_t    m_folds;
+                fold_isamples_t    m_folds;
         };
 }
 
