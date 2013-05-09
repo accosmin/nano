@@ -74,13 +74,13 @@ int main(int argc, char *argv[])
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
         po_desc.add_options()("help,h", "help message");
-        po_desc.add_options()("iters,i",
+        po_desc.add_options()("iters",
                 boost::program_options::value<size_t>()->default_value(2048),
                 "number of iterations [8, 16000]");
-        po_desc.add_options()("eps,e",
+        po_desc.add_options()("eps",
                 boost::program_options::value<scalar_t>()->default_value(1e-6),
                 "convergence accuracy [1e-20, 1e-1]");
-        po_desc.add_options()("dim,d",
+        po_desc.add_options()("dim",
                 boost::program_options::value<size_t>()->default_value(128),
                 "maximum dimension [2, 1024]");
 

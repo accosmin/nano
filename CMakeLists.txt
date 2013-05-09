@@ -44,8 +44,6 @@ file(GLOB nanocv_sources
         src/task/*.cpp
         src/model/*.h
         src/model/*.cpp
-        src/train/*.h
-        src/train/*.cpp
         )
 
 add_library(nanocv
@@ -63,7 +61,6 @@ set(nanocv_includes
         src/loss/
         src/task/
         src/model/
-        src/train/
         )
 
 include_directories(
@@ -86,7 +83,9 @@ set(nanocv_programs
         ncv_test_image
         ncv_test_color
         ncv_test_task
-        ncv_test_sfml)
+        ncv_test_sfml
+
+        ncv_trainer)
 
 # Build executables
 foreach(proj ${nanocv_programs})

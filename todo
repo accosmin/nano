@@ -1,15 +1,7 @@
-- cleanup sampling & annotation data structures:
-	- move the point & rectangle to types
-	- create a 2d size structure (e.g. task sample dimension, model size)
-
 - train/test models:
-	- generic model (load/save/size/process)
-	- linear model implementation
-	- trainer for the linear model
+	- FASTER linear training!
 
-        - multiple runs (per fold) -> avg + stdev error rate
-	- take into account that some samples are not labeled!
-
+	- regularization: l2, symmetry
 	- could add options to filter the input: e.g. smoothing, normalization, contrast equalization
 
 - SFML test programs:

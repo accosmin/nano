@@ -10,6 +10,7 @@
 #include "ncv_stats.h"
 #include "ncv_loss.h"
 #include "ncv_task.h"
+#include "ncv_model.h"
 
 namespace ncv
 {

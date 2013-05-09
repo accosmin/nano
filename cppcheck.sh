@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dirs="src/ src/core/ src/loss/ src/model/ src/task/ src/train/ "
+dirs="src/ src/core/ src/loss/ src/model/ src/task/ "
 log="cppcheck.log"
 
 echo "includes: "

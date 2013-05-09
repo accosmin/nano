@@ -10,10 +10,10 @@ int main(int argc, char *argv[])
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
         po_desc.add_options()("help,h", "help message");
-        po_desc.add_options()("task,t",
+        po_desc.add_options()("task",
                 boost::program_options::value<ncv::string_t>(),
                 ("task name (" + ncv::text::concatenate(task_names, ", ") + ")").c_str());
-        po_desc.add_options()("dir,d",
+        po_desc.add_options()("task-dir",
                 boost::program_options::value<ncv::string_t>(),
                 "directory to load task data from");
 	
@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
         // check arguments and options
         if (	po_vm.empty() ||
                 !po_vm.count("task") ||
-                !po_vm.count("dir") ||
+                !po_vm.count("task-dir") ||
                 po_vm.count("help"))
         {
                 std::cout << po_desc;
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
         }
 
         const ncv::string_t cmd_task = po_vm["task"].as<ncv::string_t>();
-        const ncv::string_t cmd_dir = po_vm["dir"].as<ncv::string_t>();
+        const ncv::string_t cmd_task_dir = po_vm["task-dir"].as<ncv::string_t>();
 
         ncv::timer_t timer;
 
@@ -48,10 +48,10 @@ int main(int argc, char *argv[])
 
         // load task data
         timer.start();
-        if (!rtask->load(cmd_dir))
+        if (!rtask->load(cmd_task_dir))
         {
                 ncv::log_error() << "<<< failed to load task <" << cmd_task
-                                 << "> from directory <" << cmd_dir << ">!";
+                                 << "> from directory <" << cmd_task_dir << ">!";
                 return EXIT_FAILURE;
         }
         else

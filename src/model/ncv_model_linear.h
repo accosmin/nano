@@ -23,12 +23,12 @@ namespace ncv
                         return rmodel_t(new linear_model_t(params));
                 }
 
-                // initialize parameters
-                void initZero();
-                void initRandom(scalar_t min, scalar_t max);
+                // train the model
+                virtual bool train(const task_t& task, const fold_t& fold, const loss_t& loss,
+                                   size_t iters, scalar_t eps);
 
                 // compute the model output
-                virtual const vector_t& process(const vector_t& input) const;
+                virtual void process(const vector_t& input, vector_t& output) const;
 
                 // save/load from file
                 virtual bool save(const string_t& path) const;
@@ -44,12 +44,19 @@ namespace ncv
                 // resize to process new data
                 void resize(size_t inputs, size_t outputs);
 
+                // initialize parameters
+                void initZero();
+                void initRandom(scalar_t min, scalar_t max);
+
+                // encode parameters for optimization
+                virtual vector_t to_params() const;
+                virtual void from_params(const vector_t& params);
+
         private:
                 
                 // attributes
                 matrix_t		m_weights;
                 vector_t		m_bias;
-                mutable vector_t        m_output;
         };
 }
 
