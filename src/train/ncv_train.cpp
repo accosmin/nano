@@ -1,7 +1,38 @@
 #include "ncv_train.h"
+#include "ncv_loss.h"
 
 namespace ncv
 {
+        //-------------------------------------------------------------------------------------------------
+
+        void evaluate(const model_t& model, const loss_t& loss,
+                      const task_t& task, const fold_t& fold,
+                      scalar_t& lvalue, scalar_t& lerror)
+        {
+                lvalue = lerror = 0.0;
+                size_t cnt = 0;
+
+                const isamples_t& isamples = task.fold(fold);
+                for (size_t s = 0; s < isamples.size(); s ++)
+                {
+                        sample_t sample;
+                        task.load(isamples[s], sample);
+
+                        if (sample.has_annotation())
+                        {
+                                const vector_t& outputs = model.process(sample.m_data);
+                                const vector_t& targets = sample.m_target;
+
+                                lvalue += loss.value(targets, outputs);
+                                lerror += loss.error(targets, outputs);
+                                ++ cnt;
+                        }
+                }
+
+                lvalue /= (cnt == 0) ? 1.0 : 1.0 / (cnt + 0.0);
+                lerror /= (cnt == 0) ? 1.0 : 1.0 / (cnt + 0.0);
+        }
+
 //        //-------------------------------------------------------------------------------------------------
 
 //        class criterion_t : public function_t

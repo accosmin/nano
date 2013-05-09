@@ -2,7 +2,6 @@
 #define NANOCV_STATS_H
 
 #include "ncv_types.h"
-#include "ncv_math.h"
 #include <limits>
 
 namespace ncv

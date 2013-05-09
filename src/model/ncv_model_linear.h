@@ -23,8 +23,12 @@ namespace ncv
                         return rmodel_t(new linear_model_t(params));
                 }
 
+                // initialize parameters
+                void initZero();
+                void initRandom(scalar_t min, scalar_t max);
+
                 // compute the model output
-                virtual const vector_t& process(const vector_t& input);
+                virtual const vector_t& process(const vector_t& input) const;
 
                 // save/load from file
                 virtual bool save(const string_t& path) const;
@@ -45,7 +49,7 @@ namespace ncv
                 // attributes
                 matrix_t		m_weights;
                 vector_t		m_bias;
-                vector_t 		m_output;
+                mutable vector_t        m_output;
         };
 }
 

@@ -28,7 +28,7 @@ namespace ncv
                 virtual ~model_t() {}
 
                 // compute the model output
-                virtual const vector_t& process(const vector_t& input) = 0;
+                virtual const vector_t& process(const vector_t& input) const = 0;
 
                 // save/load from file
                 virtual bool save(const string_t& path) const = 0;

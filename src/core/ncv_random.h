@@ -53,7 +53,8 @@ namespace ncv
                 // constructor
                 random_t(trange min, trange max)
                         :       m_gen(0),//std::random_device()),
-                                m_die(min, max)
+                                m_die(std::min(min, max),
+                                      std::max(min, max))
                 {
                         std::random_device rd;
                         m_gen = gen_t(rd());
@@ -66,8 +67,11 @@ namespace ncv
                 }
                 
                 // fill the [begin, end) range with random values
-                template <class TIterator>
-                void operator()(TIterator begin, TIterator end)
+                template
+                <
+                        class titerator
+                >
+                void operator()(titerator begin, titerator end)
                 {
                         for (; begin != end; ++ begin)
                         {

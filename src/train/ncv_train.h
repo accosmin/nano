@@ -2,10 +2,17 @@
 #define NANOCV_TRAIN_H
 
 #include "ncv_model.h"
+#include "ncv_task.h"
 
 namespace ncv
 {	
-        // TODO: functions to evaluate a model on a task (average loss/error for all folds) and cumulate these values
+        class loss_t;
+
+        // evaluate a model on a given task: compute the average loss value & error
+        void evaluate(const model_t& model, const loss_t& loss,
+                      const task_t& task, const fold_t& fold,
+                      scalar_t& lvalue, scalar_t& lerror);
+
 
         // TODO: generic trainer?! (given model, task and loss)
 

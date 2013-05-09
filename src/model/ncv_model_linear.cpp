@@ -1,4 +1,5 @@
 #include "ncv_model_linear.h"
+#include "ncv_random.h"
 #include <fstream>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
@@ -28,9 +29,27 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        const vector_t& linear_model_t::process(const vector_t& input)
+        const vector_t& linear_model_t::process(const vector_t& input) const
         {
                 return m_output = m_weights * input + m_bias;
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void linear_model_t::initZero()
+        {
+                m_weights.setZero();
+                m_bias.setZero();
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void linear_model_t::initRandom(scalar_t min, scalar_t max)
+        {
+                random_t<scalar_t> rgen(min, max);
+
+                rgen(m_weights.data(), m_weights.data() + m_weights.size());
+                rgen(m_bias.data(), m_bias.data() + m_bias.size());
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -42,7 +61,6 @@ namespace ncv
                 boost::archive::binary_oarchive oa(ofs);
                 oa << m_weights;
                 oa << m_bias;
-                oa << m_output;
 
                 return ofs.good();
         }
@@ -56,10 +74,9 @@ namespace ncv
                 boost::archive::binary_iarchive ia(ifs);
                 ia >> m_weights;
                 ia >> m_bias;
-                ia >> m_output;
+                m_output.resize(n_outputs());
 
                 return ifs.good() &&
-                       static_cast<size_t>(m_output.size()) == n_outputs() &&
                        static_cast<size_t>(m_bias.size()) == n_outputs();
         }
 

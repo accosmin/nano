@@ -38,25 +38,6 @@ namespace ncv
                 model_manager_t::instance().add("linear", linear_model_t());
         }
 
-//        //-------------------------------------------------------------------------------------------------
-        
-//        void evaluate(const dataset_t& data, const loss_t& loss, model_t& model,
-//		scalar_t& lvalue, scalar_t& lerror)
-//	{
-//		lvalue = lerror = 0.0;
-//		for (size_t s = 0; s < data.n_samples(); s ++)
-//		{
-//			const vector_t& targets = data.targets(s);
-//			const vector_t& scores = model.process(data.inputs(s));
-			
-//			lvalue += loss.value(targets, scores);
-//			lerror += loss.error(targets, scores);
-//		}
-		
-//                lvalue *= inversedata.n_samples());
-//                lerror *= inversedata.n_samples());
-//	}
-
         //-------------------------------------------------------------------------------------------------
 }
 	
