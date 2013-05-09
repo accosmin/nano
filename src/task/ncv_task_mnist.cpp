@@ -7,6 +7,14 @@ namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
+        mnist_task_t::mnist_task_t(const string_t&)
+                :       task_t("mnist",
+                               "MNIST (digit classification)")
+        {
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
         bool mnist_task_t::load(const string_t& dir)
         {
                 const string_t test_ifile = dir + "/t10k-images-idx3-ubyte";
@@ -50,22 +58,22 @@ namespace ncv
                 while ( flabel.read(label, 1) &&
                         fimage.read(buffer, n_inputs()))
                 {
-                        const index_t ilabel = static_cast<index_t>(label[0]);
+                        const size_t ilabel = static_cast<size_t>(label[0]);
                         if (ilabel >= n_outputs())
                         {
                                 continue;
                         }
 
-                        const annotation_t anno(region(),
+                        const annotation_t anno(sample_region(0, 0),
                                 "digit" + text::to_string(ilabel),
                                 ncv::class_target(ilabel, n_outputs()));
 
-                        annotated_image_t aimage;
-                        aimage.m_protocol = p;
-                        aimage.m_annotations.push_back(anno);
-                        aimage.load_gray(buffer, n_rows(), n_cols());
+                        image_t image;
+                        image.m_protocol = p;
+                        image.m_annotations.push_back(anno);
+                        image.load_gray(buffer, n_rows(), n_cols());
 
-                        m_images.push_back(aimage);
+                        m_images.push_back(image);
                         ++ cnt;
                 }
 
@@ -74,13 +82,13 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        bool mnist_task_t::build_folds(size_t n_train_images, size_t n_test_images)
+        bool mnist_task_t::build_folds(size_t n_train, size_t n_test)
         {
                 const fold_t train_fold = std::make_pair(0, protocol::train);
-                m_folds[train_fold] = make_isamples(0, n_train_images, region());
+                m_folds[train_fold] = make_isamples(0, n_train, sample_region(0, 0));
 
                 const fold_t test_fold = std::make_pair(0, protocol::test);
-                m_folds[test_fold] = make_isamples(n_train_images, n_test_images, region());
+                m_folds[test_fold] = make_isamples(n_train, n_test, sample_region(0, 0));
 
                 return true;
         }
@@ -89,8 +97,7 @@ namespace ncv
 
         void mnist_task_t::load(const isample_t& isample, sample_t& sample) const
         {
-                const annotated_image_t& image = this->image(isample.m_index);
-                sample.load_gray(image, isample);
+                sample.load_gray(image(isample.m_index), isample.m_region);
         }
 
         //-------------------------------------------------------------------------------------------------

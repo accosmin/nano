@@ -23,6 +23,14 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
+        stl10_task_t::stl10_task_t(const string_t&)
+                :       task_t("stl10",
+                               "STL-10 (object classification)")
+        {
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
         bool stl10_task_t::load(const string_t& dir)
         {
                 const string_t test_ifile = dir + "/test_X.bin";
@@ -64,22 +72,22 @@ namespace ncv
                 while ( flabel.read(label, 1) &&
                         fimage.read(buffer, n_inputs()))
                 {
-                        const index_t ilabel = static_cast<index_t>(label[0]) - 1;
+                        const size_t ilabel = static_cast<size_t>(label[0]) - 1;
                         if (ilabel >= n_outputs())
                         {
                                 continue;
                         }
 
-                        const annotation_t anno(region(),
+                        const annotation_t anno(sample_region(0, 0),
                                 labels[ilabel],
                                 ncv::class_target(ilabel, n_outputs()));
 
-                        annotated_image_t aimage;
-                        aimage.m_protocol = p;
-                        aimage.m_annotations.push_back(anno);
-                        aimage.load_rgba(buffer, n_rows(), n_cols());
+                        image_t image;
+                        image.m_protocol = p;
+                        image.m_annotations.push_back(anno);
+                        image.load_rgba(buffer, n_rows(), n_cols());
 
-                        m_images.push_back(aimage);
+                        m_images.push_back(image);
                         ++ cnt;
                 }
 
@@ -102,12 +110,12 @@ namespace ncv
                 size_t cnt = 0;
                 while (fimage.read(buffer, n_inputs()))
                 {
-                        annotated_image_t aimage;
-                        aimage.m_protocol = p;
-                        aimage.m_annotations.clear();
-                        aimage.load_rgba(buffer, n_rows(), n_cols());
+                        image_t image;
+                        image.m_protocol = p;
+                        image.m_annotations.clear();
+                        image.load_rgba(buffer, n_rows(), n_cols());
 
-                        m_images.push_back(aimage);
+                        m_images.push_back(image);
                         ++ cnt;
                 }
 
@@ -116,8 +124,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        bool stl10_task_t::build_folds(const string_t& ifile,
-                size_t n_train_images, size_t n_unlabeled_images, size_t n_test_images)
+        bool stl10_task_t::build_folds(const string_t& ifile, size_t n_train, size_t n_unlabeled, size_t n_test)
         {
                 std::ifstream findices(ifile.c_str());
                 if (!findices.is_open())
@@ -125,10 +132,10 @@ namespace ncv
                         return false;
                 }
 
-                for (index_t f = 0; f < n_folds(); f ++)
+                for (size_t f = 0; f < n_folds(); f ++)
                 {
                         const fold_t train_fold = std::make_pair(f, protocol::train);
-                        m_folds[train_fold] = make_isamples(n_train_images, n_unlabeled_images, region());
+                        m_folds[train_fold] = make_isamples(n_train, n_unlabeled, sample_region(0, 0));
 
                         string_t line;
                         if (!std::getline(findices, line))
@@ -139,7 +146,7 @@ namespace ncv
                         strings_t tokens;
                         boost::algorithm::split(tokens, line, boost::algorithm::is_any_of(" \t\n\r"));
 
-                        for (index_t t = 0; t < tokens.size(); t ++)
+                        for (size_t t = 0; t < tokens.size(); t ++)
                         {
                                 if (tokens[t].empty())
                                 {
@@ -148,10 +155,10 @@ namespace ncv
 
                                 try
                                 {
-                                        const index_t i = text::from_string<index_t>(tokens[t]);
-                                        if (i < n_train_images)
+                                        const size_t i = text::from_string<size_t>(tokens[t]);
+                                        if (i < n_train)
                                         {
-                                                m_folds[train_fold].push_back(isample_t(i, region()));
+                                                m_folds[train_fold].push_back(isample_t(i, sample_region(0, 0)));
                                         }
                                         else
                                         {
@@ -165,10 +172,10 @@ namespace ncv
                         }
                 }
 
-                for (index_t f = 0; f < n_folds(); f ++)
+                for (size_t f = 0; f < n_folds(); f ++)
                 {
                         const fold_t test_fold = std::make_pair(f, protocol::test);
-                        m_folds[test_fold] = make_isamples(n_train_images + n_unlabeled_images, n_test_images, region());
+                        m_folds[test_fold] = make_isamples(n_train + n_unlabeled, n_test, sample_region(0, 0));
                 }
 
                 return true;
@@ -178,8 +185,7 @@ namespace ncv
 
         void stl10_task_t::load(const isample_t& isample, sample_t& sample) const
         {
-                const annotated_image_t& image = this->image(isample.m_index);
-                sample.load_rgba(image, isample);
+                sample.load_rgba(image(isample.m_index), isample.m_region);
         }
 
         //-------------------------------------------------------------------------------------------------

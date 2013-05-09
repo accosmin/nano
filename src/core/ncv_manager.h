@@ -24,23 +24,26 @@ namespace ncv
         public:
 
                 typedef std::shared_ptr<tobject>        robject_t;
+
+                // constructor
+                clonable_t(const string_t& name, const string_t& description)
+                        :       m_name(name), m_description(description)
+                {
+                }
         
                 // create an object clone
                 virtual robject_t clone(const string_t& params) const = 0;
                 
                 // describe the object
-                virtual const char* name() const = 0;
-                virtual const char* desc() const = 0;
-        };
+                const string_t& name() const { return m_name; }
+                const string_t& description() const { return m_description; }
 
-        #define MAKE_CLONABLE(str_class, str_name, str_desc) \
-                str_class(const string_t& params = string_t()); \
-                virtual robject_t clone(const string_t& params) const \
-                { \
-                        return std::make_shared<str_class>(params); \
-                } \
-                virtual const char* name() const { return str_name; } \
-                virtual const char* desc() const { return str_desc; }
+        private:
+
+                // attributes
+                string_t                m_name;
+                string_t                m_description;
+        };
 
         template
         <

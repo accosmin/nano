@@ -12,16 +12,15 @@ namespace ncv
         class logistic_loss_t : public loss_t
         {
         public:
+
+                // constructor
+                logistic_loss_t(const string_t& params = string_t());
                 
                 // create an object clone
-                virtual rloss_t clone(const string_t& /*params*/) const
+                virtual rloss_t clone(const string_t& params) const
                 {
-                        return rloss_t(new logistic_loss_t(*this));
+                        return rloss_t(new logistic_loss_t(params));
                 }
-
-                // describe the object
-                virtual const char* name() const { return "logistic"; }
-                virtual const char* desc() const { return "logistic loss"; }
 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const

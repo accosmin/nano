@@ -148,9 +148,9 @@ namespace ncv
                         scalar_t opt_fx() const { return m_opt_fx; }
                         scalar_t opt_gn() const { return m_opt_gn; }
 
-                        count_t fevals() const { return m_f_evals; }
-                        count_t gevals() const { return m_g_evals; }
-                        count_t iterations() const { return m_iterations; }
+                        size_t fevals() const { return m_f_evals; }
+                        size_t gevals() const { return m_g_evals; }
+                        size_t iterations() const { return m_iterations; }
                         scalar_t speed_avg() const { return m_speed_stats.avg(); }
                         scalar_t speed_stdev() const { return m_speed_stats.stdev(); }
 
@@ -196,10 +196,10 @@ namespace ncv
                         mutable scalar_t        m_opt_fx;               // optimal function value
                         mutable scalar_t        m_opt_gn;               // optimal function gradient norm
 
-                        mutable count_t         m_f_evals;              // #function value evaluations
-                        mutable count_t         m_g_evals;              // #function gradient evaluations
-                        mutable count_t         m_iterations;           // #iterations
-                        mutable stats<scalar_t> m_speed_stats;          // convergence speed statistics
+                        mutable size_t          m_f_evals;              // #function value evaluations
+                        mutable size_t          m_g_evals;              // #function gradient evaluations
+                        mutable size_t          m_iterations;           // #iterations
+                        mutable stats_t         m_speed_stats;          // convergence speed statistics
                 };
 
                 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -307,7 +307,7 @@ namespace ncv
                         scalar_t t = 1.0, pdt = -1.0;
 
                         // iterate until convergence
-                        for (index_t i = 0; i < problem.max_iterations(); i ++)
+                        for (size_t i = 0; i < problem.max_iterations(); i ++)
                         {
                                 problem.update(cstate);
 
@@ -356,7 +356,7 @@ namespace ncv
                         state_t cstate(problem, x0), pstate = cstate;
 
                         // iterate until convergence
-                        for (index_t i = 0; i < problem.max_iterations(); i ++)
+                        for (size_t i = 0; i < problem.max_iterations(); i ++)
                         {
                                 problem.update(cstate);
 
@@ -414,7 +414,7 @@ namespace ncv
                         vector_t q, r;
 
                         // iterate until convergence
-                        for (index_t i = 0; i < problem.max_iterations(); i ++)
+                        for (size_t i = 0; i < problem.max_iterations(); i ++)
                         {
                                 problem.update(cstate);
 
@@ -431,7 +431,7 @@ namespace ncv
                                 std::deque<vector_t>::const_reverse_iterator itr_s = ss.rbegin();
                                 std::deque<vector_t>::const_reverse_iterator itr_y = ys.rbegin();
                                 scalars_t alphas;
-                                for (index_t j = 1; j <= history_size && i >= j; j ++)
+                                for (size_t j = 1; j <= history_size && i >= j; j ++)
                                 {
                                         const vector_t& s = (*itr_s ++);
                                         const vector_t& y = (*itr_y ++);
@@ -455,7 +455,7 @@ namespace ncv
                                 std::deque<vector_t>::const_iterator it_s = ss.begin();
                                 std::deque<vector_t>::const_iterator it_y = ys.begin();
                                 scalars_t::const_reverse_iterator itr_alpha = alphas.rbegin();
-                                for (index_t j = 1; j <= history_size && i >= j; j ++)
+                                for (size_t j = 1; j <= history_size && i >= j; j ++)
                                 {
                                         const vector_t& s = (*it_s ++);
                                         const vector_t& y = (*it_y ++);

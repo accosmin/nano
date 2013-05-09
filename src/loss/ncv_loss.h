@@ -13,7 +13,7 @@ namespace ncv
         // classification convention
         inline scalar_t pos_target() { return +1.0; }
         inline scalar_t neg_target() { return -1.0; }
-        vector_t class_target(index_t ilabel, size_t n_labels);
+        vector_t class_target(size_t ilabel, size_t n_labels);
 
         // (multivariate) regression and classification error
         scalar_t l1_error(const vector_t& targets, const vector_t& scores);
@@ -30,6 +30,12 @@ namespace ncv
         class loss_t : public clonable_t<loss_t>
         {
         public:
+
+                // constructor
+                loss_t(const string_t& name, const string_t& description)
+                        :       clonable_t<loss_t>(name, description)
+                {
+                }
                 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const = 0;

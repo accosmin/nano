@@ -15,10 +15,10 @@ int main(int argc, char *argv[])
                 boost::program_options::value<ncv::scalar_t>()->default_value(1.0),
                 "scaling factor [0.1, 10.0]");
         po_desc.add_options()("width,w",
-                boost::program_options::value<ncv::index_t>()->default_value(0),
+                boost::program_options::value<ncv::size_t>()->default_value(0),
                 "scaling width [0, 4096] (considered if positive)");
         po_desc.add_options()("height,h",
-                boost::program_options::value<ncv::index_t>()->default_value(0),
+                boost::program_options::value<ncv::size_t>()->default_value(0),
                 "scaling height [0, 4096] (considered if positive)");
         po_desc.add_options()("output,o",
                 boost::program_options::value<ncv::string_t>(),
@@ -42,8 +42,8 @@ int main(int argc, char *argv[])
 
         const ncv::string_t cmd_input = po_vm["input"].as<ncv::string_t>();
         const ncv::scalar_t cmd_scale = ncv::math::clamp(po_vm["scale"].as<ncv::scalar_t>(), 0.1, 10.0);
-        const ncv::index_t cmd_width = ncv::math::clamp(po_vm["width"].as<ncv::index_t>(), 0, 4096);
-        const ncv::index_t cmd_height = ncv::math::clamp(po_vm["height"].as<ncv::index_t>(), 0, 4096);
+        const ncv::size_t cmd_width = ncv::math::clamp(po_vm["width"].as<ncv::size_t>(), 0, 4096);
+        const ncv::size_t cmd_height = ncv::math::clamp(po_vm["height"].as<ncv::size_t>(), 0, 4096);
         const ncv::string_t cmd_output = po_vm["output"].as<ncv::string_t>();
 
         ncv::timer_t timer;
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
         ncv::cielab_matrix_t cielab_image, cielab_image_scaled;
 
         timer.start();
-        if (!ncv::load_image(cmd_input, rgba_image))
+        if (!ncv::load_rgba(cmd_input, rgba_image))
         {
                 ncv::log_error() << "<<< failed to load image <" << cmd_input << ">!";
                 return EXIT_FAILURE;
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 
         // save output image
         timer.start();
-        if (!ncv::save_image(cmd_output, rgba_image))
+        if (!ncv::save_rgba(cmd_output, rgba_image))
         {
                 ncv::log_error() << ">>> failed to save image <" << cmd_output << ">!";
                 return EXIT_FAILURE;

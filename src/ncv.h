@@ -13,6 +13,16 @@
 
 namespace ncv
 {
+        // current version
+        static const size_t MAJOR_VERSION = 0;
+        static const size_t MINOR_VERSION = 1;
+
+        inline string_t version()
+        {
+                return text::to_string(MAJOR_VERSION) + "." +
+                       text::to_string(MINOR_VERSION);
+        }
+
         // initialize library (register objects, start worker pool ...)
         void init();
 }

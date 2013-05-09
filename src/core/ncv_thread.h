@@ -79,7 +79,7 @@ namespace ncv
 
                                 // attributes
                                 std::deque<task_t>      m_tasks;                // Tasks (functors) to execute
-                                index_t                 m_running;              // #running taks
+                                size_t                  m_running;              // #running taks
                                 mutex_t                 m_mutex;                // Synchronize task access
                                 condition_t             m_condition;            // Signaling
                                 bool                    m_stop;                 // Stop requested

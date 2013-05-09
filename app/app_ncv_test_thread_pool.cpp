@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
         const ncv::size_t n_max_jobs = pool.n_threads() * 16;
 
         // run multiple tests ...
-        for (ncv::index_t t = 0; t < n_tests; t ++)
+        for (ncv::size_t t = 0; t < n_tests; t ++)
         {
                 ncv::random_t<ncv::size_t> rnd(1, n_max_jobs);
 
@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
                 ncv::log_info() << "@pool [" << (t + 1) << "/" << n_tests
                                 << "]: creating " << n_jobs << " jobs ...";
 
-                for (ncv::index_t j = 0; j < n_jobs; j ++)
+                for (ncv::size_t j = 0; j < n_jobs; j ++)
                 {
                         pool.enqueue([=]()
                         {

@@ -1,50 +1,63 @@
 #include "ncv_sample.h"
-#include "ncv_annotation.h"
 
 namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
-        isamples_t make_isamples(index_t istart, index_t icount, const irect_t& region)
+        void sample_t::load_gray(const image_t& image, const rect_t& region)
         {
-                isamples_t isamples(icount);
-                for (index_t i = 0; i < icount; i ++)
+                const coord_t top = get_top(region), left = get_left(region);
+                const coord_t rows = get_rows(region), cols = get_cols(region);
+
+                m_data.resize(rows * cols);
+                for (coord_t r = 0, i = 0; r < rows; r ++)
                 {
-                        isamples[i].m_index = istart + i;
-                        isamples[i].m_region = region;
+                        for (coord_t c = 0; c < cols; c ++)
+                        {
+                                const rgba_t rgba = image.m_rgba(top + r, left + c);
+                                m_data(i ++) = color::make_luma(rgba);
+                        }
                 }
+                m_data /= 255.0;
 
-                return isamples;
+                load_target(image, region);
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void sample_t::load_gray(const annotated_image_t& aimage, const isample_t& isample)
+        void sample_t::load_rgba(const image_t& image, const rect_t& region)
         {
-                aimage.save_gray(isample.m_region, m_data);
-                load_target(aimage, isample);
+                const coord_t top = get_top(region), left = get_left(region);
+                const coord_t rows = get_rows(region), cols = get_cols(region);
+
+                m_data.resize(rows * cols * 3);
+                for (coord_t r = 0, i = 0; r < rows; r ++)
+                {
+                        for (coord_t c = 0; c < cols; c ++)
+                        {
+                                const rgba_t rgba = image.m_rgba(top + r, left + c);
+                                m_data(i ++) = color::make_red(rgba);
+                                m_data(i ++) = color::make_green(rgba);
+                                m_data(i ++) = color::make_blue(rgba);
+                        }
+                }
+                m_data /= 255.0;
+
+                load_target(image, region);
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void sample_t::load_rgba(const annotated_image_t& aimage, const isample_t& isample)
-        {
-                aimage.save_gray(isample.m_region, m_data);
-                load_target(aimage, isample);
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void sample_t::load_target(const annotated_image_t& aimage, const isample_t& /*isample*/)
+        void sample_t::load_target(const image_t& image, const rect_t& /*region*/)
         {
                 // FIXME: assuming image classification (max one annotation for the whole image)!
-                if (aimage.m_annotations.empty())
+                if (image.m_annotations.empty())
                 {
                         m_target.resize(0);
                 }
                 else
                 {
-                        m_target = aimage.m_annotations[0].m_target;
+                        m_target = image.m_annotations[0].m_target;
                 }
         }
 

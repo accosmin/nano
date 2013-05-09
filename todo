@@ -1,17 +1,16 @@
-- finish tasks:
-	- transform from image_sample_t to sample_t
-	- update the task test program to time sample transformation
+- cleanup sampling & annotation data structures:
+	- move the point & rectangle to types
+	- create a 2d size structure (e.g. task sample dimension, model size)
 
-- faster RGB to CIELab transform (goal: 1s single-thread version of the color testing program)
-
-- train/test modes:
-	- implement various activation functions: tanh, 2bx/(b^2+x^2), identity
-	- implement a generic model as a set of linear layers with various activation functions
-	- implement a back-prop like trainer
+- train/test models:
+	- generic model (load/save/size/process)
+	- linear model implementation
+	- trainer for the linear model
 
         - multiple runs (per fold) -> avg + stdev error rate
-
 	- take into account that some samples are not labeled!
+
+	- could add options to filter the input: e.g. smoothing, normalization, contrast equalization
 
 - SFML test programs:
 	- I - display task images (train/test, flip images), draw annotations and labels
@@ -34,6 +33,8 @@
                 - zooming buttons
                 - display the current zooming level (in percentage)
                 - display the output of various filters
+
+- faster RGB to CIELab transform (goal: 1s single-thread version of the color testing program)
 
 - add other datasets:
 	- INRIA car and person datasets

@@ -20,6 +20,12 @@ namespace ncv
         class task_t : public clonable_t<task_t>
 	{
         public:
+
+                // constructor
+                task_t(const string_t& name, const string_t& description)
+                        :       clonable_t<task_t>(name, description)
+                {
+                }
                 
                 // destructor
                 virtual ~task_t() {}
@@ -30,18 +36,35 @@ namespace ncv
                 // load sample patch
                 virtual void load(const isample_t& isample, sample_t& sample) const = 0;
 
+                // sample size
+                rect_t sample_size() const;
+
+                // sample region at a particular offset
+                rect_t sample_region(coord_t x, coord_t y) const;
+
                 // access functions
                 virtual size_t n_rows() const = 0;
                 virtual size_t n_cols() const = 0;
                 virtual size_t n_inputs() const = 0;
                 virtual size_t n_outputs() const = 0;
-                irect_t region() const { return make_rect(0, 0, n_cols(), n_rows()); }
 
-                virtual size_t n_images() const = 0;
-                virtual const annotated_image_t& image(index_t i) const = 0;
+                size_t n_images() const { return m_images.size(); }
+                const image_t& image(size_t i) const { return m_images[i]; }
 
-                virtual size_t n_folds() const = 0;
-                virtual const isamples_t& fold(const fold_t& fold) const = 0;
+                size_t n_folds() const { return m_folds.size() / 2; } // train + test
+                const isamples_t& fold(const fold_t& fold) const { return m_folds.find(fold)->second; }
+
+        protected:
+
+                // construct image-indexed samples for the [istart, istart + icount) images
+                //      having the (region) image coordinates
+                isamples_t make_isamples(size_t istart, size_t icount, const rect_t& region);
+
+        protected:
+
+                // attributes
+                images_t                m_images;
+                folds_t                 m_folds;
         };
 }
 

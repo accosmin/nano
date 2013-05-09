@@ -13,15 +13,14 @@ namespace ncv
         {
         public:
 
-                // create an object clone
-                virtual rloss_t clone(const string_t& /*params*/) const
-                {
-                        return rloss_t(new classnll_loss_t(*this));
-                }
+                // constructor
+                classnll_loss_t(const string_t& params = string_t());
 
-                // describe the object
-                virtual const char* name() const { return "classnll"; }
-                virtual const char* desc() const { return "class negative log-likelihood loss"; }
+                // create an object clone
+                virtual rloss_t clone(const string_t& params) const
+                {
+                        return rloss_t(new classnll_loss_t(params));
+                }
 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const

@@ -11,6 +11,8 @@
 #include "ncv_task_stl10.h"
 #include "ncv_task_cmufaces.h"
 
+#include "ncv_model_linear.h"
+
 namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
@@ -31,6 +33,9 @@ namespace ncv
                 task_manager_t::instance().add("cifar10", cifar10_task_t());
                 task_manager_t::instance().add("stl10", stl10_task_t());
                 task_manager_t::instance().add("cmufaces", cmufaces_task_t());
+
+                // register models
+                model_manager_t::instance().add("linear", linear_model_t());
         }
 
 //        //-------------------------------------------------------------------------------------------------

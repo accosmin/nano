@@ -1,1 +1,14 @@
-cppcheck --enable=all -I src/ -I src/core/ -I src/loss/ -I src/model/ -I src/task/ src/*.cpp src/core/*.cpp src/loss/*.cpp src/model/*.cpp src/task/*.cpp > cppcheck.log 2>&1
+#!/bin/bash
+
+dirs="src/ src/core/ src/loss/ src/model/ src/task/ src/train/ "
+log="cppcheck.log"
+
+echo "includes: "
+echo ${dirs//src/ -I src}
+
+echo "sources: "
+echo ${dirs// /\*.cpp }
+
+echo "checking ..."
+cppcheck --enable=all ${dirs//src/ -I src} ${dirs// /\*.cpp } > ${log} 2>&1
+echo ">>> done, results in ${log}."

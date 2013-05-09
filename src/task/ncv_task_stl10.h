@@ -17,15 +17,14 @@ namespace ncv
         class stl10_task_t : public task_t
         {
         public:
-                // create an object clone
-                virtual rtask_t clone(const string_t& /*params*/) const
-                {
-                        return rtask_t(new stl10_task_t(*this));
-                }
+                // constructor
+                stl10_task_t(const string_t& params = string_t());
 
-                // describe the object
-                virtual const char* name() const { return "stl10"; }
-                virtual const char* desc() const { return "STL-10 (object classification)"; }
+                // create an object clone
+                virtual rtask_t clone(const string_t& params) const
+                {
+                        return rtask_t(new stl10_task_t(params));
+                }
 
                 // load images from the given directory
                 virtual bool load(const string_t& dir);
@@ -38,12 +37,6 @@ namespace ncv
                 virtual size_t n_cols() const { return 96; }
                 virtual size_t n_inputs() const { return n_rows() * n_cols() * 3; }
                 virtual size_t n_outputs() const { return 10; }
-
-                virtual size_t n_images() const { return m_images.size(); }
-                virtual const annotated_image_t& image(index_t i) const { return m_images[i]; }
-
-                virtual size_t n_folds() const { return 10; }
-                virtual const isamples_t& fold(const fold_t& fold) const { return m_folds.find(fold)->second; }
                                                    
         private:
                                                    
@@ -52,14 +45,7 @@ namespace ncv
                 size_t load(const string_t& ifile, protocol p);
 
                 // build folds
-                bool build_folds(const string_t& ifile,
-                                 size_t n_train_images, size_t n_unlabeled_images, size_t n_test_images);
-
-        private:
-
-                // attributes
-                annotated_images_t      m_images;
-                fold_isamples_t    m_folds;
+                bool build_folds(const string_t& ifile, size_t n_train, size_t n_unlabeled, size_t n_test);
         };
 }
 

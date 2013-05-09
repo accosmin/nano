@@ -6,9 +6,9 @@ template
 <
         typename toperator
 >
-ncv::stats<> test(int size, int trials, toperator op)
+ncv::stats_t test(int size, int trials, toperator op)
 {
-        ncv::stats<> timings;
+        ncv::stats_t timings;
         for (int t = 0; t < trials; t ++)
         {
                 const ncv::timer_t timer;
@@ -29,9 +29,9 @@ template
 <
         typename toperator
 >
-ncv::stats<> test_omp(int size, int trials, toperator op)
+ncv::stats_t test_omp(int size, int trials, toperator op)
 {
-        ncv::stats<> timings;
+        ncv::stats_t timings;
         for (int t = 0; t < trials; t ++)
         {
                 const ncv::timer_t timer;
@@ -53,9 +53,9 @@ template
 <
         typename toperator
 >
-ncv::stats<> test_ncv(int size, int trials, toperator op)
+ncv::stats_t test_ncv(int size, int trials, toperator op)
 {
-        ncv::stats<> timings;
+        ncv::stats_t timings;
         for (int t = 0; t < trials; t ++)
         {
                 const ncv::timer_t timer;
@@ -68,7 +68,7 @@ ncv::stats<> test_ncv(int size, int trials, toperator op)
         return timings;
 }
 
-ncv::string_t to_string(const ncv::stats<>& timings, ncv::index_t col_size)
+ncv::string_t to_string(const ncv::stats_t& timings, ncv::size_t col_size)
 {
         return  ncv::text::resize(
                 ncv::text::to_string(timings.avg()) + " +/- " + ncv::text::to_string(timings.stdev()),
@@ -77,11 +77,11 @@ ncv::string_t to_string(const ncv::stats<>& timings, ncv::index_t col_size)
 
 // display the formatted timing statistics
 void print(const ncv::string_t& header,
-           const ncv::stats<>& timings,
-           const ncv::stats<>& timings_omp,
-           const ncv::stats<>& timings_ncv)
+           const ncv::stats_t& timings,
+           const ncv::stats_t& timings_omp,
+           const ncv::stats_t& timings_ncv)
 {
-        static const ncv::index_t col_size = 32;
+        static const ncv::size_t col_size = 32;
 
         std::cout << ncv::text::resize(header, col_size)
                   << to_string(timings, col_size)
@@ -123,15 +123,15 @@ int main(int argc, char *argv[])
                 };
 
                 std::fill(std::begin(results), std::end(results), 0.0);
-                const ncv::stats<> timings     = test    (size, 16, op);
+                const ncv::stats_t timings     = test    (size, 16, op);
                 std::cout << "sum = " << std::accumulate(std::begin(results), std::end(results), 0.0) << std::endl;
 
                 std::fill(std::begin(results), std::end(results), 0.0);
-                const ncv::stats<> timings_omp = test_omp(size, 16, op);
+                const ncv::stats_t timings_omp = test_omp(size, 16, op);
                 std::cout << "sum = " << std::accumulate(std::begin(results), std::end(results), 0.0) << std::endl;
 
                 std::fill(std::begin(results), std::end(results), 0.0);
-                const ncv::stats<> timings_ncv = test_ncv(size, 16, op);
+                const ncv::stats_t timings_ncv = test_ncv(size, 16, op);
                 std::cout << "sum = " << std::accumulate(std::begin(results), std::end(results), 0.0) << std::endl;
 
                 print("test1 [" + ncv::text::to_string(size) + "]",

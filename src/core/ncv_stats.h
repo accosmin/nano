@@ -11,28 +11,38 @@ namespace ncv
         // computes statistics: average, standard deviation etc.
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-        template
-        <
-                typename tscalar = double
-        >
-        class stats
+        class stats_t
 	{
 	public:
 		
                 // constructor
-                stats() { _clear(); }
+                stats_t()
+                {
+                        clear();
+                }
 		
                 // reset statistics
-		void clear() { _clear(); }
+                void clear()
+                {
+                        _clear();
+                }
                 
                 // add new values
-                void add(tscalar value) { _add(value); }
+                void add(scalar_t value)
+                {
+                        _add(value);
+                }
 
-                template <typename tscalar_other>
-                void add(const stats<tscalar_other>& other) { _add(other); }
+                void add(const stats_t& other)
+                {
+                        _add(other);
+                }
                 
-                template <class TIterator>
-                void add(TIterator begin, TIterator end)
+                template
+                <
+                        class titerator
+                >
+                void add(titerator begin, titerator end)
 		{
 			for ( ; begin != end; ++ begin)
                         {
@@ -41,22 +51,22 @@ namespace ncv
 		}
 		
                 // access functions
-		bool            valid() const { return count() != 0; }
-                size_t          count() const { return m_count; }
-                tscalar         min() const { return m_min; }
-                tscalar         max() const { return m_max; }
-                tscalar         avg() const { return _avg(); }
-                tscalar         var() const { return _var(); }
-                tscalar         stdev() const { return std::sqrt(_var()); }
-                tscalar         sum() const { return m_sum1; }
-                tscalar         sumsq() const { return m_sum2; }
+                bool valid() const { return count() != 0; }
+                size_t count() const { return m_count; }
+                scalar_t min() const { return m_min; }
+                scalar_t max() const { return m_max; }
+                scalar_t avg() const { return _avg(); }
+                scalar_t var() const { return _var(); }
+                scalar_t stdev() const { return std::sqrt(_var()); }
+                scalar_t sum() const { return m_sum1; }
+                scalar_t sumsq() const { return m_sum2; }
 		
 	private:
                 
                 // reset statistics
                 void _clear()
                 { 
-                        m_min = std::numeric_limits<tscalar>::max();
+                        m_min = std::numeric_limits<scalar_t>::max();
                         m_max = -m_min;
                         m_sum1 = 0;
                         m_sum2 = 0;
@@ -64,7 +74,7 @@ namespace ncv
                 }
                 
                 // add new values
-                void _add(tscalar value)
+                void _add(scalar_t value)
                 {
                         m_min = std::min(m_min, value);
                         m_max = std::max(m_max, value);
@@ -73,32 +83,30 @@ namespace ncv
                         m_count ++;
                 }
 
-                template <typename tscalar_other>
-                void _add(const stats<tscalar_other>& other)
+                void _add(const stats_t& other)
                 {
-                        m_min = std::min(m_min, static_cast<tscalar>(other.m_min));
-                        m_max = std::max(m_max, static_cast<tscalar>(other.m_max));
-                        m_sum1 += static_cast<tscalar>(other.m_sum1);
-                        m_sum2 += static_cast<tscalar>(other.m_sum2);
+                        m_min = std::min(m_min, other.m_min);
+                        m_max = std::max(m_max, other.m_max);
+                        m_sum1 += other.m_sum1;
+                        m_sum2 += other.m_sum2;
                         m_count += other.m_count;
                 }
                 
                 // access functions
-                tscalar _avg() const
+                scalar_t _avg() const
                 {
-                        return  count() < 1 ? sum() : sum() / count();
+                        return count() < 1 ? sum() : sum() / count();
                 }                
-                tscalar _var() const
+                scalar_t _var() const
                 {
-                        return  count() < 2 ? 
-                                0.0l : (sumsq() - sum() * sum() / count()) / (count() - 1);
+                        return count() < 2 ? 0.0 : (sumsq() - sum() * sum() / count()) / (count() - 1);
                 }                
                 
         private:
 		 
                 // attributes
-                tscalar         m_min, m_max;
-                tscalar         m_sum1, m_sum2;
+                scalar_t        m_min, m_max;
+                scalar_t        m_sum1, m_sum2;
                 size_t          m_count;
 	};
 }

@@ -4,6 +4,14 @@ namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
+        hinge_loss_t::hinge_loss_t(const string_t&)
+                :       loss_t("hinge",
+                               "hinge loss")
+        {
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
         scalar_t hinge_loss_t::value(const vector_t& targets, const vector_t& scores) const
         {
                 scalar_t value = 0.0l;

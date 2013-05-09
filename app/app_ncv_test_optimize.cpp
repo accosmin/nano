@@ -8,7 +8,7 @@ template
 >
 void print(const tproblem& problem, const ncv::string_t& header, const ncv::string_t& time)
 {
-        static const ncv::index_t col_size = 32;
+        static const ncv::size_t col_size = 32;
         static const ncv::string_t del_line(4 * col_size + 4, '-');
 
         std::cout << del_line << std::endl;

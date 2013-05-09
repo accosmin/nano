@@ -32,7 +32,7 @@ namespace ncv
                 {
                         return miliseconds_to_string(elapsed_miliseconds());
                 }
-                index_t elapsed_miliseconds() const
+                size_t elapsed_miliseconds() const
                 {
                         const auto duration = std::chrono::duration_cast<milliseconds_t>(now() - m_start);
                         return duration.count();
@@ -50,7 +50,7 @@ namespace ncv
                 }
 
                 // transform miliseconds to string (days, hours, minutes, seconds, miliseconds)
-                static string_t miliseconds_to_string(index_t count)
+                static string_t miliseconds_to_string(size_t count)
                 {
                         static const size_t size_second = 1000;
                         static const size_t size_minute = 60 * size_second;

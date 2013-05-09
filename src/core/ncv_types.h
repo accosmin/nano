@@ -7,6 +7,8 @@
 #include <map>
 #include <eigen3/Eigen/Core>
 #include <boost/serialization/vector.hpp>
+#include <boost/geometry/geometries/point_xy.hpp>
+#include <boost/geometry/geometries/box.hpp>
 
 namespace ncv
 {
@@ -54,10 +56,6 @@ namespace ncv
 
         // numerical types
         typedef std::size_t                     size_t;
-        typedef std::size_t                     index_t;
-        typedef std::size_t                     count_t;
-        typedef std::vector<index_t>            indices_t;
-        typedef std::vector<count_t>            counts_t;
 
         typedef double                          scalar_t;
         typedef std::vector<scalar_t>           scalars_t;
@@ -67,6 +65,35 @@ namespace ncv
 
         typedef matrix<scalar_t>::matrix_t      matrix_t;
         typedef matrix<scalar_t>::matrices_t    matrices_t;
+
+        // pixel geometry
+        namespace bgm = boost::geometry::model;
+        typedef int                             coord_t;
+        typedef bgm::d2::point_xy<coord_t>      point_t;
+        typedef bgm::box<point_t>               rect_t;
+
+        inline point_t make_point(coord_t x = 0, coord_t y = 0)
+        {
+                return point_t(x, y);
+        }
+        inline rect_t make_rect(coord_t x = 0, coord_t y = 0, coord_t w = 0, coord_t h = 0)
+        {
+                return rect_t(make_point(x, y), make_point(x + w, y + h));
+        }
+        inline rect_t make_size(coord_t w = 0, coord_t h = 0)
+        {
+                return make_rect(0, 0, w, h);
+        }
+
+        inline coord_t get_left(const rect_t& rect)     { return rect.min_corner().x(); }
+        inline coord_t get_right(const rect_t& rect)    { return rect.max_corner().x(); }
+        inline coord_t get_top(const rect_t& rect)      { return rect.min_corner().y(); }
+        inline coord_t get_bottom(const rect_t& rect)   { return rect.max_corner().y(); }
+
+        inline coord_t get_width(const rect_t& rect)    { return get_right(rect) - get_left(rect); }
+        inline coord_t get_height(const rect_t& rect)   { return get_bottom(rect) - get_top(rect); }
+        inline coord_t get_rows(const rect_t& rect)     { return get_height(rect); }
+        inline coord_t get_cols(const rect_t& rect)     { return get_width(rect); }
 
         // strings
         typedef std::string                     string_t;

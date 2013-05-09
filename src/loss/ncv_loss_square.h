@@ -12,16 +12,15 @@ namespace ncv
         class square_loss_t : public loss_t
 	{
 	public:
+
+                // constructor
+                square_loss_t(const string_t& params = string_t());
                 
                 // create an object clone
-                virtual rloss_t clone(const string_t& /*params*/) const
+                virtual rloss_t clone(const string_t& params) const
                 {
-                        return rloss_t(new square_loss_t(*this));
+                        return rloss_t(new square_loss_t(params));
                 }
-
-                // describe the object
-                virtual const char* name() const { return "square"; }
-                virtual const char* desc() const { return "square loss"; }
 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const

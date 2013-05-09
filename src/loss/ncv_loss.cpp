@@ -4,7 +4,7 @@ namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
-        vector_t class_target(index_t ilabel, size_t n_labels)
+        vector_t class_target(size_t ilabel, size_t n_labels)
         {
                 vector_t target(n_labels);
                 target.setConstant(neg_target());
