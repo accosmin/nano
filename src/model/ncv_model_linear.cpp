@@ -2,6 +2,7 @@
 #include "ncv_random.h"
 #include "ncv_optimize.h"
 #include "ncv_logger.h"
+#include "ncv_timer.h"
 #include <fstream>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
@@ -83,8 +84,8 @@ namespace ncv
                 vector_t params(n_parameters());
 
                 size_t pos = 0;
-                model_t::to_params(m_weights, pos, params);
-                model_t::to_params(m_bias, pos, params);
+                model_t::encode(m_weights, pos, params);
+                model_t::encode(m_bias, pos, params);
 
                 return params;
         }
@@ -94,8 +95,8 @@ namespace ncv
         void linear_model_t::from_params(const vector_t& params)
         {
                 size_t pos = 0;
-                model_t::from_params(m_weights, pos, params);
-                model_t::from_params(m_bias, pos, params);
+                model_t::decode(m_weights, pos, params);
+                model_t::decode(m_bias, pos, params);
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -126,21 +127,29 @@ namespace ncv
 
                 auto opt_fn_fval = [&] (const vector_t& x)
                 {
+                        // not needed!
                         return 0.0;
                 };
 
                 auto opt_fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
+                        timer_t timer;
+
+                        timer.start();
                         from_params(x);
 
                         sample_t sample;
-                        matrix_t wgrad = m_weights;
-                        vector_t output, lgrad, bgrad = m_bias;
+                        matrix_t wgrad(n_outputs(), n_inputs());
+                        vector_t output, lgrad(n_outputs()), bgrad(n_outputs());
                         wgrad.setZero();
                         bgrad.setZero();
 
                         scalar_t fx = 0.0;
                         size_t cnt = 0;
+
+//                        const size_t cum_size = 16;
+//                        matrix_t lgrad_cum(n_outputs(), cum_size);
+//                        matrix_t datat_cum(cum_size, n_inputs());
 
                         for (size_t i = 0; i < isamples.size(); i ++)
                         {
@@ -153,17 +162,34 @@ namespace ncv
                                         wgrad.noalias() += lgrad * sample.m_data.transpose();
                                         bgrad.noalias() += lgrad;
                                         cnt ++;
+
+//                                        fx += loss.vgrad(sample.m_target, output, lgrad);
+
+//                                        const size_t base = cnt % cum_size;
+//                                        lgrad_cum.col(base) = lgrad;
+//                                        datat_cum.row(base) = sample.m_data;
+
+//                                        if (base + 1 == cum_size)
+//                                        {
+//                                                wgrad.noalias() += lgrad_cum * datat_cum;
+//                                        }
+
+//                                        bgrad.noalias() += lgrad;
+//                                        cnt ++;
+
                                 }
                         }
 
                         gx.resize(n_parameters());
                         size_t pos = 0;
-                        model_t::to_params(wgrad, pos, gx);
-                        model_t::to_params(bgrad, pos, gx);
+                        model_t::encode(wgrad, pos, gx);
+                        model_t::encode(bgrad, pos, gx);
 
                         const scalar_t inv = (cnt == 0) ? 1.0 : 1.0 / cnt;
                         fx *= inv;
                         gx *= inv;
+
+                        std::cout << "fx = " << fx << " done in " << timer.elapsed_string() << std::endl;
 
                         return fx;
                 };

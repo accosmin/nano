@@ -56,12 +56,12 @@ namespace ncv
 
         public:
 
-                // encode parameters for optimization
-                static void to_params(const matrix_t& mat, size_t& pos, vector_t& params);
-                static void to_params(const vector_t& vec, size_t& pos, vector_t& params);
+                // encode parameters/gradients for optimization
+                static void encode(const matrix_t& mat, size_t& pos, vector_t& params);
+                static void encode(const vector_t& vec, size_t& pos, vector_t& params);
 
-                static void from_params(matrix_t& mat, size_t& pos, const vector_t& params);
-                static void from_params(vector_t& vec, size_t& pos, const vector_t& params);
+                static void decode(matrix_t& mat, size_t& pos, const vector_t& params);
+                static void decode(vector_t& vec, size_t& pos, const vector_t& params);
         };
 }
 

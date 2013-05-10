@@ -31,8 +31,8 @@ namespace ncv
                 for (int o = 0; o < targets.rows(); o ++)
                 {
                         const scalar_t edge = targets[o] * scores[o];
-                        value += std::max(1.0l - edge, 0.0l);
-                        grads[o] = edge > 1.0l ? 0.0l : - targets[o];
+                        value += std::max(1.0 - edge, 0.0);
+                        grads[o] = edge > 1.0 ? 0.0 : - targets[o];
                 }
                 return value;
         }

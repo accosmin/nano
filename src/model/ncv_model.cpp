@@ -36,7 +36,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void model_t::to_params(const matrix_t& mat, size_t& pos, vector_t& params)
+        void model_t::encode(const matrix_t& mat, size_t& pos, vector_t& params)
         {
                 std::copy(mat.data(), mat.data() + mat.size(), params.segment(pos, mat.size()).data());
                 pos += mat.size();
@@ -44,7 +44,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void model_t::to_params(const vector_t& vec, size_t& pos, vector_t& params)
+        void model_t::encode(const vector_t& vec, size_t& pos, vector_t& params)
         {
                 params.segment(pos, vec.size()) = vec;
                 pos += vec.size();
@@ -52,7 +52,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void model_t::from_params(matrix_t& mat, size_t& pos, const vector_t& params)
+        void model_t::decode(matrix_t& mat, size_t& pos, const vector_t& params)
         {
                 auto segm = params.segment(pos, mat.size());
                 std::copy(segm.data(), segm.data() + segm.size(), mat.data());
@@ -61,7 +61,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void model_t::from_params(vector_t& vec, size_t& pos, const vector_t& params)
+        void model_t::decode(vector_t& vec, size_t& pos, const vector_t& params)
         {
                 vec = params.segment(pos, vec.size());
                 pos += vec.size();
