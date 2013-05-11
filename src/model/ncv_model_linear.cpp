@@ -3,6 +3,8 @@
 #include "ncv_optimize.h"
 #include "ncv_logger.h"
 #include "ncv_timer.h"
+#include "ncv_optimize.h"
+#include "ncv_thread.h"
 #include <fstream>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
@@ -118,7 +120,8 @@ namespace ncv
                 typedef std::function<scalar_t(const vector_t&, vector_t&)>             op_fval_grad_t;
                 typedef optimize::problem_t<op_size_t, op_fval_t, op_fval_grad_t>       problem_t;
 
-                const isamples_t& isamples = task.fold(fold);
+                samples_t samples;
+                task.load(fold, samples);
 
                 auto opt_fn_size = [&] ()
                 {
@@ -138,47 +141,62 @@ namespace ncv
                         timer.start();
                         from_params(x);
 
-                        sample_t sample;
                         matrix_t wgrad(n_outputs(), n_inputs());
-                        vector_t output, lgrad(n_outputs()), bgrad(n_outputs());
+                        vector_t bgrad(n_outputs());
                         wgrad.setZero();
                         bgrad.setZero();
 
                         scalar_t fx = 0.0;
                         size_t cnt = 0;
 
-//                        const size_t cum_size = 16;
-//                        matrix_t lgrad_cum(n_outputs(), cum_size);
-//                        matrix_t datat_cum(cum_size, n_inputs());
-
-                        for (size_t i = 0; i < isamples.size(); i ++)
+                        struct thread_data
                         {
-                                task.load(isamples[i], sample);
-                                if (sample.has_annotation())
+                                scalar_t        m_fx;
+                                size_t          m_cnt;
+                                matrix_t        m_wgrad;
+                                vector_t        m_bgrad;
+                        };
+
+                        typedef std::function<void(thread_data&)>               op_init_t;
+                        typedef std::function<void(size_t, thread_data&)>       op_t;
+                        typedef std::function<void(const thread_data&)>         op_cumulate_t;
+
+                        thread_loop_cumulate<size_t, thread_data, op_init_t, op_t, op_cumulate_t>
+                        (
+                                samples.size(),
+                                [&] (thread_data& data)
                                 {
-                                        process(sample.m_data, output);
+                                        data.m_fx = 0.0;
+                                        data.m_cnt = 0;
+                                        data.m_wgrad.resize(n_outputs(), n_inputs());
+                                        data.m_bgrad.resize(n_outputs());
+                                        data.m_wgrad.setZero();
+                                        data.m_bgrad.setZero();
+                                },
+                                [&] (size_t i, thread_data& data)
+                                {
+                                        const sample_t& sample = samples[i];
+                                        if (sample.has_annotation())
+                                        {
+                                                vector_t output;
+                                                process(sample.m_input, output);
 
-                                        fx += loss.vgrad(sample.m_target, output, lgrad);
-                                        wgrad.noalias() += lgrad * sample.m_data.transpose();
-                                        bgrad.noalias() += lgrad;
-                                        cnt ++;
+                                                vector_t lgrad;
+                                                data.m_fx += loss.vgrad(sample.m_target, output, lgrad);
+                                                data.m_wgrad.noalias() += lgrad * sample.m_input.transpose();
+                                                data.m_bgrad.noalias() += lgrad;
 
-//                                        fx += loss.vgrad(sample.m_target, output, lgrad);
-
-//                                        const size_t base = cnt % cum_size;
-//                                        lgrad_cum.col(base) = lgrad;
-//                                        datat_cum.row(base) = sample.m_data;
-
-//                                        if (base + 1 == cum_size)
-//                                        {
-//                                                wgrad.noalias() += lgrad_cum * datat_cum;
-//                                        }
-
-//                                        bgrad.noalias() += lgrad;
-//                                        cnt ++;
-
+                                                data.m_cnt ++;
+                                        }
+                                },
+                                [&] (const thread_data& data)
+                                {
+                                        fx += data.m_fx;
+                                        cnt += data.m_cnt;
+                                        wgrad.noalias() += data.m_wgrad;
+                                        bgrad.noalias() += data.m_bgrad;
                                 }
-                        }
+                        );
 
                         gx.resize(n_parameters());
                         size_t pos = 0;
@@ -189,7 +207,8 @@ namespace ncv
                         fx *= inv;
                         gx *= inv;
 
-                        std::cout << "fx = " << fx << " done in " << timer.elapsed_string() << std::endl;
+                        log_info() << "linear model: function value = " << fx << " (done in "
+                                   << timer.elapsed_string() << ").";
 
                         return fx;
                 };

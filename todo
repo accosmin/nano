@@ -1,5 +1,11 @@
 - train/test models:
+	- store samples in memory:
+		- stl-10: downsample to images to 48x48 to fit in memory
+
 	- FASTER linear training!
+		- more efficient: v * u.transpose()
+
+	- experimentation script: train linear models on all datasets (256, 1e-5)
 
 	- regularization: l2, symmetry
 	- could add options to filter the input: e.g. smoothing, normalization, contrast equalization

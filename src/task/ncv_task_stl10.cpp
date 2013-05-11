@@ -183,9 +183,16 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void stl10_task_t::load(const isample_t& isample, sample_t& sample) const
+        void stl10_task_t::load(const fold_t& fold, samples_t& samples) const
         {
-                sample.load_rgba(image(isample.m_index), isample.m_region);
+                const isamples_t& isamples = this->fold(fold);
+
+                samples.resize(isamples.size());
+                for (size_t i = 0; i < isamples.size(); i ++)
+                {
+                        const isample_t& isample = isamples[i];
+                        samples[i].load_rgba(image(isample.m_index), isample.m_region);
+                }
         }
 
         //-------------------------------------------------------------------------------------------------

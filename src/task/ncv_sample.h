@@ -49,7 +49,7 @@ namespace ncv
                 void load_target(const image_t& image, const rect_t& region);
 
                 // attributes
-                vector_t        m_data;
+                vector_t        m_input;
                 vector_t        m_target;       // target vector (if empty then no annotation is given)
         };
 

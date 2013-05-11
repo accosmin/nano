@@ -15,16 +15,10 @@ namespace ncv
         // utility functions to process a loop using multiple threads.
         //
         // assuming a function <op(i)> to process the i-th element out of N total,
-        // then instead of:
+        // then instead of:     for (size_t i = 0; i < N; i ++) { op(i); }
+        // we can use:          thread_loop(N, op)
         //
-        // for (size_t i = 0; i < N; i ++)
-        //      op(i)
-        //
-        // we can use:
-        //
-        // thread_loop(N, op)
-        //
-        //      to automatically split the loop using as many threads as available on the current platform.
+        // to automatically split the loop using as many threads as available on the current platform.
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         namespace thread_impl
@@ -132,9 +126,10 @@ namespace ncv
                 thread_impl::worker_pool_t& pool = thread_impl::worker_pool_t::instance();
 
                 const tsize n_tasks = static_cast<tsize>(pool.n_threads());
+
                 for (tsize t = 0; t < n_tasks; t ++)
                 {
-                        pool.enqueue([=]()
+                        pool.enqueue([=,&op]()
                         {
                                 for (tsize i = t; i < N; i += n_tasks)
                                 {
@@ -146,7 +141,47 @@ namespace ncv
                 pool.wait();
         }
 
-        // TODO: policy based split (non-overlapping, interleaving memory access)
+        // split a loop computation of the given size using multiple threads
+        //      toperator_init: initialize <tdata> partial results for each thread
+        //      toperator_cumulate: cumulate <tdata> partial results
+        template
+        <                        
+                typename tsize,
+                typename tdata,
+                class toperator_init,
+                class toperator,
+                class toperator_cumulate
+        >
+        void thread_loop_cumulate(tsize N, toperator_init op_init, toperator op, toperator_cumulate op_cumulate)
+        {
+                thread_impl::worker_pool_t& pool = thread_impl::worker_pool_t::instance();
+
+                const tsize n_tasks = static_cast<tsize>(pool.n_threads());
+
+                std::vector<tdata> data(n_tasks);
+                for (tsize t = 0; t < n_tasks; t ++)
+                {
+                        op_init(data[t]);
+                }
+
+                for (tsize t = 0; t < n_tasks; t ++)
+                {
+                        pool.enqueue([=,&data,&op]()
+                        {
+                                for (tsize i = t; i < N; i += n_tasks)
+                                {
+                                        op(i, data[t]);
+                                }
+                        });
+                }
+
+                pool.wait();
+
+                for (tsize t = 0; t < n_tasks; t ++)
+                {
+                        op_cumulate(data[t]);
+                }
+        }
 }
 
 #endif // NANOCV_THREAD_H

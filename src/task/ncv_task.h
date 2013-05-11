@@ -33,8 +33,8 @@ namespace ncv
                 // load images from the given directory
                 virtual bool load(const string_t& dir) = 0;
 
-                // load sample patch
-                virtual void load(const isample_t& isample, sample_t& sample) const = 0;
+                // load samplees
+                virtual void load(const fold_t& fold, samples_t& samples) const = 0;
 
                 // sample size
                 rect_t sample_size() const;

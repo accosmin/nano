@@ -9,16 +9,16 @@ namespace ncv
                 const coord_t top = get_top(region), left = get_left(region);
                 const coord_t rows = get_rows(region), cols = get_cols(region);
 
-                m_data.resize(rows * cols);
+                m_input.resize(rows * cols);
                 for (coord_t r = 0, i = 0; r < rows; r ++)
                 {
                         for (coord_t c = 0; c < cols; c ++)
                         {
                                 const rgba_t rgba = image.m_rgba(top + r, left + c);
-                                m_data(i ++) = color::make_luma(rgba);
+                                m_input(i ++) = color::make_luma(rgba);
                         }
                 }
-                m_data /= 255.0;
+                m_input /= 255.0;
 
                 load_target(image, region);
         }
@@ -30,18 +30,18 @@ namespace ncv
                 const coord_t top = get_top(region), left = get_left(region);
                 const coord_t rows = get_rows(region), cols = get_cols(region);
 
-                m_data.resize(rows * cols * 3);
+                m_input.resize(rows * cols * 3);
                 for (coord_t r = 0, i = 0; r < rows; r ++)
                 {
                         for (coord_t c = 0; c < cols; c ++)
                         {
                                 const rgba_t rgba = image.m_rgba(top + r, left + c);
-                                m_data(i ++) = color::make_red(rgba);
-                                m_data(i ++) = color::make_green(rgba);
-                                m_data(i ++) = color::make_blue(rgba);
+                                m_input(i ++) = color::make_red(rgba);
+                                m_input(i ++) = color::make_green(rgba);
+                                m_input(i ++) = color::make_blue(rgba);
                         }
                 }
-                m_data /= 255.0;
+                m_input /= 255.0;
 
                 load_target(image, region);
         }

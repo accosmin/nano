@@ -9,19 +9,18 @@ namespace ncv
         {
                 lvalue = lerror = 0.0;
 
-                sample_t sample;
-                vector_t output;
                 size_t cnt = 0;
 
-                const isamples_t& isamples = task.fold(fold);
-                for (size_t s = 0; s < isamples.size(); s ++)
+                samples_t samples;
+                task.load(fold, samples);
+
+                for (size_t s = 0; s < samples.size(); s ++)
                 {
-
-                        task.load(isamples[s], sample);
-
+                        const sample_t& sample = samples[s];
                         if (sample.has_annotation())
                         {
-                                process(sample.m_data, output);
+                                vector_t output;
+                                process(sample.m_input, output);
 
                                 lvalue += loss.value(sample.m_target, output);
                                 lerror += loss.error(sample.m_target, output);
