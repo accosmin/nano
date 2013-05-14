@@ -29,6 +29,7 @@ namespace ncv
 
                 // load samples
                 virtual void load(const fold_t& fold, samples_t& samples) const;
+                virtual sample_t load(const isample_t& isample) const;
 
                 // access functions
                 virtual size_t n_rows() const { return 28; }

@@ -32,7 +32,7 @@ namespace ncv
                 task_manager_t::instance().add("mnist", mnist_task_t());
                 task_manager_t::instance().add("cifar10", cifar10_task_t());
                 task_manager_t::instance().add("stl10", stl10_task_t());
-                task_manager_t::instance().add("cmufaces", cmufaces_task_t());
+                task_manager_t::instance().add("cmu-faces", cmufaces_task_t());
 
                 // register models
                 model_manager_t::instance().add("linear", linear_model_t());

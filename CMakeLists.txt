@@ -12,9 +12,10 @@ set(Boost_USE_MULTITHREADED ON)
 find_package(Boost COMPONENTS thread serialization program_options filesystem system)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
-# SFML
-find_package(SFML REQUIRED system window graphics network audio)
-include_directories(${SFML_INCLUDE_DIR})
+# QT
+find_package(Qt4 REQUIRED)
+include(${QT_USE_FILE})
+add_definitions(${QT_DEFINITIONS})
 
 # Set the compiler flags
 set(extra_cxx_flags                    "-Wall -std=c++11 -fopenmp")
@@ -72,7 +73,7 @@ set(libs "${libs};${Boost_SERIALIZATION_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_SYSTEM_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_FILESYSTEM_LIBRARY_RELEASE}")
-set(libs "${libs};${SFML_LIBRARIES}")
+set(libs "${libs};${QT_LIBRARIES}")
 
 # Set the executables
 set(nanocv_programs
@@ -83,7 +84,6 @@ set(nanocv_programs
         ncv_test_image
         ncv_test_color
         ncv_test_task
-        ncv_test_sfml
 
         ncv_trainer)
 

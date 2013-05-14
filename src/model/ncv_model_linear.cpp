@@ -113,8 +113,9 @@ namespace ncv
                 resize(task.n_inputs(), task.n_outputs());
 
                 // construct the optimization problem
-                samples_t samples;
-                task.load(fold, samples);
+                const isamples_t& isamples = task.fold(fold);
+//                samples_t samples;
+//                task.load(fold, samples);
 
                 auto opt_fn_size = [&] ()
                 {
@@ -139,10 +140,16 @@ namespace ncv
                                 // constructor
                                 opt_data(size_t n_outputs = 0, size_t n_inputs = 0)
                                         :       m_fx(0.0),
-                                                m_cnt(0),
-                                                m_wgrad(n_outputs, n_inputs),
-                                                m_bgrad(n_outputs)
+                                                m_cnt(0)
                                 {
+                                        resize(n_outputs, n_inputs);
+                                }
+
+                                // resize
+                                void resize(size_t n_outputs, size_t n_inputs)
+                                {
+                                        m_wgrad.resize(n_outputs, n_inputs);
+                                        m_bgrad.resize(n_outputs);
                                         m_wgrad.setZero();
                                         m_bgrad.setZero();
                                 }
@@ -156,16 +163,17 @@ namespace ncv
 
                         opt_data cum_data(n_outputs(), n_inputs());
 
+                        // cumulate function value and gradients (using multiple threads)
                         thread_loop_cumulate<opt_data>
                         (
-                                samples.size(),
+                                isamples.size(),
                                 [&] (opt_data& data)
                                 {
-                                        data = opt_data(n_outputs(), n_inputs());
+                                        data.resize(n_outputs(), n_inputs());
                                 },
                                 [&] (size_t i, opt_data& data)
                                 {
-                                        const sample_t& sample = samples[i];
+                                        const sample_t sample = task.load(isamples[i]);
                                         if (sample.has_annotation())
                                         {
                                                 vector_t output;

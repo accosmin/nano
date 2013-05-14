@@ -1,6 +1,6 @@
 - train/test models:
-	- store samples in memory:
-		- stl-10: downsample to images to 48x48 to fit in memory
+	- test the training script
+	- make cmake work with Qt5 modules
 
 	- FASTER linear training!
 		- more efficient: v * u.transpose()
@@ -10,27 +10,7 @@
 	- regularization: l2, symmetry
 	- could add options to filter the input: e.g. smoothing, normalization, contrast equalization
 
-- SFML test programs:
-	- I - display task images (train/test, flip images), draw annotations and labels
-	- II - plot 2D functions
-
-- 2D widgets:
-        - try to create a flat set of widget similar to these ones:
-        http://timotheegiet.com/blog/illust/krita-sketch-release.html
-
-        Wrap the mainwindow and the events into a xdesktop class.
-        All the widgets should be added to this xdesktop class
-        
-        - nicer task viewer: - thumbnail-based, - caching 256 images, - iterator added to task for off-memory tasks
-        - gui: 
-                - display the image pyramid: implement bilinear & nearest neighbour scaling for arbitrary matrices, image_t::scale(0.9)
-                - display edges & gradients: image_t::edges(), image_t::grads() scaled to [0, 255]
-                - display histogram for a particular channel: implement a generic histogram class (count - contiguous & sparse, value binning) with formated text print
-                - display histogram for a selected region
-                        - should also load datasets and apply filters to them
-                - zooming buttons
-                - display the current zooming level (in percentage)
-                - display the output of various filters
+- small ui application to visualize task images
 
 - faster RGB to CIELab transform (goal: 1s single-thread version of the color testing program)
 

@@ -33,14 +33,14 @@ namespace ncv
 
         bool cifar10_task_t::load(const string_t& dir)
         {
-                const string_t train_bfile1 = dir + "/cifar-10-batches-bin/data_batch_1.bin";
-                const string_t train_bfile2 = dir + "/cifar-10-batches-bin/data_batch_2.bin";
-                const string_t train_bfile3 = dir + "/cifar-10-batches-bin/data_batch_3.bin";
-                const string_t train_bfile4 = dir + "/cifar-10-batches-bin/data_batch_4.bin";
-                const string_t train_bfile5 = dir + "/cifar-10-batches-bin/data_batch_5.bin";
+                const string_t train_bfile1 = dir + "/data_batch_1.bin";
+                const string_t train_bfile2 = dir + "/data_batch_2.bin";
+                const string_t train_bfile3 = dir + "/data_batch_3.bin";
+                const string_t train_bfile4 = dir + "/data_batch_4.bin";
+                const string_t train_bfile5 = dir + "/data_batch_5.bin";
                 const size_t n_train_images = 50000;
 
-                const string_t test_bfile = dir + "/cifar-10-batches-bin/test_batch.bin";
+                const string_t test_bfile = dir + "/test_batch.bin";
                 const size_t n_test_images = 10000;
 
                 m_images.clear();
@@ -120,6 +120,15 @@ namespace ncv
                         const isample_t& isample = isamples[i];
                         samples[i].load_rgba(image(isample.m_index), isample.m_region);
                 }
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        sample_t cifar10_task_t::load(const isample_t& isample) const
+        {
+                sample_t sample;
+                sample.load_rgba(image(isample.m_index), isample.m_region);
+                return sample;
         }
 
         //-------------------------------------------------------------------------------------------------

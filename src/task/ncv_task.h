@@ -35,6 +35,7 @@ namespace ncv
 
                 // load samplees
                 virtual void load(const fold_t& fold, samples_t& samples) const = 0;
+                virtual sample_t load(const isample_t& isample) const = 0;
 
                 // sample size
                 rect_t sample_size() const;

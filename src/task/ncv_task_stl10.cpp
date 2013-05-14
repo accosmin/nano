@@ -196,4 +196,13 @@ namespace ncv
         }
 
         //-------------------------------------------------------------------------------------------------
+
+        sample_t stl10_task_t::load(const isample_t& isample) const
+        {
+                sample_t sample;
+                sample.load_rgba(image(isample.m_index), isample.m_region);
+                return sample;
+        }
+
+        //-------------------------------------------------------------------------------------------------
 }
