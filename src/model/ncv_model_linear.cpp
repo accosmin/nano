@@ -1,9 +1,7 @@
 #include "ncv_model_linear.h"
 #include "ncv_random.h"
-#include "ncv_optimize.h"
 #include "ncv_logger.h"
 #include "ncv_timer.h"
-#include "ncv_optimize.h"
 #include "ncv_thread.h"
 #include <fstream>
 #include <boost/archive/binary_iarchive.hpp>
@@ -115,11 +113,6 @@ namespace ncv
                 resize(task.n_inputs(), task.n_outputs());
 
                 // construct the optimization problem
-                typedef std::function<size_t(void)>                                     op_size_t;
-                typedef std::function<scalar_t(const vector_t&)>                        op_fval_t;
-                typedef std::function<scalar_t(const vector_t&, vector_t&)>             op_fval_grad_t;
-                typedef optimize::problem_t<op_size_t, op_fval_t, op_fval_grad_t>       problem_t;
-
                 samples_t samples;
                 task.load(fold, samples);
 
@@ -141,39 +134,36 @@ namespace ncv
                         timer.start();
                         from_params(x);
 
-                        matrix_t wgrad(n_outputs(), n_inputs());
-                        vector_t bgrad(n_outputs());
-                        wgrad.setZero();
-                        bgrad.setZero();
-
-                        scalar_t fx = 0.0;
-                        size_t cnt = 0;
-
-                        struct thread_data
+                        struct opt_data
                         {
+                                // constructor
+                                opt_data(size_t n_outputs = 0, size_t n_inputs = 0)
+                                        :       m_fx(0.0),
+                                                m_cnt(0),
+                                                m_wgrad(n_outputs, n_inputs),
+                                                m_bgrad(n_outputs)
+                                {
+                                        m_wgrad.setZero();
+                                        m_bgrad.setZero();
+                                }
+
+                                // attributes
                                 scalar_t        m_fx;
                                 size_t          m_cnt;
                                 matrix_t        m_wgrad;
                                 vector_t        m_bgrad;
                         };
 
-                        typedef std::function<void(thread_data&)>               op_init_t;
-                        typedef std::function<void(size_t, thread_data&)>       op_t;
-                        typedef std::function<void(const thread_data&)>         op_cumulate_t;
+                        opt_data cum_data(n_outputs(), n_inputs());
 
-                        thread_loop_cumulate<size_t, thread_data, op_init_t, op_t, op_cumulate_t>
+                        thread_loop_cumulate<opt_data>
                         (
                                 samples.size(),
-                                [&] (thread_data& data)
+                                [&] (opt_data& data)
                                 {
-                                        data.m_fx = 0.0;
-                                        data.m_cnt = 0;
-                                        data.m_wgrad.resize(n_outputs(), n_inputs());
-                                        data.m_bgrad.resize(n_outputs());
-                                        data.m_wgrad.setZero();
-                                        data.m_bgrad.setZero();
+                                        data = opt_data(n_outputs(), n_inputs());
                                 },
-                                [&] (size_t i, thread_data& data)
+                                [&] (size_t i, opt_data& data)
                                 {
                                         const sample_t& sample = samples[i];
                                         if (sample.has_annotation())
@@ -189,37 +179,35 @@ namespace ncv
                                                 data.m_cnt ++;
                                         }
                                 },
-                                [&] (const thread_data& data)
+                                [&] (const opt_data& data)
                                 {
-                                        fx += data.m_fx;
-                                        cnt += data.m_cnt;
-                                        wgrad.noalias() += data.m_wgrad;
-                                        bgrad.noalias() += data.m_bgrad;
+                                        cum_data.m_fx += data.m_fx;
+                                        cum_data.m_cnt += data.m_cnt;
+                                        cum_data.m_wgrad.noalias() += data.m_wgrad;
+                                        cum_data.m_bgrad.noalias() += data.m_bgrad;
                                 }
                         );
 
                         gx.resize(n_parameters());
                         size_t pos = 0;
-                        model_t::encode(wgrad, pos, gx);
-                        model_t::encode(bgrad, pos, gx);
+                        model_t::encode(cum_data.m_wgrad, pos, gx);
+                        model_t::encode(cum_data.m_bgrad, pos, gx);
 
-                        const scalar_t inv = (cnt == 0) ? 1.0 : 1.0 / cnt;
-                        fx *= inv;
+                        const scalar_t inv = (cum_data.m_cnt == 0) ? 1.0 : 1.0 / cum_data.m_cnt;
+                        cum_data.m_fx *= inv;
                         gx *= inv;
 
-                        log_info() << "linear model: function value = " << fx << " (done in "
+                        log_info() << "linear model: function value = " << cum_data.m_fx << " (done in "
                                    << timer.elapsed_string() << ").";
 
-                        return fx;
+                        return cum_data.m_fx;
                 };
 
-                const problem_t problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad, iters, eps);
+                const opt_problem_t problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad, iters, eps);
 
                 // optimize
                 initRandom(-1.0, 1.0);
-
                 optimize::lbfgs(problem, to_params());
-
                 from_params(problem.opt_x());
 
                 // OK
@@ -230,7 +218,6 @@ namespace ncv
                           << "], speed = [" << problem.speed_avg() << " +/- " << problem.speed_stdev()
                           << "].";
 
-                // OK
                 return true;
         }
 

@@ -20,6 +20,9 @@ namespace ncv
 
                                 if (m_data.m_stop)
                                 {
+                                        m_data.m_running = 0;
+                                        m_data.m_tasks.clear();
+                                        m_data.m_condition.notify_all();
                                         break;
                                 }
 

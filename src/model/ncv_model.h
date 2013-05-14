@@ -3,6 +3,7 @@
 
 #include "ncv_task.h"
 #include "ncv_loss.h"
+#include "ncv_optimize.h"
 
 namespace ncv
 {
@@ -62,6 +63,14 @@ namespace ncv
 
                 static void decode(matrix_t& mat, size_t& pos, const vector_t& params);
                 static void decode(vector_t& vec, size_t& pos, const vector_t& params);
+
+        protected:
+
+                // optimization problem
+                typedef std::function<size_t(void)>                                     opt_size_t;
+                typedef std::function<scalar_t(const vector_t&)>                        opt_fval_t;
+                typedef std::function<scalar_t(const vector_t&, vector_t&)>             opt_fval_grad_t;
+                typedef optimize::problem_t<opt_size_t, opt_fval_t, opt_fval_grad_t>    opt_problem_t;
         };
 }
 

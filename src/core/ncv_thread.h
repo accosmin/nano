@@ -145,9 +145,9 @@ namespace ncv
         //      toperator_init: initialize <tdata> partial results for each thread
         //      toperator_cumulate: cumulate <tdata> partial results
         template
-        <                        
-                typename tsize,
+        <
                 typename tdata,
+                typename tsize,
                 class toperator_init,
                 class toperator,
                 class toperator_cumulate
