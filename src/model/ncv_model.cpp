@@ -11,12 +11,10 @@ namespace ncv
 
                 size_t cnt = 0;
 
-                samples_t samples;
-                task.load(fold, samples);
-
-                for (size_t s = 0; s < samples.size(); s ++)
+                const isamples_t& isamples = task.fold(fold);
+                for (size_t s = 0; s < isamples.size(); s ++)
                 {
-                        const sample_t& sample = samples[s];
+                        const sample_t sample = task.load(isamples[s]);
                         if (sample.has_annotation())
                         {
                                 vector_t output;

@@ -1,5 +1,5 @@
 - BUG:
-	- training the linear model on stl10 fails with inf
+	- line-search for lbfgs is quite slow for stl10
 
 - train/test models:
 	- test the training script
