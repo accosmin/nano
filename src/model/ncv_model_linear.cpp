@@ -205,7 +205,8 @@ namespace ncv
                         cum_data.m_fx *= inv;
                         gx *= inv;
 
-                        log_info() << "linear model: function value = " << cum_data.m_fx << " (done in "
+                        log_info() << "linear model: function value = " << cum_data.m_fx
+                                   << " using " << cum_data.m_cnt << " samples (done in "
                                    << timer.elapsed_string() << ").";
 
                         return cum_data.m_fx;
@@ -214,7 +215,8 @@ namespace ncv
                 const opt_problem_t problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad, iters, eps);
 
                 // optimize
-                initRandom(-1.0, 1.0);
+                initRandom(-1.0 / sqrt(n_parameters()),
+                           +1.0 / sqrt(n_parameters()));
                 optimize::lbfgs(problem, to_params());
                 from_params(problem.opt_x());
 

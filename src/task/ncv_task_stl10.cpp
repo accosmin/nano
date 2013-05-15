@@ -132,7 +132,9 @@ namespace ncv
                         return false;
                 }
 
-                for (size_t f = 0; f < n_folds(); f ++)
+                const size_t n_folds = 10;
+
+                for (size_t f = 0; f < n_folds; f ++)
                 {
                         const fold_t train_fold = std::make_pair(f, protocol::train);
                         m_folds[train_fold] = make_isamples(n_train, n_unlabeled, sample_region(0, 0));
@@ -172,7 +174,7 @@ namespace ncv
                         }
                 }
 
-                for (size_t f = 0; f < n_folds(); f ++)
+                for (size_t f = 0; f < n_folds; f ++)
                 {
                         const fold_t test_fold = std::make_pair(f, protocol::test);
                         m_folds[test_fold] = make_isamples(n_train + n_unlabeled, n_test, sample_region(0, 0));

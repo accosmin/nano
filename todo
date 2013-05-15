@@ -1,3 +1,6 @@
+- BUG:
+	- training the linear model on stl10 fails with inf
+
 - train/test models:
 	- test the training script
 	- make cmake work with Qt5 modules
