@@ -126,7 +126,6 @@ namespace ncv
                 thread_impl::worker_pool_t& pool = thread_impl::worker_pool_t::instance();
 
                 const tsize n_tasks = static_cast<tsize>(pool.n_threads());
-
                 for (tsize t = 0; t < n_tasks; t ++)
                 {
                         pool.enqueue([=,&op]()
@@ -182,6 +181,8 @@ namespace ncv
                         op_cumulate(data[t]);
                 }
         }
+
+        //                TODO: check if using a consecutive different policy speeds things-up!
 }
 
 #endif // NANOCV_THREAD_H

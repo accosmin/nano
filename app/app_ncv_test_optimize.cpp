@@ -12,9 +12,9 @@ void print(const tproblem& problem, const ncv::string_t& header, const ncv::stri
         static const ncv::string_t del_line(4 * col_size + 4, '-');
 
         std::cout << del_line << std::endl;
-        std::cout << header << ": x  = [" << problem.opt_x().transpose() << "]" << std::endl;
-        std::cout << header << ": fx = [" << problem.opt_fx() << "]" << std::endl;
-        std::cout << header << ": gn = [" << problem.opt_gn() << "]" << std::endl;
+        std::cout << header << ": x  = [" << problem.optimum().x.transpose() << "]" << std::endl;
+        std::cout << header << ": fx = [" << problem.optimum().f << "]" << std::endl;
+        std::cout << header << ": gn = [" << problem.optimum().g.norm() << "]" << std::endl;
         std::cout << header << ": evaluations = [" << problem.fevals() << " + " << problem.gevals()
                   << "], iterations = [" << problem.iterations() << "/" << problem.max_iterations()
                   << "], speed = [" << problem.speed_avg() << " +/- " << problem.speed_stdev()

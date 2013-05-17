@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <cstdint>
 #include <eigen3/Eigen/Core>
 #include <boost/serialization/vector.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
@@ -17,7 +18,7 @@ namespace ncv
         <
                 typename tvalue
         >
-        struct vector
+        struct tvector
         {
                 typedef tvalue                                  type_t;
 
@@ -33,12 +34,34 @@ namespace ncv
                 typedef typename vectors_t::iterator            vectors_it;
         };
 
+        // fixed size vector
+        template
+        <
+                typename tvalue,
+                std::size_t trows
+        >
+        struct tfixed_size_vector
+        {
+                typedef tvalue                                  type_t;
+
+                typedef Eigen::Matrix
+                <
+                        tvalue,
+                        trows,
+                        1,
+                        Eigen::ColMajor
+                >                                               vector_t;
+                typedef std::vector<vector_t>                   vectors_t;
+                typedef typename vectors_t::const_iterator      vectors_const_it;
+                typedef typename vectors_t::iterator            vectors_it;
+        };
+
         // matrix
         template
         <
                 typename tvalue
         >
-        struct matrix
+        struct tmatrix
         {
                 typedef tvalue                                  type_t;
 
@@ -54,17 +77,40 @@ namespace ncv
                 typedef typename matrix_t::Index                index_t;
         };
 
+        // fixed size matrix
+        template
+        <
+                typename tvalue,
+                std::size_t trows,
+                std::size_t tcols
+        >
+        struct tfixed_size_matrix
+        {
+                typedef tvalue                                  type_t;
+
+                typedef Eigen::Matrix
+                <       tvalue,
+                        trows,
+                        tcols,
+                        Eigen::RowMajor
+                >                                               matrix_t;
+                typedef std::vector<matrix_t>                   matrices_t;
+                typedef typename matrices_t::const_iterator     matrices_const_it;
+                typedef typename matrices_t::iterator           matrices_it;
+                typedef typename matrix_t::Index                index_t;
+        };
+
         // numerical types
         typedef std::size_t                     size_t;
 
         typedef double                          scalar_t;
         typedef std::vector<scalar_t>           scalars_t;
 
-        typedef vector<scalar_t>::vector_t      vector_t;
-        typedef vector<scalar_t>::vectors_t     vectors_t;
+        typedef tvector<scalar_t>::vector_t     vector_t;
+        typedef tvector<scalar_t>::vectors_t    vectors_t;
 
-        typedef matrix<scalar_t>::matrix_t      matrix_t;
-        typedef matrix<scalar_t>::matrices_t    matrices_t;
+        typedef tmatrix<scalar_t>::matrix_t     matrix_t;
+        typedef tmatrix<scalar_t>::matrices_t   matrices_t;
 
         // pixel geometry
         namespace bgm = boost::geometry::model;

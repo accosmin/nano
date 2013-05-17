@@ -13,9 +13,9 @@ find_package(Boost COMPONENTS thread serialization program_options filesystem sy
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 # QT
-find_package(Qt4 REQUIRED)
-include(${QT_USE_FILE})
-add_definitions(${QT_DEFINITIONS})
+find_package(Qt5Gui)
+include_directories(${Qt5Gui_INCLUDE_DIRS})
+add_definitions(${Qt5Gui_DEFINITIONS})
 
 # Set the compiler flags
 set(extra_cxx_flags                    "-Wall -std=c++11 -fopenmp")
@@ -73,7 +73,7 @@ set(libs "${libs};${Boost_SERIALIZATION_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_SYSTEM_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_FILESYSTEM_LIBRARY_RELEASE}")
-set(libs "${libs};${QT_LIBRARIES}")
+set(libs "${libs};${Qt5Gui_LIBRARIES}")
 
 # Set the executables
 set(nanocv_programs
@@ -84,6 +84,7 @@ set(nanocv_programs
         ncv_test_image
         ncv_test_color
         ncv_test_task
+        ncv_test_conv
 
         ncv_trainer)
 

@@ -1,8 +1,8 @@
 #include "ncv_model_linear.h"
 #include "ncv_random.h"
 #include "ncv_logger.h"
-#include "ncv_timer.h"
 #include "ncv_thread.h"
+#include "ncv_optimize.h"
 #include <fstream>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
@@ -101,6 +101,17 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
+        struct state_update_log_t
+        {
+                static void update(const optimize::state_t& state)
+                {
+                        ncv::log_info() << "linear model: current [loss = " << state.f
+                                        << ", gradient = " << state.g.norm() << "].";
+                }
+        };
+
+        //-------------------------------------------------------------------------------------------------
+
         bool linear_model_t::train(const task_t& task, const fold_t& fold, const loss_t& loss,
                 size_t iters, scalar_t eps)
         {
@@ -114,8 +125,6 @@ namespace ncv
 
                 // construct the optimization problem
                 const isamples_t& isamples = task.fold(fold);
-//                samples_t samples;
-//                task.load(fold, samples);
 
                 auto opt_fn_size = [&] ()
                 {
@@ -130,9 +139,6 @@ namespace ncv
 
                 auto opt_fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
-                        timer_t timer;
-
-                        timer.start();
                         from_params(x);
 
                         struct opt_data
@@ -205,24 +211,25 @@ namespace ncv
                         cum_data.m_fx *= inv;
                         gx *= inv;
 
-                        log_info() << "linear model: function value = " << cum_data.m_fx
-                                   << " using " << cum_data.m_cnt << " samples (done in "
-                                   << timer.elapsed_string() << ").";
-
                         return cum_data.m_fx;
                 };
 
-                const opt_problem_t problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad, iters, eps);
+                const optimize::problem_t<
+                                opt_size_t,
+                                opt_fval_t,
+                                opt_fval_grad_t,
+                                state_update_log_t>
+                        problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad, iters, eps);
 
                 // optimize
                 initRandom(-1.0 / sqrt(n_parameters()),
                            +1.0 / sqrt(n_parameters()));
                 optimize::lbfgs(problem, to_params());
-                from_params(problem.opt_x());
+                from_params(problem.optimum().x);
 
                 // OK
-                log_info() << "linear model: optimum loss = [" << problem.opt_fx() << "]" << ".";
-                log_info() << "linear model: optimum grad = [" << problem.opt_gn() << "]" << ".";
+                log_info() << "linear model: optimum [loss = " << problem.optimum().f
+                           << ", gradient = " << problem.optimum().g.norm() << "]" << ".";
                 log_info() << "linear model: evaluations = [" << problem.fevals() << " + " << problem.gevals()
                           << "], iterations = [" << problem.iterations() << "/" << problem.max_iterations()
                           << "], speed = [" << problem.speed_avg() << " +/- " << problem.speed_stdev()

@@ -3,7 +3,6 @@
 
 #include "ncv_task.h"
 #include "ncv_loss.h"
-#include "ncv_optimize.h"
 
 namespace ncv
 {
@@ -31,7 +30,7 @@ namespace ncv
 
                 // train the model
                 virtual bool train(const task_t& task, const fold_t& fold, const loss_t& loss,
-                                   size_t iters, scalar_t eps) = 0;
+                        size_t iters, scalar_t eps) = 0;
 
                 // evaluate the model (compute the average loss value & error)
                 void test(const task_t& task, const fold_t& fold, const loss_t& loss,
@@ -70,7 +69,6 @@ namespace ncv
                 typedef std::function<size_t(void)>                                     opt_size_t;
                 typedef std::function<scalar_t(const vector_t&)>                        opt_fval_t;
                 typedef std::function<scalar_t(const vector_t&, vector_t&)>             opt_fval_grad_t;
-                typedef optimize::problem_t<opt_size_t, opt_fval_t, opt_fval_grad_t>    opt_problem_t;
         };
 }
 

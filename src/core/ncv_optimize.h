@@ -3,6 +3,7 @@
 
 #include "ncv_math.h"
 #include "ncv_stats.h"
+#include "ncv_timer.h"
 #include <deque>
 
 namespace ncv
@@ -10,11 +11,21 @@ namespace ncv
         namespace optimize
         {
                 /////////////////////////////////////////////////////////////////////////////////////////////
-                // optimization state: current point, function value, gradient and descent direction.
+                // optimization state: current point (x), function value (f),
+                //      gradient (g) and descent direction (d).
                 ////////////////////////////////////////////////////////////////////////////////////////////////
 
                 struct state_t
                 {
+                        // constructor
+                        state_t(size_t size = 0)
+                                : x(size),
+                                  g(size),
+                                  d(size),
+                                  f(std::numeric_limits<scalar_t>::max())
+                        {
+                        }
+
                         // constructor
                         template
                         <
@@ -42,6 +53,23 @@ namespace ncv
                         scalar_t f;
                 };
 
+                // compare two optimization states
+                inline bool operator<(const state_t& one, const state_t& other)
+                {
+                        return one.f < other.f;
+                }
+
+                /////////////////////////////////////////////////////////////////////////////////////////////
+                // default state update procedure.
+                /////////////////////////////////////////////////////////////////////////////////////////////
+
+                struct state_update_ignore_t
+                {
+                        static void update(const state_t&)
+                        {
+                        }
+                };
+
                 /////////////////////////////////////////////////////////////////////////////////////////////
                 // describes a multivariate optimization problem.
                 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,14 +78,16 @@ namespace ncv
                 <
                         typename top_size,              // dimensionality:              N = top_size()
                         typename top_fval,              // function value:              fx = top_fval(x)
-                        typename top_fval_grad          //  & gradient:                 fx = top_fval_grad(x, gx)
+                        typename top_fval_grad,         //  & gradient:                 fx = top_fval_grad(x, gx)
+                        typename tstate_update_t = state_update_ignore_t
                 >
-                class problem_t
+                class problem_t : private tstate_update_t
                 {
                 public:
 
                         // constructor
-                        problem_t(const top_size& op_size,
+                        problem_t(
+                                const top_size& op_size,
                                 const top_fval& op_fval,
                                 const top_fval_grad& op_fval_grad,
                                 size_t max_iterations,  // maximum number of iterations (stopping criteria)
@@ -73,7 +103,8 @@ namespace ncv
                         }
 
                         // constructor
-                        problem_t(const top_size& op_size,
+                        problem_t(
+                                const top_size& op_size,
                                 const top_fval& op_fval,
                                 // no gradient provided!
                                 size_t max_iterations,  // maximum number of iterations (stopping criteria)
@@ -90,13 +121,10 @@ namespace ncv
                         // clear history
                         void clear() const
                         {
-                                m_opt_x.resize(size()); m_opt_x.setZero();
-                                m_opt_fx = std::numeric_limits<scalar_t>::max();
-                                m_opt_gn = std::numeric_limits<scalar_t>::max();
+                                m_optimum = state_t(size());
                                 m_f_evals = 0;
                                 m_g_evals = 0;
                                 m_iterations = 0;
-                                m_speed_stats.clear();
                         }
 
                         // compute function value & gradient
@@ -125,28 +153,25 @@ namespace ncv
                         {
                                 if (m_iterations > 0)
                                 {
-                                        const scalar_t df = std::fabs(m_opt_fx - st.f);
-                                        m_speed_stats.add(df / std::max(1.0, std::fabs(m_opt_fx)));
+                                        const scalar_t df = std::fabs(m_optimum.f - st.f);
+                                        m_speed_stats.add(df / std::max(1.0, std::fabs(m_optimum.f)));
                                 }
 
                                 m_iterations ++;
-                                if (st.f < m_opt_fx)
+                                if (st < m_optimum)
                                 {
-                                        m_opt_x = st.x;
-                                        m_opt_fx = st.f;
-                                        m_opt_gn = st.g.norm();
+                                        m_optimum = st;
                                 }
+
+                                tstate_update_t::update(st);
                         }
 
                         // access functions
                         size_t size() const { return m_op_size(); }
-
                         size_t max_iterations() const { return m_max_iterations; }
                         scalar_t epsilon() const { return m_epsilon; }
 
-                        const vector_t& opt_x() const { return m_opt_x; }
-                        scalar_t opt_fx() const { return m_opt_fx; }
-                        scalar_t opt_gn() const { return m_opt_gn; }
+                        const state_t& optimum() const { return m_optimum; }
 
                         size_t fevals() const { return m_f_evals; }
                         size_t gevals() const { return m_g_evals; }
@@ -192,9 +217,7 @@ namespace ncv
                         top_fval_grad           m_op_fval_grad;
                         bool                    m_has_op_grad;
 
-                        mutable vector_t        m_opt_x;                // optimal value
-                        mutable scalar_t        m_opt_fx;               // optimal function value
-                        mutable scalar_t        m_opt_gn;               // optimal function gradient norm
+                        mutable state_t         m_optimum;              // optimum state
 
                         mutable size_t          m_f_evals;              // #function value evaluations
                         mutable size_t          m_g_evals;              // #function gradient evaluations
@@ -301,10 +324,10 @@ namespace ncv
                                 return false;
                         }
 
-                        problem.clear();
-
                         state_t cstate(problem, x0);
                         scalar_t t = 1.0, pdt = -1.0;
+
+                        problem.clear();
 
                         // iterate until convergence
                         for (size_t i = 0; i < problem.max_iterations(); i ++)
@@ -351,9 +374,9 @@ namespace ncv
                                 return false;
                         }
 
-                        problem.clear();
-
                         state_t cstate(problem, x0), pstate = cstate;
+
+                        problem.clear();
 
                         // iterate until convergence
                         for (size_t i = 0; i < problem.max_iterations(); i ++)
@@ -406,12 +429,12 @@ namespace ncv
                                 return false;
                         }
 
-                        problem.clear();
-
                         std::deque<vector_t> ss, ys;
                         state_t cstate(problem, x0), pstate = cstate;
 
                         vector_t q, r;
+
+                        problem.clear();
 
                         // iterate until convergence
                         for (size_t i = 0; i < problem.max_iterations(); i ++)
