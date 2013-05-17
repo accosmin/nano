@@ -317,7 +317,9 @@ namespace ncv
                 >
                 bool gradient_descent(
                         const tproblem& problem,
-                        const vector_t& x0)
+                        const vector_t& x0,
+                        scalar_t ls_alpha = 0.2,
+                        scalar_t ls_beta = 0.7)
                 {
                         if (problem.size() != math::cast<size_t>(x0.size()))
                         {
@@ -350,7 +352,8 @@ namespace ncv
                                         t *= pdt / dt;
                                 }
 
-                                t = impl::line_search_armijo(problem, cstate, t, 0.2, 0.7);
+                                t = impl::line_search_armijo(problem, cstate,
+                                                             t, ls_alpha, ls_beta);
                                 cstate.update(problem, t);
                         }                        
 
@@ -367,7 +370,9 @@ namespace ncv
                 >
                 bool conjugate_gradient_descent(
                         const tproblem& problem,
-                        const vector_t& x0)
+                        const vector_t& x0,
+                        scalar_t ls_alpha = 1e-4,
+                        scalar_t ls_beta = 0.1)
                 {
                         if (problem.size() != math::cast<size_t>(x0.size()))
                         {
@@ -403,7 +408,8 @@ namespace ncv
                                 }
 
                                 // update solution
-                                const scalar_t t = impl::line_search_strong_wolfe(problem, cstate, 1.0, 1e-4, 0.1);
+                                const scalar_t t = impl::line_search_strong_wolfe(problem, cstate,
+                                                                                  1.0, ls_alpha, ls_beta);
                                 pstate = cstate;
                                 cstate.update(problem, t);
                         }
@@ -422,7 +428,9 @@ namespace ncv
                 bool lbfgs(
                         const tproblem& problem,
                         const vector_t& x0,
-                        size_t history_size = 8)
+                        size_t history_size = 8,
+                        scalar_t ls_alpha = 1e-4,
+                        scalar_t ls_beta = 0.1)
                 {
                         if (problem.size() != math::cast<size_t>(x0.size()))
                         {
@@ -491,7 +499,8 @@ namespace ncv
                                 cstate.d = -r;
 
                                 // update solution
-                                const scalar_t t = impl::line_search_strong_wolfe(problem, cstate, 1.0, 1e-4, 0.9);
+                                const scalar_t t = impl::line_search_strong_wolfe(problem, cstate,
+                                                                                  1.0, ls_alpha, ls_beta);
                                 pstate = cstate;
                                 cstate.update(problem, t);
 

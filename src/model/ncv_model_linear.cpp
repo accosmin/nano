@@ -123,6 +123,33 @@ namespace ncv
 
                 resize(task.n_inputs(), task.n_outputs());
 
+                // (partial) optimization data
+                struct opt_data
+                {
+                        // constructor
+                        opt_data(size_t n_outputs = 0, size_t n_inputs = 0)
+                                :       m_fx(0.0),
+                                        m_cnt(0)
+                        {
+                                resize(n_outputs, n_inputs);
+                        }
+
+                        // resize
+                        void resize(size_t n_outputs, size_t n_inputs)
+                        {
+                                m_wgrad.resize(n_outputs, n_inputs);
+                                m_bgrad.resize(n_outputs);
+                                m_wgrad.setZero();
+                                m_bgrad.setZero();
+                        }
+
+                        // attributes
+                        scalar_t        m_fx;
+                        size_t          m_cnt;
+                        matrix_t        m_wgrad;
+                        vector_t        m_bgrad;
+                };
+
                 // construct the optimization problem
                 const isamples_t& isamples = task.fold(fold);
 
@@ -133,39 +160,47 @@ namespace ncv
 
                 auto opt_fn_fval = [&] (const vector_t& x)
                 {
-                        // not needed!
-                        return 0.0;
+                        from_params(x);
+
+                        opt_data cum_data(n_outputs(), n_inputs());
+
+                        // cumulate function value and gradients (using multiple threads)
+                        thread_loop_cumulate<opt_data>
+                        (
+                                isamples.size(),
+                                [&] (opt_data& data)
+                                {
+                                        data.resize(n_outputs(), n_inputs());
+                                },
+                                [&] (size_t i, opt_data& data)
+                                {
+                                        const sample_t sample = task.load(isamples[i]);
+                                        if (sample.has_annotation())
+                                        {
+                                                vector_t output;
+                                                process(sample.m_input, output);
+
+                                                vector_t lgrad;
+                                                data.m_fx += loss.vgrad(sample.m_target, output, lgrad);
+                                                data.m_cnt ++;
+                                        }
+                                },
+                                [&] (const opt_data& data)
+                                {
+                                        cum_data.m_fx += data.m_fx;
+                                        cum_data.m_cnt += data.m_cnt;
+                                }
+                        );
+
+                        const scalar_t inv = (cum_data.m_cnt == 0) ? 1.0 : 1.0 / cum_data.m_cnt;
+                        cum_data.m_fx *= inv;
+
+                        return cum_data.m_fx;
                 };
 
                 auto opt_fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
                         from_params(x);
-
-                        struct opt_data
-                        {
-                                // constructor
-                                opt_data(size_t n_outputs = 0, size_t n_inputs = 0)
-                                        :       m_fx(0.0),
-                                                m_cnt(0)
-                                {
-                                        resize(n_outputs, n_inputs);
-                                }
-
-                                // resize
-                                void resize(size_t n_outputs, size_t n_inputs)
-                                {
-                                        m_wgrad.resize(n_outputs, n_inputs);
-                                        m_bgrad.resize(n_outputs);
-                                        m_wgrad.setZero();
-                                        m_bgrad.setZero();
-                                }
-
-                                // attributes
-                                scalar_t        m_fx;
-                                size_t          m_cnt;
-                                matrix_t        m_wgrad;
-                                vector_t        m_bgrad;
-                        };
 
                         opt_data cum_data(n_outputs(), n_inputs());
 
