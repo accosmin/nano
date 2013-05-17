@@ -2,6 +2,7 @@
 #define  NANOCV_IMAGE_H
 
 #include "ncv_color.h"
+#include "ncv_geom.h"
 
 namespace ncv
 {
@@ -22,7 +23,7 @@ namespace ncv
                 annotation_t(coord_t x = 0, coord_t y = 0, coord_t w = 0, coord_t h = 0,
                            const string_t& label = string_t(),
                            const vector_t& target = vector_t())
-                        :       annotation_t(make_rect(x, y, w, h), label, target)
+                        :       annotation_t(geom::make_rect(x, y, w, h), label, target)
                 {
                 }
 

@@ -2,6 +2,7 @@
 #define NANOCV_H
 
 #include "ncv_optimize.h"
+#include "ncv_geom.h"
 #include "ncv_logger.h"
 #include "ncv_random.h"
 #include "ncv_timer.h"

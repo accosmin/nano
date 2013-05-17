@@ -6,8 +6,8 @@ namespace ncv
 
         void sample_t::load_gray(const image_t& image, const rect_t& region)
         {
-                const coord_t top = get_top(region), left = get_left(region);
-                const coord_t rows = get_rows(region), cols = get_cols(region);
+                const coord_t top = geom::top(region), left = geom::left(region);
+                const coord_t rows = geom::rows(region), cols = geom::cols(region);
 
                 m_input.resize(rows * cols);
                 for (coord_t r = 0, i = 0; r < rows; r ++)
@@ -27,8 +27,8 @@ namespace ncv
 
         void sample_t::load_rgba(const image_t& image, const rect_t& region)
         {
-                const coord_t top = get_top(region), left = get_left(region);
-                const coord_t rows = get_rows(region), cols = get_cols(region);
+                const coord_t top = geom::top(region), left = geom::left(region);
+                const coord_t rows = geom::rows(region), cols = geom::cols(region);
 
                 m_input.resize(rows * cols * 3);
                 for (coord_t r = 0, i = 0; r < rows; r ++)
@@ -48,16 +48,33 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void sample_t::load_target(const image_t& image, const rect_t& /*region*/)
+        void sample_t::load_target(const image_t& image, const rect_t& region)
         {
-                // FIXME: assuming image classification (max one annotation for the whole image)!
-                if (image.m_annotations.empty())
+                scalar_t best_overlap = 0.0;
+                size_t best_index = 0;
+
+                // find the most overlapping annotation
+                for (size_t i = 0; i < image.m_annotations.size(); i ++)
                 {
-                        m_target.resize(0);
+                        const annotation_t& anno = image.m_annotations[i];
+
+                        const scalar_t overlap = geom::overlap(anno.m_region, region);
+                        if (overlap > best_overlap)
+                        {
+                                best_overlap = overlap;
+                                best_index = i;
+                        }
+                }
+
+                static const scalar_t thres_overlap = 0.80;
+                if (    best_overlap > thres_overlap &&
+                        best_index < image.m_annotations.size())
+                {
+                        m_target = image.m_annotations[best_index].m_target;
                 }
                 else
                 {
-                        m_target = image.m_annotations[0].m_target;
+                        m_target.resize(0);
                 }
         }
 

@@ -13,7 +13,7 @@ namespace ncv
         {
                 // constructor
                 isample_t(size_t index = 0, coord_t x = 0, coord_t y = 0, coord_t w = 0, coord_t h = 0)
-                        :       isample_t(index, make_rect(x, y, w, h))
+                        :       isample_t(index, geom::make_rect(x, y, w, h))
                 {
                 }
                 isample_t(size_t index, const rect_t& region)
