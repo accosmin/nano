@@ -2,7 +2,7 @@
 #define NANOCV_TASK_H
 
 #include "ncv_manager.h"
-#include "ncv_sample.h"
+#include "ncv_image.h"
 
 namespace ncv
 {
@@ -33,10 +33,6 @@ namespace ncv
                 // load images from the given directory
                 virtual bool load(const string_t& dir) = 0;
 
-                // load samplees
-                virtual void load(const fold_t& fold, samples_t& samples) const = 0;
-                virtual sample_t load(const isample_t& isample) const = 0;
-
                 // sample size
                 rect_t sample_size() const;
 
@@ -46,7 +42,7 @@ namespace ncv
                 // access functions
                 virtual size_t n_rows() const = 0;
                 virtual size_t n_cols() const = 0;
-                virtual size_t n_inputs() const = 0;
+                size_t n_inputs() const { return 3 * n_rows() * n_cols(); }     // RGB!
                 virtual size_t n_outputs() const = 0;
 
                 size_t n_images() const { return m_images.size(); }

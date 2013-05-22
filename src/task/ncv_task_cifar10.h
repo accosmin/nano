@@ -27,14 +27,9 @@ namespace ncv
                 // load images from the given directory
                 virtual bool load(const string_t& dir);
 
-                // load samples
-                virtual void load(const fold_t& fold, samples_t& samples) const;
-                virtual sample_t load(const isample_t& isample) const;
-
                 // access functions
                 virtual size_t n_rows() const { return 32; }
                 virtual size_t n_cols() const { return 32; }
-                virtual size_t n_inputs() const { return n_rows() * n_cols() * 3; }
                 virtual size_t n_outputs() const { return 10; }
 
         private:

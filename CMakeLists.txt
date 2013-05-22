@@ -77,15 +77,14 @@ set(libs "${libs};${Qt5Gui_LIBRARIES}")
 
 # Set the executables
 set(nanocv_programs
-        ncv_max_threads
         ncv_test_thread_loop
         ncv_test_thread_pool
         ncv_test_optimize
         ncv_test_image
         ncv_test_color
-        ncv_test_task
-        ncv_test_conv
 
+        ncv_max_threads
+        ncv_info_task
         ncv_trainer)
 
 # Build executables

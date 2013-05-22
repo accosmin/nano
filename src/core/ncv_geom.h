@@ -7,6 +7,7 @@ namespace ncv
 {
         namespace geom
         {
+                // create geometric objects
                 inline point_t make_point(coord_t x = 0, coord_t y = 0)
                 {
                         return point_t(x, y);
@@ -20,6 +21,7 @@ namespace ncv
                         return make_rect(0, 0, w, h);
                 }
 
+                // access geometric objects
                 inline coord_t left(const rect_t& rect)     { return rect.min_corner().x(); }
                 inline coord_t right(const rect_t& rect)    { return rect.max_corner().x(); }
                 inline coord_t top(const rect_t& rect)      { return rect.min_corner().y(); }
@@ -32,9 +34,17 @@ namespace ncv
 
                 inline coord_t area(const rect_t& rect)     { return width(rect) * height(rect); }
 
+                // compute the overlap between two regions
                 rect_t intersection(const rect_t& rect1, const rect_t& rect2);
                 rect_t union_(const rect_t& rect1, const rect_t& rect2);
                 scalar_t overlap(const rect_t& rect1, const rect_t& rect2);
+
+                // serialize/deserialize 2D & 1D matrices
+                void serialize(const matrix_t& mat, size_t& pos, vector_t& params);
+                void serialize(const vector_t& vec, size_t& pos, vector_t& params);
+
+                void deserialize(matrix_t& mat, size_t& pos, const vector_t& params);
+                void deserialize(vector_t& vec, size_t& pos, const vector_t& params);
         }
 }
 

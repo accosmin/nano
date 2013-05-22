@@ -58,6 +58,30 @@ namespace ncv
                         return protocol::train;
                 }
 
+                template <>
+                inline string_t to_string(optimization_method type)
+                {
+                        switch (type)
+                        {
+                        case optimization_method::gd:           return "gd";
+                        case optimization_method::cgd:          return "cgd";
+                        case optimization_method::lbfgs:        return "lbfgs";
+                        case optimization_method::sgd:          return "sgd";
+                        default:                                return "lbfgs";
+                        }
+                }
+
+                template <>
+                inline optimization_method from_string<optimization_method>(const string_t& string)
+                {
+                        if (string == "gd")                     return optimization_method::gd;
+                        if (string == "cgd")                    return optimization_method::cgd;
+                        if (string == "lbfgs")                  return optimization_method::lbfgs;
+                        if (string == "sgd")                    return optimization_method::sgd;
+                        throw std::invalid_argument("invalid data type <" + string + ">!");
+                        return optimization_method::lbfgs;
+                }
+
                 // compact a list of values into a string using the given glue string
                 template
                 <

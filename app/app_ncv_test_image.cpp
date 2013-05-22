@@ -60,13 +60,13 @@ int main(int argc, char *argv[])
         }
         else
         {
-                ncv::log_info() << "<<< loaded image <" << cmd_input << "> in " << timer.elapsed_string() << ".";
+                ncv::log_info() << "<<< loaded image <" << cmd_input << "> in " << timer.elapsed() << ".";
         }
 
         // transform RGBA to CIELab
         timer.start();
         ncv::math::transform(rgba_image, cielab_image, ncv::color::make_cielab);
-        ncv::log_info() << "transformed RGBA to CIELab in " << timer.elapsed_string() << ".";
+        ncv::log_info() << "transformed RGBA to CIELab in " << timer.elapsed() << ".";
 
         // resize image
         timer.start();
@@ -80,13 +80,13 @@ int main(int argc, char *argv[])
         }
         ncv::log_info() << "scaled image from <" << cielab_image.cols() << "x" << cielab_image.rows()
                         << "> to <" << cielab_image_scaled.cols() << "x" << cielab_image_scaled.rows()
-                        << "> in " << timer.elapsed_string() << ".";
+                        << "> in " << timer.elapsed() << ".";
 
         // transform CIELab to RGBA
         timer.start();
         ncv::math::transform(cielab_image_scaled, rgba_image,
                              [](const ncv::cielab_t& cielab) { return ncv::color::make_rgba(cielab); });
-        ncv::log_info() << "transformed CIELab to RGBA in " << timer.elapsed_string() << ".";
+        ncv::log_info() << "transformed CIELab to RGBA in " << timer.elapsed() << ".";
 
         // save output image
         timer.start();
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-                ncv::log_info() << ">>> saved image <" << cmd_output << "> in " << timer.elapsed_string() << ".";
+                ncv::log_info() << ">>> saved image <" << cmd_output << "> in " << timer.elapsed() << ".";
         }
 		
         // OK

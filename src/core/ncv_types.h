@@ -140,8 +140,17 @@ namespace ncv
         // machine learning protocol
         enum class protocol : int
         {
-                train = 0,            // training
-                test                  // testing
+                train = 0,              // training
+                test                    // testing
+        };
+
+        // optimization method
+        enum class optimization_method : int
+        {
+                gd,                     // gradient descent (with line-search)
+                cgd,                    // conjugate gradient descent (with line-search)
+                lbfgs,                  // l-BFGS (with line-search)
+                sgd                     // stochastic gradient descent
         };
 }
 

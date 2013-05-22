@@ -8,6 +8,11 @@ namespace ncv
         /////////////////////////////////////////////////////////////////////////////////////////
         // linear model:
         //	output = weights * input + bias.
+        //
+        // parameters: opt=lbfgs[gd,cgd,lbfgs,sgd],iters=256[8-2048],eps=1e-5[1e-6,1e-3]
+        //      opt     - optimization method (default = l-BFGS)
+        //      iters   - number of optimization iterations (default = 256)
+        //      eps     - optimization precision (default = 1e-5)
         /////////////////////////////////////////////////////////////////////////////////////////
                 
         class linear_model_t : public model_t
@@ -23,10 +28,6 @@ namespace ncv
                         return rmodel_t(new linear_model_t(params));
                 }
 
-                // train the model
-                virtual bool train(const task_t& task, const fold_t& fold, const loss_t& loss,
-                                   size_t iters, scalar_t eps);
-
                 // compute the model output
                 virtual void process(const vector_t& input, vector_t& output) const;
 
@@ -35,28 +36,78 @@ namespace ncv
                 virtual bool load(const string_t& path);
 
                 // access functions
-                virtual size_t n_inputs() const { return m_weights.cols(); }
-                virtual size_t n_outputs() const { return m_weights.rows(); }
                 virtual size_t n_parameters() const { return m_weights.size() + m_bias.size(); }
 
-        private:
+        protected:
 
-                // resize to process new data
-                void resize(size_t inputs, size_t outputs);
+                // resize to new inputs/outputs
+                virtual void resize();
+
+                // train the model
+                virtual bool _train(const task_t& task, const fold_t& fold, const loss_t& loss);
+
+        private:
 
                 // initialize parameters
                 void initZero();
                 void initRandom(scalar_t min, scalar_t max);
 
                 // encode parameters for optimization
-                virtual vector_t to_params() const;
-                virtual void from_params(const vector_t& params);
+                vector_t to_params() const;
+                void from_params(const vector_t& params);
+
+                // (partial) optimization data
+                struct opt_data_t
+                {
+                        // constructor
+                        opt_data_t(size_t n_outputs = 0, size_t n_inputs = 0)
+                                :       m_fx(0.0),
+                                        m_cnt(0)
+                        {
+                                resize(n_outputs, n_inputs);
+                        }
+
+                        // resize
+                        void resize(size_t n_outputs, size_t n_inputs)
+                        {
+                                m_wgrad.resize(n_outputs, n_inputs);
+                                m_bgrad.resize(n_outputs);
+                                m_wgrad.setZero();
+                                m_bgrad.setZero();
+                        }
+
+                        // cumulate (partial) results
+                        void operator+=(const opt_data_t& data)
+                        {
+                                m_fx += data.m_fx;
+                                m_cnt += data.m_cnt;
+                                m_wgrad.noalias() += data.m_wgrad;
+                                m_bgrad.noalias() += data.m_bgrad;
+                        }
+
+                        // attributes
+                        scalar_t        m_fx;
+                        size_t          m_cnt;
+                        matrix_t        m_wgrad;
+                        vector_t        m_bgrad;
+                };
+
+                // cumulate loss value and gradients
+                void cum_fval(const task_t& task, const loss_t& loss, const isample_t& isample,
+                        opt_data_t& data) const;
+
+                void cum_fval_grad(const task_t& task, const loss_t& loss, const isample_t& isample,
+                        opt_data_t& data) const;
 
         private:
                 
                 // attributes
                 matrix_t		m_weights;
                 vector_t		m_bias;
+
+                optimization_method     m_opt_method;   // optimization: method
+                size_t                  m_opt_iters;    // optimization: maximum number of iterations
+                size_t                  m_opt_eps;      // optimization: precision (epsilon)
         };
 }
 

@@ -39,6 +39,39 @@ namespace ncv
         }
 
         //-------------------------------------------------------------------------------------------------
+
+        void geom::serialize(const matrix_t& mat, size_t& pos, vector_t& params)
+        {
+                std::copy(mat.data(), mat.data() + mat.size(), params.segment(pos, mat.size()).data());
+                pos += mat.size();
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void geom::serialize(const vector_t& vec, size_t& pos, vector_t& params)
+        {
+                params.segment(pos, vec.size()) = vec;
+                pos += vec.size();
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void geom::deserialize(matrix_t& mat, size_t& pos, const vector_t& params)
+        {
+                auto segm = params.segment(pos, mat.size());
+                std::copy(segm.data(), segm.data() + segm.size(), mat.data());
+                pos += mat.size();
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void geom::deserialize(vector_t& vec, size_t& pos, const vector_t& params)
+        {
+                vec = params.segment(pos, vec.size());
+                pos += vec.size();
+        }
+
+        //-------------------------------------------------------------------------------------------------
 }
 
 

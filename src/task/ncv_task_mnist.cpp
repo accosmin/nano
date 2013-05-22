@@ -56,7 +56,7 @@ namespace ncv
                 // load annotations and images
                 size_t cnt = 0;
                 while ( flabel.read(label, 1) &&
-                        fimage.read(buffer, n_inputs()))
+                        fimage.read(buffer, n_rows() * n_cols() * 1))
                 {
                         const size_t ilabel = static_cast<size_t>(label[0]);
                         if (ilabel >= n_outputs())
@@ -91,29 +91,6 @@ namespace ncv
                 m_folds[test_fold] = make_isamples(n_train, n_test, sample_region(0, 0));
 
                 return true;
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void mnist_task_t::load(const fold_t& fold, samples_t& samples) const
-        {
-                const isamples_t& isamples = this->fold(fold);
-
-                samples.resize(isamples.size());
-                for (size_t i = 0; i < isamples.size(); i ++)
-                {
-                        const isample_t& isample = isamples[i];
-                        samples[i].load_gray(image(isample.m_index), isample.m_region);
-                }
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        sample_t mnist_task_t::load(const isample_t& isample) const
-        {
-                sample_t sample;
-                sample.load_gray(image(isample.m_index), isample.m_region);
-                return sample;
         }
 
         //-------------------------------------------------------------------------------------------------

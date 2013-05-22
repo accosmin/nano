@@ -28,11 +28,11 @@ namespace ncv
                 {
                         m_start = now();
                 }
-                string_t elapsed_string() const
+                string_t elapsed() const
                 {
-                        return miliseconds_to_string(elapsed_miliseconds());
+                        return miliseconds_to_string(miliseconds());
                 }
-                size_t elapsed_miliseconds() const
+                size_t miliseconds() const
                 {
                         const auto duration = std::chrono::duration_cast<milliseconds_t>(now() - m_start);
                         return duration.count();

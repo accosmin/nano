@@ -18,7 +18,7 @@ ncv::stats_t test(int size, int trials, toperator op)
                         op(i);
                 }
 
-                timings.add(timer.elapsed_miliseconds());
+                timings.add(timer.miliseconds());
         }
 
         return timings;
@@ -42,7 +42,7 @@ ncv::stats_t test_omp(int size, int trials, toperator op)
                         op(i);
                 }
 
-                timings.add(timer.elapsed_miliseconds());
+                timings.add(timer.miliseconds());
         }
 
         return timings;
@@ -62,7 +62,7 @@ ncv::stats_t test_ncv(int size, int trials, toperator op)
 
                 ncv::thread_loop(size, op);
 
-                timings.add(timer.elapsed_miliseconds());
+                timings.add(timer.miliseconds());
         }
 
         return timings;

@@ -21,25 +21,25 @@ namespace ncv
                 typedef typename std::is_integral<T>::type
                         uniform_distribution_should_use_integral_type_t;
 
-                typedef std::uniform_int_distribution<T>        type_t;
+                typedef std::uniform_int_distribution<T>                type_t;
         };
 
         template <>
         struct uniform_distribution_t<float>
         {
-                typedef std::uniform_real_distribution<float>   type_t;
+                typedef std::uniform_real_distribution<float>           type_t;
         };
 
         template <>
         struct uniform_distribution_t<double>
         {
-                typedef std::uniform_real_distribution<double>  type_t;
+                typedef std::uniform_real_distribution<double>          type_t;
         };
 
         template <>
         struct uniform_distribution_t<long double>
         {
-                typedef std::uniform_real_distribution<long double>  type_t;
+                typedef std::uniform_real_distribution<long double>     type_t;
         };
 
         template

@@ -108,7 +108,7 @@ namespace ncv
 
                 // load images
                 size_t cnt = 0;
-                while (fimage.read(buffer, n_inputs()))
+                while (fimage.read(buffer, n_rows() * n_cols() * 3))
                 {
                         image_t image;
                         image.m_protocol = p;
@@ -181,29 +181,6 @@ namespace ncv
                 }
 
                 return true;
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void stl10_task_t::load(const fold_t& fold, samples_t& samples) const
-        {
-                const isamples_t& isamples = this->fold(fold);
-
-                samples.resize(isamples.size());
-                for (size_t i = 0; i < isamples.size(); i ++)
-                {
-                        const isample_t& isample = isamples[i];
-                        samples[i].load_rgba(image(isample.m_index), isample.m_region);
-                }
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        sample_t stl10_task_t::load(const isample_t& isample) const
-        {
-                sample_t sample;
-                sample.load_rgba(image(isample.m_index), isample.m_region);
-                return sample;
         }
 
         //-------------------------------------------------------------------------------------------------

@@ -1,4 +1,5 @@
 #include "ncv_model.h"
+#include "ncv_logger.h"
 
 namespace ncv
 {
@@ -14,14 +15,17 @@ namespace ncv
                 const isamples_t& isamples = task.fold(fold);
                 for (size_t s = 0; s < isamples.size(); s ++)
                 {
-                        const sample_t sample = task.load(isamples[s]);
-                        if (sample.has_annotation())
+                        const isample_t& isample = isamples[s];
+
+                        const image_t& image = task.image(isample.m_index);
+                        const vector_t target = image.get_target(isample.m_region);
+                        if (image.has_target(target))
                         {
                                 vector_t output;
-                                process(sample.m_input, output);
+                                process(image.get_input(isample.m_region), output);
 
-                                lvalue += loss.value(sample.m_target, output);
-                                lerror += loss.error(sample.m_target, output);
+                                lvalue += loss.value(target, output);
+                                lerror += loss.error(target, output);
                                 ++ cnt;
                         }
                 }
@@ -33,35 +37,29 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void model_t::encode(const matrix_t& mat, size_t& pos, vector_t& params)
+        bool model_t::train(const task_t& task, const fold_t& fold, const loss_t& loss)
         {
-                std::copy(mat.data(), mat.data() + mat.size(), params.segment(pos, mat.size()).data());
-                pos += mat.size();
+                if (fold.second != protocol::train)
+                {
+                        log_error() << "cannot only train models with training samples!";
+                        return false;
+                }
+
+                m_rows = task.n_rows();
+                m_cols = task.n_cols();
+                m_outputs = task.n_outputs();
+
+                resize();
+
+                return _train(task, fold, loss);
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void model_t::encode(const vector_t& vec, size_t& pos, vector_t& params)
+        void model_t::process(const image_t& image, coord_t x, coord_t y, vector_t& output) const
         {
-                params.segment(pos, vec.size()) = vec;
-                pos += vec.size();
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void model_t::decode(matrix_t& mat, size_t& pos, const vector_t& params)
-        {
-                auto segm = params.segment(pos, mat.size());
-                std::copy(segm.data(), segm.data() + segm.size(), mat.data());
-                pos += mat.size();
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void model_t::decode(vector_t& vec, size_t& pos, const vector_t& params)
-        {
-                vec = params.segment(pos, vec.size());
-                pos += vec.size();
+                const vector_t input = image.get_input(geom::make_rect(x, y, n_cols(), n_rows()));
+                return process(input, output);
         }
 
         //-------------------------------------------------------------------------------------------------

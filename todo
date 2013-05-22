@@ -1,19 +1,6 @@
-- BUG:
-	- line-search for lbfgs is quite slow for stl10
+* add functor to the optimization procedure to process the optimum update
 
-* sample_t: always store as rgba_image_t, but provide function to copy to vector_t (3 x rows x cols), ::n_rows(), ::n_cols(), ::n_inputs() = 3xrowsxcols
-
-- speed-up compilation
-
-
-* optimize: line-search policy (try until eps, try 16 times)
-
-* default line-search parameters in the lbfgs, gd, cgd functions
-* (iters + eps) as parameters to the linear model, update the command line
-* options to problem_t to print the current step (after line-search): fx, gradient
-
-* check how fast is to run a 8x8 16-filter convolution with 4-8 layers for a 40x40 100K images
-(if fast -> may store the samples as RGBA patches, model_t::process(rgba_image, x, y))
+* bootstrapping: start with empty training set + REPEAT (evaluate, sample based on the test error, add samples to training set, train) 
 
 - train/test models:
 	- test the training script

@@ -85,27 +85,4 @@ namespace ncv
         }
 
         //-------------------------------------------------------------------------------------------------
-
-        void cmufaces_task_t::load(const fold_t& fold, samples_t& samples) const
-        {
-                const isamples_t& isamples = this->fold(fold);
-
-                samples.resize(isamples.size());
-                for (size_t i = 0; i < isamples.size(); i ++)
-                {
-                        const isample_t& isample = isamples[i];
-                        samples[i].load_gray(image(isample.m_index), isample.m_region);
-                }
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        sample_t cmufaces_task_t::load(const isample_t& isample) const
-        {
-                sample_t sample;
-                sample.load_gray(image(isample.m_index), isample.m_region);
-                return sample;
-        }
-
-        //-------------------------------------------------------------------------------------------------
 }

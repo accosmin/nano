@@ -11,7 +11,7 @@ namespace ncv
         // the clonable interface to be used with a manager:
         //      ::clone(const string_t&)        - create a new object (with the given parameters)
 	//      ::name()                        - details the associated ID
-	//      ::desc()                        - short description (parameters included)
+        //      ::desc()                        - short description (parameters included)
         // hint: use register_object<base, derived> to register objects to the manager.
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         
@@ -72,7 +72,7 @@ namespace ncv
                 // access functions
 		strings_t ids() const { return _ids(); }
 		strings_t names() const { return _names(); }
-                strings_t descs() const { return _descs(); }
+                strings_t descriptions() const { return _descriptions(); }
 
         private:
 
@@ -147,9 +147,9 @@ namespace ncv
 
                 //-------------------------------------------------------------------------------------------------
 
-		strings_t _descs() const
+                strings_t _descriptions() const
 		{
-			return _collect([] (const protos_const_it& it) { return it->second->desc(); });
+                        return _collect([] (const protos_const_it& it) { return it->second->description(); });
 		}
 
                 //-------------------------------------------------------------------------------------------------

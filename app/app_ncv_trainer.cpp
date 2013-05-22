@@ -5,9 +5,19 @@ int main(int argc, char *argv[])
 {
         ncv::init();
 
-        const ncv::strings_t& task_names = ncv::task_manager_t::instance().names();
-        const ncv::strings_t& loss_names = ncv::loss_manager_t::instance().names();
-        const ncv::strings_t& model_names = ncv::model_manager_t::instance().names();
+        const ncv::strings_t task_names = ncv::task_manager_t::instance().names();
+        const ncv::strings_t loss_names = ncv::loss_manager_t::instance().names();
+
+        const ncv::strings_t model_names = ncv::model_manager_t::instance().names();
+        const ncv::strings_t model_descriptions = ncv::model_manager_t::instance().descriptions();
+
+        ncv::string_t po_desc_models;
+        po_desc_models += "model name (" + ncv::text::concatenate(model_names, ", ") + "):";
+        for (ncv::size_t i = 0; i < model_names.size(); i ++)
+        {
+                po_desc_models += "\n  " + ncv::text::resize(model_names[i], 16) +
+                                  " " + model_descriptions[i];
+        }
 
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
@@ -23,16 +33,13 @@ int main(int argc, char *argv[])
                 ("loss name (" + ncv::text::concatenate(loss_names, ", ") + ")").c_str());
         po_desc.add_options()("model",
                 boost::program_options::value<ncv::string_t>(),
-                ("model name (" + ncv::text::concatenate(model_names, ", ") + ")").c_str());
+                po_desc_models.c_str());
+        po_desc.add_options()("model-params",
+                boost::program_options::value<ncv::string_t>()->default_value(""),
+                "model parameters (if any) as specified in the chosed model's description");
         po_desc.add_options()("trials",
                 boost::program_options::value<ncv::size_t>(),
                 "number of models to train & evaluate");
-        po_desc.add_options()("iters",
-                boost::program_options::value<ncv::size_t>()->default_value(128),
-                "number of iterations [8, 4096]");
-        po_desc.add_options()("eps",
-                boost::program_options::value<ncv::scalar_t>()->default_value(1e-4),
-                "convergence accuracy [1e-6, 1e-1]");
 	
         boost::program_options::variables_map po_vm;
         boost::program_options::store(
@@ -57,10 +64,8 @@ int main(int argc, char *argv[])
         const ncv::string_t cmd_task_dir = po_vm["task-dir"].as<ncv::string_t>();
         const ncv::string_t cmd_loss = po_vm["loss"].as<ncv::string_t>();
         const ncv::string_t cmd_model = po_vm["model"].as<ncv::string_t>();
+        const ncv::string_t cmd_model_params = po_vm["model-params"].as<ncv::string_t>();
         const ncv::size_t cmd_trials = po_vm["trials"].as<ncv::size_t>();
-        const ncv::size_t cmd_iters = ncv::math::clamp(po_vm["iters"].as<ncv::size_t>(), 8, 4096);
-        const ncv::scalar_t cmd_eps = ncv::math::clamp(po_vm["eps"].as<ncv::scalar_t>(), 1e-6, 1e-1);
-
         ncv::timer_t timer;
 
         // create task
@@ -81,7 +86,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-                ncv::log_info() << "<<< loaded task in " << timer.elapsed_string() << ".";
+                ncv::log_info() << "<<< loaded task in " << timer.elapsed() << ".";
         }
 
         // describe task
@@ -111,7 +116,7 @@ int main(int argc, char *argv[])
         }
 
         // create model
-        ncv::rmodel_t rmodel = ncv::model_manager_t::instance().get(cmd_model, "");
+        ncv::rmodel_t rmodel = ncv::model_manager_t::instance().get(cmd_model, cmd_model_params);
         if (!rmodel)
         {
                 ncv::log_error() << "<<< failed to load model <" << cmd_model << ">!";
@@ -128,18 +133,18 @@ int main(int argc, char *argv[])
                         const ncv::fold_t test_fold = std::make_pair(f, ncv::protocol::test);
 
                         timer.start();
-                        if (!rmodel->train(*rtask, train_fold, *rloss, cmd_iters, cmd_eps))
+                        if (!rmodel->train(*rtask, train_fold, *rloss))
                         {
                                 ncv::log_error() << "<<< failed to train model <" << cmd_model << ">!";
                                 break;
                         }
-                        ncv::log_info() << "<<< model trained in " << timer.elapsed_string() << ".";
+                        ncv::log_info() << "<<< model trained in " << timer.elapsed() << ".";
 
                         timer.start();
                         ncv::scalar_t lvalue, lerror;
                         rmodel->test(*rtask, test_fold, *rloss, lvalue, lerror);
                         ncv::log_info() << "<<< model tested [" << lvalue << "/" << lerror
-                                        << "] in " << timer.elapsed_string() << ".";
+                                        << "] in " << timer.elapsed() << ".";
 
                         lstats.add(lvalue);
                         estats.add(lerror);

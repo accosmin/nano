@@ -21,7 +21,10 @@ namespace ncv
 
                 // constructor
                 model_t(const string_t& name, const string_t& description)
-                        :       clonable_t<model_t>(name, description)
+                        :       clonable_t<model_t>(name, description),
+                                m_rows(0),
+                                m_cols(0),
+                                m_outputs(0)
                 {
                 }
 
@@ -29,8 +32,7 @@ namespace ncv
                 virtual ~model_t() {}
 
                 // train the model
-                virtual bool train(const task_t& task, const fold_t& fold, const loss_t& loss,
-                        size_t iters, scalar_t eps) = 0;
+                bool train(const task_t& task, const fold_t& fold, const loss_t& loss);
 
                 // evaluate the model (compute the average loss value & error)
                 void test(const task_t& task, const fold_t& fold, const loss_t& loss,
@@ -38,37 +40,32 @@ namespace ncv
 
                 // compute the model output
                 virtual void process(const vector_t& input, vector_t& output) const = 0;
+                void process(const image_t& image, coord_t x, coord_t y, vector_t& output) const;
 
                 // save/load from file
                 virtual bool save(const string_t& path) const = 0;
                 virtual bool load(const string_t& path) = 0;
 
                 // access functions
-                virtual size_t n_inputs() const = 0;
-                virtual size_t n_outputs() const = 0;
+                size_t n_rows() const { return m_rows; }
+                size_t n_cols() const { return m_cols; }
+                size_t n_inputs() const { return 3 * n_rows() * n_cols(); }     // RGB!
+                size_t n_outputs() const { return m_outputs; }
                 virtual size_t n_parameters() const = 0;
 
         protected:
 
-                // encode parameters for optimization
-                virtual vector_t to_params() const = 0;
-                virtual void from_params(const vector_t& params) = 0;
+                // resize to new inputs/outputs
+                virtual void resize() = 0;
 
-        public:
+                // train the model
+                virtual bool _train(const task_t& task, const fold_t& fold, const loss_t& loss) = 0;
 
-                // encode parameters/gradients for optimization
-                static void encode(const matrix_t& mat, size_t& pos, vector_t& params);
-                static void encode(const vector_t& vec, size_t& pos, vector_t& params);
+        private:
 
-                static void decode(matrix_t& mat, size_t& pos, const vector_t& params);
-                static void decode(vector_t& vec, size_t& pos, const vector_t& params);
-
-        protected:
-
-                // optimization problem
-                typedef std::function<size_t(void)>                                     opt_size_t;
-                typedef std::function<scalar_t(const vector_t&)>                        opt_fval_t;
-                typedef std::function<scalar_t(const vector_t&, vector_t&)>             opt_fval_grad_t;
+                // attributes
+                size_t          m_rows, m_cols;         // input patch size
+                size_t          m_outputs;              // output size
         };
 }
 

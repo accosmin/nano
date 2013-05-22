@@ -1,8 +1,9 @@
 #include "ncv_model_linear.h"
-#include "ncv_random.h"
 #include "ncv_logger.h"
 #include "ncv_thread.h"
 #include "ncv_optimize.h"
+#include "ncv_random.h"
+#include "ncv_timer.h"
 #include <fstream>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
@@ -13,16 +14,19 @@ namespace ncv
 
         linear_model_t::linear_model_t(const string_t& params)
                 :       model_t("linear",
-                                "linear model")
+                                "parameters: opt=lbfgs[gd,cgd,lbfgs,sgd],iters=256[8-2048],eps=1e-5[1e-6,1e-3]")
         {
+                m_opt_method = text::from_params<optimization_method>(params, "opt", optimization_method::lbfgs);
+                m_opt_iters = math::clamp(text::from_params<size_t>(params, "iters", 256), 8, 2048);
+                m_opt_eps = math::clamp(text::from_params<scalar_t>(params, "eps", 1e-5), 1e-3, 1e-6);
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void linear_model_t::resize(size_t inputs, size_t outputs)
+        void linear_model_t::resize()
         {
-                m_weights.resize(outputs, inputs);
-                m_bias.resize(outputs);
+                m_weights.resize(n_outputs(), n_inputs());
+                m_bias.resize(n_outputs());
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -84,8 +88,8 @@ namespace ncv
                 vector_t params(n_parameters());
 
                 size_t pos = 0;
-                model_t::encode(m_weights, pos, params);
-                model_t::encode(m_bias, pos, params);
+                geom::serialize(m_weights, pos, params);
+                geom::serialize(m_bias, pos, params);
 
                 return params;
         }
@@ -95,61 +99,67 @@ namespace ncv
         void linear_model_t::from_params(const vector_t& params)
         {
                 size_t pos = 0;
-                model_t::decode(m_weights, pos, params);
-                model_t::decode(m_bias, pos, params);
+                geom::deserialize(m_weights, pos, params);
+                geom::deserialize(m_bias, pos, params);
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void linear_model_t::cum_fval(const task_t& task, const loss_t& loss, const isample_t& isample,
+                opt_data_t& data) const
+        {
+                const image_t& image = task.image(isample.m_index);
+                const vector_t target = image.get_target(isample.m_region);
+                if (image.has_target(target))
+                {
+                        const vector_t input = image.get_input(isample.m_region);
+
+                        vector_t output;
+                        process(input, output);
+
+                        data.m_fx += loss.value(target, output);
+                        data.m_cnt ++;
+                }
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void linear_model_t::cum_fval_grad(const task_t& task, const loss_t& loss, const isample_t& isample,
+                opt_data_t& data) const
+        {
+                const image_t& image = task.image(isample.m_index);
+                const vector_t target = image.get_target(isample.m_region);
+                if (image.has_target(target))
+                {
+                        const vector_t input = image.get_input(isample.m_region);
+
+                        vector_t output;
+                        process(input, output);
+
+                        vector_t lgrad;
+                        data.m_fx += loss.vgrad(target, output, lgrad);
+                        data.m_wgrad.noalias() += lgrad * input.transpose();
+                        data.m_bgrad.noalias() += lgrad;
+                        data.m_cnt ++;
+                }
         }
 
         //-------------------------------------------------------------------------------------------------
 
         struct state_update_log_t
         {
-                static void update(const optimize::state_t& state)
+                static void update(const optimize::state_t& state, const timer_t& timer)
                 {
-                        ncv::log_info() << "linear model: current [loss = " << state.f
-                                        << ", gradient = " << state.g.norm() << "].";
+                        ncv::log_info() << "linear model: state [loss = " << state.f
+                                        << ", gradient = " << state.g.norm()
+                                        << "] updated in " << timer.elapsed() << ".";
                 }
         };
 
         //-------------------------------------------------------------------------------------------------
 
-        bool linear_model_t::train(const task_t& task, const fold_t& fold, const loss_t& loss,
-                size_t iters, scalar_t eps)
+        bool linear_model_t::_train(const task_t& task, const fold_t& fold, const loss_t& loss)
         {
-                if (fold.second != protocol::train)
-                {
-                        log_error() << "cannot only train models with training samples!";
-                        return false;
-                }
-
-                resize(task.n_inputs(), task.n_outputs());
-
-                // (partial) optimization data
-                struct opt_data
-                {
-                        // constructor
-                        opt_data(size_t n_outputs = 0, size_t n_inputs = 0)
-                                :       m_fx(0.0),
-                                        m_cnt(0)
-                        {
-                                resize(n_outputs, n_inputs);
-                        }
-
-                        // resize
-                        void resize(size_t n_outputs, size_t n_inputs)
-                        {
-                                m_wgrad.resize(n_outputs, n_inputs);
-                                m_bgrad.resize(n_outputs);
-                                m_wgrad.setZero();
-                                m_bgrad.setZero();
-                        }
-
-                        // attributes
-                        scalar_t        m_fx;
-                        size_t          m_cnt;
-                        matrix_t        m_wgrad;
-                        vector_t        m_bgrad;
-                };
-
                 // construct the optimization problem
                 const isamples_t& isamples = task.fold(fold);
 
@@ -162,33 +172,23 @@ namespace ncv
                 {
                         from_params(x);
 
-                        opt_data cum_data(n_outputs(), n_inputs());
+                        opt_data_t cum_data(n_outputs(), n_inputs());
 
                         // cumulate function value and gradients (using multiple threads)
-                        thread_loop_cumulate<opt_data>
+                        thread_loop_cumulate<opt_data_t>
                         (
                                 isamples.size(),
-                                [&] (opt_data& data)
+                                [&] (opt_data_t& data)
                                 {
                                         data.resize(n_outputs(), n_inputs());
                                 },
-                                [&] (size_t i, opt_data& data)
+                                [&] (size_t i, opt_data_t& data)
                                 {
-                                        const sample_t sample = task.load(isamples[i]);
-                                        if (sample.has_annotation())
-                                        {
-                                                vector_t output;
-                                                process(sample.m_input, output);
-
-                                                vector_t lgrad;
-                                                data.m_fx += loss.vgrad(sample.m_target, output, lgrad);
-                                                data.m_cnt ++;
-                                        }
+                                        cum_fval(task, loss, isamples[i], data);
                                 },
-                                [&] (const opt_data& data)
+                                [&] (const opt_data_t& data)
                                 {
-                                        cum_data.m_fx += data.m_fx;
-                                        cum_data.m_cnt += data.m_cnt;
+                                        cum_data += data;
                                 }
                         );
 
@@ -202,45 +202,30 @@ namespace ncv
                 {
                         from_params(x);
 
-                        opt_data cum_data(n_outputs(), n_inputs());
+                        opt_data_t cum_data(n_outputs(), n_inputs());
 
                         // cumulate function value and gradients (using multiple threads)
-                        thread_loop_cumulate<opt_data>
+                        thread_loop_cumulate<opt_data_t>
                         (
                                 isamples.size(),
-                                [&] (opt_data& data)
+                                [&] (opt_data_t& data)
                                 {
                                         data.resize(n_outputs(), n_inputs());
                                 },
-                                [&] (size_t i, opt_data& data)
+                                [&] (size_t i, opt_data_t& data)
                                 {
-                                        const sample_t sample = task.load(isamples[i]);
-                                        if (sample.has_annotation())
-                                        {
-                                                vector_t output;
-                                                process(sample.m_input, output);
-
-                                                vector_t lgrad;
-                                                data.m_fx += loss.vgrad(sample.m_target, output, lgrad);
-                                                data.m_wgrad.noalias() += lgrad * sample.m_input.transpose();
-                                                data.m_bgrad.noalias() += lgrad;
-
-                                                data.m_cnt ++;
-                                        }
+                                        cum_fval_grad(task, loss, isamples[i], data);
                                 },
-                                [&] (const opt_data& data)
+                                [&] (const opt_data_t& data)
                                 {
-                                        cum_data.m_fx += data.m_fx;
-                                        cum_data.m_cnt += data.m_cnt;
-                                        cum_data.m_wgrad.noalias() += data.m_wgrad;
-                                        cum_data.m_bgrad.noalias() += data.m_bgrad;
+                                        cum_data += data;
                                 }
                         );
 
                         gx.resize(n_parameters());
                         size_t pos = 0;
-                        model_t::encode(cum_data.m_wgrad, pos, gx);
-                        model_t::encode(cum_data.m_bgrad, pos, gx);
+                        geom::serialize(cum_data.m_wgrad, pos, gx);
+                        geom::serialize(cum_data.m_bgrad, pos, gx);
 
                         const scalar_t inv = (cum_data.m_cnt == 0) ? 1.0 : 1.0 / cum_data.m_cnt;
                         cum_data.m_fx *= inv;
@@ -249,26 +234,19 @@ namespace ncv
                         return cum_data.m_fx;
                 };
 
-                const optimize::problem_t<
-                                opt_size_t,
-                                opt_fval_t,
-                                opt_fval_grad_t,
-                                state_update_log_t>
-                        problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad, iters, eps);
+                const optimize::problem_t problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad);
 
                 // optimize
                 initRandom(-1.0 / sqrt(n_parameters()),
                            +1.0 / sqrt(n_parameters()));
-                optimize::lbfgs(problem, to_params());
-                from_params(problem.optimum().x);
+                const optimize::result_t res = optimize::lbfgs(problem, to_params(), m_opt_iters, m_opt_eps);
+                from_params(res.optimum().x);
 
                 // OK
-                log_info() << "linear model: optimum [loss = " << problem.optimum().f
-                           << ", gradient = " << problem.optimum().g.norm() << "]" << ".";
-                log_info() << "linear model: evaluations = [" << problem.fevals() << " + " << problem.gevals()
-                          << "], iterations = [" << problem.iterations() << "/" << problem.max_iterations()
-                          << "], speed = [" << problem.speed_avg() << " +/- " << problem.speed_stdev()
-                          << "].";
+                log_info() << "linear model: optimum [loss = " << res.optimum().f
+                           << ", gradient = " << res.optimum().g.norm() << "]"
+                           << ", iterations = [" << res.iterations() << "/" << m_opt_iters
+                           << "], speed = [" << res.speed().avg() << " +/- " << res.speed().stdev() << "].";
 
                 return true;
         }

@@ -5,7 +5,7 @@ int main(int argc, char *argv[])
 {
         ncv::init();
 
-        const ncv::strings_t& task_names = ncv::task_manager_t::instance().names();
+        const ncv::strings_t task_names = ncv::task_manager_t::instance().names();
 
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-                ncv::log_info() << "<<< loaded task in " << timer.elapsed_string() << ".";
+                ncv::log_info() << "<<< loaded task in " << timer.elapsed() << ".";
         }
 
         // describe task

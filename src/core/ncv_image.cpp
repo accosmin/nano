@@ -100,4 +100,60 @@ namespace ncv
         }
 
         //-------------------------------------------------------------------------------------------------
+
+        vector_t image_t::get_input(const rect_t& region) const
+        {
+                const coord_t top = geom::top(region), left = geom::left(region);
+                const coord_t rows = geom::rows(region), cols = geom::cols(region);
+
+                vector_t data(rows * cols * 3);
+                for (coord_t r = 0, i = 0; r < rows; r ++)
+                {
+                        for (coord_t c = 0; c < cols; c ++)
+                        {
+                                const rgba_t rgba = m_rgba(top + r, left + c);
+                                data(i ++) = color::make_red(rgba);
+                                data(i ++) = color::make_green(rgba);
+                                data(i ++) = color::make_blue(rgba);
+                        }
+                }
+                data /= 255.0;
+
+                return data;
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        vector_t image_t::get_target(const rect_t& region) const
+        {
+                // load the target of the most overlapping annotation
+                scalar_t best_overlap = 0.0;
+                size_t best_index = 0;
+
+                for (size_t i = 0; i < m_annotations.size(); i ++)
+                {
+                        const annotation_t& anno = m_annotations[i];
+
+                        const scalar_t overlap = geom::overlap(anno.m_region, region);
+                        if (overlap > best_overlap)
+                        {
+                                best_overlap = overlap;
+                                best_index = i;
+                        }
+                }
+
+                static const scalar_t thres_overlap = 0.80;
+                if (    best_overlap > thres_overlap &&
+                        best_index < m_annotations.size())
+                {
+                        return m_annotations[best_index].m_target;
+                }
+                else
+                {
+                        vector_t target;
+                        return target;
+                }
+        }
+
+        //-------------------------------------------------------------------------------------------------
 }

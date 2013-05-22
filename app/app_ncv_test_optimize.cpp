@@ -2,32 +2,25 @@
 #include <boost/program_options.hpp>
 
 // display the formatted optimization history
-template
-<
-        typename tproblem
->
-void print(const tproblem& problem, const ncv::string_t& header, const ncv::string_t& time)
+void print(const ncv::optimize::result_t& result, ncv::size_t max_iterations,
+           const ncv::string_t& header, const ncv::string_t& time)
 {
         static const ncv::size_t col_size = 32;
         static const ncv::string_t del_line(4 * col_size + 4, '-');
 
         std::cout << del_line << std::endl;
-        std::cout << header << ": x  = [" << problem.optimum().x.transpose() << "]" << std::endl;
-        std::cout << header << ": fx = [" << problem.optimum().f << "]" << std::endl;
-        std::cout << header << ": gn = [" << problem.optimum().g.norm() << "]" << std::endl;
-        std::cout << header << ": evaluations = [" << problem.fevals() << " + " << problem.gevals()
-                  << "], iterations = [" << problem.iterations() << "/" << problem.max_iterations()
-                  << "], speed = [" << problem.speed_avg() << " +/- " << problem.speed_stdev()
+        std::cout << header << ": x  = [" << result.optimum().x.transpose() << "]" << std::endl;
+        std::cout << header << ": fx = [" << result.optimum().f << "]" << std::endl;
+        std::cout << header << ": gn = [" << result.optimum().g.norm() << "]" << std::endl;
+        std::cout << header << ": iterations = [" << result.iterations() << "/" << max_iterations
+                  << "], speed = [" << result.speed().avg() << " +/- " << result.speed().stdev()
                   << "], time = [" << time << "]." << std::endl;
         std::cout << del_line << std::endl;
 }
 
 // optimize a problem starting from random points
-template
-<
-        typename tproblem
->
-void test(const tproblem& problem, const ncv::string_t& name, ncv::size_t trials)
+void test(const ncv::optimize::problem_t& problem, ncv::size_t max_iters, ncv::scalar_t eps,
+          const ncv::string_t& name, ncv::size_t trials)
 {
         const ncv::size_t size = problem.size();
 
@@ -43,33 +36,25 @@ void test(const tproblem& problem, const ncv::string_t& name, ncv::size_t trials
                 ncv::timer_t timer;
 
                 timer.start();
-                ncv::optimize::gradient_descent(problem, x0);
-                print(problem, name + " (GD)" + name_trial, timer.elapsed_string());
+                const ncv::optimize::result_t res_gd = ncv::optimize::gradient_descent(problem, x0, max_iters, eps);
+                print(res_gd, max_iters, name + " (GD)" + name_trial, timer.elapsed());
 
                 timer.start();
-                ncv::optimize::conjugate_gradient_descent(problem, x0);
-                print(problem, name + " (CGD)" + name_trial, timer.elapsed_string());
+                const ncv::optimize::result_t res_cgd = ncv::optimize::conjugate_gradient_descent(problem, x0, max_iters, eps);
+                print(res_cgd, max_iters, name + " (CGD)" + name_trial, timer.elapsed());
 
                 timer.start();
-                ncv::optimize::lbfgs(problem, x0);
-                print(problem, name + " (LBFGS)" + name_trial, timer.elapsed_string());
+                const ncv::optimize::result_t res_lbfgs = ncv::optimize::lbfgs(problem, x0, max_iters, eps);
+                print(res_lbfgs, max_iters, name + " (LBFGS)" + name_trial, timer.elapsed());
         }
 }
 
 int main(int argc, char *argv[])
 {
-        typedef ncv::size_t                             size_t;
-        typedef ncv::scalar_t                           scalar_t;
-        typedef ncv::vector_t                           vector_t;
-
-        typedef std::function<size_t(void)>                                     op_size_t;
-        typedef std::function<scalar_t(const vector_t&)>                        op_fval_t;
-        typedef std::function<scalar_t(const vector_t&, vector_t&)>             op_fval_grad_t;
-
-        typedef ncv::optimize::problem_t<
-                        op_size_t,
-                        op_fval_t,
-                        op_fval_grad_t>                 problem_t;
+        typedef ncv::size_t                     size_t;
+        typedef ncv::scalar_t                   scalar_t;
+        typedef ncv::vector_t                   vector_t;
+        typedef ncv::optimize::problem_t        problem_t;
 
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
@@ -245,8 +230,8 @@ int main(int argc, char *argv[])
                         return f;
                 };
 
-                const problem_t problem(op_size, op_fval, cmd_iters, cmd_eps);
-                test(problem, "rosenbrock [" + ncv::text::to_string(n) + "D]", cmd_trials);
+                const problem_t problem(op_size, op_fval);
+                test(problem, cmd_iters, cmd_eps, "rosenbrock [" + ncv::text::to_string(n) + "D]", cmd_trials);
         }
 
         // Himmelblau problem
@@ -274,8 +259,8 @@ int main(int argc, char *argv[])
                         return op_fval(x);
                 };
 
-                const problem_t problem(op_size, op_fval, op_fval_grad, cmd_iters, cmd_eps);
-                test(problem, "himmelblau [2D]", cmd_trials);
+                const problem_t problem(op_size, op_fval, op_fval_grad);
+                test(problem, cmd_iters, cmd_eps, "himmelblau [2D]", cmd_trials);
         }
 
         // OK
