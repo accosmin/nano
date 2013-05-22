@@ -130,6 +130,9 @@ namespace ncv
                         op_fval_grad_t          m_op_fval_grad;
                 };
 
+                // result updated
+                typedef std::function<void(const result_t&)>    op_updated_t;
+
                 /////////////////////////////////////////////////////////////////////////////////////////////
                 // gradient descent starting from the initial value (guess) x0.
                 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -138,7 +141,8 @@ namespace ncv
                         const problem_t& problem,
                         const vector_t& x0,
                         size_t max_iterations,          // maximum number of iterations
-                        scalar_t epsilon);              // convergence precision
+                        scalar_t epsilon,               // convergence precision
+                        const op_updated_t& op_updated = op_updated_t());
 
                 /////////////////////////////////////////////////////////////////////////////////////////////
                 // conjugate gradient descent starting from the initial value (guess) x0.
@@ -148,7 +152,8 @@ namespace ncv
                         const problem_t& problem,
                         const vector_t& x0,
                         size_t max_iterations,          // maximum number of iterations
-                        scalar_t epsilon);              // convergence precision
+                        scalar_t epsilon,               // convergence precision
+                        const op_updated_t& op_updated = op_updated_t());
 
                 /////////////////////////////////////////////////////////////////////////////////////////////
                 // limited memory bfgs (l-bfgs) starting from the initial value (guess) x0.
@@ -159,7 +164,8 @@ namespace ncv
                         const vector_t& x0,
                         size_t max_iterations,          // maximum number of iterations
                         scalar_t epsilon,               // convergence precision
-                        size_t history_size = 8);       // hessian approximation history size
+                        size_t history_size = 8,        // hessian approximation history size
+                        const op_updated_t& op_updated = op_updated_t());
         }
 }
 

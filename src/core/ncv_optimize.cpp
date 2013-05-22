@@ -185,7 +185,8 @@ namespace ncv
 
         optimize::result_t optimize::gradient_descent(
                 const problem_t& problem, const vector_t& x0,
-                size_t max_iterations, scalar_t epsilon)
+                size_t max_iterations, scalar_t epsilon,
+                const op_updated_t& op_updated)
         {
                 assert(problem.size() == math::cast<size_t>(x0.size()));
 
@@ -197,6 +198,10 @@ namespace ncv
                 for (size_t i = 0; i < max_iterations; i ++)
                 {
                         result.update(cstate);
+                        if (op_updated)
+                        {
+                                op_updated(result);
+                        }
 
                         // check convergence
                         if (impl::converged(epsilon, cstate))
@@ -225,7 +230,8 @@ namespace ncv
 
         optimize::result_t optimize::conjugate_gradient_descent(
                 const problem_t& problem, const vector_t& x0,
-                size_t max_iterations, scalar_t epsilon)
+                size_t max_iterations, scalar_t epsilon,
+                const op_updated_t& op_updated)
         {
                 assert(problem.size() == math::cast<size_t>(x0.size()));
 
@@ -236,6 +242,10 @@ namespace ncv
                 for (size_t i = 0; i < max_iterations; i ++)
                 {
                         result.update(cstate);
+                        if (op_updated)
+                        {
+                                op_updated(result);
+                        }
 
                         // check convergence
                         if (impl::converged(epsilon, cstate))
@@ -269,7 +279,8 @@ namespace ncv
 
         optimize::result_t optimize::lbfgs(
                 const problem_t& problem, const vector_t& x0,
-                size_t max_iterations, scalar_t epsilon, size_t history_size)
+                size_t max_iterations, scalar_t epsilon, size_t history_size,
+                const op_updated_t& op_updated)
         {
                 assert(problem.size() == math::cast<size_t>(x0.size()));
 
@@ -283,6 +294,10 @@ namespace ncv
                 for (size_t i = 0; i < max_iterations; i ++)
                 {
                         result.update(cstate);
+                        if (op_updated)
+                        {
+                                op_updated(result);
+                        }
 
                         // check convergence
                         if (impl::converged(epsilon, cstate))

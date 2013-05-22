@@ -146,15 +146,13 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        struct state_update_log_t
+        static void update(const optimize::result_t& result, timer_t& timer)
         {
-                static void update(const optimize::state_t& state, const timer_t& timer)
-                {
-                        ncv::log_info() << "linear model: state [loss = " << state.f
-                                        << ", gradient = " << state.g.norm()
-                                        << "] updated in " << timer.elapsed() << ".";
-                }
-        };
+                ncv::log_info() << "linear model: state [loss = " << result.optimum().f
+                                << ", gradient = " << result.optimum().g.lpNorm<Eigen::Infinity>()
+                                << "] updated in " << timer.elapsed() << ".";
+                timer.start();
+        }
 
         //-------------------------------------------------------------------------------------------------
 
@@ -239,7 +237,12 @@ namespace ncv
                 // optimize
                 initRandom(-1.0 / sqrt(n_parameters()),
                            +1.0 / sqrt(n_parameters()));
-                const optimize::result_t res = optimize::lbfgs(problem, to_params(), m_opt_iters, m_opt_eps);
+
+                timer_t timer;
+                const optimize::result_t res = optimize::lbfgs(
+                        problem, to_params(),
+                        m_opt_iters, m_opt_eps, 8,
+                        std::bind(update, _1, std::ref(timer)));
                 from_params(res.optimum().x);
 
                 // OK
