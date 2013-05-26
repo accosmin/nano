@@ -9,8 +9,7 @@ namespace ncv
         // linear model:
         //	output = weights * input + bias.
         //
-        // parameters: opt=lbfgs[gd,cgd,lbfgs,sgd],iters=256[8-2048],eps=1e-5[1e-6,1e-3]
-        //      opt     - optimization method (default = l-BFGS)
+        // parameters: iters=256[8-2048],eps=1e-5[1e-6,1e-3]
         //      iters   - number of optimization iterations (default = 256)
         //      eps     - optimization precision (default = 1e-5)
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -43,14 +42,14 @@ namespace ncv
                 // resize to new inputs/outputs
                 virtual void resize();
 
+                // initialize parameters
+                virtual void zero();
+                virtual void random();
+
                 // train the model
-                virtual bool _train(const task_t& task, const fold_t& fold, const loss_t& loss);
+                virtual bool train(const task_t& task, const samples_t& samples, const loss_t& loss);
 
         private:
-
-                // initialize parameters
-                void initZero();
-                void initRandom(scalar_t min, scalar_t max);
 
                 // encode parameters for optimization
                 vector_t to_params() const;
@@ -93,10 +92,10 @@ namespace ncv
                 };
 
                 // cumulate loss value and gradients
-                void cum_fval(const task_t& task, const loss_t& loss, const isample_t& isample,
+                void cum_fval(const task_t& task, const loss_t& loss, const sample_t& sample,
                         opt_data_t& data) const;
 
-                void cum_fval_grad(const task_t& task, const loss_t& loss, const isample_t& isample,
+                void cum_fval_grad(const task_t& task, const loss_t& loss, const sample_t& sample,
                         opt_data_t& data) const;
 
         private:

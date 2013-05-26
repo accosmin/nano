@@ -14,9 +14,10 @@ namespace ncv
 
         linear_model_t::linear_model_t(const string_t& params)
                 :       model_t("linear",
-                                "parameters: opt=lbfgs[gd,cgd,lbfgs,sgd],iters=256[8-2048],eps=1e-5[1e-6,1e-3]")
+                                "parameters: iters=256[8-2048],eps=1e-5[1e-6,1e-3]")
         {
-                m_opt_method = text::from_params<optimization_method>(params, "opt", optimization_method::lbfgs);
+//                opt=lbfgs[gd,cgd,lbfgs,sgd],
+//                m_opt_method = text::from_params<optimization_method>(params, "opt", optimization_method::lbfgs);
                 m_opt_iters = math::clamp(text::from_params<size_t>(params, "iters", 256), 8, 2048);
                 m_opt_eps = math::clamp(text::from_params<scalar_t>(params, "eps", 1e-5), 1e-3, 1e-6);
         }
@@ -38,7 +39,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void linear_model_t::initZero()
+        void linear_model_t::zero()
         {
                 m_weights.setZero();
                 m_bias.setZero();
@@ -46,8 +47,11 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void linear_model_t::initRandom(scalar_t min, scalar_t max)
+        void linear_model_t::random()
         {
+                const scalar_t min = -1.0 / sqrt(n_parameters());
+                const scalar_t max = +1.0 / sqrt(n_parameters());
+
                 random_t<scalar_t> rgen(min, max);
 
                 rgen(m_weights.data(), m_weights.data() + m_weights.size());
@@ -105,14 +109,14 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void linear_model_t::cum_fval(const task_t& task, const loss_t& loss, const isample_t& isample,
+        void linear_model_t::cum_fval(const task_t& task, const loss_t& loss, const sample_t& sample,
                 opt_data_t& data) const
         {
-                const image_t& image = task.image(isample.m_index);
-                const vector_t target = image.get_target(isample.m_region);
+                const image_t& image = task.image(sample.m_index);
+                const vector_t target = image.get_target(sample.m_region);
                 if (image.has_target(target))
                 {
-                        const vector_t input = image.get_input(isample.m_region);
+                        const vector_t input = image.get_input(sample.m_region);
 
                         vector_t output;
                         process(input, output);
@@ -124,14 +128,14 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void linear_model_t::cum_fval_grad(const task_t& task, const loss_t& loss, const isample_t& isample,
+        void linear_model_t::cum_fval_grad(const task_t& task, const loss_t& loss, const sample_t& sample,
                 opt_data_t& data) const
         {
-                const image_t& image = task.image(isample.m_index);
-                const vector_t target = image.get_target(isample.m_region);
+                const image_t& image = task.image(sample.m_index);
+                const vector_t target = image.get_target(sample.m_region);
                 if (image.has_target(target))
                 {
-                        const vector_t input = image.get_input(isample.m_region);
+                        const vector_t input = image.get_input(sample.m_region);
 
                         vector_t output;
                         process(input, output);
@@ -156,11 +160,9 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        bool linear_model_t::_train(const task_t& task, const fold_t& fold, const loss_t& loss)
+        bool linear_model_t::train(const task_t& task, const samples_t& samples, const loss_t& loss)
         {
                 // construct the optimization problem
-                const isamples_t& isamples = task.fold(fold);
-
                 auto opt_fn_size = [&] ()
                 {
                         return n_parameters();
@@ -175,14 +177,14 @@ namespace ncv
                         // cumulate function value and gradients (using multiple threads)
                         thread_loop_cumulate<opt_data_t>
                         (
-                                isamples.size(),
+                                samples.size(),
                                 [&] (opt_data_t& data)
                                 {
                                         data.resize(n_outputs(), n_inputs());
                                 },
                                 [&] (size_t i, opt_data_t& data)
                                 {
-                                        cum_fval(task, loss, isamples[i], data);
+                                        cum_fval(task, loss, samples[i], data);
                                 },
                                 [&] (const opt_data_t& data)
                                 {
@@ -190,8 +192,7 @@ namespace ncv
                                 }
                         );
 
-                        const scalar_t inv = (cum_data.m_cnt == 0) ? 1.0 : 1.0 / cum_data.m_cnt;
-                        cum_data.m_fx *= inv;
+                        math::norm(cum_data.m_fx, cum_data.m_cnt);
 
                         return cum_data.m_fx;
                 };
@@ -205,14 +206,14 @@ namespace ncv
                         // cumulate function value and gradients (using multiple threads)
                         thread_loop_cumulate<opt_data_t>
                         (
-                                isamples.size(),
+                                samples.size(),
                                 [&] (opt_data_t& data)
                                 {
                                         data.resize(n_outputs(), n_inputs());
                                 },
                                 [&] (size_t i, opt_data_t& data)
                                 {
-                                        cum_fval_grad(task, loss, isamples[i], data);
+                                        cum_fval_grad(task, loss, samples[i], data);
                                 },
                                 [&] (const opt_data_t& data)
                                 {
@@ -225,9 +226,8 @@ namespace ncv
                         geom::serialize(cum_data.m_wgrad, pos, gx);
                         geom::serialize(cum_data.m_bgrad, pos, gx);
 
-                        const scalar_t inv = (cum_data.m_cnt == 0) ? 1.0 : 1.0 / cum_data.m_cnt;
-                        cum_data.m_fx *= inv;
-                        gx *= inv;
+                        math::norm(cum_data.m_fx, cum_data.m_cnt);
+                        math::norm(gx, cum_data.m_cnt);
 
                         return cum_data.m_fx;
                 };
@@ -235,9 +235,6 @@ namespace ncv
                 const optimize::problem_t problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad);
 
                 // optimize
-                initRandom(-1.0 / sqrt(n_parameters()),
-                           +1.0 / sqrt(n_parameters()));
-
                 timer_t timer;
                 const optimize::result_t res = optimize::lbfgs(
                         problem, to_params(),

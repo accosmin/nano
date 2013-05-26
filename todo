@@ -1,10 +1,9 @@
-* add functor to the optimization procedure to process the optimum update
-
-* bootstrapping: start with empty training set + REPEAT (evaluate, sample based on the test error, add samples to training set, train) 
+* bootstrapping: 
+	- start with empty training set + REPEAT (evaluate, sample based on the test error, add samples to training set, train) 
+	- parameter to the linear model
 
 - train/test models:
-	- test the training script
-	- make cmake work with Qt5 modules
+	- update script: linear model (lbfgs vs. bootstrapping)
 
 	- FASTER linear training!
 		- more efficient: v * u.transpose()

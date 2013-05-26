@@ -102,6 +102,7 @@ namespace ncv
 
         // numerical types
         typedef std::size_t                     size_t;
+        typedef std::vector<size_t>             indices_t;
 
         typedef double                          scalar_t;
         typedef std::vector<scalar_t>           scalars_t;

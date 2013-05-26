@@ -49,13 +49,13 @@ namespace ncv
                 const image_t& image(size_t i) const { return m_images[i]; }
 
                 size_t n_folds() const { return m_folds.size() / 2; } // train + test
-                const isamples_t& fold(const fold_t& fold) const { return m_folds.find(fold)->second; }
+                const samples_t& samples(const fold_t& fold) const { return m_folds.find(fold)->second; }
 
         protected:
 
                 // construct image-indexed samples for the [istart, istart + icount) images
                 //      having the (region) image coordinates
-                isamples_t make_isamples(size_t istart, size_t icount, const rect_t& region);
+                samples_t make_samples(size_t istart, size_t icount, const rect_t& region);
 
         protected:
 

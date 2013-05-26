@@ -22,6 +22,18 @@ namespace ncv
                 using boost::math::constants::pi;
                 using namespace boost::math::constants;
 
+                // normalize a value (scalar or vector)
+                template
+                <
+                        typename tvalue,
+                        typename tsize
+                >
+                void norm(tvalue& v, tsize cnt)
+                {
+                        const double inv = (cnt == 0) ? 1.0 : 1.0 / cnt;
+                        v *= inv;
+                }
+
                 // square a value
                 template
                 <

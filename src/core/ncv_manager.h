@@ -87,15 +87,7 @@ namespace ncv
 
                 bool _add(const string_t& id, const tobject& proto)
                 {
-                        if (m_protos.find(id) == m_protos.end())
-                        {
-                                m_protos[id] = proto.clone("");
-                                return true;
-                        }
-                        else
-                        {
-                                return false;
-                        }
+                        return m_protos.insert(typename protos_t::value_type(id, proto.clone(""))).second;
                 }
 
                 //-------------------------------------------------------------------------------------------------

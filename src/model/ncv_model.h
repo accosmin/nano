@@ -55,11 +55,42 @@ namespace ncv
 
         protected:
 
+                // apply an operator to each sample
+                template
+                <
+                        typename toperator
+                >
+                void foreach_sample_with_target(const task_t& task, const samples_t& samples, toperator op) const
+                {
+                        for (size_t i = 0; i < samples.size(); i ++)
+                        {
+                                const sample_t& sample = samples[i];
+                                const image_t& image = task.image(sample.m_index);
+
+                                const vector_t target = image.get_target(sample.m_region);
+                                if (image.has_target(target))
+                                {
+                                        const vector_t input = image.get_input(sample.m_region);
+                                        op(i, input, target);
+                                }
+                        }
+                }
+
                 // resize to new inputs/outputs
                 virtual void resize() = 0;
 
+                // initialize parameters
+                virtual void zero() = 0;
+                virtual void random() = 0;
+
                 // train the model
-                virtual bool _train(const task_t& task, const fold_t& fold, const loss_t& loss) = 0;
+                virtual bool train(const task_t& task, const samples_t& samples, const loss_t& loss) = 0;
+
+        private:
+
+                // error-based sample bootstraping
+                samples_t bootstrap(const task_t& task, const samples_t& samples, const loss_t& loss,
+                        scalar_t factor, scalar_t& error) const;
 
         private:
 

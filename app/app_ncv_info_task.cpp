@@ -73,8 +73,8 @@ int main(int argc, char *argv[])
                 const ncv::fold_t test_fold = std::make_pair(f, ncv::protocol::test);
 
                 ncv::log_info() << "fold [" << (f + 1) << "/" << rtask->n_folds()
-                                << "]: #train samples = " << rtask->fold(train_fold).size()
-                                << ", #test samples = " << rtask->fold(test_fold).size() << ".";
+                                << "]: #train samples = " << rtask->samples(train_fold).size()
+                                << ", #test samples = " << rtask->samples(test_fold).size() << ".";
         }
 		
         // OK

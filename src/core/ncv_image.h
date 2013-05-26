@@ -46,14 +46,14 @@ namespace ncv
         // image-indexed sample
         ////////////////////////////////////////////////////////////////////////////////
 
-        struct isample_t
+        struct sample_t
         {
                 // constructor
-                isample_t(size_t index = 0, coord_t x = 0, coord_t y = 0, coord_t w = 0, coord_t h = 0)
-                        :       isample_t(index, geom::make_rect(x, y, w, h))
+                sample_t(size_t index = 0, coord_t x = 0, coord_t y = 0, coord_t w = 0, coord_t h = 0)
+                        :       sample_t(index, geom::make_rect(x, y, w, h))
                 {
                 }
-                isample_t(size_t index, const rect_t& region)
+                sample_t(size_t index, const rect_t& region)
                         :       m_index(index), m_region(region)
                 {
                 }
@@ -63,11 +63,11 @@ namespace ncv
                 rect_t          m_region;       // image coordinates
         };
 
-        typedef std::vector<isample_t>          isamples_t;
+        typedef std::vector<sample_t>           samples_t;
 
         // fold image-indexed samples
         typedef std::pair<size_t, protocol>     fold_t;
-        typedef std::map<fold_t, isamples_t>    folds_t;
+        typedef std::map<fold_t, samples_t>    folds_t;
 
         ////////////////////////////////////////////////////////////////////////////////
         // image with its annotations

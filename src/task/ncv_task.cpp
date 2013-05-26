@@ -18,16 +18,16 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        isamples_t task_t::make_isamples(size_t istart, size_t icount, const rect_t& region)
+        samples_t task_t::make_samples(size_t istart, size_t icount, const rect_t& region)
         {
-                isamples_t isamples(icount);
+                samples_t samples(icount);
                 for (size_t i = 0; i < icount; i ++)
                 {
-                        isamples[i].m_index = istart + i;
-                        isamples[i].m_region = region;
+                        samples[i].m_index = istart + i;
+                        samples[i].m_region = region;
                 }
 
-                return isamples;
+                return samples;
         }
 
         //-------------------------------------------------------------------------------------------------

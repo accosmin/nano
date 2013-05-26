@@ -137,7 +137,7 @@ namespace ncv
                 for (size_t f = 0; f < n_folds; f ++)
                 {
                         const fold_t train_fold = std::make_pair(f, protocol::train);
-                        m_folds[train_fold] = make_isamples(n_train, n_unlabeled, sample_region(0, 0));
+                        m_folds[train_fold] = make_samples(n_train, n_unlabeled, sample_region(0, 0));
 
                         string_t line;
                         if (!std::getline(findices, line))
@@ -160,7 +160,7 @@ namespace ncv
                                         const size_t i = text::from_string<size_t>(tokens[t]);
                                         if (i < n_train)
                                         {
-                                                m_folds[train_fold].push_back(isample_t(i, sample_region(0, 0)));
+                                                m_folds[train_fold].push_back(sample_t(i, sample_region(0, 0)));
                                         }
                                         else
                                         {
@@ -177,7 +177,7 @@ namespace ncv
                 for (size_t f = 0; f < n_folds; f ++)
                 {
                         const fold_t test_fold = std::make_pair(f, protocol::test);
-                        m_folds[test_fold] = make_isamples(n_train + n_unlabeled, n_test, sample_region(0, 0));
+                        m_folds[test_fold] = make_samples(n_train + n_unlabeled, n_test, sample_region(0, 0));
                 }
 
                 return true;
