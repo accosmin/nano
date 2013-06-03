@@ -64,13 +64,13 @@ namespace ncv
                         return false;
                 }
 
-                char buffer[n_inputs()];
+                char buffer[n_rows() * n_cols() * 3];
                 char label[1];
                 
                 // load images and annotations
                 size_t cnt = 0;
                 while ( flabel.read(label, 1) &&
-                        fimage.read(buffer, n_inputs()))
+                        fimage.read(buffer, sizeof(buffer)))
                 {
                         const size_t ilabel = static_cast<size_t>(label[0]) - 1;
                         if (ilabel >= n_outputs())
@@ -104,11 +104,11 @@ namespace ncv
                         return false;
                 }
 
-                char buffer[n_inputs()];
+                char buffer[n_rows() * n_cols() * 3];
 
                 // load images
                 size_t cnt = 0;
-                while (fimage.read(buffer, n_rows() * n_cols() * 3))
+                while (fimage.read(buffer, sizeof(buffer)))
                 {
                         image_t image;
                         image.m_protocol = p;

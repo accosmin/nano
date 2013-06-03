@@ -65,13 +65,13 @@ namespace ncv
                         return 0;
                 }
 
-                char buffer[n_inputs()];
+                char buffer[n_rows() * n_cols() * 3];
                 char label[1];
 
                 // load images and annotations
                 size_t cnt = 0;
                 while ( istream.read(label, 1) &&
-                        istream.read(buffer, n_rows() * n_cols() * 3))
+                        istream.read(buffer, sizeof(buffer)))
                 {
                         const size_t ilabel = static_cast<size_t>(label[0]);
                         if (ilabel >= n_outputs())

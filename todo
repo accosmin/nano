@@ -1,6 +1,18 @@
-* bootstrapping: 
-	- start with empty training set + REPEAT (evaluate, sample based on the test error, add samples to training set, train) 
-	- parameter to the linear model
+* better organize the model classes:
+	- reuse the binary archives to load/save the model
+	- less verbose design 
+	- focus more on convolution models (learning combinations of filters)
+
+* display for each loss/model/task:
+	- (ids...)\n id name params
+	- replace description with params
+
+* update experiments scripts
+
+* base class to keep (rows, cols, inputs, outputs): can be used for models & tasks
+
+* can models use matrices as inputs?!
+	- to speed-up gradient computation, something like a convolution
 
 - train/test models:
 	- update script: linear model (lbfgs vs. bootstrapping)

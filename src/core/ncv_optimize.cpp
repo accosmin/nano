@@ -53,7 +53,7 @@ namespace ncv
 
                         scalar_t ls_strong_wolfe(
                                 const problem_t& problem, state_t& st, scalar_t t0,
-                                scalar_t c1 = 1e-4, scalar_t c2 = 0.1)
+                                scalar_t c1 = 1e-4, scalar_t c2 = 0.9)
                         {
                                 // Check if descent direction
                                 scalar_t dg = st.d.dot(st.g);

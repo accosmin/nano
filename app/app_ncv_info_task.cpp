@@ -63,7 +63,6 @@ int main(int argc, char *argv[])
         ncv::log_info() << "images: " << rtask->n_images() << ".";
         ncv::log_info() << "sample: #rows = " << rtask->n_rows()
                         << ", #cols = " << rtask->n_cols()
-                        << ", #inputs = " << rtask->n_inputs()
                         << ", #outputs = " << rtask->n_outputs()
                         << ", #folds = " << rtask->n_folds() << ".";
 

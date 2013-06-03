@@ -80,9 +80,37 @@ namespace ncv
                 bool load_gray(const char* buffer, size_t rows, size_t cols);
                 bool load_rgba(const char* buffer, size_t rows, size_t cols);
 
-                // retrieve the scaled to [0, 1] RGB input vector & the associated target (if any)
-                vector_t get_input(const rect_t& region) const;
+                // retrieve the scaled [0, 1] RGB input vector
+                matrix_t get_red(const rect_t& region) const { return get(region, color::make_red); }
+                matrix_t get_green(const rect_t& region) const { return get(region, color::make_green); }
+                matrix_t get_blue(const rect_t& region) const { return get(region, color::make_blue); }
+                matrix_t get_luma(const rect_t& region) const { return get(region, color::make_luma); }
+
+                // retrieve the associated target (if any)
                 vector_t get_target(const rect_t& region) const;
+
+                template
+                <
+                        typename toperator
+                >
+                matrix_t get(const rect_t& region, const toperator& op) const
+                {
+                        const coord_t top = geom::top(region), left = geom::left(region);
+                        const coord_t rows = geom::rows(region), cols = geom::cols(region);
+
+                        matrix_t data(rows, cols);
+                        for (coord_t r = 0; r < rows; r ++)
+                        {
+                                for (coord_t c = 0; c < cols; c ++)
+                                {
+                                        const rgba_t rgba = m_rgba(top + r, left + c);
+                                        data(r, c) = op(rgba);
+                                }
+                        }
+                        data /= 255.0;
+
+                        return data;
+                }
 
                 // check if a target is valid
                 static bool has_target(const vector_t& target) { return target.size() > 0; }

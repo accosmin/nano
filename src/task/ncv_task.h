@@ -42,7 +42,6 @@ namespace ncv
                 // access functions
                 virtual size_t n_rows() const = 0;
                 virtual size_t n_cols() const = 0;
-                size_t n_inputs() const { return 3 * n_rows() * n_cols(); }     // RGB!
                 virtual size_t n_outputs() const = 0;
 
                 size_t n_images() const { return m_images.size(); }

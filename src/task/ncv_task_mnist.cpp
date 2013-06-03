@@ -37,7 +37,7 @@ namespace ncv
 
         size_t mnist_task_t::load(const string_t& ifile, const string_t& gfile, protocol p)
         {
-                char buffer[n_inputs()];
+                char buffer[n_rows() * n_cols()];
                 char label[2];
 
                 // image and label data streams
@@ -56,7 +56,7 @@ namespace ncv
                 // load annotations and images
                 size_t cnt = 0;
                 while ( flabel.read(label, 1) &&
-                        fimage.read(buffer, n_rows() * n_cols() * 1))
+                        fimage.read(buffer, sizeof(buffer)))
                 {
                         const size_t ilabel = static_cast<size_t>(label[0]);
                         if (ilabel >= n_outputs())

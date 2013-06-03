@@ -20,13 +20,7 @@ namespace ncv
         public:
 
                 // constructor
-                model_t(const string_t& name, const string_t& description)
-                        :       clonable_t<model_t>(name, description),
-                                m_rows(0),
-                                m_cols(0),
-                                m_outputs(0)
-                {
-                }
+                model_t(const string_t& name, const string_t& description);
 
                 // destructor
                 virtual ~model_t() {}
@@ -39,19 +33,18 @@ namespace ncv
                         scalar_t& lvalue, scalar_t& lerror) const;
 
                 // compute the model output
-                virtual void process(const vector_t& input, vector_t& output) const = 0;
-                void process(const image_t& image, coord_t x, coord_t y, vector_t& output) const;
+                virtual vector_t process(const image_t& image, coord_t x, coord_t y) const = 0;
+                vector_t process(const image_t& image, const rect_t& region) const;
 
                 // save/load from file
-                virtual bool save(const string_t& path) const = 0;
-                virtual bool load(const string_t& path) = 0;
+                bool save(const string_t& path) const;
+                bool load(const string_t& path);
 
                 // access functions
                 size_t n_rows() const { return m_rows; }
                 size_t n_cols() const { return m_cols; }
-                size_t n_inputs() const { return 3 * n_rows() * n_cols(); }     // RGB!
                 size_t n_outputs() const { return m_outputs; }
-                virtual size_t n_parameters() const = 0;
+                size_t n_parameters() const { return m_parameters; }
 
         protected:
 
@@ -70,14 +63,18 @@ namespace ncv
                                 const vector_t target = image.get_target(sample.m_region);
                                 if (image.has_target(target))
                                 {
-                                        const vector_t input = image.get_input(sample.m_region);
-                                        op(i, input, target);
+                                        const vector_t output = process(image, sample.m_region);
+                                        op(i, output, target);
                                 }
                         }
                 }
 
-                // resize to new inputs/outputs
-                virtual void resize() = 0;
+                // save/load from file
+                virtual bool save(std::ofstream& os) const = 0;
+                virtual bool load(std::ifstream& is) = 0;
+
+                // resize to new inputs/outputs, returns the number of parameters
+                virtual size_t resize() = 0;
 
                 // initialize parameters
                 virtual void zero() = 0;
@@ -86,17 +83,32 @@ namespace ncv
                 // train the model
                 virtual bool train(const task_t& task, const samples_t& samples, const loss_t& loss) = 0;
 
-        private:
+        protected:
 
-                // error-based sample bootstraping
-                samples_t bootstrap(const task_t& task, const samples_t& samples, const loss_t& loss,
-                        scalar_t factor, scalar_t& error) const;
+                // initialize matrices & vectors
+                static void zero(matrix_t& mat);
+                static void zero(matrices_t& mats);
+                static void zero(vector_t& vec);
+
+                static void random(scalar_t min, scalar_t max, matrix_t& mat);
+                static void random(scalar_t min, scalar_t max, matrices_t& mats);
+                static void random(scalar_t min, scalar_t max, vector_t& vec);
+
+                // serialize/deserialize matrices & vectors
+                static void serialize(const matrix_t& mat, size_t& pos, vector_t& params);
+                static void serialize(const matrices_t& mats, size_t& pos, vector_t& params);
+                static void serialize(const vector_t& vec, size_t& pos, vector_t& params);
+
+                static void deserialize(matrix_t& mat, size_t& pos, const vector_t& params);
+                static void deserialize(matrices_t& mats, size_t& pos, const vector_t& params);
+                static void deserialize(vector_t& vec, size_t& pos, const vector_t& params);
 
         private:
 
                 // attributes
                 size_t          m_rows, m_cols;         // input patch size
                 size_t          m_outputs;              // output size
+                size_t          m_parameters;
         };
 }
 

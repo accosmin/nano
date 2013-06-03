@@ -93,7 +93,6 @@ int main(int argc, char *argv[])
         ncv::log_info() << "images: " << rtask->n_images() << ".";
         ncv::log_info() << "sample: #rows = " << rtask->n_rows()
                         << ", #cols = " << rtask->n_cols()
-                        << ", #inputs = " << rtask->n_inputs()
                         << ", #outputs = " << rtask->n_outputs()
                         << ", #folds = " << rtask->n_folds() << ".";
 
@@ -138,12 +137,12 @@ int main(int argc, char *argv[])
                                 ncv::log_error() << "<<< failed to train model <" << cmd_model << ">!";
                                 break;
                         }
-                        ncv::log_info() << "<<< model trained in " << timer.elapsed() << ".";
+                        ncv::log_info() << "<<< training done in " << timer.elapsed() << ".";
 
                         timer.start();
                         ncv::scalar_t lvalue, lerror;
                         rmodel->test(*rtask, test_fold, *rloss, lvalue, lerror);
-                        ncv::log_info() << "<<< model tested [" << lvalue << "/" << lerror
+                        ncv::log_info() << "<<< test error: [" << lvalue << "/" << lerror
                                         << "] in " << timer.elapsed() << ".";
 
                         lstats.add(lvalue);

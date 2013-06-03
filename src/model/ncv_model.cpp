@@ -1,9 +1,53 @@
 #include "ncv_model.h"
 #include "ncv_logger.h"
 #include "ncv_random.h"
+#include <fstream>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
 
 namespace ncv
 {
+        //-------------------------------------------------------------------------------------------------
+
+        model_t::model_t(const string_t& name, const string_t& description)
+                :       clonable_t<model_t>(name, description),
+                        m_rows(0),
+                        m_cols(0),
+                        m_outputs(0),
+                        m_parameters(0)
+        {
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        bool model_t::save(const string_t& path) const
+        {
+                std::ofstream os(path, std::ios::binary);
+
+                boost::archive::binary_oarchive oa(os);
+                oa << m_rows;
+                oa << m_cols;
+                oa << m_outputs;
+                oa << m_parameters;
+
+                return os.good() && save(os);
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        bool model_t::load(const string_t& path)
+        {
+                std::ifstream is(path, std::ios::binary);
+
+                boost::archive::binary_iarchive ia(is);
+                ia >> m_rows;
+                ia >> m_cols;
+                ia >> m_outputs;
+                ia >> m_parameters;
+
+                return is.good() && load(is);
+        }
+
         //-------------------------------------------------------------------------------------------------
 
         void model_t::test(const task_t& task, const fold_t& fold, const loss_t& loss,
@@ -13,11 +57,8 @@ namespace ncv
                 size_t cnt = 0;
 
                 const samples_t& samples = task.samples(fold);
-                foreach_sample_with_target(task, samples, [&] (size_t i, const vector_t& input, const vector_t& target)
+                foreach_sample_with_target(task, samples, [&] (size_t i, const vector_t& output, const vector_t& target)
                 {
-                        vector_t output;
-                        process(input, output);
-
                         lvalue += loss.value(target, output);
                         lerror += loss.error(target, output);
                         ++ cnt;
@@ -25,45 +66,6 @@ namespace ncv
 
                 math::norm(lvalue, cnt);
                 math::norm(lerror, cnt);
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        samples_t model_t::bootstrap(const task_t& task, const samples_t& samples, const loss_t& loss,
-                scalar_t factor, scalar_t& error) const
-        {
-                scalars_t errors;
-                indices_t indices;
-                size_t cnt = 0;
-
-                foreach_sample_with_target(task, samples, [&] (size_t i, const vector_t& input, const vector_t& target)
-                {
-                        vector_t output;
-                        process(input, output);
-
-                        errors.push_back(loss.error(target, output));
-                        indices.push_back(i);
-                        cnt ++;
-                });
-
-                error = std::accumulate(errors.begin(), errors.end(), 0.0);
-                math::norm(error, cnt);
-
-                random_t<scalar_t> rgen(0.0, 1.0);
-                const scalar_t prob_scale = factor * cnt / (error * cnt + std::numeric_limits<scalar_t>::epsilon());
-
-                samples_t esamples;
-                for (size_t ii = 0; ii < indices.size(); ii ++)
-                {
-                        const scalar_t prob = errors[ii] * prob_scale;
-                        if (rgen() < prob)
-                        {
-                                const size_t i = indices[ii];
-                                esamples.push_back(samples[i]);
-                        }
-                }
-
-                return esamples;
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -79,38 +81,121 @@ namespace ncv
                 m_rows = task.n_rows();
                 m_cols = task.n_cols();
                 m_outputs = task.n_outputs();
+                m_parameters = resize();
 
-                resize();
                 random();
 
-                const scalar_t boot_factor = 0.01;
-                const size_t boot_steps = 8;
-
-                samples_t samples;
-                for (size_t b = 0; b < boot_steps; b ++)
-                {
-                        scalar_t error;
-                        const samples_t esamples = bootstrap(task, task.samples(fold), loss, boot_factor, error);
-                        samples.insert(samples.end(), esamples.begin(), esamples.end());
-
-                        log_info() << "boostrap [" << (b + 1) << "/" << boot_steps
-                                   << "]: error = " << error << ", samples = " << samples.size() << ".";
-                        if (!train(task, samples, loss))
-                        {
-                                log_error() << "failed to train the model!";
-                                return false;
-                        }
-                }
-
-                return true;
+                return train(task, task.samples(fold), loss);
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void model_t::process(const image_t& image, coord_t x, coord_t y, vector_t& output) const
+        vector_t model_t::process(const image_t& image, const rect_t& region) const
         {
-                const vector_t input = image.get_input(geom::make_rect(x, y, n_cols(), n_rows()));
-                return process(input, output);
+                return process(image, geom::left(region), geom::top(region));
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void model_t::zero(matrix_t& mat)
+        {
+                mat.setZero();
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void model_t::zero(matrices_t& mats)
+        {
+                for (matrix_t& mat : mats)
+                {
+                        zero(mat);
+                }
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void model_t::zero(vector_t& vec)
+        {
+                vec.setZero();
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void model_t::random(scalar_t min, scalar_t max, matrix_t& mat)
+        {
+                random_t<scalar_t> rgen(min, max);
+                rgen(mat.data(), mat.data() + mat.size());
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void model_t::random(scalar_t min, scalar_t max, matrices_t& mats)
+        {
+                for (matrix_t& mat : mats)
+                {
+                        random(min, max, mat);
+                }
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void model_t::random(scalar_t min, scalar_t max, vector_t& vec)
+        {
+                random_t<scalar_t> rgen(min, max);
+                rgen(vec.data(), vec.data() + vec.size());
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void model_t::serialize(const matrix_t& mat, size_t& pos, vector_t& params)
+        {
+                std::copy(mat.data(), mat.data() + mat.size(), params.segment(pos, mat.size()).data());
+                pos += mat.size();
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void model_t::serialize(const matrices_t& mats, size_t& pos, vector_t& params)
+        {
+                for (const matrix_t& mat : mats)
+                {
+                        serialize(mat, pos, params);
+                }
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void model_t::serialize(const vector_t& vec, size_t& pos, vector_t& params)
+        {
+                params.segment(pos, vec.size()) = vec;
+                pos += vec.size();
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void model_t::deserialize(matrix_t& mat, size_t& pos, const vector_t& params)
+        {
+                auto segm = params.segment(pos, mat.size());
+                std::copy(segm.data(), segm.data() + segm.size(), mat.data());
+                pos += mat.size();
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void model_t::deserialize(matrices_t& mats, size_t& pos, const vector_t& params)
+        {
+                for (matrix_t& mat : mats)
+                {
+                        deserialize(mat, pos, params);
+                }
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void model_t::deserialize(vector_t& vec, size_t& pos, const vector_t& params)
+        {
+                vec = params.segment(pos, vec.size());
+                pos += vec.size();
         }
 
         //-------------------------------------------------------------------------------------------------

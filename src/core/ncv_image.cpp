@@ -101,29 +101,6 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        vector_t image_t::get_input(const rect_t& region) const
-        {
-                const coord_t top = geom::top(region), left = geom::left(region);
-                const coord_t rows = geom::rows(region), cols = geom::cols(region);
-
-                vector_t data(rows * cols * 3);
-                for (coord_t r = 0, i = 0; r < rows; r ++)
-                {
-                        for (coord_t c = 0; c < cols; c ++)
-                        {
-                                const rgba_t rgba = m_rgba(top + r, left + c);
-                                data(i ++) = color::make_red(rgba);
-                                data(i ++) = color::make_green(rgba);
-                                data(i ++) = color::make_blue(rgba);
-                        }
-                }
-                data /= 255.0;
-
-                return data;
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
         vector_t image_t::get_target(const rect_t& region) const
         {
                 // load the target of the most overlapping annotation

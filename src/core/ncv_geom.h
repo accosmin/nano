@@ -38,13 +38,6 @@ namespace ncv
                 rect_t intersection(const rect_t& rect1, const rect_t& rect2);
                 rect_t union_(const rect_t& rect1, const rect_t& rect2);
                 scalar_t overlap(const rect_t& rect1, const rect_t& rect2);
-
-                // serialize/deserialize 2D & 1D matrices
-                void serialize(const matrix_t& mat, size_t& pos, vector_t& params);
-                void serialize(const vector_t& vec, size_t& pos, vector_t& params);
-
-                void deserialize(matrix_t& mat, size_t& pos, const vector_t& params);
-                void deserialize(vector_t& vec, size_t& pos, const vector_t& params);
         }
 }
 

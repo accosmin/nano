@@ -74,13 +74,13 @@ namespace ncv
                 inline rgba_t make_blue(rgba_t rgba)    { return (rgba >>  8) & 0xFF; }
                 inline rgba_t make_alpha(rgba_t rgba)   { return (rgba >>  0) & 0xFF; }
 
-                inline rgba_t make_luma(rgba_t r, rgba_t g, rgba_t b)
+                inline rgba_t make_luma_(rgba_t r, rgba_t g, rgba_t b)
                 {
                         return (r * 11 + g * 16 + b * 5) / 32;
                 }
                 inline rgba_t make_luma(rgba_t rgba)
                 {
-                        return make_luma(make_red(rgba), make_green(rgba), make_blue(rgba));
+                        return make_luma_(make_red(rgba), make_green(rgba), make_blue(rgba));
                 }
 
                 cielab_t make_cielab(rgba_t rgba);
