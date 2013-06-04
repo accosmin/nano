@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
                 {
                         const ncv::matrix_t& filter = filters[f];
 
-                        const ncv::scalar_t sum_conv = filter.cwiseProduct(sample).sum();
+                        const ncv::scalar_t sum_conv = (filter.array() * sample.array()).sum();//filter.cwiseProduct(sample).sum();
                         sum_total += sum_conv;
                 }
 
