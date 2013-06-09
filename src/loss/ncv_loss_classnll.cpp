@@ -20,12 +20,10 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
         
-        scalar_t classnll_loss_t::vgrad(const vector_t& targets, const vector_t& scores, vector_t& grads) const
+        vector_t classnll_loss_t::vgrad(const vector_t& targets, const vector_t& scores) const
         {
-                grads = scores.array().exp().matrix() / scores.array().exp().sum() - 
+                return   scores.array().exp().matrix() / scores.array().exp().sum() -
                         0.5 * (targets.array() + 1.0).matrix();
-                
-                return value(targets, scores);
         }
 
         //-------------------------------------------------------------------------------------------------

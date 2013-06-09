@@ -5,14 +5,14 @@ int main(int argc, char *argv[])
 {
         ncv::init();
 
-        const ncv::strings_t task_names = ncv::task_manager_t::instance().names();
+        const ncv::strings_t task_ids = ncv::task_manager_t::instance().ids();
 
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
         po_desc.add_options()("help,h", "help message");
         po_desc.add_options()("task",
                 boost::program_options::value<ncv::string_t>(),
-                ("task name (" + ncv::text::concatenate(task_names, ", ") + ")").c_str());
+                ("tasks to choose from: " + ncv::text::concatenate(task_ids, ", ")).c_str());
         po_desc.add_options()("task-dir",
                 boost::program_options::value<ncv::string_t>(),
                 "directory to load task data from");

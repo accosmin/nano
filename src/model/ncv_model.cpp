@@ -2,8 +2,6 @@
 #include "ncv_logger.h"
 #include "ncv_random.h"
 #include <fstream>
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
 
 namespace ncv
 {
@@ -30,7 +28,7 @@ namespace ncv
                 oa << m_outputs;
                 oa << m_parameters;
 
-                return os.good() && save(os);
+                return save(oa);        // fixme: how to check status of the stream?!
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -45,7 +43,7 @@ namespace ncv
                 ia >> m_outputs;
                 ia >> m_parameters;
 
-                return is.good() && load(is);
+                return load(ia);        // fixme: how to check status of the stream?!
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -57,15 +55,25 @@ namespace ncv
                 size_t cnt = 0;
 
                 const samples_t& samples = task.samples(fold);
-                foreach_sample_with_target(task, samples, [&] (size_t i, const vector_t& output, const vector_t& target)
-                {
-                        lvalue += loss.value(target, output);
-                        lerror += loss.error(target, output);
-                        ++ cnt;
-                });
 
-                math::norm(lvalue, cnt);
-                math::norm(lerror, cnt);
+                for (size_t i = 0; i < samples.size(); i ++)
+                {
+                        const sample_t& sample = samples[i];
+                        const image_t& image = task.image(sample.m_index);
+
+                        const vector_t target = image.make_target(sample.m_region);
+                        if (image.has_target(target))
+                        {
+                                const vector_t output = forward(image, sample.m_region);
+
+                                lvalue += loss.value(target, output);
+                                lerror += loss.error(target, output);
+                                ++ cnt;
+                        }
+                }
+
+                lvalue /= cnt;
+                lerror /= cnt;
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -90,112 +98,9 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        vector_t model_t::process(const image_t& image, const rect_t& region) const
+        vector_t model_t::forward(const image_t& image, const rect_t& region) const
         {
-                return process(image, geom::left(region), geom::top(region));
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void model_t::zero(matrix_t& mat)
-        {
-                mat.setZero();
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void model_t::zero(matrices_t& mats)
-        {
-                for (matrix_t& mat : mats)
-                {
-                        zero(mat);
-                }
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void model_t::zero(vector_t& vec)
-        {
-                vec.setZero();
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void model_t::random(scalar_t min, scalar_t max, matrix_t& mat)
-        {
-                random_t<scalar_t> rgen(min, max);
-                rgen(mat.data(), mat.data() + mat.size());
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void model_t::random(scalar_t min, scalar_t max, matrices_t& mats)
-        {
-                for (matrix_t& mat : mats)
-                {
-                        random(min, max, mat);
-                }
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void model_t::random(scalar_t min, scalar_t max, vector_t& vec)
-        {
-                random_t<scalar_t> rgen(min, max);
-                rgen(vec.data(), vec.data() + vec.size());
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void model_t::serialize(const matrix_t& mat, size_t& pos, vector_t& params)
-        {
-                std::copy(mat.data(), mat.data() + mat.size(), params.segment(pos, mat.size()).data());
-                pos += mat.size();
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void model_t::serialize(const matrices_t& mats, size_t& pos, vector_t& params)
-        {
-                for (const matrix_t& mat : mats)
-                {
-                        serialize(mat, pos, params);
-                }
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void model_t::serialize(const vector_t& vec, size_t& pos, vector_t& params)
-        {
-                params.segment(pos, vec.size()) = vec;
-                pos += vec.size();
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void model_t::deserialize(matrix_t& mat, size_t& pos, const vector_t& params)
-        {
-                auto segm = params.segment(pos, mat.size());
-                std::copy(segm.data(), segm.data() + segm.size(), mat.data());
-                pos += mat.size();
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void model_t::deserialize(matrices_t& mats, size_t& pos, const vector_t& params)
-        {
-                for (matrix_t& mat : mats)
-                {
-                        deserialize(mat, pos, params);
-                }
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void model_t::deserialize(vector_t& vec, size_t& pos, const vector_t& params)
-        {
-                vec = params.segment(pos, vec.size());
-                pos += vec.size();
+                return forward(image, geom::left(region), geom::top(region));
         }
 
         //-------------------------------------------------------------------------------------------------

@@ -145,13 +145,11 @@ namespace ncv
                 test                    // testing
         };
 
-        // optimization method
-        enum class optimization_method : int
+        // color processing mode method
+        enum class process : int
         {
-                gd,                     // gradient descent (with line-search)
-                cgd,                    // conjugate gradient descent (with line-search)
-                lbfgs,                  // l-BFGS (with line-search)
-                sgd                     // stochastic gradient descent
+                luma,                   // process only grayscale color channel
+                rgba                    // process red, green & blue color channels
         };
 }
 

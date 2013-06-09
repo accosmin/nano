@@ -5,18 +5,19 @@ int main(int argc, char *argv[])
 {
         ncv::init();
 
-        const ncv::strings_t task_names = ncv::task_manager_t::instance().names();
-        const ncv::strings_t loss_names = ncv::loss_manager_t::instance().names();
+        const ncv::strings_t task_ids = ncv::task_manager_t::instance().ids();
+        const ncv::strings_t loss_ids = ncv::loss_manager_t::instance().ids();
 
-        const ncv::strings_t model_names = ncv::model_manager_t::instance().names();
+        const ncv::strings_t model_ids = ncv::model_manager_t::instance().ids();
         const ncv::strings_t model_descriptions = ncv::model_manager_t::instance().descriptions();
 
         ncv::string_t po_desc_models;
-        po_desc_models += "model name (" + ncv::text::concatenate(model_names, ", ") + "):";
-        for (ncv::size_t i = 0; i < model_names.size(); i ++)
+        po_desc_models += "models to choose from:";
+        for (ncv::size_t i = 0; i < model_ids.size(); i ++)
         {
-                po_desc_models += "\n  " + ncv::text::resize(model_names[i], 16) +
-                                  " " + model_descriptions[i];
+                po_desc_models += "\n  " +
+                                ncv::text::resize(model_ids[i], 16) +
+                                ncv::text::resize(model_descriptions[i], 32);
         }
 
         // parse the command line
@@ -24,13 +25,13 @@ int main(int argc, char *argv[])
         po_desc.add_options()("help,h", "help message");
         po_desc.add_options()("task",
                 boost::program_options::value<ncv::string_t>(),
-                ("task name (" + ncv::text::concatenate(task_names, ", ") + ")").c_str());
+                ("tasks to choose from: " + ncv::text::concatenate(task_ids, ", ")).c_str());
         po_desc.add_options()("task-dir",
                 boost::program_options::value<ncv::string_t>(),
                 "directory to load task data from");
         po_desc.add_options()("loss",
                 boost::program_options::value<ncv::string_t>(),
-                ("loss name (" + ncv::text::concatenate(loss_names, ", ") + ")").c_str());
+                ("losses to choose from: " + ncv::text::concatenate(loss_ids, ", ")).c_str());
         po_desc.add_options()("model",
                 boost::program_options::value<ncv::string_t>(),
                 po_desc_models.c_str());

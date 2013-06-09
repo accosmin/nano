@@ -19,10 +19,9 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
         
-        scalar_t square_loss_t::vgrad(const vector_t& targets, const vector_t& scores, vector_t& grads) const
+        vector_t square_loss_t::vgrad(const vector_t& targets, const vector_t& scores) const
         {
-                grads = targets - scores;
-                return value(targets, scores);
+                return targets - scores;
         }
 
         //-------------------------------------------------------------------------------------------------

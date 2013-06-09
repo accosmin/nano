@@ -101,7 +101,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        vector_t image_t::get_target(const rect_t& region) const
+        vector_t image_t::make_target(const rect_t& region) const
         {
                 // load the target of the most overlapping annotation
                 scalar_t best_overlap = 0.0;

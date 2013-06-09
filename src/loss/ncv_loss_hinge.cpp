@@ -20,23 +20,22 @@ namespace ncv
                         const scalar_t edge = targets[o] * scores[o];
                         value += std::max(1.0 - edge, 0.0);
                 }
+
                 return value;
         }
 
         //-------------------------------------------------------------------------------------------------
         
-        scalar_t hinge_loss_t::vgrad(const vector_t& targets, const vector_t& scores, vector_t& grads) const
+        vector_t hinge_loss_t::vgrad(const vector_t& targets, const vector_t& scores) const
         {
-                grads.resize(targets.rows());
-
-                scalar_t value = 0.0;
+                vector_t grads(targets.rows());
                 for (int o = 0; o < targets.rows(); o ++)
                 {
                         const scalar_t edge = targets[o] * scores[o];
-                        value += std::max(1.0 - edge, 0.0);
                         grads[o] = edge > 1.0 ? 0.0 : - targets[o];
                 }
-                return value;
+
+                return grads;
         }
 
         //-------------------------------------------------------------------------------------------------

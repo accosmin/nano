@@ -11,8 +11,7 @@
 #include "ncv_task_stl10.h"
 #include "ncv_task_cmufaces.h"
 
-#include "ncv_model_affine_conv.h"
-//#include "ncv_model_affine_proj.h"
+#include "ncv_model_affine.h"
 
 namespace ncv
 {
@@ -36,8 +35,7 @@ namespace ncv
                 task_manager_t::instance().add("cmu-faces", cmufaces_task_t());
 
                 // register models
-//                model_manager_t::instance().add("affine-conv", affine_conv_model_t());
-//                model_manager_t::instance().add("affine-proj", affine_proj_model_t());
+                model_manager_t::instance().add("affine", affine_model_t());
         }
 
         //-------------------------------------------------------------------------------------------------

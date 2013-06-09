@@ -3,6 +3,8 @@
 
 #include "ncv_task.h"
 #include "ncv_loss.h"
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
 
 namespace ncv
 {
@@ -33,8 +35,8 @@ namespace ncv
                         scalar_t& lvalue, scalar_t& lerror) const;
 
                 // compute the model output
-                virtual vector_t process(const image_t& image, coord_t x, coord_t y) const = 0;
-                vector_t process(const image_t& image, const rect_t& region) const;
+                virtual vector_t forward(const image_t& image, coord_t x, coord_t y) const = 0;
+                vector_t forward(const image_t& image, const rect_t& region) const;
 
                 // save/load from file
                 bool save(const string_t& path) const;
@@ -48,30 +50,9 @@ namespace ncv
 
         protected:
 
-                // apply an operator to each sample
-                template
-                <
-                        typename toperator
-                >
-                void foreach_sample_with_target(const task_t& task, const samples_t& samples, toperator op) const
-                {
-                        for (size_t i = 0; i < samples.size(); i ++)
-                        {
-                                const sample_t& sample = samples[i];
-                                const image_t& image = task.image(sample.m_index);
-
-                                const vector_t target = image.get_target(sample.m_region);
-                                if (image.has_target(target))
-                                {
-                                        const vector_t output = process(image, sample.m_region);
-                                        op(i, output, target);
-                                }
-                        }
-                }
-
                 // save/load from file
-                virtual bool save(std::ofstream& os) const = 0;
-                virtual bool load(std::ifstream& is) = 0;
+                virtual bool save(boost::archive::binary_oarchive& oa) const = 0;
+                virtual bool load(boost::archive::binary_iarchive& ia) = 0;
 
                 // resize to new inputs/outputs, returns the number of parameters
                 virtual size_t resize() = 0;
@@ -82,26 +63,6 @@ namespace ncv
 
                 // train the model
                 virtual bool train(const task_t& task, const samples_t& samples, const loss_t& loss) = 0;
-
-        protected:
-
-                // initialize matrices & vectors
-                static void zero(matrix_t& mat);
-                static void zero(matrices_t& mats);
-                static void zero(vector_t& vec);
-
-                static void random(scalar_t min, scalar_t max, matrix_t& mat);
-                static void random(scalar_t min, scalar_t max, matrices_t& mats);
-                static void random(scalar_t min, scalar_t max, vector_t& vec);
-
-                // serialize/deserialize matrices & vectors
-                static void serialize(const matrix_t& mat, size_t& pos, vector_t& params);
-                static void serialize(const matrices_t& mats, size_t& pos, vector_t& params);
-                static void serialize(const vector_t& vec, size_t& pos, vector_t& params);
-
-                static void deserialize(matrix_t& mat, size_t& pos, const vector_t& params);
-                static void deserialize(matrices_t& mats, size_t& pos, const vector_t& params);
-                static void deserialize(vector_t& vec, size_t& pos, const vector_t& params);
 
         private:
 

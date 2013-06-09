@@ -30,7 +30,7 @@ namespace ncv
 
                 // compute the loss value & derivatives
                 virtual scalar_t value(const vector_t& targets, const vector_t& scores) const;
-                virtual scalar_t vgrad(const vector_t& targets, const vector_t& scores, vector_t& grads) const;
+                virtual vector_t vgrad(const vector_t& targets, const vector_t& scores) const;
 	};
 }
 

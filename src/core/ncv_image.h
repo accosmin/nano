@@ -81,13 +81,13 @@ namespace ncv
                 bool load_rgba(const char* buffer, size_t rows, size_t cols);
 
                 // retrieve the scaled [0, 1] RGB input vector
-                matrix_t get_red(const rect_t& region) const { return get(region, color::make_red); }
-                matrix_t get_green(const rect_t& region) const { return get(region, color::make_green); }
-                matrix_t get_blue(const rect_t& region) const { return get(region, color::make_blue); }
-                matrix_t get_luma(const rect_t& region) const { return get(region, color::make_luma); }
+                matrix_t make_red(const rect_t& region) const { return get(region, color::make_red); }
+                matrix_t make_green(const rect_t& region) const { return get(region, color::make_green); }
+                matrix_t make_blue(const rect_t& region) const { return get(region, color::make_blue); }
+                matrix_t make_luma(const rect_t& region) const { return get(region, color::make_luma); }
 
                 // retrieve the associated target (if any)
-                vector_t get_target(const rect_t& region) const;
+                vector_t make_target(const rect_t& region) const;
 
                 template
                 <

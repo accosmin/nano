@@ -1,14 +1,3 @@
-* better organize the model classes:
-	- reuse the binary archives to load/save the model
-	- less verbose design 
-	- focus more on convolution models (learning combinations of filters)
-
-* display for each loss/model/task:
-	- (ids...)\n id name params
-	- replace description with params
-
-* update experiments scripts
-
 * base class to keep (rows, cols, inputs, outputs): can be used for models & tasks
 
 * can models use matrices as inputs?!
