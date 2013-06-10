@@ -1,21 +1,21 @@
-#ifndef NANOCV_OUNIT_H
-#define NANOCV_OUNIT_H
+#ifndef NANOCV_HUNIT_H
+#define NANOCV_HUNIT_H
 
-#include "ncv_unit.h"
+#include "ncv_types.h"
 
 namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
-        // scalar output unit:
+        // matrix output hidden unit:
         //	output = input * conv + bias.
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        class ounit_t
+        class hunit_t
         {
         public:
 
                 // constructor
-                ounit_t(size_t n_inputs = 0, size_t n_rows = 0, size_t n_cols = 0);
+                hunit_t(size_t n_inputs = 0, size_t n_rows = 0, size_t n_cols = 0);
 
                 // resize to process new inputs (returns the number of parameters to optimize)
                 size_t resize(size_t n_inputs, size_t n_rows, size_t n_cols);
@@ -29,12 +29,12 @@ namespace ncv
                 void random(scalar_t min, scalar_t max);
 
                 // serialize/deserialize parameters
-                void serialize(serializer_t& s) const;
-                void gserialize(serializer_t& s) const;
-                void deserialize(deserializer_t& s);
+                void serialize(size_t& pos, vector_t& params) const;
+                void gserialize(size_t& pos, vector_t& params) const;
+                void deserialize(size_t& pos, const vector_t& params);
 
                 // cumulate gradients
-                void operator+=(const ounit_t& other);
+                void operator+=(const hunit_t& other);
 
         private:
 
@@ -60,7 +60,7 @@ namespace ncv
                 scalar_t                m_gbias;        //      (& gradient)
         };
 
-        typedef std::vector<ounit_t>    ounits_t;
+        typedef std::vector<hunit_t>    ounits_t;
 }
 
-#endif // NANOCV_OUNIT_H
+#endif // NANOCV_HUNIT_H

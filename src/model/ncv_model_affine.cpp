@@ -119,8 +119,8 @@ namespace ncv
         {
                 vector_t params(n_parameters());
 
-                size_t pos = 0;
-                m_olayer.serialize(pos, params);
+                serializer_t s(params);
+                m_olayer.serialize(s);
 
                 return params;
         }
@@ -129,13 +129,13 @@ namespace ncv
 
         void affine_model_t::deserialize(const vector_t& params)
         {
-                size_t pos = 0;
-                m_olayer.deserialize(pos, params);
+                deserializer_t s(params);
+                m_olayer.deserialize(s);
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void affine_model_t::cum_fval(const task_t& task, const loss_t& loss, const sample_t& sample,
+        void affine_model_t::cum_loss(const task_t& task, const loss_t& loss, const sample_t& sample,
                 olayer_t& data) const
         {
                 const image_t& image = task.image(sample.m_index);
@@ -149,7 +149,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void affine_model_t::cum_fval_grad(const task_t& task, const loss_t& loss, const sample_t& sample,
+        void affine_model_t::cum_grad(const task_t& task, const loss_t& loss, const sample_t& sample,
                 olayer_t& data) const
         {
                 const image_t& image = task.image(sample.m_index);
@@ -175,29 +175,29 @@ namespace ncv
 
         bool affine_model_t::train(const task_t& task, const samples_t& samples, const loss_t& loss)
         {
-                // construct the optimization problem
+                // optimization problem: size
                 auto opt_fn_size = [&] ()
                 {
                         return n_parameters();
                 };
 
+                // optimization problem: function value
                 auto opt_fn_fval = [&] (const vector_t& x)
                 {
                         olayer_t cum_data(n_outputs(), n_inputs(), n_rows(), n_cols());
 
-                        // cumulate function value and gradients (using multiple threads)
                         thread_loop_cumulate<olayer_t>
                         (
                                 samples.size(),
                                 [&] (olayer_t& data)
                                 {
                                         data.resize(n_outputs(), n_inputs(), n_rows(), n_cols());
-                                        size_t pos = 0;
-                                        data.deserialize(pos, x);
+                                        deserializer_t s(x);
+                                        data.deserialize(s);
                                 },
                                 [&] (size_t i, olayer_t& data)
                                 {
-                                        cum_fval(task, loss, samples[i], data);
+                                        cum_loss(task, loss, samples[i], data);
                                 },
                                 [&] (const olayer_t& data)
                                 {
@@ -208,23 +208,23 @@ namespace ncv
                         return cum_data.loss() / cum_data.count();
                 };
 
+                // optimization problem: function value & gradient
                 auto opt_fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
                         olayer_t cum_data(n_outputs(), n_inputs(), n_rows(), n_cols());
 
-                        // cumulate function value and gradients (using multiple threads)
                         thread_loop_cumulate<olayer_t>
                         (
                                 samples.size(),
                                 [&] (olayer_t& data)
                                 {
                                         data.resize(n_outputs(), n_inputs(), n_rows(), n_cols());
-                                        size_t pos = 0;
-                                        data.deserialize(pos, x);
+                                        deserializer_t s(x);
+                                        data.deserialize(s);
                                 },
                                 [&] (size_t i, olayer_t& data)
                                 {
-                                        cum_fval_grad(task, loss, samples[i], data);
+                                        cum_grad(task, loss, samples[i], data);
                                 },
                                 [&] (const olayer_t& data)
                                 {
@@ -233,8 +233,8 @@ namespace ncv
                         );
 
                         gx.resize(n_parameters());
-                        size_t pos = 0;
-                        cum_data.gserialize(pos, gx);
+                        serializer_t s(gx);
+                        cum_data.gserialize(s);
                         gx /= cum_data.count();
 
                         return cum_data.loss() / cum_data.count();

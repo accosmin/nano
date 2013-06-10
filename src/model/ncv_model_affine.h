@@ -59,8 +59,8 @@ namespace ncv
                 void deserialize(const vector_t& params);
 
                 // cumulate loss value and gradients
-                void cum_fval(const task_t& task, const loss_t& loss, const sample_t& sample, olayer_t& data) const;
-                void cum_fval_grad(const task_t& task, const loss_t& loss, const sample_t& sample, olayer_t& data) const;
+                void cum_loss(const task_t& task, const loss_t& loss, const sample_t& sample, olayer_t& data) const;
+                void cum_grad(const task_t& task, const loss_t& loss, const sample_t& sample, olayer_t& data) const;
 
         private:
                 
