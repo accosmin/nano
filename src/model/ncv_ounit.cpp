@@ -153,6 +153,18 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
+        void ounit_t::gserialize(size_t& pos, vector_t& params) const
+        {
+                for (const matrix_t& mat : m_gconv)
+                {
+                        ncv::serialize(mat, pos, params);
+                }
+
+                ncv::serialize(m_gbias, pos, params);
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
         void ounit_t::deserialize(size_t& pos, const vector_t& params)
         {
                 for (matrix_t& mat : m_conv)

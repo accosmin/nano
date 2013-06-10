@@ -115,7 +115,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        vector_t affine_model_t::to_params() const
+        vector_t affine_model_t::serialize() const
         {
                 vector_t params(n_parameters());
 
@@ -127,7 +127,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void affine_model_t::from_params(const vector_t& params)
+        void affine_model_t::deserialize(const vector_t& params)
         {
                 size_t pos = 0;
                 m_olayer.deserialize(pos, params);
@@ -183,8 +183,6 @@ namespace ncv
 
                 auto opt_fn_fval = [&] (const vector_t& x)
                 {
-                        from_params(x);
-
                         olayer_t cum_data(n_outputs(), n_inputs(), n_rows(), n_cols());
 
                         // cumulate function value and gradients (using multiple threads)
@@ -194,6 +192,8 @@ namespace ncv
                                 [&] (olayer_t& data)
                                 {
                                         data.resize(n_outputs(), n_inputs(), n_rows(), n_cols());
+                                        size_t pos = 0;
+                                        data.deserialize(pos, x);
                                 },
                                 [&] (size_t i, olayer_t& data)
                                 {
@@ -210,8 +210,6 @@ namespace ncv
 
                 auto opt_fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
-                        from_params(x);
-
                         olayer_t cum_data(n_outputs(), n_inputs(), n_rows(), n_cols());
 
                         // cumulate function value and gradients (using multiple threads)
@@ -221,6 +219,8 @@ namespace ncv
                                 [&] (olayer_t& data)
                                 {
                                         data.resize(n_outputs(), n_inputs(), n_rows(), n_cols());
+                                        size_t pos = 0;
+                                        data.deserialize(pos, x);
                                 },
                                 [&] (size_t i, olayer_t& data)
                                 {
@@ -234,7 +234,12 @@ namespace ncv
 
                         gx.resize(n_parameters());
                         size_t pos = 0;
-                        cum_data.serialize(pos, gx);
+                        cum_data.gserialize(pos, gx);
+                        gx /= cum_data.count();
+
+                        std::cout << "loss = " << (cum_data.loss() / cum_data.count())
+                                  << ", x = [" << x.minCoeff() << ", " << x.maxCoeff()
+                                  << ", gx = [" << gx.minCoeff() << ", " << gx.maxCoeff() << "]" << std::endl;
 
                         return cum_data.loss() / cum_data.count();
                 };
@@ -243,14 +248,14 @@ namespace ncv
 
                 // optimize
                 static const size_t opt_iters = 256;
-                static const scalar_t opt_eps = 1e-3;
+                static const scalar_t opt_eps = 1e-5;
                 timer_t timer;
                 const optimize::result_t res = optimize::lbfgs(
-                        problem, to_params(),
+                        problem, serialize(),
                         opt_iters, opt_eps, 8,
                         std::bind(update, _1, std::ref(timer)));
 
-                from_params(res.optimum().x);
+                deserialize(res.optimum().x);
 
                 // OK
                 log_info() << "linear model: optimum [loss = " << res.optimum().f

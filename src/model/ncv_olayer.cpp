@@ -66,6 +66,16 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
+        void olayer_t::gserialize(size_t& pos, vector_t& params) const
+        {
+                for (const ounit_t& ounit : m_ounits)
+                {
+                        ounit.gserialize(pos, params);
+                }
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
         void olayer_t::deserialize(size_t& pos, const vector_t& params)
         {
                 for (ounit_t& ounit : m_ounits)

@@ -55,8 +55,8 @@ namespace ncv
                 size_t n_inputs() const;
 
                 // encode parameters for optimization
-                vector_t to_params() const;
-                void from_params(const vector_t& params);
+                vector_t serialize() const;
+                void deserialize(const vector_t& params);
 
                 // cumulate loss value and gradients
                 void cum_fval(const task_t& task, const loss_t& loss, const sample_t& sample, olayer_t& data) const;
