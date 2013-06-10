@@ -237,10 +237,6 @@ namespace ncv
                         cum_data.gserialize(pos, gx);
                         gx /= cum_data.count();
 
-                        std::cout << "loss = " << (cum_data.loss() / cum_data.count())
-                                  << ", x = [" << x.minCoeff() << ", " << x.maxCoeff()
-                                  << ", gx = [" << gx.minCoeff() << ", " << gx.maxCoeff() << "]" << std::endl;
-
                         return cum_data.loss() / cum_data.count();
                 };
 
@@ -249,10 +245,12 @@ namespace ncv
                 // optimize
                 static const size_t opt_iters = 256;
                 static const scalar_t opt_eps = 1e-5;
+                static const size_t opt_history = 8;
+
                 timer_t timer;
                 const optimize::result_t res = optimize::lbfgs(
                         problem, serialize(),
-                        opt_iters, opt_eps, 8,
+                        opt_iters, opt_eps, opt_history,
                         std::bind(update, _1, std::ref(timer)));
 
                 deserialize(res.optimum().x);

@@ -194,7 +194,7 @@ namespace ncv
         {
                 for (size_t i = 0; i < input.size(); i ++)
                 {
-                        m_gconv[i].noalias() += m_conv[i] * gradient;
+                        m_gconv[i].noalias() += input[i] * gradient;
                 }
 
                 m_gbias += gradient;
