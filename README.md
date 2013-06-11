@@ -1,9 +1,6 @@
-**NanoCV** is a small (nano) library that implements various (non-linear) optimization and machine learning algorithms. The library is to be used as a sandbox for 
-implementing and playing with various image classification and object detection methods.
+**NanoCV** is a small (nano) C++(11) library that implements various (non-linear) optimization and machine learning algorithms. The library is to be used as a sandbox for 
+implementing and testing various image classification and object detection methods.
 
 As the library evolves, command line programs will be supplied for testing various components and for training and testing models.
 
-The programming style is inspired by STL and boost. Also C++11 is heavily used because it makes coding fun and 
-easier. The library is written to be cross-platform having only Boost, Eigen and Qt as dependencies.
-
-
+The library is written to be cross-platform having only Boost, Eigen and Qt as dependencies. However, it is tested so far only on ArchLinux x64.
