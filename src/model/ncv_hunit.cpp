@@ -5,73 +5,6 @@ namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
-        void serialize(const matrix_t& mat, size_t& pos, vector_t& params)
-        {
-                std::copy(mat.data(), mat.data() + mat.size(), params.segment(pos, mat.size()).data());
-                pos += mat.size();
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void serialize(const matrices_t& mats, size_t& pos, vector_t& params)
-        {
-                for (const matrix_t& mat : mats)
-                {
-                        serialize(mat, pos, params);
-                }
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void serialize(const vector_t& vec, size_t& pos, vector_t& params)
-        {
-                params.segment(pos, vec.size()) = vec;
-                pos += vec.size();
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void serialize(scalar_t val, size_t& pos, vector_t& params)
-        {
-                params(pos ++) = val;
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void deserialize(matrix_t& mat, size_t& pos, const vector_t& params)
-        {
-                auto segm = params.segment(pos, mat.size());
-                std::copy(segm.data(), segm.data() + segm.size(), mat.data());
-                pos += mat.size();
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void deserialize(matrices_t& mats, size_t& pos, const vector_t& params)
-        {
-                for (matrix_t& mat : mats)
-                {
-                        deserialize(mat, pos, params);
-                }
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void deserialize(vector_t& vec, size_t& pos, const vector_t& params)
-        {
-                vec = params.segment(pos, vec.size());
-                pos += vec.size();
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void deserialize(scalar_t& val, size_t& pos, const vector_t& params)
-        {
-                val = params(pos ++);
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
         hunit_t::hunit_t(size_t n_inputs, size_t n_rows, size_t n_cols)
                 :       m_bias(0.0),
                         m_gbias(0.0)
@@ -141,38 +74,23 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void hunit_t::serialize(size_t& pos, vector_t& params) const
+        void hunit_t::serialize(serializer_t& s) const
         {
-                for (const matrix_t& mat : m_conv)
-                {
-                        ncv::serialize(mat, pos, params);
-                }
-
-                ncv::serialize(m_bias, pos, params);
+                s << m_conv << m_bias;
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void hunit_t::gserialize(size_t& pos, vector_t& params) const
+        void hunit_t::gserialize(serializer_t& s) const
         {
-                for (const matrix_t& mat : m_gconv)
-                {
-                        ncv::serialize(mat, pos, params);
-                }
-
-                ncv::serialize(m_gbias, pos, params);
+                s << m_gconv << m_gbias;
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void hunit_t::deserialize(size_t& pos, const vector_t& params)
+        void hunit_t::deserialize(deserializer_t& s)
         {
-                for (matrix_t& mat : m_conv)
-                {
-                        ncv::deserialize(mat, pos, params);
-                }
-
-                ncv::deserialize(m_bias, pos, params);
+                s >> m_conv >> m_bias;
         }
 
         //-------------------------------------------------------------------------------------------------

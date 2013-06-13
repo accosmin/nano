@@ -1,5 +1,5 @@
-#ifndef NANOCV_UNIT_H
-#define NANOCV_UNIT_H
+#ifndef NANOCV_SERIALIZER_H
+#define NANOCV_SERIALIZER_H
 
 #include "ncv_types.h"
 
@@ -58,4 +58,4 @@ namespace ncv
         };
 }
 
-#endif // NANOCV_UNIT_H
+#endif // NANOCV_SERIALIZER_H

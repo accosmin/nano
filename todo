@@ -1,7 +1,10 @@
-* base class to keep (rows, cols, inputs, outputs): can be used for models & tasks
+- multi-layer model:
+	- hidden layer -> network (#layers, filter size, #filters)
+	- choose activation from command line
+	- backprop-like trainer
 
-* can models use matrices as inputs?!
-	- to speed-up gradient computation, something like a convolution
+* image_t::load(matrix_t, color_min = black, color_max = white) -> save the given matrix/filter as a grayscale (by default) image
+	- can be used to verify the learned weights/convolutions
 
 - train/test models:
 	- update script: linear model (lbfgs vs. bootstrapping)

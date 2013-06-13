@@ -1,13 +1,13 @@
 #ifndef NANOCV_HUNIT_H
 #define NANOCV_HUNIT_H
 
-#include "ncv_types.h"
+#include "ncv_serializer.h"
 
 namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
-        // matrix output hidden unit:
-        //	output = input * conv + bias.
+        // matrix output unit:
+        //	linearly combine (using  = input * conv + bias.
         /////////////////////////////////////////////////////////////////////////////////////////
 
         class hunit_t
@@ -29,9 +29,9 @@ namespace ncv
                 void random(scalar_t min, scalar_t max);
 
                 // serialize/deserialize parameters
-                void serialize(size_t& pos, vector_t& params) const;
-                void gserialize(size_t& pos, vector_t& params) const;
-                void deserialize(size_t& pos, const vector_t& params);
+                void serialize(serializer_t& s) const;
+                void gserialize(serializer_t& s) const;
+                void deserialize(deserializer_t& s);
 
                 // cumulate gradients
                 void operator+=(const hunit_t& other);

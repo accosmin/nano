@@ -1,13 +1,14 @@
 #ifndef NANOCV_OUNIT_H
 #define NANOCV_OUNIT_H
 
-#include "ncv_unit.h"
+#include "ncv_serializer.h"
 
 namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
         // scalar output unit:
-        //	output = input * conv + bias.
+        //	affinely combine the input matrices using convolutions &
+        //      apply a non-linear activation function on all outputs.
         /////////////////////////////////////////////////////////////////////////////////////////
 
         class ounit_t
