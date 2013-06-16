@@ -1,17 +1,17 @@
 #include "ncv.h"
 #include <cfenv>
 
-#include "ncv_loss_classnll.h"
-#include "ncv_loss_hinge.h"
-#include "ncv_loss_logistic.h"
-#include "ncv_loss_square.h"
+#include "loss/loss_classnll.h"
+#include "loss/loss_hinge.h"
+#include "loss/loss_logistic.h"
+#include "loss/loss_square.h"
 
-#include "ncv_task_cifar10.h"
-#include "ncv_task_mnist.h"
-#include "ncv_task_stl10.h"
-#include "ncv_task_cmufaces.h"
+#include "task/task_cifar10.h"
+#include "task/task_mnist.h"
+#include "task/task_stl10.h"
+#include "task/task_cmufaces.h"
 
-#include "ncv_model_affine.h"
+#include "model/model_affine.h"
 
 namespace ncv
 {

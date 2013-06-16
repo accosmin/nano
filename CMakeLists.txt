@@ -58,10 +58,6 @@ add_library(nanocv
 # Set the include directories and linking libraries
 set(nanocv_includes
         src/
-        src/core/
-        src/loss/
-        src/task/
-        src/model/
         )
 
 include_directories(

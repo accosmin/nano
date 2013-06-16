@@ -1,17 +1,17 @@
 #ifndef NANOCV_H
 #define NANOCV_H
 
-#include "ncv_optimize.h"
-#include "ncv_geom.h"
-#include "ncv_logger.h"
-#include "ncv_random.h"
-#include "ncv_timer.h"
-#include "ncv_thread.h"
-#include "ncv_image.h"
-#include "ncv_stats.h"
-#include "ncv_loss.h"
-#include "ncv_task.h"
-#include "ncv_model.h"
+#include "core/optimize.h"
+#include "core/geom.h"
+#include "core/logger.h"
+#include "core/random.h"
+#include "core/timer.h"
+#include "core/thread.h"
+#include "core/image.h"
+#include "core/stats.h"
+#include "loss/loss.h"
+#include "task/task.h"
+#include "model/model.h"
 
 namespace ncv
 {

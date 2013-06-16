@@ -1,3 +1,8 @@
+- finish tensor_t:
+	- use it for both output & hidden layers
+
+- many more assert!
+
 - multi-layer model:
 	- hidden layer -> network (#layers, filter size, #filters)
 	- choose activation from command line
@@ -5,6 +10,9 @@
 
 * image_t::load(matrix_t, color_min = black, color_max = white) -> save the given matrix/filter as a grayscale (by default) image
 	- can be used to verify the learned weights/convolutions
+
+- install:
+	- also copy the headers 
 
 - train/test models:
 	- update script: linear model (lbfgs vs. bootstrapping)
