@@ -146,7 +146,7 @@ namespace ncv
                         }
 
                         strings_t tokens;
-                        boost::algorithm::split(tokens, line, boost::algorithm::is_any_of(" \t\n\r"));
+                        text::split(tokens, line, text::is_any_of(" \t\n\r"));
 
                         for (size_t t = 0; t < tokens.size(); t ++)
                         {

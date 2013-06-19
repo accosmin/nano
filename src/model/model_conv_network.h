@@ -1,29 +1,31 @@
-#ifndef NANOCV_MODEL_AFFINE_H
-#define NANOCV_MODEL_AFFINE_H
+#ifndef NANOCV_MODEL_CONV_NETWORK_H
+#define NANOCV_MODEL_CONV_NETWORK_H
 
 #include "model.h"
-#include "olayer.h"
+#include "tensor4d.h"
 
 namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
-        // affine convolution model.
+        // convolution (multi-layer) network model.
         //
         // parameters:
-        //      proc    - input processing method (default = luma, range = luma/rgba)
+        //      color   - input color mode (default = luma, options = luma/rgba)
+        //      network - network size (default = empty_string -> no hidden layer,
+        //                      format = [n_convolutions : n_convolution_rows x n_convolution_cols[,...]])
         /////////////////////////////////////////////////////////////////////////////////////////
                 
-        class affine_model_t : public model_t
+        class conv_network_model_t : public model_t
         {
         public:
                 
                 // constructor
-                affine_model_t(const string_t& params = string_t());
+                conv_network_model_t(const string_t& params = string_t());
 
                 // create an object clone
                 virtual rmodel_t clone(const string_t& params) const
                 {
-                        return rmodel_t(new affine_model_t(params));
+                        return rmodel_t(new conv_network_model_t(params));
                 }
 
                 // compute the model output
@@ -47,9 +49,11 @@ namespace ncv
 
         private:
 
+                typedef std::vector<tensor4d_t> conv_network_t;
+
                 // compose the input data
-                matrices_t make_input(const image_t& image, coord_t x, coord_t y) const;
-                matrices_t make_input(const image_t& image, const rect_t& region) const;
+                tensor3d_t make_input(const image_t& image, coord_t x, coord_t y) const;
+                tensor3d_t make_input(const image_t& image, const rect_t& region) const;
 
                 // retrieve the number of input channels
                 size_t n_inputs() const;
@@ -59,15 +63,16 @@ namespace ncv
                 void deserialize(const vector_t& params);
 
                 // cumulate loss value and gradients
-                void cum_loss(const task_t& task, const loss_t& loss, const sample_t& sample, olayer_t& data) const;
-                void cum_grad(const task_t& task, const loss_t& loss, const sample_t& sample, olayer_t& data) const;
+                void cum_loss(const task_t&, const loss_t&, const sample_t&, conv_network_t&) const;
+                void cum_grad(const task_t&, const loss_t&, const sample_t&, conv_network_t&) const;
 
         private:
                 
                 // attributes
-                olayer_t                m_olayer;       //
-                ncv::color_mode         m_opt_proc;     // input processing method
+                conv_network_t          m_layers;               // network layers
+                color_mode              m_color_param;          // input color mode
+                std::vector<size_t>     m_network_param;        // network description
         };
 }
 
-#endif // NANOCV_MODEL_AFFINE_H
+#endif // NANOCV_MODEL_CONV_NETWORK_H

@@ -1,12 +1,10 @@
-- finish tensor_t:
-	- use it for both output & hidden layers
-
 - many more assert!
 
-- multi-layer model:
-	- hidden layer -> network (#layers, filter size, #filters)
+- convolution network:
+	- implement the LBFGS / backprop trainer
 	- choose activation from command line
-	- backprop-like trainer
+
+	- make the affine model a specialization of the convolution layer (e.g. no hidden layer)
 
 * image_t::load(matrix_t, color_min = black, color_max = white) -> save the given matrix/filter as a grayscale (by default) image
 	- can be used to verify the learned weights/convolutions
@@ -14,16 +12,19 @@
 - install:
 	- also copy the headers 
 
-- train/test models:
-	- update script: linear model (lbfgs vs. bootstrapping)
+- update the experimentation script:
+	- evaluate some small networks (with 0/1/2... hidden layers), make sure that it works for no hidden layers (like before)
+	- evaluate some activation functions
 
-	- FASTER linear training!
-		- more efficient: v * u.transpose()
-
-	- experimentation script: train linear models on all datasets (256, 1e-5)
-
+- implement other training methods for the convolution network:
+	- >>> derive from the base convolution model and override ::train()
+	- auto-encoding: using the unlabeled data (could also try with all samples)
+	- train a single layer at a time
 	- regularization: l2, symmetry
+	- could use genetic algorithms and encode a convolution matrix using e.g. 16 possible values, can impose symmetry-like constrains 
 	- could add options to filter the input: e.g. smoothing, normalization, contrast equalization
+
+	- autoencoders: how to generate samples ?!
 
 - small ui application to visualize task images
 
@@ -32,11 +33,4 @@
 - add other datasets:
 	- INRIA car and person datasets
 	- NORB, inria pedestrian detection, inria human detection, dymlerchrysler human detection, face detection, PASCALVoc2011, CALTECH101...
-
-- autoencoders: how to generate samples ?!
-
-- may revive/improve the bootstrapping idea:
-        - also bootstrap the background of the images containing faces
-                => many billions of samples (may require removing some profile faces or some animals 
-                        that look very much like frontal faces)
 

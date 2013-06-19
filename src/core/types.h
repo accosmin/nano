@@ -146,7 +146,7 @@ namespace ncv
         };
 
         // color processing mode method
-        enum class process : int
+        enum class color_mode : int
         {
                 luma,                   // process only grayscale color channel
                 rgba                    // process red, green & blue color channels

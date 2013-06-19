@@ -59,23 +59,23 @@ namespace ncv
                 }
 
                 template <>
-                inline string_t to_string(process type)
+                inline string_t to_string(color_mode mode)
                 {
-                        switch (type)
+                        switch (mode)
                         {
-                        case process::luma:             return "luma";
-                        case process::rgba:             return "rgba";
+                        case color_mode::luma:          return "luma";
+                        case color_mode::rgba:          return "rgba";
                         default:                        return "luma";
                         }
                 }
 
                 template <>
-                inline process from_string<process>(const string_t& string)
+                inline color_mode from_string<color_mode>(const string_t& string)
                 {
-                        if (string == "luma")           return process::luma;
-                        if (string == "rgba")           return process::rgba;
-                        throw std::invalid_argument("invalid process type <" + string + ">!");
-                        return process::luma;
+                        if (string == "luma")           return color_mode::luma;
+                        if (string == "rgba")           return color_mode::rgba;
+                        throw std::invalid_argument("invalid color mode <" + string + ">!");
+                        return color_mode::luma;
                 }
 
                 // compact a list of values into a string using the given glue string
@@ -104,10 +104,10 @@ namespace ncv
                 {
                         strings_t tokens, dual;
 
-                        boost::algorithm::split(tokens, params, boost::algorithm::is_any_of(","));
+                        text::split(tokens, params, text::is_any_of(","));
                         for (size_t i = 0; i < tokens.size(); i ++)
                         {
-                                boost::algorithm::split(dual, tokens[i], boost::algorithm::is_any_of("="));
+                                text::split(dual, tokens[i], text::is_any_of("="));
                                 if (dual.size() == 2 && dual[0] == param_name)
                                 {
                                         string_t value = dual[1];

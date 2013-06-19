@@ -31,7 +31,7 @@ namespace ncv
                 tensor3d_t backward(const tensor3d_t& gradient) const;
                 tensor4d_t gradient(const tensor3d_t& input, const tensor3d_t& gradient) const;
 
-                // serialize/deserialize parameters
+                // serialize/deserialize data
                 void serialize(serializer_t& s) const;
                 void deserialize(deserializer_t& s);
 
@@ -39,14 +39,14 @@ namespace ncv
                 void operator+=(const tensor4d_t& other);
 
                 // access functions
-                size_t size() const { return dim1() * dim2() * rows() * cols(); }
-                size_t dim1() const { return m_dim1; }
-                size_t dim2() const { return m_dim2; }
-                size_t rows() const { return m_rows; }
-                size_t cols() const { return m_cols; }
+                size_t size() const { return n_dim1() * n_dim2() * n_rows() * n_cols(); }
+                size_t n_dim1() const { return m_dim1; }
+                size_t n_dim2() const { return m_dim2; }
+                size_t n_rows() const { return m_rows; }
+                size_t n_cols() const { return m_cols; }
 
-                const matrices_t& operator()(size_t d1) const { return m_data[d1]; }
-                const matrix_t& operator()(size_t d1, size_t d2) const { return m_data[d1][d2]; }
+                const matrix_t& data(size_t d1, size_t d2) const { return m_data[d1 * n_dim2() + d2]; }
+                matrix_t& data(size_t d1, size_t d2) { return m_data[d1 * n_dim2() + d2]; }
 
         private:
 
@@ -64,8 +64,6 @@ namespace ncv
                         ar & m_data;
                 }
 
-                typedef std::vector<matrices_t> mmatrices_t;
-
         private:
 
                 // attributes
@@ -73,7 +71,7 @@ namespace ncv
                 size_t          m_dim2; // #dimension 2
                 size_t          m_rows; // #rows (for each dimension)
                 size_t          m_cols; // #cols (for each dimension)
-                mmatrices_t     m_data; // values (e.g. inputs, parameters, results)
+                matrices_t      m_data; // values (e.g. inputs, parameters, results)
         };
 }
 

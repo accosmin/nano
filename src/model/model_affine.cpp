@@ -12,7 +12,7 @@ namespace ncv
                 :       model_t("affine",
                                 "parameters: proc=luma[luma,rgba]")
         {
-                m_opt_proc = text::from_params<ncv::process>(params, "proc", ncv::process::luma);
+                m_opt_proc = text::from_params<color_mode>(params, "proc", color_mode::luma);
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -24,12 +24,12 @@ namespace ncv
                 const rect_t region = geom::make_rect(x, y, n_cols(), n_rows());
                 switch (m_opt_proc)
                 {
-                case process::luma:
+                case color_mode::luma:
                         data.resize(1);
                         data[0] = image.make_luma(region);
                         break;
 
-                case process::rgba:
+                case color_mode::rgba:
                         data.resize(3);
                         data[0] = image.make_red(region);
                         data[1] = image.make_green(region);
@@ -53,10 +53,10 @@ namespace ncv
         {
                 switch (m_opt_proc)
                 {
-                case process::rgba:
+                case color_mode::rgba:
                         return 3;
 
-                case process::luma:
+                case color_mode::luma:
                 default:
                         return 1;
                 }
