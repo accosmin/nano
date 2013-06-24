@@ -1,4 +1,4 @@
-- many more assert!
+- MUCH faster optimization (profile the code, it takes more time than without tensors)
 
 - convolution network:
 	- implement the LBFGS / backprop trainer

@@ -6,7 +6,7 @@
 namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
-        // utilities for building processing units.
+        // serialize data to vectors.
         /////////////////////////////////////////////////////////////////////////////////////////
 
         class serializer_t
@@ -14,22 +14,40 @@ namespace ncv
         public:
 
                 // constructor
-                serializer_t(vector_t& params)
-                        :       m_params(params),
-                                m_pos(0)
-                {
-                }
+                serializer_t(vector_t& data);
 
                 // serialize data
                 serializer_t& operator<<(scalar_t val);
                 serializer_t& operator<<(const vector_t& vec);
                 serializer_t& operator<<(const matrix_t& mat);
-                serializer_t& operator<<(const matrices_t& mats);
+
+                template
+                <
+                        typename tdata
+                >
+                serializer_t& operator<<(const std::vector<tdata>& datas)
+                {
+                        for (size_t i = 0; i < datas.size(); i ++)
+                        {
+                                (*this) << datas[i];
+                        }
+
+                        return *this;
+                }
+
+                template
+                <
+                        typename tdata
+                >
+                serializer_t& operator<<(const tdata& data)
+                {
+                        return (*this) << data;
+                }
 
         private:
 
                 // attributes
-                vector_t&       m_params;
+                vector_t&       m_data;
                 size_t          m_pos;
         };
 
@@ -38,8 +56,8 @@ namespace ncv
         public:
 
                 // constructor
-                deserializer_t(const vector_t& params)
-                        :       m_params(params),
+                deserializer_t(const vector_t& data)
+                        :       m_data(data),
                                 m_pos(0)
                 {
                 }
@@ -48,12 +66,34 @@ namespace ncv
                 deserializer_t& operator>>(scalar_t& val);
                 deserializer_t& operator>>(vector_t& vec);
                 deserializer_t& operator>>(matrix_t& mat);
-                deserializer_t& operator>>(matrices_t& mats);
+
+                template
+                <
+                        typename tdata
+                >
+                deserializer_t& operator>>(std::vector<tdata>& datas)
+                {
+                        for (size_t i = 0; i < datas.size(); i ++)
+                        {
+                                (*this) >> datas[i];
+                        }
+
+                        return *this;
+                }
+
+                template
+                <
+                        typename tdata
+                >
+                deserializer_t& operator>>(tdata& data)
+                {
+                        return (*this) >> data;
+                }
 
         private:
 
                 // attributes
-                const vector_t& m_params;
+                const vector_t& m_data;
                 size_t          m_pos;
         };
 }

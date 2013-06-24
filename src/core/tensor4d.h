@@ -1,15 +1,13 @@
 #ifndef NANOCV_TENSOR4D_H
 #define NANOCV_TENSOR4D_H
 
-#include "tensor3d.h"
+#include "core/serializer.h"
 
 namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
         // 4D tensor:
         //      - 2D collection of fixed size (convolution) matrices
-        //      - output is the 3D tensor with matrices being the sum
-        //              of the Hadamard product of the convolutions with the inputs
         /////////////////////////////////////////////////////////////////////////////////////////
 
         class tensor4d_t
@@ -26,14 +24,9 @@ namespace ncv
                 void zero();
                 void random(scalar_t min = -0.1, scalar_t max = 0.1);
 
-                // process inputs (compute outputs & gradients)
-                tensor3d_t forward(const tensor3d_t& input) const;
-                tensor3d_t backward(const tensor3d_t& gradient) const;
-                tensor4d_t gradient(const tensor3d_t& input, const tensor3d_t& gradient) const;
-
                 // serialize/deserialize data
-                void serialize(serializer_t& s) const;
-                void deserialize(deserializer_t& s);
+                friend serializer_t& operator<<(serializer_t& s, const tensor4d_t& tensor);
+                friend deserializer_t& operator>>(deserializer_t& s, tensor4d_t& tensor);
 
                 // cumulate
                 void operator+=(const tensor4d_t& other);
@@ -45,8 +38,8 @@ namespace ncv
                 size_t n_rows() const { return m_rows; }
                 size_t n_cols() const { return m_cols; }
 
-                const matrix_t& data(size_t d1, size_t d2) const { return m_data[d1 * n_dim2() + d2]; }
-                matrix_t& data(size_t d1, size_t d2) { return m_data[d1 * n_dim2() + d2]; }
+                const matrix_t& operator()(size_t d1, size_t d2) const { return m_data[d1 * n_dim2() + d2]; }
+                matrix_t& operator()(size_t d1, size_t d2) { return m_data[d1 * n_dim2() + d2]; }
 
         private:
 
@@ -71,8 +64,19 @@ namespace ncv
                 size_t          m_dim2; // #dimension 2
                 size_t          m_rows; // #rows (for each dimension)
                 size_t          m_cols; // #cols (for each dimension)
-                matrices_t      m_data; // values (e.g. inputs, parameters, results)
+                matrices_t      m_data; // values
         };
+
+        // serialize/deserialize data
+        inline serializer_t& operator<<(serializer_t& s, const tensor4d_t& tensor)
+        {
+                return s << tensor.m_data;
+        }
+
+        inline deserializer_t& operator>>(deserializer_t& s, tensor4d_t& tensor)
+        {
+                return s >> tensor.m_data;
+        }
 }
 
 #endif // NANOCV_TENSOR4D_H

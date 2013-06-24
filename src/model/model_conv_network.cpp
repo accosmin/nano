@@ -61,14 +61,14 @@ namespace ncv
                 {
                 case color_mode::luma:
                         data.resize(1, n_rows(), n_cols());
-                        data.data(0) = image.make_luma(region);
+                        data(0) = image.make_luma(region);
                         break;
 
                 case color_mode::rgba:
                         data.resize(3, n_rows(), n_cols());
-                        data.data(0) = image.make_red(region);
-                        data.data(1) = image.make_green(region);
-                        data.data(2) = image.make_blue(region);
+                        data(0) = image.make_red(region);
+                        data(1) = image.make_green(region);
+                        data(2) = image.make_blue(region);
                         break;
                 }
 
@@ -101,15 +101,13 @@ namespace ncv
 
         vector_t conv_network_model_t::forward(const image_t& image, coord_t x, coord_t y) const
         {
-                tensor3d_t input = make_input(image, x, y);
+                const tensor3d_t input = make_input(image, x, y);
+                const tensor3d_t& output = forward(input);
 
-                for (size_t l = 0; l < m_layers.size(); l ++)
-                {
-                        const tensor4d_t& layer = m_layers[l];
-                        input = layer.forward(input);
-                }
+                vector_t result(output.size());
+                serializer_t(result) << output;
 
-                return input.to_vector();
+                return result;
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -148,32 +146,34 @@ namespace ncv
                 assert(m_network_param.size() % 3 == 0);
 
                 // create hidden layers
-                m_layers.resize(n_layers + 1);
+                m_layers.clear();
                 for (size_t l = 0; l < n_layers; l ++)
                 {
+                        conv_layer_t layer;
                         const size_t convs = m_network_param[3 * l + 0];
                         const size_t crows = m_network_param[3 * l + 1];
                         const size_t ccols = m_network_param[3 * l + 2];
 
-                        if (convs < 1 ||
-                            crows < 1 || crows >= irows ||
-                            ccols < 1 || ccols >= icols)
+                        const size_t n_new_params = layer.resize(idims, irows, icols, convs, crows, ccols);
+                        if (n_new_params < 1)
                         {
                                 throw std::runtime_error("invalid network description for the inputs " +
                                                          text::to_string(n_inputs()) + "x" +
                                                          text::to_string(n_rows()) + "x" +
                                                          text::to_string(n_cols()) + "!");
                         }
+                        n_params += n_new_params;
+                        m_layers.push_back(layer);
 
-                        n_params += m_layers[l].resize(idims, convs, crows, ccols);
-
-                        idims = convs;
-                        irows -= crows;
-                        icols -= ccols;
+                        idims = layer.n_outputs();
+                        irows = layer.n_orows();
+                        icols = layer.n_ocols();
                 }
 
                 // create output layer
-                n_params += m_layers[n_layers].resize(idims, n_outputs(), irows, icols);
+                conv_layer_t layer;
+                n_params += layer.resize(idims, irows, icols, n_outputs(), irows, icols);
+                m_layers.push_back(layer);
 
                 return n_params;
         }
@@ -182,7 +182,7 @@ namespace ncv
 
         void conv_network_model_t::zero()
         {
-                for (tensor4d_t& layer : m_layers)
+                for (conv_layer_t& layer : m_layers)
                 {
                         layer.zero();
                 }
@@ -195,7 +195,7 @@ namespace ncv
                 const scalar_t min = -1.0 / sqrt(n_parameters());
                 const scalar_t max = +1.0 / sqrt(n_parameters());
 
-                for (tensor4d_t& layer : m_layers)
+                for (conv_layer_t& layer : m_layers)
                 {
                         layer.random(min, max);
                 }
@@ -203,56 +203,100 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        vector_t conv_network_model_t::serialize() const
+        const tensor3d_t& conv_network_model_t::forward(const tensor3d_t& _input) const
         {
-                vector_t params(n_parameters());
-
-                serializer_t s(params);
-                for (const tensor4d_t& layer : m_layers)
+                const tensor3d_t* input = &_input;
+                for (layers_t::const_iterator it = m_layers.begin(); it != m_layers.end(); ++ it)
                 {
-                        layer.serialize(s);
+                        input = &it->forward(*input);
                 }
 
-                return params;
+                return *input;
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void conv_network_model_t::deserialize(const vector_t& params)
+        void conv_network_model_t::backward(const tensor3d_t& _gradient)
         {
-                deserializer_t s(params);
-                for (tensor4d_t& layer : m_layers)
+                const tensor3d_t* gradient = &_gradient;
+                for (layers_t::reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                 {
-                        layer.deserialize(s);
-                }
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void conv_network_model_t::cum_loss(const task_t& task, const loss_t& loss, const sample_t& sample,
-                conv_network_t& network) const
-        {
-                const image_t& image = task.image(sample.m_index);
-                const vector_t target = image.make_target(sample.m_region);
-                if (image.has_target(target))
-                {
-//                        const matrices_t input = make_input(image, sample.m_region);
-//                        data.forward(input, target, loss);
+                        gradient = &it->backward(*gradient);
                 }
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void conv_network_model_t::cum_grad(const task_t& task, const loss_t& loss, const sample_t& sample,
-                conv_network_t& network) const
+        scalar_t conv_network_model_t::value(const task_t& task, const loss_t& loss, const samples_t& samples)
         {
-                const image_t& image = task.image(sample.m_index);
-                const vector_t target = image.make_target(sample.m_region);
-                if (image.has_target(target))
+                scalar_t lvalue = 0.0;
+                size_t lcount = 0;
+
+                for (size_t i = 0; i < samples.size(); i ++)
                 {
-//                        const matrices_t input = make_input(image, sample.m_region);
-//                        data.backward(input, target, loss);
+                        const sample_t& sample = samples[i];
+
+                        const image_t& image = task.image(sample.m_index);
+                        const vector_t target = image.make_target(sample.m_region);
+                        if (image.has_target(target))
+                        {
+                                // forward: network output
+                                const tensor3d_t input = make_input(image, sample.m_region);
+                                const tensor3d_t& output = forward(input);
+
+                                // loss value
+                                vector_t voutput(n_outputs());
+                                serializer_t(voutput) << output;
+
+                                lvalue += loss.value(target, voutput);
+                                lcount ++;
+                        }
                 }
+
+                return lcount == 0 ? 0.0 : lvalue / lcount;
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        scalar_t conv_network_model_t::vgrad(const task_t& task, const loss_t& loss, const samples_t& samples)
+        {
+                scalar_t lvalue = 0.0;
+                size_t lcount = 0;
+
+                std::cout << "vgrad - begin " << std::endl;
+
+                for (size_t i = 0; i < samples.size(); i ++)
+                {
+                        const sample_t& sample = samples[i];
+
+                        const image_t& image = task.image(sample.m_index);
+                        const vector_t target = image.make_target(sample.m_region);
+                        if (image.has_target(target))
+                        {
+                                // forward: network output
+                                const tensor3d_t input = make_input(image, sample.m_region);
+                                const tensor3d_t& output = forward(input);
+
+                                // loss value & gradient
+                                vector_t voutput(n_outputs());
+                                serializer_t(voutput) << output;
+
+                                lvalue += loss.value(target, voutput);
+                                lcount ++;
+
+                                const vector_t vgradient = loss.vgrad(target, voutput);
+
+                                // backward: network gradient
+                                tensor3d_t gradient(n_outputs(), 1, 1);
+                                deserializer_t(vgradient) >> gradient;
+
+                                backward(gradient);
+                        }
+                }
+
+                std::cout << "vrad - end, count = " << lcount << std::endl;
+
+                return lcount == 0 ? 0.0 : lvalue / lcount;
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -269,95 +313,84 @@ namespace ncv
 
         bool conv_network_model_t::train(const task_t& task, const samples_t& samples, const loss_t& loss)
         {
-                return false;
+                // print model structure
+                for (size_t l = 0; l < n_layers(); l ++)
+                {
+                        const conv_layer_t& layer = m_layers[l];
 
-//                // optimization problem: size
-//                auto opt_fn_size = [&] ()
-//                {
-//                        return n_parameters();
-//                };
+                        log_info() << "convolution model: layer ["
+                                   << (l + 1) << "/" << n_layers() << "] "
+                                   << layer.n_inputs() << "x" << layer.n_irows() << "x" << layer.n_icols()
+                                   << " -> "
+                                   << layer.n_outputs() << "x" << layer.n_orows() << "x" << layer.n_ocols() << ".";
+                }
 
-//                // optimization problem: function value
-//                auto opt_fn_fval = [&] (const vector_t& x)
-//                {
-//                        olayer_t cum_data(n_outputs(), n_inputs(), n_rows(), n_cols());
+                // optimization problem: size
+                auto opt_fn_size = [&] ()
+                {
+                        return n_parameters();
+                };
 
-//                        thread_loop_cumulate<olayer_t>
-//                        (
-//                                samples.size(),
-//                                [&] (olayer_t& data)
-//                                {
-//                                        data.resize(n_outputs(), n_inputs(), n_rows(), n_cols());
-//                                        deserializer_t s(x);
-//                                        data.deserialize(s);
-//                                },
-//                                [&] (size_t i, olayer_t& data)
-//                                {
-//                                        cum_loss(task, loss, samples[i], data);
-//                                },
-//                                [&] (const olayer_t& data)
-//                                {
-//                                        cum_data += data;
-//                                }
-//                        );
+                // optimization problem: function value
+                auto opt_fn_fval = [&] (const vector_t& x)
+                {
+                        deserializer_t(x) >> m_layers;
 
-//                        return cum_data.loss() / cum_data.count();
-//                };
+                        return value(task, loss, samples);
+                };
 
-//                // optimization problem: function value & gradient
-//                auto opt_fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
-//                {
-//                        olayer_t cum_data(n_outputs(), n_inputs(), n_rows(), n_cols());
+                // optimization problem: function value & gradient
+                auto opt_fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
+                {
+                        deserializer_t(x) >> m_layers;
 
-//                        thread_loop_cumulate<olayer_t>
-//                        (
-//                                samples.size(),
-//                                [&] (olayer_t& data)
-//                                {
-//                                        data.resize(n_outputs(), n_inputs(), n_rows(), n_cols());
-//                                        deserializer_t s(x);
-//                                        data.deserialize(s);
-//                                },
-//                                [&] (size_t i, olayer_t& data)
-//                                {
-//                                        cum_grad(task, loss, samples[i], data);
-//                                },
-//                                [&] (const olayer_t& data)
-//                                {
-//                                        cum_data += data;
-//                                }
-//                        );
+                        const scalar_t fx = vgrad(task, loss, samples);
 
-//                        gx.resize(n_parameters());
-//                        serializer_t s(gx);
-//                        cum_data.gserialize(s);
-//                        gx /= cum_data.count();
+                        gx.resize(n_parameters());
 
-//                        return cum_data.loss() / cum_data.count();
-//                };
+                        serializer_t s(gx);
+                        for (size_t l = 0; l < n_layers(); l ++)
+                        {
+                                const conv_layer_t& layer = m_layers[l];
+                                s << layer.gdata();
+                        }
 
-//                const optimize::problem_t problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad);
+                        return fx;
+                };
 
-//                // optimize
-//                static const size_t opt_iters = 256;
-//                static const scalar_t opt_eps = 1e-5;
-//                static const size_t opt_history = 8;
+                const optimize::problem_t problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad);
 
-//                timer_t timer;
-//                const optimize::result_t res = optimize::lbfgs(
-//                        problem, serialize(),
-//                        opt_iters, opt_eps, opt_history,
-//                        std::bind(update, _1, std::ref(timer)));
+                // optimize
+                static const size_t opt_iters = 256;
+                static const scalar_t opt_eps = 1e-5;
+                static const size_t opt_history = 8;
 
-//                deserialize(res.optimum().x);
+                std::cout << "n_parameters = " << n_parameters() << std::endl;
 
-//                // OK
-//                log_info() << "linear model: optimum [loss = " << res.optimum().f
-//                           << ", gradient = " << res.optimum().g.norm() << "]"
-//                           << ", iterations = [" << res.iterations() << "/" << opt_iters
-//                           << "], speed = [" << res.speed().avg() << " +/- " << res.speed().stdev() << "].";
+                vector_t x(n_parameters());
 
-//                return true;
+                std::cout << "layers size = "
+                          << (m_layers[0].gdata().size() + m_layers[1].gdata().size()) << std::endl;
+
+                serializer_t(x) << m_layers;
+
+                std::cout << "x = [" << x.minCoeff() << ", " << x.maxCoeff() << "]" << std::endl;
+
+                timer_t timer;
+                const optimize::result_t res = optimize::lbfgs(
+                        problem, x,
+                        opt_iters, opt_eps, opt_history,
+                        std::bind(update, _1, std::ref(timer)));
+
+                deserializer_t(res.optimum().x) >> m_layers;
+
+                // OK
+                log_info() << "linear model: optimum [loss = " << res.optimum().f
+                           << ", gradient = " << res.optimum().g.norm() << "]"
+                           << ", iterations = [" << res.iterations() << "/" << opt_iters
+                           << "], speed = [" << res.speed().avg() << " +/- " << res.speed().stdev() << "].";
+
+                return true;
         }
 
         //-------------------------------------------------------------------------------------------------

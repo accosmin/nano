@@ -20,13 +20,16 @@ namespace ncv
                 // resize to new dimensions
                 size_t resize(size_t dim1, size_t rows, size_t cols);
 
-                // serialize to vector (if stored as 1x1 matrices)
-                vector_t to_vector() const;
-                void from_vector(const vector_t& vec);
+                // reset parameters
+                void zero();
+                void random(scalar_t min = -0.1, scalar_t max = 0.1);
 
                 // serialize/deserialize data
-                void serialize(serializer_t& s) const;
-                void deserialize(deserializer_t& s);
+                friend serializer_t& operator<<(serializer_t& s, const tensor3d_t& tensor);
+                friend deserializer_t& operator>>(deserializer_t& s, tensor3d_t& tensor);
+
+                // cumulate
+                void operator+=(const tensor3d_t& other);
 
                 // access functions
                 size_t size() const { return n_dim1() * n_rows() * n_cols(); }
@@ -34,8 +37,8 @@ namespace ncv
                 size_t n_rows() const { return m_rows; }
                 size_t n_cols() const { return m_cols; }
 
-                const matrix_t& data(size_t d1) const { return m_data[d1]; }
-                matrix_t& data(size_t d1) { return m_data[d1]; }
+                const matrix_t& operator()(size_t d1) const { return m_data[d1]; }
+                matrix_t& operator()(size_t d1) { return m_data[d1]; }
 
         private:
 
@@ -58,8 +61,19 @@ namespace ncv
                 size_t          m_dim1; // #dimension 1
                 size_t          m_rows; // #rows (for each dimension)
                 size_t          m_cols; // #cols (for each dimension)
-                matrices_t      m_data; // values (e.g. inputs, parameters, results)
+                matrices_t      m_data; // values
         };
+
+        // serialize/deserialize data
+        inline serializer_t& operator<<(serializer_t& s, const tensor3d_t& tensor)
+        {
+                return s << tensor.m_data;
+        }
+
+        inline deserializer_t& operator>>(deserializer_t& s, tensor3d_t& tensor)
+        {
+                return s >> tensor.m_data;
+        }
 }
 
 #endif // NANOCV_TENSOR3D_H

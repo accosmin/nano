@@ -4,22 +4,18 @@ namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
-        serializer_t& serializer_t::operator<<(const matrix_t& mat)
+        serializer_t::serializer_t(vector_t& data)
+                :       m_data(data),
+                        m_pos(0)
         {
-                std::copy(mat.data(), mat.data() + mat.size(), m_params.segment(m_pos, mat.size()).data());
-                m_pos += mat.size();
-
-                return *this;
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        serializer_t& serializer_t::operator<<(const matrices_t& mats)
+        serializer_t& serializer_t::operator<<(const matrix_t& mat)
         {
-                for (const matrix_t& mat : mats)
-                {
-                        operator<<(mat);
-                }
+                std::copy(mat.data(), mat.data() + mat.size(), m_data.data() + m_pos);
+                m_pos += mat.size();
 
                 return *this;
         }
@@ -28,7 +24,7 @@ namespace ncv
 
         serializer_t& serializer_t::operator<<(const vector_t& vec)
         {
-                m_params.segment(m_pos, vec.size()) = vec;
+                std::copy(vec.data(), vec.data() + vec.size(), m_data.data() + m_pos);
                 m_pos += vec.size();
 
                 return *this;
@@ -38,7 +34,8 @@ namespace ncv
 
         serializer_t& serializer_t::operator<<(scalar_t val)
         {
-                m_params(m_pos ++) = val;
+                m_data(m_pos ++) = val;
+                m_pos ++;
 
                 return *this;
         }
@@ -47,7 +44,7 @@ namespace ncv
 
         deserializer_t& deserializer_t::operator>>(matrix_t& mat)
         {
-                auto segm = m_params.segment(m_pos, mat.size());
+                auto segm = m_data.segment(m_pos, mat.size());
                 std::copy(segm.data(), segm.data() + segm.size(), mat.data());
                 m_pos += mat.size();
 
@@ -56,21 +53,9 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        deserializer_t& deserializer_t::operator>>(matrices_t& mats)
-        {
-                for (matrix_t& mat : mats)
-                {
-                        operator>>(mat);
-                }
-
-                return *this;
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
         deserializer_t& deserializer_t::operator>>(vector_t& vec)
         {
-                vec = m_params.segment(m_pos, vec.size());
+                vec = m_data.segment(m_pos, vec.size());
                 m_pos += vec.size();
 
                 return *this;
@@ -80,7 +65,7 @@ namespace ncv
 
         deserializer_t& deserializer_t::operator>>(scalar_t& val)
         {
-                val = m_params(m_pos ++);
+                val = m_data(m_pos ++);
 
                 return *this;
         }

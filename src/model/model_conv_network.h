@@ -2,7 +2,7 @@
 #define NANOCV_MODEL_CONV_NETWORK_H
 
 #include "model.h"
-#include "tensor4d.h"
+#include "conv_layer.h"
 
 namespace ncv
 {
@@ -14,7 +14,7 @@ namespace ncv
         //      network - network size (default = empty_string -> no hidden layer,
         //                      format = [n_convolutions : n_convolution_rows x n_convolution_cols[,...]])
         /////////////////////////////////////////////////////////////////////////////////////////
-                
+
         class conv_network_model_t : public model_t
         {
         public:
@@ -49,27 +49,30 @@ namespace ncv
 
         private:
 
-                typedef std::vector<tensor4d_t> conv_network_t;
-
                 // compose the input data
                 tensor3d_t make_input(const image_t& image, coord_t x, coord_t y) const;
                 tensor3d_t make_input(const image_t& image, const rect_t& region) const;
 
-                // retrieve the number of input channels
+                // access functions
                 size_t n_inputs() const;
+                size_t n_layers() const { return m_layers.size(); }
+                conv_layer_t& layer(size_t l) { return m_layers[l]; }
+                const conv_layer_t& layer(size_t l) const { return m_layers[l]; }
 
-                // encode parameters for optimization
-                vector_t serialize() const;
-                void deserialize(const vector_t& params);
+                // process inputs (compute outputs & gradients)
+                const tensor3d_t& forward(const tensor3d_t& input) const;
+                void backward(const tensor3d_t& gradient);
 
                 // cumulate loss value and gradients
-                void cum_loss(const task_t&, const loss_t&, const sample_t&, conv_network_t&) const;
-                void cum_grad(const task_t&, const loss_t&, const sample_t&, conv_network_t&) const;
+                scalar_t value(const task_t&, const loss_t&, const samples_t&);
+                scalar_t vgrad(const task_t&, const loss_t&, const samples_t&);
 
         private:
+
+                typedef std::vector<conv_layer_t>       layers_t;
                 
                 // attributes
-                conv_network_t          m_layers;               // network layers
+                layers_t                m_layers;               // convolution network
                 color_mode              m_color_param;          // input color mode
                 std::vector<size_t>     m_network_param;        // network description
         };

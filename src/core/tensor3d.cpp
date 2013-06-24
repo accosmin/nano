@@ -1,4 +1,5 @@
 #include "tensor3d.h"
+#include "core/random.h"
 
 namespace ncv
 {
@@ -29,47 +30,38 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        vector_t tensor3d_t::to_vector() const
+        void tensor3d_t::zero()
         {
-                assert(1 == n_rows());
-                assert(1 == n_cols());
-
-                vector_t result(n_dim1());
-
-                for (size_t d1 = 0; d1 < n_dim1(); d1 ++)
+                for (matrix_t& mat : m_data)
                 {
-                        result(d1) = data(d1)(0, 0);
-                }
-
-                return result;
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void tensor3d_t::from_vector(const vector_t& vec)
-        {
-                assert(1 == n_rows());
-                assert(1 == n_cols());
-                assert(v.size() == n_dim1());
-
-                for (size_t d1 = 0; d1 < n_dim1(); d1 ++)
-                {
-                        data(d1)(0, 0) = vec(d1);
+                        mat.setZero();
                 }
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void tensor3d_t::serialize(serializer_t& s) const
+        void tensor3d_t::random(scalar_t min, scalar_t max)
         {
-                s << m_data;
+                random_t<scalar_t> rgen(min, max);
+
+                for (matrix_t& mat : m_data)
+                {
+                        rgen(mat.data(), mat.data() + mat.size());
+                }
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void tensor3d_t::deserialize(deserializer_t& s)
+        void tensor3d_t::operator +=(const tensor3d_t& other)
         {
-                s >> m_data;
+                assert(n_dim1() == other.n_dim1());
+                assert(n_rows() == other.n_rows());
+                assert(n_cols() == other.n_cols());
+
+                for (size_t d1 = 0; d1 < n_dim1(); d1 ++)
+                {
+                        this->operator()(d1).noalias() += other.operator()(d1);
+                }
         }
 
         //-------------------------------------------------------------------------------------------------
