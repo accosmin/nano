@@ -55,14 +55,19 @@ namespace ncv
                 {
                         for (size_t c = 0; c < ocols; c ++)
                         {
-                                // FIXME: can this be written more efficiently as a block operation?!
-                                for (size_t rr = 0; rr < crows; rr ++)
-                                {
-                                        for (size_t cc = 0; cc < ccols; cc ++)
-                                        {
-                                                in_gd(r + rr, c + cc) += gd(r, c) * co(rr, cc);
-                                        }
-                                }
+                                const scalar_t g = gd(r, c);
+
+                                // FIXME: why is this not working properly!
+                                in_gd.block(r, c, crows, ccols) += g * co;
+
+//                                // FIXME: can this be written more efficiently as a block operation?!
+//                                for (size_t rr = 0; rr < crows; rr ++)
+//                                {
+//                                        for (size_t cc = 0; cc < ccols; cc ++)
+//                                        {
+//                                                in_gd(r + rr, c + cc) += gd(r, c) * co(rr, cc);
+//                                        }
+//                                }
                         }
                 }
         }
@@ -103,7 +108,7 @@ namespace ncv
         void conv_layer_t::zero()
         {
                 m_cdata.zero();
-                m_gdata.zero();
+                zero_grad();
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -111,6 +116,13 @@ namespace ncv
         void conv_layer_t::random(scalar_t min, scalar_t max)
         {
                 m_cdata.random(min, max);
+                zero_grad();
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void conv_layer_t::zero_grad()
+        {
                 m_gdata.zero();
         }
 
@@ -123,7 +135,9 @@ namespace ncv
                 assert(n_icols() <= input.n_cols());
 
                 m_idata = input;
+                m_odata.zero();
 
+                // output
                 for (size_t o = 0; o < n_outputs(); o ++)
                 {
                         matrix_t& odata = m_odata(o);
@@ -148,6 +162,7 @@ namespace ncv
                 assert(n_orows() == gradient.n_rows());
                 assert(n_ocols() == gradient.n_cols());
 
+                // convolution gradient
                 for (size_t o = 0; o < n_outputs(); o ++)
                 {
                         const matrix_t& ogdata = gradient(o);
@@ -161,6 +176,8 @@ namespace ncv
                         }
                 }
 
+                // input gradient
+                m_idata.zero();
                 for (size_t o = 0; o < n_outputs(); o ++)
                 {
                         const matrix_t& ogdata = gradient(o);

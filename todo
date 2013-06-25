@@ -1,4 +1,15 @@
-- MUCH faster optimization (profile the code, it takes more time than without tensors)
+- MUCH faster optimization (profile the code, it takes more time than without tensors):
+	- focus on the backward step: it takes 50% of the processing time
+	
+	- checkout the convergence speed, experiment with gradient descent and conjugate gd
+
+	- 6s for 5000 samples & 8:8x8 hidden layer!
+
+- constrain the loss such that the optimization works properly when the number of parameters
+	is larger than the number of samples
+
+- improve serialization interface: (serializer_t(size) << layers).data():
+	- also cleanup the interface (too many functions are overloaded)
 
 - convolution network:
 	- implement the LBFGS / backprop trainer

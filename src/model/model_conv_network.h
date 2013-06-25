@@ -65,7 +65,7 @@ namespace ncv
 
                 // cumulate loss value and gradients
                 scalar_t value(const task_t&, const loss_t&, const samples_t&);
-                scalar_t vgrad(const task_t&, const loss_t&, const samples_t&);
+                scalar_t vgrad(const task_t&, const loss_t&, const samples_t&, vector_t&);
 
         private:
 

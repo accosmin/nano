@@ -232,7 +232,7 @@ namespace ncv
                 scalar_t lvalue = 0.0;
                 size_t lcount = 0;
 
-                for (size_t i = 0; i < samples.size(); i ++)
+                for (size_t i = 0; i < samples.size() && i < 5000; i ++)
                 {
                         const sample_t& sample = samples[i];
 
@@ -253,19 +253,26 @@ namespace ncv
                         }
                 }
 
-                return lcount == 0 ? 0.0 : lvalue / lcount;
+                return (lcount == 0) ? 0.0 : (lvalue / lcount);
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        scalar_t conv_network_model_t::vgrad(const task_t& task, const loss_t& loss, const samples_t& samples)
+        scalar_t conv_network_model_t::vgrad(const task_t& task, const loss_t& loss, const samples_t& samples,
+                vector_t& grad)
         {
                 scalar_t lvalue = 0.0;
                 size_t lcount = 0;
+                for (conv_layer_t& layer : m_layers)
+                {
+                        layer.zero_grad();
+                }
 
                 std::cout << "vgrad - begin " << std::endl;
 
-                for (size_t i = 0; i < samples.size(); i ++)
+                const timer_t timer;
+
+                for (size_t i = 0; i < samples.size() && i < 5000; i ++)
                 {
                         const sample_t& sample = samples[i];
 
@@ -281,6 +288,10 @@ namespace ncv
                                 vector_t voutput(n_outputs());
                                 serializer_t(voutput) << output;
 
+//                                std::cout << "target = [" << target.minCoeff() << ", " << target.maxCoeff()
+//                                          << "], voutput = [" << voutput.minCoeff()
+//                                          << ", " << voutput.maxCoeff() << "]" << std::endl;
+
                                 lvalue += loss.value(target, voutput);
                                 lcount ++;
 
@@ -291,12 +302,27 @@ namespace ncv
                                 deserializer_t(vgradient) >> gradient;
 
                                 backward(gradient);
+
+//                                std::cout << "vgradient = [" << vgradient.minCoeff()
+//                                          << ", " << vgradient.maxCoeff() << "]"
+//                                          << ", count = " << lcount
+//                                          << ", loss = " << lvalue << std::endl;
                         }
                 }
 
-                std::cout << "vrad - end, count = " << lcount << std::endl;
+                std::cout << "vgrad - end, count = " << lcount << ", loss = "
+                          << lvalue << " done in " << timer.elapsed() << std::endl;
 
-                return lcount == 0 ? 0.0 : lvalue / lcount;
+                grad.resize(n_parameters());
+
+                serializer_t s(grad);
+                for (conv_layer_t& layer : m_layers)
+                {
+                        s << layer.gdata();
+                }
+
+                grad /= (lcount == 0) ? 1.0 : lcount;
+                return (lcount == 0) ? 0.0 : (lvalue / lcount);
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -344,18 +370,7 @@ namespace ncv
                 {
                         deserializer_t(x) >> m_layers;
 
-                        const scalar_t fx = vgrad(task, loss, samples);
-
-                        gx.resize(n_parameters());
-
-                        serializer_t s(gx);
-                        for (size_t l = 0; l < n_layers(); l ++)
-                        {
-                                const conv_layer_t& layer = m_layers[l];
-                                s << layer.gdata();
-                        }
-
-                        return fx;
+                        return vgrad(task, loss, samples, gx);
                 };
 
                 const optimize::problem_t problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad);
