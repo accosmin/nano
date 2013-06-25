@@ -53,6 +53,7 @@ namespace ncv
 
                         scalar_t ls_strong_wolfe(
                                 const problem_t& problem, state_t& st, scalar_t t0,
+                                scalar_t& ft, vector_t& gt,
                                 scalar_t c1 = 1e-4, scalar_t c2 = 0.9)
                         {
                                 // Check if descent direction
@@ -63,11 +64,9 @@ namespace ncv
                                         dg = st.d.dot(st.g);
                                 }
 
-                                vector_t gt;
-
                                 // strong Wolfe (sufficient decrease and curvature) conditions
                                 scalar_t t = t0;
-                                while (problem.f(st.x + t * st.d, gt) > st.f + t * c1 * dg ||
+                                while ((ft = problem.f(st.x + t * st.d, gt)) > st.f + t * c1 * dg ||
                                        std::fabs(gt.dot(st.d)) < c2 * dg)
                                 {
                                         t = c2 * t;
@@ -236,7 +235,10 @@ namespace ncv
                 assert(problem.size() == math::cast<size_t>(x0.size()));
 
                 result_t result(problem.size());
-                state_t cstate(problem, x0), pstate = cstate;
+                state_t cstate(problem, x0), pstate = cstate;                
+
+                scalar_t ft;
+                vector_t gt;
 
                 // iterate until convergence
                 for (size_t i = 0; i < max_iterations; i ++)
@@ -267,9 +269,9 @@ namespace ncv
                         }
 
                         // update solution
-                        const scalar_t t = impl::ls_strong_wolfe(problem, cstate, 1.0);
+                        const scalar_t t = impl::ls_strong_wolfe(problem, cstate, 1.0, ft, gt);
                         pstate = cstate;
-                        cstate.update(problem, t);
+                        cstate.update(t, ft, gt);
                 }
 
                 return result;
@@ -288,7 +290,9 @@ namespace ncv
                 std::deque<vector_t> ss, ys;
                 state_t cstate(problem, x0), pstate = cstate;
 
-                vector_t q, r;
+                vector_t q, r;                
+                scalar_t ft;
+                vector_t gt;
 
                 // iterate until convergence
                 for (size_t i = 0; i < max_iterations; i ++)
@@ -349,9 +353,9 @@ namespace ncv
                         cstate.d = -r;
 
                         // update solution
-                        const scalar_t t = impl::ls_strong_wolfe(problem, cstate, 1.0);
+                        const scalar_t t = impl::ls_strong_wolfe(problem, cstate, 1.0, ft, gt);
                         pstate = cstate;
-                        cstate.update(problem, t);
+                        cstate.update(t, ft, gt);
 
                         ss.push_back(cstate.x - pstate.x);
                         ys.push_back(cstate.g - pstate.g);

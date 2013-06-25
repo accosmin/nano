@@ -45,6 +45,14 @@ namespace ncv
                                 f = problem.f(x, g);
                         }
 
+                        // update current point
+                        void update(scalar_t t, scalar_t ft, const vector_t& gt)
+                        {
+                                x.noalias() += t * d;
+                                f = ft;
+                                g = gt;
+                        }
+
                         // attributes
                         vector_t x, g, d;
                         scalar_t f;
