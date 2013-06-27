@@ -1,5 +1,6 @@
 #include "conv_layer.h"
 #include "core/logger.h"
+#include "core/string.h"
 
 namespace ncv
 {
@@ -57,7 +58,19 @@ namespace ncv
                         {
                                 const scalar_t g = gd(r, c);
 
-                                // FIXME: why is this not working properly!
+//                                const auto method1 = g * co;
+//                                for (size_t rr = 0; rr < crows; rr ++)
+//                                {
+//                                        for (size_t cc = 0; cc < ccols; cc ++)
+//                                        {
+//                                                if (std::fabs(gd(r, c) * co(rr, cc) - method1(rr, cc)) > 1e-6)
+//                                                {
+//                                                        std::cout << "backward: ERROR the block method is not valid!"
+//                                                                  << std::endl;
+//                                                }
+//                                        }
+//                                }
+
                                 in_gd.block(r, c, crows, ccols) += g * co;
 
 //                                // FIXME: can this be written more efficiently as a block operation?!
@@ -192,6 +205,77 @@ namespace ncv
                 }
 
                 return m_idata;
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        size_t conv_layer_t::make_network(
+                size_t idims, size_t irows, size_t icols,
+                const std::vector<size_t>& network_params, // [#convolutions, #crows, #cols]*
+                size_t odims,
+                std::vector<conv_layer_t>& network)
+        {
+                size_t n_params = 0;
+
+                const size_t n_layers = network_params.size() / 3;
+                if (network_params.size() % 3 != 0)
+                {
+                        log_error() << "invalid convolution network description ("
+                                    << text::concatenate(network_params) << ")!";
+                        return 0;
+                }
+
+                // create hidden layers
+                network.clear();
+                for (size_t l = 0; l < n_layers; l ++)
+                {
+                        conv_layer_t layer;
+                        const size_t convs = network_params[3 * l + 0];
+                        const size_t crows = network_params[3 * l + 1];
+                        const size_t ccols = network_params[3 * l + 2];
+
+                        const size_t n_new_params = layer.resize(idims, irows, icols, convs, crows, ccols);
+                        if (n_new_params < 1)
+                        {
+                                log_error() << "invalid convolution network description for the layer ["
+                                            << (l + 1) << "/" << n_layers
+                                            << "(" << idims << ":" << irows << "x" << icols << ")!";
+                                return 0;
+                        }
+
+                        n_params += n_new_params;
+                        network.push_back(layer);
+
+                        idims = layer.n_outputs();
+                        irows = layer.n_orows();
+                        icols = layer.n_ocols();
+                }
+
+                // create output layer
+                conv_layer_t layer;
+                n_params += layer.resize(idims, irows, icols, odims, irows, icols);
+                network.push_back(layer);
+
+                return n_params;
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void conv_layer_t::print_network(const std::vector<conv_layer_t>& network)
+        {
+                for (size_t l = 0; l < network.size(); l ++)
+                {
+                        const conv_layer_t& layer = network[l];
+
+                        log_info() << "convolution network: layer ["
+                                   << (l + 1) << "/" << network.size() << "] convolutions - "
+                                   << layer.m_cdata.n_dim1() << "x" << layer.m_cdata.n_dim2() << " of "
+                                   << layer.m_cdata.n_rows() << "x" << layer.m_cdata.n_cols()
+                                   << ", inputs "
+                                   << layer.n_inputs() << "x" << layer.n_irows() << "x" << layer.n_icols()
+                                   << ", outputs "
+                                   << layer.n_outputs() << "x" << layer.n_orows() << "x" << layer.n_ocols() << ".";
+                }
         }
 
         //-------------------------------------------------------------------------------------------------

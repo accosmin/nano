@@ -10,6 +10,9 @@ namespace ncv
         //      - 2D collection of fixed size (convolution) matrices
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        class tensor4d_t;
+        typedef std::vector<tensor4d_t>         tensor4ds_t;
+
         class tensor4d_t
         {
         public:

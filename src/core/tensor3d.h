@@ -10,6 +10,9 @@ namespace ncv
         //      - 1D collection of fixed size matrices
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        class tensor3d_t;
+        typedef std::vector<tensor3d_t>         tensor3ds_t;
+
         class tensor3d_t
         {
         public:

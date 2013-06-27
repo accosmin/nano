@@ -69,7 +69,7 @@ namespace ncv
 
         private:
 
-                typedef std::vector<conv_layer_t>       layers_t;
+                typedef conv_layers_t   layers_t;
                 
                 // attributes
                 layers_t                m_layers;               // convolution network

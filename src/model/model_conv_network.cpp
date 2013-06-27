@@ -136,44 +136,15 @@ namespace ncv
 
         size_t conv_network_model_t::resize()
         {
-                size_t n_params = 0;
+                const size_t n_params = conv_layer_t::make_network(
+                        n_inputs(), n_rows(), n_cols(),
+                        m_network_param, n_outputs(),
+                        m_layers);
 
-                size_t idims = n_inputs();
-                size_t irows = n_rows();
-                size_t icols = n_cols();
-
-                const size_t n_layers = m_network_param.size() / 3;
-                assert(m_network_param.size() % 3 == 0);
-
-                // create hidden layers
-                m_layers.clear();
-                for (size_t l = 0; l < n_layers; l ++)
+                if (n_params == 0)
                 {
-                        conv_layer_t layer;
-                        const size_t convs = m_network_param[3 * l + 0];
-                        const size_t crows = m_network_param[3 * l + 1];
-                        const size_t ccols = m_network_param[3 * l + 2];
-
-                        const size_t n_new_params = layer.resize(idims, irows, icols, convs, crows, ccols);
-                        if (n_new_params < 1)
-                        {
-                                throw std::runtime_error("invalid network description for the inputs " +
-                                                         text::to_string(n_inputs()) + "x" +
-                                                         text::to_string(n_rows()) + "x" +
-                                                         text::to_string(n_cols()) + "!");
-                        }
-                        n_params += n_new_params;
-                        m_layers.push_back(layer);
-
-                        idims = layer.n_outputs();
-                        irows = layer.n_orows();
-                        icols = layer.n_ocols();
+                        throw std::runtime_error("invalid convolution network model!");
                 }
-
-                // create output layer
-                conv_layer_t layer;
-                n_params += layer.resize(idims, irows, icols, n_outputs(), irows, icols);
-                m_layers.push_back(layer);
 
                 return n_params;
         }
@@ -232,7 +203,9 @@ namespace ncv
                 scalar_t lvalue = 0.0;
                 size_t lcount = 0;
 
-                for (size_t i = 0; i < samples.size() && i < 5000; i ++)
+                const timer_t timer;
+
+                for (size_t i = 0; i < samples.size() && i < 2000; i ++)
                 {
                         const sample_t& sample = samples[i];
 
@@ -253,7 +226,13 @@ namespace ncv
                         }
                 }
 
-                return (lcount == 0) ? 0.0 : (lvalue / lcount);
+                lvalue /= (lcount == 0) ? 1.0 : lcount;
+
+                std::cout << "::value: count = " << lcount
+                          << ", loss = " << lvalue
+                          << " done in " << timer.elapsed() << std::endl;
+
+                return lvalue;
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -268,11 +247,9 @@ namespace ncv
                         layer.zero_grad();
                 }
 
-                std::cout << "vgrad - begin " << std::endl;
-
                 const timer_t timer;
 
-                for (size_t i = 0; i < samples.size() && i < 5000; i ++)
+                for (size_t i = 0; i < samples.size() && i < 2000; i ++)
                 {
                         const sample_t& sample = samples[i];
 
@@ -308,10 +285,7 @@ namespace ncv
 //                                          << ", count = " << lcount
 //                                          << ", loss = " << lvalue << std::endl;
                         }
-                }
-
-                std::cout << "vgrad - end, count = " << lcount << ", loss = "
-                          << lvalue << " done in " << timer.elapsed() << std::endl;
+                }                
 
                 grad.resize(n_parameters());
 
@@ -322,7 +296,14 @@ namespace ncv
                 }
 
                 grad /= (lcount == 0) ? 1.0 : lcount;
-                return (lcount == 0) ? 0.0 : (lvalue / lcount);
+                lvalue /= (lcount == 0) ? 1.0 : lcount;
+
+                std::cout << "::vgrad: count = " << lcount
+                          << ", loss = " << lvalue
+                          << ", grad = [" << grad.minCoeff() << ", " << grad.maxCoeff()
+                          << "] done in " << timer.elapsed() << std::endl;
+
+                return lvalue;
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -339,17 +320,7 @@ namespace ncv
 
         bool conv_network_model_t::train(const task_t& task, const samples_t& samples, const loss_t& loss)
         {
-                // print model structure
-                for (size_t l = 0; l < n_layers(); l ++)
-                {
-                        const conv_layer_t& layer = m_layers[l];
-
-                        log_info() << "convolution model: layer ["
-                                   << (l + 1) << "/" << n_layers() << "] "
-                                   << layer.n_inputs() << "x" << layer.n_irows() << "x" << layer.n_icols()
-                                   << " -> "
-                                   << layer.n_outputs() << "x" << layer.n_orows() << "x" << layer.n_ocols() << ".";
-                }
+                conv_layer_t::print_network(m_layers);
 
                 // optimization problem: size
                 auto opt_fn_size = [&] ()

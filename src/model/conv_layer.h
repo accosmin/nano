@@ -12,6 +12,9 @@ namespace ncv
         //              a set of outputs using convolution matrices of size (crows, ccols).
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        class conv_layer_t;
+        typedef std::vector<conv_layer_t>       conv_layers_t;
+
         class conv_layer_t
         {
         public:
@@ -36,6 +39,16 @@ namespace ncv
                 // serialize/deserialize data
                 friend serializer_t& operator<<(serializer_t& s, const conv_layer_t& layer);
                 friend deserializer_t& operator>>(deserializer_t& s, conv_layer_t& layer);
+
+                // build convolution network (returns the total number of parameters)
+                static size_t make_network(
+                        size_t idims, size_t irows, size_t icols,       // input size
+                        const std::vector<size_t>& network_params,      // [#convolutions, #crows, #cols]*
+                        size_t odims,                                   // output size
+                        std::vector<conv_layer_t>& network);
+
+                // show the structure of a network
+                static void print_network(const std::vector<conv_layer_t>& network);
 
                 // access functions
                 size_t n_inputs() const { return m_idata.n_dim1(); }
