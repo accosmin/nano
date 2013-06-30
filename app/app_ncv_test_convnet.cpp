@@ -25,39 +25,12 @@ static void backward(ncv::conv_layers_t& layers, const ncv::tensor3d_t& _gradien
 
 int main(int argc, char *argv[])
 {
-        // parse the command line
-        boost::program_options::options_description po_desc("", 160);
-        po_desc.add_options()("help,h", "help message");
-        po_desc.add_options()("samples",
-                boost::program_options::value<ncv::size_t>()->default_value(16),
-                "number of samples to evaluate [8, 1024]");
-        po_desc.add_options()("size",
-                boost::program_options::value<ncv::size_t>()->default_value(16),
-                "sample size in pixels [8, 16]");
-        po_desc.add_options()("layers",
-                boost::program_options::value<ncv::size_t>()->default_value(2),
-                "number of random convolution layers [0, 4]");
-
-        boost::program_options::variables_map po_vm;
-        boost::program_options::store(
-                boost::program_options::command_line_parser(argc, argv).options(po_desc).run(),
-                po_vm);
-        boost::program_options::notify(po_vm);
-
-        // check arguments and options
-        if (	po_vm.empty() ||
-                po_vm.count("help"))
-        {
-                std::cout << po_desc;
-                return EXIT_FAILURE;
-        }
-
-        const ncv::size_t cmd_samples = 1;//ncv::math::clamp(po_vm["samples"].as<ncv::size_t>(), 10, 10 * 1024);
-        const ncv::size_t cmd_isize = ncv::math::clamp(po_vm["size"].as<ncv::size_t>(), 4, 64);
-        const ncv::size_t cmd_layers = ncv::math::clamp(po_vm["layers"].as<ncv::size_t>(), 0, 4);
+        const ncv::size_t cmd_samples = 16;
+        const ncv::size_t cmd_isize = 16;
+        const ncv::size_t cmd_layers = 2;
 
         const ncv::size_t cmd_inputs = 1;
-        const ncv::size_t cmd_outputs = 1;
+        const ncv::size_t cmd_outputs = 10;
         const ncv::size_t cmd_tests = 16;
 
         // generate random samples & targets

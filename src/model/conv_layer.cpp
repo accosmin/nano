@@ -52,6 +52,8 @@ namespace ncv
                 const size_t orows = static_cast<size_t>(ogdata.rows());
                 const size_t ocols = static_cast<size_t>(ogdata.cols());
 
+                // TODO: this takes 50% of time!
+
                 for (size_t r = 0; r < orows; r ++)
                 {
                         for (size_t c = 0; c < ocols; c ++)

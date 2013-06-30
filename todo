@@ -1,3 +1,6 @@
+- improve serialization interface: (serializer_t(size) << layers).data():
+	- also cleanup the interface (too many functions are overloaded)
+
 - test program to check the backward & forward step:
 	- modify the model to use conv_layer_t::make_network()
 
@@ -19,9 +22,6 @@
 
 - constrain the loss such that the optimization works properly when the number of parameters
 	is larger than the number of samples
-
-- improve serialization interface: (serializer_t(size) << layers).data():
-	- also cleanup the interface (too many functions are overloaded)
 
 - convolution network:
 	- implement the LBFGS / backprop trainer
