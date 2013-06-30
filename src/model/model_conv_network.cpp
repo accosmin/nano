@@ -265,10 +265,6 @@ namespace ncv
                                 vector_t voutput(n_outputs());
                                 serializer_t(voutput) << output;
 
-//                                std::cout << "target = [" << target.minCoeff() << ", " << target.maxCoeff()
-//                                          << "], voutput = [" << voutput.minCoeff()
-//                                          << ", " << voutput.maxCoeff() << "]" << std::endl;
-
                                 lvalue += loss.value(target, voutput);
                                 lcount ++;
 
@@ -279,11 +275,6 @@ namespace ncv
                                 deserializer_t(vgradient) >> gradient;
 
                                 backward(gradient);
-
-//                                std::cout << "vgradient = [" << vgradient.minCoeff()
-//                                          << ", " << vgradient.maxCoeff() << "]"
-//                                          << ", count = " << lcount
-//                                          << ", loss = " << lvalue << std::endl;
                         }
                 }                
 
@@ -354,13 +345,7 @@ namespace ncv
                 std::cout << "n_parameters = " << n_parameters() << std::endl;
 
                 vector_t x(n_parameters());
-
-                std::cout << "layers size = "
-                          << (m_layers[0].gdata().size() + m_layers[1].gdata().size()) << std::endl;
-
                 serializer_t(x) << m_layers;
-
-                std::cout << "x = [" << x.minCoeff() << ", " << x.maxCoeff() << "]" << std::endl;
 
                 timer_t timer;
                 const optimize::result_t res = optimize::lbfgs(

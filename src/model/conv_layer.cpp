@@ -25,62 +25,38 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        static void gradient(const matrix_t& in, const matrix_t& gd, matrix_t& co_gd)
+        static void gradient(const matrix_t& idata, const matrix_t& ogdata, matrix_t& gdata)
         {
-                const size_t crows = static_cast<size_t>(co_gd.rows());
-                const size_t ccols = static_cast<size_t>(co_gd.cols());
+                const size_t crows = static_cast<size_t>(gdata.rows());
+                const size_t ccols = static_cast<size_t>(gdata.cols());
 
-                const size_t orows = static_cast<size_t>(in.rows() - crows + 1);
-                const size_t ocols = static_cast<size_t>(in.cols() - ccols + 1);
+                const size_t orows = static_cast<size_t>(ogdata.rows());
+                const size_t ocols = static_cast<size_t>(ogdata.cols());
 
                 for (size_t r = 0; r < crows; r ++)
                 {
                         for (size_t c = 0; c < ccols; c ++)
                         {
-                                co_gd(r, c) += in.block(r, c, orows, ocols).cwiseProduct(gd).sum();
+                                gdata(r, c) += idata.block(r, c, orows, ocols).cwiseProduct(ogdata).sum();
                         }
                 }
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        static void backward(const matrix_t& gd, const matrix_t& co, matrix_t& in_gd)
+        static void backward(const matrix_t& ogdata, const matrix_t& cdata, matrix_t& igdata)
         {
-                const size_t crows = static_cast<size_t>(co.rows());
-                const size_t ccols = static_cast<size_t>(co.cols());
+                const size_t crows = static_cast<size_t>(cdata.rows());
+                const size_t ccols = static_cast<size_t>(cdata.cols());
 
-                const size_t orows = static_cast<size_t>(gd.rows());
-                const size_t ocols = static_cast<size_t>(gd.cols());
+                const size_t orows = static_cast<size_t>(ogdata.rows());
+                const size_t ocols = static_cast<size_t>(ogdata.cols());
 
                 for (size_t r = 0; r < orows; r ++)
                 {
                         for (size_t c = 0; c < ocols; c ++)
                         {
-                                const scalar_t g = gd(r, c);
-
-//                                const auto method1 = g * co;
-//                                for (size_t rr = 0; rr < crows; rr ++)
-//                                {
-//                                        for (size_t cc = 0; cc < ccols; cc ++)
-//                                        {
-//                                                if (std::fabs(gd(r, c) * co(rr, cc) - method1(rr, cc)) > 1e-6)
-//                                                {
-//                                                        std::cout << "backward: ERROR the block method is not valid!"
-//                                                                  << std::endl;
-//                                                }
-//                                        }
-//                                }
-
-                                in_gd.block(r, c, crows, ccols) += g * co;
-
-//                                // FIXME: can this be written more efficiently as a block operation?!
-//                                for (size_t rr = 0; rr < crows; rr ++)
-//                                {
-//                                        for (size_t cc = 0; cc < ccols; cc ++)
-//                                        {
-//                                                in_gd(r + rr, c + cc) += gd(r, c) * co(rr, cc);
-//                                        }
-//                                }
+                                igdata.block(r, c, crows, ccols) += ogdata(r, c) * cdata;
                         }
                 }
         }

@@ -1,6 +1,6 @@
 #include "ncv.h"
 #include "model/conv_layer.h"
-#include "loss/loss_square.h"
+#include "loss/loss_classnll.h"
 #include <boost/program_options.hpp>
 
 static const ncv::tensor3d_t& forward(ncv::conv_layers_t& layers, const ncv::tensor3d_t& _input)
@@ -52,12 +52,12 @@ int main(int argc, char *argv[])
                 return EXIT_FAILURE;
         }
 
-        const ncv::size_t cmd_samples = ncv::math::clamp(po_vm["samples"].as<ncv::size_t>(), 10, 10 * 1024);
+        const ncv::size_t cmd_samples = 1;//ncv::math::clamp(po_vm["samples"].as<ncv::size_t>(), 10, 10 * 1024);
         const ncv::size_t cmd_isize = ncv::math::clamp(po_vm["size"].as<ncv::size_t>(), 4, 64);
         const ncv::size_t cmd_layers = ncv::math::clamp(po_vm["layers"].as<ncv::size_t>(), 0, 4);
 
         const ncv::size_t cmd_inputs = 1;
-        const ncv::size_t cmd_outputs = 4;
+        const ncv::size_t cmd_outputs = 1;
         const ncv::size_t cmd_tests = 16;
 
         // generate random samples & targets
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
         ncv::log_info() << "number of parameters: " << n_parameters << ".";
         ncv::conv_layer_t::print_network(layers);
 
-        ncv::square_loss_t loss;
+        ncv::classnll_loss_t loss;
 
         // optimization problem: size
         auto opt_fn_size = [&] ()
@@ -194,7 +194,7 @@ int main(int argc, char *argv[])
                 problem_ax.f(x, gx_ax);
 
                 ncv::log_info() << "[" << (t + 1) << "/" << cmd_tests
-                                << "]: gradient difference = "
+                                << "]: gradient difference (analytic vs. finite difference) = "
                                 << (gx_gd - gx_ax).lpNorm<Eigen::Infinity>() << ".";
         }
 
