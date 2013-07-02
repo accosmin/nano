@@ -20,6 +20,11 @@
 	- 6s:xxxms for 5000 samples & 8:8x8 hidden layer!
 	- 2s:600ms for 2000 samples & 8:8x8 hidden layer!
 
+- option to save the model at closing the program - destructor:
+	- trainer().set_path().train()
+		- use random initialization if the path is invalid
+	- otherwise continue training
+
 - constrain the loss such that the optimization works properly when the number of parameters
 	is larger than the number of samples
 

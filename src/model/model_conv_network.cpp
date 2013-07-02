@@ -301,7 +301,7 @@ namespace ncv
 
         static void update(const optimize::result_t& result, timer_t& timer)
         {
-                ncv::log_info() << "convolution model: state [loss = " << result.optimum().f
+                ncv::log_info() << "convolution network model: state [loss = " << result.optimum().f
                                 << ", gradient = " << result.optimum().g.lpNorm<Eigen::Infinity>()
                                 << "] updated in " << timer.elapsed() << ".";
                 timer.start();
@@ -342,7 +342,7 @@ namespace ncv
                 static const scalar_t opt_eps = 1e-5;
                 static const size_t opt_history = 8;
 
-                std::cout << "n_parameters = " << n_parameters() << std::endl;
+                log_info() << "convolution network model: parameters " << n_parameters() << ".";
 
                 vector_t x(n_parameters());
                 serializer_t(x) << m_layers;
@@ -356,7 +356,7 @@ namespace ncv
                 deserializer_t(res.optimum().x) >> m_layers;
 
                 // OK
-                log_info() << "linear model: optimum [loss = " << res.optimum().f
+                log_info() << "convolution network model: optimum [loss = " << res.optimum().f
                            << ", gradient = " << res.optimum().g.norm() << "]"
                            << ", iterations = [" << res.iterations() << "/" << opt_iters
                            << "], speed = [" << res.speed().avg() << " +/- " << res.speed().stdev() << "].";

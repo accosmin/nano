@@ -41,6 +41,8 @@ file(GLOB nanocv_sources
         src/core/*.cpp
         src/loss/*.h
         src/loss/*.cpp
+        src/activation/*.h
+        src/activation/*.cpp
         src/task/*.h
         src/task/*.cpp
         src/model/*.h

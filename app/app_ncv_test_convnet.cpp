@@ -25,7 +25,7 @@ static void backward(ncv::conv_layers_t& layers, const ncv::tensor3d_t& _gradien
 
 int main(int argc, char *argv[])
 {
-        const ncv::size_t cmd_samples = 16;
+        const ncv::size_t cmd_samples = 4;
         const ncv::size_t cmd_isize = 16;
         const ncv::size_t cmd_layers = 2;
 

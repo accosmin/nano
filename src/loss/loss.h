@@ -36,6 +36,9 @@ namespace ncv
                         :       clonable_t<loss_t>(name, description)
                 {
                 }
+
+                // destructor
+                virtual ~loss_t() {}
                 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const = 0;
