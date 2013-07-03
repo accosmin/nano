@@ -3,17 +3,51 @@
 
 #include "core/tensor3d.h"
 #include "core/tensor4d.h"
+#include "activation/activation.h"
 
 namespace ncv
 {
+        class conv_layer_t;
+        typedef std::vector<conv_layer_t>       conv_layers_t;
+
+        class conv_layer_param_t;
+        typedef std::vector<conv_layer_param_t> conv_layer_params_t;
+
         /////////////////////////////////////////////////////////////////////////////////////////
         // convolution layer:
         //      - process a set of inputs of size (irows, icols) and produces
         //              a set of outputs using convolution matrices of size (crows, ccols).
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        class conv_layer_t;
-        typedef std::vector<conv_layer_t>       conv_layers_t;
+        struct conv_layer_param_t
+        {
+                // constructor
+                conv_layer_param_t(size_t convs = 0, size_t crows = 0, size_t ccols = 0,
+                                   const string_t& activation = string_t())
+                        :       m_convs(convs), m_crows(crows), m_ccols(ccols),
+                                m_activation(activation)
+                {
+                }
+
+                friend class boost::serialization::access;
+                template
+                <
+                        class tarchive
+                >
+                void serialize(tarchive & ar, const unsigned int version)
+                {
+                        ar & m_convs;
+                        ar & m_crows;
+                        ar & m_ccols;
+                        ar & m_activation;
+                }
+
+                // attributes
+                size_t          m_convs;                // #convolutions
+                size_t          m_crows;                // convolution size (rows)
+                size_t          m_ccols;                // convolution size (columns)
+                string_t        m_activation;           // activation function id
+        };
 
         class conv_layer_t
         {
@@ -21,11 +55,13 @@ namespace ncv
 
                 // constructor
                 conv_layer_t(size_t inputs = 0, size_t irows = 0, size_t icols = 0,
-                             size_t outputs = 0, size_t crows = 0, size_t ccols = 0);
+                             size_t outputs = 0, size_t crows = 0, size_t ccols = 0,
+                             const string_t& activation = string_t());
 
                 // resize to new dimensions
                 size_t resize(size_t inputs, size_t irows, size_t icols,
-                              size_t outputs, size_t crows, size_t ccols);
+                              size_t outputs, size_t crows, size_t ccols,
+                              const string_t& activation);
 
                 // reset parameters
                 void zero();
@@ -43,7 +79,7 @@ namespace ncv
                 // build convolution network (returns the total number of parameters)
                 static size_t make_network(
                         size_t idims, size_t irows, size_t icols,       // input size
-                        const std::vector<size_t>& network_params,      // [#convolutions, #crows, #cols]*
+                        const conv_layer_params_t& network_params,      //
                         size_t odims,                                   // output size
                         std::vector<conv_layer_t>& network);
 
@@ -74,6 +110,9 @@ namespace ncv
                         ar & m_cdata;
                         ar & m_gdata;
                         ar & m_odata;
+                        ar & m_activation;
+
+                        // TODO: save the activation ID and not the activation function itself
                 }
 
         private:
@@ -83,6 +122,9 @@ namespace ncv
                 tensor4d_t              m_cdata;        // convolution matrices
                 tensor4d_t              m_gdata;        // cumulated gradient of the convolution matrices
                 mutable tensor3d_t      m_odata;        // output buffer
+
+                string_t                m_activation;
+                ractivation_t           m_afunc;        // activation/transfer function
         };
 
         // serialize/deserialize data

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "This script is not updated with the new interface/models!"
+exit
+
 # paths
 dir_exp=/home/cosmin/experiments/results
 dir_db=/home/cosmin/experiments/databases

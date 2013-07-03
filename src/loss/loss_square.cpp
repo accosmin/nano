@@ -5,8 +5,7 @@ namespace ncv
         //-------------------------------------------------------------------------------------------------
 
         square_loss_t::square_loss_t(const string_t&)
-                :       loss_t("square",
-                               "square loss")
+                :       loss_t("square loss")
         {
         }
 
@@ -21,7 +20,7 @@ namespace ncv
         
         vector_t square_loss_t::vgrad(const vector_t& targets, const vector_t& scores) const
         {
-                return targets - scores;
+                return scores - targets;
         }
 
         //-------------------------------------------------------------------------------------------------

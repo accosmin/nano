@@ -5,8 +5,7 @@ namespace ncv
         //-------------------------------------------------------------------------------------------------
 
         logistic_loss_t::logistic_loss_t(const string_t&)
-                :       loss_t("logistic",
-                               "logistic loss")
+                :       loss_t("logistic loss")
         {
         }
 

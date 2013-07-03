@@ -10,8 +10,7 @@ namespace ncv
         //-------------------------------------------------------------------------------------------------
 
         cmufaces_task_t::cmufaces_task_t(const string_t&)
-                :       task_t("cmu-faces",
-                               "CMU faces (face/non-face classification)")
+                :       task_t("CMU faces (face/non-face classification)")
         {
         }
 

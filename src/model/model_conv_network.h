@@ -11,8 +11,15 @@ namespace ncv
         //
         // parameters:
         //      color   - input color mode (default = luma, options = luma/rgba)
-        //      network - network size (default = empty_string -> no hidden layer,
-        //                      format = [n_convolutions : n_convolution_rows x n_convolution_cols[,...]])
+        //      network - network size:
+        //                      - default = empty_string -> no hidden layer,
+        //                      - format = [nconvs : crows : ccols : activation]*, where
+        //                              nconvs          - number of convolutions
+        //                              crows           - convolution size (rows)
+        //                              ccols           - convolution size (columns)
+        //                              activation      - activation function id
+        //      iters   - number of optimization iterations (default = 256, options = [8, 4096])
+        //      eps     - optimization convergence accuracy (default = 1e-5, options = [1e-3, 1e-6])
         /////////////////////////////////////////////////////////////////////////////////////////
 
         class conv_network_model_t : public model_t
@@ -69,12 +76,13 @@ namespace ncv
 
         private:
 
-                typedef conv_layers_t   layers_t;
-                
                 // attributes
-                layers_t                m_layers;               // convolution network
+                conv_layers_t           m_layers;               // convolution network
+
                 color_mode              m_color_param;          // input color mode
-                std::vector<size_t>     m_network_param;        // network description
+                conv_layer_params_t     m_layer_params;         // network description
+                size_t                  m_opt_iters;
+                scalar_t                m_opt_eps;
         };
 }
 

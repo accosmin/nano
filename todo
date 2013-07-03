@@ -1,15 +1,35 @@
+- better names for the activation functions
+
+- test program to check the backward & forward step:
+	- double check the gradient backward part of the activation functions
+		and the math at the layer::backward() part
+
+	- conclusion: 
+		- the gradient estimation error increases with both the input range and the number of layers
+
+	- check for better approximations of the gradient!
+
+	- the tanh saturates very fast (needs smaller inputs)!
+
+	- still problems with maxzero!	
+
 - improve serialization interface: (serializer_t(size) << layers).data():
 	- also cleanup the interface (too many functions are overloaded)
 
-- test program to check the backward & forward step:
-	- modify the model to use conv_layer_t::make_network()
+	- EASIER method to convert to/from tensors and vectors
 
-	- small dataset: 100 samples of 8x8
-	- small network: [4:4x4][4:4x4]
+- MACRO to simplify the clonable_t interface implementation (e.g. loss, activation, task ...)
 
-	- compute the gradient with backward and finite differencies
+- convolution model parameters:
+	- number of iterations and epsilon
+	- save this to model file (the number of iterations remaining)
+
+- train -> save at closing -> load model -> train from the last parameters & remaining optimization iterations
 
 - MUCH faster optimization (profile the code, it takes more time than without tensors):
+	- use noalias for block -> check if any improvement:
+		- mat.noalias().block() += ...	
+
 	- bug: the loss becomes infinity sometimes (the line-search step overshoots?!)
 	- bug: too many line-search steps => the gradient may be incorrectly computed
 

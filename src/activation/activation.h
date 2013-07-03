@@ -20,8 +20,8 @@ namespace ncv
         public:
 
                 // constructor
-                activation_t(const string_t& name, const string_t& description)
-                        :       clonable_t<activation_t>(name, description)
+                activation_t(const string_t& description)
+                        :       clonable_t<activation_t>(description)
                 {
                 }
 
@@ -29,8 +29,8 @@ namespace ncv
                 virtual ~activation_t() {}
 
                 // output & gradient
-                virtual scalar_t value(scalar_t score) const = 0;
-                virtual scalar_t vgrad(scalar_t score) const = 0;
+                virtual scalar_t value(scalar_t x) const = 0;
+                virtual scalar_t vgrad(scalar_t x) const = 0;
         };
 }
 

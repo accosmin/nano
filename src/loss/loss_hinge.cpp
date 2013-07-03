@@ -5,8 +5,7 @@ namespace ncv
         //-------------------------------------------------------------------------------------------------
 
         hinge_loss_t::hinge_loss_t(const string_t&)
-                :       loss_t("hinge",
-                               "hinge loss")
+                :       loss_t("hinge loss")
         {
         }
 

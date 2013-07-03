@@ -11,8 +11,9 @@
 #include "task/task_stl10.h"
 #include "task/task_cmufaces.h"
 
-#include "activation/activation_maxzero.h"
+#include "activation/activation_unit.h"
 #include "activation/activation_tanh.h"
+#include "activation/activation_xnorm.h"
 
 #include "model/model_conv_network.h"
 
@@ -38,6 +39,9 @@ namespace ncv
                 task_manager_t::instance().add("cmu-faces", cmufaces_task_t());
 
                 // register activation/transfer functions
+                activation_manager_t::instance().add("unit", unit_activation_t());
+                activation_manager_t::instance().add("tanh", tanh_activation_t());
+                activation_manager_t::instance().add("xnorm", xnorm_activation_t());
 
                 // register models
                 model_manager_t::instance().add("convnet", conv_network_model_t());

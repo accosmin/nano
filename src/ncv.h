@@ -10,6 +10,7 @@
 #include "core/image.h"
 #include "core/stats.h"
 #include "loss/loss.h"
+#include "activation/activation.h"
 #include "task/task.h"
 #include "model/model.h"
 

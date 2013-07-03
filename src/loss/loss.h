@@ -32,8 +32,8 @@ namespace ncv
         public:
 
                 // constructor
-                loss_t(const string_t& name, const string_t& description)
-                        :       clonable_t<loss_t>(name, description)
+                loss_t(const string_t& description)
+                        :       clonable_t<loss_t>(description)
                 {
                 }
 

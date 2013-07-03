@@ -10,7 +10,6 @@ namespace ncv
         // manager: used to manage different object types associated with ID strings.
         // the clonable interface to be used with a manager:
         //      ::clone(const string_t&)        - create a new object (with the given parameters)
-	//      ::name()                        - details the associated ID
         //      ::desc()                        - short description (parameters included)
         // hint: use register_object<base, derived> to register objects to the manager.
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -26,8 +25,8 @@ namespace ncv
                 typedef std::shared_ptr<tobject>        robject_t;
 
                 // constructor
-                clonable_t(const string_t& name, const string_t& description)
-                        :       m_name(name), m_description(description)
+                clonable_t(const string_t& description)
+                        :       m_description(description)
                 {
                 }
         
@@ -35,13 +34,11 @@ namespace ncv
                 virtual robject_t clone(const string_t& params) const = 0;
                 
                 // describe the object
-                const string_t& name() const { return m_name; }
                 const string_t& description() const { return m_description; }
 
         private:
 
                 // attributes
-                string_t                m_name;
                 string_t                m_description;
         };
 
@@ -70,8 +67,7 @@ namespace ncv
                 }
 
                 // access functions
-		strings_t ids() const { return _ids(); }
-		strings_t names() const { return _names(); }
+                strings_t ids() const { return _ids(); }
                 strings_t descriptions() const { return _descriptions(); }
 
         private:
@@ -102,11 +98,7 @@ namespace ncv
                 robject_t _get(const string_t& id, const string_t& params) const
                 {
                         const protos_const_it it = m_protos.find(id);
-                        if (it == m_protos.end())
-                        {
-                                throw std::invalid_argument("cannot find the object <" + id + ">!");
-                        }
-                        return it->second->clone(params);
+                        return it == m_protos.end() ? robject_t() : it->second->clone(params);
                 }
 
                 //-------------------------------------------------------------------------------------------------
@@ -129,13 +121,6 @@ namespace ncv
                 {
 			return _collect([] (const protos_const_it& it) { return it->first; });
                 }
-
-                //-------------------------------------------------------------------------------------------------
-
-		strings_t _names() const
-		{
-			return _collect([] (const protos_const_it& it) { return it->second->name(); });
-		}
 
                 //-------------------------------------------------------------------------------------------------
 

@@ -3,16 +3,20 @@
 #include "core/thread.h"
 #include "core/optimize.h"
 #include "core/timer.h"
+#include "activation/activation.h"
 
 namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
         conv_network_model_t::conv_network_model_t(const string_t& params)
-                :       model_t("convolution network",
-                                "parameters: color=luma[luma,rgba],network=[16:8x8[,...]]")
+                :       model_t("parameters: color=luma[luma/rgba],"\
+                                "network=[16:8:8:activation]*,"\
+                                "iters=256,eps=1e-5")
         {
                 m_color_param = text::from_params<color_mode>(params, "color", ncv::color_mode::luma);
+                m_opt_iters = math::clamp(text::from_params<size_t>(params, "iters", 256), 8, 4096);
+                m_opt_eps = math::clamp(text::from_params<scalar_t>(params, "eps", 1e-5), 1e-6, 1e-3);
 
                 // decode the network structure
                 const string_t network_desc = text::from_params<string_t>(params, "network", "");
@@ -20,6 +24,7 @@ namespace ncv
                 {
                         strings_t network_tokens;
                         text::split(network_tokens, network_desc, text::is_any_of(","));
+
                         if (network_tokens.empty())
                         {
                                 throw std::runtime_error("invalid convolution network <" +
@@ -29,9 +34,15 @@ namespace ncv
                         // layers ...
                         for (size_t l = 0; l < network_tokens.size(); l ++)
                         {
+                                if (network_tokens[l].empty())
+                                {
+                                        continue;
+                                }
+
                                 strings_t layer_tokens;
-                                text::split(layer_tokens, network_tokens[l], text::is_any_of(":x"));
-                                if (layer_tokens.size() != 3)
+                                text::split(layer_tokens, network_tokens[l], text::is_any_of(":"));
+
+                                if (layer_tokens.size() != 4)
                                 {
                                         throw std::runtime_error("invalid layer description <" +
                                                                  network_tokens[l] + "> for the nework <" +
@@ -42,10 +53,9 @@ namespace ncv
                                 const size_t convs = text::from_string<size_t>(layer_tokens[0]);
                                 const size_t crows = text::from_string<size_t>(layer_tokens[1]);
                                 const size_t ccols = text::from_string<size_t>(layer_tokens[2]);
+                                const string_t activation = layer_tokens[3];
 
-                                m_network_param.push_back(convs);
-                                m_network_param.push_back(crows);
-                                m_network_param.push_back(ccols);
+                                m_layer_params.push_back(conv_layer_param_t(convs, crows, ccols, activation));
                         }
                 }
         }
@@ -115,8 +125,8 @@ namespace ncv
         bool conv_network_model_t::save(boost::archive::binary_oarchive& oa) const
         {
                 oa << m_layers;
-                oa << m_color_param;
-                oa << m_network_param;
+                oa << m_layer_params;
+                oa << m_color_param;                
 
                 return true;    // fixme: how to check status of the stream?!
         }
@@ -126,8 +136,8 @@ namespace ncv
         bool conv_network_model_t::load(boost::archive::binary_iarchive& ia)
         {
                 ia >> m_layers;
+                ia >> m_layer_params;
                 ia >> m_color_param;
-                ia >> m_network_param;
 
                 return true;    // fixme: how to check status of the stream?!
         }
@@ -137,8 +147,7 @@ namespace ncv
         size_t conv_network_model_t::resize()
         {
                 const size_t n_params = conv_layer_t::make_network(
-                        n_inputs(), n_rows(), n_cols(),
-                        m_network_param, n_outputs(),
+                        n_inputs(), n_rows(), n_cols(), m_layer_params, n_outputs(),
                         m_layers);
 
                 if (n_params == 0)
@@ -177,7 +186,7 @@ namespace ncv
         const tensor3d_t& conv_network_model_t::forward(const tensor3d_t& _input) const
         {
                 const tensor3d_t* input = &_input;
-                for (layers_t::const_iterator it = m_layers.begin(); it != m_layers.end(); ++ it)
+                for (conv_layers_t::const_iterator it = m_layers.begin(); it != m_layers.end(); ++ it)
                 {
                         input = &it->forward(*input);
                 }
@@ -190,7 +199,7 @@ namespace ncv
         void conv_network_model_t::backward(const tensor3d_t& _gradient)
         {
                 const tensor3d_t* gradient = &_gradient;
-                for (layers_t::reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
+                for (conv_layers_t::reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                 {
                         gradient = &it->backward(*gradient);
                 }
@@ -338,19 +347,17 @@ namespace ncv
                 const optimize::problem_t problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad);
 
                 // optimize
-                static const size_t opt_iters = 256;
-                static const scalar_t opt_eps = 1e-5;
-                static const size_t opt_history = 8;
-
-                log_info() << "convolution network model: parameters " << n_parameters() << ".";
+                log_info() << "convolution network model: parameters = " << n_parameters() << ".";
 
                 vector_t x(n_parameters());
                 serializer_t(x) << m_layers;
 
                 timer_t timer;
+
+                static const size_t opt_history = 8;
                 const optimize::result_t res = optimize::lbfgs(
                         problem, x,
-                        opt_iters, opt_eps, opt_history,
+                        m_opt_iters, m_opt_eps, opt_history,
                         std::bind(update, _1, std::ref(timer)));
 
                 deserializer_t(res.optimum().x) >> m_layers;
@@ -358,7 +365,7 @@ namespace ncv
                 // OK
                 log_info() << "convolution network model: optimum [loss = " << res.optimum().f
                            << ", gradient = " << res.optimum().g.norm() << "]"
-                           << ", iterations = [" << res.iterations() << "/" << opt_iters
+                           << ", iterations = [" << res.iterations() << "/" << m_opt_iters
                            << "], speed = [" << res.speed().avg() << " +/- " << res.speed().stdev() << "].";
 
                 return true;

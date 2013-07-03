@@ -24,8 +24,7 @@ namespace ncv
         //-------------------------------------------------------------------------------------------------
 
         stl10_task_t::stl10_task_t(const string_t&)
-                :       task_t("stl10",
-                               "STL-10 (object classification)")
+                :       task_t("STL-10 (object classification)")
         {
         }
 

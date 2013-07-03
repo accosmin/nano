@@ -24,8 +24,7 @@ namespace ncv
         //-------------------------------------------------------------------------------------------------
 
         cifar10_task_t::cifar10_task_t(const string_t&)
-                :       task_t("cifar10",
-                               "CIFAR-10 (object classification)")
+                :       task_t("CIFAR-10 (object classification)")
         {
         }
 

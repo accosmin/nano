@@ -14,28 +14,35 @@ namespace ncv
         public:
 
                 // constructor
-                tanh_activation_t()
-                        :       activation_t("tanh", "hyperbolic tangent activation function")
+                tanh_activation_t(const string_t& /*params*/ = string_t())
+                        :       activation_t("hyperbolic tangent activation function")
                 {
+                }
+
+                // create an object clone
+                virtual ractivation_t clone(const string_t& params) const
+                {
+                        return ractivation_t(new tanh_activation_t(params));
                 }
 
                 // output & gradient
-                virtual scalar_t value(scalar_t score) const { return _value(score); }
-                virtual scalar_t vgrad(scalar_t score) const { return _vgrad(score); }
+                virtual scalar_t value(scalar_t x) const { return _value(x); }
+                virtual scalar_t vgrad(scalar_t x) const { return _vgrad(x); }
 
         private:
 
-                scalar_t _value(scalar_t score) const
+                // helper functions
+                scalar_t _value(scalar_t x) const
                 {
-                        const scalar_t pexp_score = exp(score);
-                        const scalar_t nexp_score = 1.0 / pexp_score;
-                        return (pexp_score - nexp_score) / (pexp_score - nexp_score);
+                        const scalar_t pexp = exp(x);
+                        const scalar_t nexp = exp(-x);//1.0 / pexp;
+                        return (pexp - nexp) / (pexp + nexp);
                 }
 
-                scalar_t _vgrad(scalar_t score) const
+                scalar_t _vgrad(scalar_t x) const
                 {
-                        const scalar_t vscore = _value(score);
-                        return vscore * (1.0 - vscore);
+                        const scalar_t vx = _value(x);
+                        return vx * (1.0 - vx);
                 }
         };
 }

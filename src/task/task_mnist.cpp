@@ -8,8 +8,7 @@ namespace ncv
         //-------------------------------------------------------------------------------------------------
 
         mnist_task_t::mnist_task_t(const string_t&)
-                :       task_t("mnist",
-                               "MNIST (digit classification)")
+                :       task_t("MNIST (digit classification)")
         {
         }
 
