@@ -32,6 +32,7 @@ namespace ncv
                 virtual size_t n_rows() const { return 19; }
                 virtual size_t n_cols() const { return 19; }
                 virtual size_t n_outputs() const { return 2; }
+                virtual color_mode color() const { return color_mode::luma; }
 
         private:
 

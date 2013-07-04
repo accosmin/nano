@@ -1,4 +1,15 @@
-- better names for the activation functions
+- create batch & stochastic & average stochastic model_t-based derived classes:
+	- ::prune_samples(samples_t -> isamples)
+	- ::value(samples, isamples) + ::vgrad(samples, isamples), ::load_params(x), ::save_params(x)
+	- ::log(result_t)
+
+	- batch: vgrad uses all samples and lbfgs
+	- stochastic: vgrad uses a single sample + N(1-8) x n_samples for optimization + x% x n_samples for tuning
+
+- (average) stochastic gradient descent:
+	- problem_t::f() -> compute the function for all samples (every N iterations)
+	- problem_t::g() -> compute the gradient for a random sample
+	- tune the learning rate on the given number of samples
 
 - test program to check the backward & forward step:
 	- double check the gradient backward part of the activation functions
@@ -12,13 +23,6 @@
 	- the tanh saturates very fast (needs smaller inputs)!
 
 	- still problems with maxzero!	
-
-- improve serialization interface: (serializer_t(size) << layers).data():
-	- also cleanup the interface (too many functions are overloaded)
-
-	- EASIER method to convert to/from tensors and vectors
-
-- MACRO to simplify the clonable_t interface implementation (e.g. loss, activation, task ...)
 
 - convolution model parameters:
 	- number of iterations and epsilon

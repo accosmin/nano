@@ -38,6 +38,9 @@ int main(int argc, char *argv[])
         po_desc.add_options()("model-params",
                 boost::program_options::value<ncv::string_t>()->default_value(""),
                 "model parameters (if any) as specified in the chosed model's description");
+        po_desc.add_options()("optimizer",
+                boost::program_options::value<ncv::string_t>()->default_value("asgd"),
+                "optimization procedure (lbfgs, sgd, asgd)");
         po_desc.add_options()("trials",
                 boost::program_options::value<ncv::size_t>(),
                 "number of models to train & evaluate");
@@ -66,6 +69,7 @@ int main(int argc, char *argv[])
         const ncv::string_t cmd_loss = po_vm["loss"].as<ncv::string_t>();
         const ncv::string_t cmd_model = po_vm["model"].as<ncv::string_t>();
         const ncv::string_t cmd_model_params = po_vm["model-params"].as<ncv::string_t>();
+        const ncv::string_t cmd_optimizer = po_vm["optimizer"].as<ncv::string_t>();
         const ncv::size_t cmd_trials = po_vm["trials"].as<ncv::size_t>();
         ncv::timer_t timer;
 
@@ -133,7 +137,9 @@ int main(int argc, char *argv[])
                         const ncv::fold_t test_fold = std::make_pair(f, ncv::protocol::test);
 
                         timer.start();
-                        if (!rmodel->train(*rtask, train_fold, *rloss))
+                        if (!rmodel->train(
+                                *rtask, train_fold, *rloss,
+                                ncv::text::from_string<ncv::optimizer>(cmd_optimizer)))
                         {
                                 ncv::log_error() << "<<< failed to train model <" << cmd_model << ">!";
                                 break;

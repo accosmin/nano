@@ -36,11 +36,11 @@ void test(const ncv::optimize::problem_t& problem, ncv::size_t max_iters, ncv::s
                 ncv::timer_t timer;
 
                 timer.start();
-                const ncv::optimize::result_t res_gd = ncv::optimize::gradient_descent(problem, x0, max_iters, eps);
+                const ncv::optimize::result_t res_gd = ncv::optimize::gd(problem, x0, max_iters, eps);
                 print(res_gd, max_iters, name + " (GD)" + name_trial, timer.elapsed());
 
                 timer.start();
-                const ncv::optimize::result_t res_cgd = ncv::optimize::conjugate_gradient_descent(problem, x0, max_iters, eps);
+                const ncv::optimize::result_t res_cgd = ncv::optimize::cgd(problem, x0, max_iters, eps);
                 print(res_cgd, max_iters, name + " (CGD)" + name_trial, timer.elapsed());
 
                 timer.start();

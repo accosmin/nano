@@ -8,8 +8,8 @@ namespace ncv
         namespace optimize
         {
                 /////////////////////////////////////////////////////////////////////////////////////////////
-                // optimization state: current point (x), function value (f),
-                //      gradient (g) and descent direction (d).
+                // optimization state:
+                //      current point (x), function value (f), gradient (g) and descent direction (d).
                 ////////////////////////////////////////////////////////////////////////////////////////////////
 
                 struct state_t
@@ -26,9 +26,9 @@ namespace ncv
                         // constructor
                         template
                         <
-                                class problem_t
+                                class tproblem
                         >
-                        state_t(const problem_t& problem, const vector_t& x0)
+                        state_t(const tproblem& problem, const vector_t& x0)
                         {
                                 x = x0;
                                 f = problem.f(x, g);
@@ -37,9 +37,9 @@ namespace ncv
                         // update current point
                         template
                         <
-                                class problem_t
+                                class tproblem
                         >
-                        void update(const problem_t& problem, scalar_t t)
+                        void update(const tproblem& problem, scalar_t t)
                         {
                                 x.noalias() += t * d;
                                 f = problem.f(x, g);
@@ -145,7 +145,7 @@ namespace ncv
                 // gradient descent starting from the initial value (guess) x0.
                 /////////////////////////////////////////////////////////////////////////////////////////////
 
-                result_t gradient_descent(
+                result_t gd(
                         const problem_t& problem,
                         const vector_t& x0,
                         size_t max_iterations,          // maximum number of iterations
@@ -156,7 +156,7 @@ namespace ncv
                 // conjugate gradient descent starting from the initial value (guess) x0.
                 /////////////////////////////////////////////////////////////////////////////////////////////
 
-                result_t conjugate_gradient_descent(
+                result_t cgd(
                         const problem_t& problem,
                         const vector_t& x0,
                         size_t max_iterations,          // maximum number of iterations
@@ -173,6 +173,28 @@ namespace ncv
                         size_t max_iterations,          // maximum number of iterations
                         scalar_t epsilon,               // convergence precision
                         size_t history_size = 8,        // hessian approximation history size
+                        const op_updated_t& op_updated = op_updated_t());
+
+                /////////////////////////////////////////////////////////////////////////////////////////////
+                // stochastic gradient descent starting from the initial value (guess) x0.
+                /////////////////////////////////////////////////////////////////////////////////////////////
+
+                result_t sgd(
+                        const problem_t& problem,
+                        const vector_t& x0,
+                        size_t opt_iterations,          // number of optimization iterations
+                        size_t tune_iterations,         // number of learning rate tuning iterations
+                        const op_updated_t& op_updated = op_updated_t());
+
+                /////////////////////////////////////////////////////////////////////////////////////////////
+                // average stochastic gradient descent starting from the initial value (guess) x0.
+                /////////////////////////////////////////////////////////////////////////////////////////////
+
+                result_t asgd(
+                        const problem_t& problem,
+                        const vector_t& x0,
+                        size_t opt_iterations,          // number of optimization iterations
+                        size_t tune_iterations,         // number of learning rate tuning iterations
                         const op_updated_t& op_updated = op_updated_t());
         }
 }

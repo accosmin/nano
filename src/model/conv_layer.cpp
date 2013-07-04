@@ -128,7 +128,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void conv_layer_t::zero_grad()
+        void conv_layer_t::zero_grad() const
         {
                 m_gdata.zero();
         }
@@ -174,7 +174,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        const tensor3d_t& conv_layer_t::backward(const tensor3d_t& gradient)
+        const tensor3d_t& conv_layer_t::backward(const tensor3d_t& gradient) const
         {
                 assert(n_outputs() == gradient.n_dim1());
                 assert(n_orows() == gradient.n_rows());

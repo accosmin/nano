@@ -182,7 +182,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        optimize::result_t optimize::gradient_descent(
+        optimize::result_t optimize::gd(
                 const problem_t& problem, const vector_t& x0,
                 size_t max_iterations, scalar_t epsilon,
                 const op_updated_t& op_updated)
@@ -227,7 +227,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        optimize::result_t optimize::conjugate_gradient_descent(
+        optimize::result_t optimize::cgd(
                 const problem_t& problem, const vector_t& x0,
                 size_t max_iterations, scalar_t epsilon,
                 const op_updated_t& op_updated)
@@ -367,6 +367,53 @@ namespace ncv
                 }
 
                 return result;
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        optimize::result_t optimize::sgd(
+                const problem_t& problem, const vector_t& x0,
+                size_t opt_iterations, size_t tune_iterations,
+                const op_updated_t& op_updated)
+        {
+                assert(problem.size() == math::cast<size_t>(x0.size()));
+
+                result_t result(problem.size());
+
+                state_t cstate(problem, x0);
+
+                const scalar_t eta = 1.0;
+                const scalar_t lambda = 1.0;
+                const size_t update_size = 100;
+
+                for (size_t t = 0; t < opt_iterations; t ++)
+                {
+                        const scalar_t learning_rate = eta / (1.0 + eta * lambda * t);
+
+                        problem.f(cstate.x, cstate.g);
+                        cstate.x -= learning_rate * cstate.g;
+
+                        if (t >= update_size && (t % update_size == 0))
+                        {
+                                cstate.f = problem.f(cstate.x);
+                                result.update(cstate);
+                                op_updated(result);
+                        }
+                }
+
+                return result;
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        optimize::result_t optimize::asgd(
+                const problem_t& problem, const vector_t& x0,
+                size_t opt_iterations, size_t tune_iterations,
+                const op_updated_t& op_updated)
+        {
+                optimize::result_t ret(0);
+
+                return ret;
         }
 
         //-------------------------------------------------------------------------------------------------

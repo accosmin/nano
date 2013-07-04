@@ -66,11 +66,11 @@ namespace ncv
                 // reset parameters
                 void zero();
                 void random(scalar_t min = -0.1, scalar_t max = 0.1);
-                void zero_grad();
+                void zero_grad() const;
 
                 // process inputs (compute outputs & gradients)
                 const tensor3d_t& forward(const tensor3d_t& input) const;
-                const tensor3d_t& backward(const tensor3d_t& gradient);
+                const tensor3d_t& backward(const tensor3d_t& gradient) const;
 
                 // serialize/deserialize data
                 friend serializer_t& operator<<(serializer_t& s, const conv_layer_t& layer);
@@ -120,7 +120,7 @@ namespace ncv
                 // attributes
                 mutable tensor3d_t      m_idata;        // input buffer
                 tensor4d_t              m_cdata;        // convolution matrices
-                tensor4d_t              m_gdata;        // cumulated gradient of the convolution matrices
+                mutable tensor4d_t      m_gdata;        // cumulated gradient of the convolution matrices
                 mutable tensor3d_t      m_odata;        // output buffer
 
                 string_t                m_activation;

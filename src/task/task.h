@@ -50,6 +50,8 @@ namespace ncv
                 size_t n_folds() const { return m_folds.size() / 2; } // train + test
                 const samples_t& samples(const fold_t& fold) const { return m_folds.find(fold)->second; }
 
+                virtual color_mode color() const = 0;
+
         protected:
 
                 // construct image-indexed samples for the [istart, istart + icount) images

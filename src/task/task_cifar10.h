@@ -30,7 +30,8 @@ namespace ncv
                 // access functions
                 virtual size_t n_rows() const { return 32; }
                 virtual size_t n_cols() const { return 32; }
-                virtual size_t n_outputs() const { return 10; }
+                virtual size_t n_outputs() const { return 10; }                
+                virtual color_mode color() const { return color_mode::rgba; }
 
         private:
 
