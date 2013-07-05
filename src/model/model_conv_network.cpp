@@ -186,8 +186,6 @@ namespace ncv
                 scalar_t lvalue = 0.0;
                 size_t lcount = 0;
 
-                timer_t timer;
-
                 for (size_t i = 0; i < data.m_indices.size(); i ++)
                 {
                         const sample_t& sample = data.m_samples[i];
@@ -209,10 +207,6 @@ namespace ncv
 
                 lvalue /= (lcount == 0) ? 1.0 : lcount;
 
-                std::cout << "::value: count = " << lcount
-                          << ", loss = " << lvalue
-                          << " done in " << timer.elapsed() << std::endl;
-
                 return lvalue;
         }
 
@@ -226,8 +220,6 @@ namespace ncv
                 {
                         layer.zero_grad();
                 }
-
-                const timer_t timer;
 
                 for (size_t i = 0; i < data.m_indices.size(); i ++)
                 {
@@ -266,11 +258,6 @@ namespace ncv
 
                 grad /= (lcount == 0) ? 1.0 : lcount;
                 lvalue /= (lcount == 0) ? 1.0 : lcount;
-
-                std::cout << "::vgrad: count = " << lcount
-                          << ", loss = " << lvalue
-                          << ", grad = [" << grad.minCoeff() << ", " << grad.maxCoeff()
-                          << "] done in " << timer.elapsed() << std::endl;
 
                 return lvalue;
         }

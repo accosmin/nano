@@ -1,3 +1,5 @@
+- update experiments scripts to train convolution models
+
 - (average) stochastic gradient descent:
 	- problem_t::f() -> compute the function for all samples (every N iterations)
 	- problem_t::g() -> compute the gradient for a random sample
@@ -35,6 +37,9 @@
 
 	- 6s:xxxms for 5000 samples & 8:8x8 hidden layer!
 	- 2s:600ms for 2000 samples & 8:8x8 hidden layer!
+
+- also implement a classical neural network
+	- with a gradient testing program
 
 - option to save the model at closing the program - destructor:
 	- trainer().set_path().train()

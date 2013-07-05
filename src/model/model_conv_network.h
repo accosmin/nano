@@ -61,11 +61,6 @@ namespace ncv
 
         private:
 
-                // access functions
-                size_t n_layers() const { return m_layers.size(); }
-                conv_layer_t& layer(size_t l) { return m_layers[l]; }
-                const conv_layer_t& layer(size_t l) const { return m_layers[l]; }
-
                 // process inputs (compute outputs & gradients)
                 const tensor3d_t& forward(const tensor3d_t& input) const;
                 void backward(const tensor3d_t& gradient) const;
