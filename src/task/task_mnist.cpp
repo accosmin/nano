@@ -57,7 +57,7 @@ namespace ncv
                 while ( flabel.read(label, 1) &&
                         fimage.read(buffer, sizeof(buffer)))
                 {
-                        const size_t ilabel = static_cast<size_t>(label[0]);
+                        const size_t ilabel = math::cast<size_t>(label[0]);
                         if (ilabel >= n_outputs())
                         {
                                 continue;

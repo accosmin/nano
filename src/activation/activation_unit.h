@@ -25,7 +25,7 @@ namespace ncv
                         return ractivation_t(new unit_activation_t(params));
                 }
 
-                // output & gradient
+                // output & gradient (as a function of the output)
                 virtual scalar_t value(scalar_t x) const { return x; }
                 virtual scalar_t vgrad(scalar_t x) const { return 1.0; }
         };

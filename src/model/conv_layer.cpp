@@ -9,11 +9,11 @@ namespace ncv
 
         static void forward(const matrix_t& idata, const matrix_t& cdata, matrix_t& odata)
         {
-                const size_t crows = static_cast<size_t>(cdata.rows());
-                const size_t ccols = static_cast<size_t>(cdata.cols());
+                const size_t crows = math::cast<size_t>(cdata.rows());
+                const size_t ccols = math::cast<size_t>(cdata.cols());
 
-                const size_t orows = static_cast<size_t>(idata.rows() - crows + 1);
-                const size_t ocols = static_cast<size_t>(idata.cols() - ccols + 1);
+                const size_t orows = math::cast<size_t>(idata.rows() - crows + 1);
+                const size_t ocols = math::cast<size_t>(idata.cols() - ccols + 1);
 
                 for (size_t r = 0; r < orows; r ++)
                 {
@@ -28,11 +28,11 @@ namespace ncv
 
         static void gradient(const matrix_t& idata, const matrix_t& ogdata, matrix_t& gdata)
         {
-                const size_t crows = static_cast<size_t>(gdata.rows());
-                const size_t ccols = static_cast<size_t>(gdata.cols());
+                const size_t crows = math::cast<size_t>(gdata.rows());
+                const size_t ccols = math::cast<size_t>(gdata.cols());
 
-                const size_t orows = static_cast<size_t>(ogdata.rows());
-                const size_t ocols = static_cast<size_t>(ogdata.cols());
+                const size_t orows = math::cast<size_t>(ogdata.rows());
+                const size_t ocols = math::cast<size_t>(ogdata.cols());
 
                 for (size_t r = 0; r < crows; r ++)
                 {
@@ -47,11 +47,11 @@ namespace ncv
 
         static void backward(const matrix_t& ogdata, const matrix_t& cdata, matrix_t& igdata)
         {
-                const size_t crows = static_cast<size_t>(cdata.rows());
-                const size_t ccols = static_cast<size_t>(cdata.cols());
+                const size_t crows = math::cast<size_t>(cdata.rows());
+                const size_t ccols = math::cast<size_t>(cdata.cols());
 
-                const size_t orows = static_cast<size_t>(ogdata.rows());
-                const size_t ocols = static_cast<size_t>(ogdata.cols());
+                const size_t orows = math::cast<size_t>(ogdata.rows());
+                const size_t ocols = math::cast<size_t>(ogdata.cols());
 
                 // TODO: this takes 50% of time!
 
@@ -183,10 +183,23 @@ namespace ncv
 
                 const activation_t& afunc = *m_afunc;
 
+                // activation
+                for (size_t o = 0; o < n_outputs(); o ++)
+                {
+                        const matrix_t& gdata = gradient(o);
+                        matrix_t& odata = m_odata(o);
+
+                        const size_t size = math::cast<size_t>(odata.size());
+                        for (size_t ii = 0; ii < size; ii ++)
+                        {
+                                odata(ii) = gdata(ii) * afunc.vgrad(odata(ii));
+                        }
+                }
+
                 // convolution gradient
                 for (size_t o = 0; o < n_outputs(); o ++)
                 {
-                        const matrix_t& ogdata = gradient(o);
+                        const matrix_t& ogdata = m_odata(o);
 
                         for (size_t i = 0; i < n_inputs(); i ++)
                         {
@@ -201,7 +214,7 @@ namespace ncv
                 m_idata.zero();
                 for (size_t o = 0; o < n_outputs(); o ++)
                 {
-                        const matrix_t& ogdata = gradient(o);
+                        const matrix_t& ogdata = m_odata(o);
 
                         for (size_t i = 0; i < n_inputs(); i ++)
                         {
@@ -212,14 +225,6 @@ namespace ncv
                         }
                 }
 
-                // activation
-                for (size_t i = 0; i < n_inputs(); i ++)
-                {
-                        matrix_t& idata = m_idata(i);
-
-                        math::for_each(idata, [&] (scalar_t& v) { v *= afunc.vgrad(v); });
-                }
-
                 return m_idata;
         }
 
@@ -227,9 +232,9 @@ namespace ncv
 
         size_t conv_layer_t::make_network(
                 size_t idims, size_t irows, size_t icols,
-                const conv_layer_params_t& network_params,
+                const conv_network_params_t& network_params,
                 size_t odims,
-                std::vector<conv_layer_t>& network)
+                conv_network_t& network)
         {
                 size_t n_params = 0;
 
@@ -275,7 +280,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void conv_layer_t::print_network(const std::vector<conv_layer_t>& network)
+        void conv_layer_t::print_network(const conv_network_t& network)
         {
                 for (size_t l = 0; l < network.size(); l ++)
                 {
@@ -290,6 +295,30 @@ namespace ncv
                                    << ") -> "
                                    << layer.n_outputs() << "x" << layer.n_orows() << "x" << layer.n_ocols()
                                    << ".";
+                }
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        const tensor3d_t& conv_layer_t::forward(const tensor3d_t& _input, const conv_network_t& network)
+        {
+                const tensor3d_t* input = &_input;
+                for (conv_network_t::const_iterator it = network.begin(); it != network.end(); ++ it)
+                {
+                        input = &it->forward(*input);
+                }
+
+                return *input;
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void conv_layer_t::backward(const tensor3d_t& _gradient, const conv_network_t& network)
+        {
+                const tensor3d_t* gradient = &_gradient;
+                for (conv_network_t::const_reverse_iterator it = network.rbegin(); it != network.rend(); ++ it)
+                {
+                        gradient = &it->backward(*gradient);
                 }
         }
 

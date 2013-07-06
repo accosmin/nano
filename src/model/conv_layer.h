@@ -8,10 +8,10 @@
 namespace ncv
 {
         class conv_layer_t;
-        typedef std::vector<conv_layer_t>       conv_layers_t;
+        typedef std::vector<conv_layer_t>       conv_network_t;
 
         class conv_layer_param_t;
-        typedef std::vector<conv_layer_param_t> conv_layer_params_t;
+        typedef std::vector<conv_layer_param_t> conv_network_params_t;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // convolution layer:
@@ -79,12 +79,16 @@ namespace ncv
                 // build convolution network (returns the total number of parameters)
                 static size_t make_network(
                         size_t idims, size_t irows, size_t icols,       // input size
-                        const conv_layer_params_t& network_params,      //
+                        const conv_network_params_t& network_params,      //
                         size_t odims,                                   // output size
-                        std::vector<conv_layer_t>& network);
+                        conv_network_t& network);
 
                 // show the structure of a network
-                static void print_network(const std::vector<conv_layer_t>& network);
+                static void print_network(const conv_network_t& network);
+
+                // process inputs (compute outputs & gradients) for a network
+                static const tensor3d_t& forward(const tensor3d_t& input, const conv_network_t& network);
+                static void backward(const tensor3d_t& gradient, const conv_network_t& network);
 
                 // access functions
                 size_t n_inputs() const { return m_idata.n_dim1(); }

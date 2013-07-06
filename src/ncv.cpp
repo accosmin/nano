@@ -13,7 +13,8 @@
 
 #include "activation/activation_unit.h"
 #include "activation/activation_tanh.h"
-#include "activation/activation_xnorm.h"
+#include "activation/activation_fun1.h"
+#include "activation/activation_fun2.h"
 
 #include "model/model_conv_network.h"
 
@@ -41,7 +42,8 @@ namespace ncv
                 // register activation/transfer functions
                 activation_manager_t::instance().add("unit", unit_activation_t());
                 activation_manager_t::instance().add("tanh", tanh_activation_t());
-                activation_manager_t::instance().add("xnorm", xnorm_activation_t());
+                activation_manager_t::instance().add("fun1", fun1_activation_t());
+                activation_manager_t::instance().add("fun2", fun2_activation_t());
 
                 // register models
                 model_manager_t::instance().add("convnet", conv_network_model_t());

@@ -1,28 +1,28 @@
-#ifndef NANOCV_ACTIVATION_TANH_H
-#define NANOCV_ACTIVATION_TANH_H
+#ifndef NANOCV_ACTIVATION_FUN2_H
+#define NANOCV_ACTIVATION_FUN2_H
 
 #include "activation.h"
 
 namespace ncv
 {
         ////////////////////////////////////////////////////////////////////////////////
-        // hyperbolic tangent activation function.
+        // x/(1+|x|) activation function.
         ////////////////////////////////////////////////////////////////////////////////
 	
-        class tanh_activation_t : public activation_t
+        class fun2_activation_t : public activation_t
         {
         public:
 
                 // constructor
-                tanh_activation_t(const string_t& /*params*/ = string_t())
-                        :       activation_t("hyperbolic tangent activation function")
+                fun2_activation_t(const string_t& /*params*/ = string_t())
+                        :       activation_t("x/(1+|x|) activation function")
                 {
                 }
 
                 // create an object clone
                 virtual ractivation_t clone(const string_t& params) const
                 {
-                        return ractivation_t(new tanh_activation_t(params));
+                        return ractivation_t(new fun2_activation_t(params));
                 }
 
                 // output & gradient (as a function of the output)
@@ -34,15 +34,15 @@ namespace ncv
                 // helper functions
                 scalar_t _value(scalar_t x) const
                 {
-                        const scalar_t pexp = exp(x), nexp = 1.0 / pexp;
-                        return (pexp - nexp) / (pexp + nexp);
+                        return x / (1.0 + std::fabs(x));
                 }
 
                 scalar_t _vgrad(scalar_t x) const
                 {
-                        return 1.0 - x * x;
+                        const scalar_t d = (x > 0.0) ? (1.0 - x) : (1.0 + x);
+                        return d * d;
                 }
         };
 }
 
-#endif // NANOCV_ACTIVATION_TANH_H
+#endif // NANOCV_ACTIVATION_FUN2_H

@@ -28,9 +28,9 @@ namespace ncv
                 // destructor
                 virtual ~activation_t() {}
 
-                // output & gradient
+                // output & gradient (as a function of the output)
                 virtual scalar_t value(scalar_t x) const = 0;
-                virtual scalar_t vgrad(scalar_t x) const = 0;
+                virtual scalar_t vgrad(scalar_t o) const = 0;
         };
 }
 

@@ -5,6 +5,8 @@
 	- problem_t::g() -> compute the gradient for a random sample
 	- tune the learning rate on the given number of samples
 
+- BUG: SGD tuning - compute the loss on a random subset not on all samples
+
 - test program to check the backward & forward step:
 	- double check the gradient backward part of the activation functions
 		and the math at the layer::backward() part

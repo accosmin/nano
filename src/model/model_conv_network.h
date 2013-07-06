@@ -10,13 +10,12 @@ namespace ncv
         // convolution (multi-layer) network model.
         //
         // parameters:
-        //      network - network size:
-        //                      - default = empty_string -> no hidden layer,
-        //                      - format = [nconvs : crows : ccols : activation]*, where
-        //                              nconvs          - number of convolutions
-        //                              crows           - convolution size (rows)
-        //                              ccols           - convolution size (columns)
-        //                              activation      - activation function id
+        //      network - default = empty_string -> no hidden layer,
+        //              - format = [nconvs : crows : ccols : activation]*, where
+        //                          nconvs          - number of convolutions
+        //                          crows           - convolution size (rows)
+        //                          ccols           - convolution size (columns)
+        //                          activation      - activation function id
         /////////////////////////////////////////////////////////////////////////////////////////
 
         class conv_network_model_t : public model_t
@@ -68,8 +67,8 @@ namespace ncv
         private:
 
                 // attributes
-                conv_layers_t           m_layers;               // convolution network
-                conv_layer_params_t     m_params;               // parameters
+                conv_network_t          m_network;              // convolution network
+                conv_network_params_t   m_params;               // parameters
         };
 }
 

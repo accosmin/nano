@@ -68,7 +68,7 @@ namespace ncv
 
         bool conv_network_model_t::save(boost::archive::binary_oarchive& oa) const
         {
-                oa << m_layers;
+                oa << m_network;
                 oa << m_params;
 
                 return true;    // fixme: how to check status of the stream?!
@@ -78,7 +78,7 @@ namespace ncv
 
         bool conv_network_model_t::load(boost::archive::binary_iarchive& ia)
         {
-                ia >> m_layers;
+                ia >> m_network;
                 ia >> m_params;
 
                 return true;    // fixme: how to check status of the stream?!
@@ -88,9 +88,9 @@ namespace ncv
 
         bool conv_network_model_t::save(vector_t& x) const
         {
-                if (static_cast<size_t>(x.size()) == n_parameters())
+                if (math::cast<size_t>(x.size()) == n_parameters())
                 {
-                        serializer_t(x) << m_layers;
+                        serializer_t(x) << m_network;
                         return true;
                 }
 
@@ -104,9 +104,9 @@ namespace ncv
 
         bool conv_network_model_t::load(const vector_t& x)
         {
-                if (static_cast<size_t>(x.size()) == n_parameters())
+                if (math::cast<size_t>(x.size()) == n_parameters())
                 {
-                        deserializer_t(x) >> m_layers;
+                        deserializer_t(x) >> m_network;
                         return true;
                 }
 
@@ -122,7 +122,7 @@ namespace ncv
         {
                 const size_t n_params = conv_layer_t::make_network(
                         n_inputs(), n_rows(), n_cols(), m_params, n_outputs(),
-                        m_layers);
+                        m_network);
 
                 if (n_params == 0)
                 {
@@ -131,7 +131,7 @@ namespace ncv
 
                 else
                 {
-                        conv_layer_t::print_network(m_layers);
+                        conv_layer_t::print_network(m_network);
                 }
 
                 return n_params;
@@ -141,7 +141,7 @@ namespace ncv
 
         void conv_network_model_t::zero()
         {
-                for (conv_layer_t& layer : m_layers)
+                for (conv_layer_t& layer : m_network)
                 {
                         layer.zero();
                 }
@@ -154,7 +154,7 @@ namespace ncv
                 const scalar_t min = -1.0 / sqrt(n_parameters());
                 const scalar_t max = +1.0 / sqrt(n_parameters());
 
-                for (conv_layer_t& layer : m_layers)
+                for (conv_layer_t& layer : m_network)
                 {
                         layer.random(min, max);
                 }
@@ -186,7 +186,7 @@ namespace ncv
                 scalar_t lvalue = 0.0;
                 size_t lcount = 0;
 
-                for (size_t i = 0; i < data.m_indices.size(); i ++)
+                for (size_t i : data.m_indices)
                 {
                         const sample_t& sample = data.m_samples[i];
 
@@ -216,12 +216,12 @@ namespace ncv
         {
                 scalar_t lvalue = 0.0;
                 size_t lcount = 0;
-                for (const conv_layer_t& layer : m_layers)
+                for (const conv_layer_t& layer : m_network)
                 {
                         layer.zero_grad();
                 }
 
-                for (size_t i = 0; i < data.m_indices.size(); i ++)
+                for (size_t i : data.m_indices)
                 {
                         const sample_t& sample = data.m_samples[i];
 
@@ -251,7 +251,7 @@ namespace ncv
                 grad.resize(n_parameters());
 
                 serializer_t s(grad);
-                for (const conv_layer_t& layer : m_layers)
+                for (const conv_layer_t& layer : m_network)
                 {
                         s << layer.gdata();
                 }
@@ -264,26 +264,16 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        const tensor3d_t& conv_network_model_t::forward(const tensor3d_t& _input) const
+        const tensor3d_t& conv_network_model_t::forward(const tensor3d_t& input) const
         {
-                const tensor3d_t* input = &_input;
-                for (conv_layers_t::const_iterator it = m_layers.begin(); it != m_layers.end(); ++ it)
-                {
-                        input = &it->forward(*input);
-                }
-
-                return *input;
+                return conv_layer_t::forward(input, m_network);
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void conv_network_model_t::backward(const tensor3d_t& _gradient) const
+        void conv_network_model_t::backward(const tensor3d_t& gradient) const
         {
-                const tensor3d_t* gradient = &_gradient;
-                for (conv_layers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
-                {
-                        gradient = &it->backward(*gradient);
-                }
+                conv_layer_t::backward(gradient, m_network);
         }
 
         //-------------------------------------------------------------------------------------------------

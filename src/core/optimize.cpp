@@ -394,20 +394,26 @@ namespace ncv
                                 result_t result(problem.size());
                                 state_t cstate(problem, x0);
 
-                                // optimize
+                                vector_t x = x0, g;
+
+                                // TODO: could use a momentum factor (to be tuned)
+
+                                // optimize ...
                                 for (size_t t = 0; t < opt_iterations; t ++)
                                 {
                                         const scalar_t learning_rate = eta / (1.0 + eta * lambda * t);
 
-                                        problem.f(cstate.x, cstate.g);
-                                        cstate.x -= learning_rate * cstate.g;
+                                        problem.f(x, g);
+                                        x.noalias() -= learning_rate * g;
 
                                         // TODO: ASGD implementation!
 
                                         // update function value from time to time
                                         if (((t + 1) % update_iterations) == 0)
                                         {
-                                                cstate.f = problem.f(cstate.x);
+                                                cstate.x = x;
+                                                cstate.g = g;
+                                                cstate.f = problem.f(x);
                                                 result.update(cstate);
                                                 op_updated(result);
                                         }
@@ -430,13 +436,11 @@ namespace ncv
                 const scalar_t lambda = 1.0;
 
                 // tune the learning rate parameters
-                scalars_t etas = { 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
+                scalars_t etas = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
 
                 std::set<std::pair<scalar_t, scalar_t> > eta_results;
-                for (size_t i = 0; i < etas.size(); i ++)
+                for (scalar_t eta : etas)
                 {
-                        const scalar_t eta = etas[i];
-
                         log_info() << "SGD: tuning learning rate [eta = " << eta << "] ...";
 
                         const result_t res = impl::sgd(problem, x0, eta, lambda,

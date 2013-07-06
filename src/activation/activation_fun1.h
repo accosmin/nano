@@ -1,28 +1,28 @@
-#ifndef NANOCV_ACTIVATION_TANH_H
-#define NANOCV_ACTIVATION_TANH_H
+#ifndef NANOCV_ACTIVATION_FUN1_H
+#define NANOCV_ACTIVATION_FUN1_H
 
 #include "activation.h"
 
 namespace ncv
 {
         ////////////////////////////////////////////////////////////////////////////////
-        // hyperbolic tangent activation function.
+        // x/sqrt(1+x^2) activation function.
         ////////////////////////////////////////////////////////////////////////////////
 	
-        class tanh_activation_t : public activation_t
+        class fun1_activation_t : public activation_t
         {
         public:
 
                 // constructor
-                tanh_activation_t(const string_t& /*params*/ = string_t())
-                        :       activation_t("hyperbolic tangent activation function")
+                fun1_activation_t(const string_t& /*params*/ = string_t())
+                        :       activation_t("x/sqrt(1+x^2) activation function")
                 {
                 }
 
                 // create an object clone
                 virtual ractivation_t clone(const string_t& params) const
                 {
-                        return ractivation_t(new tanh_activation_t(params));
+                        return ractivation_t(new fun1_activation_t(params));
                 }
 
                 // output & gradient (as a function of the output)
@@ -34,15 +34,15 @@ namespace ncv
                 // helper functions
                 scalar_t _value(scalar_t x) const
                 {
-                        const scalar_t pexp = exp(x), nexp = 1.0 / pexp;
-                        return (pexp - nexp) / (pexp + nexp);
+                        return x / sqrt(1.0 + x * x);
                 }
 
                 scalar_t _vgrad(scalar_t x) const
                 {
-                        return 1.0 - x * x;
+                        const scalar_t d = 1.0 - x * x;
+                        return d * sqrt(d);
                 }
         };
 }
 
-#endif // NANOCV_ACTIVATION_TANH_H
+#endif // NANOCV_ACTIVATION_FUN1_H

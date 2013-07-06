@@ -229,11 +229,10 @@ namespace ncv
                 static const size_t opt_iterations = 256;
                 static const size_t opt_epsilon = 1e-5;
                 static const size_t opt_history = 8;
+                const auto updater = std::bind(update, _1, std::ref(timer));
 
                 const optimize::result_t res = optimize::lbfgs(
-                        problem, x,
-                        opt_iterations, opt_epsilon, opt_history,
-                        std::bind(update, _1, std::ref(timer)));
+                        problem, x, opt_iterations, opt_epsilon, opt_history, updater);
 
                 load(res.optimum().x);
 
@@ -266,14 +265,16 @@ namespace ncv
                 // optimization problem: function value & gradient
                 auto opt_fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
-                        load(x);
-
                         random_t<size_t> rgen(0, data.m_indices.size() - 1);
-                        const size_t index = rgen();
 
                         data_t sdata(data.m_task, data.m_samples);
-                        sdata.m_indices.push_back(data.m_indices[index]);
+                        for (size_t i = 0; i < 1; i ++)
+                        {
+                                const size_t index = rgen();
+                                sdata.m_indices.push_back(data.m_indices[index]);
+                        }
 
+                        load(x);
                         return vgrad(sdata, loss, gx);
                 };
 
@@ -285,17 +286,17 @@ namespace ncv
 
                 timer_t timer;
 
-                const size_t opt_iterations = data.m_indices.size();
-                const size_t tune_iterations = data.m_indices.size() / 20;
-                // TODO: better parameters
-
+                const size_t opt_iterations = 4 * data.m_indices.size();
+                const size_t tune_iterations = opt_iterations / 20;
                 const auto updater = std::bind(update, _1, std::ref(timer));
+
+                // TODO: tune using all iterations!!!
 
                 const optimize::result_t res = asgd ?
                         optimize::asgd(problem, x, opt_iterations, tune_iterations, updater) :
                         optimize::sgd(problem, x, opt_iterations, tune_iterations, updater);
 
-                load(x);
+                load(res.optimum().x);
 
                 // OK
                 log_info() << "model: optimum [loss = " << res.optimum().f

@@ -3,30 +3,10 @@
 #include "loss/loss_classnll.h"
 #include <boost/program_options.hpp>
 
-static const ncv::tensor3d_t& forward(ncv::conv_layers_t& layers, const ncv::tensor3d_t& _input)
-{
-        const ncv::tensor3d_t* input = &_input;
-        for (ncv::conv_layers_t::const_iterator it = layers.begin(); it != layers.end(); ++ it)
-        {
-                input = &it->forward(*input);
-        }
-
-        return *input;
-}
-
-static void backward(ncv::conv_layers_t& layers, const ncv::tensor3d_t& _gradient)
-{
-        const ncv::tensor3d_t* gradient = &_gradient;
-        for (ncv::conv_layers_t::reverse_iterator it = layers.rbegin(); it != layers.rend(); ++ it)
-        {
-                gradient = &it->backward(*gradient);
-        }
-}
-
 static void test(
         const ncv::string_t& header,
         const ncv::string_t& loss_id,
-        ncv::conv_layers_t& layers, ncv::vector_t& params, ncv::tensor3d_t& input, ncv::vector_t& target,
+        ncv::conv_network_t& network, ncv::vector_t& params, ncv::tensor3d_t& input, ncv::vector_t& target,
         ncv::size_t n_tests)
 {
         const ncv::rloss_t loss = ncv::loss_manager_t::instance().get(loss_id, "");
@@ -41,10 +21,10 @@ static void test(
         // optimization problem: function value
         auto opt_fn_fval = [&] (const ncv::vector_t& x)
         {
-                ncv::deserializer_t(x) >> layers;
+                ncv::deserializer_t(x) >> network;
 
                 // forward: network output
-                const ncv::tensor3d_t& output = forward(layers, input);
+                const ncv::tensor3d_t& output = ncv::conv_layer_t::forward(input, network);
 
                 // loss value
                 ncv::vector_t voutput(output.size());
@@ -56,15 +36,15 @@ static void test(
         // optimization problem: function value & gradient
         auto opt_fn_fval_grad = [&] (const ncv::vector_t& x, ncv::vector_t& gx)
         {
-                ncv::deserializer_t(x) >> layers;
+                ncv::deserializer_t(x) >> network;
 
-                for (ncv::conv_layer_t& layer : layers)
+                for (ncv::conv_layer_t& layer : network)
                 {
                         layer.zero_grad();
                 }
 
                 // forward: network output
-                const ncv::tensor3d_t& output = forward(layers, input);
+                const ncv::tensor3d_t& output = ncv::conv_layer_t::forward(input, network);
 
                 // loss value & gradient
                 ncv::vector_t voutput(output.size());
@@ -77,12 +57,12 @@ static void test(
                 ncv::tensor3d_t gradient(output.size(), 1, 1);
                 ncv::deserializer_t(vgradient) >> gradient;
 
-                backward(layers, gradient);
+                ncv::conv_layer_t::backward(gradient, network);
 
                 gx.resize(n_parameters);
 
                 ncv::serializer_t s(gx);
-                for (ncv::conv_layer_t& layer : layers)
+                for (ncv::conv_layer_t& layer : network)
                 {
                         s << layer.gdata();
                 }
@@ -126,33 +106,33 @@ int main(int argc, char *argv[])
         const ncv::size_t cmd_irows = 16;
         const ncv::size_t cmd_icols = 16;
         const ncv::size_t cmd_outputs = 10;
-        const ncv::size_t cmd_max_layers = 3;
+        const ncv::size_t cmd_max_network = 3;
 
         const ncv::size_t cmd_tests = 8;
 
         // evaluate the analytical gradient vs. the finite difference approximation
-        //      for each: loss, activation & number of layers
-        for (size_t n_layers = 0; n_layers <= cmd_max_layers; n_layers ++)
+        //      for each: loss, activation & number of network
+        for (size_t n_network = 0; n_network <= cmd_max_network; n_network ++)
         {
                 const ncv::strings_t _activation_ids =
-                        (n_layers == 0) ? ncv::strings_t(1, "unit") : activation_ids;
+                        (n_network == 0) ? ncv::strings_t(1, "unit") : activation_ids;
 
                 for (const ncv::string_t& activation_id : _activation_ids)
                 {
                         // build the convolution network
-                        ncv::conv_layer_params_t network_params;
-                        for (ncv::size_t l = 0; l < n_layers; l ++)
+                        ncv::conv_network_params_t network_params;
+                        for (ncv::size_t l = 0; l < n_network; l ++)
                         {
                                 ncv::random_t<ncv::size_t> rgen(2, 6);
                                 network_params.push_back({rgen(), rgen(), rgen(), activation_id});
                         }
 
-                        ncv::conv_layers_t layers;
+                        ncv::conv_network_t network;
                         const ncv::size_t n_parameters = ncv::conv_layer_t::make_network(
-                                cmd_inputs, cmd_irows, cmd_icols, network_params, cmd_outputs, layers);
+                                cmd_inputs, cmd_irows, cmd_icols, network_params, cmd_outputs, network);
 
                         ncv::log_info() << "number of parameters: " << n_parameters << ".";
-                        ncv::conv_layer_t::print_network(layers);
+                        ncv::conv_layer_t::print_network(network);
 
                         // build the inputs & outputs
                         ncv::vector_t params(n_parameters);
@@ -162,10 +142,10 @@ int main(int argc, char *argv[])
                         // test network
                         for (const ncv::string_t& loss_id : loss_ids)
                         {
-                                test("[layers = " + ncv::text::to_string(n_layers) +
+                                test("[network = " + ncv::text::to_string(n_network) +
                                      ", activation = " + activation_id +
                                      ", loss = " + loss_id + "]",
-                                     loss_id, layers, params, sample, target, cmd_tests);
+                                     loss_id, network, params, sample, target, cmd_tests);
                         }
                 }
         }

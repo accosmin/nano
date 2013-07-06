@@ -44,6 +44,7 @@ namespace ncv
                         return value * value;
                 }
 
+                // cast (implementation detail)
                 namespace impl
                 {
                         template
