@@ -1,30 +1,18 @@
-- update experiments scripts to train convolution models
-
-- (average) stochastic gradient descent:
-	- problem_t::f() -> compute the function for all samples (every N iterations)
-	- problem_t::g() -> compute the gradient for a random sample
-	- tune the learning rate on the given number of samples
+- ASGD/SGD:
+	- epsilon param -> quite is the gradient is too small
 
 - BUG: SGD tuning - compute the loss on a random subset not on all samples
 
-- test program to check the backward & forward step:
-	- double check the gradient backward part of the activation functions
-		and the math at the layer::backward() part
+- ncv_trainer program:
+	- option to save the model to file
 
-	- conclusion: 
-		- the gradient estimation error increases with both the input range and the number of layers
+- ncv_tester program:
+	- load a model and test it on a task
 
-	- check for better approximations of the gradient!
+- fully connected network:
+	- update the test program
 
-	- the tanh saturates very fast (needs smaller inputs)!
-
-	- still problems with maxzero!	
-
-- convolution model parameters:
-	- number of iterations and epsilon
-	- save this to model file (the number of iterations remaining)
-
-- train -> save at closing -> load model -> train from the last parameters & remaining optimization iterations
+- update experiments scripts to train convolution & fully connected models
 
 - MUCH faster optimization (profile the code, it takes more time than without tensors):
 	- use noalias for block -> check if any improvement:
@@ -40,22 +28,8 @@
 	- 6s:xxxms for 5000 samples & 8:8x8 hidden layer!
 	- 2s:600ms for 2000 samples & 8:8x8 hidden layer!
 
-- also implement a classical neural network
-	- with a gradient testing program
-
-- option to save the model at closing the program - destructor:
-	- trainer().set_path().train()
-		- use random initialization if the path is invalid
-	- otherwise continue training
-
 - constrain the loss such that the optimization works properly when the number of parameters
 	is larger than the number of samples
-
-- convolution network:
-	- implement the LBFGS / backprop trainer
-	- choose activation from command line
-
-	- make the affine model a specialization of the convolution layer (e.g. no hidden layer)
 
 * image_t::load(matrix_t, color_min = black, color_max = white) -> save the given matrix/filter as a grayscale (by default) image
 	- can be used to verify the learned weights/convolutions

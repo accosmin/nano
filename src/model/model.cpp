@@ -173,14 +173,11 @@ namespace ncv
                 switch (trainer)
                 {
                 case optimizer::lbfgs:
-                        return train_lbfgs(data, loss);
+                        return train_batch(data, loss);
 
                 case optimizer::sgd:
-                        return train_sgd(data, loss, false);
-
-                case optimizer::asgd:
                 default:
-                        return train_sgd(data, loss, true);
+                        return train_stochastic(data, loss);
                 }
         }
 
@@ -196,7 +193,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        bool model_t::train_lbfgs(const data_t& data, const loss_t& loss)
+        bool model_t::train_batch(const data_t& data, const loss_t& loss)
         {
                 // optimization problem: size
                 auto opt_fn_size = [&] ()
@@ -247,7 +244,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        bool model_t::train_sgd(const data_t& data, const loss_t& loss, bool asgd)
+        bool model_t::train_stochastic(const data_t& data, const loss_t& loss)
         {
                 // optimization problem: size
                 auto opt_fn_size = [&] ()
@@ -286,22 +283,18 @@ namespace ncv
 
                 timer_t timer;
 
-                const size_t opt_iterations = 4 * data.m_indices.size();
-                const size_t tune_iterations = opt_iterations / 20;
+                const size_t n_samples = data.m_indices.size();
+                const scalar_t opt_epsilon = 1e-5;
                 const auto updater = std::bind(update, _1, std::ref(timer));
 
-                // TODO: tune using all iterations!!!
-
-                const optimize::result_t res = asgd ?
-                        optimize::asgd(problem, x, opt_iterations, tune_iterations, updater) :
-                        optimize::sgd(problem, x, opt_iterations, tune_iterations, updater);
+                const optimize::result_t res = optimize::sgd(problem, x, n_samples, opt_epsilon, updater);
 
                 load(res.optimum().x);
 
                 // OK
                 log_info() << "model: optimum [loss = " << res.optimum().f
                            << ", gradient = " << res.optimum().g.norm() << "]"
-                           << ", iterations = [" << res.iterations() << "/" << opt_iterations
+                           << ", iterations = [" << res.iterations()
                            << "], speed = [" << res.speed().avg() << " +/- " << res.speed().stdev() << "].";
 
                 return true;

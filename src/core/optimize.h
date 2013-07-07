@@ -182,19 +182,8 @@ namespace ncv
                 result_t sgd(
                         const problem_t& problem,
                         const vector_t& x0,
-                        size_t opt_iterations,          // number of optimization iterations
-                        size_t tune_iterations,         // number of learning rate tuning iterations
-                        const op_updated_t& op_updated = op_updated_t());
-
-                /////////////////////////////////////////////////////////////////////////////////////////////
-                // average stochastic gradient descent starting from the initial value (guess) x0.
-                /////////////////////////////////////////////////////////////////////////////////////////////
-
-                result_t asgd(
-                        const problem_t& problem,
-                        const vector_t& x0,
-                        size_t opt_iterations,          // number of optimization iterations
-                        size_t tune_iterations,         // number of learning rate tuning iterations
+                        size_t epoch_size,              // ~number of samples
+                        scalar_t epsilon,               // convergence precision
                         const op_updated_t& op_updated = op_updated_t());
         }
 }

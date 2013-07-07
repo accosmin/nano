@@ -97,8 +97,8 @@ namespace ncv
         private:
 
                 // train the model
-                bool train_lbfgs(const data_t& data, const loss_t& loss);
-                bool train_sgd(const data_t& data, const loss_t& loss, bool asgd);
+                bool train_batch(const data_t& data, const loss_t& loss);
+                bool train_stochastic(const data_t& data, const loss_t& loss);
 
         private:
 

@@ -85,8 +85,7 @@ namespace ncv
                         {
                         case optimizer::lbfgs:          return "lbfgs";
                         case optimizer::sgd:            return "sgd";
-                        case optimizer::asgd:           return "asgd";
-                        default:                        return "asgd";
+                        default:                        return "sgd";
                         }
                 }
 
@@ -95,9 +94,8 @@ namespace ncv
                 {
                         if (string == "lbfgs")          return optimizer::lbfgs;
                         if (string == "sgd")            return optimizer::sgd;
-                        if (string == "asgd")           return optimizer::asgd;
                         throw std::invalid_argument("invalid optimizer <" + string + ">!");
-                        return optimizer::asgd;
+                        return optimizer::sgd;
                 }
 
                 // compact a list of values into a string using the given glue string

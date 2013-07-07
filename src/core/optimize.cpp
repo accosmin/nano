@@ -376,50 +376,101 @@ namespace ncv
         namespace optimize
         {
                 /////////////////////////////////////////////////////////////////////////////////////////////
-                // run (average) stochastic gradient iterations.
+                // run stochastic gradient iterations using the given learning rate.
                 //      update the function value each <update_iterations>.
                 /////////////////////////////////////////////////////////////////////////////////////////////
 
                 namespace impl
                 {
                         result_t sgd(
-                                const problem_t& problem, const vector_t& x0,
-                                scalar_t eta, scalar_t lambda,
-                                size_t opt_iterations, size_t update_iterations,
-                                bool averaged,
-                                const op_updated_t& op_updated)
+                                state_t state, const problem_t& problem, const vector_t& x0,
+                                scalar_t eta, scalar_t lambda, scalar_t epsilon,
+                                size_t opt_iters, size_t update_iters, const op_updated_t& op_updated)
                         {
                                 assert(problem.size() == math::cast<size_t>(x0.size()));
 
                                 result_t result(problem.size());
-                                state_t cstate(problem, x0);
-
-                                vector_t x = x0, g;
-
-                                // TODO: could use a momentum factor (to be tuned)
+                                state_t cstate = state;
 
                                 // optimize ...
-                                for (size_t t = 0; t < opt_iterations; t ++)
+                                for (size_t t = 0; t < opt_iters; t ++)
                                 {
                                         const scalar_t learning_rate = eta / (1.0 + eta * lambda * t);
 
-                                        problem.f(x, g);
-                                        x.noalias() -= learning_rate * g;
+                                        problem.f(cstate.x, cstate.g);
+                                        cstate.x.noalias() -= learning_rate * cstate.g;
 
-                                        // TODO: ASGD implementation!
-
-                                        // update function value from time to time
-                                        if (((t + 1) % update_iterations) == 0)
+                                        // check convergence (& update function value)
+                                        if (impl::converged(epsilon, cstate))
                                         {
-                                                cstate.x = x;
-                                                cstate.g = g;
-                                                cstate.f = problem.f(x);
+                                                cstate.f = problem.f(cstate.x);
                                                 result.update(cstate);
-                                                op_updated(result);
+
+                                                if (op_updated)
+                                                {
+                                                        op_updated(result);
+                                                }
+
+                                                break;
+                                        }
+
+                                        // update function value (from time to time)
+                                        if (((t + 1) % update_iters) == 0)
+                                        {
+                                                cstate.f = problem.f(cstate.x);
+                                                result.update(cstate);
+
+                                                if (op_updated)
+                                                {
+                                                        op_updated(result);
+                                                }
                                         }
                                 }
 
                                 return result;
+                        }
+                }
+
+                /////////////////////////////////////////////////////////////////////////////////////////////
+                // run stochastic gradient iterations & optimize (tune) the learning rate.
+                /////////////////////////////////////////////////////////////////////////////////////////////
+
+                namespace impl
+                {
+                        result_t sgd(
+                                const problem_t& problem, const vector_t& x0,
+                                size_t epoch_size, scalar_t epsilon, const op_updated_t& op_updated)
+                        {
+                                assert(problem.size() == math::cast<size_t>(x0.size()));
+
+                                const scalar_t lambda = 1.0;
+
+                                const size_t opt_iters = epoch_size * 16;
+                                const size_t tune_iters = epoch_size / 10;
+                                const size_t update_iters = epoch_size / 10;
+
+                                state_t cstate(problem, x0);
+
+                                // tune the learning rate parameters
+                                scalars_t etas = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
+
+                                std::set<std::pair<scalar_t, scalar_t> > eta_results;
+                                for (scalar_t eta : etas)
+                                {
+                                        log_info() << "SGD: tuning learning rate [eta = " << eta << "] ...";
+
+                                        const result_t res = sgd(cstate, problem, x0, eta, lambda, epsilon,
+                                                                 tune_iters, tune_iters, op_updated);
+
+                                        eta_results.insert(std::make_pair(res.optimum().f, eta));
+                                }
+
+                                // OK, optimize with the optimal learning rate
+                                const scalar_t eta = eta_results.begin()->second;
+                                log_info() << "SGD: optimum learning rate [eta = " << eta << "].";
+
+                                return sgd(cstate, problem, x0, eta, lambda, epsilon,
+                                           opt_iters, update_iters, op_updated);
                         }
                 }
         }
@@ -427,47 +478,10 @@ namespace ncv
         //-------------------------------------------------------------------------------------------------
 
         optimize::result_t optimize::sgd(
-                const problem_t& problem, const vector_t& x0,
-                size_t opt_iterations, size_t tune_iterations,
+                const problem_t& problem, const vector_t& x0, size_t epoch_size, scalar_t epsilon,
                 const op_updated_t& op_updated)
         {
-                assert(problem.size() == math::cast<size_t>(x0.size()));
-
-                const scalar_t lambda = 1.0;
-
-                // tune the learning rate parameters
-                scalars_t etas = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
-
-                std::set<std::pair<scalar_t, scalar_t> > eta_results;
-                for (scalar_t eta : etas)
-                {
-                        log_info() << "SGD: tuning learning rate [eta = " << eta << "] ...";
-
-                        const result_t res = impl::sgd(problem, x0, eta, lambda,
-                                                       tune_iterations, tune_iterations,
-                                                       false, op_updated);
-
-                        eta_results.insert(std::make_pair(res.optimum().f, eta));
-                }
-
-                // OK, optimize
-                const scalar_t eta = eta_results.begin()->second;
-                log_info() << "SGD: optimum learning rate [eta = " << eta << "].";
-
-                const size_t update_iterations = opt_iterations / 20;
-                return impl::sgd(problem, x0, eta, lambda, opt_iterations, update_iterations, false, op_updated);
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        optimize::result_t optimize::asgd(
-                const problem_t& problem, const vector_t& x0,
-                size_t opt_iterations, size_t tune_iterations,
-                const op_updated_t& op_updated)
-        {
-                optimize::result_t ret(0);
-
-                return ret;
+                return impl::sgd(problem, x0, epoch_size, epsilon, op_updated);
         }
 
         //-------------------------------------------------------------------------------------------------
