@@ -1,16 +1,29 @@
-- ASGD/SGD:
-	- epsilon param -> quite is the gradient is too small
+- BUG: SGD is not working as advertised (it stops too soon!)
 
-- BUG: SGD tuning - compute the loss on a random subset not on all samples
+- BUG: training 1 layer convolution networks does not work properly:
+	- the linesearch takes too long!
+
+- FASTER convolution models:
+	- can use two loops instead of four (check the C program, may need padding)
+	- SSE?!
+	- multi-threaded
+
+	- GOAL: mnist, network=8x8:fun1 => 1s / LBFGS iterations
+
+- fully connected network:
+	- affine_layer + network + param
+	- gradient test program: test_affine_net similar to test_conv_net
+	- affine_model
+	- test script	
+
+- SGD:
+	- not working properly!!!
 
 - ncv_trainer program:
 	- option to save the model to file
 
 - ncv_tester program:
 	- load a model and test it on a task
-
-- fully connected network:
-	- update the test program
 
 - update experiments scripts to train convolution & fully connected models
 

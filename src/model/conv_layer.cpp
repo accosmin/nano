@@ -7,36 +7,89 @@ namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
-        static void forward(const matrix_t& idata, const matrix_t& cdata, matrix_t& odata)
+        static void forward(const matrix_t& idata, const matrix_t& kdata, matrix_t& odata)
         {
-                const size_t crows = math::cast<size_t>(cdata.rows());
-                const size_t ccols = math::cast<size_t>(cdata.cols());
+                const size_t krows = math::cast<size_t>(kdata.rows());
+                const size_t kcols = math::cast<size_t>(kdata.cols());
 
-                const size_t orows = math::cast<size_t>(idata.rows() - crows + 1);
-                const size_t ocols = math::cast<size_t>(idata.cols() - ccols + 1);
+                const size_t orows = math::cast<size_t>(odata.rows());
+                const size_t ocols = math::cast<size_t>(odata.cols());
 
                 for (size_t r = 0; r < orows; r ++)
                 {
                         for (size_t c = 0; c < ocols; c ++)
                         {
-                                odata(r, c) += idata.block(r, c, crows, ccols).cwiseProduct(cdata).sum();
+                                odata(r, c) += idata.block(r, c, krows, kcols).cwiseProduct(kdata).sum();
                         }
                 }
         }
 
         //-------------------------------------------------------------------------------------------------
 
+        static void forward(const matrix_t& idata, const matrix_t& kdata,
+                const indices_t& koffset, matrix_t& odata, matrix_t& kbuffer)
+        {
+                const size_t krows = math::cast<size_t>(kdata.rows());
+                const size_t kcols = math::cast<size_t>(kdata.cols());
+                const size_t ksize = krows * kcols;
+
+//                const size_t irows = math::cast<size_t>(idata.rows());
+                const size_t icols = math::cast<size_t>(idata.cols());
+
+                const size_t orows = math::cast<size_t>(odata.rows());
+                const size_t ocols = math::cast<size_t>(odata.cols());
+
+                const size_t bsize = orows * icols + ocols;
+
+                scalar_t* pkbuffer = &kbuffer(0);
+                for (size_t b = 0; b < bsize; b ++)
+                {
+                        const scalar_t* pidata = &idata(b);
+                        const scalar_t* pkdata = &kdata(0);
+
+                        scalar_t val = 0.0;
+                        for (size_t k = 0; k < ksize; k ++)
+                        {
+                                val += pidata[koffset[k]] * *(pkdata ++);
+                        }
+
+                        *(pkbuffer ++) = val;
+                }
+
+                odata.noalias() += kbuffer.block(0, 0, orows, ocols);
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        // FIXME: this may prove usefull for the affine fully connected layers!
+//        static void xforward(const matrix_t& idata, const matrix_t& kdata, matrix_t& odata)
+//        {
+//                const size_t isize = static_cast<size_t>(idata.size());
+//                const size_t osize = static_cast<size_t>(odata.size());
+
+//                const scalar_t* pkdata = &kdata(0);
+//                for (size_t o = 0; o < osize; o ++)
+//                {
+//                        for (size_t i = 0; i < isize; i ++)
+//                        {
+//                                odata(o) += idata(i) * *(pkdata ++);
+//                        }
+//                }
+//        }
+
+        //-------------------------------------------------------------------------------------------------
+
         static void gradient(const matrix_t& idata, const matrix_t& ogdata, matrix_t& gdata)
         {
-                const size_t crows = math::cast<size_t>(gdata.rows());
-                const size_t ccols = math::cast<size_t>(gdata.cols());
+                const size_t krows = math::cast<size_t>(gdata.rows());
+                const size_t kcols = math::cast<size_t>(gdata.cols());
 
                 const size_t orows = math::cast<size_t>(ogdata.rows());
                 const size_t ocols = math::cast<size_t>(ogdata.cols());
 
-                for (size_t r = 0; r < crows; r ++)
+                for (size_t r = 0; r < krows; r ++)
                 {
-                        for (size_t c = 0; c < ccols; c ++)
+                        for (size_t c = 0; c < kcols; c ++)
                         {
                                 gdata(r, c) += idata.block(r, c, orows, ocols).cwiseProduct(ogdata).sum();
                         }
@@ -45,10 +98,10 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        static void backward(const matrix_t& ogdata, const matrix_t& cdata, matrix_t& igdata)
+        static void backward(const matrix_t& ogdata, const matrix_t& kdata, matrix_t& igdata)
         {
-                const size_t crows = math::cast<size_t>(cdata.rows());
-                const size_t ccols = math::cast<size_t>(cdata.cols());
+                const size_t krows = math::cast<size_t>(kdata.rows());
+                const size_t kcols = math::cast<size_t>(kdata.cols());
 
                 const size_t orows = math::cast<size_t>(ogdata.rows());
                 const size_t ocols = math::cast<size_t>(ogdata.cols());
@@ -59,7 +112,7 @@ namespace ncv
                 {
                         for (size_t c = 0; c < ocols; c ++)
                         {
-                                igdata.block(r, c, crows, ccols).noalias() += ogdata(r, c) * cdata;
+                                igdata.block(r, c, krows, kcols).noalias() += ogdata(r, c) * kdata;
                         }
                 }
         }
@@ -103,18 +156,29 @@ namespace ncv
                 }
 
                 m_idata.resize(inputs, irows, icols);
-                m_cdata.resize(outputs, inputs, crows, ccols);
+                m_kdata.resize(outputs, inputs, crows, ccols);
                 m_gdata.resize(outputs, inputs, crows, ccols);
                 m_odata.resize(outputs, irows - crows + 1, icols - ccols + 1);
 
-                return m_cdata.size();
+                m_kbuffer.resize(irows, icols);
+
+                m_koffset.clear();
+                for (size_t r = 0; r < crows; r ++)
+                {
+                        for (size_t c = 0; c < ccols; c ++)
+                        {
+                                m_koffset.push_back(r * icols + c);
+                        }
+                }
+
+                return m_kdata.size();
         }
 
         //-------------------------------------------------------------------------------------------------
 
         void conv_layer_t::zero()
         {
-                m_cdata.zero();
+                m_kdata.zero();
                 zero_grad();
         }
 
@@ -122,7 +186,7 @@ namespace ncv
 
         void conv_layer_t::random(scalar_t min, scalar_t max)
         {
-                m_cdata.random(min, max);
+                m_kdata.random(min, max);
                 zero_grad();
         }
 
@@ -155,9 +219,10 @@ namespace ncv
                         for (size_t i = 0; i < n_inputs(); i ++)
                         {
                                 const matrix_t& idata = m_idata(i);
-                                const matrix_t& cdata = m_cdata(o, i);
+                                const matrix_t& kdata = m_kdata(o, i);
 
-                                ncv::forward(idata, cdata, odata);
+//                                ncv::forward(idata, kdata, odata);
+                                ncv::forward(idata, kdata, m_koffset, odata, m_kbuffer);
                         }
                 }
 
@@ -218,10 +283,10 @@ namespace ncv
 
                         for (size_t i = 0; i < n_inputs(); i ++)
                         {
-                                const matrix_t& cdata = m_cdata(o, i);
+                                const matrix_t& kdata = m_kdata(o, i);
                                 matrix_t& igdata = m_idata(i);
 
-                                ncv::backward(ogdata, cdata, igdata);
+                                ncv::backward(ogdata, kdata, igdata);
                         }
                 }
 
@@ -290,8 +355,8 @@ namespace ncv
                                    << (l + 1) << "/" << network.size() << "] " << layer.m_activation << " ("
                                    << layer.n_inputs() << "x" << layer.n_irows() << "x" << layer.n_icols()
                                    << " * "
-                                   << layer.m_cdata.n_dim1() << "x" << layer.m_cdata.n_dim2() << "x"
-                                   << layer.m_cdata.n_rows() << "x" << layer.m_cdata.n_cols()
+                                   << layer.m_kdata.n_dim1() << "x" << layer.m_kdata.n_dim2() << "x"
+                                   << layer.m_kdata.n_rows() << "x" << layer.m_kdata.n_cols()
                                    << ") -> "
                                    << layer.n_outputs() << "x" << layer.n_orows() << "x" << layer.n_ocols()
                                    << ".";

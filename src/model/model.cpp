@@ -223,7 +223,7 @@ namespace ncv
 
                 timer_t timer;
 
-                static const size_t opt_iterations = 256;
+                static const size_t opt_iterations = 16;
                 static const size_t opt_epsilon = 1e-5;
                 static const size_t opt_history = 8;
                 const auto updater = std::bind(update, _1, std::ref(timer));

@@ -13,6 +13,26 @@ namespace ncv
         class conv_layer_param_t;
         typedef std::vector<conv_layer_param_t> conv_network_params_t;
 
+        // OPTIMIZATION IDEA - replaces 4 inner loops(o, i) with just two
+//        for (o)
+//        {
+//                matrix_t& odata = m_odata(o);
+//                for (i)
+//                {
+//                        const matrix_t& idata = m_idata(i);
+//                        const matrix_t& kdata = m_kdata(o, i); // osize * isize
+
+//                        osize = orows * ocols;
+//                        isize = irows * icols;
+
+//                        for (oo : osize)
+//                        {
+
+//                                odata(oo) += idata *HADAMARD* &kdata(oo * isize)
+//                        }
+//                }
+//        }
+
         /////////////////////////////////////////////////////////////////////////////////////////
         // convolution layer:
         //      - process a set of inputs of size (irows, icols) and produces
@@ -111,7 +131,7 @@ namespace ncv
                 void serialize(tarchive & ar, const unsigned int version)
                 {
                         ar & m_idata;
-                        ar & m_cdata;
+                        ar & m_kdata;
                         ar & m_gdata;
                         ar & m_odata;
                         ar & m_activation;
@@ -123,9 +143,12 @@ namespace ncv
 
                 // attributes
                 mutable tensor3d_t      m_idata;        // input buffer
-                tensor4d_t              m_cdata;        // convolution matrices
+                tensor4d_t              m_kdata;        // convolution/kernel matrices
                 mutable tensor4d_t      m_gdata;        // cumulated gradient of the convolution matrices
                 mutable tensor3d_t      m_odata;        // output buffer
+
+                mutable matrix_t        m_kbuffer;
+                indices_t               m_koffset;
 
                 string_t                m_activation;
                 ractivation_t           m_afunc;        // activation/transfer function
@@ -134,12 +157,12 @@ namespace ncv
         // serialize/deserialize data
         inline serializer_t& operator<<(serializer_t& s, const conv_layer_t& layer)
         {
-                return s << layer.m_cdata;
+                return s << layer.m_kdata;
         }
 
         inline deserializer_t& operator>>(deserializer_t& s, conv_layer_t& layer)
         {
-                return s >> layer.m_cdata;
+                return s >> layer.m_kdata;
         }
 }
 

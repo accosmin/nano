@@ -26,19 +26,20 @@ do
 	done
 
 	echo "training <${convnet_unit_params}> ..."
-	time ./build/ncv_trainer ${common_params} ${sgd_params} --model-params ${convnet_unit_params} > convnet_unit_layers${i}_sgd.log
-	time ./build/ncv_trainer ${common_params} ${lbfgs_params} --model-params ${convnet_unit_params} > convnet_unit_layers${i}_lbfgs.log
+	#time ./build/ncv_trainer ${common_params} ${sgd_params} --model-params ${convnet_unit_params} > convnet_unit_layers${i}_sgd.log
+	time ./build/ncv_trainer ${common_params} ${lbfgs_params} --model-params ${convnet_unit_params} #> convnet_unit_layers${i}_lbfgs.log
+	exit
 
 	echo "training <${convnet_tanh_params}> ..."
-	time ./build/ncv_trainer ${common_params} ${sgd_params} --model-params ${convnet_tanh_params} > convnet_tanh_layers${i}_sgd.log
+	#time ./build/ncv_trainer ${common_params} ${sgd_params} --model-params ${convnet_tanh_params} > convnet_tanh_layers${i}_sgd.log
 	time ./build/ncv_trainer ${common_params} ${lbfgs_params} --model-params ${convnet_tanh_params} > convnet_tanh_layers${i}_lbfgs.log
 	
 	echo "training <${convnet_fun1_params}> ..."
-	time ./build/ncv_trainer ${common_params} ${sgd_params} --model-params ${convnet_fun1_params} > convnet_fun1_layers${i}_sgd.log
+	#time ./build/ncv_trainer ${common_params} ${sgd_params} --model-params ${convnet_fun1_params} > convnet_fun1_layers${i}_sgd.log
 	time ./build/ncv_trainer ${common_params} ${lbfgs_params} --model-params ${convnet_fun1_params} > convnet_fun1_layers${i}_lbfgs.log
 	
 	echo "training <${convnet_fun2_params}> ..."
-	time ./build/ncv_trainer ${common_params} ${sgd_params} --model-params ${convnet_fun2_params} > convnet_fun2_layers${i}_sgd.log
+	#time ./build/ncv_trainer ${common_params} ${sgd_params} --model-params ${convnet_fun2_params} > convnet_fun2_layers${i}_sgd.log
 	time ./build/ncv_trainer ${common_params} ${lbfgs_params} --model-params ${convnet_fun2_params} > convnet_fun2_layers${i}_lbfgs.log
 done
 

@@ -1,12 +1,12 @@
 #ifndef NANOCV_AFFINE_LAYER_H
 #define NANOCV_AFFINE_LAYER_H
 
-//#include "core/tensor3d.h"
-//#include "core/tensor4d.h"
-//#include "activation/activation.h"
+#include "core/tensor3d.h"
+#include "core/tensor4d.h"
+#include "activation/activation.h"
 
-//namespace ncv
-//{
+namespace ncv
+{
 //        class affine_layer_t;
 //        typedef std::vector<affine_layer_t>             affine_network_t;
 
@@ -15,16 +15,16 @@
 
 //        /////////////////////////////////////////////////////////////////////////////////////////
 //        // affine layer:
-//        //      - process a set of inputs of size (irows, icols) and produces a set of outputs
+//        //      - process a set of inputs of size (irows, icols) and produces a set of 2D outputs
 //        //              of fixed size using fully connected affine transformations.
 //        /////////////////////////////////////////////////////////////////////////////////////////
 
 //        struct affine_layer_param_t
 //        {
 //                // constructor
-//                affine_layer_param_t(size_t outputs = 0,
-//                                   const string_t& activation = string_t())
-//                        :       m_outputs(outputs),
+//                affine_layer_param_t(size_t dims = 0, size_t rows = 0, size_t cols = 0,
+//                                     const string_t& activation = string_t())
+//                        :       m_dims(dims), m_rows(rows), m_cols(cols),
 //                                m_activation(activation)
 //                {
 //                }
@@ -36,12 +36,16 @@
 //                >
 //                void serialize(tarchive & ar, const unsigned int version)
 //                {
-//                        ar & m_outputs;
+//                        ar & m_dims;
+//                        ar & m_rows;
+//                        ar & m_cols;
 //                        ar & m_activation;
 //                }
 
 //                // attributes
-//                size_t          m_outputs;              // #outputs
+//                size_t          m_dims;                 // #outputs
+//                size_t          m_rows;                 // output size (rows)
+//                size_t          m_cols;                 // output size (columns)
 //                string_t        m_activation;           // activation function id
 //        };
 
@@ -51,12 +55,12 @@
 
 //                // constructor
 //                affine_layer_t(size_t inputs = 0, size_t irows = 0, size_t icols = 0,
-//                             size_t outputs = 0, size_t crows = 0, size_t ccols = 0,
-//                             const string_t& activation = string_t());
+//                               size_t outputs = 0, size_t orows = 0, size_t ocols = 0,
+//                               const string_t& activation = string_t());
 
 //                // resize to new dimensions
 //                size_t resize(size_t inputs, size_t irows, size_t icols,
-//                              size_t outputs, size_t crows, size_t ccols,
+//                              size_t outputs, size_t orows, size_t ocols,
 //                              const string_t& activation);
 
 //                // reset parameters
@@ -75,7 +79,7 @@
 //                // build convolution network (returns the total number of parameters)
 //                static size_t make_network(
 //                        size_t idims, size_t irows, size_t icols,       // input size
-//                        const affine_network_params_t& network_params,      //
+//                        const affine_network_params_t& network_params,  //
 //                        size_t odims,                                   // output size
 //                        affine_network_t& network);
 
@@ -117,6 +121,25 @@
 
 //        private:
 
+//                for (o)
+//                {
+//                        matrix_t& odata = m_odata(o);
+//                        for (i)
+//                        {
+//                                const matrix_t& idata = m_idata(i);
+//                                const matrix_t& kdata = m_kdata(o, i); // osize * isize
+
+//                                osize = orows * ocols;
+//                                isize = irows * icols;
+
+//                                for (oo : osize)
+//                                {
+
+//                                        odata(oo) += idata *HADAMARD* &kdata(oo * isize)
+//                                }
+//                        }
+//                }
+
 //                // attributes
 //                mutable tensor3d_t      m_idata;        // input buffer
 //                tensor4d_t              m_cdata;        // convolution matrices
@@ -137,6 +160,6 @@
 //        {
 //                return s >> layer.m_cdata;
 //        }
-//}
+}
 
 #endif // NANOCV_AFFINE_LAYER_H

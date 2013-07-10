@@ -183,6 +183,8 @@ namespace ncv
 
         scalar_t conv_network_model_t::value(const data_t& data, const loss_t& loss) const
         {
+                const timer_t timer;
+
                 scalar_t lvalue = 0.0;
                 size_t lcount = 0;
 
@@ -207,6 +209,9 @@ namespace ncv
 
                 lvalue /= (lcount == 0) ? 1.0 : lcount;
 
+                std::cout << "::value- loss = " << lvalue << ", samples = " << lcount
+                          << ", done in " << timer.elapsed() << std::endl;
+
                 return lvalue;
         }
 
@@ -214,6 +219,8 @@ namespace ncv
 
         scalar_t conv_network_model_t::vgrad(const data_t& data, const loss_t& loss, vector_t& grad) const
         {
+                const timer_t timer;
+
                 scalar_t lvalue = 0.0;
                 size_t lcount = 0;
                 for (const conv_layer_t& layer : m_network)
@@ -258,6 +265,10 @@ namespace ncv
 
                 grad /= (lcount == 0) ? 1.0 : lcount;
                 lvalue /= (lcount == 0) ? 1.0 : lcount;
+
+                std::cout << "::vgrad- loss = " << lvalue << ", samples = " << lcount
+                          << ", gradient = [" << grad.minCoeff() << ", " << grad.maxCoeff()
+                          << "], done in " << timer.elapsed() << std::endl;
 
                 return lvalue;
         }
