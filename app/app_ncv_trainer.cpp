@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
                 "model parameters (if any) as specified in the chosed model's description");
         po_desc.add_options()("optimizer",
                 boost::program_options::value<ncv::string_t>()->default_value("lbfgs"),
-                "optimization procedure (lbfgs, sgd)");
+                "optimization procedure (lbfgs, cgd, sgd)");
         po_desc.add_options()("trials",
                 boost::program_options::value<ncv::size_t>(),
                 "number of models to train & evaluate");

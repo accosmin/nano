@@ -156,6 +156,7 @@ namespace ncv
         enum class optimizer : int
         {
                 lbfgs,          // batch LBFGS
+                cgd,            // batch conjugate gradient descent
                 sgd             // stochastic gradient descent
         };
 }

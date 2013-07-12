@@ -26,59 +26,6 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        static void forward(const matrix_t& idata, const matrix_t& kdata,
-                const indices_t& koffset, matrix_t& odata, matrix_t& kbuffer)
-        {
-                const size_t krows = math::cast<size_t>(kdata.rows());
-                const size_t kcols = math::cast<size_t>(kdata.cols());
-                const size_t ksize = krows * kcols;
-
-//                const size_t irows = math::cast<size_t>(idata.rows());
-                const size_t icols = math::cast<size_t>(idata.cols());
-
-                const size_t orows = math::cast<size_t>(odata.rows());
-                const size_t ocols = math::cast<size_t>(odata.cols());
-
-                const size_t bsize = orows * icols + ocols;
-
-                scalar_t* pkbuffer = &kbuffer(0);
-                for (size_t b = 0; b < bsize; b ++)
-                {
-                        const scalar_t* pidata = &idata(b);
-                        const scalar_t* pkdata = &kdata(0);
-
-                        scalar_t val = 0.0;
-                        for (size_t k = 0; k < ksize; k ++)
-                        {
-                                val += pidata[koffset[k]] * *(pkdata ++);
-                        }
-
-                        *(pkbuffer ++) = val;
-                }
-
-                odata.noalias() += kbuffer.block(0, 0, orows, ocols);
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        // FIXME: this may prove usefull for the affine fully connected layers!
-//        static void xforward(const matrix_t& idata, const matrix_t& kdata, matrix_t& odata)
-//        {
-//                const size_t isize = static_cast<size_t>(idata.size());
-//                const size_t osize = static_cast<size_t>(odata.size());
-
-//                const scalar_t* pkdata = &kdata(0);
-//                for (size_t o = 0; o < osize; o ++)
-//                {
-//                        for (size_t i = 0; i < isize; i ++)
-//                        {
-//                                odata(o) += idata(i) * *(pkdata ++);
-//                        }
-//                }
-//        }
-
-        //-------------------------------------------------------------------------------------------------
-
         static void gradient(const matrix_t& idata, const matrix_t& ogdata, matrix_t& gdata)
         {
                 const size_t krows = math::cast<size_t>(gdata.rows());
@@ -119,9 +66,10 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        conv_layer_t::conv_layer_t(size_t inputs, size_t irows, size_t icols,
-                                   size_t outputs, size_t crows, size_t ccols,
-                                   const string_t& activation)
+        conv_layer_t::conv_layer_t(
+                size_t inputs, size_t irows, size_t icols,
+                size_t outputs, size_t crows, size_t ccols,
+                const string_t& activation)
         {
                 resize(inputs, irows, icols, outputs, crows, ccols, activation);
         }
@@ -159,17 +107,6 @@ namespace ncv
                 m_kdata.resize(outputs, inputs, crows, ccols);
                 m_gdata.resize(outputs, inputs, crows, ccols);
                 m_odata.resize(outputs, irows - crows + 1, icols - ccols + 1);
-
-                m_kbuffer.resize(irows, icols);
-
-                m_koffset.clear();
-                for (size_t r = 0; r < crows; r ++)
-                {
-                        for (size_t c = 0; c < ccols; c ++)
-                        {
-                                m_koffset.push_back(r * icols + c);
-                        }
-                }
 
                 return m_kdata.size();
         }
@@ -221,8 +158,7 @@ namespace ncv
                                 const matrix_t& idata = m_idata(i);
                                 const matrix_t& kdata = m_kdata(o, i);
 
-//                                ncv::forward(idata, kdata, odata);
-                                ncv::forward(idata, kdata, m_koffset, odata, m_kbuffer);
+                                ncv::forward(idata, kdata, odata);
                         }
                 }
 

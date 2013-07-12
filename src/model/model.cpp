@@ -173,7 +173,8 @@ namespace ncv
                 switch (trainer)
                 {
                 case optimizer::lbfgs:
-                        return train_batch(data, loss);
+                case optimizer::cgd:
+                        return train_batch(data, loss, trainer);
 
                 case optimizer::sgd:
                 default:
@@ -193,7 +194,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        bool model_t::train_batch(const data_t& data, const loss_t& loss)
+        bool model_t::train_batch(const data_t& data, const loss_t& loss, optimizer trainer)
         {
                 // optimization problem: size
                 auto opt_fn_size = [&] ()
@@ -223,13 +224,23 @@ namespace ncv
 
                 timer_t timer;
 
-                static const size_t opt_iterations = 16;
+                static const size_t opt_iterations = 1024;
                 static const size_t opt_epsilon = 1e-5;
                 static const size_t opt_history = 8;
                 const auto updater = std::bind(update, _1, std::ref(timer));
 
-                const optimize::result_t res = optimize::lbfgs(
-                        problem, x, opt_iterations, opt_epsilon, opt_history, updater);
+                optimize::result_t res;
+                switch (trainer)
+                {
+                case optimizer::cgd:
+                        res = optimize::lbfgs(problem, x, opt_iterations, opt_epsilon, opt_history, updater);
+                        break;
+
+                case optimizer::lbfgs:
+                default:
+                        res = optimize::cgd(problem, x, opt_iterations, opt_epsilon, updater);
+                        break;
+                }
 
                 load(res.optimum().x);
 

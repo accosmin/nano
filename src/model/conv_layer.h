@@ -147,9 +147,6 @@ namespace ncv
                 mutable tensor4d_t      m_gdata;        // cumulated gradient of the convolution matrices
                 mutable tensor3d_t      m_odata;        // output buffer
 
-                mutable matrix_t        m_kbuffer;
-                indices_t               m_koffset;
-
                 string_t                m_activation;
                 ractivation_t           m_afunc;        // activation/transfer function
         };
