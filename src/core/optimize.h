@@ -74,7 +74,7 @@ namespace ncv
                 public:
 
                         // constructor (analytic gradient)
-                        explicit result_t(size_t size);
+                        explicit result_t(size_t size = 0);
 
                         // update solution
                         void update(const state_t& st);
