@@ -3,7 +3,7 @@
 #include "logger.h"
 #include <deque>
 #include <cassert>
-#include <set>
+#include <map>
 
 namespace ncv
 {
@@ -445,32 +445,26 @@ namespace ncv
 
                                 const scalar_t lambda = 1.0;
 
-                                const size_t opt_iters = epoch_size * 16;
-                                const size_t tune_iters = epoch_size / 10;
+                                const size_t opt_iters = epoch_size * 8;
                                 const size_t update_iters = epoch_size / 10;
 
                                 state_t cstate(problem, x0);
 
-                                // tune the learning rate parameters
-                                scalars_t etas = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
+                                std::map<scalar_t, result_t> eta_results;
 
-                                std::set<std::pair<scalar_t, scalar_t> > eta_results;
+                                // try various learning rate parameters
+                                const scalars_t etas = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
                                 for (scalar_t eta : etas)
                                 {
-                                        log_info() << "SGD: tuning learning rate [eta = " << eta << "] ...";
+                                        log_info() << "SGD: learning rate [eta = " << eta << "] ...";
 
                                         const result_t res = sgd(cstate, problem, x0, eta, lambda, epsilon,
-                                                                 tune_iters, tune_iters, op_updated);
+                                                                 opt_iters, update_iters, op_updated);
 
-                                        eta_results.insert(std::make_pair(res.optimum().f, eta));
+                                        eta_results[res.optimum().f] = res;
                                 }
 
-                                // OK, optimize with the optimal learning rate
-                                const scalar_t eta = eta_results.begin()->second;
-                                log_info() << "SGD: optimum learning rate [eta = " << eta << "].";
-
-                                return sgd(cstate, problem, x0, eta, lambda, epsilon,
-                                           opt_iters, update_iters, op_updated);
+                                return eta_results.begin()->second;
                         }
                 }
         }

@@ -85,30 +85,42 @@ namespace ncv
                         outputs < 1 || crows < 1 || ccols < 1 ||*/
                         irows < crows || icols < ccols)
                 {
-                        log_warning() << "convolution layer: invalid size ("
-                                      << inputs << "x" << irows << "x" << icols
-                                      << ") -> (" << outputs << "x" << crows << "x" << ccols << ")";
-                        return 0;
+                        const string_t message =
+                                "invalid size (" + text::to_string(inputs) + "x" + text::to_string(irows) +
+                                 "x" + text::to_string(icols) + ") -> (" + text::to_string(outputs) + "x" +
+                                 text::to_string(crows) + "x" + text::to_string(ccols) + ")";
+
+                        log_warning() << "convolution layer: " << message;
+                        throw std::runtime_error("convolution layer: " + message);
                 }
 
                 m_activation = activation;
-                m_afunc = activation_manager_t::instance().get(activation, "");
-                if (    !m_afunc &&
-                        inputs != 0 && irows != 0 && icols != 0 && outputs != 0 && crows != 0 && ccols != 0)
-                {
-                        log_warning() << "convolution layer: invalid activation function ("
-                                      << activation << ") out of ("
-                                      << text::concatenate(activation_manager_t::instance().ids(), ", ")
-                                      << ")";
-                        return 0;
-                }
-
                 m_idata.resize(inputs, irows, icols);
                 m_kdata.resize(outputs, inputs, crows, ccols);
                 m_gdata.resize(outputs, inputs, crows, ccols);
                 m_odata.resize(outputs, irows - crows + 1, icols - ccols + 1);
 
+                set_activation();
+
                 return m_kdata.size();
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void conv_layer_t::set_activation()
+        {
+                m_afunc = activation_manager_t::instance().get(m_activation, "");
+                if (    !m_afunc &&
+                        n_inputs() != 0 && n_irows() != 0 && n_icols() != 0 &&
+                        n_outputs() != 0)
+                {
+                        const string_t message =
+                                "invalid activation function (" + m_activation + ") out of (" +
+                                text::concatenate(activation_manager_t::instance().ids(), ", ") + ")";
+
+                        log_warning() << "convolution layer: " << message;
+                        throw std::runtime_error("convolution layer: " + message);
+                }
         }
 
         //-------------------------------------------------------------------------------------------------

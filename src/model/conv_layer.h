@@ -8,30 +8,10 @@
 namespace ncv
 {
         class conv_layer_t;
-        typedef std::vector<conv_layer_t>       conv_network_t;
+        typedef std::vector<conv_layer_t>               conv_network_t;
 
         class conv_layer_param_t;
-        typedef std::vector<conv_layer_param_t> conv_network_params_t;
-
-        // OPTIMIZATION IDEA - replaces 4 inner loops(o, i) with just two
-//        for (o)
-//        {
-//                matrix_t& odata = m_odata(o);
-//                for (i)
-//                {
-//                        const matrix_t& idata = m_idata(i);
-//                        const matrix_t& kdata = m_kdata(o, i); // osize * isize
-
-//                        osize = orows * ocols;
-//                        isize = irows * icols;
-
-//                        for (oo : osize)
-//                        {
-
-//                                odata(oo) += idata *HADAMARD* &kdata(oo * isize)
-//                        }
-//                }
-//        }
+        typedef std::vector<conv_layer_param_t>         conv_network_params_t;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // convolution layer:
@@ -136,8 +116,11 @@ namespace ncv
                         ar & m_odata;
                         ar & m_activation;
 
-                        // TODO: save the activation ID and not the activation function itself
+                        set_activation();
                 }
+
+                // setup the activation function
+                void set_activation();
 
         private:
 

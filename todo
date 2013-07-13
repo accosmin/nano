@@ -1,5 +1,12 @@
 - refactor networks and models:
-	- move the training part to the convolution model
+	- convlayer & convnet
+	- convnet::save/load from file
+	
+	- convnet_trainer:
+		- full access to train them: lbfgs, cgd, sgd
+		- ncv_trainer program:
+			- option to save the model to file
+
 	- too much duplicated code (layer manipulation & model training)
 	
 	- try GA on 8-bit convolutions?!
@@ -13,16 +20,10 @@
 
 	- GOAL: mnist, network=8x8:fun1 => 1s / LBFGS iterations
 
-- SGD:
-	- not working properly!!!
-
-- ncv_trainer program:
-	- option to save the model to file
-
 - ncv_tester program:
 	- load a model and test it on a task
 
-- update experiments scripts to train convolution & fully connected models
+- update experiments scripts to train convolution models
 
 - MUCH faster optimization (profile the code, it takes more time than without tensors):
 	- use noalias for block -> check if any improvement:
