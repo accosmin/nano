@@ -1,6 +1,8 @@
 - refactor networks and models:
 	- convlayer & convnet
 	- convnet::save/load from file
+
+	- split the model (output & gradients) from the trainer (lbfgs, sgd, asgd)
 	
 	- convnet_trainer:
 		- full access to train them: lbfgs, cgd, sgd
