@@ -1,8 +1,6 @@
 #include "model.h"
 #include "core/logger.h"
-#include "core/random.h"
-#include "core/optimize.h"
-#include "core/timer.h"
+#include "task/task.h"
 #include <fstream>
 
 namespace ncv
@@ -51,46 +49,16 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void model_t::test(const task_t& task, const fold_t& fold, const loss_t& loss,
-                scalar_t& lvalue, scalar_t& lerror) const
+        vector_t model_t::value(const image_t& image, const rect_t& region) const
         {
-                lvalue = lerror = 0.0;
-                size_t cnt = 0;
-
-                const samples_t& samples = task.samples(fold);
-
-                for (size_t i = 0; i < samples.size(); i ++)
-                {
-                        const sample_t& sample = samples[i];
-                        const image_t& image = task.image(sample.m_index);
-
-                        const vector_t target = image.make_target(sample.m_region);
-                        if (image.has_target(target))
-                        {
-                                const vector_t output = process(image, sample.m_region);
-
-                                lvalue += loss.value(target, output);
-                                lerror += loss.error(target, output);
-                                ++ cnt;
-                        }
-                }
-
-                lvalue /= cnt;
-                lerror /= cnt;
+                return value(image, geom::left(region), geom::top(region));
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        vector_t model_t::process(const image_t& image, const rect_t& region) const
+        vector_t model_t::value(const image_t& image, coord_t x, coord_t y) const
         {
-                return process(image, geom::left(region), geom::top(region));
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        vector_t model_t::process(const image_t& image, coord_t x, coord_t y) const
-        {
-                return process(make_input(image, x, y));
+                return value(make_input(image, x, y));
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -142,171 +110,22 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        bool model_t::train(const task_t& task, const fold_t& fold, const loss_t& loss, optimizer trainer)
+        bool model_t::resize(const task_t& task)
         {
-                if (fold.second != protocol::train)
-                {
-                        log_error() << "model: cannot only train models with training samples!";
-                        return false;
-                }
+                return resize(task.n_rows(), task.n_cols(), task.n_rows(), task.color());
+        }
 
-                // initialize model
-                m_rows = task.n_rows();
-                m_cols = task.n_cols();
-                m_outputs = task.n_outputs();
+        //-------------------------------------------------------------------------------------------------
+
+        bool model_t::resize(size_t rows, size_t cols, size_t outputs, color_mode color)
+        {
+                m_rows = rows;
+                m_cols = cols;
+                m_outputs = outputs;
+                m_color = color;
                 m_parameters = resize();
 
-                random();
-
                 log_info() << "model: parameters = " << n_parameters() << ".";
-
-                // create training data
-                data_t data(task, task.samples(fold));
-                prune(data);
-                if (data.m_indices.empty())
-                {
-                        log_error() << "model: no valid training samples!";
-                        return false;
-                }
-
-                // train model
-                switch (trainer)
-                {
-                case optimizer::lbfgs:
-                case optimizer::cgd:
-                        return train_batch(data, loss, trainer);
-
-                case optimizer::sgd:
-                default:
-                        return train_stochastic(data, loss);
-                }
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        static void update(const optimize::result_t& result, timer_t& timer)
-        {
-                ncv::log_info() << "convolution network model: state [loss = " << result.optimum().f
-                                << ", gradient = " << result.optimum().g.lpNorm<Eigen::Infinity>()
-                                << "] updated in " << timer.elapsed() << ".";
-                timer.start();
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        bool model_t::train_batch(const data_t& data, const loss_t& loss, optimizer trainer)
-        {
-                // optimization problem: size
-                auto opt_fn_size = [&] ()
-                {
-                        return n_parameters();
-                };
-
-                // optimization problem: function value
-                auto opt_fn_fval = [&] (const vector_t& x)
-                {
-                        load(x);
-                        return value(data, loss);
-                };
-
-                // optimization problem: function value & gradient
-                auto opt_fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
-                {
-                        load(x);
-                        return vgrad(data, loss, gx);
-                };
-
-                const optimize::problem_t problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad);
-
-                // optimize
-                vector_t x(n_parameters());
-                save(x);
-
-                timer_t timer;
-
-                static const size_t opt_iterations = 1024;
-                static const size_t opt_epsilon = 1e-5;
-                static const size_t opt_history = 8;
-                const auto updater = std::bind(update, _1, std::ref(timer));
-
-                optimize::result_t res;
-                switch (trainer)
-                {
-                case optimizer::cgd:
-                        res = optimize::lbfgs(problem, x, opt_iterations, opt_epsilon, opt_history, updater);
-                        break;
-
-                case optimizer::lbfgs:
-                default:
-                        res = optimize::cgd(problem, x, opt_iterations, opt_epsilon, updater);
-                        break;
-                }
-
-                load(res.optimum().x);
-
-                // OK
-                log_info() << "model: optimum [loss = " << res.optimum().f
-                           << ", gradient = " << res.optimum().g.norm() << "]"
-                           << ", iterations = [" << res.iterations() << "/" << opt_iterations
-                           << "], speed = [" << res.speed().avg() << " +/- " << res.speed().stdev() << "].";
-
-                return true;
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        bool model_t::train_stochastic(const data_t& data, const loss_t& loss)
-        {
-                // optimization problem: size
-                auto opt_fn_size = [&] ()
-                {
-                        return n_parameters();
-                };
-
-                // optimization problem: function value
-                auto opt_fn_fval = [&] (const vector_t& x)
-                {
-                        load(x);
-                        return value(data, loss);
-                };
-
-                // optimization problem: function value & gradient
-                auto opt_fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
-                {
-                        random_t<size_t> rgen(0, data.m_indices.size() - 1);
-
-                        data_t sdata(data.m_task, data.m_samples);
-                        for (size_t i = 0; i < 1; i ++)
-                        {
-                                const size_t index = rgen();
-                                sdata.m_indices.push_back(data.m_indices[index]);
-                        }
-
-                        load(x);
-                        return vgrad(sdata, loss, gx);
-                };
-
-                const optimize::problem_t problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad);
-
-                // optimize
-                vector_t x(n_parameters());
-                save(x);
-
-                timer_t timer;
-
-                const size_t n_samples = data.m_indices.size();
-                const scalar_t opt_epsilon = 1e-5;
-                const auto updater = std::bind(update, _1, std::ref(timer));
-
-                const optimize::result_t res = optimize::sgd(problem, x, n_samples, opt_epsilon, updater);
-
-                load(res.optimum().x);
-
-                // OK
-                log_info() << "model: optimum [loss = " << res.optimum().f
-                           << ", gradient = " << res.optimum().g.norm() << "]"
-                           << ", iterations = [" << res.iterations()
-                           << "], speed = [" << res.speed().avg() << " +/- " << res.speed().stdev() << "].";
 
                 return true;
         }

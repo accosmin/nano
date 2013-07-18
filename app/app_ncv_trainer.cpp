@@ -136,24 +136,25 @@ int main(int argc, char *argv[])
                         const ncv::fold_t train_fold = std::make_pair(f, ncv::protocol::train);
                         const ncv::fold_t test_fold = std::make_pair(f, ncv::protocol::test);
 
-                        timer.start();
-                        if (!rmodel->train(
-                                *rtask, train_fold, *rloss,
-                                ncv::text::from_string<ncv::optimizer>(cmd_optimizer)))
-                        {
-                                ncv::log_error() << "<<< failed to train model <" << cmd_model << ">!";
-                                break;
-                        }
-                        ncv::log_info() << "<<< training done in " << timer.elapsed() << ".";
+                        // TODO: use a proper trainer!
+//                        timer.start();
+//                        if (!rmodel->train(
+//                                *rtask, train_fold, *rloss,
+//                                ncv::text::from_string<ncv::optimizer>(cmd_optimizer)))
+//                        {
+//                                ncv::log_error() << "<<< failed to train model <" << cmd_model << ">!";
+//                                break;
+//                        }
+//                        ncv::log_info() << "<<< training done in " << timer.elapsed() << ".";
 
-                        timer.start();
-                        ncv::scalar_t lvalue, lerror;
-                        rmodel->test(*rtask, test_fold, *rloss, lvalue, lerror);
-                        ncv::log_info() << "<<< test error: [" << lvalue << "/" << lerror
-                                        << "] in " << timer.elapsed() << ".";
+//                        timer.start();
+//                        ncv::scalar_t lvalue, lerror;
+//                        rmodel->test(*rtask, test_fold, *rloss, lvalue, lerror);
+//                        ncv::log_info() << "<<< test error: [" << lvalue << "/" << lerror
+//                                        << "] in " << timer.elapsed() << ".";
 
-                        lstats.add(lvalue);
-                        estats.add(lerror);
+//                        lstats.add(lvalue);
+//                        estats.add(lerror);
                 }
         }
 

@@ -18,21 +18,32 @@ namespace ncv
         //                          activation      - activation function id
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        class conv_network_model_t : public model_t
+        class conv_network_t : public model_t
         {
         public:
+
+                // FIXME: remove this!
+                using model_t::resize;
                 
                 // constructor
-                conv_network_model_t(const string_t& params = string_t());
+                conv_network_t(const string_t& params = string_t());
+                conv_network_t(const conv_layer_params_t& params);
 
                 // create an object clone
                 virtual rmodel_t clone(const string_t& params) const
                 {
-                        return rmodel_t(new conv_network_model_t(params));
+                        return rmodel_t(new conv_network_t(params));
                 }
 
-                // compute the model output
-                virtual vector_t process(const tensor3d_t& input) const;
+                // compute the model output & gradient
+                virtual vector_t value(const tensor3d_t& input) const;
+                virtual vector_t vgrad(const vector_t& ogradient) const;
+
+                // save/load parameters from vector
+                virtual bool save_params(vector_t& x) const;
+                virtual bool load_params(const vector_t& x);
+                virtual void zero_params();
+                virtual void random_params();
 
         protected:
 
@@ -40,35 +51,19 @@ namespace ncv
                 virtual bool save(boost::archive::binary_oarchive& oa) const;
                 virtual bool load(boost::archive::binary_iarchive& ia);
 
-                // save/load from parameter vector
-                virtual bool save(vector_t& x) const;
-                virtual bool load(const vector_t& x);
-
                 // resize to new inputs/outputs, returns the number of parameters
                 virtual size_t resize();
 
-                // initialize parameters
-                virtual void zero();
-                virtual void random();
-
-                // construct the list of valid training samples
-                virtual void prune(data_t& data) const;
-
-                // compute loss value & gradient (given current
-                virtual scalar_t value(const data_t& data, const loss_t& loss) const;
-                virtual scalar_t vgrad(const data_t& data, const loss_t& loss, vector_t& grad) const;
-
         private:
 
-                // process inputs (compute outputs & gradients)
-                const tensor3d_t& forward(const tensor3d_t& input) const;
-                void backward(const tensor3d_t& gradient) const;
+                // display the model structure
+                void print() const;
 
         private:
 
                 // attributes
-                conv_network_t          m_network;              // convolution network
-                conv_network_params_t   m_params;               // parameters
+                conv_layer_params_t     m_params;       // network parameters (hidden layers)
+                conv_layers_t           m_layers;       // convolution layers
         };
 }
 

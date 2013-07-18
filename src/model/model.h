@@ -1,8 +1,8 @@
 #ifndef NANOCV_MODEL_H
 #define NANOCV_MODEL_H
 
-#include "task/task.h"
-#include "loss/loss.h"
+#include "core/manager.h"
+#include "core/image.h"
 #include "core/tensor3d.h"
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
@@ -14,8 +14,12 @@ namespace ncv
         typedef manager_t<model_t>              model_manager_t;
         typedef model_manager_t::robject_t      rmodel_t;
 
+        class task_t;
+
         /////////////////////////////////////////////////////////////////////////////////////////
-        // generic model: output = model(input).
+        // generic model:
+        //      ::value()       - computes the model output for an image patch
+        //      ::vgrad()       - computes the model's parameters gradient
         /////////////////////////////////////////////////////////////////////////////////////////
                 
         class model_t : public clonable_t<model_t>
@@ -28,21 +32,25 @@ namespace ncv
                 // destructor
                 virtual ~model_t() {}
 
-                // train the model
-                bool train(const task_t& task, const fold_t& fold, const loss_t& loss, optimizer trainer);
+                // resize to process new inputs
+                bool resize(size_t rows, size_t cols, size_t outputs, color_mode color);
+                bool resize(const task_t& task);
 
-                // evaluate the model (compute the average loss value & error)
-                void test(const task_t& task, const fold_t& fold, const loss_t& loss,
-                        scalar_t& lvalue, scalar_t& lerror) const;
-
-                // compute the model output
-                vector_t process(const image_t& image, coord_t x, coord_t y) const;
-                vector_t process(const image_t& image, const rect_t& region) const;
-                virtual vector_t process(const tensor3d_t& input) const = 0;
+                // compute the model output & gradient
+                vector_t value(const image_t& image, coord_t x, coord_t y) const;
+                vector_t value(const image_t& image, const rect_t& region) const;
+                virtual vector_t value(const tensor3d_t& input) const = 0;
+                virtual vector_t vgrad(const vector_t& ogradient) const = 0;
 
                 // save/load from file
                 bool save(const string_t& path) const;
                 bool load(const string_t& path);
+
+                // save/load parameters from vector
+                virtual bool save_params(vector_t& x) const = 0;
+                virtual bool load_params(const vector_t& x) = 0;
+                virtual void zero_params() = 0;
+                virtual void random_params() = 0;
 
                 // access functions
                 size_t n_rows() const { return m_rows; }
@@ -54,20 +62,6 @@ namespace ncv
 
         protected:
 
-                struct data_t
-                {
-                        data_t(const task_t& task,
-                               const samples_t& samples)
-                                :       m_task(task),
-                                        m_samples(samples)
-                        {
-                        }
-
-                        const task_t&           m_task;
-                        const samples_t&        m_samples;
-                        std::vector<size_t>     m_indices;
-                };
-
                 // compose the input data
                 tensor3d_t make_input(const image_t& image, coord_t x, coord_t y) const;
                 tensor3d_t make_input(const image_t& image, const rect_t& region) const;
@@ -76,36 +70,15 @@ namespace ncv
                 virtual bool save(boost::archive::binary_oarchive& oa) const = 0;
                 virtual bool load(boost::archive::binary_iarchive& ia) = 0;
 
-                // save/load from parameter vector
-                virtual bool save(vector_t& x) const = 0;
-                virtual bool load(const vector_t& x) = 0;
-
                 // resize to new inputs/outputs, returns the number of parameters
                 virtual size_t resize() = 0;
-
-                // initialize parameters
-                virtual void zero() = 0;
-                virtual void random() = 0;
-
-                // construct the list of valid training samples
-                virtual void prune(data_t& data) const = 0;
-
-                // compute loss value & gradient (given current
-                virtual scalar_t value(const data_t& data, const loss_t& loss) const = 0;
-                virtual scalar_t vgrad(const data_t& data, const loss_t& loss, vector_t& grad) const = 0;
-
-        private:
-
-                // train the model
-                bool train_batch(const data_t& data, const loss_t& loss, optimizer trainer);
-                bool train_stochastic(const data_t& data, const loss_t& loss);
 
         private:
 
                 // attributes
                 size_t          m_rows, m_cols;         // input patch size
                 size_t          m_outputs;              // output size
-                size_t          m_parameters;
+                size_t          m_parameters;           // #number of parameters
                 color_mode      m_color;                // input color mode
         };
 }

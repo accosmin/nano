@@ -8,10 +8,10 @@
 namespace ncv
 {
         class conv_layer_t;
-        typedef std::vector<conv_layer_t>               conv_network_t;
+        typedef std::vector<conv_layer_t>               conv_layers_t;
 
         class conv_layer_param_t;
-        typedef std::vector<conv_layer_param_t>         conv_network_params_t;
+        typedef std::vector<conv_layer_param_t>         conv_layer_params_t;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // convolution layer:
@@ -76,20 +76,6 @@ namespace ncv
                 friend serializer_t& operator<<(serializer_t& s, const conv_layer_t& layer);
                 friend deserializer_t& operator>>(deserializer_t& s, conv_layer_t& layer);
 
-                // build convolution network (returns the total number of parameters)
-                static size_t make_network(
-                        size_t idims, size_t irows, size_t icols,       // input size
-                        const conv_network_params_t& network_params,      //
-                        size_t odims,                                   // output size
-                        conv_network_t& network);
-
-                // show the structure of a network
-                static void print_network(const conv_network_t& network);
-
-                // process inputs (compute outputs & gradients) for a network
-                static const tensor3d_t& forward(const tensor3d_t& input, const conv_network_t& network);
-                static void backward(const tensor3d_t& gradient, const conv_network_t& network);
-
                 // access functions
                 size_t n_inputs() const { return m_idata.n_dim1(); }
                 size_t n_irows() const { return m_idata.n_rows(); }
@@ -99,7 +85,10 @@ namespace ncv
                 size_t n_orows() const { return m_odata.n_rows(); }
                 size_t n_ocols() const { return m_odata.n_cols(); }
 
+                const tensor4d_t& kdata() const { return m_kdata; }
                 const tensor4d_t& gdata() const { return m_gdata; }
+
+                const string_t& activation() const { return m_activation; }
 
         private:
 

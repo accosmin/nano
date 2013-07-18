@@ -1,5 +1,5 @@
 #include "ncv.h"
-#include "model/conv_layer.h"
+#include "model/conv_network.h"
 #include "loss/loss_classnll.h"
 #include <boost/program_options.hpp>
 
@@ -21,53 +21,22 @@ static void test(
         // optimization problem: function value
         auto opt_fn_fval = [&] (const ncv::vector_t& x)
         {
-                ncv::deserializer_t(x) >> network;
+                network.load_params(x);
 
-                // forward: network output
-                const ncv::tensor3d_t& output = ncv::conv_layer_t::forward(input, network);
+                const ncv::vector_t output = network.value(input);
 
-                // loss value
-                ncv::vector_t voutput(output.size());
-                ncv::serializer_t(voutput) << output;
-
-                return loss->value(target, voutput);
+                return loss->value(target, output);
         };
 
         // optimization problem: function value & gradient
         auto opt_fn_fval_grad = [&] (const ncv::vector_t& x, ncv::vector_t& gx)
         {
-                ncv::deserializer_t(x) >> network;
+                network.load_params(x);
 
-                for (ncv::conv_layer_t& layer : network)
-                {
-                        layer.zero_grad();
-                }
+                const ncv::vector_t output = network.value(input);
+                gx = network.vgrad(loss->vgrad(target, output));
 
-                // forward: network output
-                const ncv::tensor3d_t& output = ncv::conv_layer_t::forward(input, network);
-
-                // loss value & gradient
-                ncv::vector_t voutput(output.size());
-                ncv::serializer_t(voutput) << output;
-
-                const ncv::scalar_t fx = loss->value(target, voutput);
-                const ncv::vector_t vgradient = loss->vgrad(target, voutput);
-
-                // backward: network gradient
-                ncv::tensor3d_t gradient(output.size(), 1, 1);
-                ncv::deserializer_t(vgradient) >> gradient;
-
-                ncv::conv_layer_t::backward(gradient, network);
-
-                gx.resize(n_parameters);
-
-                ncv::serializer_t s(gx);
-                for (ncv::conv_layer_t& layer : network)
-                {
-                        s << layer.gdata();
-                }
-
-                return fx;
+                return loss->value(target, output);
         };
 
         // construct optimization problem: analytic gradient and finite difference approximation
@@ -102,6 +71,7 @@ int main(int argc, char *argv[])
         const ncv::strings_t loss_ids = ncv::loss_manager_t::instance().ids();
         const ncv::strings_t activation_ids = ncv::activation_manager_t::instance().ids();
 
+        const ncv::color_mode cmd_color = ncv::color_mode::luma;
         const ncv::size_t cmd_inputs = 1;
         const ncv::size_t cmd_irows = 16;
         const ncv::size_t cmd_icols = 16;
@@ -120,22 +90,18 @@ int main(int argc, char *argv[])
                 for (const ncv::string_t& activation_id : _activation_ids)
                 {
                         // build the convolution network
-                        ncv::conv_network_params_t network_params;
+                        ncv::conv_layer_params_t network_params;
                         for (ncv::size_t l = 0; l < n_network; l ++)
                         {
                                 ncv::random_t<ncv::size_t> rgen(2, 6);
                                 network_params.push_back({rgen(), rgen(), rgen(), activation_id});
                         }
 
-                        ncv::conv_network_t network;
-                        const ncv::size_t n_parameters = ncv::conv_layer_t::make_network(
-                                cmd_inputs, cmd_irows, cmd_icols, network_params, cmd_outputs, network);
-
-                        ncv::log_info() << "number of parameters: " << n_parameters << ".";
-                        ncv::conv_layer_t::print_network(network);
+                        ncv::conv_network_t network(network_params);
+                        network.resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color);
 
                         // build the inputs & outputs
-                        ncv::vector_t params(n_parameters);
+                        ncv::vector_t params(network.n_parameters());
                         ncv::tensor3d_t sample(cmd_inputs, cmd_irows, cmd_icols);
                         ncv::vector_t target(cmd_outputs);
 
