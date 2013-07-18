@@ -4,13 +4,6 @@ namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
-        logistic_loss_t::logistic_loss_t(const string_t&)
-                :       loss_t("logistic loss")
-        {
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
         scalar_t logistic_loss_t::value(const vector_t& targets, const vector_t& scores) const
         {
                 scalar_t value = 0.0;

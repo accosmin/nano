@@ -27,7 +27,7 @@ namespace ncv
         public:
 
                 // constructor
-                model_t(const string_t& description);
+                model_t();
 
                 // destructor
                 virtual ~model_t() {}

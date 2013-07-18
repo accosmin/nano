@@ -14,13 +14,9 @@ namespace ncv
         public:
 
                 // constructor
-                classnll_loss_t(const string_t& params = string_t());
+                classnll_loss_t(const string_t& /*params*/ = string_t()) {}
 
-                // create an object clone
-                virtual rloss_t clone(const string_t& params) const
-                {
-                        return rloss_t(new classnll_loss_t(params));
-                }
+                NCV_MAKE_CLONABLE(classnll_loss_t, loss_t, "class negative log-likelihood loss")
 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const

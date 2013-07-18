@@ -10,7 +10,7 @@ namespace ncv
         // manager: used to manage different object types associated with ID strings.
         // the clonable interface to be used with a manager:
         //      ::clone(const string_t&)        - create a new object (with the given parameters)
-        //      ::desc()                        - short description (parameters included)
+        //      ::description()                 - short description (parameters included)
         // hint: use register_object<base, derived> to register objects to the manager.
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         
@@ -22,25 +22,25 @@ namespace ncv
         {        
         public:
 
-                typedef std::shared_ptr<tobject>        robject_t;
+                typedef std::shared_ptr<tobject> robject_t;
 
-                // constructor
-                clonable_t(const string_t& description)
-                        :       m_description(description)
-                {
-                }
-        
                 // create an object clone
                 virtual robject_t clone(const string_t& params) const = 0;
                 
                 // describe the object
-                const string_t& description() const { return m_description; }
-
-        private:
-
-                // attributes
-                string_t                m_description;
+                virtual string_t description() const = 0;
         };
+
+        // implements the clonable_t interface
+        #define NCV_MAKE_CLONABLE(object_class, base_class, description_str) \
+                typedef typename clonable_t<base_class>::robject_t robject_t; \
+                \
+                virtual robject_t clone(const string_t& params) const \
+                { \
+                        return robject_t(new object_class(params)); \
+                } \
+                \
+                virtual string_t description() const { return #description_str; }
 
         template
         <

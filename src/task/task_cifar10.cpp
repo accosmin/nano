@@ -23,13 +23,6 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        cifar10_task_t::cifar10_task_t(const string_t&)
-                :       task_t("CIFAR-10 (object classification)")
-        {
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
         bool cifar10_task_t::load(const string_t& dir)
         {
                 const string_t train_bfile1 = dir + "/data_batch_1.bin";

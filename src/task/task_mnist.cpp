@@ -7,13 +7,6 @@ namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
-        mnist_task_t::mnist_task_t(const string_t&)
-                :       task_t("MNIST (digit classification)")
-        {
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
         bool mnist_task_t::load(const string_t& dir)
         {
                 const string_t test_ifile = dir + "/t10k-images-idx3-ubyte";

@@ -14,16 +14,9 @@ namespace ncv
         public:
 
                 // constructor
-                fun1_activation_t(const string_t& /*params*/ = string_t())
-                        :       activation_t("x/sqrt(1+x^2) activation function")
-                {
-                }
+                fun1_activation_t(const string_t& /*params*/ = string_t()) {}
 
-                // create an object clone
-                virtual ractivation_t clone(const string_t& params) const
-                {
-                        return ractivation_t(new fun1_activation_t(params));
-                }
+                NCV_MAKE_CLONABLE(fun1_activation_t, activation_t, "x/sqrt(1+x^2) activation function")
 
                 // output & gradient (as a function of the output)
                 virtual scalar_t value(scalar_t x) const { return _value(x); }

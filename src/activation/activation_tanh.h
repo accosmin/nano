@@ -14,16 +14,9 @@ namespace ncv
         public:
 
                 // constructor
-                tanh_activation_t(const string_t& /*params*/ = string_t())
-                        :       activation_t("hyperbolic tangent activation function")
-                {
-                }
+                tanh_activation_t(const string_t& /*params*/ = string_t()) {}
 
-                // create an object clone
-                virtual ractivation_t clone(const string_t& params) const
-                {
-                        return ractivation_t(new tanh_activation_t(params));
-                }
+                NCV_MAKE_CLONABLE(tanh_activation_t, activation_t, "hyperbolic tangent activation function")
 
                 // output & gradient (as a function of the output)
                 virtual scalar_t value(scalar_t x) const { return _value(x); }

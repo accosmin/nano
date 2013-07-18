@@ -14,13 +14,9 @@ namespace ncv
 	public:
 
                 // constructor
-                square_loss_t(const string_t& params = string_t());
-                
-                // create an object clone
-                virtual rloss_t clone(const string_t& params) const
-                {
-                        return rloss_t(new square_loss_t(params));
-                }
+                square_loss_t(const string_t& /*params*/ = string_t()) {}
+
+                NCV_MAKE_CLONABLE(square_loss_t, loss_t, "square loss")
 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const

@@ -31,12 +31,6 @@ namespace ncv
         {
         public:
 
-                // constructor
-                loss_t(const string_t& description)
-                        :       clonable_t<loss_t>(description)
-                {
-                }
-
                 // destructor
                 virtual ~loss_t() {}
                 

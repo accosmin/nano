@@ -23,13 +23,6 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        stl10_task_t::stl10_task_t(const string_t&)
-                :       task_t("STL-10 (object classification)")
-        {
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
         bool stl10_task_t::load(const string_t& dir)
         {
                 const string_t test_ifile = dir + "/test_X.bin";

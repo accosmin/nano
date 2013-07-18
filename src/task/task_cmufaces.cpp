@@ -9,13 +9,6 @@ namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
-        cmufaces_task_t::cmufaces_task_t(const string_t&)
-                :       task_t("CMU faces (face/non-face classification)")
-        {
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
         bool cmufaces_task_t::load(const string_t& dir)
         {
                 const string_t train_face_dir = dir + "/train/face/";

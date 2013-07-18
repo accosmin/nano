@@ -14,13 +14,9 @@ namespace ncv
         public:
 
                 // constructor
-                logistic_loss_t(const string_t& params = string_t());
-                
-                // create an object clone
-                virtual rloss_t clone(const string_t& params) const
-                {
-                        return rloss_t(new logistic_loss_t(params));
-                }
+                logistic_loss_t(const string_t& /*params*/ = string_t()) {}
+
+                NCV_MAKE_CLONABLE(logistic_loss_t, loss_t, "logistic loss")
 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const

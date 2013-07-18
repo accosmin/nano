@@ -18,13 +18,6 @@ namespace ncv
         class activation_t : public clonable_t<activation_t>
         {
         public:
-
-                // constructor
-                activation_t(const string_t& description)
-                        :       clonable_t<activation_t>(description)
-                {
-                }
-
                 // destructor
                 virtual ~activation_t() {}
 

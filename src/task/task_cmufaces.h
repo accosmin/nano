@@ -17,13 +17,9 @@ namespace ncv
         public:
 
                 // constructor
-                cmufaces_task_t(const string_t& params = string_t());
+                cmufaces_task_t(const string_t& /*params*/ = string_t()) {}
 
-                // create an object clone
-                virtual rtask_t clone(const string_t& params) const
-                {
-                        return rtask_t(new cmufaces_task_t(params));
-                }
+                NCV_MAKE_CLONABLE(cmufaces_task_t, task_t, "CMU faces (face/non-face classification)")
 
                 // load images from the given directory
                 virtual bool load(const string_t& dir);

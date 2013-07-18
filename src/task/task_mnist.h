@@ -16,13 +16,9 @@ namespace ncv
         {
         public:
                 // constructor
-                mnist_task_t(const string_t& params = string_t());
+                mnist_task_t(const string_t& /*params*/ = string_t()) {}
 
-                // create an object clone
-                virtual rtask_t clone(const string_t& params) const
-                {
-                        return rtask_t(new mnist_task_t(params));
-                }
+                NCV_MAKE_CLONABLE(mnist_task_t, task_t, "MNIST (digit classification)")
 
                 // load images from the given directory
                 virtual bool load(const string_t& dir);

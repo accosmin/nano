@@ -7,8 +7,8 @@ namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
-        model_t::model_t(const string_t& description)
-                :       clonable_t<model_t>(description),
+        model_t::model_t()
+                :       clonable_t<model_t>(),
                         m_rows(0),
                         m_cols(0),
                         m_outputs(0),

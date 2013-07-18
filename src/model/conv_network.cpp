@@ -6,7 +6,6 @@ namespace ncv
         //-------------------------------------------------------------------------------------------------
 
         conv_network_t::conv_network_t(const string_t& params)
-                :       model_t("parameters: network=[16:8:8:activation]*")
         {
                 // decode the network structure
                 const string_t network_desc = text::from_params<string_t>(params, "network", "");
@@ -53,8 +52,7 @@ namespace ncv
         //-------------------------------------------------------------------------------------------------
 
         conv_network_t::conv_network_t(const conv_layer_params_t& params)
-                :       model_t("parameters: network=[16:8:8:activation]*"),
-                        m_params(params)
+                :       m_params(params)
         {
         }
 

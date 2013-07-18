@@ -29,11 +29,7 @@ namespace ncv
                 conv_network_t(const string_t& params = string_t());
                 conv_network_t(const conv_layer_params_t& params);
 
-                // create an object clone
-                virtual rmodel_t clone(const string_t& params) const
-                {
-                        return rmodel_t(new conv_network_t(params));
-                }
+                NCV_MAKE_CLONABLE(conv_network_t, model_t, "parameters: network=[16:8:8:activation]*")
 
                 // compute the model output & gradient
                 virtual vector_t value(const tensor3d_t& input) const;
