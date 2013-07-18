@@ -27,6 +27,9 @@ namespace ncv
                 // round to nearest integer
                 std::fesetround(FE_TONEAREST);
 
+                // use Eigen with multiple threads
+                Eigen::initParallel();
+
                 // register losses
                 loss_manager_t::instance().add("classnll", classnll_loss_t());
                 loss_manager_t::instance().add("hinge", hinge_loss_t());
