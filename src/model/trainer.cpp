@@ -1,21 +1,61 @@
 #include "trainer.h"
+#include "core/thread.h"
 
 namespace ncv
 {
-//        //-------------------------------------------------------------------------------------------------
+        //-------------------------------------------------------------------------------------------------
 
-//        struct value_data_t
-//        {
-//                value_data_t() : m_value(0.0), m_count(0) {}
+        struct value_data_t
+        {
+                value_data_t() : m_value(0.0), m_count(0)
+                {
+                }
 
-//                scalar_t value() const { return ,+
-//                {
+                value_data_t& operator+=(const value_data_t& other)
+                {
+                        m_value += other.m_value;
+                        m_count += other.m_count;
+                        return *this;
+                }
 
-//                }
+                scalar_t value() const { return m_value / ((m_count == 0) ? 1.0 : m_count); }
 
-//                scalar_t        m_value;
-//                size_t          m_count;
-//        };
+                scalar_t        m_value;
+                size_t          m_count;
+                rmodel_t        m_model;
+        };
+
+        //-------------------------------------------------------------------------------------------------
+
+        struct vgrad_data_t
+        {
+                vgrad_data_t(size_t n_parameters = 0) : m_value(0.0), m_count(0)
+                {
+                        resize(n_parameters);
+                }
+
+                void resize(size_t n_parameters)
+                {
+                        m_vgrad.resize(n_parameters);
+                        m_vgrad.setZero();
+                }
+
+                vgrad_data_t& operator+=(const vgrad_data_t& other)
+                {
+                        m_value += other.m_value;
+                        m_vgrad += other.m_vgrad;
+                        m_count += other.m_count;
+                        return *this;
+                }
+
+                scalar_t value() const { return m_value / ((m_count == 0) ? 1.0 : m_count); }
+                vector_t vgrad() const { return m_vgrad / ((m_count == 0) ? 1.0 : m_count); }
+
+                scalar_t        m_value;
+                vector_t        m_vgrad;
+                size_t          m_count;
+                rmodel_t        m_model;
+        };
 
         //-------------------------------------------------------------------------------------------------
 
@@ -42,28 +82,32 @@ namespace ncv
                 const task_t& task, const samples_t& samples, const loss_t& loss,
                 const model_t& model)
         {
-                scalar_t lvalue = 0.0;
-                size_t lcount = 0;
+                value_data_t cum_data;
 
-                // TODO: parallelize this!
-                //      clone the model, resize with the task, initialize with the given parameters
-                //      and then update the loss
+                thread_loop_cumulate<value_data_t>(
+                        samples.size(),
+                        [&] (value_data_t& data)
+                        {
+                                data.m_model = model.clone();
+                        },
+                        [&] (size_t i, value_data_t& data)
+                        {
+                                const sample_t& sample = samples[i];
+                                const image_t& image = task.image(sample.m_index);
+                                const vector_t target = image.make_target(sample.m_region);
+                                assert(image.has_target(target));
 
-                for (const sample_t& sample : samples)
-                {
-                        const image_t& image = task.image(sample.m_index);
-                        const vector_t target = image.make_target(sample.m_region);
-                        assert(image.has_target(target));
+                                const vector_t output = data.m_model->value(image, sample.m_region);
 
-                        const vector_t output = model.value(image, sample.m_region);
+                                data.m_value += loss.value(target, output);
+                                data.m_count ++;
+                        },
+                        [&] (const value_data_t& data)
+                        {
+                                cum_data += data;
+                        });
 
-                        lvalue += loss.value(target, output);
-                        lcount ++;
-                }
-
-                lvalue /= (lcount == 0) ? 1.0 : lcount;
-
-                return lvalue;
+                return cum_data.value();
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -72,36 +116,38 @@ namespace ncv
                 const task_t& task, const samples_t& samples, const loss_t& loss,
                 const model_t& model, vector_t& lgrad)
         {
-                scalar_t lvalue = 0.0;
-                size_t lcount = 0;
+                vgrad_data_t cum_data(model.n_parameters());
 
-                lgrad.resize(model.n_parameters());
-                lgrad.setZero();
+                thread_loop_cumulate<vgrad_data_t>(
+                        samples.size(),
+                        [&] (vgrad_data_t& data)
+                        {
+                                data.resize(model.n_parameters());
+                                data.m_model = model.clone();
+                        },
+                        [&] (size_t i, vgrad_data_t& data)
+                        {
+                                const sample_t& sample = samples[i];
+                                const image_t& image = task.image(sample.m_index);
+                                const vector_t target = image.make_target(sample.m_region);
+                                assert(image.has_target(target));
 
-                // TODO: parallelize this!
-                //      clone the model, resize with the task, initialize with the given parameters
-                //      and then update the loss
+                                const vector_t output = data.m_model->value(image, sample.m_region);
 
-                for (const sample_t& sample : samples)
-                {
-                        const image_t& image = task.image(sample.m_index);
-                        const vector_t target = image.make_target(sample.m_region);
-                        assert(image.has_target(target));
+                                data.m_value += loss.value(target, output);
+                                data.m_count ++;
 
-                        const vector_t output = model.value(image, sample.m_region);
+                                const vector_t mgrad = data.m_model->vgrad(loss.vgrad(target, output));
+                                assert(mgrad.size() == model.n_parameters());
+                                data.m_vgrad += mgrad;
+                        },
+                        [&] (const vgrad_data_t& data)
+                        {
+                                cum_data += data;
+                        });
 
-                        lvalue += loss.value(target, output);
-                        lcount ++;
-
-                        const vector_t mgrad = model.vgrad(loss.vgrad(target, output));
-                        assert(mgrad.size() == lgrad.size());
-                        lgrad += mgrad;
-                }
-
-                lvalue /= (lcount == 0) ? 1.0 : lcount;
-                lgrad /= (lcount == 0) ? 1.0 : lcount;
-
-                return lvalue;
+                lgrad = cum_data.vgrad();
+                return cum_data.value();
         }
 
         //-------------------------------------------------------------------------------------------------
