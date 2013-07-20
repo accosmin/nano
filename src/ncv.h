@@ -13,6 +13,7 @@
 #include "activation/activation.h"
 #include "task/task.h"
 #include "model/model.h"
+#include "model/trainer.h"
 
 namespace ncv
 {

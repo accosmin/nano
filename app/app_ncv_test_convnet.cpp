@@ -9,7 +9,7 @@ static void test(
         ncv::conv_network_t& network, ncv::vector_t& params, ncv::tensor3d_t& input, ncv::vector_t& target,
         ncv::size_t n_tests)
 {
-        const ncv::rloss_t loss = ncv::loss_manager_t::instance().get(loss_id, "");
+        const ncv::rloss_t loss = ncv::loss_manager_t::instance().get(loss_id);
         const ncv::size_t n_parameters = params.size();
 
         // optimization problem: size

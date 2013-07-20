@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
         ncv::timer_t timer;
 
         // create task
-        ncv::rtask_t rtask = ncv::task_manager_t::instance().get(cmd_task, "");
+        ncv::rtask_t rtask = ncv::task_manager_t::instance().get(cmd_task);
         if (!rtask)
         {
                 ncv::log_error() << "<<< failed to load task <" << cmd_task << ">!";

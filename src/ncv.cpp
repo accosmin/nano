@@ -18,6 +18,8 @@
 
 #include "model/conv_network.h"
 
+#include "model/batch_trainer.h"
+
 namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
@@ -49,7 +51,10 @@ namespace ncv
                 activation_manager_t::instance().add("fun2", fun2_activation_t());
 
                 // register models
-//                model_manager_t::instance().add("convnet", conv_network_model_t());
+                model_manager_t::instance().add("convnet", conv_network_t());
+
+                // register trainers
+                trainer_manager_t::instance().add("batch", batch_trainer_t());
         }
 
         //-------------------------------------------------------------------------------------------------

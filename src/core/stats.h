@@ -9,7 +9,7 @@ namespace ncv
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
         // computes statistics: average, standard deviation etc.
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
+
         class stats_t
 	{
 	public:
@@ -105,7 +105,7 @@ namespace ncv
 		 
                 // attributes
                 scalar_t        m_min, m_max;
-                scalar_t        m_sum1, m_sum2;
+                long double     m_sum1, m_sum2;
                 size_t          m_count;
 	};
 }

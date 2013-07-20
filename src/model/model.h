@@ -46,7 +46,7 @@ namespace ncv
                 bool save(const string_t& path) const;
                 bool load(const string_t& path);
 
-                // save/load parameters from vector
+                // save/load/initialize parameters from vector
                 virtual bool save_params(vector_t& x) const = 0;
                 virtual bool load_params(const vector_t& x) = 0;
                 virtual void zero_params() = 0;

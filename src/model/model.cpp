@@ -112,7 +112,7 @@ namespace ncv
 
         bool model_t::resize(const task_t& task)
         {
-                return resize(task.n_rows(), task.n_cols(), task.n_rows(), task.color());
+                return resize(task.n_rows(), task.n_cols(), task.n_outputs(), task.color());
         }
 
         //-------------------------------------------------------------------------------------------------

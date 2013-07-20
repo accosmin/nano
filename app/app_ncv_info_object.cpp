@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
         print("activation",     ncv::activation_manager_t::instance());
         print("task",           ncv::task_manager_t::instance());
         print("model",          ncv::model_manager_t::instance());
+        print("trainer",        ncv::trainer_manager_t::instance());
 
         // OK
         ncv::log_info() << ncv::done;

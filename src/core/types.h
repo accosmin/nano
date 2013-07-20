@@ -151,14 +151,6 @@ namespace ncv
                 luma,                   // process only grayscale color channel
                 rgba                    // process red, green & blue color channels
         };
-
-        // optimization mode
-        enum class optimizer : int
-        {
-                lbfgs,          // batch LBFGS
-                cgd,            // batch conjugate gradient descent
-                sgd             // stochastic gradient descent
-        };
 }
 
 // serialize matrices and vectors

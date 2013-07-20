@@ -109,7 +109,7 @@ namespace ncv
 
         void conv_layer_t::set_activation()
         {
-                m_afunc = activation_manager_t::instance().get(m_activation, "");
+                m_afunc = activation_manager_t::instance().get(m_activation);
                 if (    !m_afunc &&
                         n_inputs() != 0 && n_irows() != 0 && n_icols() != 0 &&
                         n_outputs() != 0)
@@ -128,7 +128,6 @@ namespace ncv
         void conv_layer_t::zero()
         {
                 m_kdata.zero();
-                zero_grad();
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -136,14 +135,6 @@ namespace ncv
         void conv_layer_t::random(scalar_t min, scalar_t max)
         {
                 m_kdata.random(min, max);
-                zero_grad();
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        void conv_layer_t::zero_grad() const
-        {
-                m_gdata.zero();
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -210,6 +201,7 @@ namespace ncv
                 }
 
                 // convolution gradient
+                m_gdata.zero();
                 for (size_t o = 0; o < n_outputs(); o ++)
                 {
                         const matrix_t& ogdata = m_odata(o);

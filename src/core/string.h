@@ -78,26 +78,6 @@ namespace ncv
                         return color_mode::luma;
                 }
 
-                template <>
-                inline string_t to_string(optimizer mode)
-                {
-                        switch (mode)
-                        {
-                        case optimizer::lbfgs:          return "lbfgs";
-                        case optimizer::sgd:            return "sgd";
-                        default:                        return "sgd";
-                        }
-                }
-
-                template <>
-                inline optimizer from_string<optimizer>(const string_t& string)
-                {
-                        if (string == "lbfgs")          return optimizer::lbfgs;
-                        if (string == "sgd")            return optimizer::sgd;
-                        throw std::invalid_argument("invalid optimizer <" + string + ">!");
-                        return optimizer::sgd;
-                }
-
                 // compact a list of values into a string using the given glue string
                 template
                 <

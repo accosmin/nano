@@ -181,8 +181,6 @@ namespace ncv
                         op_cumulate(data[t]);
                 }
         }
-
-        //                TODO: check if using a consecutive different policy speeds things-up!
 }
 
 #endif // NANOCV_THREAD_H

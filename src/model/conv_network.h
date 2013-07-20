@@ -29,13 +29,14 @@ namespace ncv
                 conv_network_t(const string_t& params = string_t());
                 conv_network_t(const conv_layer_params_t& params);
 
-                NCV_MAKE_CLONABLE(conv_network_t, model_t, "parameters: network=[16:8:8:activation]*")
+                NCV_MAKE_CLONABLE(conv_network_t, model_t,
+                                  "convolution network, parameters: network=[#convs:#conv_rows:#conv_cols:activation]*")
 
                 // compute the model output & gradient
                 virtual vector_t value(const tensor3d_t& input) const;
                 virtual vector_t vgrad(const vector_t& ogradient) const;
 
-                // save/load parameters from vector
+                // save/load/initialize parameters
                 virtual bool save_params(vector_t& x) const;
                 virtual bool load_params(const vector_t& x);
                 virtual void zero_params();

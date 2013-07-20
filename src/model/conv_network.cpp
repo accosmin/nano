@@ -119,10 +119,6 @@ namespace ncv
                 if (math::cast<size_t>(x.size()) == n_parameters())
                 {
                         deserializer_t(x) >> m_layers;
-                        for (conv_layer_t& layer : m_layers)
-                        {
-                                layer.zero_grad();
-                        }
                         return true;
                 }
 
