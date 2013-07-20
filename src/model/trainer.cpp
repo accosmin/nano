@@ -63,6 +63,7 @@ namespace ncv
         {
                 samples_t pruned_samples;
 
+                // keep only the samples having targets associated
                 for (const sample_t& sample : samples)
                 {
                         const image_t& image = task.image(sample.m_index);
@@ -84,14 +85,18 @@ namespace ncv
         {
                 value_data_t cum_data;
 
-                thread_loop_cumulate<value_data_t>(
+                // split the computation using multiple threads
+                thread_loop_cumulate<value_data_t>
+                (
                         samples.size(),
                         [&] (value_data_t& data)
                         {
+                                // initialize partial cumulated data
                                 data.m_model = model.clone();
                         },
                         [&] (size_t i, value_data_t& data)
                         {
+                                // process sample [i]
                                 const sample_t& sample = samples[i];
                                 const image_t& image = task.image(sample.m_index);
                                 const vector_t target = image.make_target(sample.m_region);
@@ -104,8 +109,10 @@ namespace ncv
                         },
                         [&] (const value_data_t& data)
                         {
+                                // cumulate partial data
                                 cum_data += data;
-                        });
+                        }
+                );
 
                 return cum_data.value();
         }
@@ -118,15 +125,19 @@ namespace ncv
         {
                 vgrad_data_t cum_data(model.n_parameters());
 
-                thread_loop_cumulate<vgrad_data_t>(
+                // split the computation using multiple threads
+                thread_loop_cumulate<vgrad_data_t>
+                (
                         samples.size(),
                         [&] (vgrad_data_t& data)
                         {
+                                // initialize partial cumulated data
                                 data.resize(model.n_parameters());
                                 data.m_model = model.clone();
                         },
                         [&] (size_t i, vgrad_data_t& data)
                         {
+                                // process sample [i]
                                 const sample_t& sample = samples[i];
                                 const image_t& image = task.image(sample.m_index);
                                 const vector_t target = image.make_target(sample.m_region);
@@ -143,8 +154,10 @@ namespace ncv
                         },
                         [&] (const vgrad_data_t& data)
                         {
+                                // cumulate partial data
                                 cum_data += data;
-                        });
+                        }
+                );
 
                 lgrad = cum_data.vgrad();
                 return cum_data.value();
