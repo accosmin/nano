@@ -383,13 +383,11 @@ namespace ncv
                 namespace impl
                 {
                         result_t sgd(
-                                state_t state, const problem_t& problem, const vector_t& x0,
+                                const problem_t& problem, const state_t& state,
                                 scalar_t eta, scalar_t lambda, scalar_t epsilon,
                                 size_t opt_iters, size_t update_iters, const op_updated_t& op_updated,
                                 bool average)
                         {
-                                assert(problem.size() == math::cast<size_t>(x0.size()));
-
                                 result_t result(problem.size());
                                 state_t cstate = state;
 
@@ -467,30 +465,35 @@ namespace ncv
                         {
                                 assert(problem.size() == math::cast<size_t>(x0.size()));
 
-                                const scalar_t lambda = 1.0;
-
                                 const size_t opt_iters = std::max(static_cast<size_t>(1), iterations);
+                                const size_t tune_iters = std::max(static_cast<size_t>(1), iterations / 20);
                                 const size_t update_iters = std::max(static_cast<size_t>(1), iterations / 10);
 
                                 state_t cstate(problem, x0);
 
-                                std::map<scalar_t, result_t> eta_results;
-
-                                // try various learning rate parameters
+                                // tune the learning rate
+                                const scalar_t lambda = 1.0;
                                 const scalars_t etas = { 1e-5, 1e-4, 1e-3, 1e-2, 1e-1 };
+
+                                std::map<scalar_t, scalar_t> eta_results;
                                 for (scalar_t eta : etas)
                                 {
                                         log_info() << (average ? "ASGD" : "SGD")
                                                    << ": learning rate [eta = " << eta << "] ...";
 
-                                        const result_t res = sgd(cstate, problem, x0, eta, lambda, epsilon,
-                                                                 opt_iters, update_iters, op_updated,
-                                                                 average);
+                                        const result_t res = sgd(problem, cstate, eta, lambda, epsilon,
+                                                                 tune_iters, tune_iters, op_updated, average);
 
-                                        eta_results[res.optimum().f] = res;
+                                        eta_results[res.optimum().f] = eta;
                                 }
 
-                                return eta_results.begin()->second;
+                                const scalar_t eta = eta_results.begin()->second;
+                                log_info() << (average ? "ASGD" : "SGD")
+                                           << ": optimum learning rate [eta = " << eta << "].";
+
+                                // optimize using the optimal learning rate
+                                return sgd(problem, cstate, eta, lambda, epsilon,
+                                           opt_iters, update_iters, op_updated, average);
                         }
                 }
         }

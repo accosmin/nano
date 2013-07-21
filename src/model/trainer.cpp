@@ -1,6 +1,5 @@
 #include "trainer.h"
 #include "core/thread.h"
-#include "core/timer.h"
 
 namespace ncv
 {
@@ -8,10 +7,29 @@ namespace ncv
 
         struct value_data_t
         {
+                // constructor
                 value_data_t() : m_value(0.0), m_count(0)
                 {
                 }
 
+                // update the cumulated loss value with a new sample
+                void update(const task_t& task, const sample_t& sample, const loss_t& loss)
+                {
+                        update(task, sample, loss, *m_model);
+                }
+                void update(const task_t& task, const sample_t& sample, const loss_t& loss, const model_t& model)
+                {
+                        const image_t& image = task.image(sample.m_index);
+                        const vector_t target = image.make_target(sample.m_region);
+                        assert(image.has_target(target));
+
+                        const vector_t output = model.value(image, sample.m_region);
+
+                        m_value += loss.value(target, output);
+                        m_count ++;
+                }
+
+                // cumulate loss value
                 value_data_t& operator+=(const value_data_t& other)
                 {
                         m_value += other.m_value;
@@ -21,6 +39,7 @@ namespace ncv
 
                 scalar_t value() const { return m_value / ((m_count == 0) ? 1.0 : m_count); }
 
+                // attributes
                 scalar_t        m_value;
                 size_t          m_count;
                 rmodel_t        m_model;
@@ -30,6 +49,7 @@ namespace ncv
 
         struct vgrad_data_t
         {
+                // constructor
                 vgrad_data_t(size_t n_parameters = 0) : m_value(0.0), m_count(0)
                 {
                         resize(n_parameters);
@@ -41,6 +61,28 @@ namespace ncv
                         m_vgrad.setZero();
                 }
 
+                // update the cumulated loss value & gradient with a new sample
+                void update(const task_t& task, const sample_t& sample, const loss_t& loss)
+                {
+                        update(task, sample, loss, *m_model);
+                }
+                void update(const task_t& task, const sample_t& sample, const loss_t& loss, const model_t& model)
+                {
+                        const image_t& image = task.image(sample.m_index);
+                        const vector_t target = image.make_target(sample.m_region);
+                        assert(image.has_target(target));
+
+                        const vector_t output = model.value(image, sample.m_region);
+
+                        m_value += loss.value(target, output);
+                        m_count ++;
+
+                        const vector_t mgrad = model.vgrad(loss.vgrad(target, output));
+                        assert(mgrad.size() == model.n_parameters());
+                        m_vgrad += mgrad;
+                }
+
+                // cumulate loss value & gradient
                 vgrad_data_t& operator+=(const vgrad_data_t& other)
                 {
                         m_value += other.m_value;
@@ -52,6 +94,7 @@ namespace ncv
                 scalar_t value() const { return m_value / ((m_count == 0) ? 1.0 : m_count); }
                 vector_t vgrad() const { return m_vgrad / ((m_count == 0) ? 1.0 : m_count); }
 
+                // attributes
                 scalar_t        m_value;
                 vector_t        m_vgrad;
                 size_t          m_count;
@@ -86,39 +129,35 @@ namespace ncv
         {
                 value_data_t cum_data;
 
-//                const timer_t timer;
-
-                // split the computation using multiple threads
-                thread_loop_cumulate<value_data_t>
-                (
-                        samples.size(),
-                        [&] (value_data_t& data)
+                if (samples.size() < thread_impl::n_threads())
+                {
+                        // few samples: single threaded
+                        for (size_t i = 0; i < samples.size(); i ++)
                         {
-                                // initialize partial cumulated data
-                                data.m_model = model.clone();
-                        },
-                        [&] (size_t i, value_data_t& data)
-                        {
-                                // process sample [i]
-                                const sample_t& sample = samples[i];
-                                const image_t& image = task.image(sample.m_index);
-                                const vector_t target = image.make_target(sample.m_region);
-                                assert(image.has_target(target));
-
-                                const vector_t output = data.m_model->value(image, sample.m_region);
-
-                                data.m_value += loss.value(target, output);
-                                data.m_count ++;
-                        },
-                        [&] (const value_data_t& data)
-                        {
-                                // cumulate partial data
-                                cum_data += data;
+                                cum_data.update(task, samples[i], loss, model);
                         }
-                );
+                }
 
-//                std::cout << "::value: #samples = " << samples.size() << ", loss = " << cum_data.value()
-//                          << ", done in " << timer.elapsed() << std::endl;
+                else
+                {
+                        // multiple samples: split the computation using multiple threads
+                        thread_loop_cumulate<value_data_t>
+                        (
+                                samples.size(),
+                                [&] (value_data_t& data)
+                                {
+                                        data.m_model = model.clone();
+                                },
+                                [&] (size_t i, value_data_t& data)
+                                {
+                                        data.update(task, samples[i], loss);
+                                },
+                                [&] (const value_data_t& data)
+                                {
+                                        cum_data += data;
+                                }
+                        );
+                }
 
                 return cum_data.value();
         }
@@ -131,45 +170,36 @@ namespace ncv
         {
                 vgrad_data_t cum_data(model.n_parameters());
 
-//                const timer_t timer;
-
-                // split the computation using multiple threads
-                thread_loop_cumulate<vgrad_data_t>
-                (
-                        samples.size(),
-                        [&] (vgrad_data_t& data)
+                if (samples.size() < thread_impl::n_threads())
+                {
+                        // few samples: single threaded
+                        for (size_t i = 0; i < samples.size(); i ++)
                         {
-                                // initialize partial cumulated data
-                                data.resize(model.n_parameters());
-                                data.m_model = model.clone();
-                        },
-                        [&] (size_t i, vgrad_data_t& data)
-                        {
-                                // process sample [i]
-                                const sample_t& sample = samples[i];
-                                const image_t& image = task.image(sample.m_index);
-                                const vector_t target = image.make_target(sample.m_region);
-                                assert(image.has_target(target));
-
-                                const vector_t output = data.m_model->value(image, sample.m_region);
-
-                                data.m_value += loss.value(target, output);
-                                data.m_count ++;
-
-                                const vector_t mgrad = data.m_model->vgrad(loss.vgrad(target, output));
-                                assert(mgrad.size() == model.n_parameters());
-                                data.m_vgrad += mgrad;
-                        },
-                        [&] (const vgrad_data_t& data)
-                        {
-                                // cumulate partial data
-                                cum_data += data;
+                                cum_data.update(task, samples[i], loss, model);
                         }
-                );
+                }
 
-//                std::cout << "::value: #samples = " << samples.size() << ", loss = " << cum_data.value()
-//                          << ", grad = " << cum_data.vgrad().lpNorm<Eigen::Infinity>()
-//                          << ", done in " << timer.elapsed() << std::endl;
+                else
+                {
+                        // multiple samples: split the computation using multiple threads
+                        thread_loop_cumulate<vgrad_data_t>
+                        (
+                                samples.size(),
+                                [&] (vgrad_data_t& data)
+                                {
+                                        data.resize(model.n_parameters());
+                                        data.m_model = model.clone();
+                                },
+                                [&] (size_t i, vgrad_data_t& data)
+                                {
+                                        data.update(task, samples[i], loss);
+                                },
+                                [&] (const vgrad_data_t& data)
+                                {
+                                        cum_data += data;
+                                }
+                        );
+                }
 
                 lgrad = cum_data.vgrad();
                 return cum_data.value();
