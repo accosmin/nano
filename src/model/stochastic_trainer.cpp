@@ -112,7 +112,7 @@ namespace ncv
                 // OK
                 log_info() << "stochastic trainer: optimum [loss = " << res.optimum().f
                            << ", gradient = " << res.optimum().g.norm() << "]"
-                           << ", epochs = [" << res.iterations() << "/" << m_epochs * samples.size()
+                           << ", updates = [" << res.iterations()
                            << "], speed = [" << res.speed().avg() << " +/- " << res.speed().stdev() << "].";
 
                 return true;
