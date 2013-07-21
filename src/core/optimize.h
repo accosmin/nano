@@ -176,13 +176,20 @@ namespace ncv
                         const op_updated_t& op_updated = op_updated_t());
 
                 /////////////////////////////////////////////////////////////////////////////////////////////
-                // stochastic gradient descent starting from the initial value (guess) x0.
+                // (average) stochastic gradient descent starting from the initial value (guess) x0.
                 /////////////////////////////////////////////////////////////////////////////////////////////
 
                 result_t sgd(
                         const problem_t& problem,
                         const vector_t& x0,
-                        size_t epoch_size,              // ~number of samples
+                        size_t iterations,              // ~number of samples
+                        scalar_t epsilon,               // convergence precision
+                        const op_updated_t& op_updated = op_updated_t());
+
+                result_t asgd(
+                        const problem_t& problem,
+                        const vector_t& x0,
+                        size_t iterations,              // ~number of samples
                         scalar_t epsilon,               // convergence precision
                         const op_updated_t& op_updated = op_updated_t());
         }

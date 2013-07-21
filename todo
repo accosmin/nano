@@ -1,3 +1,6 @@
+- BUG:
+        - LBFGS trainer - sometimes does not converge - the line-search part takes too long!!!
+
 - refactor networks and models:
 	- convlayer & convnet
 	- convnet::save/load from file

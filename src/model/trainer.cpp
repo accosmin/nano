@@ -1,5 +1,6 @@
 #include "trainer.h"
 #include "core/thread.h"
+#include "core/timer.h"
 
 namespace ncv
 {
@@ -85,6 +86,8 @@ namespace ncv
         {
                 value_data_t cum_data;
 
+//                const timer_t timer;
+
                 // split the computation using multiple threads
                 thread_loop_cumulate<value_data_t>
                 (
@@ -114,6 +117,9 @@ namespace ncv
                         }
                 );
 
+//                std::cout << "::value: #samples = " << samples.size() << ", loss = " << cum_data.value()
+//                          << ", done in " << timer.elapsed() << std::endl;
+
                 return cum_data.value();
         }
 
@@ -124,6 +130,8 @@ namespace ncv
                 const model_t& model, vector_t& lgrad)
         {
                 vgrad_data_t cum_data(model.n_parameters());
+
+//                const timer_t timer;
 
                 // split the computation using multiple threads
                 thread_loop_cumulate<vgrad_data_t>
@@ -158,6 +166,10 @@ namespace ncv
                                 cum_data += data;
                         }
                 );
+
+//                std::cout << "::value: #samples = " << samples.size() << ", loss = " << cum_data.value()
+//                          << ", grad = " << cum_data.vgrad().lpNorm<Eigen::Infinity>()
+//                          << ", done in " << timer.elapsed() << std::endl;
 
                 lgrad = cum_data.vgrad();
                 return cum_data.value();

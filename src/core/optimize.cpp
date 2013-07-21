@@ -385,12 +385,20 @@ namespace ncv
                         result_t sgd(
                                 state_t state, const problem_t& problem, const vector_t& x0,
                                 scalar_t eta, scalar_t lambda, scalar_t epsilon,
-                                size_t opt_iters, size_t update_iters, const op_updated_t& op_updated)
+                                size_t opt_iters, size_t update_iters, const op_updated_t& op_updated,
+                                bool average)
                         {
                                 assert(problem.size() == math::cast<size_t>(x0.size()));
 
                                 result_t result(problem.size());
                                 state_t cstate = state;
+
+                                vector_t avg_x;
+                                if (average)
+                                {
+                                        avg_x.resize(problem.size());
+                                        avg_x.setZero();
+                                }
 
                                 // optimize ...
                                 for (size_t t = 0; t < opt_iters; t ++)
@@ -399,6 +407,12 @@ namespace ncv
 
                                         problem.f(cstate.x, cstate.g);
                                         cstate.x.noalias() -= learning_rate * cstate.g;
+
+                                        // average sgd
+                                        if (average)
+                                        {
+                                                avg_x = ((t + 0.0) * avg_x + cstate.x) / (t + 1.0);
+                                        }
 
                                         // check convergence (& update function value)
                                         if (impl::converged(epsilon, cstate))
@@ -415,7 +429,8 @@ namespace ncv
                                         }
 
                                         // update function value (from time to time)
-                                        if (((t + 1) % update_iters) == 0)
+                                        if (    ((t + 1) % update_iters) == 0 ||
+                                                (t + 1) == opt_iters)
                                         {
                                                 cstate.f = problem.f(cstate.x);
                                                 result.update(cstate);
@@ -425,6 +440,14 @@ namespace ncv
                                                         op_updated(result);
                                                 }
                                         }
+                                }
+
+                                // average sgd
+                                if (average)
+                                {
+                                        cstate.x = avg_x;
+                                        cstate.f = problem.f(cstate.x);
+                                        result.update(cstate);
                                 }
 
                                 return result;
@@ -439,27 +462,30 @@ namespace ncv
                 {
                         result_t sgd(
                                 const problem_t& problem, const vector_t& x0,
-                                size_t epoch_size, scalar_t epsilon, const op_updated_t& op_updated)
+                                size_t iterations, scalar_t epsilon, const op_updated_t& op_updated,
+                                bool average)
                         {
                                 assert(problem.size() == math::cast<size_t>(x0.size()));
 
                                 const scalar_t lambda = 1.0;
 
-                                const size_t opt_iters = epoch_size * 8;
-                                const size_t update_iters = epoch_size / 10;
+                                const size_t opt_iters = std::max(static_cast<size_t>(1), iterations);
+                                const size_t update_iters = std::max(static_cast<size_t>(1), iterations / 10);
 
                                 state_t cstate(problem, x0);
 
                                 std::map<scalar_t, result_t> eta_results;
 
                                 // try various learning rate parameters
-                                const scalars_t etas = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
+                                const scalars_t etas = { 1e-5, 1e-4, 1e-3, 1e-2, 1e-1 };
                                 for (scalar_t eta : etas)
                                 {
-                                        log_info() << "SGD: learning rate [eta = " << eta << "] ...";
+                                        log_info() << (average ? "ASGD" : "SGD")
+                                                   << ": learning rate [eta = " << eta << "] ...";
 
                                         const result_t res = sgd(cstate, problem, x0, eta, lambda, epsilon,
-                                                                 opt_iters, update_iters, op_updated);
+                                                                 opt_iters, update_iters, op_updated,
+                                                                 average);
 
                                         eta_results[res.optimum().f] = res;
                                 }
@@ -472,10 +498,19 @@ namespace ncv
         //-------------------------------------------------------------------------------------------------
 
         optimize::result_t optimize::sgd(
-                const problem_t& problem, const vector_t& x0, size_t epoch_size, scalar_t epsilon,
+                const problem_t& problem, const vector_t& x0, size_t iterations, scalar_t epsilon,
                 const op_updated_t& op_updated)
         {
-                return impl::sgd(problem, x0, epoch_size, epsilon, op_updated);
+                return impl::sgd(problem, x0, iterations, epsilon, op_updated, false);
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        optimize::result_t optimize::asgd(
+                const problem_t& problem, const vector_t& x0, size_t iterations, scalar_t epsilon,
+                const op_updated_t& op_updated)
+        {
+                return impl::sgd(problem, x0, iterations, epsilon, op_updated, true);
         }
 
         //-------------------------------------------------------------------------------------------------

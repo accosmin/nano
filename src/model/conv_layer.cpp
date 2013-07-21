@@ -183,7 +183,7 @@ namespace ncv
                 assert(n_outputs() == gradient.n_dim1());
                 assert(n_orows() == gradient.n_rows());
                 assert(n_ocols() == gradient.n_cols());
-                assert(afunc);
+                assert(m_afunc);
 
                 const activation_t& afunc = *m_afunc;
 

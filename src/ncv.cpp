@@ -19,6 +19,7 @@
 #include "model/conv_network.h"
 
 #include "model/batch_trainer.h"
+#include "model/stochastic_trainer.h"
 
 namespace ncv
 {
@@ -55,6 +56,7 @@ namespace ncv
 
                 // register trainers
                 trainer_manager_t::instance().add("batch", batch_trainer_t());
+                trainer_manager_t::instance().add("stochastic", stochastic_trainer_t());
         }
 
         //-------------------------------------------------------------------------------------------------
