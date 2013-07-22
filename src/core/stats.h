@@ -1,8 +1,9 @@
 #ifndef NANOCV_STATS_H
 #define NANOCV_STATS_H
 
-#include "types.h"
 #include <limits>
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics.hpp>
 
 namespace ncv
 {
@@ -10,24 +11,19 @@ namespace ncv
         // computes statistics: average, standard deviation etc.
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        template
+        <
+                typename tscalar = double
+        >
         class stats_t
 	{
-	public:
-		
-                // constructor
-                stats_t()
-                {
-                        clear();
-                }
+        public:
 		
                 // reset statistics
-                void clear()
-                {
-                        _clear();
-                }
+                void clear() { _clear(); }
                 
                 // add new values
-                void add(scalar_t value)
+                void add(tscalar value)
                 {
                         _add(value);
                 }
@@ -51,62 +47,51 @@ namespace ncv
 		
                 // access functions
                 bool valid() const { return count() != 0; }
-                size_t count() const { return m_count; }
-                scalar_t min() const { return m_min; }
-                scalar_t max() const { return m_max; }
-                scalar_t avg() const { return _avg(); }
-                scalar_t var() const { return _var(); }
-                scalar_t stdev() const { return std::sqrt(_var()); }
-                scalar_t sum() const { return m_sum1; }
-                scalar_t sumsq() const { return m_sum2; }
+                size_t count() const { return boost::accumulators::count(m_acc); }
+                tscalar min() const { return boost::accumulators::min(m_acc); }
+                tscalar max() const { return boost::accumulators::max(m_acc); }
+                tscalar avg() const { return boost::accumulators::mean(m_acc); }
+                tscalar var() const { return boost::accumulators::variance(m_acc)(); }
+                tscalar stdev() const { return std::sqrt(var()); }
 		
-	private:
-                
+        private:
+
                 // reset statistics
                 void _clear()
                 { 
-                        m_min = std::numeric_limits<scalar_t>::max();
-                        m_max = -m_min;
-                        m_sum1 = 0;
-                        m_sum2 = 0;
-                        m_count = 0;
+                        m_acc.drop<boost::accumulators::tag::min>();
+                        m_acc.drop<boost::accumulators::tag::max>();
+                        m_acc.drop<boost::accumulators::tag::mean>();
+                        m_acc.drop<boost::accumulators::tag::variance>();
                 }
                 
                 // add new values
-                void _add(scalar_t value)
+                void _add(tscalar value)
                 {
-                        m_min = std::min(m_min, value);
-                        m_max = std::max(m_max, value);
-                        m_sum1 += value;
-                        m_sum2 += value * value;
-                        m_count ++;
+                        m_acc(value);
                 }
 
                 void _add(const stats_t& other)
                 {
-                        m_min = std::min(m_min, other.m_min);
-                        m_max = std::max(m_max, other.m_max);
-                        m_sum1 += other.m_sum1;
-                        m_sum2 += other.m_sum2;
-                        m_count += other.m_count;
+                        m_acc(other.m_acc);
                 }
                 
-                // access functions
-                scalar_t _avg() const
-                {
-                        return count() < 1 ? sum() : sum() / count();
-                }                
-                scalar_t _var() const
-                {
-                        return count() < 2 ? 0.0 : (sumsq() - sum() * sum() / count()) / (count() - 1);
-                }                
-                
         private:
+
+                typedef boost::accumulators::accumulator_set
+                <
+                        tscalar,
+                        boost::accumulators::stats
+                        <
+                                boost::accumulators::droppable<boost::accumulators::tag::min>,
+                                boost::accumulators::droppable<boost::accumulators::tag::max>,
+                                boost::accumulators::droppable<boost::accumulators::tag::mean>,
+                                boost::accumulators::droppable<boost::accumulators::tag::variance>
+                        >
+                >       accumulator_t;
 		 
                 // attributes
-                scalar_t        m_min, m_max;
-                long double     m_sum1, m_sum2;
-                size_t          m_count;
+                accumulator_t   m_acc;
 	};
 }
 

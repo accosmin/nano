@@ -94,7 +94,7 @@ namespace ncv
                 if (m_iterations > 0)
                 {
                         const scalar_t df = std::fabs(m_optimum.f - st.f);
-                        m_conv_speed.add(df / std::max(1.0, std::fabs(m_optimum.f)));
+                        m_conv_speed.add(df / std::max(static_cast<scalar_t>(1.0), std::fabs(m_optimum.f)));
                 }
 
                 m_iterations ++;
@@ -267,7 +267,7 @@ namespace ncv
                                 const scalar_t beta = cstate.g.dot(cstate.g - pstate.g) /
                                                       pstate.g.dot(pstate.g);
                                 cstate.d = -cstate.g +
-                                           std::max(0.0, beta) * pstate.d;
+                                           std::max(static_cast<scalar_t>(0.0), beta) * pstate.d;
                         }
 
                         // update solution
