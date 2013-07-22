@@ -1,19 +1,17 @@
 - BUG:
         - LBFGS trainer - sometimes does not converge - the line-search part takes too long!!!
 
+- faster convolutions (forward & backward)
+
+- setup the vectors and matrices to use floats, keep scalar_t for other numerical operations
+
 - refactor networks and models:
 	- convlayer & convnet
 	- convnet::save/load from file
 
-	- split the model (output & gradients) from the trainer (lbfgs, sgd, asgd)
-	
-	- convnet_trainer:
-		- full access to train them: lbfgs, cgd, sgd
-		- ncv_trainer program:
-			- option to save the model to file
+	- ncv_trainer program:
+		- option to save the model to file
 
-	- too much duplicated code (layer manipulation & model training)
-	
 	- try GA on 8-bit convolutions?!
 
 - BUG: SGD is not working as advertised (it stops too soon!)
