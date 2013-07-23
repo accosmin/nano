@@ -75,7 +75,17 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        vector_t conv_network_t::vgrad(const vector_t& vgradient) const
+        void conv_network_t::zero_grad() const
+        {
+                for (const conv_layer_t& layer : m_layers)
+                {
+                        layer.zero_grad();
+                }
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void conv_network_t::cumulate_grad(const vector_t& vgradient) const
         {
                 tensor3d_t _gradient(n_outputs(), 1, 1);
                 deserializer_t(vgradient) >> _gradient;
@@ -85,7 +95,12 @@ namespace ncv
                 {
                         gradient = &it->backward(*gradient);
                 }
+        }
 
+        //-------------------------------------------------------------------------------------------------
+
+        vector_t conv_network_t::grad() const
+        {
                 vector_t mgradient(n_parameters());
                 serializer_t s(mgradient);
                 for (const conv_layer_t& layer : m_layers)
@@ -119,6 +134,7 @@ namespace ncv
                 if (math::cast<size_t>(x.size()) == n_parameters())
                 {
                         deserializer_t(x) >> m_layers;
+                        zero_grad();
                         return true;
                 }
 
@@ -134,7 +150,7 @@ namespace ncv
         {
                 for (conv_layer_t& layer : m_layers)
                 {
-                        layer.zero();
+                        layer.zero_params();
                 }
         }
 
@@ -147,7 +163,7 @@ namespace ncv
 
                 for (conv_layer_t& layer : m_layers)
                 {
-                        layer.random(min, max);
+                        layer.random_params(min, max);
                 }
         }
 
@@ -195,7 +211,7 @@ namespace ncv
 
                         conv_layer_t layer;
                         const size_t n_new_params = layer.resize(idims, irows, icols, convs, crows, ccols, aid);
-                        layer.zero();
+                        layer.zero_params();
 
                         if (n_new_params < 1)
                         {
@@ -219,7 +235,7 @@ namespace ncv
                 // create output layer
                 conv_layer_t layer;
                 n_params += layer.resize(idims, irows, icols, odims, irows, icols, "unit");
-                layer.zero();
+                layer.zero_params();
                 m_layers.push_back(layer);
 
                 if (n_params == 0)

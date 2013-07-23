@@ -32,9 +32,11 @@ static void test(
         auto opt_fn_fval_grad = [&] (const ncv::vector_t& x, ncv::vector_t& gx)
         {
                 network.load_params(x);
+                network.zero_grad();
 
                 const ncv::vector_t output = network.value(input);
-                gx = network.vgrad(loss->vgrad(target, output));
+                network.cumulate_grad(loss->vgrad(target, output));
+                gx = network.grad();
 
                 return loss->value(target, output);
         };

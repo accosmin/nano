@@ -12,7 +12,7 @@ namespace ncv
                         m_iterations(text::from_params<size_t>(params, "iter", 256)),
                         m_epsilon(text::from_params<scalar_t>(params, "eps", 1e-6))
         {
-                m_iterations = math::clamp(m_iterations, 16, 1024);
+                m_iterations = math::clamp(m_iterations, 4, 1024);
                 m_epsilon = math::clamp(m_epsilon, 1e-8, 1e-3);
         }
 
@@ -81,7 +81,7 @@ namespace ncv
                 optimize::result_t res;
                 if (text::iequals(m_optimizer, "lbfgs"))
                 {
-                        res = optimize::lbfgs(problem, x, m_iterations, m_epsilon, 8, updater);
+                        res = optimize::lbfgs(problem, x, m_iterations, m_epsilon, 6, updater);
                 }
                 else if (text::iequals(m_optimizer, "cgd"))
                 {

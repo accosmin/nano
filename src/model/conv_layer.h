@@ -64,8 +64,9 @@ namespace ncv
                               const string_t& activation);
 
                 // reset parameters
-                void zero();
-                void random(scalar_t min = -0.1, scalar_t max = 0.1);
+                void zero_params();
+                void random_params(scalar_t min = -0.1, scalar_t max = 0.1);
+                void zero_grad() const;
 
                 // process inputs (compute outputs & gradients)
                 const tensor3d_t& forward(const tensor3d_t& input) const;

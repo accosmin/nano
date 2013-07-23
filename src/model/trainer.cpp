@@ -77,9 +77,15 @@ namespace ncv
                         m_value += loss.value(target, output);
                         m_count ++;
 
-                        const vector_t mgrad = model.vgrad(loss.vgrad(target, output));
-                        assert(mgrad.size() == model.n_parameters());
-                        m_vgrad += mgrad;
+                        model.cumulate_grad(loss.vgrad(target, output));
+
+//                        const vector_t mgrad = model.vgrad(loss.vgrad(target, output));
+//                        assert(mgrad.size() == model.n_parameters());
+//                        m_vgrad += mgrad;
+                }
+                void store() const
+                {
+                        m_vgrad = m_model->grad();
                 }
 
                 // cumulate loss value & gradient
@@ -96,7 +102,7 @@ namespace ncv
 
                 // attributes
                 scalar_t        m_value;
-                vector_t        m_vgrad;
+                mutable vector_t        m_vgrad;
                 size_t          m_count;
                 rmodel_t        m_model;
         };
@@ -172,11 +178,15 @@ namespace ncv
 
                 if (samples.size() < thread_impl::n_threads())
                 {
+                        model.zero_grad();
+
                         // few samples: single threaded
                         for (size_t i = 0; i < samples.size(); i ++)
                         {
                                 cum_data.update(task, samples[i], loss, model);
                         }
+
+                        cum_data.store();
                 }
 
                 else
@@ -189,6 +199,7 @@ namespace ncv
                                 {
                                         data.resize(model.n_parameters());
                                         data.m_model = model.clone();
+                                        data.m_model->zero_grad();
                                 },
                                 [&] (size_t i, vgrad_data_t& data)
                                 {
@@ -196,6 +207,7 @@ namespace ncv
                                 },
                                 [&] (const vgrad_data_t& data)
                                 {
+                                        data.store();
                                         cum_data += data;
                                 }
                         );

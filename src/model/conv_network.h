@@ -32,9 +32,13 @@ namespace ncv
                 NCV_MAKE_CLONABLE(conv_network_t, model_t,
                                   "convolution network, parameters: network=[#convs:#conv_rows:#conv_cols:activation]*")
 
-                // compute the model output & gradient
+                // compute the model output
                 virtual vector_t value(const tensor3d_t& input) const;
-                virtual vector_t vgrad(const vector_t& ogradient) const;
+
+                // initialize/cumulate gradient
+                virtual void zero_grad() const;
+                virtual void cumulate_grad(const vector_t& ograd) const;
+                virtual vector_t grad() const;
 
                 // save/load/initialize parameters
                 virtual bool save_params(vector_t& x) const;

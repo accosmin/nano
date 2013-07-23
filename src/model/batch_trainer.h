@@ -10,8 +10,8 @@ namespace ncv
         //
         // parameters:
         //      opt=lbfgs[,cgd,gd]      - batch optimization method
-        //      iter=256[16,1024]       - maximum number of iterations
-        //      eps=1e-6[1e-3,1e-8]     - convergence
+        //      iter=256[4,1024]        - maximum number of iterations
+        //      eps=1e-6[1e-8,1e-3]     - convergence
         /////////////////////////////////////////////////////////////////////////////////////////
                 
         class batch_trainer_t : public trainer_t
@@ -22,7 +22,7 @@ namespace ncv
                 batch_trainer_t(const string_t& params = string_t());
 
                 NCV_MAKE_CLONABLE(batch_trainer_t, trainer_t,
-                                  "batch trainer, parameters: opt=lbfgs[,cgd,gd],iter=256[16,1024],eps=1e-6[1e-3,1e-8]")
+                                  "batch trainer, parameters: opt=lbfgs[,cgd,gd],iter=256[4,1024],eps=1e-6[1e-8,1e-3]")
 
                 // train the model
                 virtual bool train(const task_t&, const fold_t&, const loss_t&, model_t&) const;

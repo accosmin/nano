@@ -36,11 +36,15 @@ namespace ncv
                 bool resize(size_t rows, size_t cols, size_t outputs, color_mode color);
                 bool resize(const task_t& task);
 
-                // compute the model output & gradient
+                // compute the output
                 vector_t value(const image_t& image, coord_t x, coord_t y) const;
                 vector_t value(const image_t& image, const rect_t& region) const;
                 virtual vector_t value(const tensor3d_t& input) const = 0;
-                virtual vector_t vgrad(const vector_t& ogradient) const = 0;
+
+                // initialize/cumulate the gradient
+                virtual void zero_grad() const = 0;
+                virtual void cumulate_grad(const vector_t& ograd) const = 0;
+                virtual vector_t grad() const = 0;
 
                 // save/load from file
                 bool save(const string_t& path) const;

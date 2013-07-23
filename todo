@@ -1,9 +1,11 @@
+* convlayer optimization idea: 
+	- cumulate gradients in the network (model_t::zero_grad() & model_t::grad()) such that the serialization is called only once
+	- setup the vectors and matrices to use floats, keep scalar_t for other numerical operations
+
+	- ???
+
 - BUG:
         - LBFGS trainer - sometimes does not converge - the line-search part takes too long!!!
-
-- faster convolutions (forward & backward)
-
-- setup the vectors and matrices to use floats, keep scalar_t for other numerical operations
 
 - refactor networks and models:
 	- convlayer & convnet

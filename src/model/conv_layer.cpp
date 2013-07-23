@@ -53,8 +53,6 @@ namespace ncv
                 const size_t orows = math::cast<size_t>(ogdata.rows());
                 const size_t ocols = math::cast<size_t>(ogdata.cols());
 
-                // TODO: this takes 50% of time!
-
                 for (size_t r = 0; r < orows; r ++)
                 {
                         for (size_t c = 0; c < ocols; c ++)
@@ -125,16 +123,25 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void conv_layer_t::zero()
+        void conv_layer_t::zero_params()
         {
                 m_kdata.zero();
+                zero_grad();
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void conv_layer_t::random(scalar_t min, scalar_t max)
+        void conv_layer_t::random_params(scalar_t min, scalar_t max)
         {
                 m_kdata.random(min, max);
+                zero_grad();
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void conv_layer_t::zero_grad() const
+        {
+                m_gdata.zero();
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -201,7 +208,6 @@ namespace ncv
                 }
 
                 // convolution gradient
-                m_gdata.zero();
                 for (size_t o = 0; o < n_outputs(); o ++)
                 {
                         const matrix_t& ogdata = m_odata(o);
