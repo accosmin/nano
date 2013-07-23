@@ -4,6 +4,7 @@
 #include <limits>
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics.hpp>
+#include <boost/accumulators/framework/accumulators/droppable_accumulator.hpp>
 
 namespace ncv
 {
@@ -18,10 +19,7 @@ namespace ncv
         class stats_t
 	{
         public:
-		
-                // reset statistics
-                void clear() { _clear(); }
-                
+
                 // add new values
                 void add(tscalar value)
                 {
@@ -51,19 +49,11 @@ namespace ncv
                 tscalar min() const { return boost::accumulators::min(m_acc); }
                 tscalar max() const { return boost::accumulators::max(m_acc); }
                 tscalar avg() const { return boost::accumulators::mean(m_acc); }
-                tscalar var() const { return boost::accumulators::variance(m_acc)(); }
+                tscalar var() const { return boost::accumulators::variance(m_acc); }
                 tscalar stdev() const { return std::sqrt(var()); }
+                tscalar sum() const { return boost::accumulators::sum(m_acc); }
 		
         private:
-
-                // reset statistics
-                void _clear()
-                { 
-                        m_acc.drop<boost::accumulators::tag::min>();
-                        m_acc.drop<boost::accumulators::tag::max>();
-                        m_acc.drop<boost::accumulators::tag::mean>();
-                        m_acc.drop<boost::accumulators::tag::variance>();
-                }
                 
                 // add new values
                 void _add(tscalar value)
@@ -85,7 +75,6 @@ namespace ncv
                         <
                                 boost::accumulators::droppable<boost::accumulators::tag::min>,
                                 boost::accumulators::droppable<boost::accumulators::tag::max>,
-                                boost::accumulators::droppable<boost::accumulators::tag::mean>,
                                 boost::accumulators::droppable<boost::accumulators::tag::variance>
                         >
                 >       accumulator_t;

@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
         }
 
         // train & test models
-        stats_t lstats, estats;
+        stats_t<scalar_t> lstats, estats;
         for (size_t t = 0; t < cmd_trials; t ++)
         {
                 for (size_t f = 0; f < rtask->n_folds(); f ++)
@@ -181,9 +181,9 @@ int main(int argc, char *argv[])
 
         // performance statistics
         log_info() << ">>> performance: loss value = " << lstats.avg() << " +/- " << lstats.stdev()
-                        << " in [" << lstats.min() << ", " << lstats.max() << "].";
+                   << " in [" << lstats.min() << ", " << lstats.max() << "].";
         log_info() << ">>> performance: loss error = " << estats.avg() << " +/- " << estats.stdev()
-                        << " in [" << estats.min() << ", " << estats.max() << "].";
+                   << " in [" << estats.min() << ", " << estats.max() << "].";
 
         // OK
         log_info() << done;

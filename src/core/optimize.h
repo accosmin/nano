@@ -2,6 +2,7 @@
 #define NANOCV_OPTIMIZE_H
 
 #include "stats.h"
+#include "types.h"
 
 namespace ncv
 {
@@ -81,15 +82,15 @@ namespace ncv
 
                         // access functions
                         const state_t& optimum() const { return m_optimum; }
-                        const stats_t& speed() const { return m_conv_speed; }
+                        const stats_t<scalar_t>& speed() const { return m_conv_speed; }
                         size_t iterations() const { return m_iterations; }
 
                 private:
 
                         // attributes
-                        state_t         m_optimum;              // optimum state
-                        size_t          m_iterations;           // #iterations
-                        stats_t         m_conv_speed;           // convergence speed statistics
+                        state_t                 m_optimum;              // optimum state
+                        size_t                  m_iterations;           // #iterations
+                        stats_t<scalar_t>       m_conv_speed;           // convergence speed statistics
                 };
 
                 /////////////////////////////////////////////////////////////////////////////////////////////
