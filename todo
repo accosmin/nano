@@ -1,4 +1,10 @@
-* convlayer optimization idea: 
+- perf result:   
+    66.69%  ncv_trainer  libnanocv.so         [.] ncv::conv_layer_t::backward(ncv::tensor3d_t const&) const                                                                  
+    26.76%  ncv_trainer  libnanocv.so         [.] ncv::conv_layer_t::forward(ncv::tensor3d_t const&) const                                                                   
+     3.14%  ncv_trainer  libnanocv.so         [.] ncv::fun1_activation_t::value(double) const                                                                                
+     1.07%  ncv_trainer  libnanocv.so         [.] ncv::fun1_activation_t::vgrad(double) const
+
+- convlayer optimization idea: 
 	- cumulate gradients in the network (model_t::zero_grad() & model_t::grad()) such that the serialization is called only once
 	- setup the vectors and matrices to use floats, keep scalar_t for other numerical operations
 

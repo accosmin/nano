@@ -80,7 +80,8 @@ set(nanocv_programs
         ncv_test_optimize
         ncv_test_image
         ncv_test_color
-        ncv_test_convnet
+        ncv_test_convnet_grad
+        ncv_test_convnet_forward
 
         ncv_max_threads
         ncv_info_task
