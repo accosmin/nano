@@ -3,6 +3,8 @@
 
 #include "clonable.h"
 #include "singleton.h"
+#include <vector>
+#include <map>
 
 namespace ncv
 {
@@ -22,31 +24,31 @@ namespace ncv
                 typedef typename clonable_t<tobject>::robject_t         robject_t;
 
                 // manage prototypes
-                bool add(const string_t& id, const tobject& proto)
+                bool add(const std::string& id, const tobject& proto)
                 {
                         return _add(id, proto);
                 }
-                bool has(const string_t& id) const
+                bool has(const std::string& id) const
                 {
                         return _has(id);
                 }
-                robject_t get(const string_t& id) const
+                robject_t get(const std::string& id) const
                 {
                         return _get(id);
                 }
-                robject_t get(const string_t& id, const string_t& params) const
+                robject_t get(const std::string& id, const std::string& params) const
                 {
                         return _get(id, params);
                 }
 
                 // access functions
-                strings_t ids() const { return _ids(); }
-                strings_t descriptions() const { return _descriptions(); }
+                std::vector<std::string> ids() const { return _ids(); }
+                std::vector<std::string> descriptions() const { return _descriptions(); }
 
         private:
 
                 // object prototypes
-                typedef std::map<string_t, robject_t>       	protos_t;
+                typedef std::map<std::string, robject_t>       	protos_t;
                 typedef typename protos_t::const_iterator       protos_const_it;
                 typedef typename protos_t::iterator		protos_it;
                 
@@ -54,21 +56,21 @@ namespace ncv
                 
                 //-------------------------------------------------------------------------------------------------
 
-                bool _add(const string_t& id, const tobject& proto)
+                bool _add(const std::string& id, const tobject& proto)
                 {
                         return m_protos.insert(typename protos_t::value_type(id, proto.clone(""))).second;
                 }
 
                 //-------------------------------------------------------------------------------------------------
 
-                bool _has(const string_t& id) const
+                bool _has(const std::string& id) const
                 {
                         return m_protos.find(id) != m_protos.end();
                 }
 
                 //-------------------------------------------------------------------------------------------------
 
-                robject_t _get(const string_t& id) const
+                robject_t _get(const std::string& id) const
                 {
                         const protos_const_it it = m_protos.find(id);
                         return it == m_protos.end() ? robject_t() : it->second->clone();
@@ -76,7 +78,7 @@ namespace ncv
                 
                 //-------------------------------------------------------------------------------------------------
 
-                robject_t _get(const string_t& id, const string_t& params) const
+                robject_t _get(const std::string& id, const std::string& params) const
                 {
                         const protos_const_it it = m_protos.find(id);
                         return it == m_protos.end() ? robject_t() : it->second->clone(params);
@@ -85,9 +87,9 @@ namespace ncv
                 //-------------------------------------------------------------------------------------------------
 
 		template <typename TFunctor>
-		strings_t _collect(const TFunctor& fun) const
+                std::vector<std::string> _collect(const TFunctor& fun) const
 		{
-                        strings_t result;
+                        std::vector<std::string> result;
                         for (protos_const_it it = m_protos.cbegin(); it != m_protos.cend(); ++ it)
                         {
                                 result.push_back(fun(it));
@@ -98,14 +100,14 @@ namespace ncv
 
                 //-------------------------------------------------------------------------------------------------
 
-		strings_t _ids() const
+                std::vector<std::string> _ids() const
                 {
 			return _collect([] (const protos_const_it& it) { return it->first; });
                 }
 
                 //-------------------------------------------------------------------------------------------------
 
-                strings_t _descriptions() const
+                std::vector<std::string> _descriptions() const
 		{
                         return _collect([] (const protos_const_it& it) { return it->second->description(); });
 		}
@@ -126,7 +128,7 @@ namespace ncv
         >
         struct register_object
         {
-                register_object(const string_t& id)
+                register_object(const std::string& id)
                 {
                         manager_t<tbase>::instance().add(id, tderived());
                 }

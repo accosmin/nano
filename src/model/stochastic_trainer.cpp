@@ -3,6 +3,8 @@
 #include "core/optimize.h"
 #include "core/timer.h"
 #include "core/random.h"
+#include "core/text.h"
+#include "core/clamp.h"
 
 namespace ncv
 {

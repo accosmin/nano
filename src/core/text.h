@@ -1,5 +1,5 @@
-#ifndef NANOCV_STRING_H
-#define NANOCV_STRING_H
+#ifndef NANOCV_TEXT_H
+#define NANOCV_TEXT_H
 
 #include "types.h"
 #include <boost/lexical_cast.hpp>
@@ -38,6 +38,7 @@ namespace ncv
                         return boost::lexical_cast<tvalue>(str);
                 }
 
+                // strinct cast for enumerations
                 template <>
                 inline string_t to_string(protocol type)
                 {
@@ -76,6 +77,36 @@ namespace ncv
                         if (string == "rgba")           return color_mode::rgba;
                         throw std::invalid_argument("invalid color mode <" + string + ">!");
                         return color_mode::luma;
+                }
+
+                template <>
+                inline string_t to_string(channel dtype)
+                {
+                        switch (dtype)
+                        {
+                        case channel::red:              return "red";
+                        case channel::green:            return "green";
+                        case channel::blue:             return "blue";
+                        case channel::luma:             return "luma";
+                        case channel::cielab_l:         return "cielab_l";
+                        case channel::cielab_a:         return "cielab_a";
+                        case channel::cielab_b:         return "cielab_b";
+                        default:                        return "luma";
+                        }
+                }
+
+                template <>
+                inline channel from_string<channel>(const string_t& string)
+                {
+                        if (string == "red")            return channel::red;
+                        if (string == "green")          return channel::green;
+                        if (string == "blue")           return channel::blue;
+                        if (string == "luma")           return channel::luma;
+                        if (string == "cielab_l")       return channel::cielab_l;
+                        if (string == "cielab_a")       return channel::cielab_a;
+                        if (string == "cielab_b")       return channel::cielab_b;
+                        throw std::invalid_argument("Invalid channel type <" + string + ">!");
+                        return channel::luma;
                 }
 
                 // compact a list of values into a string using the given glue string
@@ -134,5 +165,5 @@ namespace ncv
         }
 }
 
-#endif // NANOCV_STRING_H
+#endif // NANOCV_TEXT_H
 

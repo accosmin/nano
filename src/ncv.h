@@ -1,14 +1,7 @@
 #ifndef NANOCV_H
 #define NANOCV_H
 
-#include "core/optimize.h"
-#include "core/geom.h"
-#include "core/logger.h"
-#include "core/random.h"
-#include "core/timer.h"
-#include "core/thread.h"
-#include "core/image.h"
-#include "core/stats.h"
+#include "core/text.h"
 #include "loss/loss.h"
 #include "activation/activation.h"
 #include "task/task.h"

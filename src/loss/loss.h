@@ -2,6 +2,7 @@
 #define NANOCV_LOSS_H
 
 #include "core/manager.h"
+#include "core/types.h"
 
 namespace ncv
 {

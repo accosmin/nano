@@ -1,14 +1,10 @@
+* static int cnt = 0 -> compute #number of convolutions / sample for the network
+
 - perf result:   
     66.69%  ncv_trainer  libnanocv.so         [.] ncv::conv_layer_t::backward(ncv::tensor3d_t const&) const                                                                  
     26.76%  ncv_trainer  libnanocv.so         [.] ncv::conv_layer_t::forward(ncv::tensor3d_t const&) const                                                                   
      3.14%  ncv_trainer  libnanocv.so         [.] ncv::fun1_activation_t::value(double) const                                                                                
      1.07%  ncv_trainer  libnanocv.so         [.] ncv::fun1_activation_t::vgrad(double) const
-
-- convlayer optimization idea: 
-	- cumulate gradients in the network (model_t::zero_grad() & model_t::grad()) such that the serialization is called only once
-	- setup the vectors and matrices to use floats, keep scalar_t for other numerical operations
-
-	- ???
 
 - BUG:
         - LBFGS trainer - sometimes does not converge - the line-search part takes too long!!!
@@ -49,6 +45,8 @@
 
 	- 6s:xxxms for 5000 samples & 8:8x8 hidden layer!
 	- 2s:600ms for 2000 samples & 8:8x8 hidden layer!
+
+
 
 - constrain the loss such that the optimization works properly when the number of parameters
 	is larger than the number of samples

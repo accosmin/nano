@@ -1,12 +1,10 @@
 #ifndef NANOCV_THREAD_H
 #define NANOCV_THREAD_H
 
-#include "types.h"
 #include "singleton.h"
 #include <thread>
-#include <mutex>
-#include <condition_variable>
 #include <vector>
+#include <condition_variable>
 #include <deque>
 
 namespace ncv

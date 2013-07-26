@@ -1,56 +1,10 @@
 #ifndef  NANOCV_COLOR_H
 #define  NANOCV_COLOR_H
 
-#include "string.h"
-#include "math.h"
+#include "types.h"
 
 namespace ncv
 {
-        // color channels
-        enum class channel : int
-        {
-                red = 0,                // R
-                green,                  // G
-                blue,                   // B
-                luma,                   // Y/L
-                cielab_l,               // CIELab L
-                cielab_a,               // CIELab a
-                cielab_b                // CIELab b
-        };
-
-        namespace text
-        {
-                template <>
-                inline string_t to_string(channel dtype)
-                {
-                        switch (dtype)
-                        {
-                        case channel::red:              return "red";
-                        case channel::green:            return "green";
-                        case channel::blue:             return "blue";
-                        case channel::luma:             return "luma";
-                        case channel::cielab_l:         return "cielab_l";
-                        case channel::cielab_a:         return "cielab_a";
-                        case channel::cielab_b:         return "cielab_b";
-                        default:                        return "luma";
-                        }
-                }
-
-                template <>
-                inline channel from_string<channel>(const string_t& string)
-                {
-                        if (string == "red")            return channel::red;
-                        if (string == "green")          return channel::green;
-                        if (string == "blue")           return channel::blue;
-                        if (string == "luma")           return channel::luma;
-                        if (string == "cielab_l")       return channel::cielab_l;
-                        if (string == "cielab_a")       return channel::cielab_a;
-                        if (string == "cielab_b")       return channel::cielab_b;
-                        throw std::invalid_argument("Invalid channel type <" + string + ">!");
-                        return channel::luma;
-                }
-        }
-
         // RGBA
         typedef uint32_t                        rgba_t;
         typedef tmatrix<rgba_t>::matrix_t       rgba_matrix_t;
@@ -65,7 +19,7 @@ namespace ncv
         >                                       cielab_t;
         typedef tmatrix<cielab_t>::matrix_t     cielab_matrix_t;
 
-        // manipulate color space
+        // manipulate colors
         namespace color
         {
                 // RGBA decoding (R, G, B, A, L(uma), CIELab)

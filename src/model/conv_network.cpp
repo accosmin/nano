@@ -1,5 +1,7 @@
 #include "conv_network.h"
 #include "core/logger.h"
+#include "core/text.h"
+#include "core/cast.h"
 
 namespace ncv
 {

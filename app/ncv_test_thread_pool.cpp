@@ -1,4 +1,7 @@
 #include "ncv.h"
+#include "core/thread.h"
+#include "core/logger.h"
+#include "core/random.h"
 
 int main(int argc, char *argv[])
 {

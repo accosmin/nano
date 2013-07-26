@@ -80,6 +80,7 @@ set(nanocv_programs
         ncv_test_optimize
         ncv_test_image
         ncv_test_color
+        ncv_test_convolution
         ncv_test_convnet_grad
         ncv_test_convnet_forward
 
@@ -90,7 +91,7 @@ set(nanocv_programs
 
 # Build executables
 foreach(proj ${nanocv_programs})
-        add_executable(${proj} app/app_${proj}.cpp)
+        add_executable(${proj} app/${proj}.cpp)
         target_link_libraries(${proj} ${libs})
 endforeach()
 

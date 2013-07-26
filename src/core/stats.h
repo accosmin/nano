@@ -4,7 +4,6 @@
 #include <limits>
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics.hpp>
-#include <boost/accumulators/framework/accumulators/droppable_accumulator.hpp>
 
 namespace ncv
 {
@@ -73,9 +72,9 @@ namespace ncv
                         tscalar,
                         boost::accumulators::stats
                         <
-                                boost::accumulators::droppable<boost::accumulators::tag::min>,
-                                boost::accumulators::droppable<boost::accumulators::tag::max>,
-                                boost::accumulators::droppable<boost::accumulators::tag::variance>
+                                boost::accumulators::tag::min,
+                                boost::accumulators::tag::max,
+                                boost::accumulators::tag::variance
                         >
                 >       accumulator_t;
 		 

@@ -1,6 +1,8 @@
 #include "task_mnist.h"
 #include "loss/loss.h"
 #include "core/color.h"
+#include "core/text.h"
+#include "core/cast.h"
 #include <fstream>
 
 namespace ncv

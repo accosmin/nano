@@ -138,6 +138,18 @@ namespace ncv
                 right
         };
 
+        // color channels
+        enum class channel : int
+        {
+                red = 0,                // R
+                green,                  // G
+                blue,                   // B
+                luma,                   // Y/L
+                cielab_l,               // CIELab L
+                cielab_a,               // CIELab a
+                cielab_b                // CIELab b
+        };
+
         // machine learning protocol
         enum class protocol : int
         {

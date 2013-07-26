@@ -1,4 +1,5 @@
 #include "image.h"
+#include "cast.h"
 #include <QImage>
 
 namespace ncv

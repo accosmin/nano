@@ -1,4 +1,6 @@
 #include "ncv.h"
+#include "core/timer.h"
+#include "core/logger.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])

@@ -1,7 +1,8 @@
 #include "conv_layer.h"
 #include "core/logger.h"
-#include "core/string.h"
-#include "core/math.h"
+#include "core/text.h"
+#include "core/cast.h"
+#include "core/matrix_algo.h"
 
 namespace ncv
 {

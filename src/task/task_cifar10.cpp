@@ -1,6 +1,7 @@
 #include "task_cifar10.h"
 #include "core/color.h"
 #include "loss/loss.h"
+#include "core/cast.h"
 #include <fstream>
 
 namespace ncv

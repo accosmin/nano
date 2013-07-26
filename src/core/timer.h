@@ -1,7 +1,6 @@
 #ifndef NANOCV_TIMER_H
 #define NANOCV_TIMER_H
 
-#include "types.h"
 #include <chrono>
 #include <ratio>
 #include <utility>
@@ -28,11 +27,11 @@ namespace ncv
                 {
                         m_start = now();
                 }
-                string_t elapsed() const
+                std::string elapsed() const
                 {
                         return miliseconds_to_string(miliseconds());
                 }
-                size_t miliseconds() const
+                std::size_t miliseconds() const
                 {
                         const auto duration = std::chrono::duration_cast<milliseconds_t>(now() - m_start);
                         return duration.count();
@@ -41,7 +40,7 @@ namespace ncv
         private:
 
                 typedef std::chrono::steady_clock::time_point           time_t;
-                typedef std::chrono::duration<size_t, std::milli>       milliseconds_t;
+                typedef std::chrono::duration<std::size_t, std::milli>  milliseconds_t;
 
                 // current time point
                 static time_t now()
@@ -50,18 +49,18 @@ namespace ncv
                 }
 
                 // transform miliseconds to string (days, hours, minutes, seconds, miliseconds)
-                static string_t miliseconds_to_string(size_t count)
+                static std::string miliseconds_to_string(std::size_t count)
                 {
-                        static const size_t size_second = 1000;
-                        static const size_t size_minute = 60 * size_second;
-                        static const size_t size_hour = 60 * size_minute;
-                        static const size_t size_day = 24 * size_hour;
+                        static const std::size_t size_second = 1000;
+                        static const std::size_t size_minute = 60 * size_second;
+                        static const std::size_t size_hour = 60 * size_minute;
+                        static const std::size_t size_day = 24 * size_hour;
 
-                        const size_t days = count / size_day; count -= days * size_day;
-                        const size_t hours = count / size_hour; count -= hours * size_hour;
-                        const size_t minutes = count / size_minute; count -= minutes * size_minute;
-                        const size_t seconds = count / size_second; count -= seconds * size_second;
-                        const size_t miliseconds = count;
+                        const std::size_t days = count / size_day; count -= days * size_day;
+                        const std::size_t hours = count / size_hour; count -= hours * size_hour;
+                        const std::size_t minutes = count / size_minute; count -= minutes * size_minute;
+                        const std::size_t seconds = count / size_second; count -= seconds * size_second;
+                        const std::size_t miliseconds = count;
 
                         std::stringstream stream;
                         if (days > 0)
