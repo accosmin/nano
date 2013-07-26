@@ -17,10 +17,10 @@ int main(int argc, char *argv[])
         po_desc.add_options()("inputs,i",
                 boost::program_options::value<string_t>()->default_value("rgba"),
                 "number of inputs [luma, rgba]");
-        po_desc.add_options()("rows,ir",
+        po_desc.add_options()("rows,r",
                 boost::program_options::value<size_t>()->default_value(32),
                 "number of input rows [16, 64]");
-        po_desc.add_options()("cols,ic",
+        po_desc.add_options()("cols,c",
                 boost::program_options::value<size_t>()->default_value(32),
                 "number of input columns [16, 64]");
         po_desc.add_options()("outputs,o",
