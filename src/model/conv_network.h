@@ -22,7 +22,6 @@ namespace ncv
         {
         public:
 
-                // FIXME: remove this!
                 using model_t::resize;
                 
                 // constructor

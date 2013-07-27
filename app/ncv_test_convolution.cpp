@@ -52,9 +52,10 @@ void test(int isize, int ksize, int n_samples)
 	init_matrix(isize - ksize + 1, isize - ksize + 1, odata);
 	kdata /= n_samples;
 
-        test_matrices(math::conv_add_eigen_block<matrix_t>, "eigen  ",   idatas, kdata, odata);
-        test_matrices(math::conv_add_mod4<matrix_t>,        "mod4   ",   idatas, kdata, odata);
-        test_matrices(math::conv_add_mod8<matrix_t>,        "mod8   ",   idatas, kdata, odata);
+        test_matrices(math::conv_add_naive<matrix_t>,       "naive  ", idatas, kdata, odata);
+        test_matrices(math::conv_add_eigen_block<matrix_t>, "eigen  ", idatas, kdata, odata);
+        test_matrices(math::conv_add_mod4<matrix_t>,        "mod4   ", idatas, kdata, odata);
+        test_matrices(math::conv_add_mod8<matrix_t>,        "mod8   ", idatas, kdata, odata);
         test_matrices(math::conv_add_dynamic<matrix_t>,     "dynamic", idatas, kdata, odata);
 	std::cout << std::endl;
 }

@@ -71,6 +71,7 @@ namespace ncv
                 // process inputs (compute outputs & gradients)
                 const tensor3d_t& forward(const tensor3d_t& input) const;
                 const tensor3d_t& backward(const tensor3d_t& gradient) const;
+                void backward(const conv_layer_t& layer) const;
 
                 // serialize/deserialize data
                 friend serializer_t& operator<<(serializer_t& s, const conv_layer_t& layer);

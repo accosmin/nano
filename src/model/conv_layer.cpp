@@ -2,48 +2,11 @@
 #include "core/logger.h"
 #include "core/text.h"
 #include "core/cast.h"
+#include "core/convolution.h"
 #include "core/matrix_algo.h"
 
 namespace ncv
 {
-        //-------------------------------------------------------------------------------------------------
-
-        static void forward(const matrix_t& idata, const matrix_t& kdata, matrix_t& odata)
-        {
-                const size_t krows = math::cast<size_t>(kdata.rows());
-                const size_t kcols = math::cast<size_t>(kdata.cols());
-
-                const size_t orows = math::cast<size_t>(odata.rows());
-                const size_t ocols = math::cast<size_t>(odata.cols());
-
-                for (size_t r = 0; r < orows; r ++)
-                {
-                        for (size_t c = 0; c < ocols; c ++)
-                        {
-                                odata(r, c) += idata.block(r, c, krows, kcols).cwiseProduct(kdata).sum();
-                        }
-                }
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        static void gradient(const matrix_t& idata, const matrix_t& ogdata, matrix_t& gdata)
-        {
-                const size_t krows = math::cast<size_t>(gdata.rows());
-                const size_t kcols = math::cast<size_t>(gdata.cols());
-
-                const size_t orows = math::cast<size_t>(ogdata.rows());
-                const size_t ocols = math::cast<size_t>(ogdata.cols());
-
-                for (size_t r = 0; r < krows; r ++)
-                {
-                        for (size_t c = 0; c < kcols; c ++)
-                        {
-                                gdata(r, c) += idata.block(r, c, orows, ocols).cwiseProduct(ogdata).sum();
-                        }
-                }
-        }
-
         //-------------------------------------------------------------------------------------------------
 
         static void backward(const matrix_t& ogdata, const matrix_t& kdata, matrix_t& igdata)
@@ -156,28 +119,23 @@ namespace ncv
 
                 m_idata = input;
 
+                // outputs
                 const activation_t& afunc = *m_afunc;
-
-                // output
-                m_odata.zero();
                 for (size_t o = 0; o < n_outputs(); o ++)
                 {
                         matrix_t& odata = m_odata(o);
+                        odata.setZero();
 
+                        // convolution output
                         for (size_t i = 0; i < n_inputs(); i ++)
                         {
                                 const matrix_t& idata = m_idata(i);
                                 const matrix_t& kdata = m_kdata(o, i);
 
-                                ncv::forward(idata, kdata, odata);
+                                math::conv_add_dynamic(idata, kdata, odata);
                         }
-                }
 
-                // activation
-                for (size_t o = 0; o < n_outputs(); o ++)
-                {
-                        matrix_t& odata = m_odata(o);
-
+                        // activation
                         math::for_each(odata, [&] (scalar_t& v) { v = afunc.value(v); });
                 }
 
@@ -193,32 +151,28 @@ namespace ncv
                 assert(n_ocols() == gradient.n_cols());
                 assert(m_afunc);
 
+                // outputs
                 const activation_t& afunc = *m_afunc;
-
-                // activation
                 for (size_t o = 0; o < n_outputs(); o ++)
                 {
-                        const matrix_t& gdata = gradient(o);
+                        const matrix_t& gdata = gradient(o);                        
+                        const matrix_t& ogdata = m_odata(o);
                         matrix_t& odata = m_odata(o);
 
+                        // activation
                         const size_t size = math::cast<size_t>(odata.size());
                         for (size_t ii = 0; ii < size; ii ++)
                         {
                                 odata(ii) = gdata(ii) * afunc.vgrad(odata(ii));
                         }
-                }
 
-                // convolution gradient
-                for (size_t o = 0; o < n_outputs(); o ++)
-                {
-                        const matrix_t& ogdata = m_odata(o);
-
+                        // convolution gradient
                         for (size_t i = 0; i < n_inputs(); i ++)
                         {
                                 const matrix_t& idata = m_idata(i);
                                 matrix_t& gdata = m_gdata(o, i);
 
-                                ncv::gradient(idata, ogdata, gdata);
+                                math::conv_add_dynamic(idata, ogdata, gdata);
                         }
                 }
 
@@ -238,6 +192,26 @@ namespace ncv
                 }
 
                 return m_idata;
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void conv_layer_t::backward(const conv_layer_t& layer) const
+        {
+                assert(n_inputs() == layer.n_inputs());
+                assert(n_outputs() == layer.n_outputs());
+                assert(n_irows() == layer.n_irows());
+                assert(n_icols() == layer.n_icols());
+                assert(n_orows() == layer.n_orows());
+                assert(n_ocols() == layer.n_ocols());
+
+                for (size_t o = 0; o < n_outputs(); o ++)
+                {
+                        for (size_t i = 0; i < n_inputs(); i ++)
+                        {
+                                m_gdata(o, i) += layer.m_gdata(o, i);
+                        }
+                }
         }
 
         //-------------------------------------------------------------------------------------------------
