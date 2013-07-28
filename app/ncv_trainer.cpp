@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
         }
 
         string_t po_desc_trainers;
-        for (size_t i = 0; i < model_ids.size(); i ++)
+        for (size_t i = 0; i < trainer_ids.size(); i ++)
         {
                 po_desc_trainers +=
                         "\t" + text::resize(trainer_ids[i], 16) +
