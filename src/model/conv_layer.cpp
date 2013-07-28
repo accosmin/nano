@@ -9,19 +9,96 @@ namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
+//        static void backward(const matrix_t& ogdata, const matrix_t& kdata, matrix_t& igdata)
+//        {
+//                const size_t krows = math::cast<size_t>(kdata.rows());
+//                const size_t kcols = math::cast<size_t>(kdata.cols());
+
+//                const size_t orows = math::cast<size_t>(ogdata.rows());
+//                const size_t ocols = math::cast<size_t>(ogdata.cols());
+
+////                TODO: move this part to core/convolution.h -> deconv_add()
+
+//                for (size_t r = 0; r < orows; r ++)
+//                {
+//                        for (size_t c = 0; c < ocols; c ++)
+//                        {
+//                                igdata.block(r, c, krows, kcols).noalias() += ogdata(r, c) * kdata;
+
+//                        }
+//                }
+//        }
+
         static void backward(const matrix_t& ogdata, const matrix_t& kdata, matrix_t& igdata)
         {
-                const size_t krows = math::cast<size_t>(kdata.rows());
-                const size_t kcols = math::cast<size_t>(kdata.cols());
+                const int krows = math::cast<int>(kdata.rows());
+                const int kcols = math::cast<int>(kdata.cols());
+                const int kcols4 = kcols - (kcols % 4);
 
-                const size_t orows = math::cast<size_t>(ogdata.rows());
-                const size_t ocols = math::cast<size_t>(ogdata.cols());
+                const int orows = math::cast<int>(ogdata.rows());
+                const int ocols = math::cast<int>(ogdata.cols());
 
-                for (size_t r = 0; r < orows; r ++)
+//                TODO: move this part to core/convolution.h -> deconv_add()
+
+//                for (int r = 0; r < orows; r ++)
+//                {
+//                        const scalar_t* pogdata = &ogdata(r, 0);
+
+//                        for (int kr = 0; kr < krows; kr ++)
+//                        {
+//                                const scalar_t* pkdata = &kdata(kr, 0);
+//                                scalar_t* pigdata = &igdata(r + kr);
+
+//                                for (int c = 0; c < ocols; c ++)
+//                                {
+////                                        for (int kc = 0; kc < kcols4; kc += 4)
+////                                        {
+////                                                pigdata[c + kc + 0] += pogdata[c] * pkdata[kc + 0];
+////                                                pigdata[c + kc + 1] += pogdata[c] * pkdata[kc + 1];
+////                                                pigdata[c + kc + 2] += pogdata[c] * pkdata[kc + 2];
+////                                                pigdata[c + kc + 3] += pogdata[c] * pkdata[kc + 3];
+////                                        }
+////                                        for (int kc = kcols4; kc < kcols; kc ++)
+////                                        {
+////                                                pigdata[c + kc + 0] += pogdata[c] * pkdata[kc];
+////                                        }
+
+//                                        for (int kc = 0; kc < kcols; kc ++)
+//                                        {
+//                                                pigdata[c + kc] += pogdata[c] * pkdata[kc];
+//                                        }
+//                                }
+//                        }
+//                }
+
+                for (int r = 0; r < orows; r ++)
                 {
-                        for (size_t c = 0; c < ocols; c ++)
+                        const scalar_t* pogdata = &ogdata(r, 0);
+
+                        for (int kr = 0; kr < krows; kr ++)
                         {
-                                igdata.block(r, c, krows, kcols).noalias() += ogdata(r, c) * kdata;
+                                const scalar_t* pkdata = &kdata(kr, 0);
+                                scalar_t* pigdata = &igdata(r + kr, 0);
+
+                                for (int c = 0; c < ocols; c ++)
+                                {
+//                                        for (int kc = 0; kc < kcols; kc ++)
+//                                        {
+//                                                pigdata[c + kc] += pogdata[c] * pkdata[kc];
+//                                        }
+
+                                        for (int kc = 0; kc < kcols4; kc += 4)
+                                        {
+                                                pigdata[c + kc + 0] += pogdata[c] * pkdata[kc + 0];
+                                                pigdata[c + kc + 1] += pogdata[c] * pkdata[kc + 1];
+                                                pigdata[c + kc + 2] += pogdata[c] * pkdata[kc + 2];
+                                                pigdata[c + kc + 3] += pogdata[c] * pkdata[kc + 3];
+                                        }
+                                        for (int kc = kcols4; kc < kcols; kc ++)
+                                        {
+                                                pigdata[c + kc + 0] += pogdata[c] * pkdata[kc];
+                                        }
+                                }
                         }
                 }
         }
@@ -155,7 +232,7 @@ namespace ncv
                 const activation_t& afunc = *m_afunc;
                 for (size_t o = 0; o < n_outputs(); o ++)
                 {
-                        const matrix_t& gdata = gradient(o);                        
+                        const matrix_t& gdata = gradient(o);
                         const matrix_t& ogdata = m_odata(o);
                         matrix_t& odata = m_odata(o);
 

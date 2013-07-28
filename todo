@@ -1,4 +1,7 @@
-* static int cnt = 0 -> compute #number of convolutions / sample for the network
+- train_convnet.sh:
+	- optimize the conv_layer_t::backward() function
+
+	- generalize & optimize the function in core/convolution.h + test program similar to test_convolution
 
 - perf result:   
     66.69%  ncv_trainer  libnanocv.so         [.] ncv::conv_layer_t::backward(ncv::tensor3d_t const&) const                                                                  
