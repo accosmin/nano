@@ -18,12 +18,11 @@ include_directories(${Qt5Gui_INCLUDE_DIRS})
 add_definitions(${Qt5Gui_DEFINITIONS})
 
 # Set the compiler flags
-set(extra_cxx_flags                    "-Wall -std=c++11 -fopenmp")
-set(CMAKE_CXX_FLAGS                    "${extra_cxx_flags} ${CMAKE_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS_DEBUG              "${extra_cxx_flags} ${CMAKE_CXX_FLAGS_DEBUG}")
-set(CMAKE_CXX_FLAGS_RELEASE            "${extra_cxx_flags} ${CMAKE_CXX_FLAGS_RELEASE}")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO     "${extra_cxx_flags} ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
-set(CMAKE_CXX_FLAGS_MINSIZEREL         "${extra_cxx_flags} ${CMAKE_CXX_FLAGS_MINSIZEREL}")
+set(CMAKE_CXX_FLAGS                     "-Wall -std=c++11 -fopenmp")
+set(CMAKE_CXX_FLAGS_DEBUG               "-g")
+set(CMAKE_CXX_FLAGS_RELEASE             "-O4 -DNDEBUG")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O2 -g -DNDEBUG")
+set(CMAKE_CXX_FLAGS_MINSIZEREL          "-Os -DNDEBUG")
 
 #set (CMAKE_BUILD_TYPE RELEASE)
 #set (CMAKE_BUILD_TYPE DEBUG)

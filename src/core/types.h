@@ -113,6 +113,12 @@ namespace ncv
         typedef tmatrix<scalar_t>::matrix_t     matrix_t;
         typedef tmatrix<scalar_t>::matrices_t   matrices_t;
 
+//        typedef tmatrix<vector_t>::matrix_t     tensor3d_t;
+//        typedef tmatrix<vector_t>::matrices_t   tensor3ds_t;
+
+//        typedef tmatrix<matrix_t>::matrix_t     tensor4d_t;
+//        typedef tmatrix<matrix_t>::matrices_t   tensor4ds_t;
+
         // pixel geometry
         namespace bgm = boost::geometry::model;
         typedef int                             coord_t;
