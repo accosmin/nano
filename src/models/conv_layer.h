@@ -78,15 +78,19 @@ namespace ncv
                 friend deserializer_t& operator>>(deserializer_t& s, conv_layer_t& layer);
 
                 // access functions
-                size_t n_inputs() const { return m_idata.n_dim1(); }
+                size_t n_idims() const { return m_idata.n_dim1(); }
                 size_t n_irows() const { return m_idata.n_rows(); }
                 size_t n_icols() const { return m_idata.n_cols(); }
 
-                size_t n_outputs() const { return m_odata.n_dim1(); }
+                size_t n_kdim1() const { return m_kdata.n_dim1(); }
+                size_t n_kdim2() const { return m_kdata.n_dim2(); }
+                size_t n_krows() const { return m_kdata.n_rows(); }
+                size_t n_kcols() const { return m_kdata.n_cols(); }
+
+                size_t n_odims() const { return m_odata.n_dim1(); }
                 size_t n_orows() const { return m_odata.n_rows(); }
                 size_t n_ocols() const { return m_odata.n_cols(); }
 
-                const tensor4d_t& kdata() const { return m_kdata; }
                 const tensor4d_t& gdata() const { return m_gdata; }
 
                 const string_t& activation() const { return m_activation; }

@@ -150,8 +150,8 @@ namespace ncv
         {
                 m_afunc = activation_manager_t::instance().get(m_activation);
                 if (    !m_afunc &&
-                        n_inputs() != 0 && n_irows() != 0 && n_icols() != 0 &&
-                        n_outputs() != 0)
+                        n_idims() != 0 && n_irows() != 0 && n_icols() != 0 &&
+                        n_odims() != 0)
                 {
                         const string_t message =
                                 "invalid activation function (" + m_activation + ") out of (" +
@@ -189,7 +189,7 @@ namespace ncv
 
         const tensor3d_t& conv_layer_t::forward(const tensor3d_t& input) const
         {
-                assert(n_inputs() == input.n_dim1());
+                assert(n_idims() == input.n_dim1());
                 assert(n_irows() <= input.n_rows());
                 assert(n_icols() <= input.n_cols());
                 assert(m_afunc);
@@ -198,13 +198,13 @@ namespace ncv
 
                 // outputs
                 const activation_t& afunc = *m_afunc;
-                for (size_t o = 0; o < n_outputs(); o ++)
+                for (size_t o = 0; o < n_odims(); o ++)
                 {
                         matrix_t& odata = m_odata(o);
                         odata.setZero();
 
                         // convolution output
-                        for (size_t i = 0; i < n_inputs(); i ++)
+                        for (size_t i = 0; i < n_idims(); i ++)
                         {
                                 const matrix_t& idata = m_idata(i);
                                 const matrix_t& kdata = m_kdata(o, i);
@@ -223,14 +223,14 @@ namespace ncv
 
         const tensor3d_t& conv_layer_t::backward(const tensor3d_t& gradient) const
         {
-                assert(n_outputs() == gradient.n_dim1());
+                assert(n_odims() == gradient.n_dim1());
                 assert(n_orows() == gradient.n_rows());
                 assert(n_ocols() == gradient.n_cols());
                 assert(m_afunc);
 
                 // outputs
                 const activation_t& afunc = *m_afunc;
-                for (size_t o = 0; o < n_outputs(); o ++)
+                for (size_t o = 0; o < n_odims(); o ++)
                 {
                         const matrix_t& gdata = gradient(o);
                         const matrix_t& ogdata = m_odata(o);
@@ -244,7 +244,7 @@ namespace ncv
                         }
 
                         // convolution gradient
-                        for (size_t i = 0; i < n_inputs(); i ++)
+                        for (size_t i = 0; i < n_idims(); i ++)
                         {
                                 const matrix_t& idata = m_idata(i);
                                 matrix_t& gdata = m_gdata(o, i);
@@ -255,11 +255,11 @@ namespace ncv
 
                 // input gradient
                 m_idata.zero();
-                for (size_t o = 0; o < n_outputs(); o ++)
+                for (size_t o = 0; o < n_odims(); o ++)
                 {
                         const matrix_t& ogdata = m_odata(o);
 
-                        for (size_t i = 0; i < n_inputs(); i ++)
+                        for (size_t i = 0; i < n_idims(); i ++)
                         {
                                 const matrix_t& kdata = m_kdata(o, i);
                                 matrix_t& igdata = m_idata(i);
@@ -275,16 +275,16 @@ namespace ncv
 
         void conv_layer_t::backward(const conv_layer_t& layer) const
         {
-                assert(n_inputs() == layer.n_inputs());
-                assert(n_outputs() == layer.n_outputs());
+                assert(n_idims() == layer.n_idims());
+                assert(n_odims() == layer.n_odims());
                 assert(n_irows() == layer.n_irows());
                 assert(n_icols() == layer.n_icols());
                 assert(n_orows() == layer.n_orows());
                 assert(n_ocols() == layer.n_ocols());
 
-                for (size_t o = 0; o < n_outputs(); o ++)
+                for (size_t o = 0; o < n_odims(); o ++)
                 {
-                        for (size_t i = 0; i < n_inputs(); i ++)
+                        for (size_t i = 0; i < n_idims(); i ++)
                         {
                                 m_gdata(o, i) += layer.m_gdata(o, i);
                         }

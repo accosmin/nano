@@ -229,7 +229,7 @@ namespace ncv
                         n_params += n_new_params;
                         m_layers.push_back(layer);
 
-                        idims = layer.n_outputs();
+                        idims = layer.n_odims();
                         irows = layer.n_orows();
                         icols = layer.n_ocols();
                 }
@@ -269,10 +269,9 @@ namespace ncv
                                               "(%4%x%5%x%6% * %7%x%8%x%9%x%10%) -> %11%x%12%x%13%.")
                                 % (l + 1) % m_layers.size()
                                 % layer.activation()
-                                % layer.n_inputs() % layer.n_irows() % layer.n_icols()
-                                % layer.kdata().n_dim1() % layer.kdata().n_dim2()
-                                % layer.kdata().n_rows() % layer.kdata().n_cols()
-                                % layer.n_outputs() % layer.n_orows() % layer.n_ocols();
+                                % layer.n_idims() % layer.n_irows() % layer.n_icols()
+                                % layer.n_kdim1() % layer.n_kdim2() % layer.n_krows() % layer.n_kcols()
+                                % layer.n_odims() % layer.n_orows() % layer.n_ocols();
 
                         log_info() << message.str();
                 }
