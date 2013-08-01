@@ -3,7 +3,7 @@
 #include "core/text.h"
 #include "core/cast.h"
 #include "core/convolution.h"
-#include "core/matrix_algo.h"
+#include "core/for_each.h"
 
 namespace ncv
 {

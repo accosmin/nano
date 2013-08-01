@@ -1,5 +1,5 @@
-#ifndef NANOCV_MATRIX_ALGO_H
-#define NANOCV_MATRIX_ALGO_H
+#ifndef NANOCV_TRANSFORM_H
+#define NANOCV_TRANSFORM_H
 
 #include <algorithm>
 
@@ -11,17 +11,6 @@ namespace ncv
 
         namespace math
         {
-                // transform coefficient-wise a matrix: op(&in)
-                template
-                <
-                        typename tmatrix,
-                        typename toperator
-                >
-                void for_each(tmatrix& in, toperator op)
-                {
-                        std::for_each(in.data(), in.data() + in.size(), op);
-                }
-
                 // transform coefficient-wise a matrix: out = op(in)
                 template
                 <
@@ -67,5 +56,5 @@ namespace ncv
         }
 }
 
-#endif // NANOCV_MATRIX_ALGO_H
+#endif // NANOCV_TRANSFORM_H
 

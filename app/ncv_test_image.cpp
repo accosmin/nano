@@ -3,7 +3,7 @@
 #include "core/timer.h"
 #include "core/clamp.h"
 #include "core/bilinear.h"
-#include "core/matrix_algo.h"
+#include "core/transform.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
