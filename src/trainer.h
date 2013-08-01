@@ -1,9 +1,9 @@
 #ifndef NANOCV_TRAINER_H
 #define NANOCV_TRAINER_H
 
-#include "task/task.h"
-#include "loss/loss.h"
-#include "model/model.h"
+#include "task.h"
+#include "loss.h"
+#include "model.h"
 
 namespace ncv
 {

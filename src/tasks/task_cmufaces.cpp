@@ -1,7 +1,7 @@
 #include "task_cmufaces.h"
 #include "core/color.h"
 #include "core/image.h"
-#include "loss/loss.h"
+#include "loss.h"
 #include <fstream>
 #include <boost/filesystem.hpp>
 

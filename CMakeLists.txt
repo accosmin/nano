@@ -34,18 +34,13 @@ include_directories(./)
 ######################################################################
 
 file(GLOB nanocv_sources
-        src/*.h
-        src/*.cpp
-        src/core/*.h
-        src/core/*.cpp
-        src/loss/*.h
-        src/loss/*.cpp
-        src/activation/*.h
-        src/activation/*.cpp
-        src/task/*.h
-        src/task/*.cpp
-        src/model/*.h
-        src/model/*.cpp
+        src/*.*
+        src/core/*.*
+        src/losses/*.*
+        src/activations/*.*
+        src/tasks/*.*
+        src/models/*.*
+        src/trainers/*.*
         )
 
 add_library(nanocv

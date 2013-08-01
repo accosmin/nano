@@ -2,11 +2,11 @@
 #define NANOCV_H
 
 #include "core/text.h"
-#include "loss/loss.h"
-#include "activation/activation.h"
-#include "task/task.h"
-#include "model/model.h"
-#include "model/trainer.h"
+#include "loss.h"
+#include "activation.h"
+#include "task.h"
+#include "model.h"
+#include "trainer.h"
 
 namespace ncv
 {

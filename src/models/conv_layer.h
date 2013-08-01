@@ -3,7 +3,7 @@
 
 #include "core/tensor3d.h"
 #include "core/tensor4d.h"
-#include "activation/activation.h"
+#include "activation.h"
 
 namespace ncv
 {

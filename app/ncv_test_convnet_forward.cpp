@@ -2,7 +2,7 @@
 #include "core/clamp.h"
 #include "core/timer.h"
 #include "core/logger.h"
-#include "model/conv_network.h"
+#include "models/conv_network.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])

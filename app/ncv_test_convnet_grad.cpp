@@ -2,8 +2,8 @@
 #include "core/optimize.h"
 #include "core/random.h"
 #include "core/logger.h"
-#include "model/conv_network.h"
-#include "loss/loss_classnll.h"
+#include "models/conv_network.h"
+#include "losses/loss_classnll.h"
 #include <boost/program_options.hpp>
 
 static void test(

@@ -1,25 +1,25 @@
 #include "ncv.h"
 #include <cfenv>
 
-#include "loss/loss_classnll.h"
-#include "loss/loss_hinge.h"
-#include "loss/loss_logistic.h"
-#include "loss/loss_square.h"
+#include "losses/loss_classnll.h"
+#include "losses/loss_hinge.h"
+#include "losses/loss_logistic.h"
+#include "losses/loss_square.h"
 
-#include "task/task_cifar10.h"
-#include "task/task_mnist.h"
-#include "task/task_stl10.h"
-#include "task/task_cmufaces.h"
+#include "tasks/task_cifar10.h"
+#include "tasks/task_mnist.h"
+#include "tasks/task_stl10.h"
+#include "tasks/task_cmufaces.h"
 
-#include "activation/activation_unit.h"
-#include "activation/activation_tanh.h"
-#include "activation/activation_fun1.h"
-#include "activation/activation_fun2.h"
+#include "activations/activation_unit.h"
+#include "activations/activation_tanh.h"
+#include "activations/activation_fun1.h"
+#include "activations/activation_fun2.h"
 
-#include "model/conv_network.h"
+#include "models/conv_network.h"
 
-#include "model/batch_trainer.h"
-#include "model/stochastic_trainer.h"
+#include "trainers/batch_trainer.h"
+#include "trainers/stochastic_trainer.h"
 
 namespace ncv
 {
