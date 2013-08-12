@@ -1,35 +1,30 @@
-#ifndef NANOCV_MODEL_CONV_NETWORK_H
-#define NANOCV_MODEL_CONV_NETWORK_H
+#ifndef NANOCV_FORWARD_NETWORK_H
+#define NANOCV_FORWARD_NETWORK_H
 
 #include "model.h"
-#include "conv_layer.h"
+#include "layer.h"
 
 namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
-        // convolution (multi-layer) network model.
+        // multi-layer forward network model.
         //
         // parameters:
         //      network - default = empty_string -> no hidden layer,
-        //              - format = [nconvs : crows : ccols : activation]*, where
-        //                          nconvs          - number of convolutions
-        //                          crows           - convolution size (rows)
-        //                          ccols           - convolution size (columns)
-        //                          activation      - activation function id
+        //              - format = [layer_id=layer_parameters[,]]*
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        class conv_network_t : public model_t
+        class forward_network_t : public model_t
         {
         public:
 
                 using model_t::resize;
                 
                 // constructor
-                conv_network_t(const string_t& params = string_t());
-                conv_network_t(const conv_layer_params_t& params);
+                forward_network_t(const string_t& params = string_t());
 
-                NCV_MAKE_CLONABLE(conv_network_t, model_t,
-                                  "convolution network, parameters: network=[#convs:#conv_rows:#conv_cols:activation]*")
+                NCV_MAKE_CLONABLE(forward_network_t, model_t,
+                                  "convolution network, parameters: network=[layer_id=layer_parameters[,]]*")
 
                 // compute the model output
                 virtual vector_t value(const tensor3d_t& input) const;
@@ -62,9 +57,9 @@ namespace ncv
         private:
 
                 // attributes
-                conv_layer_params_t     m_params;       // network parameters (hidden layers)
-                conv_layers_t           m_layers;       // convolution layers
+                string_t                m_params;       // network parameters (hidden layers)
+                rlayers_t               m_layers;       // feed-forward layers
         };
 }
 
-#endif // NANOCV_MODEL_CONV_NETWORK_H
+#endif // NANOCV_FORWARD_NETWORK_H

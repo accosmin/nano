@@ -27,8 +27,8 @@ int main(int argc, char *argv[])
         ncv::init();
 
         print("loss",           ncv::loss_manager_t::instance());
-        print("activation",     ncv::activation_manager_t::instance());
         print("task",           ncv::task_manager_t::instance());
+        print("layer",          ncv::layer_manager_t::instance());
         print("model",          ncv::model_manager_t::instance());
         print("trainer",        ncv::trainer_manager_t::instance());
 

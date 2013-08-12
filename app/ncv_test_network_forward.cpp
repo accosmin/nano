@@ -2,7 +2,8 @@
 #include "core/clamp.h"
 #include "core/timer.h"
 #include "core/logger.h"
-#include "models/conv_network.h"
+#include "core/tensor3d.h"
+#include "models/forward_network.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
@@ -28,7 +29,7 @@ int main(int argc, char *argv[])
                 "number of input rows [1, 100]");
         po_desc.add_options()("network,n",
                 boost::program_options::value<string_t>(),
-                "convolution network parameters");
+                "network parameters");
         po_desc.add_options()("samples,s",
                 boost::program_options::value<size_t>()->default_value(10000),
                 "number of random samples [1K, 1M]");
@@ -55,8 +56,8 @@ int main(int argc, char *argv[])
         const string_t cmd_network = po_vm["network"].as<string_t>();
         const size_t cmd_samples = math::clamp(po_vm["samples"].as<size_t>(), 1000, 1000 * 1000);
 
-        // create convolution network
-        ncv::conv_network_t network(cmd_network);
+        // create feed-forward network
+        ncv::forward_network_t network(cmd_network);
         network.resize(cmd_rows, cmd_cols, cmd_outputs, cmd_color);
 
         // create random samples

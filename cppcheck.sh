@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dirs="./src/ ./src/core/ ./src/activation/ ./src/loss/ ./src/model/ ./src/task/ "
+dirs="./src/ ./src/core/ ./src/layers/ ./src/losses/ ./src/models/ ./src/tasks/ ./src/trainers/ "
 log="cppcheck.log"
 
 echo "includes: "

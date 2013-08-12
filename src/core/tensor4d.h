@@ -23,8 +23,9 @@ namespace ncv
                 // resize to new dimensions
                 size_t resize(size_t dim1, size_t dim2, size_t rows, size_t cols);
 
-                // reset parameters
+                // reset
                 void zero();
+                void constant(scalar_t value);
                 void random(scalar_t min = -0.1, scalar_t max = 0.1);
 
                 // serialize/deserialize data

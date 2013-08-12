@@ -20,7 +20,6 @@ namespace ncv
                 >
                 void transform(const tin_matrix& in, tout_matrix& out, toperator op)
                 {
-                        out.resize(in.rows(), in.cols());
                         std::transform(in.data(), in.data() + in.size(), out.data(), op);
                 }
 
@@ -34,7 +33,6 @@ namespace ncv
                 >
                 void transform(const tin1_matrix& in1, const tin2_matrix& in2, tout_matrix& out, toperator op)
                 {
-                        out.resize(in1.rows(), in1.cols());
                         std::transform(in1.data(), in1.data() + in1.size(), in2.data(), out.data(), op);
                 }
 
@@ -48,10 +46,17 @@ namespace ncv
                         typename toperator
                 >
                 void transform(const tin1_matrix& in1, const tin2_matrix& in2, const tin3_matrix& in3,
-                               tout_matrix& out, toperator op)
+                        tout_matrix& out, toperator op)
                 {
-                        out.resize(in1.rows(), in1.cols());
-                        std::transform(in1.data(), in1.data() + in1.size(), in2.data(), in3.data(), out.data(), op);
+                        auto in1_it = in1.data(), in1_end = in1.data() + in1.size();
+                        auto in2_it = in2.data();
+                        auto in3_it = in3.data();
+                        auto out_it = out.data();
+
+                        for ( ; in1_it != in1_end; ++ in1_it, ++ in2_it, ++ in3_it, ++ out_it)
+                        {
+                                *out_it = op(*in1_it, *in2_it, *in3_it);
+                        }
                 }
         }
 }

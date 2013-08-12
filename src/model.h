@@ -2,8 +2,7 @@
 #define NANOCV_MODEL_H
 
 #include "core/manager.h"
-#include "core/image.h"
-#include "core/tensor3d.h"
+#include "core/types.h"
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 
@@ -15,6 +14,8 @@ namespace ncv
         typedef model_manager_t::robject_t      rmodel_t;
 
         class task_t;
+        class image_t;
+        class tensor3d_t;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // generic model:

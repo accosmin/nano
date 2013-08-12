@@ -33,9 +33,16 @@ namespace ncv
 
         void tensor4d_t::zero()
         {
+                constant(0.0);
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void tensor4d_t::constant(scalar_t value)
+        {
                 for (matrix_t& mat : m_data)
                 {
-                        mat.setZero();
+                        mat.setConstant(value);
                 }
         }
 

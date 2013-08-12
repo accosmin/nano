@@ -37,7 +37,7 @@ file(GLOB nanocv_sources
         src/*.*
         src/core/*.*
         src/losses/*.*
-        src/activations/*.*
+        src/layers/*.*
         src/tasks/*.*
         src/models/*.*
         src/trainers/*.*
@@ -75,8 +75,8 @@ set(nanocv_programs
         ncv_test_image
         ncv_test_color
         ncv_test_convolution
-        ncv_test_convnet_grad
-        ncv_test_convnet_forward
+        ncv_test_network_grad
+        ncv_test_network_forward
 
         ncv_max_threads
         ncv_info_task

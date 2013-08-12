@@ -1,3 +1,34 @@
+- layer_t interface:
+	- conv_network_t -> network_t
+	- max_pool_layer_t + max_abs_pool_layer_t
+	- tanh_layer_t + norm_abs_layer_t + norm_square_layer_t
+
+	- nicer way of changing network parameters from command line:
+		- conv:16:8:8:fun1,max,conv:16:8:8:fun1,max_abs ...
+
+* template classes to .hpp
+* thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
+
+* core/math.h make sure tresult is before tvalue
+
+* use std::make_shared, instead of robject_t(
+
+check if storing matrices column-wise (default in Eigen3) produces a faster ::block() convolution
+
+same with -DEIGEN_NO_DEBUG (only for release)
+
+* could use std::atexit() to save the model at closing -> re-training should reload the current model and continue training
+* better could catch various signals: http://en.cppreference.com/w/cpp/utility/program and safely saved the trained model
+
+- reduce dependency between files: e.g. types.h includes too many headers!
+
+- move boost::binary_archive as typedefs to some header
+
+- re-design tensor3d & tensor4d 
+
+- serializer/deserializer:
+	- easier to use interface
+
 - train_convnet.sh:
 	- optimize the conv_layer_t::backward() function
 

@@ -3,7 +3,7 @@
 
 #include "core/text.h"
 #include "loss.h"
-#include "activation.h"
+#include "layer.h"
 #include "task.h"
 #include "model.h"
 #include "trainer.h"

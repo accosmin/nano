@@ -11,12 +11,15 @@
 #include "tasks/task_stl10.h"
 #include "tasks/task_cmufaces.h"
 
-#include "activations/activation_unit.h"
-#include "activations/activation_tanh.h"
-#include "activations/activation_fun1.h"
-#include "activations/activation_fun2.h"
+#include "layers/activation_unit_layer.h"
+#include "layers/activation_tanh_layer.h"
+#include "layers/activation_anorm_layer.h"
+#include "layers/activation_snorm_layer.h"
+#include "layers/conv_layer.h"
+#include "layers/pooling_max_layer.h"
+#include "layers/pooling_max_abs_layer.h"
 
-#include "models/conv_network.h"
+#include "models/forward_network.h"
 
 #include "trainers/batch_trainer.h"
 #include "trainers/stochastic_trainer.h"
@@ -45,14 +48,17 @@ namespace ncv
                 task_manager_t::instance().add("stl10", stl10_task_t());
                 task_manager_t::instance().add("cmu-faces", cmufaces_task_t());
 
-                // register activation/transfer functions
-                activation_manager_t::instance().add("unit", unit_activation_t());
-                activation_manager_t::instance().add("tanh", tanh_activation_t());
-                activation_manager_t::instance().add("fun1", fun1_activation_t());
-                activation_manager_t::instance().add("fun2", fun2_activation_t());
+                // register layers
+                layer_manager_t::instance().add("unit", unit_activation_layer_t());
+                layer_manager_t::instance().add("tanh", tanh_activation_layer_t());
+                layer_manager_t::instance().add("anorm", anorm_activation_layer_t());
+                layer_manager_t::instance().add("snorm", snorm_activation_layer_t());
+                layer_manager_t::instance().add("conv", conv_layer_t());
+                layer_manager_t::instance().add("max-pool", max_pooling_layer_t());
+                layer_manager_t::instance().add("max-abs-pool", max_abs_pooling_layer_t());
 
                 // register models
-                model_manager_t::instance().add("convnet", conv_network_t());
+                model_manager_t::instance().add("forward-network", forward_network_t());
 
                 // register trainers
                 trainer_manager_t::instance().add("batch", batch_trainer_t());
