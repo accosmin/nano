@@ -11,13 +11,13 @@
 #include "tasks/task_stl10.h"
 #include "tasks/task_cmufaces.h"
 
-#include "layers/activation_unit_layer.h"
-#include "layers/activation_tanh_layer.h"
-#include "layers/activation_anorm_layer.h"
-#include "layers/activation_snorm_layer.h"
-#include "layers/conv_layer.h"
-#include "layers/pooling_max_layer.h"
-#include "layers/pooling_max_abs_layer.h"
+#include "layers/layer_activation_unit.h"
+#include "layers/layer_activation_tanh.h"
+#include "layers/layer_activation_anorm.h"
+#include "layers/layer_activation_snorm.h"
+#include "layers/layer_convolution.h"
+#include "layers/layer_pooling_max.h"
+#include "layers/layer_pooling_max_abs.h"
 
 #include "models/forward_network.h"
 

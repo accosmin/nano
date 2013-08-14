@@ -13,6 +13,8 @@
 
 * use std::make_shared, instead of robject_t(
 
+ math::cast & math::round should use Boost.Numeric (boost::numeric_cast ...)
+
 check if storing matrices column-wise (default in Eigen3) produces a faster ::block() convolution
 
 same with -DEIGEN_NO_DEBUG (only for release)

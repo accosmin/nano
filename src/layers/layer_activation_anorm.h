@@ -1,7 +1,7 @@
 #ifndef NANOCV_ANORM_ACTIVATION_LAYER_H
 #define NANOCV_ANORM_ACTIVATION_LAYER_H
 
-#include "activation_layer.h"
+#include "layer_activation.h"
 
 namespace ncv
 {
@@ -17,6 +17,14 @@ namespace ncv
                 anorm_activation_layer_t(const string_t& = string_t()) {}
 
                 NCV_MAKE_CLONABLE(anorm_activation_layer_t, layer_t, "x/(1+|x|) activation layer")
+
+                // short description
+                virtual string_t describe() const
+                {
+                        return (boost::format("x/(1+|x|) (%1%x%2%x%3%) -> %4%%5%%6%")
+                                % n_idims() % n_irows() % n_icols()
+                                % n_odims() % n_orows() % n_ocols()).str();
+                }
 
         protected:
 

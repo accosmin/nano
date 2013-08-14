@@ -1,13 +1,13 @@
-#include "activation_layer.h"
+#include "layer_pooling.h"
 #include "core/transform.h"
 
 namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
-        size_t activation_layer_t::resize(size_t idims, size_t irows, size_t icols)
+        size_t pooling_layer_t::resize(size_t idims, size_t irows, size_t icols)
         {
-                const size_t odims = idims;
+                const size_t odims = 1;
 
                 m_idata.resize(idims, irows, icols);
                 m_odata.resize(odims, irows, icols);
@@ -17,46 +17,46 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        void activation_layer_t::zero_params()
+        void pooling_layer_t::zero_params()
         {
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void activation_layer_t::random_params(scalar_t min, scalar_t max)
+        void pooling_layer_t::random_params(scalar_t min, scalar_t max)
         {
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void activation_layer_t::zero_grad() const
+        void pooling_layer_t::zero_grad() const
         {
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        serializer_t& activation_layer_t::save_params(serializer_t& s) const
-        {
-                return s;
-        }
-
-        //-------------------------------------------------------------------------------------------------
-
-        serializer_t& activation_layer_t::save_grad(serializer_t& s) const
+        serializer_t& pooling_layer_t::save_params(serializer_t& s) const
         {
                 return s;
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        deserializer_t& activation_layer_t::load_params(deserializer_t& s) const
+        serializer_t& pooling_layer_t::save_grad(serializer_t& s) const
         {
                 return s;
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        bool activation_layer_t::save(boost::archive::binary_oarchive& oa) const
+        deserializer_t& pooling_layer_t::load_params(deserializer_t& s) const
+        {
+                return s;
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        bool pooling_layer_t::save(boost::archive::binary_oarchive& oa) const
         {
                 // TODO
 
@@ -65,7 +65,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        bool activation_layer_t::load(boost::archive::binary_iarchive& ia)
+        bool pooling_layer_t::load(boost::archive::binary_iarchive& ia)
         {
                 // TODO
 
@@ -74,13 +74,14 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        const tensor3d_t& activation_layer_t::forward(const tensor3d_t& input) const
+        const tensor3d_t& pooling_layer_t::forward(const tensor3d_t& input) const
         {
                 assert(n_idims() == input.n_dim1());
                 assert(n_irows() <= input.n_rows());
                 assert(n_icols() <= input.n_cols());
 
                 m_idata = input;
+                m_odata.zero();
 
                 for (size_t o = 0; o < n_odims(); o ++)
                 {
@@ -91,7 +92,7 @@ namespace ncv
                                 const matrix_t& idata = m_idata(i);
 
                                 math::transform(idata, odata, odata,
-                                        std::bind(&activation_layer_t::forward_scalar, this, _1));
+                                        std::bind(&pooling_layer_t::forward_pool, this, _1, _2));
                         }
                 }
 
@@ -100,7 +101,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        const tensor3d_t& activation_layer_t::backward(const tensor3d_t& gradient) const
+        const tensor3d_t& pooling_layer_t::backward(const tensor3d_t& gradient) const
         {
                 assert(n_odims() == gradient.n_dim1());
                 assert(n_orows() == gradient.n_rows());
@@ -115,8 +116,8 @@ namespace ncv
                         {
                                 matrix_t& idata = m_idata(i);
 
-                                math::transform(gdata, odata, idata,
-                                        std::bind(&activation_layer_t::backward_scalar, this, _1, _2));
+                                math::transform(gdata, odata, idata, idata,
+                                        std::bind(&pooling_layer_t::backward_pool, this, _1, _2, _3));
                         }
                 }
 

@@ -1,4 +1,4 @@
-#include "conv_layer.h"
+#include "layer_convolution.h"
 #include "core/logger.h"
 #include "core/text.h"
 #include "core/cast.h"
@@ -128,7 +128,7 @@ namespace ncv
                                  "x" + text::to_string(icols) + ") -> (" + text::to_string(odims) + "x" +
                                  text::to_string(crows) + "x" + text::to_string(ccols) + ")";
 
-                        log_warning() << "convolution layer: " << message;
+                        log_error() << "convolution layer: " << message;
                         throw std::runtime_error("convolution layer: " + message);
                 }
 

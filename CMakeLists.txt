@@ -80,7 +80,7 @@ set(nanocv_programs
 
         ncv_max_threads
         ncv_info_task
-        ncv_info_object
+        ncv_info
         ncv_trainer)
 
 # Build executables

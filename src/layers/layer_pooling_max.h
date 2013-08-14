@@ -1,7 +1,7 @@
 #ifndef NANOCV_MAX_POOLING_LAYER_H
 #define NANOCV_MAX_POOLING_LAYER_H
 
-#include "pooling_layer.h"
+#include "layer_pooling.h"
 #include "core/numeric.h"
 
 namespace ncv
@@ -18,6 +18,14 @@ namespace ncv
                 max_pooling_layer_t(const string_t& = string_t()) {}
 
                 NCV_MAKE_CLONABLE(max_pooling_layer_t, layer_t, "max pooling layer")
+
+                // short description
+                virtual string_t describe() const
+                {
+                        return (boost::format("max pooling (%1%x%2%x%3%) -> %4%%5%%6%")
+                                % n_idims() % n_irows() % n_icols()
+                                % n_odims() % n_orows() % n_ocols()).str();
+                }
 
         protected:
 

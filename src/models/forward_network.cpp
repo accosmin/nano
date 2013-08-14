@@ -1,4 +1,5 @@
 #include "forward_network.h"
+#include "layers/layer_convolution.h"
 #include "core/logger.h"
 #include "core/text.h"
 #include "core/cast.h"
@@ -157,106 +158,59 @@ namespace ncv
 
         size_t forward_network_t::resize()
         {
-                // decode the network structure
-                const string_t network_desc = text::from_params<string_t>(params, "network", "");
-                if (!network_desc.empty())
-                {
-                        strings_t network_tokens;
-                        text::split(network_tokens, network_desc, text::is_any_of(","));
-
-                        if (network_tokens.empty())
-                        {
-                                throw std::runtime_error("invalid convolution network <" +
-                                                         network_desc + ">!");
-                        }
-
-                        // layers ...
-                        for (size_t l = 0; l < network_tokens.size(); l ++)
-                        {
-                                if (network_tokens[l].empty())
-                                {
-                                        continue;
-                                }
-
-                                strings_t layer_tokens;
-                                text::split(layer_tokens, network_tokens[l], text::is_any_of(":"));
-
-                                if (layer_tokens.size() != 4)
-                                {
-                                        throw std::runtime_error("invalid layer description <" +
-                                                                 network_tokens[l] + "> for the nework <" +
-                                                                 network_desc + ">!");
-                                }
-
-                                // convolutions ...
-                                const size_t convs = text::from_string<size_t>(layer_tokens[0]);
-                                const size_t crows = text::from_string<size_t>(layer_tokens[1]);
-                                const size_t ccols = text::from_string<size_t>(layer_tokens[2]);
-                                const string_t activation = layer_tokens[3];
-
-                                m_params.push_back(conv_layer_param_t(convs, crows, ccols, activation));
-                        }
-                }
-
-                size_t idims = n_inputs();
                 size_t irows = n_rows();
                 size_t icols = n_cols();
-                size_t odims = n_outputs();
+                size_t idims = n_inputs();
                 size_t n_params = 0;
 
                 m_layers.clear();
 
                 // create hidden layers
-                for (size_t l = 0; l < m_params.size(); l ++)
+                strings_t net_params;
+                text::split(net_params, m_params, text::is_any_of(";"));
+                for (size_t l = 0; l < net_params.size(); l ++)
                 {
-                        const conv_layer_param_t& param = m_params[l];
-
-                        const size_t convs = param.m_convs;
-                        const size_t crows = param.m_crows;
-                        const size_t ccols = param.m_ccols;
-                        const string_t aid = param.m_activation;
-
-                        conv_layer_t layer;
-                        const size_t n_new_params = layer.resize(idims, irows, icols, convs, crows, ccols, aid);
-                        layer.zero_params();
-
-                        if (n_new_params < 1)
+                        strings_t layer_tokens;
+                        text::split(layer_tokens, net_params[l], text::is_any_of(":"));
+                        if (layer_tokens.size() != 2)
                         {
-                                const auto message =
-                                        boost::format("convolution network: invalid convolution network description "\
-                                                      "for the layer [%1%/%2%]: (%3%:%4%x%5%)!")
-                                        % (l + 1) % m_params.size() % idims % irows % icols;
+                                const string_t message = "invalid layer description <" +
+                                        net_params[l] + ">! expecting <layer_id:layer_parameters>!";
 
-                                log_error() << message.str();
-                                throw std::runtime_error(message.str());
+                                log_error() << "forward network: " << message;
+                                throw std::runtime_error(message);
                         }
 
+                        const string_t layer_id = layer_tokens[0];
+                        const string_t layer_params = layer_tokens[1];
+
+                        const rlayer_t layer = layer_manager_t::instance().get(layer_id, layer_params);
+                        if (!layer)
+                        {
+                                const string_t message = "invalid layer id <" + layer_id + ">!";
+
+                                log_error() << "forward network: " << message;
+                                throw std::runtime_error(message);
+                        }
+
+                        const size_t n_new_params = layer->resize(idims, irows, icols);
                         n_params += n_new_params;
                         m_layers.push_back(layer);
 
-                        idims = layer.n_odims();
-                        irows = layer.n_orows();
-                        icols = layer.n_ocols();
+                        idims = layer->n_odims();
+                        irows = layer->n_orows();
+                        icols = layer->n_ocols();
                 }
 
                 // create output layer
-                conv_layer_t layer;
-                n_params += layer.resize(idims, irows, icols, odims, irows, icols, "unit");
-                layer.zero_params();
+                const rlayer_t layer(new conv_layer_t(
+                        "convs=" + text::to_string(n_outputs()) + ","
+                        "crows=" + text::to_string(irows) + ","
+                        "ccols=" + text::to_string(icols)));
+                n_params += layer->resize(idims, irows, icols);
                 m_layers.push_back(layer);
 
-                if (n_params == 0)
-                {
-                        const string_t message = "convolution network: invalid convolution network model!";
-
-                        log_error() << message;
-                        throw std::runtime_error(message);
-                }
-
-                else
-                {
-                        print();
-                }
+                print();
 
                 return n_params;
         }
@@ -269,13 +223,8 @@ namespace ncv
                 {
                         const rlayer_t& layer = m_layers[l];
 
-                        const auto message =
-                                boost::format("feed-forward network: layer [%1%/%2%] %3%x%4%x%5% -> %6%x%7%x%8%.")
-                                % (l + 1) % m_layers.size()
-                                % layer->n_idims() % layer->n_irows() % layer->n_icols()
-                                % layer->n_odims() % layer->n_orows() % layer->n_ocols();
-
-                        log_info() << message.str();
+                        log_info() << boost::format("feed-forward network: layer [%1%/%2%] %3%.")
+                                % (l + 1) % m_layers.size() % layer->describe();
                 }
         }
 
