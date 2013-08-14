@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
                 boost::program_options::value<size_t>()->default_value(10),
                 "number of input rows [1, 100]");
         po_desc.add_options()("network,n",
-                boost::program_options::value<string_t>(),
+                boost::program_options::value<string_t>()->default_value(""),
                 "network parameters");
         po_desc.add_options()("samples,s",
                 boost::program_options::value<size_t>()->default_value(10000),
@@ -42,7 +42,6 @@ int main(int argc, char *argv[])
 
         // check arguments and options
         if (	po_vm.empty() ||
-                !po_vm.count("network") ||
                 po_vm.count("help"))
         {
                 std::cout << po_desc;

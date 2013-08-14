@@ -23,7 +23,7 @@ namespace ncv
                 forward_network_t(const string_t& params = string_t());
 
                 NCV_MAKE_CLONABLE(forward_network_t, model_t,
-                                  "convolution network, parameters: [layer_id:layer_parameters[;]]*")
+                                  "convolution network, parameters: [layer_id[:layer_parameters][;]]*")
 
                 // compute the model output
                 virtual vector_t value(const tensor3d_t& input) const;

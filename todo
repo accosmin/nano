@@ -6,6 +6,8 @@
 	- nicer way of changing network parameters from command line:
 		- conv:16:8:8:fun1,max,conv:16:8:8:fun1,max_abs ...
 
+- to try 2x/(1+x^2) as an activation function
+
 * template classes to .hpp
 * thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
 

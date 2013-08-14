@@ -12,8 +12,8 @@ namespace ncv
         //
         // parameters:
         //      convs=16[1,256]         - number of convolutions
-        //      rows=8[1,32]            - convolution size
-        //      cols=8[1,32]            - convolution size
+        //      crows=8[1,256]          - convolution size
+        //      ccols=8[1,256]          - convolution size
         /////////////////////////////////////////////////////////////////////////////////////////
 
         class conv_layer_t : public layer_t
@@ -23,7 +23,7 @@ namespace ncv
                 // constructor
                 conv_layer_t(const string_t& params = string_t());
 
-                NCV_MAKE_CLONABLE(conv_layer_t, layer_t, "convolution layer, parameters: convs=16,rows=8,cols=8")
+                NCV_MAKE_CLONABLE(conv_layer_t, layer_t, "convolution layer, parameters: convs=16,crows=8,ccols=8")
 
                 // resize to process new inputs, returns the number of parameters
                 virtual size_t resize(size_t idims, size_t irows, size_t icols);
@@ -49,7 +49,7 @@ namespace ncv
                 // short description
                 virtual string_t describe() const
                 {
-                        return (boost::format("conv (%1%x%2%x%3% * %4%%5%%6%%7%) -> %8%%9%%10%")
+                        return (boost::format("conv (%1%x%2%x%3% * %4%x%5%x%6%x%7%) -> %8%x%9%x%10%")
                                 % n_idims() % n_irows() % n_icols() % n_kdim1() % n_kdim2() % n_krows() % n_kcols()
                                 % n_odims() % n_orows() % n_ocols()).str();
                 }

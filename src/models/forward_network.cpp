@@ -170,19 +170,24 @@ namespace ncv
                 text::split(net_params, m_params, text::is_any_of(";"));
                 for (size_t l = 0; l < net_params.size(); l ++)
                 {
+                        if (net_params[l].empty())
+                        {
+                                continue;
+                        }
+
                         strings_t layer_tokens;
                         text::split(layer_tokens, net_params[l], text::is_any_of(":"));
-                        if (layer_tokens.size() != 2)
+                        if (layer_tokens.size() != 2 && layer_tokens.size() != 1)
                         {
                                 const string_t message = "invalid layer description <" +
-                                        net_params[l] + ">! expecting <layer_id:layer_parameters>!";
+                                        net_params[l] + ">! expecting <layer_id[:layer_parameters]>!";
 
                                 log_error() << "forward network: " << message;
                                 throw std::runtime_error(message);
                         }
 
                         const string_t layer_id = layer_tokens[0];
-                        const string_t layer_params = layer_tokens[1];
+                        const string_t layer_params = layer_tokens.size() == 2 ? layer_tokens[1] : string_t();
 
                         const rlayer_t layer = layer_manager_t::instance().get(layer_id, layer_params);
                         if (!layer)
@@ -223,7 +228,7 @@ namespace ncv
                 {
                         const rlayer_t& layer = m_layers[l];
 
-                        log_info() << boost::format("feed-forward network: layer [%1%/%2%] %3%.")
+                        log_info() << boost::format("feed-forward network [%1%/%2%]: [%3%].")
                                 % (l + 1) % m_layers.size() % layer->describe();
                 }
         }

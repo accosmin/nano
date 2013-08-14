@@ -116,8 +116,8 @@ namespace ncv
         size_t conv_layer_t::resize(size_t idims, size_t irows, size_t icols)
         {
                 const size_t odims = math::clamp(text::from_params<size_t>(m_params, "convs", 16), 1, 256);
-                const size_t crows = math::clamp(text::from_params<size_t>(m_params, "rows", 8), 1, 32);
-                const size_t ccols = math::clamp(text::from_params<size_t>(m_params, "cols", 8), 1, 32);
+                const size_t crows = math::clamp(text::from_params<size_t>(m_params, "crows", 8), 1, 256);
+                const size_t ccols = math::clamp(text::from_params<size_t>(m_params, "ccols", 8), 1, 256);
 
                 if (    /*idims < 1 || irows < 1 || icols < 1 ||
                         convs < 1 || crows < 1 || ccols < 1 ||*/
