@@ -69,15 +69,8 @@ namespace ncv
         };
 
         // serialize/deserialize data
-        inline serializer_t& operator<<(serializer_t& s, const tensor3d_t& tensor)
-        {
-                return s << tensor.m_data;
-        }
-
-        inline deserializer_t& operator>>(deserializer_t& s, tensor3d_t& tensor)
-        {
-                return s >> tensor.m_data;
-        }
+        serializer_t& operator<<(serializer_t& s, const tensor3d_t& tensor);
+        deserializer_t& operator>>(deserializer_t& s, tensor3d_t& tensor);
 }
 
 #endif // NANOCV_TENSOR3D_H

@@ -26,7 +26,8 @@ namespace ncv
 
                 const tensor3d_t& output = *input;
                 vector_t result(output.size());
-                serializer_t(result) << output;
+                serializer_t s(result);
+                s << output;
 
                 return result;
         }
@@ -46,7 +47,8 @@ namespace ncv
         void forward_network_t::cumulate_grad(const vector_t& vgradient) const
         {
                 tensor3d_t _gradient(n_outputs(), 1, 1);
-                deserializer_t(vgradient) >> _gradient;
+                deserializer_t s(vgradient);
+                s >> _gradient;
 
                 const tensor3d_t* gradient = &_gradient;
                 for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
@@ -95,13 +97,20 @@ namespace ncv
 
         bool forward_network_t::load_params(const vector_t& x)
         {
+                std::cout << "forward_network_t::load_params - step1" << std::endl;
+
+                std::cout << "forward_network_t::load_params - #parameters = " << n_parameters() << std::endl;
+
                 if (math::cast<size_t>(x.size()) == n_parameters())
                 {
                         deserializer_t s(x);
                         for (const rlayer_t& layer : m_layers)
                         {
+                                std::cout << "forward_network_t::load_params - step2 - layer " << layer->describe() << std::endl;
                                 layer->load_params(s);
                         }
+
+                        std::cout << "forward_network_t::load_params - step3" << std::endl;
 
                         zero_grad();
                         return true;

@@ -49,7 +49,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        deserializer_t& activation_layer_t::load_params(deserializer_t& s) const
+        deserializer_t& activation_layer_t::load_params(deserializer_t& s)
         {
                 return s;
         }

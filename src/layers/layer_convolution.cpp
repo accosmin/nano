@@ -179,8 +179,10 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        deserializer_t& conv_layer_t::load_params(deserializer_t& s) const
+        deserializer_t& conv_layer_t::load_params(deserializer_t& s)
         {
+                std::cout << "conv_layer_t::load_params - step1" << std::endl;
+                std::cout << "conv_layer_t::load_params - kdata.size() = " << m_kdata.size() << std::endl;
                 return s >> m_kdata;
         }
 
@@ -210,6 +212,8 @@ namespace ncv
                 assert(n_irows() <= input.n_rows());
                 assert(n_icols() <= input.n_cols());
 
+                std::cout << "conv_layer_t::forward - step1" << std::endl;
+
                 // convolution output
                 m_idata = input;
                 for (size_t o = 0; o < n_odims(); o ++)
@@ -226,6 +230,8 @@ namespace ncv
                         }
                 }
 
+                std::cout << "conv_layer_t::forward - step2" << std::endl;
+
                 return m_odata;
         }
 
@@ -236,6 +242,11 @@ namespace ncv
                 assert(n_odims() == gradient.n_dim1());
                 assert(n_orows() == gradient.n_rows());
                 assert(n_ocols() == gradient.n_cols());
+
+                std::cout << "conv_layer_t::backward - gradient = " << gradient.n_dim1()
+                          << "x" << gradient.n_rows() << "x" << gradient.n_cols() << std::endl;
+                std::cout << "conv_layer_t::backward - desc = " << describe() << std::endl;
+                std::cout << "conv_layer_t::backward - step1" << std::endl;
 
                 // convolution gradient
                 m_odata = gradient;
@@ -252,6 +263,8 @@ namespace ncv
                         }
                 }
 
+                std::cout << "conv_layer_t::backward - step2" << std::endl;
+
                 // input gradient
                 m_idata.zero();
                 for (size_t o = 0; o < n_odims(); o ++)
@@ -266,6 +279,8 @@ namespace ncv
                                 ncv::backward(odata, kdata, idata);
                         }
                 }
+
+                std::cout << "conv_layer_t::backward - step3" << std::endl;
 
                 return m_idata;
         }

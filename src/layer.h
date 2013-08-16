@@ -42,7 +42,7 @@ namespace ncv
                 // serialize parameters & gradients
                 virtual serializer_t& save_params(serializer_t& s) const = 0;
                 virtual serializer_t& save_grad(serializer_t& s) const = 0;
-                virtual deserializer_t& load_params(deserializer_t& s) const = 0;
+                virtual deserializer_t& load_params(deserializer_t& s) = 0;
 
                 // process inputs (compute outputs & gradients)
                 virtual const tensor3d_t& forward(const tensor3d_t& input) const = 0;

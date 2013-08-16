@@ -1,12 +1,6 @@
-- layer_t interface:
-	- conv_network_t -> network_t
-	- max_pool_layer_t + max_abs_pool_layer_t
-	- tanh_layer_t + norm_abs_layer_t + norm_square_layer_t
+* BUG: cannot serialize convolution layers
 
-	- nicer way of changing network parameters from command line:
-		- conv:16:8:8:fun1,max,conv:16:8:8:fun1,max_abs ...
-
-- to try 2x/(1+x^2) as an activation function
+* replace layer_t::describe() with a better name (it is too similar to clonable_t::description)
 
 * template classes to .hpp
 * thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)

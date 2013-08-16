@@ -17,32 +17,9 @@ namespace ncv
                 serializer_t(vector_t& data);
 
                 // serialize data
-                serializer_t& operator<<(scalar_t val);
-                serializer_t& operator<<(const vector_t& vec);
-                serializer_t& operator<<(const matrix_t& mat);
-
-                template
-                <
-                        typename tdata
-                >
-                serializer_t& operator<<(const std::vector<tdata>& datas)
-                {
-                        for (size_t i = 0; i < datas.size(); i ++)
-                        {
-                                (*this) << datas[i];
-                        }
-
-                        return *this;
-                }
-
-                template
-                <
-                        typename tdata
-                >
-                serializer_t& operator<<(const tdata& data)
-                {
-                        return (*this) << data;
-                }
+                friend serializer_t& operator<<(serializer_t& s, scalar_t val);
+                friend serializer_t& operator<<(serializer_t& s, const vector_t& vec);
+                friend serializer_t& operator<<(serializer_t& s, const matrix_t& mat);
 
         private:
 
@@ -51,44 +28,37 @@ namespace ncv
                 size_t          m_pos;
         };
 
+        // serialize data
+        serializer_t& operator<<(serializer_t& s, scalar_t val);
+        serializer_t& operator<<(serializer_t& s, const vector_t& vec);
+        serializer_t& operator<<(serializer_t& s, const matrix_t& mat);
+
+        // serialize vectors of known types
+        template
+        <
+                typename tdata
+        >
+        serializer_t& operator<<(serializer_t& s, const std::vector<tdata>& datas)
+        {
+                for (const tdata& data : datas)
+                {
+                        s << data;
+                }
+
+                return s;
+        }
+
         class deserializer_t
         {
         public:
 
                 // constructor
-                deserializer_t(const vector_t& data)
-                        :       m_data(data),
-                                m_pos(0)
-                {
-                }
+                deserializer_t(const vector_t& data);
 
                 // deserialize data
-                deserializer_t& operator>>(scalar_t& val);
-                deserializer_t& operator>>(vector_t& vec);
-                deserializer_t& operator>>(matrix_t& mat);
-
-                template
-                <
-                        typename tdata
-                >
-                deserializer_t& operator>>(std::vector<tdata>& datas)
-                {
-                        for (size_t i = 0; i < datas.size(); i ++)
-                        {
-                                (*this) >> datas[i];
-                        }
-
-                        return *this;
-                }
-
-                template
-                <
-                        typename tdata
-                >
-                deserializer_t& operator>>(tdata& data)
-                {
-                        return (*this) >> data;
-                }
+                friend deserializer_t& operator>>(deserializer_t& s, scalar_t& val);
+                friend deserializer_t& operator>>(deserializer_t& s, vector_t& vec);
+                friend deserializer_t& operator>>(deserializer_t& s, matrix_t& mat);
 
         private:
 
@@ -96,6 +66,26 @@ namespace ncv
                 const vector_t& m_data;
                 size_t          m_pos;
         };
+
+        // deserialize data
+        deserializer_t& operator>>(deserializer_t& s, scalar_t& val);
+        deserializer_t& operator>>(deserializer_t& s, vector_t& vec);
+        deserializer_t& operator>>(deserializer_t& s, matrix_t& mat);
+
+        // deserialize vectors of known types
+        template
+        <
+                typename tdata
+        >
+        deserializer_t& operator>>(deserializer_t& s, std::vector<tdata>& datas)
+        {
+                for (tdata& data : datas)
+                {
+                        s >> data;
+                }
+
+                return s;
+        }
 }
 
 #endif // NANOCV_SERIALIZER_H
