@@ -235,7 +235,7 @@ namespace ncv
 
                         log_info() <<
                                 boost::format("feed-forward network [%1%/%2%]: [%3%] (%4%x%5%x%6%) -> (%7%x%8%x%9%).")
-                                % (l + 1) % m_layers.size() % text::resize(layer_ids[l], 12)
+                                % (l + 1) % m_layers.size() % layer_ids[l]
                                 % layer->n_idims() % layer->n_irows() % layer->n_icols()
                                 % layer->n_odims() % layer->n_orows() % layer->n_ocols();
                 }

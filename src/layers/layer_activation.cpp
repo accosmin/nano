@@ -7,10 +7,7 @@ namespace ncv
 
         size_t activation_layer_t::resize(size_t idims, size_t irows, size_t icols)
         {
-                const size_t odims = idims;
-
-                m_idata.resize(idims, irows, icols);
-                m_odata.resize(odims, irows, icols);
+                m_data.resize(idims, irows, icols);
 
                 return 0;
         }
@@ -80,22 +77,15 @@ namespace ncv
                 assert(n_irows() <= input.n_rows());
                 assert(n_icols() <= input.n_cols());
 
-                m_idata = input;
-
                 for (size_t o = 0; o < n_odims(); o ++)
-                {
-                        matrix_t& odata = m_odata(o);
+                {                        
+                        const matrix_t& idata = input(o);
+                        matrix_t& odata = m_data(o);
 
-                        for (size_t i = 0; i < n_idims(); i ++)
-                        {
-                                const matrix_t& idata = m_idata(i);
-
-                                math::transform(idata, odata, odata,
-                                        std::bind(&activation_layer_t::forward_scalar, this, _1));
-                        }
+                        math::transform(idata, odata, std::bind(&activation_layer_t::value, this, _1));
                 }
 
-                return m_odata;
+                return m_data;
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -108,19 +98,14 @@ namespace ncv
 
                 for (size_t o = 0; o < n_odims(); o ++)
                 {
-                        const matrix_t& odata = m_odata(o);
                         const matrix_t& gdata = gradient(o);
+                        const matrix_t& odata = m_data(o);
+                        matrix_t& idata = m_data(o);
 
-                        for (size_t i = 0; i < n_idims(); i ++)
-                        {
-                                matrix_t& idata = m_idata(i);
-
-                                math::transform(gdata, odata, idata,
-                                        std::bind(&activation_layer_t::backward_scalar, this, _1, _2));
-                        }
+                        math::transform(gdata, odata, idata, std::bind(&activation_layer_t::vgrad, this, _1, _2));
                 }
 
-                return m_idata;
+                return m_data;
         }
 
         //-------------------------------------------------------------------------------------------------

@@ -21,11 +21,11 @@ namespace ncv
         protected:
 
                 // activation outputs & gradients
-                virtual scalar_t forward_scalar(scalar_t ix) const
+                virtual scalar_t value(scalar_t ix) const
                 {
                         return ix / (1.0 + std::fabs(ix));
                 }
-                virtual scalar_t backward_scalar(scalar_t gx, scalar_t ox) const
+                virtual scalar_t vgrad(scalar_t gx, scalar_t ox) const
                 {
                         const scalar_t d = (ox > 0.0) ? (1.0 - ox) : (1.0 + ox);
                         return gx * d * d;

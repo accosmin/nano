@@ -40,25 +40,24 @@ namespace ncv
                 virtual bool load(boost::archive::binary_iarchive& ia);
 
                 // access functions
-                virtual size_t n_idims() const { return m_idata.n_dim1(); }
-                virtual size_t n_irows() const { return m_idata.n_rows(); }
-                virtual size_t n_icols() const { return m_idata.n_cols(); }
+                virtual size_t n_idims() const { return m_data.n_dim1(); }
+                virtual size_t n_irows() const { return m_data.n_rows(); }
+                virtual size_t n_icols() const { return m_data.n_cols(); }
 
-                virtual size_t n_odims() const { return m_odata.n_dim1(); }
-                virtual size_t n_orows() const { return m_odata.n_rows(); }
-                virtual size_t n_ocols() const { return m_odata.n_cols(); }
+                virtual size_t n_odims() const { return m_data.n_dim1(); }
+                virtual size_t n_orows() const { return m_data.n_rows(); }
+                virtual size_t n_ocols() const { return m_data.n_cols(); }
 
         protected:
 
                 // activation outputs & gradients
-                virtual scalar_t forward_scalar(scalar_t ix) const = 0;
-                virtual scalar_t backward_scalar(scalar_t gx, scalar_t ox) const = 0;
+                virtual scalar_t value(scalar_t ix) const = 0;
+                virtual scalar_t vgrad(scalar_t gx, scalar_t ox) const = 0;
 
         private:
 
                 // attributes
-                mutable tensor3d_t      m_idata;        // input buffer
-                mutable tensor3d_t      m_odata;        // output buffer
+                mutable tensor3d_t      m_data;         // input-output buffer
         };
 }
 

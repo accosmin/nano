@@ -5,6 +5,7 @@
 #include "core/tensor3d.h"
 #include "models/forward_network.h"
 #include <boost/program_options.hpp>
+#include <set>
 
 using namespace ncv;
 
@@ -90,6 +91,7 @@ int main(int argc, char *argv[])
 
         // evaluate the analytical gradient vs. the finite difference approximation
         //      for each: number of convolution layers, activation layer, pooling layer
+        std::set<string_t> descs;
         for (size_t n_layers = 0; n_layers <= cmd_max_layers; n_layers ++)
         {
                 for (const string_t& activation_layer_id : activation_layer_ids)
@@ -108,22 +110,27 @@ int main(int argc, char *argv[])
                                         desc += pooling_layer_id + ";";
                                 }
 
-                                forward_network_t network(desc);
-                                network.resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color);
-
-                                // build the inputs & outputs
-                                vector_t params(network.n_parameters());
-                                tensor3d_t sample(cmd_inputs, cmd_irows, cmd_icols);
-                                vector_t target(cmd_outputs);
-
-                                // test network
-                                for (const string_t& loss_id : loss_ids)
-                                {
-                                        test_grad("[network = " + text::to_string(n_layers) +
-                                                  ", loss = " + loss_id + "]",
-                                                  loss_id, network, params, sample, target, cmd_tests);
-                                }
+                                descs.insert(desc);
                         }
+                }
+        }
+
+        for (const string_t& desc : descs)
+        {
+                // create network
+                forward_network_t network(desc);
+                network.resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color);
+
+                // build the inputs & outputs
+                vector_t params(network.n_parameters());
+                tensor3d_t sample(cmd_inputs, cmd_irows, cmd_icols);
+                vector_t target(cmd_outputs);
+
+                // test network
+                for (const string_t& loss_id : loss_ids)
+                {
+                        test_grad("[loss = " + loss_id + "]",
+                                  loss_id, network, params, sample, target, cmd_tests);
                 }
         }
 
