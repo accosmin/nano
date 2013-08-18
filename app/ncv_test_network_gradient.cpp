@@ -14,12 +14,8 @@ static void test_grad(
         model_t& model, vector_t& params, tensor3d_t& input, vector_t& target,
         size_t n_tests)
 {
-        std::cout << "test_grad: " << header << " " << loss_id << std::endl;
-
         const rloss_t loss = loss_manager_t::instance().get(loss_id);
         const size_t n_parameters = params.size();
-
-        std::cout << "test_grad: #parameters = " << n_parameters << std::endl;
 
         // optimization problem: size
         auto opt_fn_size = [&] ()
@@ -64,8 +60,6 @@ static void test_grad(
                 rgen(params.data(), params.data() + params.size());
 
                 input.random(-0.1 / sqrt(n_parameters), 0.1 / sqrt(n_parameters));
-
-                std::cout << "test_grad: testing [" << t << "] ..." << std::endl;
 
                 vector_t gx_gd, gx_ax;
                 problem_gd.f(x, gx_gd);

@@ -51,7 +51,7 @@ namespace ncv
         private:
 
                 // display the model structure
-                void print() const;
+                void print(const strings_t& layer_ids) const;
 
         private:
 

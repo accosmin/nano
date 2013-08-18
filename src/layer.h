@@ -52,9 +52,6 @@ namespace ncv
                 virtual bool save(boost::archive::binary_oarchive& oa) const = 0;
                 virtual bool load(boost::archive::binary_iarchive& ia) = 0;
 
-                // short description
-                virtual string_t describe() const = 0;
-
                 // access functions
                 virtual size_t n_idims() const = 0;
                 virtual size_t n_irows() const = 0;

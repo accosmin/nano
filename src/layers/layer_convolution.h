@@ -46,14 +46,6 @@ namespace ncv
                 virtual bool save(boost::archive::binary_oarchive& oa) const;
                 virtual bool load(boost::archive::binary_iarchive& ia);
 
-                // short description
-                virtual string_t describe() const
-                {
-                        return (boost::format("conv (%1%x%2%x%3% * %4%x%5%x%6%x%7%) -> %8%x%9%x%10%")
-                                % n_idims() % n_irows() % n_icols() % n_kdim1() % n_kdim2() % n_krows() % n_kcols()
-                                % n_odims() % n_orows() % n_ocols()).str();
-                }
-
                 // access functions
                 virtual size_t n_idims() const { return m_idata.n_dim1(); }
                 virtual size_t n_irows() const { return m_idata.n_rows(); }

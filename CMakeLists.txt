@@ -75,7 +75,7 @@ set(nanocv_programs
         ncv_test_image
         ncv_test_color
         ncv_test_convolution
-        ncv_test_network_grad
+        ncv_test_network_gradient
         ncv_test_network_forward
 
         ncv_max_threads

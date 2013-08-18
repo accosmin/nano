@@ -97,20 +97,13 @@ namespace ncv
 
         bool forward_network_t::load_params(const vector_t& x)
         {
-                std::cout << "forward_network_t::load_params - step1" << std::endl;
-
-                std::cout << "forward_network_t::load_params - #parameters = " << n_parameters() << std::endl;
-
                 if (math::cast<size_t>(x.size()) == n_parameters())
                 {
                         deserializer_t s(x);
                         for (const rlayer_t& layer : m_layers)
                         {
-                                std::cout << "forward_network_t::load_params - step2 - layer " << layer->describe() << std::endl;
                                 layer->load_params(s);
                         }
-
-                        std::cout << "forward_network_t::load_params - step3" << std::endl;
 
                         zero_grad();
                         return true;
@@ -173,6 +166,7 @@ namespace ncv
                 size_t n_params = 0;
 
                 m_layers.clear();
+                strings_t layer_ids;
 
                 // create hidden layers
                 strings_t net_params;
@@ -210,6 +204,7 @@ namespace ncv
                         const size_t n_new_params = layer->resize(idims, irows, icols);
                         n_params += n_new_params;
                         m_layers.push_back(layer);
+                        layer_ids.push_back(layer_id);
 
                         idims = layer->n_odims();
                         irows = layer->n_orows();
@@ -223,22 +218,26 @@ namespace ncv
                         "ccols=" + text::to_string(icols)));
                 n_params += layer->resize(idims, irows, icols);
                 m_layers.push_back(layer);
+                layer_ids.push_back("conv");
 
-                print();
+                print(layer_ids);
 
                 return n_params;
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void forward_network_t::print() const
+        void forward_network_t::print(const strings_t& layer_ids) const
         {
                 for (size_t l = 0; l < m_layers.size(); l ++)
                 {
                         const rlayer_t& layer = m_layers[l];
 
-                        log_info() << boost::format("feed-forward network [%1%/%2%]: [%3%].")
-                                % (l + 1) % m_layers.size() % layer->describe();
+                        log_info() <<
+                                boost::format("feed-forward network [%1%/%2%]: [%3%] (%4%x%5%x%6%) -> (%7%x%8%x%9%).")
+                                % (l + 1) % m_layers.size() % text::resize(layer_ids[l], 12)
+                                % layer->n_idims() % layer->n_irows() % layer->n_icols()
+                                % layer->n_odims() % layer->n_orows() % layer->n_ocols();
                 }
         }
 

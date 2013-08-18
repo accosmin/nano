@@ -18,14 +18,6 @@ namespace ncv
 
                 NCV_MAKE_CLONABLE(unit_activation_layer_t, layer_t, "identity activation layer")
 
-                // short description
-                virtual string_t describe() const
-                {
-                        return (boost::format("unit (%1%x%2%x%3%) -> %4%x%5%x%6%")
-                                % n_idims() % n_irows() % n_icols()
-                                % n_odims() % n_orows() % n_ocols()).str();
-                }
-
         protected:
 
                 // activation outputs & gradients
