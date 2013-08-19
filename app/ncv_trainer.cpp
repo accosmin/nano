@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
         for (size_t i = 0; i < model_ids.size(); i ++)
         {
                 po_desc_models +=
-                        "\t" + text::resize(model_ids[i], 16) +
+                        "  " + text::resize(model_ids[i], 16) +
                         text::resize(model_descriptions[i], 32) + (i + 1 == model_ids.size() ? "" : "\n");
         }
 
@@ -31,8 +31,8 @@ int main(int argc, char *argv[])
         for (size_t i = 0; i < trainer_ids.size(); i ++)
         {
                 po_desc_trainers +=
-                        "\t" + text::resize(trainer_ids[i], 16) +
-                        text::resize(trainer_descriptions[i], 32) + (i + 1 == model_ids.size() ? "" : "\n");
+                        "  " + text::resize(trainer_ids[i], 16) +
+                        text::resize(trainer_descriptions[i], 32) + (i + 1 == trainer_ids.size() ? "" : "\n");
         }
 
         // parse the command line
@@ -52,13 +52,13 @@ int main(int argc, char *argv[])
                 po_desc_models.c_str());
         po_desc.add_options()("model-params",
                 boost::program_options::value<string_t>()->default_value(""),
-                "model parameters (if any) as specified in the chosed model's description");
+                "model parameters (if any) as specified in the chosen model's description");
         po_desc.add_options()("trainer",
                 boost::program_options::value<string_t>(),
                 po_desc_trainers.c_str());
         po_desc.add_options()("trainer-params",
                 boost::program_options::value<string_t>()->default_value(""),
-                "trainer parameters (if any) as specified in the chosed trainer's description");
+                "trainer parameters (if any) as specified in the chosen trainer's description");
         po_desc.add_options()("trials",
                 boost::program_options::value<size_t>(),
                 "number of models to train & evaluate");

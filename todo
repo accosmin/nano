@@ -1,6 +1,9 @@
-* BUG: cannot serialize convolution layers
+* smooth version of the max-pooling layers: like here: http://en.wikipedia.org/wiki/Softmax_activation_function
 
-* replace layer_t::describe() with a better name (it is too similar to clonable_t::description)
+* (A)SGD learning rate schedule: lambda=0.01 / (1.0 + eta * t) ... and tune eta
+
+* line-search methods should return a bool to indicate failure (e.g. more than 24 steps performed)
+
 
 * template classes to .hpp
 * thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
