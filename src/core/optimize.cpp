@@ -401,7 +401,7 @@ namespace ncv
                                 // optimize ...
                                 for (size_t t = 0; t < opt_iters; t ++)
                                 {
-                                        const scalar_t learning_rate = eta / (1.0 + eta * lambda * t);
+                                        const scalar_t learning_rate = lambda / (1.0 + eta * t);
 
                                         problem.f(cstate.x, cstate.g);
                                         cstate.x.noalias() -= learning_rate * cstate.g;
@@ -472,7 +472,7 @@ namespace ncv
                                 state_t cstate(problem, x0);
 
                                 // tune the learning rate
-                                const scalar_t lambda = 1.0;
+                                const scalar_t lambda = 0.01;
                                 const scalars_t etas = { 1e-5, 1e-4, 1e-3, 1e-2, 1e-1 };
 
                                 std::map<scalar_t, scalar_t> eta_results;
