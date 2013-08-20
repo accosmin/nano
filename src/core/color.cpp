@@ -1,6 +1,6 @@
 #include "color.h"
-#include "cast.h"
-#include "clamp.h"
+#include "cast.hpp"
+#include "clamp.hpp"
 
 namespace ncv
 {

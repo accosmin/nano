@@ -1,5 +1,5 @@
 #include "layer_activation.h"
-#include "core/transform.h"
+#include "core/transform.hpp"
 
 namespace ncv
 {

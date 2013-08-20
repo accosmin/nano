@@ -1,7 +1,7 @@
 #ifndef NANOCV_OPTIMIZE_H
 #define NANOCV_OPTIMIZE_H
 
-#include "stats.h"
+#include "stats.hpp"
 #include "types.h"
 
 namespace ncv

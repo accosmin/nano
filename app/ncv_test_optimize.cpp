@@ -1,10 +1,10 @@
 #include "ncv.h"
 #include "core/optimize.h"
 #include "core/logger.h"
-#include "core/random.h"
+#include "core/random.hpp"
 #include "core/timer.h"
-#include "core/clamp.h"
-#include "core/numeric.h"
+#include "core/clamp.hpp"
+#include "core/numeric.hpp"
 #include <boost/program_options.hpp>
 
 // display the formatted optimization history

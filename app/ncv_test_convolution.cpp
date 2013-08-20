@@ -1,5 +1,5 @@
 #include "ncv.h"
-#include "core/convolution.h"
+#include "core/convolution.hpp"
 #include <iomanip>
 
 using namespace ncv;

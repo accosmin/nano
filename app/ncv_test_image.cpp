@@ -1,9 +1,9 @@
 #include "ncv.h"
 #include "core/logger.h"
 #include "core/timer.h"
-#include "core/clamp.h"
-#include "core/bilinear.h"
-#include "core/transform.h"
+#include "core/clamp.hpp"
+#include "core/bilinear.hpp"
+#include "core/transform.hpp"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])

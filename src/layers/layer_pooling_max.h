@@ -2,7 +2,7 @@
 #define NANOCV_MAX_POOLING_LAYER_H
 
 #include "layer_pooling.h"
-#include "core/numeric.h"
+#include "core/numeric.hpp"
 
 namespace ncv
 {

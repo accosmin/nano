@@ -2,7 +2,7 @@
 #define NANOCV_BILINEAR_H
 
 #include <algorithm>
-#include "cast.h"
+#include "cast.hpp"
 
 namespace ncv
 {

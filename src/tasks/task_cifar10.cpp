@@ -1,6 +1,6 @@
 #include "task_cifar10.h"
 #include "core/color.h"
-#include "core/cast.h"
+#include "core/cast.hpp"
 #include "loss.h"
 #include <fstream>
 

@@ -3,7 +3,7 @@
 #include "core/optimize.h"
 #include "core/timer.h"
 #include "core/text.h"
-#include "core/clamp.h"
+#include "core/clamp.hpp"
 
 namespace ncv
 {

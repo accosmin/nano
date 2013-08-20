@@ -1,8 +1,8 @@
 #ifndef NANOCV_MANAGER_H
 #define NANOCV_MANAGER_H
 
-#include "clonable.h"
-#include "singleton.h"
+#include "clonable.hpp"
+#include "singleton.hpp"
 #include <vector>
 #include <map>
 

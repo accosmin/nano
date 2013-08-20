@@ -1,7 +1,7 @@
 #include "task_mnist.h"
 #include "core/color.h"
 #include "core/text.h"
-#include "core/cast.h"
+#include "core/cast.hpp"
 #include "loss.h"
 #include <fstream>
 

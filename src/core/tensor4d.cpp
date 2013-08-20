@@ -1,5 +1,5 @@
 #include "tensor4d.h"
-#include "core/random.h"
+#include "core/random.hpp"
 
 namespace ncv
 {

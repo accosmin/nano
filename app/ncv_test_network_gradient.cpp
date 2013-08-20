@@ -1,6 +1,6 @@
 #include "ncv.h"
 #include "core/optimize.h"
-#include "core/random.h"
+#include "core/random.hpp"
 #include "core/logger.h"
 #include "core/tensor3d.h"
 #include "models/forward_network.h"

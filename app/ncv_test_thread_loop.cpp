@@ -1,5 +1,5 @@
 #include "ncv.h"
-#include "core/stats.h"
+#include "core/stats.hpp"
 #include "core/logger.h"
 #include "core/timer.h"
 #include "core/thread.h"

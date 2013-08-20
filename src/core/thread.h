@@ -1,7 +1,7 @@
 #ifndef NANOCV_THREAD_H
 #define NANOCV_THREAD_H
 
-#include "singleton.h"
+#include "singleton.hpp"
 #include <thread>
 #include <vector>
 #include <condition_variable>
