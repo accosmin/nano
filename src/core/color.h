@@ -7,7 +7,7 @@ namespace ncv
 {
         // RGBA
         typedef uint32_t                        rgba_t;
-        typedef tmatrix<rgba_t>::matrix_t       rgba_matrix_t;
+        typedef tmatrix_t<rgba_t>::matrix_t     rgba_matrix_t;
 
         // CIELab
         typedef Eigen::Matrix
@@ -17,7 +17,7 @@ namespace ncv
                 1,
                 Eigen::ColMajor
         >                                       cielab_t;
-        typedef tmatrix<cielab_t>::matrix_t     cielab_matrix_t;
+        typedef tmatrix_t<cielab_t>::matrix_t   cielab_matrix_t;
 
         // manipulate colors
         namespace color

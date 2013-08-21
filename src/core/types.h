@@ -1,105 +1,17 @@
 #ifndef NANOCV_TYPES_H
 #define NANOCV_TYPES_H
 
+#include "matrix.hpp"
+#include "tensor.hpp"
 #include <functional>
 #include <string>
 #include <vector>
-#include <map>
 #include <cstdint>
-#include <eigen3/Eigen/Core>
-#include <boost/serialization/vector.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/box.hpp>
 
 namespace ncv
 {
-        // vector
-        template
-        <
-                typename tvalue
-        >
-        struct tvector
-        {
-                typedef tvalue                                  type_t;
-
-                typedef Eigen::Matrix
-                <
-                        tvalue,
-                        Eigen::Dynamic,
-                        1,
-                        Eigen::ColMajor
-                >                                               vector_t;
-                typedef std::vector<vector_t>                   vectors_t;
-                typedef typename vectors_t::const_iterator      vectors_const_it;
-                typedef typename vectors_t::iterator            vectors_it;
-        };
-
-        // fixed size vector
-        template
-        <
-                typename tvalue,
-                std::size_t trows
-        >
-        struct tfixed_size_vector
-        {
-                typedef tvalue                                  type_t;
-
-                typedef Eigen::Matrix
-                <
-                        tvalue,
-                        trows,
-                        1,
-                        Eigen::ColMajor
-                >                                               vector_t;
-                typedef std::vector<vector_t>                   vectors_t;
-                typedef typename vectors_t::const_iterator      vectors_const_it;
-                typedef typename vectors_t::iterator            vectors_it;
-        };
-
-        // matrix
-        template
-        <
-                typename tvalue
-        >
-        struct tmatrix
-        {
-                typedef tvalue                                  type_t;
-
-                typedef Eigen::Matrix
-                <       tvalue,
-                        Eigen::Dynamic,
-                        Eigen::Dynamic,
-                        Eigen::RowMajor
-                >                                               matrix_t;
-                typedef std::vector<matrix_t>                   matrices_t;
-                typedef typename matrices_t::const_iterator     matrices_const_it;
-                typedef typename matrices_t::iterator           matrices_it;
-                typedef typename matrix_t::Index                index_t;
-        };
-
-        // fixed size matrix
-        template
-        <
-                typename tvalue,
-                std::size_t trows,
-                std::size_t tcols
-        >
-        struct tfixed_size_matrix
-        {
-                typedef tvalue                                  type_t;
-
-                typedef Eigen::Matrix
-                <       tvalue,
-                        trows,
-                        tcols,
-                        Eigen::RowMajor
-                >                                               matrix_t;
-                typedef std::vector<matrix_t>                   matrices_t;
-                typedef typename matrices_t::const_iterator     matrices_const_it;
-                typedef typename matrices_t::iterator           matrices_it;
-                typedef typename matrix_t::Index                index_t;
-        };
-
         // numerical types
         typedef std::size_t                     size_t;
         typedef std::vector<size_t>             indices_t;
@@ -107,17 +19,17 @@ namespace ncv
         typedef double                          scalar_t;
         typedef std::vector<scalar_t>           scalars_t;
 
-        typedef tvector<scalar_t>::vector_t     vector_t;
-        typedef tvector<scalar_t>::vectors_t    vectors_t;
+        typedef tvector_t<scalar_t>::vector_t   vector_t;
+        typedef tvector_t<scalar_t>::vectors_t  vectors_t;
 
-        typedef tmatrix<scalar_t>::matrix_t     matrix_t;
-        typedef tmatrix<scalar_t>::matrices_t   matrices_t;
+        typedef tmatrix_t<scalar_t>::matrix_t   matrix_t;
+        typedef tmatrix_t<scalar_t>::matrices_t matrices_t;
 
-//        typedef tmatrix<vector_t>::matrix_t     tensor3d_t;
-//        typedef tmatrix<vector_t>::matrices_t   tensor3ds_t;
+        typedef ttensor3d_t<matrix_t, size_t>   tensor3d_t;
+        typedef std::vector<tensor3d_t>         tensor3ds_t;
 
-//        typedef tmatrix<matrix_t>::matrix_t     tensor4d_t;
-//        typedef tmatrix<matrix_t>::matrices_t   tensor4ds_t;
+        typedef ttensor4d_t<matrix_t, size_t>   tensor4d_t;
+        typedef std::vector<tensor4d_t>         tensor4ds_t;
 
         // pixel geometry
         namespace bgm = boost::geometry::model;
@@ -128,7 +40,6 @@ namespace ncv
         // strings
         typedef std::string                     string_t;
         typedef std::vector<string_t>           strings_t;
-        typedef std::map<string_t, string_t>    string_map_t;
 
         // lambda
         using std::placeholders::_1;
@@ -169,47 +80,6 @@ namespace ncv
                 luma,                   // process only grayscale color channel
                 rgba                    // process red, green & blue color channels
         };
-}
-
-// serialize matrices and vectors
-namespace boost
-{
-        namespace serialization
-        {
-                template
-                <
-                        class tarchive,
-                        class tvalue,
-                        int Rows,
-                        int Cols,
-                        int Options
-                >
-                void serialize(tarchive& ar, Eigen::Matrix<tvalue, Rows, Cols, Options>& mat, const unsigned int)
-                {
-                        if (tarchive::is_saving::value)
-                        {
-                                int rows = mat.rows(), cols = mat.cols();
-                                ar & rows; ar & cols;
-
-                                for (int i = 0; i < mat.size(); i ++)
-                                {
-                                        ar & mat(i);
-                                }
-                        }
-
-                        else
-                        {
-                                int rows = 0, cols = 0;
-                                ar & rows; ar & cols;
-
-                                mat.resize(rows, cols);
-                                for (int i = 0; i < mat.size(); i ++)
-                                {
-                                        ar & mat(i);
-                                }
-                        }
-                }
-        }
 }
 
 #endif // NANOCV_TYPES_H

@@ -1,16 +1,12 @@
-- re-design tensor3d & tensor4d:
-	- template tensor class
-	- typedef in types.h
+* (A)SGD learning rate schedule: lambda=0.01 / (1.0 + eta * t) ... and tune eta:
+	- CRASHES
+
+* line-search methods should return a bool to indicate failure (e.g. more than 24 steps performed)
 
 - serializer/deserializer:
 	- easier to use interface
 
 * smooth version of the max-pooling layers: like here: http://en.wikipedia.org/wiki/Softmax_activation_function
-
-* (A)SGD learning rate schedule: lambda=0.01 / (1.0 + eta * t) ... and tune eta:
-	- CRASHES
-
-* line-search methods should return a bool to indicate failure (e.g. more than 24 steps performed)
 
 * thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
 

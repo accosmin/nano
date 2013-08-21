@@ -20,7 +20,6 @@ namespace ncv
         //              a set of outputs of size (orows, ocols).
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        class tensor3d_t;
         class serializer_t;
         class deserializer_t;
 

@@ -3,6 +3,7 @@
 
 #include "color.h"
 #include "geom.h"
+#include <map>
 
 namespace ncv
 {

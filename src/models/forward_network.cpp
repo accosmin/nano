@@ -3,7 +3,7 @@
 #include "core/logger.h"
 #include "core/text.h"
 #include "core/cast.hpp"
-#include "core/tensor3d.h"
+#include "core/serializer.h"
 
 namespace ncv
 {
@@ -25,9 +25,8 @@ namespace ncv
                 }
 
                 const tensor3d_t& output = *input;
-                vector_t result(output.size());
-                serializer_t s(result);
-                s << output;
+                vector_t result(output.size());                
+                serializer_t(result) << output;
 
                 return result;
         }
@@ -47,8 +46,7 @@ namespace ncv
         void forward_network_t::cumulate_grad(const vector_t& vgradient) const
         {
                 tensor3d_t _gradient(n_outputs(), 1, 1);
-                deserializer_t s(vgradient);
-                s >> _gradient;
+                deserializer_t(vgradient) >> _gradient;
 
                 const tensor3d_t* gradient = &_gradient;
                 for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)

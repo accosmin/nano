@@ -2,7 +2,6 @@
 #define NANOCV_ACTIVATION_LAYER_H
 
 #include "layer.h"
-#include "core/tensor3d.h"
 
 namespace ncv
 {

@@ -5,6 +5,7 @@
 #include "core/convolution.hpp"
 #include "core/for_each.hpp"
 #include "core/clamp.hpp"
+#include "core/serializer.h"
 
 namespace ncv
 {

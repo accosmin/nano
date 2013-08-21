@@ -2,7 +2,6 @@
 #include "core/clamp.hpp"
 #include "core/timer.h"
 #include "core/logger.h"
-#include "core/tensor3d.h"
 #include "models/forward_network.h"
 #include <boost/program_options.hpp>
 

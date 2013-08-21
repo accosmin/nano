@@ -2,8 +2,6 @@
 #define NANOCV_CONV_LAYER_H
 
 #include "layer.h"
-#include "core/tensor3d.h"
-#include "core/tensor4d.h"
 
 namespace ncv
 {

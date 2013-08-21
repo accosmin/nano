@@ -15,7 +15,6 @@ namespace ncv
 
         class task_t;
         class image_t;
-        class tensor3d_t;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // generic model:

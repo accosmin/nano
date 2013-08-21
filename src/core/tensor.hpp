@@ -1,77 +1,241 @@
 #ifndef NANOCV_TENSOR_HPP
 #define NANOCV_TENSOR_HPP
 
-#include "core/serializer.h"
+#include <vector>
+#include <boost/serialization/access.hpp>
+#include <boost/serialization/base_object.hpp>
+#include <cassert>
+#include "random.hpp"
 
 namespace ncv
 {
-//        /////////////////////////////////////////////////////////////////////////////////////////
-//        // 3D/4D tensor:
-//        //      - 1D/2D collection of fixed size matrices
-//        /////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // 3D/4D tensor:
+        //      - 1D/2D collection of fixed size matrices
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-//        template
-//        <
-//                typename tmatrix
-//        >
-//        class tensor3d_t
-//        {
-//        public:
+        namespace impl
+        {
+                template
+                <
+                        typename tmatrix,
+                        typename tsize
+                >
+                class tensor_storage_t
+                {
+                public:
 
-//                // constructor
-//                tensor3d_t(size_t dim1 = 0, size_t rows = 0, size_t cols = 0);
+                        typedef std::vector<tmatrix>    matrices_t;
 
-//                // resize to new dimensions
-//                size_t resize(size_t dim1, size_t rows, size_t cols);
+                        // constructor
+                        tensor_storage_t(tsize size = 0, tsize rows = 0, tsize cols = 0)
+                        {
+                                allocate(size, rows, cols);
+                        }
 
-//                // reset
-//                void zero();
-//                void constant(scalar_t value);
-//                void random(scalar_t min = -0.1, scalar_t max = 0.1);
+                        // destructor
+                        virtual ~tensor_storage_t()
+                        {
+                        }
 
-//                // serialize/deserialize data
-//                friend serializer_t& operator<<(serializer_t& s, const tensor3d_t& tensor);
-//                friend deserializer_t& operator>>(deserializer_t& s, tensor3d_t& tensor);
+                        // reset values
+                        void zero()
+                        {
+                                constant(0);
+                        }
 
-//                // cumulate
-//                void operator+=(const tensor3d_t& other);
+                        template
+                        <
+                                typename tscalar
+                        >
+                        void constant(tscalar value)
+                        {
+                                for (tmatrix& mat : m_data)
+                                {
+                                        mat.setConstant(value);
+                                }
+                        }
 
-//                // access functions
-//                size_t size() const { return n_dim1() * n_rows() * n_cols(); }
-//                size_t n_dim1() const { return m_dim1; }
-//                size_t n_rows() const { return m_rows; }
-//                size_t n_cols() const { return m_cols; }
+                        template
+                        <
+                                typename tscalar
+                        >
+                        void random(tscalar min = -0.1, tscalar max = 0.1)
+                        {
+                                random_t<tscalar> rgen(min, max);
+                                for (tmatrix& mat : m_data)
+                                {
+                                        rgen(mat.data(), mat.data() + mat.size());
+                                }
+                        }
 
-//                const matrix_t& operator()(size_t d1) const { return m_data[d1]; }
-//                matrix_t& operator()(size_t d1) { return m_data[d1]; }
+                        // cumulate
+                        void operator+=(const tensor_storage_t& other)
+                        {
+                                assert(size() == other.size());
+                                assert(n_rows() == other.n_rows());
+                                assert(n_cols() == other.n_cols());
 
-//        private:
+                                for (tsize i = 0; i < m_data.size(); i ++)
+                                {
+                                        get(i).noalias() += get(i);
+                                }
+                        }
 
-//                friend class boost::serialization::access;
-//                template
-//                <
-//                        class tarchive
-//                >
-//                void serialize(tarchive & ar, const unsigned int version)
-//                {
-//                        ar & m_dim1;
-//                        ar & m_rows;
-//                        ar & m_cols;
-//                        ar & m_data;
-//                }
+                        // access functions
+                        tsize size() const { return m_data.size() * n_rows() * n_cols(); }
+                        tsize n_rows() const { return m_rows; }
+                        tsize n_cols() const { return m_cols; }
 
-//        private:
+                protected:
 
-//                // attributes
-//                size_t          m_dim1; // #dimension 1
-//                size_t          m_rows; // #rows (for each dimension)
-//                size_t          m_cols; // #cols (for each dimension)
-//                matrices_t      m_data; // values
-//        };
+                        // resize to new dimensions
+                        tsize allocate(tsize size, tsize rows, tsize cols)
+                        {
+                                m_rows = rows;
+                                m_cols = cols;
 
-//        // serialize/deserialize data
-//        serializer_t& operator<<(serializer_t& s, const tensor3d_t& tensor);
-//        deserializer_t& operator>>(deserializer_t& s, tensor3d_t& tensor);
+                                m_data.resize(size);
+                                for (tmatrix& mat : m_data)
+                                {
+                                        mat.resize(rows, cols);
+                                        mat.setZero();
+                                }
+
+                                return this->size();
+                        }
+
+                        // access functions
+                        const tmatrix& get(tsize i) const { return m_data[i]; }
+                        tmatrix& get(tsize i) { return m_data[i]; }
+
+                private:
+
+                        // serialize
+                        friend class boost::serialization::access;
+                        template
+                        <
+                                class tarchive
+                        >
+                        void serialize(tarchive & ar, const unsigned int version)
+                        {
+                                ar & m_rows;
+                                ar & m_cols;
+                                ar & m_data;
+                        }
+
+                private:
+
+                        // attributes
+                        tsize           m_rows; // #rows (for each dimension)
+                        tsize           m_cols; // #cols (for each dimension)
+                        matrices_t      m_data; // values
+                };
+        }
+
+        template
+        <
+                typename tmatrix,
+                typename tsize
+        >
+        class ttensor3d_t : public impl::tensor_storage_t<tmatrix, tsize>
+        {
+        public:
+
+                typedef impl::tensor_storage_t<tmatrix, tsize> base_t;
+
+                // constructor
+                ttensor3d_t(tsize dim1 = 0, tsize rows = 0, tsize cols = 0)
+                {
+                        resize(dim1, rows, cols);
+                }
+
+                // resize to new dimensions
+                tsize resize(tsize dim1, tsize rows, tsize cols)
+                {
+                        m_dim1 = dim1;
+                        return base_t::allocate(dim1, rows, cols);
+                }
+
+                // access functions
+                tsize n_dim1() const { return m_dim1; }
+
+                const tmatrix& operator()(tsize d1) const { return base_t::get(d1); }
+                tmatrix& operator()(tsize d1) { return base_t::get(d1); }
+
+        private:
+
+                // serialize
+                friend class boost::serialization::access;
+                template
+                <
+                        class tarchive
+                >
+                void serialize(tarchive & ar, const unsigned int version)
+                {
+                        ar & boost::serialization::base_object<base_t>(*this);
+                        ar & m_dim1;
+                }
+
+        private:
+
+                // attributes
+                tsize           m_dim1; // #dimension 1
+        };
+
+        template
+        <
+                typename tmatrix,
+                typename tsize
+        >
+        class ttensor4d_t : public impl::tensor_storage_t<tmatrix, tsize>
+        {
+        public:
+
+                typedef impl::tensor_storage_t<tmatrix, tsize> base_t;
+
+                // constructor
+                ttensor4d_t(tsize dim1 = 0, tsize dim2 = 0, tsize rows = 0, tsize cols = 0)
+                {
+                        resize(dim1, dim2, rows, cols);
+                }
+
+                // resize to new dimensions
+                tsize resize(tsize dim1, tsize dim2, tsize rows, tsize cols)
+                {
+                        m_dim1 = dim1;
+                        m_dim2 = dim2;
+                        return base_t::allocate(dim1 * dim2, rows, cols);
+                }
+
+                // access functions
+                tsize n_dim1() const { return m_dim1; }
+                tsize n_dim2() const { return m_dim2; }
+
+                const tmatrix& operator()(size_t d1, size_t d2) const { return base_t::get(d1 * n_dim2() + d2); }
+                tmatrix& operator()(size_t d1, size_t d2) { return base_t::get(d1 * n_dim2() + d2); }
+
+        private:
+
+                // serialize
+                friend class boost::serialization::access;
+                template
+                <
+                        class tarchive
+                >
+                void serialize(tarchive & ar, const unsigned int version)
+                {
+                        ar & boost::serialization::base_object<base_t>(*this);
+                        ar & m_dim1;
+                        ar & m_dim2;
+                }
+
+        private:
+
+                // attributes
+                tsize           m_dim1; // #dimension 1
+                tsize           m_dim2; // #dimension 2
+        };
 }
 
 #endif // NANOCV_TENSOR_HPP

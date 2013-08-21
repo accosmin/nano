@@ -12,32 +12,59 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        serializer_t& operator<<(serializer_t& s, const matrix_t& mat)
+        serializer_t& serializer_t::operator<<(const tensor4d_t& t)
         {
-                std::copy(mat.data(), mat.data() + mat.size(), s.m_data.data() + s.m_pos);
-                s.m_pos += mat.size();
+                for (size_t d1 = 0; d1 < t.n_dim1(); d1 ++)
+                {
+                        for (size_t d2 = 0; d2 < t.n_dim2(); d2 ++)
+                        {
+                                this->operator<<(t(d1, d2));
+                        }
+                }
 
-                return s;
+                return *this;
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        serializer_t& operator<<(serializer_t& s, const vector_t& vec)
+        serializer_t& serializer_t::operator<<(const tensor3d_t& t)
         {
-                std::copy(vec.data(), vec.data() + vec.size(), s.m_data.data() + s.m_pos);
-                s.m_pos += vec.size();
+                for (size_t d1 = 0; d1 < t.n_dim1(); d1 ++)
+                {
+                        this->operator<<(t(d1));
+                }
 
-                return s;
+                return *this;
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        serializer_t& operator<<(serializer_t& s, scalar_t val)
+        serializer_t& serializer_t::operator<<(const matrix_t& mat)
         {
-                s.m_data(s.m_pos ++) = val;
-                s.m_pos ++;
+                std::copy(mat.data(), mat.data() + mat.size(), m_data.data() + m_pos);
+                m_pos += mat.size();
 
-                return s;
+                return *this;
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        serializer_t& serializer_t::operator<<(const vector_t& vec)
+        {
+                std::copy(vec.data(), vec.data() + vec.size(), m_data.data() + m_pos);
+                m_pos += vec.size();
+
+                return *this;
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        serializer_t& serializer_t::operator<<(scalar_t val)
+        {
+                m_data(m_pos ++) = val;
+                m_pos ++;
+
+                return *this;
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -50,32 +77,59 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        deserializer_t& operator>>(deserializer_t& s, matrix_t& mat)
+        deserializer_t& deserializer_t::operator>>(tensor4d_t& t)
         {
-                auto segm = s.m_data.segment(s.m_pos, mat.size());
+                for (size_t d1 = 0; d1 < t.n_dim1(); d1 ++)
+                {
+                        for (size_t d2 = 0; d2 < t.n_dim2(); d2 ++)
+                        {
+                                this->operator>>(t(d1, d2));
+                        }
+                }
+
+                return *this;
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        deserializer_t& deserializer_t::operator>>(tensor3d_t& t)
+        {
+                for (size_t d1 = 0; d1 < t.n_dim1(); d1 ++)
+                {
+                        this->operator>>(t(d1));
+                }
+
+                return *this;
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        deserializer_t& deserializer_t::operator>>(matrix_t& mat)
+        {
+                auto segm = m_data.segment(m_pos, mat.size());
                 std::copy(segm.data(), segm.data() + segm.size(), mat.data());
-                s.m_pos += mat.size();
+                m_pos += mat.size();
 
-                return s;
+                return *this;
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        deserializer_t& operator>>(deserializer_t& s, vector_t& vec)
+        deserializer_t& deserializer_t::operator>>(vector_t& vec)
         {
-                vec = s.m_data.segment(s.m_pos, vec.size());
-                s.m_pos += vec.size();
+                vec = m_data.segment(m_pos, vec.size());
+                m_pos += vec.size();
 
-                return s;
+                return *this;
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        deserializer_t& operator>>(deserializer_t& s, scalar_t& val)
+        deserializer_t& deserializer_t::operator>>(scalar_t& val)
         {
-                val = s.m_data(s.m_pos ++);
+                val = m_data(m_pos ++);
 
-                return s;
+                return *this;
         }
 
         //-------------------------------------------------------------------------------------------------
