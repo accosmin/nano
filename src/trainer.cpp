@@ -87,6 +87,10 @@ namespace ncv
                 {
                         m_vgrad = m_model->grad();
                 }
+                void store(const model_t& model) const
+                {
+                        m_vgrad = model.grad();
+                }
 
                 // cumulate loss value & gradient
                 vgrad_data_t& operator+=(const vgrad_data_t& other)
@@ -101,10 +105,10 @@ namespace ncv
                 vector_t vgrad() const { return m_vgrad / ((m_count == 0) ? 1.0 : m_count); }
 
                 // attributes
-                scalar_t        m_value;
+                scalar_t                m_value;
                 mutable vector_t        m_vgrad;
-                size_t          m_count;
-                rmodel_t        m_model;
+                size_t                  m_count;
+                rmodel_t                m_model;
         };
 
         //-------------------------------------------------------------------------------------------------
@@ -186,7 +190,7 @@ namespace ncv
                                 cum_data.update(task, samples[i], loss, model);
                         }
 
-                        cum_data.store();
+                        cum_data.store(model);
                 }
 
                 else

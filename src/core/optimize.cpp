@@ -143,7 +143,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        scalar_t optimize::problem_t::f(const vector_t x, vector_t& g) const
+        scalar_t optimize::problem_t::f(const vector_t& x, vector_t& g) const
         {
                 if (m_op_fval_grad)
                 {
@@ -401,7 +401,7 @@ namespace ncv
                                 // optimize ...
                                 for (size_t t = 0; t < opt_iters; t ++)
                                 {
-                                        const scalar_t learning_rate = lambda / (1.0 + eta * t);
+                                        const scalar_t learning_rate = eta / (1.0 + eta * lambda * t);
 
                                         problem.f(cstate.x, cstate.g);
                                         cstate.x.noalias() -= learning_rate * cstate.g;
@@ -410,6 +410,14 @@ namespace ncv
                                         if (average)
                                         {
                                                 avg_x = ((t + 0.0) * avg_x + cstate.x) / (t + 1.0);
+                                        }
+
+                                        if (t % 1000 == 0)
+                                        {
+                                                std::cout << "eta = " << eta << ", learning_rate = " << learning_rate
+                                                          << ", x = [" << cstate.x.minCoeff()
+                                                          << ", " << cstate.x.maxCoeff()
+                                                          << "], g = " << cstate.g.lpNorm<Eigen::Infinity>() << std::endl;
                                         }
 
                                         // check convergence (& update function value)
@@ -437,6 +445,11 @@ namespace ncv
                                                 {
                                                         op_updated(result);
                                                 }
+
+                                                std::cout << "eta = " << eta << ", learning_rate = " << learning_rate
+                                                          << ", x = [" << cstate.x.minCoeff()
+                                                          << ", " << cstate.x.maxCoeff()
+                                                          << "], f = " << cstate.f << std::endl;
                                         }
                                 }
 
@@ -469,11 +482,11 @@ namespace ncv
                                 const size_t tune_iters = std::max(static_cast<size_t>(1), iterations / 20);
                                 const size_t update_iters = std::max(static_cast<size_t>(1), iterations / 10);
 
-                                state_t cstate(problem, x0);
+                                const state_t cstate(problem, x0);
 
                                 // tune the learning rate
-                                const scalar_t lambda = 0.01;
-                                const scalars_t etas = { 1e-5, 1e-4, 1e-3, 1e-2, 1e-1 };
+                                const scalar_t lambda = 1.0;
+                                const scalars_t etas = { 5.0, 2.0, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0, 2.0, 5.0 };
 
                                 std::map<scalar_t, scalar_t> eta_results;
                                 for (scalar_t eta : etas)

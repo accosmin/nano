@@ -124,7 +124,7 @@ namespace ncv
                         // compute dimensionality & function value & gradient
                         size_t size() const;
                         scalar_t f(const vector_t& x) const;
-                        scalar_t f(const vector_t x, vector_t& g) const;
+                        scalar_t f(const vector_t& x, vector_t& g) const;
 
                 private:
 
