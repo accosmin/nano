@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 	static const int max_isize = 32;
 	static const int min_ksize = 8;
 	static const int max_ksize = 12;
-        static const int n_samples = 100000;
+        static const int n_samples = 10000;
 
 	for (int isize = min_isize; isize <= max_isize; isize += 2)
 	{
