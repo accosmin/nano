@@ -412,14 +412,6 @@ namespace ncv
                                                 avg_x = ((t + 0.0) * avg_x + cstate.x) / (t + 1.0);
                                         }
 
-                                        if (t % 1000 == 0)
-                                        {
-                                                std::cout << "eta = " << eta << ", learning_rate = " << learning_rate
-                                                          << ", x = [" << cstate.x.minCoeff()
-                                                          << ", " << cstate.x.maxCoeff()
-                                                          << "], g = " << cstate.g.lpNorm<Eigen::Infinity>() << std::endl;
-                                        }
-
                                         // check convergence (& update function value)
                                         if (impl::converged(epsilon, cstate))
                                         {
@@ -445,11 +437,6 @@ namespace ncv
                                                 {
                                                         op_updated(result);
                                                 }
-
-                                                std::cout << "eta = " << eta << ", learning_rate = " << learning_rate
-                                                          << ", x = [" << cstate.x.minCoeff()
-                                                          << ", " << cstate.x.maxCoeff()
-                                                          << "], f = " << cstate.f << std::endl;
                                         }
                                 }
 
@@ -486,7 +473,7 @@ namespace ncv
 
                                 // tune the learning rate
                                 const scalar_t lambda = 1.0;
-                                const scalars_t etas = { 5.0, 2.0, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0, 2.0, 5.0 };
+                                const scalars_t etas = { 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0, 2.0, 5.0, 10.0 };
 
                                 std::map<scalar_t, scalar_t> eta_results;
                                 for (scalar_t eta : etas)

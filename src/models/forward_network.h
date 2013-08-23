@@ -7,7 +7,7 @@
 namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
-        // multi-layer forward network model.
+        // multi-layer feed-forward network model.
         //
         // parameters:  - default = empty_string -> no hidden layer
         //              - format = [layer_id:layer_parameters[,]]*
@@ -22,8 +22,15 @@ namespace ncv
                 // constructor
                 forward_network_t(const string_t& params = string_t());
 
-                NCV_MAKE_CLONABLE(forward_network_t, model_t,
-                                  "convolution network, parameters: [layer_id[:layer_parameters][;]]*")
+                // create an object clone
+                virtual robject_t clone() const;
+                virtual robject_t clone(const std::string& params) const;
+
+                // describe the object
+                virtual std::string description() const
+                {
+                        return "feed-forward network, parameters: [layer_id[:layer_parameters][;]]*";
+                }
 
                 // compute the model output
                 virtual vector_t value(const tensor3d_t& input) const;

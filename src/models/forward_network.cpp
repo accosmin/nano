@@ -239,6 +239,26 @@ namespace ncv
                 }
         }
 
+        //------------------------------------------------------------------------------------------------
+
+        forward_network_t::robject_t forward_network_t::clone() const
+        {
+                forward_network_t* result = new forward_network_t(*this);
+                for (size_t l = 0; l < m_layers.size(); l ++)
+                {
+                        result->m_layers[l] = m_layers[l]->clone();
+                }
+
+                return forward_network_t::robject_t(result);
+        }
+
+        //------------------------------------------------------------------------------------------------
+
+        forward_network_t::robject_t forward_network_t::clone(const std::string& params) const
+        {
+                return forward_network_t::robject_t(new forward_network_t(params));
+        }
+
         //-------------------------------------------------------------------------------------------------
 }
 
