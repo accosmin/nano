@@ -1,10 +1,6 @@
-* (A)SGD learning rate schedule: lambda=0.01 / (1.0 + eta * t) ... and tune eta:
-	- CRASHES
+* investigate why the trainer fails!
 
-* line-search methods should return a bool to indicate failure (e.g. more than 24 steps performed)
-
-- serializer/deserializer:
-	- easier to use interface
+* make SGD & ASGD work well!
 
 * smooth version of the max-pooling layers: like here: http://en.wikipedia.org/wiki/Softmax_activation_function
 
@@ -15,8 +11,6 @@
 * use std::make_shared, instead of robject_t(
 
  math::cast & math::round should use Boost.Numeric (boost::numeric_cast ...)
-
-check if storing matrices column-wise (default in Eigen3) produces a faster ::block() convolution
 
 same with -DEIGEN_NO_DEBUG (only for release)
 
@@ -37,9 +31,6 @@ same with -DEIGEN_NO_DEBUG (only for release)
     26.76%  ncv_trainer  libnanocv.so         [.] ncv::conv_layer_t::forward(ncv::tensor3d_t const&) const                                                                   
      3.14%  ncv_trainer  libnanocv.so         [.] ncv::fun1_activation_t::value(double) const                                                                                
      1.07%  ncv_trainer  libnanocv.so         [.] ncv::fun1_activation_t::vgrad(double) const
-
-- BUG:
-        - LBFGS trainer - sometimes does not converge - the line-search part takes too long!!!
 
 - refactor networks and models:
 	- convlayer & convnet
