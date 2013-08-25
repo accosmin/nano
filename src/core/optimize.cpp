@@ -16,65 +16,145 @@ namespace ncv
 
                 namespace impl
                 {
-                        inline bool converged(scalar_t epsilon, const state_t& st)
+                        bool converged(scalar_t epsilon, const state_t& st)
                         {
                                 return st.g.lpNorm<Eigen::Infinity>() < epsilon * (1.0 + std::fabs(st.f));
                         }
                 }
 
                 /////////////////////////////////////////////////////////////////////////////////////////////
-                // backtracking line-search searches for the scalar
-                // that reduces the function value (the most) along the direction d:
+                // check and force a descent direction.
+                /////////////////////////////////////////////////////////////////////////////////////////////
+
+                namespace impl
+                {
+                        scalar_t descent(state_t& st)
+                        {
+                                scalar_t dg = st.d.dot(st.g);
+                                if (dg > std::numeric_limits<scalar_t>::min())
+                                {
+                                        log_warning() << "optimize: not a descent direction!";
+                                        st.d = -st.g;
+                                        dg = st.d.dot(st.g);
+                                }
+
+                                return dg;
+                        }
+                }
+
+                /////////////////////////////////////////////////////////////////////////////////////////////
+                // line-search methods to find the scalar that reduces
+                //      the function value (the most) along the direction d:
                 //
                 //      argmin(t) f(x + t * d).
                 /////////////////////////////////////////////////////////////////////////////////////////////
 
                 namespace impl
                 {
+                        // Armijo (sufficient decrease) condition
                         scalar_t ls_armijo(
-                                const problem_t& problem, state_t& st, scalar_t t0,
-                                scalar_t alpha = 0.2, scalar_t beta = 0.7)
+                                const problem_t& problem, state_t& st,
+                                scalar_t alpha = 0.2, scalar_t beta = 0.7, size_t max_iters = 64)
                         {
-                                // Check if descent direction
-                                scalar_t dg = st.d.dot(st.g);
-                                if (dg > std::numeric_limits<scalar_t>::min())
+                                const scalar_t dg = descent(st);
+
+                                scalar_t t = 1.0;
+                                for (size_t i = 0; i < max_iters; i ++, t = beta * t)
                                 {
-                                        st.d = -st.g;
-                                        dg = st.d.dot(st.g);
+                                        if (problem.f(st.x + t * st.d) < st.f + t * alpha * dg)
+                                        {
+                                                return t;
+                                        }
                                 }
 
-                                // Armijo (sufficient decrease) condition
-                                scalar_t t = t0;
-                                while (problem.f(st.x + t * st.d) > st.f + t * alpha * dg)
-                                {
-                                        t = beta * t;
-                                }
-
-                                return t;
+                                return 0.0;
                         }
 
-                        scalar_t ls_strong_wolfe(
-                                const problem_t& problem, state_t& st, scalar_t t0,
+                        // helper function: strong Wolfe (sufficient decrease and curvature) conditions
+                        scalar_t ls_zoom(
+                                const problem_t& problem, const state_t& st,
                                 scalar_t& ft, vector_t& gt,
-                                scalar_t c1 = 1e-4, scalar_t c2 = 0.9)
+                                scalar_t tlo, scalar_t thi, scalar_t ftlo, scalar_t fthi,
+                                scalar_t c1, scalar_t c2, size_t max_iters)
                         {
-                                // Check if descent direction
-                                scalar_t dg = st.d.dot(st.g);
-                                if (dg > std::numeric_limits<scalar_t>::min())
+                                const scalar_t dg = st.d.dot(st.g);
+
+                                // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
+                                for (size_t i = 0; i < max_iters; i ++)
                                 {
-                                        st.d = -st.g;
-                                        dg = st.d.dot(st.g);
+                                        const scalar_t t = (tlo + thi) / 2.0;
+
+                                        // check sufficient decrease
+                                        ft = problem.f(st.x + t * st.d, gt);
+                                        if (ft > st.f + c1 * t * dg || ft >= ftlo)
+                                        {
+                                                thi = t;
+                                                fthi = ft;
+                                        }
+
+                                        // check curvature
+                                        else
+                                        {
+                                                const scalar_t dg1 = gt.dot(st.d);
+                                                if (std::fabs(dg1) <= -c2 * dg)
+                                                {
+                                                        return t;
+                                                }
+
+                                                if (dg1 * (thi - tlo) >= 0.0)
+                                                {
+                                                        thi = tlo;
+                                                        fthi = ftlo;
+                                                }
+
+                                                tlo = t;
+                                                ftlo = ft;
+                                        }
                                 }
 
-                                // strong Wolfe (sufficient decrease and curvature) conditions
-                                scalar_t t = t0;
-                                while ((ft = problem.f(st.x + t * st.d, gt)) > st.f + t * c1 * dg ||
-                                       std::fabs(gt.dot(st.d)) < c2 * dg)
+                                return 0.0;
+                        }
+
+                        // strong Wolfe (sufficient decrease and curvature) conditions
+                        scalar_t ls_strong_wolfe(
+                                const problem_t& problem, state_t& st, scalar_t& ft, vector_t& gt,
+                                scalar_t c1 = 1e-4, scalar_t c2 = 0.1, size_t max_iters = 64)
+                        {
+                                const scalar_t dg = descent(st);
+
+                                const scalar_t tmax = 100.0;
+
+                                scalar_t t0 = 0.0, ft0 = std::numeric_limits<scalar_t>::max();
+                                scalar_t t = 1.0;
+
+                                // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
+                                for (size_t i = 0; i < max_iters; i ++)
                                 {
-                                        t = c2 * t;
+                                        // check sufficient decrease
+                                        ft = problem.f(st.x + t * st.d, gt);
+                                        if (ft > st.f + c1 * t * dg || ft >= ft0)
+                                        {
+                                                return ls_zoom(problem, st, ft, gt, t0, t, ft0, ft, c1, c2, max_iters);
+                                        }
+
+                                        // check curvature
+                                        const scalar_t dg1 = gt.dot(st.d);
+                                        if (std::fabs(dg1) <= -c2 * dg)
+                                        {
+                                                return t;
+                                        }
+
+                                        if (dg1 >= 0.0)
+                                        {
+                                                return ls_zoom(problem, st, ft, gt, t, t0, ft, ft0, c1, c2, max_iters);
+                                        }
+
+                                        t0 = t;
+                                        t = std::min(tmax, t * 3.0);
+                                        ft0 = ft;
                                 }
 
-                                return t;
+                                return 0.0;
                         }
                 }
         }
@@ -193,7 +273,6 @@ namespace ncv
 
                 result_t result(problem.size());
                 state_t cstate(problem, x0);
-                scalar_t t = 1.0, pdt = -1.0;
 
                 // iterate until convergence
                 for (size_t i = 0; i < max_iterations; i ++)
@@ -214,13 +293,12 @@ namespace ncv
                         cstate.d = -cstate.g;
 
                         // update solution
-                        const scalar_t dt = cstate.g.dot(cstate.d);
-                        if (i > 0)
+                        const scalar_t t = impl::ls_armijo(problem, cstate);
+                        if (t < std::numeric_limits<scalar_t>::epsilon())
                         {
-                                t *= pdt / dt;
+                                log_warning() << "optimize: line-search failed for GD!";
+                                break;
                         }
-
-                        t = impl::ls_armijo(problem, cstate, t);
                         cstate.update(problem, t);
                 }
 
@@ -266,12 +344,16 @@ namespace ncv
                         {
                                 const scalar_t beta = cstate.g.dot(cstate.g - pstate.g) /
                                                       pstate.g.dot(pstate.g);
-                                cstate.d = -cstate.g +
-                                           std::max(static_cast<scalar_t>(0.0), beta) * pstate.d;
+                                cstate.d = -cstate.g + std::max(static_cast<scalar_t>(0.0), beta) * pstate.d;
                         }
 
                         // update solution
-                        const scalar_t t = impl::ls_strong_wolfe(problem, cstate, 1.0, ft, gt);
+                        const scalar_t t = impl::ls_strong_wolfe(problem, cstate, ft, gt);
+                        if (t < std::numeric_limits<scalar_t>::epsilon())
+                        {
+                                log_warning() << "optimize: line-search failed for CGD!";
+                                break;
+                        }
                         pstate = cstate;
                         cstate.update(t, ft, gt);
                 }
@@ -355,7 +437,12 @@ namespace ncv
                         cstate.d = -r;
 
                         // update solution
-                        const scalar_t t = impl::ls_strong_wolfe(problem, cstate, 1.0, ft, gt);
+                        const scalar_t t = impl::ls_strong_wolfe(problem, cstate, ft, gt, 1e-4, 0.9);
+                        if (t < std::numeric_limits<scalar_t>::epsilon())
+                        {
+                                log_warning() << "optimize: line-search failed for LBFGS!";
+                                break;
+                        }
                         pstate = cstate;
                         cstate.update(t, ft, gt);
 

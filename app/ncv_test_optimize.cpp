@@ -7,12 +7,14 @@
 #include "core/numeric.hpp"
 #include <boost/program_options.hpp>
 
+using namespace ncv;
+
 // display the formatted optimization history
-void print(const ncv::optimize::result_t& result, ncv::size_t max_iterations,
-           const ncv::string_t& header, const ncv::string_t& time)
+void print(const optimize::result_t& result, size_t max_iterations,
+           const string_t& header, const string_t& time)
 {
-        static const ncv::size_t col_size = 32;
-        static const ncv::string_t del_line(4 * col_size + 4, '-');
+        static const size_t col_size = 32;
+        static const string_t del_line(4 * col_size + 4, '-');
 
         std::cout << del_line << std::endl;
         std::cout << header << ": x  = [" << result.optimum().x.transpose() << "]" << std::endl;
@@ -25,42 +27,45 @@ void print(const ncv::optimize::result_t& result, ncv::size_t max_iterations,
 }
 
 // optimize a problem starting from random points
-void test(const ncv::optimize::problem_t& problem, ncv::size_t max_iters, ncv::scalar_t eps,
-          const ncv::string_t& name, ncv::size_t trials)
+void test(const optimize::problem_t& problem, size_t max_iters, scalar_t eps,
+          const string_t& name, size_t trials)
 {
-        const ncv::size_t size = problem.size();
+        const size_t size = problem.size();
 
-        ncv::random_t<ncv::scalar_t> rgen(-1.0, 1.0);
+//        TODO: print rank of methods !!! & #times a method wins
+//        size_t ranks[3][3] = { { 0, 0, 0, }, { 0, 0, 0, }, { 0, 0, 0, } };
+
+        random_t<scalar_t> rgen(-2.0, 2.0);
         for (size_t trial = 0; trial < trials; trial ++)
         {
-                ncv::vector_t x0(size);
+                vector_t x0(size);
                 rgen(x0.data(), x0.data() + x0.size());
 
-                const ncv::string_t name_trial =
-                        " [" + ncv::text::to_string(trial + 1) + "/" + ncv::text::to_string(trials) + "]";
+                const string_t name_trial =
+                        " [" + text::to_string(trial + 1) + "/" + text::to_string(trials) + "]";
 
                 ncv::timer_t timer;
 
                 timer.start();
-                const ncv::optimize::result_t res_gd = ncv::optimize::gd(problem, x0, max_iters, eps);
+                const optimize::result_t res_gd = optimize::gd(problem, x0, max_iters, eps);
                 print(res_gd, max_iters, name + " (GD)" + name_trial, timer.elapsed());
 
                 timer.start();
-                const ncv::optimize::result_t res_cgd = ncv::optimize::cgd(problem, x0, max_iters, eps);
+                const optimize::result_t res_cgd = optimize::cgd(problem, x0, max_iters, eps);
                 print(res_cgd, max_iters, name + " (CGD)" + name_trial, timer.elapsed());
 
                 timer.start();
-                const ncv::optimize::result_t res_lbfgs = ncv::optimize::lbfgs(problem, x0, max_iters, eps);
+                const optimize::result_t res_lbfgs = optimize::lbfgs(problem, x0, max_iters, eps);
                 print(res_lbfgs, max_iters, name + " (LBFGS)" + name_trial, timer.elapsed());
         }
 }
 
 int main(int argc, char *argv[])
 {
-        typedef ncv::size_t                     size_t;
-        typedef ncv::scalar_t                   scalar_t;
-        typedef ncv::vector_t                   vector_t;
-        typedef ncv::optimize::problem_t        problem_t;
+        typedef size_t                     size_t;
+        typedef scalar_t                   scalar_t;
+        typedef vector_t                   vector_t;
+        typedef optimize::problem_t        problem_t;
 
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
@@ -89,9 +94,9 @@ int main(int argc, char *argv[])
                 return EXIT_FAILURE;
         }
 
-        const size_t cmd_iters = ncv::math::clamp(po_vm["iters"].as<size_t>(), 8, 16000);
-        const scalar_t cmd_eps = ncv::math::clamp(po_vm["eps"].as<scalar_t>(), 1e-20, 1e-1);
-        const size_t cmd_dims = ncv::math::clamp(po_vm["dim"].as<size_t>(), 2, 1024);
+        const size_t cmd_iters = math::clamp(po_vm["iters"].as<size_t>(), 8, 16000);
+        const scalar_t cmd_eps = math::clamp(po_vm["eps"].as<scalar_t>(), 1e-20, 1e-1);
+        const size_t cmd_dims = math::clamp(po_vm["dim"].as<size_t>(), 2, 1024);
         const size_t cmd_trials = 16;
 
 //        // sphere function
@@ -119,7 +124,7 @@ int main(int argc, char *argv[])
 //                };
 
 //                const problem_t problem(op_size, op_fval, op_fval_grad, cmd_iters, cmd_eps);
-//                test(problem, "sphere [" + ncv::text::to_string(n) + "D]", cmd_trials);
+//                test(problem, "sphere [" + text::to_string(n) + "D]", cmd_trials);
 //        }
 
 //        // ellipsoidal function
@@ -135,7 +140,7 @@ int main(int argc, char *argv[])
 //                        scalar_t f = 0.0;
 //                        for (size_t i = 0; i < n; i ++)
 //                        {
-//                                f += (i + 1.0) * ncv::math::square(x[i]);
+//                                f += (i + 1.0) * math::square(x[i]);
 //                        }
 //                        return f;
 //                };
@@ -156,7 +161,7 @@ int main(int argc, char *argv[])
 //                };
 
 //                const problem_t problem(op_size, op_fval, op_fval_grad, cmd_iters, cmd_eps);
-//                test(problem, "ellipsoidal [" + ncv::text::to_string(n) + "D]", cmd_trials);
+//                test(problem, "ellipsoidal [" + text::to_string(n) + "D]", cmd_trials);
 //        }
 
 //        // rotated ellipsoidal function
@@ -179,13 +184,13 @@ int main(int argc, char *argv[])
 //                                        s += x[j];
 //                                }
 
-//                                f += ncv::math::square(s);
+//                                f += math::square(s);
 //                        }
 //                        return f;
 //                };
 
 //                const problem_t problem(op_size, op_fval, cmd_iters, cmd_eps);
-//                test(problem, "rotated ellipsoidal [" + ncv::text::to_string(n) + "D]", cmd_trials);
+//                test(problem, "rotated ellipsoidal [" + text::to_string(n) + "D]", cmd_trials);
 //        }
 
 //        // Whitley's function
@@ -203,8 +208,8 @@ int main(int argc, char *argv[])
 //                        {
 //                                for (size_t j = 0; j < n; j ++)
 //                                {
-//                                        const scalar_t d = 100.0 * ncv::math::square(x[i] * x[i] - x[j]) +
-//                                                           ncv::math::square(1.0 - x[j]);
+//                                        const scalar_t d = 100.0 * math::square(x[i] * x[i] - x[j]) +
+//                                                           math::square(1.0 - x[j]);
 //                                        f += d * d / 4000.0 - std::cos(d) + 1.0;
 //                                }
 //                        }
@@ -213,7 +218,7 @@ int main(int argc, char *argv[])
 //                };
 
 //                const problem_t problem(op_size, op_fval, cmd_iters, cmd_eps);
-//                test(problem, "whitley [" + ncv::text::to_string(n) + "D]", cmd_trials);
+//                test(problem, "whitley [" + text::to_string(n) + "D]", cmd_trials);
 //        }
 
         // Rosenbrock problem
@@ -229,15 +234,15 @@ int main(int argc, char *argv[])
                         scalar_t f = 0.0;
                         for (size_t i = 0; i + 1 < n; i ++)
                         {
-                                f += 100.0 * ncv::math::square(x[i + 1] - ncv::math::square(x[i])) +
-                                     ncv::math::square(x[i] - 1.0);
+                                f += 100.0 * math::square(x[i + 1] - math::square(x[i])) +
+                                     math::square(x[i] - 1.0);
                         }
 
                         return f;
                 };
 
                 const problem_t problem(op_size, op_fval);
-                test(problem, cmd_iters, cmd_eps, "rosenbrock [" + ncv::text::to_string(n) + "D]", cmd_trials);
+                test(problem, cmd_iters, cmd_eps, "rosenbrock [" + text::to_string(n) + "D]", cmd_trials);
         }
 
         // Himmelblau problem
@@ -270,6 +275,6 @@ int main(int argc, char *argv[])
         }
 
         // OK
-        ncv::log_info() << ncv::done;
+        log_info() << done;
         return EXIT_SUCCESS;
 }

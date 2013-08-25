@@ -10,7 +10,8 @@ namespace ncv
         {
                 /////////////////////////////////////////////////////////////////////////////////////////////
                 // optimization state:
-                //      current point (x), function value (f), gradient (g) and descent direction (d).
+                //      current point (x), function value (f), gradient (g),
+                //      descent direction (d) & line-search step (t).
                 ////////////////////////////////////////////////////////////////////////////////////////////////
 
                 struct state_t
@@ -20,7 +21,8 @@ namespace ncv
                                 : x(size),
                                   g(size),
                                   d(size),
-                                  f(std::numeric_limits<scalar_t>::max())
+                                  f(std::numeric_limits<scalar_t>::max()),
+                                  t(1.0)
                         {
                         }
 
@@ -56,7 +58,7 @@ namespace ncv
 
                         // attributes
                         vector_t x, g, d;
-                        scalar_t f;
+                        scalar_t f, t;
                 };
 
                 // compare two optimization states
