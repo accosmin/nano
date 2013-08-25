@@ -122,7 +122,7 @@ namespace ncv
                         {
                                 const scalar_t dg = descent(st);
 
-                                const scalar_t tmax = 100.0;
+                                const scalar_t tmax = 1000.0;
 
                                 scalar_t t0 = 0.0, ft0 = std::numeric_limits<scalar_t>::max();
                                 scalar_t t = 1.0;
