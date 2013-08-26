@@ -17,6 +17,8 @@ same with -DEIGEN_NO_DEBUG (only for release)
 * could use std::atexit() to save the model at closing -> re-training should reload the current model and continue training
 * better could catch various signals: http://en.cppreference.com/w/cpp/utility/program and safely saved the trained model
 
+ is it possible to find an analytic solution to the line-search problem for a convolution model?!
+
 - reduce dependency between files: e.g. types.h includes too many headers!
 
 - move boost::binary_archive as typedefs to some header
