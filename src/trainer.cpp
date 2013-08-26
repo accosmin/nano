@@ -78,10 +78,6 @@ namespace ncv
                         m_count ++;
 
                         model.cumulate_grad(loss.vgrad(target, output));
-
-//                        const vector_t mgrad = model.vgrad(loss.vgrad(target, output));
-//                        assert(mgrad.size() == model.n_parameters());
-//                        m_vgrad += mgrad;
                 }
                 void store() const
                 {

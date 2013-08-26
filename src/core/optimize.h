@@ -14,47 +14,19 @@ namespace ncv
                 //      descent direction (d) & line-search step (t).
                 ////////////////////////////////////////////////////////////////////////////////////////////////
 
+                class problem_t;
+
                 struct state_t
                 {
-                        // constructor
-                        state_t(size_t size = 0)
-                                : x(size),
-                                  g(size),
-                                  d(size),
-                                  f(std::numeric_limits<scalar_t>::max()),
-                                  t(1.0)
-                        {
-                        }
-
-                        // constructor
-                        template
-                        <
-                                class tproblem
-                        >
-                        state_t(const tproblem& problem, const vector_t& x0)
-                        {
-                                x = x0;
-                                f = problem.f(x, g);
-                        }
+                        // constructors
+                        state_t(size_t size = 0);
+                        state_t(const problem_t& problem, const vector_t& x0);
 
                         // update current point
-                        template
-                        <
-                                class tproblem
-                        >
-                        void update(const tproblem& problem, scalar_t t)
-                        {
-                                x.noalias() += t * d;
-                                f = problem.f(x, g);
-                        }
+                        void update(const problem_t& problem, scalar_t t);
 
                         // update current point
-                        void update(scalar_t t, scalar_t ft, const vector_t& gt)
-                        {
-                                x.noalias() += t * d;
-                                f = ft;
-                                g = gt;
-                        }
+                        void update(scalar_t t, scalar_t ft, const vector_t& gt);       // FIXME: remove this!
 
                         // attributes
                         vector_t x, g, d;
@@ -80,12 +52,14 @@ namespace ncv
                         explicit result_t(size_t size = 0);
 
                         // update solution
-                        void update(const state_t& st);
+                        void update(const problem_t& problem, const state_t& st);
 
                         // access functions
                         const state_t& optimum() const { return m_optimum; }
                         const stats_t<scalar_t>& speed() const { return m_conv_speed; }
                         size_t iterations() const { return m_iterations; }
+                        size_t n_fval_calls() const { return m_cnt_fval; }
+                        size_t n_grad_calls() const { return m_cnt_grad; }
 
                 private:
 
@@ -93,6 +67,8 @@ namespace ncv
                         state_t                 m_optimum;              // optimum state
                         size_t                  m_iterations;           // #iterations
                         stats_t<scalar_t>       m_conv_speed;           // convergence speed statistics
+                        size_t                  m_cnt_fval;
+                        size_t                  m_cnt_grad;
                 };
 
                 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -128,6 +104,10 @@ namespace ncv
                         scalar_t f(const vector_t& x) const;
                         scalar_t f(const vector_t& x, vector_t& g) const;
 
+                        // access functions
+                        size_t n_fval_calls() const { return m_cnt_fval; }
+                        size_t n_grad_calls() const { return m_cnt_grad; }
+
                 private:
 
                         // evaluate gradient (if not provided)
@@ -139,6 +119,8 @@ namespace ncv
                         op_size_t               m_op_size;
                         op_fval_t               m_op_fval;
                         op_fval_grad_t          m_op_fval_grad;
+                        mutable size_t          m_cnt_fval;
+                        mutable size_t          m_cnt_grad;
                 };
 
                 // result updated

@@ -161,16 +161,57 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        optimize::result_t::result_t(size_t size)
-                :       m_optimum(size),
-                        m_iterations(0)
+        optimize::state_t::state_t(size_t size)
+                : x(size),
+                  g(size),
+                  d(size),
+                  f(std::numeric_limits<scalar_t>::max()),
+                  t(1.0)
         {
         }
 
         //-------------------------------------------------------------------------------------------------
 
-        void optimize::result_t::update(const state_t& st)
+        optimize::state_t::state_t(const problem_t& problem, const vector_t& x0)
         {
+                x = x0;
+                f = problem.f(x, g);
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void optimize::state_t::update(const problem_t& problem, scalar_t t)
+        {
+                x.noalias() += t * d;
+                f = problem.f(x, g);
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void optimize::state_t::update(scalar_t t, scalar_t ft, const vector_t& gt)        // FIXME: remove this!
+        {
+                x.noalias() += t * d;
+                f = ft;
+                g = gt;
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        optimize::result_t::result_t(size_t size)
+                :       m_optimum(size),
+                        m_iterations(0),
+                        m_cnt_fval(0),
+                        m_cnt_grad(0)
+        {
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        void optimize::result_t::update(const problem_t& problem, const state_t& st)
+        {
+                m_cnt_fval = problem.n_fval_calls();
+                m_cnt_grad = problem.n_grad_calls();
+
                 if (m_iterations > 0)
                 {
                         const scalar_t df = std::fabs(m_optimum.f - st.f);
@@ -192,7 +233,9 @@ namespace ncv
                 const op_fval_grad_t& op_fval_grad)
                 :       m_op_size(op_size),
                         m_op_fval(op_fval),
-                        m_op_fval_grad(op_fval_grad)
+                        m_op_fval_grad(op_fval_grad),
+                        m_cnt_fval(0),
+                        m_cnt_grad(0)
         {
         }
 
@@ -203,7 +246,9 @@ namespace ncv
                 const op_fval_t& op_fval)
                 :       m_op_size(op_size),
                         m_op_fval(op_fval),
-                        m_op_fval_grad()
+                        m_op_fval_grad(),
+                        m_cnt_fval(0),
+                        m_cnt_grad(0)
         {
         }
 
@@ -218,6 +263,7 @@ namespace ncv
 
         scalar_t optimize::problem_t::f(const vector_t& x) const
         {
+                m_cnt_fval ++;
                 return m_op_fval(x);
         }
 
@@ -227,6 +273,8 @@ namespace ncv
         {
                 if (m_op_fval_grad)
                 {
+                        m_cnt_fval ++;
+                        m_cnt_grad ++;
                         return m_op_fval_grad(x, g);
                 }
                 else
@@ -277,7 +325,7 @@ namespace ncv
                 // iterate until convergence
                 for (size_t i = 0; i < max_iterations; i ++)
                 {
-                        result.update(cstate);
+                        result.update(problem, cstate);
                         if (op_updated)
                         {
                                 op_updated(result);
@@ -323,7 +371,7 @@ namespace ncv
                 // iterate until convergence
                 for (size_t i = 0; i < max_iterations; i ++)
                 {
-                        result.update(cstate);
+                        result.update(problem, cstate);
                         if (op_updated)
                         {
                                 op_updated(result);
@@ -348,7 +396,7 @@ namespace ncv
                         }
 
                         // update solution
-                        const scalar_t t = impl::ls_strong_wolfe(problem, cstate, ft, gt);
+                        const scalar_t t = impl::ls_strong_wolfe(problem, cstate, ft, gt, 1e-4, 0.1);
                         if (t < std::numeric_limits<scalar_t>::epsilon())
                         {
                                 log_warning() << "optimize: line-search failed for CGD!";
@@ -381,7 +429,7 @@ namespace ncv
                 // iterate until convergence
                 for (size_t i = 0; i < max_iterations; i ++)
                 {
-                        result.update(cstate);
+                        result.update(problem, cstate);
                         if (op_updated)
                         {
                                 op_updated(result);
@@ -503,7 +551,7 @@ namespace ncv
                                         if (impl::converged(epsilon, cstate))
                                         {
                                                 cstate.f = problem.f(cstate.x);
-                                                result.update(cstate);
+                                                result.update(problem, cstate);
 
                                                 if (op_updated)
                                                 {
@@ -518,7 +566,7 @@ namespace ncv
                                                 (t + 1) == opt_iters)
                                         {
                                                 cstate.f = problem.f(cstate.x);
-                                                result.update(cstate);
+                                                result.update(problem, cstate);
 
                                                 if (op_updated)
                                                 {
@@ -532,7 +580,7 @@ namespace ncv
                                 {
                                         cstate.x = avg_x;
                                         cstate.f = problem.f(cstate.x);
-                                        result.update(cstate);
+                                        result.update(problem, cstate);
                                 }
 
                                 return result;

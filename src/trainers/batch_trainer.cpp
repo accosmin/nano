@@ -24,6 +24,7 @@ namespace ncv
         {
                 ncv::log_info() << "batch trainer: state [loss = " << result.optimum().f
                                 << ", gradient = " << result.optimum().g.lpNorm<Eigen::Infinity>()
+                                << ", calls = " << result.n_fval_calls() << "/" << result.n_grad_calls()
                                 << "] updated in " << timer.elapsed() << ".";
                 timer.start();
         }
@@ -43,12 +44,15 @@ namespace ncv
                 model.random_params();
 
                 // prune training data
-                const samples_t& samples = trainer_t::prune_annotated(task, task.samples(fold));
+                samples_t samples = trainer_t::prune_annotated(task, task.samples(fold));
                 if (samples.empty())
                 {
                         log_error() << "batch trainer: no annotated training samples!";
                         return false;
                 }
+
+                // DEBUG!
+                samples.erase(samples.begin() + 2000, samples.end());
 
                 // optimization problem: size
                 auto opt_fn_size = [&] ()
@@ -103,8 +107,9 @@ namespace ncv
 
                 // OK
                 log_info() << "batch trainer: optimum [loss = " << res.optimum().f
-                           << ", gradient = " << res.optimum().g.norm() << "]"
-                           << ", iterations = [" << res.iterations() << "/" << m_iterations
+                           << ", gradient = " << res.optimum().g.norm()
+                           << ", calls = " << res.n_fval_calls() << "/" << res.n_grad_calls()
+                           << "], iterations = [" << res.iterations() << "/" << m_iterations
                            << "], speed = [" << res.speed().avg() << " +/- " << res.speed().stdev() << "].";
 
                 return true;

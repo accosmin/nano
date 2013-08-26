@@ -25,6 +25,7 @@ namespace ncv
         {
                 ncv::log_info() << "stochastic trainer: state [loss = " << result.optimum().f
                                 << ", gradient = " << result.optimum().g.lpNorm<Eigen::Infinity>()
+                                << ", calls = " << result.n_fval_calls() << "/" << result.n_grad_calls()
                                 << "] updated in " << timer.elapsed() << ".";
                 timer.start();
         }
@@ -113,8 +114,9 @@ namespace ncv
 
                 // OK
                 log_info() << "stochastic trainer: optimum [loss = " << res.optimum().f
-                           << ", gradient = " << res.optimum().g.norm() << "]"
-                           << ", updates = [" << res.iterations()
+                           << ", gradient = " << res.optimum().g.norm()
+                           << ", calls = " << res.n_fval_calls() << "/" << res.n_grad_calls()
+                           << "]s, updates = [" << res.iterations()
                            << "], speed = [" << res.speed().avg() << " +/- " << res.speed().stdev() << "].";
 
                 return true;
