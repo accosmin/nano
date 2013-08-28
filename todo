@@ -31,6 +31,8 @@ same with -DEIGEN_NO_DEBUG (only for release)
 
 	- generalize & optimize the function in core/convolution.h + test program similar to test_convolution
 
+- visualize convolutions after/during training either using a Qt ui or some images
+
 - perf result:   
     66.69%  ncv_trainer  libnanocv.so         [.] ncv::conv_layer_t::backward(ncv::tensor3d_t const&) const                                                                  
     26.76%  ncv_trainer  libnanocv.so         [.] ncv::conv_layer_t::forward(ncv::tensor3d_t const&) const                                                                   
