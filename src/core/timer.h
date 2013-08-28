@@ -39,13 +39,13 @@ namespace ncv
 
         private:
 
-                typedef std::chrono::steady_clock::time_point           time_t;
+                typedef std::chrono::high_resolution_clock::time_point  time_t;
                 typedef std::chrono::duration<std::size_t, std::milli>  milliseconds_t;
 
                 // current time point
                 static time_t now()
                 {
-                        return std::chrono::steady_clock::now();
+                        return std::chrono::high_resolution_clock::now();
                 }
 
                 // transform miliseconds to string (days, hours, minutes, seconds, miliseconds)

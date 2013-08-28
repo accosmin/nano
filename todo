@@ -1,3 +1,6 @@
+* serializer: store data in std::vector, push_back values -> (serializer_t() << s << v << m).data() or .size()
+* same for deserializer
+
 * investigate why the trainer fails!
 
 * make SGD & ASGD work well!

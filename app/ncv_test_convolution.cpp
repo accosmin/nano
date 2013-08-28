@@ -4,6 +4,30 @@
 
 using namespace ncv;
 
+// FIXME: use Eigen::Vector4d to speed-up convolutions (it may use SSE)!
+//// 2D (cumulative) convolution: odata += idata * kdata
+////      using Eigen blocks
+//template
+//<
+//        typename tmatrix
+//>
+//void conv_add_eigen_block(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
+//{
+//        const int krows = static_cast<int>(kdata.rows());
+//        const int kcols = static_cast<int>(kdata.cols());
+
+//        const int orows = static_cast<int>(odata.rows());
+//        const int ocols = static_cast<int>(odata.cols());
+
+//        for (int r = 0; r < orows; r ++)
+//        {
+//                for (int c = 0; c < ocols; c ++)
+//                {
+//                        odata(r, c) += kdata.cwiseProduct(idata.block(r, c, krows, kcols)).sum();
+//                }
+//       }
+//}
+
 void init_matrix(int rows, int cols, matrix_t& matrix)
 {
 	matrix.resize(rows, cols);
@@ -38,7 +62,7 @@ void test_matrices(top op, const char* name, const matrices_t& idatas, const mat
         std::cout.precision(3);
 	std::cout << std::fixed << odata.sum();
 	std::cout.precision(3);
-        std::cout << " (" << name << " - " << ((stop - start + 0.0) / (CLOCKS_PER_SEC + 0.0)) << ")\t";
+        std::cout << " (" << name << " - " << ((stop - start + 0.0) / (CLOCKS_PER_SEC + 0.0)) << ")  ";
 }
 
 void test(int isize, int ksize, int n_samples)
