@@ -1,41 +1,22 @@
-#include "ncv.h"
+#include <eigen3/Eigen/Core>
 #include "core/convolution.hpp"
 #include <iomanip>
+#include <ctime>
+#include <iostream>
 
-using namespace ncv;
+typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> matrix_t;
+typedef std::vector<matrix_t> matrices_t;
 
-// FIXME: use Eigen::Vector4d to speed-up convolutions (it may use SSE)!
-//// 2D (cumulative) convolution: odata += idata * kdata
-////      using Eigen blocks
-//template
-//<
-//        typename tmatrix
-//>
-//void conv_add_eigen_block(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
-//{
-//        const int krows = static_cast<int>(kdata.rows());
-//        const int kcols = static_cast<int>(kdata.cols());
-
-//        const int orows = static_cast<int>(odata.rows());
-//        const int ocols = static_cast<int>(odata.cols());
-
-//        for (int r = 0; r < orows; r ++)
-//        {
-//                for (int c = 0; c < ocols; c ++)
-//                {
-//                        odata(r, c) += kdata.cwiseProduct(idata.block(r, c, krows, kcols)).sum();
-//                }
-//       }
-//}
-
-void init_matrix(int rows, int cols, matrix_t& matrix)
+template <typename tmatrix>
+void init_matrix(int rows, int cols, tmatrix& matrix)
 {
 	matrix.resize(rows, cols);
 	matrix.setRandom();
 	matrix.array() = matrix.array().abs();
 }
 
-void init_matrices(int rows, int cols, int count, matrices_t& matrices)
+template <typename tmatrices>
+void init_matrices(int rows, int cols, int count, tmatrices& matrices)
 {
 	matrices.resize(count);
 	for (int i = 0; i < count; i ++)
@@ -44,8 +25,8 @@ void init_matrices(int rows, int cols, int count, matrices_t& matrices)
 	}
 }
 
-template <typename top>
-void test_matrices(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata, matrix_t& odata)
+template <typename tmatrices, typename tmatrix, typename top>
+void test_matrices(top op, const char* name, const tmatrices& idatas, const tmatrix& kdata, tmatrix& odata)
 {
         const clock_t start = clock();
 
@@ -59,10 +40,10 @@ void test_matrices(top op, const char* name, const matrices_t& idatas, const mat
 
         const clock_t stop = clock();
 
-        std::cout.precision(3);
-	std::cout << std::fixed << odata.sum();
+
 	std::cout.precision(3);
-        std::cout << " (" << name << " - " << ((stop - start + 0.0) / (CLOCKS_PER_SEC + 0.0)) << ")  ";
+        std::cout << name << " - " << ((stop - start + 0.0) / (CLOCKS_PER_SEC + 0.0))
+                  << " (" << std::fixed << odata.sum() << ")\t";
 }
 
 void test(int isize, int ksize, int n_samples)
@@ -76,11 +57,11 @@ void test(int isize, int ksize, int n_samples)
 	init_matrix(isize - ksize + 1, isize - ksize + 1, odata);
 	kdata /= n_samples;
 
-        test_matrices(math::conv_add_naive<matrix_t>,       "naive  ", idatas, kdata, odata);
-        test_matrices(math::conv_add_eigen_block<matrix_t>, "eigen  ", idatas, kdata, odata);
-        test_matrices(math::conv_add_mod4<matrix_t>,        "mod4   ", idatas, kdata, odata);
-        test_matrices(math::conv_add_mod8<matrix_t>,        "mod8   ", idatas, kdata, odata);
-        test_matrices(math::conv_add_dynamic<matrix_t>,     "dynamic", idatas, kdata, odata);
+        test_matrices(ncv::math::conv_add_naive<matrix_t>,       "nai", idatas, kdata, odata);
+        test_matrices(ncv::math::conv_add_eigen_block<matrix_t>, "eig", idatas, kdata, odata);
+        test_matrices(ncv::math::conv_add_mod4<matrix_t>,        "md4", idatas, kdata, odata);
+        test_matrices(ncv::math::conv_add_mod8<matrix_t>,        "md8", idatas, kdata, odata);
+        test_matrices(ncv::math::conv_add_dynamic<matrix_t>,     "dyn", idatas, kdata, odata);
 	std::cout << std::endl;
 }
 
@@ -89,7 +70,7 @@ int main(int argc, char* argv[])
 	static const int min_isize = 16;
 	static const int max_isize = 32;
 	static const int min_ksize = 8;
-	static const int max_ksize = 12;
+        static const int max_ksize = 12;
         static const int n_samples = 10000;
 
 	for (int isize = min_isize; isize <= max_isize; isize += 2)

@@ -172,16 +172,14 @@ namespace ncv
 
                         for (int r = 0; r < orows; r ++)
                         {
-                                typename tmatrix::Scalar* podata = &odata(r, 0);
-
-                                for (int kr = 0; kr < krows; kr ++)
+                                for (int c = 0; c < ocols; c ++)
                                 {
-                                        const typename tmatrix::Scalar* pidata = &idata(r + kr, 0);
-                                        const typename tmatrix::Scalar* pkdata = &kdata(kr, 0);
-
-                                        for (int c = 0; c < ocols; c ++)
+                                        for (int kr = 0; kr < krows; kr ++)
                                         {
-                                                podata[c] += impl::conv_add(pidata + c, pkdata, kcols);
+                                                for (int kc = 0; kc < kcols; kc ++)
+                                                {
+                                                        odata(r, c) += idata(r + kr, c + kc) * kdata(kr, kc);
+                                                }
                                         }
                                }
                         }
