@@ -37,11 +37,11 @@ namespace ncv
                 \
                 virtual robject_t clone(const std::string& params) const \
                 { \
-                        return robject_t(new object_class(params)); \
+                        return std::make_shared<object_class>(params); \
                 } \
                 virtual robject_t clone() const \
                 { \
-                        return robject_t(new object_class(*this)); \
+                        return std::make_shared<object_class>(*this); \
                 } \
                 \
                 virtual std::string description() const { return #description_str; }
