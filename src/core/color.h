@@ -47,6 +47,10 @@ namespace ncv
 
                 rgba_t make_rgba(const cielab_t& cielab);
 
+                // RGBA encoding (by normalizing a matrix data)
+                rgba_matrix_t make_rgba(const matrix_t& data);
+                rgba_matrix_t make_rgba(const matrix_t& data, scalar_t min, scalar_t max);
+
                 // color channel range
                 inline scalar_t min(channel ch)
                 {

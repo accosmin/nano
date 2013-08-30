@@ -227,4 +227,35 @@ namespace ncv
         }
 
         //-------------------------------------------------------------------------------------------------
+
+        rgba_matrix_t color::make_rgba(const matrix_t& data)
+        {
+                return make_rgba(data, data.minCoeff(), data.maxCoeff());
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        rgba_matrix_t color::make_rgba(const matrix_t& data, scalar_t min_, scalar_t max_)
+        {
+                const scalar_t min = std::min(min_, max_) - std::numeric_limits<scalar_t>::epsilon();
+                const scalar_t max = std::max(min_, max_) + std::numeric_limits<scalar_t>::epsilon();
+                const scalar_t delta = std::fabs(max - min);
+                const scalar_t scale = 255.0 / delta;
+
+                const int rows = static_cast<int>(data.rows());
+                const int cols = static_cast<int>(data.cols());
+                const int size = rows * cols;
+
+                rgba_matrix_t rgba(rows, cols);
+                for (int i = 0; i < size; i ++)
+                {
+                        const scalar_t nval = scale * (math::clamp(data(i), min, max) - min);
+                        const rgba_t gray = math::cast<rgba_t>(nval);
+                        rgba(i) = color::make_rgba(gray, gray, gray, 255);
+                }
+
+                return rgba;
+        }
+
+        //-------------------------------------------------------------------------------------------------
 }
