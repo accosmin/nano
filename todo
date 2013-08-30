@@ -1,41 +1,32 @@
 * test program to print model (ncv_describe -> model structure + convolutions as images)
 
-* keep only smooth losses & activations, construct smooth approximations of pooling layers
+* move boost::binary_archive as typedefs to some header
+
+* reduce dependency between files: e.g. types.h includes too many headers!
 
 * serializer: store data in std::vector, push_back values -> (serializer_t() << s << v << m).data() or .size()
 * same for deserializer
+	- BETTER name for serializer! -> vectorizer?!
 
-* investigate why the trainer fails!
+* keep only smooth losses & activations, construct smooth approximations of pooling layers
+	* smooth version of the max-pooling layers: like here: http://en.wikipedia.org/wiki/Softmax_activation_function
 
 * make SGD & ASGD work well!
+	- parallelize the training by optimizing the learning rate: 
+		- choose N learning rates (N = number of threads) equally distant in (MIN, MAX)
+		- find the best current learning rate and split the adjacent interval to N+1 interval, update (MIN, MAX) and repeat
+		- each time increase (double?!) the number of samples to consider
 
-* smooth version of the max-pooling layers: like here: http://en.wikipedia.org/wiki/Softmax_activation_function
+	- may generalizer trainer::value() and trainer::vgrad() to receive the number of threads to use!
 
 * thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
-
-* core/math.h make sure tresult is before tvalue
-
-* use std::make_shared, instead of robject_t(
-
- math::cast & math::round should use Boost.Numeric (boost::numeric_cast ...)
-
-same with -DEIGEN_NO_DEBUG (only for release)
 
 * could use std::atexit() to save the model at closing -> re-training should reload the current model and continue training
 * better could catch various signals: http://en.cppreference.com/w/cpp/utility/program and safely saved the trained model
 
- is it possible to find an analytic solution to the line-search problem for a convolution model?!
+* is it possible to find an analytic solution to the line-search problem for a convolution model?!
 
-- reduce dependency between files: e.g. types.h includes too many headers!
-
-- move boost::binary_archive as typedefs to some header
-
-- train_convnet.sh:
-	- optimize the conv_layer_t::backward() function
-
-	- generalize & optimize the function in core/convolution.h + test program similar to test_convolution
-
-- visualize convolutions after/during training either using a Qt ui or some images
+* visualize convolutions after/during training either using a Qt ui or some images
 
 - perf result:   
     66.69%  ncv_trainer  libnanocv.so         [.] ncv::conv_layer_t::backward(ncv::tensor3d_t const&) const                                                                  
@@ -43,60 +34,15 @@ same with -DEIGEN_NO_DEBUG (only for release)
      3.14%  ncv_trainer  libnanocv.so         [.] ncv::fun1_activation_t::value(double) const                                                                                
      1.07%  ncv_trainer  libnanocv.so         [.] ncv::fun1_activation_t::vgrad(double) const
 
-- refactor networks and models:
-	- convlayer & convnet
-	- convnet::save/load from file
+* update experiments scripts to train convolution models
 
-	- ncv_trainer program:
-		- option to save the model to file
-
-	- try GA on 8-bit convolutions?!
-
-- BUG: SGD is not working as advertised (it stops too soon!)
-
-- FASTER convolution models:
-	- can use two loops instead of four (check the C program, may need padding)
-	- SSE?!
-	- multi-threaded
-
-	- GOAL: mnist, network=8x8:fun1 => 1s / LBFGS iterations
-
-- ncv_tester program:
-	- load a model and test it on a task
-
-- update experiments scripts to train convolution models
-
-- MUCH faster optimization (profile the code, it takes more time than without tensors):
-	- use noalias for block -> check if any improvement:
-		- mat.noalias().block() += ...	
-
-	- bug: the loss becomes infinity sometimes (the line-search step overshoots?!)
-	- bug: too many line-search steps => the gradient may be incorrectly computed
-
-	- focus on the backward step: it takes 50% of the processing time
-	
-	- checkout the convergence speed, experiment with gradient descent and conjugate gd
-
-	- 6s:xxxms for 5000 samples & 8:8x8 hidden layer!
-	- 2s:600ms for 2000 samples & 8:8x8 hidden layer!
-
-
-
-- constrain the loss such that the optimization works properly when the number of parameters
-	is larger than the number of samples
-
-* image_t::load(matrix_t, color_min = black, color_max = white) -> save the given matrix/filter as a grayscale (by default) image
-	- can be used to verify the learned weights/convolutions
-
-- install:
+* make install:
 	- also copy the headers 
 
 - update the experimentation script:
-	- evaluate some small networks (with 0/1/2... hidden layers), make sure that it works for no hidden layers (like before)
-	- evaluate some activation functions
+	- evaluate different architecture: vary the number of layers, the activation functions and switch on and off the pooling
 
 - implement other training methods for the convolution network:
-	- >>> derive from the base convolution model and override ::train()
 	- auto-encoding: using the unlabeled data (could also try with all samples)
 	- train a single layer at a time
 	- regularization: l2, symmetry
