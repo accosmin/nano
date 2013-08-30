@@ -81,7 +81,8 @@ set(nanocv_programs
         ncv_max_threads
         ncv_info_task
         ncv_info
-        ncv_trainer)
+        ncv_trainer
+        ncv_tester)
 
 # Build executables
 foreach(proj ${nanocv_programs})

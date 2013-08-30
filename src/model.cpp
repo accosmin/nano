@@ -28,8 +28,9 @@ namespace ncv
                 oa << m_cols;
                 oa << m_outputs;
                 oa << m_parameters;
+                oa << m_color;
 
-                return save(oa);        // fixme: how to check status of the stream?!
+                return save(oa) && os.good();
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -43,8 +44,9 @@ namespace ncv
                 ia >> m_cols;
                 ia >> m_outputs;
                 ia >> m_parameters;
+                ia >> m_color;
 
-                return load(ia);        // fixme: how to check status of the stream?!
+                return load(ia) && is.good();
         }
 
         //-------------------------------------------------------------------------------------------------

@@ -58,18 +58,14 @@ namespace ncv
 
         bool pooling_layer_t::save(boost::archive::binary_oarchive& oa) const
         {
-                // TODO
-
-                return false;
+                return true;
         }
 
         //-------------------------------------------------------------------------------------------------
 
         bool pooling_layer_t::load(boost::archive::binary_iarchive& ia)
         {
-                // TODO
-
-                return false;
+                return true;
         }
 
         //-------------------------------------------------------------------------------------------------

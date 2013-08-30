@@ -1,3 +1,7 @@
+* test program to print model (ncv_describe -> model structure + convolutions as images)
+
+* keep only smooth losses & activations, construct smooth approximations of pooling layers
+
 * serializer: store data in std::vector, push_back values -> (serializer_t() << s << v << m).data() or .size()
 * same for deserializer
 

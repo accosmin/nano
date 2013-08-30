@@ -189,18 +189,20 @@ namespace ncv
 
         bool conv_layer_t::save(boost::archive::binary_oarchive& oa) const
         {
-                // TODO
+                oa << m_params;
+                oa << m_kdata;
 
-                return false;
+                return true;
         }
 
         //-------------------------------------------------------------------------------------------------
 
         bool conv_layer_t::load(boost::archive::binary_iarchive& ia)
         {
-                // TODO
+                ia >> m_params;
+                ia >> m_kdata;
 
-                return false;
+                return true;
         }
 
         //-------------------------------------------------------------------------------------------------
