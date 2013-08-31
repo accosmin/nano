@@ -7,8 +7,6 @@
 #include <string>
 #include <vector>
 #include <cstdint>
-#include <boost/geometry/geometries/point_xy.hpp>
-#include <boost/geometry/geometries/box.hpp>
 
 namespace ncv
 {
@@ -30,12 +28,6 @@ namespace ncv
 
         typedef ttensor4d_t<matrix_t, size_t>   tensor4d_t;
         typedef std::vector<tensor4d_t>         tensor4ds_t;
-
-        // pixel geometry
-        namespace bgm = boost::geometry::model;
-        typedef int                             coord_t;
-        typedef bgm::d2::point_xy<coord_t>      point_t;
-        typedef bgm::box<point_t>               rect_t;
 
         // strings
         typedef std::string                     string_t;

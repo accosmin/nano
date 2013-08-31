@@ -2,9 +2,17 @@
 #define NANOCV_GEOM_H
 
 #include "types.h"
+#include <boost/geometry/geometries/point_xy.hpp>
+#include <boost/geometry/geometries/box.hpp>
 
 namespace ncv
 {
+        // pixel geometry
+        namespace bgm = boost::geometry::model;
+        typedef int                             coord_t;
+        typedef bgm::d2::point_xy<coord_t>      point_t;
+        typedef bgm::box<point_t>               rect_t;
+
         namespace geom
         {
                 // create geometric objects

@@ -1,12 +1,10 @@
-* test program to print model (ncv_describe -> model structure + convolutions as images)
-
-* move boost::binary_archive as typedefs to some header
-
 * reduce dependency between files: e.g. types.h includes too many headers!
 
 * serializer: store data in std::vector, push_back values -> (serializer_t() << s << v << m).data() or .size()
 * same for deserializer
 	- BETTER name for serializer! -> vectorizer?!
+
+* test program to print model (ncv_describe -> model structure + convolutions as images)
 
 * keep only smooth losses & activations, construct smooth approximations of pooling layers
 	* smooth version of the max-pooling layers: like here: http://en.wikipedia.org/wiki/Softmax_activation_function
