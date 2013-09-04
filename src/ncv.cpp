@@ -2,7 +2,6 @@
 #include <cfenv>
 
 #include "losses/loss_classnll.h"
-#include "losses/loss_hinge.h"
 #include "losses/loss_logistic.h"
 #include "losses/loss_square.h"
 
@@ -13,7 +12,6 @@
 
 #include "layers/layer_activation_unit.h"
 #include "layers/layer_activation_tanh.h"
-#include "layers/layer_activation_anorm.h"
 #include "layers/layer_activation_snorm.h"
 #include "layers/layer_convolution.h"
 #include "layers/layer_pooling_max.h"
@@ -37,7 +35,6 @@ namespace ncv
 
                 // register losses
                 loss_manager_t::instance().add("classnll", classnll_loss_t());
-                loss_manager_t::instance().add("hinge", hinge_loss_t());
                 loss_manager_t::instance().add("logistic", logistic_loss_t());
                 loss_manager_t::instance().add("square", square_loss_t());
 
@@ -50,7 +47,6 @@ namespace ncv
                 // register layers
                 layer_manager_t::instance().add("unit", unit_activation_layer_t());
                 layer_manager_t::instance().add("tanh", tanh_activation_layer_t());
-                layer_manager_t::instance().add("anorm", anorm_activation_layer_t());
                 layer_manager_t::instance().add("snorm", snorm_activation_layer_t());
                 layer_manager_t::instance().add("conv", conv_layer_t());
                 layer_manager_t::instance().add("max-pool", max_pooling_layer_t());

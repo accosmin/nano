@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 {
         ncv::init();
 
-        const strings_t activation_layer_ids { "", "unit", "tanh", "anorm", "snorm" };
+        const strings_t activation_layer_ids { "", "unit", "tanh", "snorm" };
         const strings_t pooling_layer_ids { "", "max-pool", "max-abs-pool" };
         const strings_t loss_ids = loss_manager_t::instance().ids();
 
