@@ -1,21 +1,15 @@
-* reduce dependency between files: e.g. types.h includes too many headers!
-
 * serializer: store data in std::vector, push_back values -> (serializer_t() << s << v << m).data() or .size()
 * same for deserializer
 	- BETTER name for serializer! -> vectorizer?!
 
-* test program to print model (ncv_describe -> model structure + convolutions as images)
+* separable convolution layer
+
+* pooling layer with multiple outputs?!
 
 * keep only smooth losses & activations, construct smooth approximations of pooling layers
 	* smooth version of the max-pooling layers: like here: http://en.wikipedia.org/wiki/Softmax_activation_function
 
-* make SGD & ASGD work well!
-	- parallelize the training by optimizing the learning rate: 
-		- choose N learning rates (N = number of threads) equally distant in (MIN, MAX)
-		- find the best current learning rate and split the adjacent interval to N+1 interval, update (MIN, MAX) and repeat
-		- each time increase (double?!) the number of samples to consider
-
-	- may generalizer trainer::value() and trainer::vgrad() to receive the number of threads to use!
+* test program to print model (ncv_describe -> model structure + convolutions as images)
 
 * thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
 

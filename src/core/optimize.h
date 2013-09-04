@@ -24,9 +24,7 @@ namespace ncv
 
                         // update current point
                         void update(const problem_t& problem, scalar_t t);
-
-                        // update current point
-                        void update(scalar_t t, scalar_t ft, const vector_t& gt);       // FIXME: remove this!
+                        void update(scalar_t t, scalar_t ft, const vector_t& gt);
 
                         // attributes
                         vector_t x, g, d;
@@ -37,6 +35,16 @@ namespace ncv
                 inline bool operator<(const state_t& one, const state_t& other)
                 {
                         return one.f < other.f;
+                }
+
+                /////////////////////////////////////////////////////////////////////////////////////////////
+                // checks the convergence:
+                //      the gradient is relatively small.
+                /////////////////////////////////////////////////////////////////////////////////////////////
+
+                inline bool converged(scalar_t epsilon, const state_t& st)
+                {
+                        return st.g.lpNorm<Eigen::Infinity>() < epsilon * (1.0 + std::fabs(st.f));
                 }
 
                 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -127,6 +135,34 @@ namespace ncv
                 typedef std::function<void(const result_t&)>    op_updated_t;
 
                 /////////////////////////////////////////////////////////////////////////////////////////////
+                // check and force a descent direction.
+                /////////////////////////////////////////////////////////////////////////////////////////////
+
+                scalar_t descent(state_t& st);
+
+                /////////////////////////////////////////////////////////////////////////////////////////////
+                // line-search methods to find the scalar that reduces
+                //      the function value (the most) along the direction d:
+                //
+                //      argmin(t) f(x + t * d).
+                /////////////////////////////////////////////////////////////////////////////////////////////
+
+                // Armijo (sufficient decrease) condition
+                scalar_t ls_armijo(const problem_t& problem, state_t& st,
+                        scalar_t alpha = 0.2, scalar_t beta = 0.7, size_t max_iters = 64);
+
+                // helper function: strong Wolfe (sufficient decrease and curvature) conditions
+                scalar_t ls_zoom(const problem_t& problem, const state_t& st,
+                        scalar_t& ft, vector_t& gt,
+                        scalar_t tlo, scalar_t thi, scalar_t ftlo, scalar_t fthi,
+                        scalar_t c1, scalar_t c2, size_t max_iters = 64);
+
+                // strong Wolfe (sufficient decrease and curvature) conditions
+                scalar_t ls_strong_wolfe(const problem_t& problem, state_t& st,
+                        scalar_t& ft, vector_t& gt,
+                        scalar_t c1 = 1e-4, scalar_t c2 = 0.1, size_t max_iters = 64);
+
+                /////////////////////////////////////////////////////////////////////////////////////////////
                 // gradient descent starting from the initial value (guess) x0.
                 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -158,24 +194,6 @@ namespace ncv
                         size_t max_iterations,          // maximum number of iterations
                         scalar_t epsilon,               // convergence precision
                         size_t history_size = 8,        // hessian approximation history size
-                        const op_updated_t& op_updated = op_updated_t());
-
-                /////////////////////////////////////////////////////////////////////////////////////////////
-                // (average) stochastic gradient descent starting from the initial value (guess) x0.
-                /////////////////////////////////////////////////////////////////////////////////////////////
-
-                result_t sgd(
-                        const problem_t& problem,
-                        const vector_t& x0,
-                        size_t iterations,              // ~number of samples
-                        scalar_t epsilon,               // convergence precision
-                        const op_updated_t& op_updated = op_updated_t());
-
-                result_t asgd(
-                        const problem_t& problem,
-                        const vector_t& x0,
-                        size_t iterations,              // ~number of samples
-                        scalar_t epsilon,               // convergence precision
                         const op_updated_t& op_updated = op_updated_t());
         }
 }

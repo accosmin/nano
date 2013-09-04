@@ -22,7 +22,6 @@
 #include "models/forward_network.h"
 
 #include "trainers/batch_trainer.h"
-#include "trainers/stochastic_trainer.h"
 
 namespace ncv
 {
@@ -62,7 +61,6 @@ namespace ncv
 
                 // register trainers
                 trainer_manager_t::instance().add("batch", batch_trainer_t());
-                trainer_manager_t::instance().add("stochastic", stochastic_trainer_t());
         }
 
         //-------------------------------------------------------------------------------------------------

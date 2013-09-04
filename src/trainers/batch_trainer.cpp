@@ -52,7 +52,7 @@ namespace ncv
                 }
 
                 // DEBUG!
-                samples.erase(samples.begin() + 2000, samples.end());
+                samples.erase(samples.begin() + 6000, samples.end());
 
                 // optimization problem: size
                 auto opt_fn_size = [&] ()
@@ -64,14 +64,14 @@ namespace ncv
                 auto opt_fn_fval = [&] (const vector_t& x)
                 {
                         model.load_params(x);
-                        return trainer_t::value(task, samples, loss, model);
+                        return trainer_t::value_mt(task, samples, loss, model);
                 };
 
                 // optimization problem: function value & gradient
                 auto opt_fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
                         model.load_params(x);
-                        return trainer_t::vgrad(task, samples, loss, model, gx);
+                        return trainer_t::vgrad_mt(task, samples, loss, model, gx);
                 };
 
                 const optimize::problem_t problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad);

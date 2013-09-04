@@ -129,40 +129,15 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        scalar_t trainer_t::value(
+        scalar_t trainer_t::value_st(
                 const task_t& task, const samples_t& samples, const loss_t& loss,
                 const model_t& model)
         {
                 value_data_t cum_data;
 
-                if (samples.size() < thread_impl::n_threads())
+                for (size_t i = 0; i < samples.size(); i ++)
                 {
-                        // few samples: single threaded
-                        for (size_t i = 0; i < samples.size(); i ++)
-                        {
-                                cum_data.update(task, samples[i], loss, model);
-                        }
-                }
-
-                else
-                {
-                        // multiple samples: split the computation using multiple threads
-                        thread_loop_cumulate<value_data_t>
-                        (
-                                samples.size(),
-                                [&] (value_data_t& data)
-                                {
-                                        data.m_model = model.clone();
-                                },
-                                [&] (size_t i, value_data_t& data)
-                                {
-                                        data.update(task, samples[i], loss);
-                                },
-                                [&] (const value_data_t& data)
-                                {
-                                        cum_data += data;
-                                }
-                        );
+                        cum_data.update(task, samples[i], loss, model);
                 }
 
                 return cum_data.value();
@@ -170,48 +145,80 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        scalar_t trainer_t::vgrad(
+        scalar_t trainer_t::value_mt(
+                const task_t& task, const samples_t& samples, const loss_t& loss,
+                const model_t& model)
+        {
+                value_data_t cum_data;
+
+                thread_loop_cumulate<value_data_t>
+                (
+                        samples.size(),
+                        [&] (value_data_t& data)
+                        {
+                                data.m_model = model.clone();
+                        },
+                        [&] (size_t i, value_data_t& data)
+                        {
+                                data.update(task, samples[i], loss);
+                        },
+                        [&] (const value_data_t& data)
+                        {
+                                cum_data += data;
+                        }
+                );
+
+                return cum_data.value();
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        scalar_t trainer_t::vgrad_st(
                 const task_t& task, const samples_t& samples, const loss_t& loss,
                 const model_t& model, vector_t& lgrad)
         {
                 vgrad_data_t cum_data(model.n_parameters());
 
-                if (samples.size() < thread_impl::n_threads())
-                {
-                        model.zero_grad();
+                model.zero_grad();
 
-                        // few samples: single threaded
-                        for (size_t i = 0; i < samples.size(); i ++)
+                for (size_t i = 0; i < samples.size(); i ++)
+                {
+                        cum_data.update(task, samples[i], loss, model);
+                }
+
+                cum_data.store(model);
+
+                lgrad = cum_data.vgrad();
+                return cum_data.value();
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
+        scalar_t trainer_t::vgrad_mt(
+                const task_t& task, const samples_t& samples, const loss_t& loss,
+                const model_t& model, vector_t& lgrad)
+        {
+                vgrad_data_t cum_data(model.n_parameters());
+
+                thread_loop_cumulate<vgrad_data_t>
+                (
+                        samples.size(),
+                        [&] (vgrad_data_t& data)
                         {
-                                cum_data.update(task, samples[i], loss, model);
+                                data.resize(model.n_parameters());
+                                data.m_model = model.clone();
+                                data.m_model->zero_grad();
+                        },
+                        [&] (size_t i, vgrad_data_t& data)
+                        {
+                                data.update(task, samples[i], loss);
+                        },
+                        [&] (const vgrad_data_t& data)
+                        {
+                                data.store();
+                                cum_data += data;
                         }
-
-                        cum_data.store(model);
-                }
-
-                else
-                {
-                        // multiple samples: split the computation using multiple threads
-                        thread_loop_cumulate<vgrad_data_t>
-                        (
-                                samples.size(),
-                                [&] (vgrad_data_t& data)
-                                {
-                                        data.resize(model.n_parameters());
-                                        data.m_model = model.clone();
-                                        data.m_model->zero_grad();
-                                },
-                                [&] (size_t i, vgrad_data_t& data)
-                                {
-                                        data.update(task, samples[i], loss);
-                                },
-                                [&] (const vgrad_data_t& data)
-                                {
-                                        data.store();
-                                        cum_data += data;
-                                }
-                        );
-                }
+                );
 
                 lgrad = cum_data.vgrad();
                 return cum_data.value();
