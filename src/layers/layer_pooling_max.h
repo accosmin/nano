@@ -2,7 +2,6 @@
 #define NANOCV_MAX_POOLING_LAYER_H
 
 #include "layer_pooling.h"
-#include "core/numeric.hpp"
 
 namespace ncv
 {
@@ -10,7 +9,20 @@ namespace ncv
         // max-pooling layer.
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        class max_pooling_layer_t : public pooling_layer_t
+        namespace impl
+        {
+                struct max_pooling_layer_wgrad_op
+                {
+                        void operator()(scalar_t x, scalar_t& w, scalar_t& g) const
+                        {
+                                static const scalar_t beta = 1.0;
+                                w = exp(beta * x);
+                                g = beta * w;
+                        }
+                };
+        }
+
+        class max_pooling_layer_t : public pooling_layer_t<impl::max_pooling_layer_wgrad_op>
         {
         public:
 
@@ -18,19 +30,6 @@ namespace ncv
                 max_pooling_layer_t(const string_t& = string_t()) {}
 
                 NCV_MAKE_CLONABLE(max_pooling_layer_t, layer_t, "max pooling layer")
-
-        protected:
-
-                // pool outputs & gradients
-                virtual scalar_t forward_pool(scalar_t ox, scalar_t ix) const
-                {
-                        return std::max(ix, ox);
-                }
-                virtual scalar_t backward_pool(scalar_t gx, scalar_t ox, scalar_t ix) const
-                {
-                        const bool cond = math::equal(ox, ix);
-                        return gx * math::kronocker<scalar_t>(cond);
-                }
         };
 }
 
