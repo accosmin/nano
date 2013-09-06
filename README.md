@@ -12,9 +12,8 @@ The library is built around several key concepts mapped to C++ object interfaces
 from command line arguments. The main concepts are the following:
 
 * **task** - describes a classification or regression task organized in folds. Each fold contains separate training and test image patches with associated target 
-output if any. This concept maps known machine learning and computer vision benchmarks to a common interface. 
+output if any. This concept maps known machine learning and computer vision benchmarks to a common interface. Examples: 
 
-Examples: 
 	* **MNIST** (supervised learning, digit classification, 28x28 grayscale inputs), 
 
 	* **CIFAR-10** (supervised learning, 10-class object classification, 32x32 RGB inputs), 
