@@ -1,13 +1,17 @@
+* separable convolution layer:
+	- update convolution test program
+	- update network gradient test program
+	- update network forward test script (check if faster)
+	- update the training experiment script and train some easy models 
+	- check if they can loaded correctly
+
+* update README: describe tasks, losses, layers, models and trainers (which optimizers are available)
+
 * serializer: store data in std::vector, push_back values -> (serializer_t() << s << v << m).data() or .size()
 * same for deserializer
 	- BETTER name for serializer! -> vectorizer?!
 
-* separable convolution layer
-
 * pooling layer with multiple outputs?!
-
-* keep only smooth losses & activations, construct smooth approximations of pooling layers
-	* smooth version of the max-pooling layers: like here: http://en.wikipedia.org/wiki/Softmax_activation_function
 
 * test program to print model (ncv_describe -> model structure + convolutions as images)
 
