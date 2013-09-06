@@ -9,7 +9,31 @@ namespace ncv
         // hyperbolic tangent activation function.
         ////////////////////////////////////////////////////////////////////////////////
 	
+        namespace impl
+        {
+                struct tanh_activation_layer_eval_t
+                {
+                        scalar_t operator()(scalar_t x) const
+                        {
+                                const scalar_t pexp = exp(x), nexp = 1.0 / pexp;
+                                return (pexp - nexp) / (pexp + nexp);
+                        }
+                };
+
+                struct tanh_activation_layer_grad_t
+                {
+                        scalar_t operator()(scalar_t g, scalar_t o) const
+                        {
+                                return g * (1.0 - o * o);
+                        }
+                };
+        }
+
         class tanh_activation_layer_t : public activation_layer_t
+        <
+                impl::tanh_activation_layer_eval_t,
+                impl::tanh_activation_layer_grad_t
+        >
         {
         public:
 
@@ -17,19 +41,6 @@ namespace ncv
                 tanh_activation_layer_t(const string_t& = string_t()) {}
 
                 NCV_MAKE_CLONABLE(tanh_activation_layer_t, layer_t, "hyperbolic tangent activation layer")
-
-        protected:
-
-                // activation outputs & gradients
-                virtual scalar_t value(scalar_t ix) const
-                {
-                        const scalar_t pexp = exp(ix), nexp = 1.0 / pexp;
-                        return (pexp - nexp) / (pexp + nexp);
-                }
-                virtual scalar_t vgrad(scalar_t gx, scalar_t ox) const
-                {
-                        return gx * (1.0 - ox * ox);
-                }
         };
 }
 

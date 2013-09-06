@@ -12,7 +12,8 @@ namespace ncv
 
         template
         <
-                typename twgrad_op      // weight & its derivative wrt the input: twgrad_op(x, &w, &g)
+                // weight & its derivative wrt the input: twgrad_op(x, &w, &g)
+                typename twgrad_op
         >
         class pooling_layer_t : public layer_t
         {
@@ -72,7 +73,7 @@ namespace ncv
                         return 0;
                 }
 
-                // compute outputs
+                // output
                 const tensor3d_t& _forward(const tensor3d_t& input) const
                 {
                         assert(n_idims() == input.n_dim1());
@@ -118,7 +119,7 @@ namespace ncv
                         return m_odata;
                 }
 
-                // compute gradients
+                // gradient
                 const tensor3d_t& _backward(const tensor3d_t& gradient) const
                 {
                         assert(n_odims() == gradient.n_dim1());

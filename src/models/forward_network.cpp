@@ -127,11 +127,12 @@ namespace ncv
 
         void forward_network_t::random_params()
         {
-                const scalar_t min = -1.0 / sqrt(n_parameters());
-                const scalar_t max = +1.0 / sqrt(n_parameters());
-
                 for (const rlayer_t& layer : m_layers)
                 {
+                        const size_t fanin = layer->n_idims() * layer->n_irows() * layer->n_icols();
+                        const scalar_t min = -1.0 / sqrt(1.0 + fanin);
+                        const scalar_t max = +1.0 / sqrt(1.0 + fanin);
+
                         layer->random_params(min, max);
                 }
         }

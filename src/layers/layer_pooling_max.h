@@ -11,7 +11,7 @@ namespace ncv
 
         namespace impl
         {
-                struct max_pooling_layer_wgrad_op
+                struct max_pooling_layer_wgrad_op_t
                 {
                         void operator()(scalar_t x, scalar_t& w, scalar_t& g) const
                         {
@@ -22,7 +22,7 @@ namespace ncv
                 };
         }
 
-        class max_pooling_layer_t : public pooling_layer_t<impl::max_pooling_layer_wgrad_op>
+        class max_pooling_layer_t : public pooling_layer_t<impl::max_pooling_layer_wgrad_op_t>
         {
         public:
 
