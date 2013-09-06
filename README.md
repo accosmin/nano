@@ -6,6 +6,19 @@ As the library evolves, command line programs will be supplied for testing vario
 
 The library is written to be cross-platform having only Boost, Eigen and Qt as dependencies.
 
-## Objects
+## Concepts
+
+The library is built around several key concepts mapped to C++ object interfaces. The main concepts are the following:
+
+* **task** 
+
+* **loss**
+
+* **model**
+
+* **layer**
+
+* **trainer**
+
 
  
