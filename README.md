@@ -5,7 +5,7 @@ classification and object detection problems.
 
 ## Concepts
 
-The library is built around several key concepts mapped to C++ object interfaces. Each object instantation is registered with an **ID** and thus it can be selected 
+The library is built around several key concepts mapped to C++ object interfaces. Each object instantation is registered with an *ID* and thus it can be selected 
 from command line arguments. 
 
 ### Task
@@ -25,7 +25,8 @@ This concept maps known machine learning and computer vision benchmarks to a com
 
 A model predicts the correct output for a given image patch. The output can be a label (if a classification task) or a score (if a regression task). Implemented instances:
 
-* **forward network** - a collection of feed-forward connected layers: the output of a layer is the input of the next. 
+* **forward network** - a collection of feed-forward connected layers: the output of a layer is the input of the next. Implemented layers: *convolution*, 
+*activation* (hyperbolic tangent, unit, signed normalization) and *pooling/compression* (maximum, maximum absolute).
 
 ### Loss 
 
