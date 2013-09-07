@@ -10,10 +10,8 @@ from command line arguments.
 
 The main concepts are the following:
 
-* **task** - describes a classification or regression problem organized in folds. Each fold contains separate training and test image patches with associated target 
-output if any. This concept maps known machine learning and computer vision benchmarks to a common interface. 
-
-Implemented instances: 
+* **task** - describes a classification or regression problem with its separate training and test image patches with associated target output if any. 
+This concept maps known machine learning and computer vision benchmarks to a common interface. Implemented instances: 
 
 	* **MNIST** - digit classification, 28x28 grayscale inputs,
 
