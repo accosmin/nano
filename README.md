@@ -61,9 +61,13 @@ The easiest way of compiling is to run the `build.sh` bash script. The test prog
 The library provides various command line programs and utilities:
 
 TODO: ncv_info (prints all registered objects with their IDs and short descriptions)
+
 TODO: ncv_info_task (loads a task and print a detailed description: #inputs, #outputs, size, folds, training and testing)
+
 TODO: ncv_trainer (train a model, command line examples)
+
 TODO: ncv_tester (test a model, command line examples)
+
 TODO: script to run experiments
 
 
