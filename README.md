@@ -1,34 +1,59 @@
 # NanoCV
 
-**NanoCV** is a small (nano) C++(11) library that implements various (non-linear) optimization and machine learning algorithms. The library is used as a sandbox for implementing and testing various image classification and object detection methods.
-
-As the library evolves, command line programs will be supplied for testing various components and for training and testing models.
-
-The library is written to be cross-platform having only Boost, Eigen and Qt as dependencies.
+This small (nano) library is used as a sandbox for implementing deep-models, such as neural networks and convolution networks, and testing them on various image 
+classification and object detection problems. 
 
 ## Concepts
 
-The library is built around several key concepts mapped to C++ object interfaces. Each instantiation has a string ID associated with which it can be retrieved 
-from command line arguments. The main concepts are the following:
+The library is built around several key concepts mapped to C++ object interfaces. Each instantiation is registered with an **ID** with which it can be 
+retrieved from command line arguments. The main concepts are the following:
 
-* **task** - describes a classification or regression task organized in folds. Each fold contains separate training and test image patches with associated target 
-output if any. This concept maps known machine learning and computer vision benchmarks to a common interface. Examples: 
+* **task** - describes a classification or regression problem organized in folds. Each fold contains separate training and test image patches with associated target 
+output if any. This concept maps known machine learning and computer vision benchmarks to a common interface. Implemented instances: 
 
-	* **MNIST** - digit classification, 28x28 grayscale inputs
+	* **MNIST** - digit classification, 28x28 grayscale inputs,
 
-	* **CIFAR-10** - 10-class object classification, 32x32 RGB inputs
+	* **CIFAR-10** - 10-class object classification, 32x32 RGB inputs,
 
-	* **CMU-FACES** - face detection (binary classification), 19x19 grayscale inputs
+	* **CMU-FACES** - face detection (binary classification), 19x19 grayscale inputs,
 
-	* **STL-10** - 10-class object classification, 96x96 RGB inputs
+	* **STL-10** - 10-class object classification, 96x96 RGB inputs.
 
-* **loss** - describes 
 
-* **model** - describes
+* **model** - predicts the correct output for a given image patch. The output can be a label (if a classification task) or a score (if a regression task). 
+Implemented instances:
 
-* **layer** - describes
+	* **forward network** - a collection of feed-forward connected **layers**: the output of a layer is the input of the next. Implemented layers: 
+**convolution**, **activation** (hyperbolic tangent, unit, signed normalization) and **compression** (maximum, maximum absolute).
 
-* **trainer**
+* **loss** - assigns a scalar score to the prediction of a model by comparing it with the ground truth target (if provided). The lower the score, the better the 
+prediction. Implemented instances:
+
+	* **class-NLL** - class log-likelihood loss is usefull for multi-label classification problems,
+
+	* **logistic** - is usefull for classification problems,
+
+	* **square** - most usefull for regression problems.
+
+* **trainer** - 
+
+## Usage
+
+### Compilation
+
+To compile (and install) CMake, a C++ compiler that supports C++11, Boost, Eigen and Qt are required. The library is tested so far only on ArchLinux x64, but the 
+code is written to be cross-platform.
+
+The easiest way of compiling is to run the `build.sh` bash script. The test programs and utilities will be found in the created `build` directory.
+
+### Examples
+
+The library provides various command line programs and utilities.
+
+TODO: run the program to scale the image, test CIELab color transformation, test convolutions, test forward network gradients using finite-differences, script to 
+train and test models.
+
+
 
 
  
