@@ -10,7 +10,7 @@ from command line arguments.
 
 The main concepts are the following:
 
-* **task** - describes a classification or regression problem with its separate training and test image patches with associated target output if any. 
+* **task** - describes a classification or regression problem consisting of separate training and test image patches with associated target outputs if any. 
 This concept maps known machine learning and computer vision benchmarks to a common interface. Implemented instances: 
 
 	* **MNIST** - digit classification, 28x28 grayscale inputs,
@@ -24,15 +24,14 @@ This concept maps known machine learning and computer vision benchmarks to a com
 * **model** - predicts the correct output for a given image patch. The output can be a label (if a classification task) or a score (if a regression task). 
 Implemented instances:
 
-	* **forward network** - a collection of feed-forward connected layers: the output of a layer is the input of the next. Implemented layers: 
-*convolution*, *activation* (hyperbolic tangent, unit, signed normalization) and *compression* (maximum, maximum absolute).
+	* **forward network** - a collection of feed-forward connected layers: the output of a layer is the input of the next. 
 
 * **loss** - assigns a scalar score to the prediction of a model by comparing it with the ground truth target (if provided). The lower the score, the better the 
 prediction. Implemented instances:
 
-	* **class-NLL** - class log-likelihood loss is usefull for multi-label classification problems,
+	* **class-NLL** - for multi-label classification problems,
 
-	* **logistic** - is usefull for classification problems,
+	* **logistic** - for classification problems,
 
 	* **square** - most usefull for regression problems.
 
@@ -53,10 +52,13 @@ The easiest way of compiling is to run the `build.sh` bash script. The test prog
 
 ### Examples
 
-The library provides various command line programs and utilities.
+The library provides various command line programs and utilities:
 
-TODO: run the program to scale the image, test CIELab color transformation, test convolutions, test forward network gradients using finite-differences, script to 
-train and test models.
+TODO: ncv_info (prints all registered objects with their IDs and short descriptions)
+TODO: ncv_info_task (loads a task and print a detailed description: #inputs, #outputs, size, folds, training and testing)
+TODO: ncv_trainer (train a model, command line examples)
+TODO: ncv_tester (test a model, command line examples)
+TODO: script to run experiments
 
 
 

@@ -5,8 +5,6 @@
 	- update the training experiment script and train some easy models 
 	- check if they can loaded correctly
 
-* update README: describe tasks, losses, layers, models and trainers (which optimizers are available)
-
 * serializer: store data in std::vector, push_back values -> (serializer_t() << s << v << m).data() or .size()
 * same for deserializer
 	- BETTER name for serializer! -> vectorizer?!
