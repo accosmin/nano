@@ -5,8 +5,10 @@ classification and object detection problems.
 
 ## Concepts
 
-The library is built around several key concepts mapped to C++ object interfaces. Each instantiation is registered with an **ID** with which it can be 
-retrieved from command line arguments. The main concepts are the following:
+The library is built around several key concepts mapped to C++ object interfaces. Each object instantation is registered with an **ID** and thus it can be selected 
+from command line arguments. 
+
+The main concepts are the following:
 
 * **task** - describes a classification or regression problem organized in folds. Each fold contains separate training and test image patches with associated target 
 output if any. This concept maps known machine learning and computer vision benchmarks to a common interface. Implemented instances: 
@@ -18,7 +20,6 @@ output if any. This concept maps known machine learning and computer vision benc
 	* **CMU-FACES** - face detection (binary classification), 19x19 grayscale inputs,
 
 	* **STL-10** - 10-class object classification, 96x96 RGB inputs.
-
 
 * **model** - predicts the correct output for a given image patch. The output can be a label (if a classification task) or a score (if a regression task). 
 Implemented instances:
