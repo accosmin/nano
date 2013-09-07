@@ -57,7 +57,7 @@ void test(int isize, int ksize, int n_samples)
 	init_matrix(isize - ksize + 1, isize - ksize + 1, odata);
 	kdata /= n_samples;
 
-        test_matrices(ncv::math::conv_add_naive<matrix_t>,       "nai", idatas, kdata, odata);
+        test_matrices(ncv::math::conv_add_brut<matrix_t>,        "brt", idatas, kdata, odata);
         test_matrices(ncv::math::conv_add_eigen_block<matrix_t>, "eig", idatas, kdata, odata);
         test_matrices(ncv::math::conv_add_mod4<matrix_t>,        "md4", idatas, kdata, odata);
         test_matrices(ncv::math::conv_add_mod8<matrix_t>,        "md8", idatas, kdata, odata);

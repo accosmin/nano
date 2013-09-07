@@ -229,6 +229,8 @@ namespace ncv
                         }
                 }
 
+//                conv_add -> conv (DO NOT ADD THE CONVOLUTIONS!!!)
+
                 return m_odata;
         }
 

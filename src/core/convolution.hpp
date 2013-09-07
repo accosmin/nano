@@ -1,6 +1,8 @@
 #ifndef NANOCV_CONVOLUTION_H
 #define NANOCV_CONVOLUTION_H
 
+#include <functional>
+
 namespace ncv
 {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -9,9 +11,26 @@ namespace ncv
 
         namespace math
         {
+                using namespace std::placeholders;
+
                 // implementation detail
                 namespace impl
                 {
+                        template
+                        <
+                                typename tscalar
+                        >
+                        tscalar conv_add(const tscalar* pidata, const tscalar* pkdata, int ksize)
+                        {
+                                tscalar sum = 0;
+                                for (int k = 0; k < ksize; k ++)
+                                {
+                                        sum += pidata[k] * pkdata[k];
+                                }
+
+                                return sum;
+                        }
+
                         template
                         <
                                 int tksize,
@@ -19,45 +38,24 @@ namespace ncv
                         >
                         tscalar conv_add(const tscalar* pidata, const tscalar* pkdata)
                         {
-                                tscalar sum = 0;
-                                for (int k = 0; k < tksize; k ++)
-                                {
-                                        sum += pidata[k] * pkdata[k];
-                                }
-
-                                return sum;
-                        }
+                                return conv_add(pidata, pkdata, tksize);
+                        }                        
 
                         template
                         <
                                 typename tscalar
                         >
-                        tscalar conv_add(const tscalar* pidata, const tscalar* pkdata, int tksize)
+                        tscalar conv_add_mod4(const tscalar* pidata, const tscalar* pkdata, int ksize4, int ksize)
                         {
                                 tscalar sum = 0;
-                                for (int k = 0; k < tksize; k ++)
-                                {
-                                        sum += pidata[k] * pkdata[k];
-                                }
-
-                                return sum;
-                        }
-
-                        template
-                        <
-                                typename tscalar
-                        >
-                        tscalar conv_add_mod4(const tscalar* pidata, const tscalar* pkdata, int tksize4, int tksize)
-                        {
-                                tscalar sum = 0;
-                                for (int k = 0; k < tksize4; k += 4)
+                                for (int k = 0; k < ksize4; k += 4)
                                 {
                                         sum += pidata[k + 0] * pkdata[k + 0];
                                         sum += pidata[k + 1] * pkdata[k + 1];
                                         sum += pidata[k + 2] * pkdata[k + 2];
                                         sum += pidata[k + 3] * pkdata[k + 3];
                                 }
-                                for (int k = tksize4; k < tksize; k ++)
+                                for (int k = ksize4; k < ksize; k ++)
                                 {
                                         sum += pidata[k + 0] * pkdata[k + 0];
                                 }
@@ -69,10 +67,10 @@ namespace ncv
                         <
                                 typename tscalar
                         >
-                        tscalar conv_add_mod8(const tscalar* pidata, const tscalar* pkdata, int tksize8, int tksize)
+                        tscalar conv_add_mod8(const tscalar* pidata, const tscalar* pkdata, int ksize8, int ksize)
                         {
                                 tscalar sum = 0;
-                                for (int k = 0; k < tksize8; k += 8)
+                                for (int k = 0; k < ksize8; k += 8)
                                 {
                                         sum += pidata[k + 0] * pkdata[k + 0];
                                         sum += pidata[k + 1] * pkdata[k + 1];
@@ -83,12 +81,63 @@ namespace ncv
                                         sum += pidata[k + 6] * pkdata[k + 6];
                                         sum += pidata[k + 7] * pkdata[k + 7];
                                 }
-                                for (int k = tksize8; k < tksize; k ++)
+                                for (int k = ksize8; k < ksize; k ++)
                                 {
                                         sum += pidata[k + 0] * pkdata[k + 0];
                                 }
 
                                 return sum;
+                        }
+
+                        template
+                        <
+                                typename tmatrix,
+                                typename tcolop
+                        >
+                        void conv_add_by_col(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata,
+                                const tcolop& op, int krows)
+                        {
+                                const int orows = static_cast<int>(odata.rows());
+                                const int ocols = static_cast<int>(odata.cols());
+
+                                for (int r = 0; r < orows; r ++)
+                                {
+                                        typename tmatrix::Scalar* podata = &odata(r, 0);
+
+                                        for (int kr = 0; kr < krows; kr ++)
+                                        {
+                                                const typename tmatrix::Scalar* pidata = &idata(r + kr, 0);
+                                                const typename tmatrix::Scalar* pkdata = &kdata(kr, 0);
+
+                                                for (int c = 0; c < ocols; c ++)
+                                                {
+                                                        podata[c] += op(pidata + c, pkdata);
+                                                }
+                                        }
+                                }
+                        }
+
+                        template
+                        <
+                                typename tmatrix,
+                                typename tcolop
+                        >
+                        void conv_add_by_col(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata,
+                                const tcolop& op)
+                        {
+                                conv_add_by_col(idata, kdata, odata, op, static_cast<int>(kdata.rows()));
+                        }
+
+                        template
+                        <
+                                int tkrows,
+                                typename tmatrix,
+                                typename tcolop
+                        >
+                        void conv_add_by_col(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata,
+                                const tcolop& op)
+                        {
+                                conv_add_by_col(idata, kdata, odata, op, tkrows);
                         }
                 }
 
@@ -100,28 +149,11 @@ namespace ncv
                 >
                 void conv_add_mod4(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
-                        const int krows = static_cast<int>(kdata.rows());
                         const int kcols = static_cast<int>(kdata.cols());
                         const int kcols4 = kcols - (kcols % 4);
 
-                        const int orows = static_cast<int>(odata.rows());
-                        const int ocols = static_cast<int>(odata.cols());
-
-                        for (int r = 0; r < orows; r ++)
-                        {
-                                typename tmatrix::Scalar* podata = &odata(r, 0);
-
-                                for (int kr = 0; kr < krows; kr ++)
-                                {
-                                        const typename tmatrix::Scalar* pidata = &idata(r + kr, 0);
-                                        const typename tmatrix::Scalar* pkdata = &kdata(kr, 0);
-
-                                        for (int c = 0; c < ocols; c ++)
-                                        {
-                                                podata[c] += impl::conv_add_mod4(pidata + c, pkdata, kcols4, kcols);
-                                        }
-                                }                                
-                        }
+                        impl::conv_add_by_col(idata, kdata, odata,
+                                std::bind(impl::conv_add_mod4<typename tmatrix::Scalar>, _1, _2, kcols4, kcols));
                 }
 
                 // 2D (cumulative) convolution: odata += idata * kdata
@@ -132,28 +164,11 @@ namespace ncv
                 >
                 void conv_add_mod8(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
-                        const int krows = static_cast<int>(kdata.rows());
                         const int kcols = static_cast<int>(kdata.cols());
                         const int kcols8 = kcols - (kcols % 8);
 
-                        const int orows = static_cast<int>(odata.rows());
-                        const int ocols = static_cast<int>(odata.cols());
-
-                        for (int r = 0; r < orows; r ++)
-                        {
-                                typename tmatrix::Scalar* podata = &odata(r, 0);
-
-                                for (int kr = 0; kr < krows; kr ++)
-                                {
-                                        const typename tmatrix::Scalar* pidata = &idata(r + kr, 0);
-                                        const typename tmatrix::Scalar* pkdata = &kdata(kr, 0);
-
-                                        for (int c = 0; c < ocols; c ++)
-                                        {
-                                                podata[c] += impl::conv_add_mod8(pidata + c, pkdata, kcols8, kcols);
-                                        }
-                               }
-                        }
+                        impl::conv_add_by_col(idata, kdata, odata,
+                                std::bind(impl::conv_add_mod8<typename tmatrix::Scalar>, _1, _2, kcols8, kcols));
                 }
 
                 // 2D (cumulative) convolution: odata += idata * kdata
@@ -162,27 +177,12 @@ namespace ncv
                 <
                         typename tmatrix
                 >
-                void conv_add_naive(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
+                void conv_add_brut(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
-                        const int krows = static_cast<int>(kdata.rows());
                         const int kcols = static_cast<int>(kdata.cols());
 
-                        const int orows = static_cast<int>(odata.rows());
-                        const int ocols = static_cast<int>(odata.cols());
-
-                        for (int r = 0; r < orows; r ++)
-                        {
-                                for (int c = 0; c < ocols; c ++)
-                                {
-                                        for (int kr = 0; kr < krows; kr ++)
-                                        {
-                                                for (int kc = 0; kc < kcols; kc ++)
-                                                {
-                                                        odata(r, c) += idata(r + kr, c + kc) * kdata(kr, kc);
-                                                }
-                                        }
-                               }
-                        }
+                        impl::conv_add_by_col(idata, kdata, odata,
+                                std::bind(impl::conv_add<typename tmatrix::Scalar>, _1, _2, kcols));
                 }
 
                 // 2D (cumulative) convolution: odata += idata * kdata
@@ -195,24 +195,8 @@ namespace ncv
                 >
                 void conv_add_fixed(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
-                        const int orows = static_cast<int>(odata.rows());
-                        const int ocols = static_cast<int>(odata.cols());
-
-                        for (int r = 0; r < orows; r ++)
-                        {
-                                typename tmatrix::Scalar* podata = &odata(r, 0);
-
-                                for (int kr = 0; kr < tkrows; kr ++)
-                                {
-                                        const typename tmatrix::Scalar* pidata = &idata(r + kr, 0);
-                                        const typename tmatrix::Scalar* pkdata = &kdata(kr, 0);
-
-                                        for (int c = 0; c < ocols; c ++)
-                                        {
-                                                podata[c] += impl::conv_add(pidata + c, pkdata, tkcols);
-                                        }
-                               }
-                        }
+                        impl::conv_add_by_col<tkrows>(idata, kdata, odata,
+                                std::bind(impl::conv_add<tkcols, typename tmatrix::Scalar>, _1, _2));
                 }
 
                 // 2D (cumulative) convolution: odata += idata * kdata
@@ -224,26 +208,8 @@ namespace ncv
                 >
                 void conv_add_fixed(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
-                        const int krows = static_cast<int>(kdata.rows());
-
-                        const int orows = static_cast<int>(odata.rows());
-                        const int ocols = static_cast<int>(odata.cols());
-
-                        for (int r = 0; r < orows; r ++)
-                        {
-                                typename tmatrix::Scalar* podata = &odata(r, 0);
-
-                                for (int kr = 0; kr < krows; kr ++)
-                                {
-                                        const typename tmatrix::Scalar* pidata = &idata(r + kr, 0);
-                                        const typename tmatrix::Scalar* pkdata = &kdata(kr, 0);
-
-                                        for (int c = 0; c < ocols; c ++)
-                                        {
-                                                podata[c] += impl::conv_add<tkcols>(pidata + c, pkdata);
-                                        }
-                                }
-                        }
+                        impl::conv_add_by_col(idata, kdata, odata,
+                                std::bind(impl::conv_add<tkcols, typename tmatrix::Scalar>, _1, _2));
                 }
 
                 // 2D (cumulative) convolution: odata += idata * kdata

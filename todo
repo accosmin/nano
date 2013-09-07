@@ -1,3 +1,11 @@
+* change the convolution layer:
+	- do not sum the convolutioned inputs -> but gather all convolutions
+	
+	- make the ::backward function templated after the convolution size (similar to conv_add)
+		- maybe move it to deconvolution.hpp!
+
+	- add bias terms
+
 * separable convolution layer:
 	- update convolution test program
 	- update network gradient test program
