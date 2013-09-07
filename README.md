@@ -24,8 +24,8 @@ output if any. This concept maps known machine learning and computer vision benc
 * **model** - predicts the correct output for a given image patch. The output can be a label (if a classification task) or a score (if a regression task). 
 Implemented instances:
 
-	* **forward network** - a collection of feed-forward connected **layers**: the output of a layer is the input of the next. Implemented layers: 
-**convolution**, **activation** (hyperbolic tangent, unit, signed normalization) and **compression** (maximum, maximum absolute).
+	* **forward network** - a collection of feed-forward connected layers: the output of a layer is the input of the next. Implemented layers: 
+*convolution*, *activation* (hyperbolic tangent, unit, signed normalization) and *compression* (maximum, maximum absolute).
 
 * **loss** - assigns a scalar score to the prediction of a model by comparing it with the ground truth target (if provided). The lower the score, the better the 
 prediction. Implemented instances:
@@ -36,7 +36,11 @@ prediction. Implemented instances:
 
 	* **square** - most usefull for regression problems.
 
-* **trainer** - 
+* **trainer** - optimizes the parameters of a *given model* to produce the correct outputs for a *given task* using the cumulated values of a *given loss* over the 
+training samples as a numerical optimization criteria. Implemented instances:
+
+	* **batch** - a single iteration typically consists of a pass through all training samples. There are several options available: *L-BFGS*, conjugate gradient 
+descent (*CGD*) and gradient descent (*GD*).
 
 ## Usage
 
