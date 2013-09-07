@@ -8,37 +8,42 @@ classification and object detection problems.
 The library is built around several key concepts mapped to C++ object interfaces. Each object instantation is registered with an **ID** and thus it can be selected 
 from command line arguments. 
 
-The main concepts are the following:
+### Task
 
-* **task** - describes a classification or regression problem consisting of separate training and test image patches with associated target outputs if any. 
+A task describes a classification or regression problem consisting of separate training and test image patches with associated target outputs if any. 
 This concept maps known machine learning and computer vision benchmarks to a common interface. Implemented instances: 
 
-	* **MNIST** - digit classification, 28x28 grayscale inputs,
+* **MNIST** - digit classification, 28x28 grayscale inputs,
 
-	* **CIFAR-10** - 10-class object classification, 32x32 RGB inputs,
+* **CIFAR-10** - 10-class object classification, 32x32 RGB inputs,
 
-	* **CMU-FACES** - face detection (binary classification), 19x19 grayscale inputs,
+* **CMU-FACES** - face detection (binary classification), 19x19 grayscale inputs,
 
-	* **STL-10** - 10-class object classification, 96x96 RGB inputs.
+* **STL-10** - 10-class object classification, 96x96 RGB inputs.
 
-* **model** - predicts the correct output for a given image patch. The output can be a label (if a classification task) or a score (if a regression task). 
-Implemented instances:
+### Model
 
-	* **forward network** - a collection of feed-forward connected layers: the output of a layer is the input of the next. 
+A model predicts the correct output for a given image patch. The output can be a label (if a classification task) or a score (if a regression task). Implemented instances:
 
-* **loss** - assigns a scalar score to the prediction of a model by comparing it with the ground truth target (if provided). The lower the score, the better the 
-prediction. Implemented instances:
+* **forward network** - a collection of feed-forward connected layers: the output of a layer is the input of the next. 
 
-	* **class-NLL** - for multi-label classification problems,
+### Loss 
 
-	* **logistic** - for classification problems,
+A loss function assigns a scalar score to the prediction of a model by comparing it with the ground truth target (if provided). 
+The lower the score, the better the prediction. Implemented instances:
 
-	* **square** - most usefull for regression problems.
+* **class-NLL** - for multi-label classification problems,
 
-* **trainer** - optimizes the parameters of a *given model* to produce the correct outputs for a *given task* using the cumulated values of a *given loss* over the 
-training samples as a numerical optimization criteria. Implemented instances:
+* **logistic** - for classification problems,
 
-	* **batch** - a single iteration typically consists of a pass through all training samples. There are several options available: *L-BFGS*, conjugate gradient 
+* **square** - most usefull for regression problems.
+
+### Trainer
+
+A trainer otimizes the parameters of a *given model* to produce the correct outputs for a *given task* using the cumulated values of a *given loss* over 
+the training samples as a numerical optimization criteria. Implemented instances:
+
+* **batch** - a single iteration typically consists of a pass through all training samples. There are several options available: *L-BFGS*, conjugate gradient 
 descent (*CGD*) and gradient descent (*GD*).
 
 ## Usage
