@@ -53,20 +53,22 @@ namespace ncv
                 virtual size_t n_orows() const { return m_odata.n_rows(); }
                 virtual size_t n_ocols() const { return m_odata.n_cols(); }
 
-                size_t n_kdim1() const { return m_kdata.n_dim1(); }
-                size_t n_kdim2() const { return m_kdata.n_dim2(); }
-                size_t n_krows() const { return m_kdata.n_rows(); }
-                size_t n_kcols() const { return m_kdata.n_cols(); }
-
         private:
 
                 // attributes
                 string_t                m_params;
 
                 mutable tensor3d_t      m_idata;        // input buffer
-                tensor4d_t              m_kdata;        // convolution/kernel matrices
-                mutable tensor4d_t      m_gdata;        // cumulated gradient of the convolution matrices
                 mutable tensor3d_t      m_odata;        // output buffer
+                mutable matrix_t        m_cdata;        // convolution buffer
+
+                tensor3d_t              m_kdata;        // convolution/kernel matrices
+                tensor3d_t              m_wdata;        // convolution weights (output, input)
+                tensor3d_t              m_bdata;        // biases (output)
+
+                mutable tensor3d_t      m_gkdata;       // cumulated gradients
+                mutable tensor3d_t      m_gwdata;
+                mutable tensor3d_t      m_gbdata;
         };
 }
 

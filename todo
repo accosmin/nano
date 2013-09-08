@@ -1,10 +1,12 @@
 * change the convolution layer:
 	- do not sum the convolutioned inputs -> but gather all convolutions
+		- given I inputs and C convolutions: learn C convolutions, scalar weights IxC and C biases
+			- Output(o = c) = sum(i, {I(i) conv C(c)} * w(i, c}) + b(c)
 	
 	- make the ::backward function templated after the convolution size (similar to conv_add)
 		- maybe move it to deconvolution.hpp!
 
-	- add bias terms
+		- it could be faster if using the same technique as with conv_add_dynamic
 
 * separable convolution layer:
 	- update convolution test program

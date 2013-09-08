@@ -30,8 +30,6 @@ void test_matrices(top op, const char* name, const tmatrices& idatas, const tmat
 {
         const clock_t start = clock();
 
-	odata.setZero();
-
 	const int count = static_cast<int>(idatas.size());
 	for (int i = 0; i < count; i ++)
 	{
@@ -39,7 +37,6 @@ void test_matrices(top op, const char* name, const tmatrices& idatas, const tmat
 	}
 
         const clock_t stop = clock();
-
 
 	std::cout.precision(3);
         std::cout << name << " - " << ((stop - start + 0.0) / (CLOCKS_PER_SEC + 0.0))
@@ -57,11 +54,11 @@ void test(int isize, int ksize, int n_samples)
 	init_matrix(isize - ksize + 1, isize - ksize + 1, odata);
 	kdata /= n_samples;
 
-        test_matrices(ncv::math::conv_add_brut<matrix_t>,        "brt", idatas, kdata, odata);
-        test_matrices(ncv::math::conv_add_eigen_block<matrix_t>, "eig", idatas, kdata, odata);
-        test_matrices(ncv::math::conv_add_mod4<matrix_t>,        "md4", idatas, kdata, odata);
-        test_matrices(ncv::math::conv_add_mod8<matrix_t>,        "md8", idatas, kdata, odata);
-        test_matrices(ncv::math::conv_add_dynamic<matrix_t>,     "dyn", idatas, kdata, odata);
+        test_matrices(ncv::math::conv_brut<matrix_t>,        "brt", idatas, kdata, odata);
+        test_matrices(ncv::math::conv_eigen_block<matrix_t>, "eig", idatas, kdata, odata);
+        test_matrices(ncv::math::conv_mod4<matrix_t>,        "md4", idatas, kdata, odata);
+        test_matrices(ncv::math::conv_mod8<matrix_t>,        "md8", idatas, kdata, odata);
+        test_matrices(ncv::math::conv_dynamic<matrix_t>,     "dyn", idatas, kdata, odata);
 	std::cout << std::endl;
 }
 
