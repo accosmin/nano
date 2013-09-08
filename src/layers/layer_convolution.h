@@ -55,6 +55,11 @@ namespace ncv
 
         private:
 
+                scalar_t bias(size_t o) const { return m_bdata(o, 0, 0); }
+                scalar_t weight(size_t o, size_t i) const { return m_wdata(o, i, 0); }
+
+        private:
+
                 // attributes
                 string_t                m_params;
 

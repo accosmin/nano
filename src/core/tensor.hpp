@@ -25,7 +25,8 @@ namespace ncv
                 {
                 public:
 
-                        typedef std::vector<tmatrix>    matrices_t;
+                        typedef std::vector<tmatrix>            matrices_t;
+                        typedef typename tmatrix::Scalar        tscalar;
 
                         // constructor
                         tensor_storage_t(tsize size = 0, tsize rows = 0, tsize cols = 0)
@@ -142,7 +143,8 @@ namespace ncv
         {
         public:
 
-                typedef impl::tensor_storage_t<tmatrix, tsize> base_t;
+                typedef impl::tensor_storage_t<tmatrix, tsize>  tbase;
+                typedef typename tbase::tscalar                tscalar;
 
                 // constructor
                 ttensor3d_t(tsize dim1 = 0, tsize rows = 0, tsize cols = 0)
@@ -154,14 +156,29 @@ namespace ncv
                 tsize resize(tsize dim1, tsize rows, tsize cols)
                 {
                         m_dim1 = dim1;
-                        return base_t::allocate(dim1, rows, cols);
+                        return tbase::allocate(dim1, rows, cols);
                 }
 
                 // access functions
                 tsize n_dim1() const { return m_dim1; }
 
-                const tmatrix& operator()(tsize d1) const { return base_t::get(d1); }
-                tmatrix& operator()(tsize d1) { return base_t::get(d1); }
+                const tmatrix& operator()(tsize d1) const
+                {
+                        return tbase::get(d1);
+                }
+                tmatrix& operator()(tsize d1)
+                {
+                        return tbase::get(d1);
+                }
+
+                const tscalar& operator()(tsize d1, size_t r, size_t c) const
+                {
+                        return tbase::get(d1)(r, c);
+                }
+                tscalar& operator()(tsize d1, size_t r, size_t c)
+                {
+                        return tbase::get(d1)(r, c);
+                }
 
         private:
 
@@ -173,7 +190,7 @@ namespace ncv
                 >
                 void serialize(tarchive & ar, const unsigned int version)
                 {
-                        ar & boost::serialization::base_object<base_t>(*this);
+                        ar & boost::serialization::base_object<tbase>(*this);
                         ar & m_dim1;
                 }
 
@@ -192,7 +209,8 @@ namespace ncv
         {
         public:
 
-                typedef impl::tensor_storage_t<tmatrix, tsize> base_t;
+                typedef impl::tensor_storage_t<tmatrix, tsize>  tbase;
+                typedef typename tbase::tscalar                tscalar;
 
                 // constructor
                 ttensor4d_t(tsize dim1 = 0, tsize dim2 = 0, tsize rows = 0, tsize cols = 0)
@@ -205,15 +223,30 @@ namespace ncv
                 {
                         m_dim1 = dim1;
                         m_dim2 = dim2;
-                        return base_t::allocate(dim1 * dim2, rows, cols);
+                        return tbase::allocate(dim1 * dim2, rows, cols);
                 }
 
                 // access functions
                 tsize n_dim1() const { return m_dim1; }
                 tsize n_dim2() const { return m_dim2; }
 
-                const tmatrix& operator()(size_t d1, size_t d2) const { return base_t::get(d1 * n_dim2() + d2); }
-                tmatrix& operator()(size_t d1, size_t d2) { return base_t::get(d1 * n_dim2() + d2); }
+                const tmatrix& operator()(size_t d1, size_t d2) const
+                {
+                        return tbase::get(d1 * n_dim2() + d2);
+                }
+                tmatrix& operator()(size_t d1, size_t d2)
+                {
+                        return tbase::get(d1 * n_dim2() + d2);
+                }
+
+                const tscalar& operator()(tsize d1, tsize d2, size_t r, size_t c) const
+                {
+                        return tbase::get(d1, d2)(r, c);
+                }
+                tscalar& operator()(tsize d1, tsize d2, size_t r, size_t c)
+                {
+                        return tbase::get(d1, d2)(r, c);
+                }
 
         private:
 
@@ -225,7 +258,7 @@ namespace ncv
                 >
                 void serialize(tarchive & ar, const unsigned int version)
                 {
-                        ar & boost::serialization::base_object<base_t>(*this);
+                        ar & boost::serialization::base_object<tbase>(*this);
                         ar & m_dim1;
                         ar & m_dim2;
                 }

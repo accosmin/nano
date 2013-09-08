@@ -182,23 +182,22 @@ namespace ncv
                 assert(n_irows() <= input.n_rows());
                 assert(n_icols() <= input.n_cols());
 
-//                // convolution output
-//                m_idata = input;
-//                for (size_t o = 0; o < n_odims(); o ++)
-//                {
-//                        matrix_t& odata = m_odata(o);
-//                        odata.setZero();
+                // convolution output
+                m_idata = input;
+                for (size_t o = 0; o < n_odims(); o ++)
+                {
+                        matrix_t& odata = m_odata(o);
+                        odata.setConstant(bias(o));
 
-//                        for (size_t i = 0; i < n_idims(); i ++)
-//                        {
-//                                const matrix_t& idata = m_idata(i);
-//                                const matrix_t& kdata = m_kdata(o, i);
+                        for (size_t i = 0; i < n_idims(); i ++)
+                        {
+                                const matrix_t& idata = m_idata(i);
+                                const matrix_t& kdata = m_kdata(o);
 
-//                                math::conv_add_dynamic(idata, kdata, odata);
-//                        }
-//                }
-
-//                conv_add -> conv (DO NOT ADD THE CONVOLUTIONS!!!)
+                                math::conv_dynamic(idata, kdata, m_cdata);
+                                odata.noalias() += m_cdata * weight(o, i);
+                        }
+                }
 
                 return m_odata;
         }
