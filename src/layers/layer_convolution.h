@@ -56,7 +56,7 @@ namespace ncv
         private:
 
                 scalar_t bias(size_t o) const { return m_bdata(o, 0, 0); }
-                scalar_t weight(size_t o, size_t i) const { return m_wdata(o, i, 0); }
+                scalar_t& gbias(size_t o) const { return m_gbdata(o, 0, 0); }
 
         private:
 
@@ -65,14 +65,14 @@ namespace ncv
 
                 mutable tensor3d_t      m_idata;        // input buffer
                 mutable tensor3d_t      m_odata;        // output buffer
-                mutable matrix_t        m_cdata;        // convolution buffer
 
-                tensor3d_t              m_kdata;        // convolution/kernel matrices
-                tensor3d_t              m_wdata;        // convolution weights (output, input)
+                mutable matrix_t        m_codata;       // convolution buffer
+                mutable matrix_t        m_ckdata;       // convolution buffer
+
+                tensor4d_t              m_kdata;        // convolution/kernel matrices
                 tensor3d_t              m_bdata;        // biases (output)
 
-                mutable tensor3d_t      m_gkdata;       // cumulated gradients
-                mutable tensor3d_t      m_gwdata;
+                mutable tensor4d_t      m_gkdata;       // cumulated gradients
                 mutable tensor3d_t      m_gbdata;
         };
 }

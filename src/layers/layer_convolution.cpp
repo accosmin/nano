@@ -87,17 +87,17 @@ namespace ncv
 
                 m_idata.resize(idims, irows, icols);
                 m_odata.resize(odims, orows, ocols);
-                m_cdata.resize(orows, ocols);
 
-                m_kdata.resize(odims, crows, ccols);
-                m_wdata.resize(odims, idims, 1);
-                m_bdata.resize(odims, 1,     1);
+                m_kdata.resize(odims, idims, crows, ccols);
+                m_gkdata.resize(odims, idims, crows, ccols);
 
-                m_gkdata.resize(odims, crows, ccols);
-                m_gwdata.resize(odims, idims, 1);
-                m_gbdata.resize(odims, 1,     1);
+                m_bdata.resize(odims, 1, 1);
+                m_gbdata.resize(odims, 1, 1);
 
-                return m_kdata.size() + m_wdata.size() + m_bdata.size();
+                m_codata.resize(orows, ocols);
+                m_ckdata.resize(crows, ccols);
+
+                return m_kdata.size() + m_bdata.size();
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -105,7 +105,6 @@ namespace ncv
         void conv_layer_t::zero_params()
         {
                 m_kdata.zero();
-                m_wdata.zero();
                 m_bdata.zero();
                 zero_grad();
         }
@@ -115,7 +114,6 @@ namespace ncv
         void conv_layer_t::random_params(scalar_t min, scalar_t max)
         {
                 m_kdata.random(min, max);
-                m_wdata.random(min, max);
                 m_bdata.random(min, max);
                 zero_grad();
         }
@@ -125,7 +123,6 @@ namespace ncv
         void conv_layer_t::zero_grad() const
         {
                 m_gkdata.zero();
-                m_gwdata.zero();
                 m_gbdata.zero();
         }
 
@@ -133,21 +130,21 @@ namespace ncv
 
         serializer_t& conv_layer_t::save_params(serializer_t& s) const
         {
-                return s << m_kdata << m_wdata << m_bdata;
+                return s << m_kdata << m_bdata;
         }
 
         //-------------------------------------------------------------------------------------------------
 
         serializer_t& conv_layer_t::save_grad(serializer_t& s) const
         {
-                return s << m_gkdata << m_gwdata << m_gbdata;
+                return s << m_gkdata << m_gbdata;
         }
 
         //-------------------------------------------------------------------------------------------------
 
         deserializer_t& conv_layer_t::load_params(deserializer_t& s)
         {
-                return s >> m_kdata >> m_wdata >> m_bdata;
+                return s >> m_kdata >> m_bdata;
         }
 
         //-------------------------------------------------------------------------------------------------
@@ -156,7 +153,6 @@ namespace ncv
         {
                 oa << m_params;
                 oa << m_kdata;
-                oa << m_wdata;
                 oa << m_bdata;
 
                 return true;
@@ -168,7 +164,6 @@ namespace ncv
         {
                 ia >> m_params;
                 ia >> m_kdata;
-                ia >> m_wdata;
                 ia >> m_bdata;
 
                 return true;
@@ -192,10 +187,10 @@ namespace ncv
                         for (size_t i = 0; i < n_idims(); i ++)
                         {
                                 const matrix_t& idata = m_idata(i);
-                                const matrix_t& kdata = m_kdata(o);
+                                const matrix_t& kdata = m_kdata(o, i);
 
-                                math::conv_dynamic(idata, kdata, m_cdata);
-                                odata.noalias() += m_cdata * weight(o, i);
+                                math::conv_dynamic(idata, kdata, m_codata);
+                                odata.noalias() += m_codata;
                         }
                 }
 
@@ -210,35 +205,36 @@ namespace ncv
                 assert(n_orows() == gradient.n_rows());
                 assert(n_ocols() == gradient.n_cols());
 
-//                // convolution gradient
-//                m_odata = gradient;
-//                for (size_t o = 0; o < n_odims(); o ++)
-//                {
-//                        const matrix_t& odata = m_odata(o);
+                // convolution gradient
+                for (size_t o = 0; o < n_odims(); o ++)
+                {
+                        const matrix_t& gdata = gradient(o);
 
-//                        for (size_t i = 0; i < n_idims(); i ++)
-//                        {
-//                                const matrix_t& idata = m_idata(i);
-//                                matrix_t& gdata = m_gdata(o, i);
+                        gbias(o) = gdata.sum();
 
-//                                math::conv_add_dynamic(idata, odata, gdata);
-//                        }
-//                }
+                        for (size_t i = 0; i < n_idims(); i ++)
+                        {
+                                const matrix_t& idata = m_idata(i);
+                                matrix_t& gkdata = m_gkdata(o, i);
 
-//                // input gradient
-//                m_idata.zero();
-//                for (size_t o = 0; o < n_odims(); o ++)
-//                {
-//                        const matrix_t& odata = m_odata(o);
+                                math::conv_dynamic(idata, gdata, gkdata);
+                        }
+                }
 
-//                        for (size_t i = 0; i < n_idims(); i ++)
-//                        {
-//                                const matrix_t& kdata = m_kdata(o, i);
-//                                matrix_t& idata = m_idata(i);
+                // input gradient
+                m_idata.zero();
+                for (size_t o = 0; o < n_odims(); o ++)
+                {
+                        const matrix_t& odata = gradient(o);
 
-//                                ncv::backward(odata, kdata, idata);
-//                        }
-//                }
+                        for (size_t i = 0; i < n_idims(); i ++)
+                        {
+                                const matrix_t& kdata = m_kdata(o, i);
+                                matrix_t& idata = m_idata(i);
+
+                                ncv::backward(odata, kdata, idata);
+                        }
+                }
 
                 return m_idata;
         }
