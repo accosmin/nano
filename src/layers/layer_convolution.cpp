@@ -2,7 +2,7 @@
 #include "core/logger.h"
 #include "core/text.h"
 #include "core/cast.hpp"
-#include "core/convolution.hpp"
+#include "core/conv.hpp"
 #include "core/for_each.hpp"
 #include "core/clamp.hpp"
 #include "core/serializer.h"

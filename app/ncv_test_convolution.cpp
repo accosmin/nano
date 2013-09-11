@@ -1,5 +1,6 @@
 #include <eigen3/Eigen/Core>
-#include "core/convolution.hpp"
+#include "core/conv.hpp"
+#include "core/sep_conv.hpp"
 #include <iomanip>
 #include <ctime>
 #include <iostream>
@@ -113,15 +114,16 @@ void test(int isize, int ksize, int n_samples)
         test_sep_conv2D(ncv::math::sep_conv<matrix_t, vector_t>,        "org", idatas, krdata, kcdata, bdata, odata);
         test_sep_conv2D(ncv::math::sep_conv_mod4<matrix_t, vector_t>,   "md4", idatas, krdata, kcdata, bdata, odata);
         test_sep_conv2D(ncv::math::sep_conv_mod8<matrix_t, vector_t>,   "md8", idatas, krdata, kcdata, bdata, odata);
+        test_sep_conv2D(ncv::math::sep_conv_dynamic<matrix_t, vector_t>,"dyn", idatas, krdata, kcdata, bdata, odata);
         std::cout << std::endl << std::endl;
 }
 
 int main(int argc, char* argv[])
 {
-	static const int min_isize = 16;
+        static const int min_isize = 18;
 	static const int max_isize = 32;
 	static const int min_ksize = 8;
-        static const int max_ksize = 12;
+        static const int max_ksize = 16;
         static const int n_samples = 10000;
 
 	for (int isize = min_isize; isize <= max_isize; isize += 2)
