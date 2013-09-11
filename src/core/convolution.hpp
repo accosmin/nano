@@ -3,6 +3,7 @@
 
 #include <functional>
 #include "dot.hpp"
+#include "mad.hpp"
 
 namespace ncv
 {
@@ -20,10 +21,10 @@ namespace ncv
                         template
                         <
                                 typename tmatrix,
-                                typename tdotop
+                                typename tdotop         // column-based dot operator
                         >
-                        void conv_by_col(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata,
-                                const tdotop& op, int krows)
+                        void conv(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata,
+                                const tdotop& dop, int krows)
                         {
                                 const int orows = static_cast<int>(odata.rows());
                                 const int ocols = static_cast<int>(odata.cols());
@@ -44,7 +45,7 @@ namespace ncv
 
                                                 for (int c = 0; c < ocols; c ++)
                                                 {
-                                                        podata[c] += op(pidata + c, pkdata);
+                                                        podata[c] += dop(pidata + c, pkdata);
                                                 }
                                         }
                                 }
@@ -53,17 +54,39 @@ namespace ncv
                         template
                         <
                                 typename tmatrix,
-                                typename tvector,
                                 typename tdotop
                         >
-                        void sep_conv_by_col(const tmatrix& idata, const tvector& krdata, const tvector& kcdata,
-                                tmatrix& bdata, tmatrix& odata, const tdotop& op)
+                        void conv(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata,
+                                const tdotop& dop)
+                        {
+                                conv(idata, kdata, odata, dop, static_cast<int>(kdata.rows()));
+                        }
+
+                        template
+                        <
+                                int tkrows,
+                                typename tmatrix,
+                                typename tdotop
+                        >
+                        void conv(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata,
+                                const tdotop& dop)
+                        {
+                                conv(idata, kdata, odata, dop, tkrows);
+                        }
+
+                        template
+                        <
+                                typename tmatrix,
+                                typename tvector,
+                                typename tdotop,        // column-based dot operator
+                                typename tmadop         // row-based mad operator
+                        >
+                        void sep_conv(const tmatrix& idata, const tvector& krdata, const tvector& kcdata,
+                                tmatrix& bdata, tmatrix& odata, const tdotop& dop, const tmadop& mop)
                         {
                                 const int irows = static_cast<int>(idata.rows());
-
                                 const int orows = static_cast<int>(odata.rows());
                                 const int ocols = static_cast<int>(odata.cols());
-
                                 const int krows = static_cast<int>(krdata.size());
 
                                 for (int r = 0; r < irows; r ++)
@@ -75,90 +98,23 @@ namespace ncv
                                                 const typename tmatrix::Scalar* pidata = &idata(r, 0);
                                                 const typename tvector::Scalar* pkdata = &kcdata(0);
 
-                                                pbdata[c] = op(pidata + c, pkdata);
+                                                pbdata[c] = dop(pidata + c, pkdata);
                                         }
                                 }
 
                                 odata.setZero();
-
                                 for (int r = 0; r < orows; r ++)
                                 {
+                                        typename tmatrix::Scalar* podata = &odata(r, 0);
+
                                         for (int kr = 0; kr < krows; kr ++)
                                         {
                                                 const typename tmatrix::Scalar* pbdata = &bdata(r + kr, 0);
-                                                const typename tvector::Scalar kdata = krdata(kr);
-                                                typename tmatrix::Scalar* podata = &odata(r, 0);
+                                                const typename tvector::Scalar kdata = krdata(kr);                                                
 
-                                                for (int c = 0; c < ocols; c ++)
-                                                {
-                                                        podata[c] += pbdata[c] * kdata;
-                                                }
+                                                mop(podata, kdata, pbdata);
                                         }
                                 }
-
-//                                for (int c = 0; c < ocols; c ++)
-//                                {
-//                                        for (int r = 0; r < orows; r ++)
-//                                        {
-//                                                typename tmatrix::Scalar sum = 0;
-//                                                for (int kr = 0; kr < krows; kr ++)
-//                                                {
-//                                                        sum += bdata(r + kr, c) * krdata(kr);
-//                                                }
-
-//                                                odata(r, c) = sum;
-//                                        }
-//                                }
-
-
-//                                for (int c = 0; c < ocols; c ++)
-//                                {
-//                                        for (int r = 0; r < orows; r ++)
-//                                        {
-//                                                typename tmatrix::Scalar* podata = &odata(r, 0);
-
-//                                                const typename tmatrix::Scalar* pidata = &idata(r, 0);
-//                                                const typename tvector::Scalar* pkdata = &kcdata(0);
-
-//                                                podata[c] += op(pidata + c, pkdata);
-//                                        }
-//                                }
-
-
-//                                        for (int kr = 0; kr < krows; kr ++)
-//                                        {
-//                                                const typename tmatrix::Scalar* pidata = &idata(r + kr, 0);
-//                                                const typename tmatrix::Scalar* pkdata = &kdata(kr, 0);
-
-//                                                for (int c = 0; c < ocols; c ++)
-//                                                {
-//                                                        podata[c] += op(pidata + c, pkdata);
-//                                                }
-//                                        }
-//                                }
-                        }
-
-                        template
-                        <
-                                typename tmatrix,
-                                typename tdotop
-                        >
-                        void conv_by_col(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata,
-                                const tdotop& op)
-                        {
-                                conv_by_col(idata, kdata, odata, op, static_cast<int>(kdata.rows()));
-                        }
-
-                        template
-                        <
-                                int tkrows,
-                                typename tmatrix,
-                                typename tdotop
-                        >
-                        void conv_by_col(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata,
-                                const tdotop& op)
-                        {
-                                conv_by_col(idata, kdata, odata, op, tkrows);
                         }
                 }
 
@@ -173,7 +129,7 @@ namespace ncv
                         const int kcols = static_cast<int>(kdata.cols());
                         const int kcols4 = kcols - (kcols % 4);
 
-                        impl::conv_by_col(idata, kdata, odata,
+                        impl::conv(idata, kdata, odata,
                                 std::bind(math::dot_mod4<typename tmatrix::Scalar>, _1, _2, kcols4, kcols));
                 }
 
@@ -190,8 +146,12 @@ namespace ncv
                         const int kcols = static_cast<int>(kcdata.size());
                         const int kcols4 = kcols - (kcols % 4);
 
-                        impl::sep_conv_by_col(idata, krdata, kcdata, bdata, odata,
-                                std::bind(math::dot_mod4<typename tmatrix::Scalar>, _1, _2, kcols4, kcols));
+                        const int ocols = static_cast<int>(odata.cols());
+                        const int ocols4 = ocols - (ocols % 4);
+
+                        impl::sep_conv(idata, krdata, kcdata, bdata, odata,
+                                std::bind(math::dot_mod4<typename tmatrix::Scalar>, _1, _2, kcols4, kcols),
+                                std::bind(math::mad_mod4<typename tmatrix::Scalar>, _1, _2, _3, ocols4, ocols));
                 }
 
                 // 2D convolution: odata += idata * kdata
@@ -205,7 +165,7 @@ namespace ncv
                         const int kcols = static_cast<int>(kdata.cols());
                         const int kcols8 = kcols - (kcols % 8);
 
-                        impl::conv_by_col(idata, kdata, odata,
+                        impl::conv(idata, kdata, odata,
                                 std::bind(math::dot_mod8<typename tmatrix::Scalar>, _1, _2, kcols8, kcols));
                 }
 
@@ -222,8 +182,12 @@ namespace ncv
                         const int kcols = static_cast<int>(kcdata.size());
                         const int kcols8 = kcols - (kcols % 8);
 
-                        impl::sep_conv_by_col(idata, krdata, kcdata, bdata, odata,
-                                std::bind(math::dot_mod8<typename tmatrix::Scalar>, _1, _2, kcols8, kcols));
+                        const int ocols = static_cast<int>(odata.cols());
+                        const int ocols8 = ocols - (ocols % 8);
+
+                        impl::sep_conv(idata, krdata, kcdata, bdata, odata,
+                                std::bind(math::dot_mod8<typename tmatrix::Scalar>, _1, _2, kcols8, kcols),
+                                std::bind(math::mad_mod8<typename tmatrix::Scalar>, _1, _2, _3, ocols8, ocols));
                 }
 
                 // 2D convolution: odata += idata * kdata
@@ -232,12 +196,30 @@ namespace ncv
                 <
                         typename tmatrix
                 >
-                void conv_brut(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
+                void conv(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
                         const int kcols = static_cast<int>(kdata.cols());
 
-                        impl::conv_by_col(idata, kdata, odata,
+                        impl::conv(idata, kdata, odata,
                                 std::bind(math::dot<typename tmatrix::Scalar>, _1, _2, kcols));
+                }
+
+                // separable 2D convolution: odata += idata * kdata
+                //      no loop unrolling
+                template
+                <
+                        typename tmatrix,
+                        typename tvector
+                >
+                void sep_conv(const tmatrix& idata, const tvector& krdata, const tvector& kcdata,
+                        tmatrix& bdata, tmatrix& odata)
+                {
+                        const int kcols = static_cast<int>(kcdata.size());
+                        const int ocols = static_cast<int>(odata.cols());
+
+                        impl::sep_conv(idata, krdata, kcdata, bdata, odata,
+                                std::bind(math::dot<typename tmatrix::Scalar>, _1, _2, kcols),
+                                std::bind(math::mad<typename tmatrix::Scalar>, _1, _2, _3, ocols));
                 }
 
                 // 2D convolution: odata += idata * kdata
@@ -250,7 +232,7 @@ namespace ncv
                 >
                 void conv_fixed(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
-                        impl::conv_by_col<tkrows>(idata, kdata, odata,
+                        impl::conv<tkrows>(idata, kdata, odata,
                                 std::bind(math::dot<tkcols, typename tmatrix::Scalar>, _1, _2));
                 }
 
@@ -263,7 +245,7 @@ namespace ncv
                 >
                 void conv_fixed(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
-                        impl::conv_by_col(idata, kdata, odata,
+                        impl::conv(idata, kdata, odata,
                                 std::bind(math::dot<tkcols, typename tmatrix::Scalar>, _1, _2));
                 }
 

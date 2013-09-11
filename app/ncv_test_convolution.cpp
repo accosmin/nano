@@ -82,8 +82,11 @@ void test_sep_conv2D(top op, const char* name, const tmatrices& idatas, const tv
         const clock_t stop = clock();
 
         std::cout.precision(3);
-        std::cout << name << " - " << ((stop - start + 0.0) / (CLOCKS_PER_SEC + 0.0))
-                  << " (" << std::fixed << odata.sum() << ")\t";
+        std::cout << name << " - ";
+        std::cout.precision(3);
+        std::cout << ((stop - start + 0.0) / (CLOCKS_PER_SEC + 0.0));
+        std::cout.precision(3);
+        std::cout << " (" << std::fixed << odata.sum() << ")\t";
 }
 
 void test(int isize, int ksize, int n_samples)
@@ -98,14 +101,19 @@ void test(int isize, int ksize, int n_samples)
 
         init_conv2D(ksize, ksize, krdata, kcdata, kdata);
 
-        test_conv2D(ncv::math::conv_brut<matrix_t>,                     "brt", idatas, kdata, odata);
-        test_conv2D(ncv::math::conv_eigen_block<matrix_t>,              "eig", idatas, kdata, odata);
+        std::cout << "mix (isize = " << isize << ", ksize = " << ksize << "): \t";
+        test_conv2D(ncv::math::conv<matrix_t>,                          "org", idatas, kdata, odata);
         test_conv2D(ncv::math::conv_mod4<matrix_t>,                     "md4", idatas, kdata, odata);
         test_conv2D(ncv::math::conv_mod8<matrix_t>,                     "md8", idatas, kdata, odata);
         test_conv2D(ncv::math::conv_dynamic<matrix_t>,                  "dyn", idatas, kdata, odata);
-        test_sep_conv2D(ncv::math::sep_conv_mod4<matrix_t, vector_t>,   "sp4", idatas, krdata, kcdata, bdata, odata);
-        test_sep_conv2D(ncv::math::sep_conv_mod8<matrix_t, vector_t>,   "sp8", idatas, krdata, kcdata, bdata, odata);
+        test_conv2D(ncv::math::conv_eigen_block<matrix_t>,              "eig", idatas, kdata, odata);
         std::cout << std::endl;
+
+        std::cout << "sep (isize = " << isize << ", ksize = " << ksize << "): \t";
+        test_sep_conv2D(ncv::math::sep_conv<matrix_t, vector_t>,        "org", idatas, krdata, kcdata, bdata, odata);
+        test_sep_conv2D(ncv::math::sep_conv_mod4<matrix_t, vector_t>,   "md4", idatas, krdata, kcdata, bdata, odata);
+        test_sep_conv2D(ncv::math::sep_conv_mod8<matrix_t, vector_t>,   "md8", idatas, krdata, kcdata, bdata, odata);
+        std::cout << std::endl << std::endl;
 }
 
 int main(int argc, char* argv[])
@@ -120,10 +128,8 @@ int main(int argc, char* argv[])
 	{
 		for (int ksize = min_ksize; ksize <= max_ksize; ksize ++)
 		{
-                        std::cout << "(isize = " << isize << ", ksize = " << ksize << "): \t";
                         test(isize, ksize, n_samples);
-		}
-                std::cout << std::endl;
+                }
 	}
 
 	return EXIT_SUCCESS;

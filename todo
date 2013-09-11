@@ -1,4 +1,8 @@
 * separable convolutions:
+	- make dot_mod4, dot_mod8 & templated<int> dot functions work for rows too!
+
+	- check if mapping the dot/muladd functions to eigen vectors can make it faster
+
 	- update convolution test program: e.g. CxC full vs. C+C separable
 
 * change the convolution layer:

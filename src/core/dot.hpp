@@ -4,7 +4,8 @@
 namespace ncv
 {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // 2D dot product utilities.
+        // dot product utilities:
+        //      sum = <pidata, pkdata>
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         namespace math
@@ -19,21 +20,6 @@ namespace ncv
                         for (int k = 0; k < ksize; k ++)
                         {
                                 sum += pidata[k] * pkdata[k];
-                        }
-
-                        return sum;
-                }
-
-                template
-                <
-                        typename tscalar
-                >
-                tscalar dot(const tscalar* pidata, int idelta, const tscalar* pkdata, int ksize)
-                {
-                        tscalar sum = 0;
-                        for (int k = 0, i = 0; k < ksize; k ++, i += idelta)
-                        {
-                                sum += pidata[i] * pkdata[k];
                         }
 
                         return sum;
