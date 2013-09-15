@@ -1,7 +1,7 @@
 #ifndef NANOCV_DOT_H
 #define NANOCV_DOT_H
 
-#include <eigen3/Eigen/Core>
+//#include <eigen3/Eigen/Core>
 
 namespace ncv
 {
@@ -95,34 +95,34 @@ namespace ncv
                         return sum;
                 }
 
-                template
-                <
-                        typename tscalar
-                >
-                tscalar dot_eigen(const tscalar* pidata, const tscalar* pkdata, int ksize)
-                {
-                        typedef typename Eigen::Matrix<tscalar, Eigen::Dynamic, 1, Eigen::ColMajor> tvector;
+//                template
+//                <
+//                        typename tscalar
+//                >
+//                tscalar dot_eigen(const tscalar* pidata, const tscalar* pkdata, int ksize)
+//                {
+//                        typedef typename Eigen::Matrix<tscalar, Eigen::Dynamic, 1, Eigen::ColMajor> tvector;
 
-                        const Eigen::Map<tvector> vidata(const_cast<tscalar*>(pidata), ksize);
-                        const Eigen::Map<tvector> vkdata(const_cast<tscalar*>(pkdata), ksize);
+//                        const Eigen::Map<tvector> vidata(const_cast<tscalar*>(pidata), ksize);
+//                        const Eigen::Map<tvector> vkdata(const_cast<tscalar*>(pkdata), ksize);
 
-                        return vidata.dot(vkdata);
-                }
+//                        return vidata.dot(vkdata);
+//                }
 
-                template
-                <
-                        int tksize,
-                        typename tscalar
-                >
-                tscalar dot_eigen(const tscalar* pidata, const tscalar* pkdata, int)
-                {
-                        typedef typename Eigen::Matrix<tscalar, tksize, 1, Eigen::ColMajor> tvector;
+//                template
+//                <
+//                        int tksize,
+//                        typename tscalar
+//                >
+//                tscalar dot_eigen(const tscalar* pidata, const tscalar* pkdata, int)
+//                {
+//                        typedef typename Eigen::Matrix<tscalar, tksize, 1, Eigen::ColMajor> tvector;
 
-                        const Eigen::Map<tvector> vidata(const_cast<tscalar*>(pidata), tksize);
-                        const Eigen::Map<tvector> vkdata(const_cast<tscalar*>(pkdata), tksize);
+//                        const Eigen::Map<tvector> vidata(const_cast<tscalar*>(pidata), tksize);
+//                        const Eigen::Map<tvector> vkdata(const_cast<tscalar*>(pkdata), tksize);
 
-                        return vidata.dot(vkdata);
-                }
+//                        return vidata.dot(vkdata);
+//                }
         }
 }
 
