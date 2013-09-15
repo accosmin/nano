@@ -1,7 +1,7 @@
 #include "task_stl10.h"
 #include "core/color.h"
 #include "core/text.h"
-#include "core/cast.hpp"
+#include "core/math/cast.hpp"
 #include "loss.h"
 #include <fstream>
 

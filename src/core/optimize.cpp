@@ -1,5 +1,5 @@
 #include "optimize.h"
-#include "cast.hpp"
+#include "math/cast.hpp"
 #include "logger.h"
 #include <deque>
 #include <cassert>

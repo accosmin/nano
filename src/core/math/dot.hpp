@@ -1,6 +1,8 @@
 #ifndef NANOCV_DOT_H
 #define NANOCV_DOT_H
 
+#include <eigen3/Eigen/Core>
+
 namespace ncv
 {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -30,17 +32,25 @@ namespace ncv
                         int tksize,
                         typename tscalar
                 >
-                tscalar dot(const tscalar* pidata, const tscalar* pkdata)
+                tscalar dot(const tscalar* pidata, const tscalar* pkdata, int)
                 {
-                        return dot(pidata, pkdata, tksize);
+                        tscalar sum = 0;
+                        for (int k = 0; k < tksize; k ++)
+                        {
+                                sum += pidata[k] * pkdata[k];
+                        }
+
+                        return sum;
                 }
 
                 template
                 <
                         typename tscalar
                 >
-                tscalar dot_mod4(const tscalar* pidata, const tscalar* pkdata, int ksize4, int ksize)
+                tscalar dot_mod4(const tscalar* pidata, const tscalar* pkdata, int ksize)
                 {
+                        const int ksize4 = (ksize >> 2) << 2;
+
                         tscalar sum = 0;
                         for (int k = 0; k < ksize4; k += 4)
                         {
@@ -61,8 +71,10 @@ namespace ncv
                 <
                         typename tscalar
                 >
-                tscalar dot_mod8(const tscalar* pidata, const tscalar* pkdata, int ksize8, int ksize)
+                tscalar dot_mod8(const tscalar* pidata, const tscalar* pkdata, int ksize)
                 {
+                        const int ksize8 = (ksize >> 3) << 3;
+
                         tscalar sum = 0;
                         for (int k = 0; k < ksize8; k += 8)
                         {
@@ -81,6 +93,35 @@ namespace ncv
                         }
 
                         return sum;
+                }
+
+                template
+                <
+                        typename tscalar
+                >
+                tscalar dot_eigen(const tscalar* pidata, const tscalar* pkdata, int ksize)
+                {
+                        typedef typename Eigen::Matrix<tscalar, Eigen::Dynamic, 1, Eigen::ColMajor> tvector;
+
+                        const Eigen::Map<tvector> vidata(const_cast<tscalar*>(pidata), ksize);
+                        const Eigen::Map<tvector> vkdata(const_cast<tscalar*>(pkdata), ksize);
+
+                        return vidata.dot(vkdata);
+                }
+
+                template
+                <
+                        int tksize,
+                        typename tscalar
+                >
+                tscalar dot_eigen(const tscalar* pidata, const tscalar* pkdata, int)
+                {
+                        typedef typename Eigen::Matrix<tscalar, tksize, 1, Eigen::ColMajor> tvector;
+
+                        const Eigen::Map<tvector> vidata(const_cast<tscalar*>(pidata), tksize);
+                        const Eigen::Map<tvector> vkdata(const_cast<tscalar*>(pkdata), tksize);
+
+                        return vidata.dot(vkdata);
                 }
         }
 }

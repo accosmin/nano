@@ -2,7 +2,7 @@
 #include "layers/layer_convolution.h"
 #include "core/logger.h"
 #include "core/text.h"
-#include "core/cast.hpp"
+#include "core/math/cast.hpp"
 #include "core/serializer.h"
 
 namespace ncv

@@ -1,7 +1,6 @@
 #ifndef NANOCV_SEP_CONVOLUTION_H
 #define NANOCV_SEP_CONVOLUTION_H
 
-#include <functional>
 #include "dot.hpp"
 #include "mad.hpp"
 
@@ -24,11 +23,11 @@ namespace ncv
                                 typename tmadop         // row-based mad operator
                         >
                         void sep_conv(const tmatrix& idata, const tvector& krdata, const tvector& kcdata,
-                                tmatrix& bdata, tmatrix& odata, const tdotop& dop, const tmadop& mop)
+                                tmatrix& bdata, tmatrix& odata, const tdotop& dop, const tmadop& mop,
+                                int kcols, int ocols)
                         {
                                 const int irows = static_cast<int>(idata.rows());
                                 const int orows = static_cast<int>(odata.rows());
-                                const int ocols = static_cast<int>(odata.cols());
                                 const int krows = static_cast<int>(krdata.size());
 
                                 for (int r = 0; r < irows; r ++)
@@ -40,7 +39,7 @@ namespace ncv
                                                 const typename tmatrix::Scalar* pidata = &idata(r, 0);
                                                 const typename tvector::Scalar* pkdata = &kcdata(0);
 
-                                                pbdata[c] = dop(pidata + c, pkdata);
+                                                pbdata[c] = dop(pidata + c, pkdata, kcols);
                                         }
                                 }
 
@@ -54,7 +53,7 @@ namespace ncv
                                                 const typename tmatrix::Scalar* pbdata = &bdata(r + kr, 0);
                                                 const typename tvector::Scalar kdata = krdata(kr);                                                
 
-                                                mop(podata, kdata, pbdata);
+                                                mop(podata, kdata, pbdata, ocols);
                                         }
                                 }
                         }
@@ -70,17 +69,11 @@ namespace ncv
                 void sep_conv_mod4(const tmatrix& idata, const tvector& krdata, const tvector& kcdata,
                         tmatrix& bdata, tmatrix& odata)
                 {
-                        using namespace std::placeholders;
-
-                        const int kcols = static_cast<int>(kcdata.size());
-                        const int kcols4 = kcols - (kcols % 4);
-
-                        const int ocols = static_cast<int>(odata.cols());
-                        const int ocols4 = ocols - (ocols % 4);
-
                         impl::sep_conv(idata, krdata, kcdata, bdata, odata,
-                                std::bind(math::dot_mod4<typename tmatrix::Scalar>, _1, _2, kcols4, kcols),
-                                std::bind(math::mad_mod4<typename tmatrix::Scalar>, _1, _2, _3, ocols4, ocols));
+                                math::dot_mod4<typename tmatrix::Scalar>,
+                                math::mad_mod4<typename tmatrix::Scalar>,
+                                static_cast<int>(kcdata.size()),
+                                static_cast<int>(odata.cols()));
                 }
 
                 // separable 2D convolution: odata = idata * kdata
@@ -93,17 +86,11 @@ namespace ncv
                 void sep_conv_mod8(const tmatrix& idata, const tvector& krdata, const tvector& kcdata,
                         tmatrix& bdata, tmatrix& odata)
                 {
-                        using namespace std::placeholders;
-
-                        const int kcols = static_cast<int>(kcdata.size());
-                        const int kcols8 = kcols - (kcols % 8);
-
-                        const int ocols = static_cast<int>(odata.cols());
-                        const int ocols8 = ocols - (ocols % 8);
-
                         impl::sep_conv(idata, krdata, kcdata, bdata, odata,
-                                std::bind(math::dot_mod8<typename tmatrix::Scalar>, _1, _2, kcols8, kcols),
-                                std::bind(math::mad_mod8<typename tmatrix::Scalar>, _1, _2, _3, ocols8, ocols));
+                               math::dot_mod8<typename tmatrix::Scalar>,
+                               math::mad_mod8<typename tmatrix::Scalar>,
+                               static_cast<int>(kcdata.size()),
+                               static_cast<int>(odata.cols()));
                 }
 
                 // separable 2D convolution: odata = idata * kdata
@@ -116,14 +103,11 @@ namespace ncv
                 void sep_conv(const tmatrix& idata, const tvector& krdata, const tvector& kcdata,
                         tmatrix& bdata, tmatrix& odata)
                 {
-                        using namespace std::placeholders;
-
-                        const int kcols = static_cast<int>(kcdata.size());
-                        const int ocols = static_cast<int>(odata.cols());
-
                         impl::sep_conv(idata, krdata, kcdata, bdata, odata,
-                                std::bind(math::dot<typename tmatrix::Scalar>, _1, _2, kcols),
-                                std::bind(math::mad<typename tmatrix::Scalar>, _1, _2, _3, ocols));
+                               math::dot<typename tmatrix::Scalar>,
+                               math::mad<typename tmatrix::Scalar>,
+                               static_cast<int>(kcdata.size()),
+                               static_cast<int>(odata.cols()));
                 }
 
                 // separable 2D convolution: odata = idata * kdata
@@ -138,11 +122,11 @@ namespace ncv
                 void sep_conv(const tmatrix& idata, const tvector& krdata, const tvector& kcdata,
                         tmatrix& bdata, tmatrix& odata)
                 {
-                        using namespace std::placeholders;
-
                         impl::sep_conv(idata, krdata, kcdata, bdata, odata,
-                                std::bind(math::dot<typename tmatrix::Scalar>, _1, _2, tkcols),
-                                std::bind(math::mad<typename tmatrix::Scalar>, _1, _2, _3, tocols));
+                               math::dot<tkcols, typename tmatrix::Scalar>,
+                               math::mad<tocols, typename tmatrix::Scalar>,
+                               static_cast<int>(kcdata.size()),
+                               static_cast<int>(odata.cols()));
                 }
 
                 // separable 2D convolution: odata = idata * kdata

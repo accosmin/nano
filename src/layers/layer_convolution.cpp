@@ -1,10 +1,10 @@
 #include "layer_convolution.h"
 #include "core/logger.h"
 #include "core/text.h"
-#include "core/cast.hpp"
-#include "core/conv.hpp"
-#include "core/for_each.hpp"
-#include "core/clamp.hpp"
+#include "core/math/cast.hpp"
+#include "core/math/conv.hpp"
+#include "core/math/for_each.hpp"
+#include "core/math/clamp.hpp"
 #include "core/serializer.h"
 
 namespace ncv

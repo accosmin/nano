@@ -3,8 +3,8 @@
 #include "core/logger.h"
 #include "core/random.hpp"
 #include "core/timer.h"
-#include "core/clamp.hpp"
-#include "core/numeric.hpp"
+#include "core/math/clamp.hpp"
+#include "core/math/numeric.hpp"
 #include <boost/program_options.hpp>
 
 using namespace ncv;

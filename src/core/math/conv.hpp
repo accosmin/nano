@@ -1,7 +1,6 @@
 #ifndef NANOCV_CONVOLUTION_H
 #define NANOCV_CONVOLUTION_H
 
-#include <functional>
 #include "dot.hpp"
 
 namespace ncv
@@ -18,10 +17,10 @@ namespace ncv
                         template
                         <
                                 typename tmatrix,
-                                typename tdotop         // column-based dot operator
+                                typename tdotop          // column-based dot operator
                         >
                         void conv(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata,
-                                const tdotop& dop, int krows)
+                                  const tdotop& dop, int krows, int kcols)
                         {
                                 const int orows = static_cast<int>(odata.rows());
                                 const int ocols = static_cast<int>(odata.cols());
@@ -42,33 +41,10 @@ namespace ncv
 
                                                 for (int c = 0; c < ocols; c ++)
                                                 {
-                                                        podata[c] += dop(pidata + c, pkdata);
+                                                        podata[c] += dop(pidata + c, pkdata, kcols);
                                                 }
                                         }
                                 }
-                        }
-
-                        template
-                        <
-                                typename tmatrix,
-                                typename tdotop
-                        >
-                        void conv(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata,
-                                const tdotop& dop)
-                        {
-                                conv(idata, kdata, odata, dop, static_cast<int>(kdata.rows()));
-                        }
-
-                        template
-                        <
-                                int tkrows,
-                                typename tmatrix,
-                                typename tdotop
-                        >
-                        void conv(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata,
-                                const tdotop& dop)
-                        {
-                                conv(idata, kdata, odata, dop, tkrows);
                         }
                 }
 
@@ -80,13 +56,9 @@ namespace ncv
                 >
                 void conv_mod4(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
-                        using namespace std::placeholders;
-
-                        const int kcols = static_cast<int>(kdata.cols());
-                        const int kcols4 = kcols - (kcols % 4);
-
                         impl::conv(idata, kdata, odata,
-                                std::bind(math::dot_mod4<typename tmatrix::Scalar>, _1, _2, kcols4, kcols));
+                                math::dot_mod4<typename tmatrix::Scalar>,
+                                static_cast<int>(kdata.rows()), static_cast<int>(kdata.cols()));
                 }
 
                 // 2D convolution: odata = idata * kdata
@@ -97,13 +69,9 @@ namespace ncv
                 >
                 void conv_mod8(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
-                        using namespace std::placeholders;
-
-                        const int kcols = static_cast<int>(kdata.cols());
-                        const int kcols8 = kcols - (kcols % 8);
-
                         impl::conv(idata, kdata, odata,
-                                std::bind(math::dot_mod8<typename tmatrix::Scalar>, _1, _2, kcols8, kcols));
+                                math::dot_mod8<typename tmatrix::Scalar>,
+                                static_cast<int>(kdata.rows()), static_cast<int>(kdata.cols()));
                 }
 
                 // 2D convolution: odata = idata * kdata
@@ -114,12 +82,9 @@ namespace ncv
                 >
                 void conv(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
-                        using namespace std::placeholders;
-
-                        const int kcols = static_cast<int>(kdata.cols());
-
                         impl::conv(idata, kdata, odata,
-                                std::bind(math::dot<typename tmatrix::Scalar>, _1, _2, kcols));
+                                math::dot<typename tmatrix::Scalar>,
+                                static_cast<int>(kdata.rows()), static_cast<int>(kdata.cols()));
                 }
 
                 // 2D convolution: odata = idata * kdata
@@ -132,25 +97,9 @@ namespace ncv
                 >
                 void conv(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
-                        using namespace std::placeholders;
-
-                        impl::conv<tkrows>(idata, kdata, odata,
-                                std::bind(math::dot<tkcols, typename tmatrix::Scalar>, _1, _2));
-                }
-
-                // 2D convolution: odata = idata * kdata
-                //      for fixed size convolution (number of columns)
-                template
-                <
-                        int tkcols,
-                        typename tmatrix
-                >
-                void conv(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
-                {
-                        using namespace std::placeholders;
-
                         impl::conv(idata, kdata, odata,
-                                std::bind(math::dot<tkcols, typename tmatrix::Scalar>, _1, _2));
+                                math::dot<tkcols, typename tmatrix::Scalar>,
+                                tkrows, tkcols);
                 }
 
                 // 2D convolution: odata = idata * kdata

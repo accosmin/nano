@@ -1,5 +1,5 @@
 #include "ncv.h"
-#include "core/clamp.hpp"
+#include "core/math/clamp.hpp"
 #include "core/timer.h"
 #include "core/logger.h"
 #include "models/forward_network.h"
@@ -10,6 +10,8 @@ int main(int argc, char *argv[])
         ncv::init();
 
         using namespace ncv;
+
+        // TODO: hard code multiple networks to test!
 
         // parse the command line
         boost::program_options::options_description po_desc("", 160);

@@ -27,7 +27,7 @@ namespace ncv
                         int tsize,
                         typename tscalar
                 >
-                void mad(tscalar* pidata, tscalar coeff, const tscalar* pkdata)
+                void mad(tscalar* pidata, tscalar coeff, const tscalar* pkdata, int)
                 {
                         mad(pidata, coeff, pkdata, tsize);
                 }
@@ -36,8 +36,10 @@ namespace ncv
                 <
                         typename tscalar
                 >
-                void mad_mod4(tscalar* pidata, tscalar coeff, const tscalar* pkdata, int size4, int size)
+                void mad_mod4(tscalar* pidata, tscalar coeff, const tscalar* pkdata, int size)
                 {
+                        const int size4 = (size >> 2) << 2;
+
                         for (int i = 0; i < size4; i += 4)
                         {
                                 pidata[i + 0] += coeff * pkdata[i + 0];
@@ -55,8 +57,10 @@ namespace ncv
                 <
                         typename tscalar
                 >
-                void mad_mod8(tscalar* pidata, tscalar coeff, const tscalar* pkdata, int size8, int size)
+                void mad_mod8(tscalar* pidata, tscalar coeff, const tscalar* pkdata, int size)
                 {
+                        const int size8 = (size >> 3) << 3;
+
                         for (int i = 0; i < size8; i += 8)
                         {
                                 pidata[i + 0] += coeff * pkdata[i + 0];

@@ -1,6 +1,6 @@
 #include <eigen3/Eigen/Core>
-#include "core/conv.hpp"
-#include "core/sep_conv.hpp"
+#include "core/math/conv.hpp"
+#include "core/math/sep_conv.hpp"
 #include <iomanip>
 #include <ctime>
 #include <iostream>
@@ -107,7 +107,7 @@ void test(int isize, int ksize, int n_samples)
         test_conv2D(ncv::math::conv_mod4<matrix_t>,                     "md4", idatas, kdata, odata);
         test_conv2D(ncv::math::conv_mod8<matrix_t>,                     "md8", idatas, kdata, odata);
         test_conv2D(ncv::math::conv_dynamic<matrix_t>,                  "dyn", idatas, kdata, odata);
-        test_conv2D(ncv::math::conv_eigen_block<matrix_t>,              "eig", idatas, kdata, odata);
+        test_conv2D(ncv::math::conv_eigen_block<matrix_t>,              "egb", idatas, kdata, odata);
         std::cout << std::endl;
 
         std::cout << "sep (isize = " << isize << ", ksize = " << ksize << "): \t";
@@ -121,9 +121,9 @@ void test(int isize, int ksize, int n_samples)
 int main(int argc, char* argv[])
 {
         static const int min_isize = 18;
-	static const int max_isize = 32;
+        static const int max_isize = 36;
 	static const int min_ksize = 8;
-        static const int max_ksize = 16;
+        static const int max_ksize = 12;
         static const int n_samples = 10000;
 
 	for (int isize = min_isize; isize <= max_isize; isize += 2)
