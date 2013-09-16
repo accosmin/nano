@@ -6,7 +6,7 @@ dir_db=/home/cosmin/experiments/databases
 
 trainer=./build/ncv_trainer
 
-common_config="--loss classnll --trainer batch --trainer-params opt=lbfgs,iter=8,eps=1e-6"
+common_config="--loss classnll --trainer batch --trainer-params opt=lbfgs,iter=256,eps=1e-6"
 
 # task description = task model model-params trials output
 tasks=(
