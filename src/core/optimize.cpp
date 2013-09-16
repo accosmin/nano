@@ -367,7 +367,7 @@ namespace ncv
                         }
 
                         // update solution
-                        const scalar_t t = optimize::ls_strong_wolfe(problem, cstate, ft, gt, 1e-4, 0.1);
+                        const scalar_t t = optimize::ls_strong_wolfe(problem, cstate, ft, gt, 1e-4, 0.1, 64);
                         if (t < std::numeric_limits<scalar_t>::epsilon())
                         {
                                 log_warning() << "optimize: line-search failed for CGD!";

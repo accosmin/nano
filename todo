@@ -1,21 +1,11 @@
-* separable convolutions:
-	- make dot_mod4, dot_mod8 & templated<int> dot functions work for rows too!
-
-	- check if mapping the dot/muladd functions to eigen vectors can make it faster
-
-	- update convolution test program: e.g. CxC full vs. C+C separable
+* back to conv_add:
+	- it is faster and it simplifies the code quite a lot
 
 * change the convolution layer:
 	- make the ::backward function templated after the convolution size (similar to conv_add)
 		- maybe move it to deconvolution.hpp!
 
 		- it could be faster if using the same technique as with conv_add_dynamic
-
-* separable convolution layer:
-	- update network gradient test program
-	- update network forward test script (check if faster)
-	- update the training experiment script and train some easy models 
-	- check if they can loaded correctly
 
 * serializer: store data in std::vector, push_back values -> (serializer_t() << s << v << m).data() or .size()
 * same for deserializer

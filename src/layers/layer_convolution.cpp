@@ -2,7 +2,7 @@
 #include "core/logger.h"
 #include "core/text.h"
 #include "core/math/cast.hpp"
-#include "core/math/conv.hpp"
+#include "core/math/convolution.hpp"
 #include "core/math/for_each.hpp"
 #include "core/math/clamp.hpp"
 #include "core/serializer.h"
@@ -210,14 +210,17 @@ namespace ncv
                 {
                         const matrix_t& gdata = gradient(o);
 
-                        gbias(o) = gdata.sum();
+                        // bias
+                        gbias(o) += gdata.sum();
 
+                        // kernel
                         for (size_t i = 0; i < n_idims(); i ++)
                         {
                                 const matrix_t& idata = m_idata(i);
                                 matrix_t& gkdata = m_gkdata(o, i);
 
-                                math::conv_dynamic(idata, gdata, gkdata);
+                                math::conv_dynamic(idata, gdata, m_ckdata);
+                                gkdata += m_ckdata;
                         }
                 }
 

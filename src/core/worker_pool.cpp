@@ -49,7 +49,7 @@ namespace ncv
         worker_pool_t::worker_pool_t()
                 :       m_data()
         {
-                for (size_t i = 0; i < n_threads(); i ++)
+                for (size_t i = 0; i < ncv::n_threads(); i ++)
                 {
                         m_workers.push_back(std::thread(worker_pool_t::worker(m_data)));
                 }

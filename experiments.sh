@@ -1,48 +1,75 @@
 #!/bin/bash
 
-echo "This script is not updated with the new interface/models!"
-exit
-
 # paths
-dir_exp=/home/cosmin/experiments/results
+dir_results=/home/cosmin/experiments/results
 dir_db=/home/cosmin/experiments/databases
 
-trainer=../build/ncv_trainer
+trainer=./build/ncv_trainer
 
-common_config="--loss classnll"
+common_config="--loss classnll --trainer batch --trainer-params opt=lbfgs,iter=8,eps=1e-6"
 
-# task description = task_id:model_id:model_parameters:number_of_trials
+# task description = task model model-params trials output
 tasks=(
-	"mnist:affine:proc=luma:10"
-	"cmu-faces:affine:proc=luma:10"
-	"cifar10:affine:proc=rgba:10"
-	"stl10:affine:proc=rgba:1"
+	"mnist forward-network 10 mnist-affine"
+	"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm 10 mnist-hidden1"
+	"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm;max-pool 10 mnist-hidden1-maxpool"
+	"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm 10 mnist-hidden2"
+	"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm;max-pool;conv:convs=16,crows=8,ccols=8;snorm;max-pool 10 mnist-hidden2-maxpool"	
+	
+	"cmu-faces forward-network 10 cmufaces-affine"
+	"cmu-faces forward-network conv:convs=16,crows=8,ccols=8;snorm 10 cmufaces-hidden1"
+	"cmu-faces forward-network conv:convs=16,crows=8,ccols=8;snorm;max-pool 10 cmufaces-hidden1-maxpool"
+	"cmu-faces forward-network conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm 10 cmufaces-hidden2"
+	"cmu-faces forward-network conv:convs=16,crows=8,ccols=8;snorm;max-pool;conv:convs=16,crows=8,ccols=8;snorm;max-pool 10 cmufaces-hidden2-maxpool"	
+	
+	"cifar10 forward-network 10 cifar10-affine"
+	"cifar10 forward-network conv:convs=16,crows=8,ccols=8;snorm 10 cifar10-hidden1"
+	"cifar10 forward-network conv:convs=16,crows=8,ccols=8;snorm;max-pool 10 cifar10-hidden1-maxpool"
+	"cifar10 forward-network conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm 10 cifar10-hidden2"
+	"cifar10 forward-network conv:convs=16,crows=8,ccols=8;snorm;max-pool;conv:convs=16,crows=8,ccols=8;snorm;max-pool 10 cifar10-hidden2-maxpool"	
+	
+	# TODO: STL10
 	)
 
 # run tasks
 for ((i=0; i<${#tasks[*]}; i++))
 do
-	task=${tasks[$i]}
-	task_spaces=${task//:/ }
+	task=${tasks[$i]}	
+	arr=(${task})
 
-	arr=(${task//:/ })
 	task_id=${arr[0]}
 	model_id=${arr[1]}
-	model_params=${arr[2]}
-	trials=${arr[3]}
 
-	dir_results=${dir_exp}/${task_name}
-	mkdir -p ${dir_results}
+	dir_exp=${dir_results}/${task_id}
+	mkdir -p ${dir_exp}
 
 	task_dir=${dir_db}/${task_id}
 
-	config="--task ${task_id} --task-dir ${task_dir} --trials ${trials} --model ${model_id} --model-params ${model_params} ${common_config}"
-	log=${dir_results}/${model_id}.log
+	if [[ ${#arr[*]} -eq 5 ]]
+	then 
+		model_params=${arr[2]}
+		trials=${arr[3]}	
+		output=${dir_exp}/${arr[4]}.model
+	        log=${dir_exp}/${arr[4]}.log
+	else
+		model_params=
+		trials=${arr[2]}
+		output=${dir_exp}/${arr[3]}.model
+	        log=${dir_exp}/${arr[3]}.log
+	fi	
 
-	echo "running <${task_id}> using the model <${model_id}> ..."
-	echo -e "\twith parameters <${config}>"
+	if [[ -z ${model_params} ]]
+	then
+		config="--task ${task_id} --task-dir ${task_dir} --trials ${trials} --model ${model_id} --output ${output} ${common_config}"
+	else
+		config="--task ${task_id} --task-dir ${task_dir} --trials ${trials} --model ${model_id} --model-params ${model_params} --output ${output} ${common_config}"
+	fi
+	
+	echo "running <${task_id}> ..."
+	echo -e "\twith model <${model_id}><${model_params}>"
+	echo -e "\twith param <${common_config}>"
 
-	#time ${trainer} ${config} > ${log}
+	time ${trainer} ${config} > ${log}
 
 	echo -e "\tlog saved to <${log}>"
 	echo

@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
         worker_pool_t& pool = worker_pool_t::instance();
 
         const size_t n_tests = 8;
-        const size_t n_max_jobs = pool.n_threads() * 16;
+        const size_t n_max_jobs = pool.n_workers() * 16;
 
         // run multiple tests ...
         for (size_t t = 0; t < n_tests; t ++)

@@ -75,6 +75,7 @@ int main(int argc, char *argv[])
 {
         ncv::init();
 
+        const strings_t convolution_layer_ids { "conv" };
         const strings_t activation_layer_ids { "", "unit", "tanh", "snorm" };
         const strings_t pooling_layer_ids { "", "max-pool", "max-abs-pool" };
         const strings_t loss_ids = loss_manager_t::instance().ids();
@@ -97,19 +98,23 @@ int main(int argc, char *argv[])
                 {
                         for (const string_t& pooling_layer_id : pooling_layer_ids)
                         {
-                                // build the network
-                                string_t desc;
-                                for (size_t l = 0; l < n_layers; l ++)
+                                for (const string_t& convolution_layer_id : convolution_layer_ids)
                                 {
-                                        random_t<size_t> rgen(2, 6);
-                                        desc += "conv:convs=" + text::to_string(rgen()) + "," +
-                                                "crows=" + text::to_string(rgen()) + ","
-                                                "ccols=" + text::to_string(rgen()) + ";";
-                                        desc += activation_layer_id + ";";
-                                        desc += pooling_layer_id + ";";
-                                }
+                                        // build the network
+                                        string_t desc;
+                                        for (size_t l = 0; l < n_layers; l ++)
+                                        {
+                                                random_t<size_t> rgen(2, 6);
+                                                desc += convolution_layer_id + ":"
+                                                        "convs=" + text::to_string(rgen()) + "," +
+                                                        "crows=" + text::to_string(rgen()) + ","
+                                                        "ccols=" + text::to_string(rgen()) + ";";
+                                                desc += activation_layer_id + ";";
+                                                desc += pooling_layer_id + ";";
+                                        }
 
-                                descs.insert(desc);
+                                        descs.insert(desc);
+                                }
                         }
                 }
         }

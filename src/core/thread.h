@@ -25,7 +25,7 @@ namespace ncv
         {
                 worker_pool_t& pool = worker_pool_t::instance();
 
-                const tsize n_tasks = static_cast<tsize>(pool.n_threads());
+                const tsize n_tasks = static_cast<tsize>(ncv::n_threads());
                 for (tsize t = 0; t < n_tasks; t ++)
                 {
                         pool.enqueue([=,&op]()
@@ -55,7 +55,7 @@ namespace ncv
         {
                 worker_pool_t& pool = worker_pool_t::instance();
 
-                const tsize n_tasks = static_cast<tsize>(pool.n_threads());
+                const tsize n_tasks = static_cast<tsize>(ncv::n_threads());
 
                 std::vector<tdata> data(n_tasks);
                 for (tsize t = 0; t < n_tasks; t ++)

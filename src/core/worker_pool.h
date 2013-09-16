@@ -48,7 +48,7 @@ namespace ncv
                 void wait();
 
                 // access functions
-                size_t n_threads() const { return m_workers.size(); }
+                size_t n_workers() const { return m_workers.size(); }
                 size_t n_jobs() const { return m_data.m_tasks.size(); }
 
         private:
