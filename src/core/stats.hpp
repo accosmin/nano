@@ -1,7 +1,6 @@
 #ifndef NANOCV_STATS_H
 #define NANOCV_STATS_H
 
-#include <limits>
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics.hpp>
 
