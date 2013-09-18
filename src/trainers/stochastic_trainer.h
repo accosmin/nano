@@ -1,5 +1,5 @@
-#ifndef BATCH_TRAINER_H
-#define BATCH_TRAINER_H
+#ifndef STOCHASTIC_TRAINER_H
+#define STOCHASTIC_TRAINER_H
 
 #include "trainer.h"
 
@@ -14,14 +14,18 @@ namespace ncv
         //      eps=1e-6[1e-8,1e-3]     - convergence
         /////////////////////////////////////////////////////////////////////////////////////////
                 
-        class batch_trainer_t : public trainer_t
+//        - mini-batch size (100 - 10000)
+//        - epoch size (#iterations with the same samples 4 - 64)
+//        - number of opochs (8 - 1024)
+
+        class stochastic_trainer_t : public trainer_t
         {
         public:
 
                 // constructor
-                batch_trainer_t(const string_t& params = string_t());
+                stochastic_trainer_t(const string_t& params = string_t());
 
-                NCV_MAKE_CLONABLE(batch_trainer_t, trainer_t,
+                NCV_MAKE_CLONABLE(stochastic_trainer_t, trainer_t,
                                   "batch trainer, parameters: opt=lbfgs[,cgd,gd],iter=256[4,4096],eps=1e-6[1e-8,1e-3]")
 
                 // train the model
@@ -36,4 +40,4 @@ namespace ncv
         };
 }
 
-#endif // BATCH_TRAINER_H
+#endif // STOCHASTIC_TRAINER_H

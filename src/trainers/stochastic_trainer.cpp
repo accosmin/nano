@@ -1,4 +1,4 @@
-#include "batch_trainer.h"
+#include "stochastic_trainer.h"
 #include "core/logger.h"
 #include "core/optimize.h"
 #include "core/timer.h"
@@ -9,12 +9,12 @@ namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
-        batch_trainer_t::batch_trainer_t(const string_t& params)
+        stochastic_trainer_t::stochastic_trainer_t(const string_t& params)
                 :       m_optimizer(text::from_params<string_t>(params, "opt", "lbfgs")),
                         m_iterations(text::from_params<size_t>(params, "iter", 256)),
                         m_epsilon(text::from_params<scalar_t>(params, "eps", 1e-6))
         {
-                m_iterations = math::clamp(m_iterations, 4, 4096);
+                m_iterations = math::clamp(m_iterations, 4, 1024);
                 m_epsilon = math::clamp(m_epsilon, 1e-8, 1e-3);
         }
 
@@ -31,7 +31,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        bool batch_trainer_t::train(const task_t& task, const fold_t& fold, const loss_t& loss, model_t& model) const
+        bool stochastic_trainer_t::train(const task_t& task, const fold_t& fold, const loss_t& loss, model_t& model) const
         {
                 if (fold.second != protocol::train)
                 {
