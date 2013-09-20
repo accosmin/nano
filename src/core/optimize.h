@@ -61,6 +61,7 @@ namespace ncv
 
                         // update solution
                         void update(const problem_t& problem, const state_t& st);
+                        void update(const result_t& result);
 
                         // access functions
                         const state_t& optimum() const { return m_optimum; }

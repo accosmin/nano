@@ -198,6 +198,22 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
+        void optimize::result_t::update(const result_t& result)
+        {
+                m_cnt_fval += result.m_cnt_fval;
+                m_cnt_grad += result.m_cnt_grad;
+
+                m_conv_speed.add(result.m_conv_speed);
+                m_iterations += result.m_iterations;
+
+                if (result.m_optimum < m_optimum)
+                {
+                        m_optimum = result.m_optimum;
+                }
+        }
+
+        //-------------------------------------------------------------------------------------------------
+
         optimize::problem_t::problem_t(
                 const op_size_t& op_size,
                 const op_fval_t& op_fval,

@@ -44,15 +44,12 @@ namespace ncv
                 model.random_params();
 
                 // prune training data
-                /*const*/ samples_t samples = trainer_t::prune_annotated(task, task.samples(fold));
+                const samples_t samples = trainer_t::prune_annotated(task, task.samples(fold));
                 if (samples.empty())
                 {
                         log_error() << "batch trainer: no annotated training samples!";
                         return false;
                 }
-
-                // DEBUG!
-                samples.erase(samples.begin() + 2000, samples.end());
 
                 // optimization problem: size
                 auto opt_fn_size = [&] ()

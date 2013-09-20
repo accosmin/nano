@@ -12,7 +12,8 @@ namespace ncv
 
         template
         <
-                typename tscalar = double
+                typename tscalar = double,
+                typename tsize = std::size_t
         >
         class stats_t
 	{
@@ -21,12 +22,13 @@ namespace ncv
                 // add new values
                 void add(tscalar value)
                 {
-                        _add(value);
+                        m_acc(value);
                 }
 
                 void add(const stats_t& other)
                 {
-                        _add(other);
+                        // FIXME: how to combine these two accumulators!
+//                        m_acc(other.m_acc);
                 }
                 
                 template
@@ -43,26 +45,13 @@ namespace ncv
 		
                 // access functions
                 bool valid() const { return count() != 0; }
-                size_t count() const { return boost::accumulators::count(m_acc); }
+                tsize count() const { return static_cast<tsize>(boost::accumulators::count(m_acc)); }
                 tscalar min() const { return boost::accumulators::min(m_acc); }
                 tscalar max() const { return boost::accumulators::max(m_acc); }
                 tscalar avg() const { return boost::accumulators::mean(m_acc); }
                 tscalar var() const { return boost::accumulators::variance(m_acc); }
                 tscalar stdev() const { return std::sqrt(var()); }
                 tscalar sum() const { return boost::accumulators::sum(m_acc); }
-		
-        private:
-                
-                // add new values
-                void _add(tscalar value)
-                {
-                        m_acc(value);
-                }
-
-                void _add(const stats_t& other)
-                {
-                        m_acc(other.m_acc);
-                }
                 
         private:
 
