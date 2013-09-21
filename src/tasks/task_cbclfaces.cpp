@@ -1,4 +1,4 @@
-#include "task_cmufaces.h"
+#include "task_cbclfaces.h"
 #include "core/color.h"
 #include "core/image.h"
 #include "loss.h"
@@ -9,7 +9,7 @@ namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
-        bool cmufaces_task_t::load(const string_t& dir)
+        bool cbclfaces_task_t::load(const string_t& dir)
         {
                 const string_t train_face_dir = dir + "/train/face/";
                 const string_t train_nonface_dir = dir + "/train/non-face/";
@@ -31,7 +31,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        size_t cmufaces_task_t::load(const string_t& dir, bool is_face, protocol p)
+        size_t cbclfaces_task_t::load(const string_t& dir, bool is_face, protocol p)
         {
                 size_t cnt = 0;
                 if (    boost::filesystem::exists(dir) &&
@@ -65,7 +65,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        bool cmufaces_task_t::build_folds(size_t n_train, size_t n_test)
+        bool cbclfaces_task_t::build_folds(size_t n_train, size_t n_test)
         {
                 const fold_t train_fold = std::make_pair(0, protocol::train);
                 m_folds[train_fold] = make_samples(0, n_train, sample_region(0, 0));

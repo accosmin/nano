@@ -16,11 +16,11 @@ tasks=(
 	"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm 10 mnist-hidden2"
 	"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm;max-pool;conv:convs=16,crows=8,ccols=8;snorm;max-pool 10 mnist-hidden2-maxpool"	
 	
-	"cmu-faces forward-network 10 cmufaces-affine"
-	"cmu-faces forward-network conv:convs=16,crows=8,ccols=8;snorm 10 cmufaces-hidden1"
-	"cmu-faces forward-network conv:convs=16,crows=8,ccols=8;snorm;max-pool 10 cmufaces-hidden1-maxpool"
-	"cmu-faces forward-network conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm 10 cmufaces-hidden2"
-	"cmu-faces forward-network conv:convs=16,crows=8,ccols=8;snorm;max-pool;conv:convs=16,crows=8,ccols=8;snorm;max-pool 10 cmufaces-hidden2-maxpool"	
+	"cbcl-faces forward-network 10 cbclfaces-affine"
+	"cbcl-faces forward-network conv:convs=16,crows=8,ccols=8;snorm 10 cbclfaces-hidden1"
+	"cbcl-faces forward-network conv:convs=16,crows=8,ccols=8;snorm;max-pool 10 cbclfaces-hidden1-maxpool"
+	"cbcl-faces forward-network conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm 10 cbclfaces-hidden2"
+	"cbcl-faces forward-network conv:convs=16,crows=8,ccols=8;snorm;max-pool;conv:convs=16,crows=8,ccols=8;snorm;max-pool 10 cbclfaces-hidden2-maxpool"	
 	
 	"cifar10 forward-network 10 cifar10-affine"
 	"cifar10 forward-network conv:convs=16,crows=8,ccols=8;snorm 10 cifar10-hidden1"

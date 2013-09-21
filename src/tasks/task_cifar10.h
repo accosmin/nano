@@ -10,6 +10,8 @@ namespace ncv
         //      - object classification
         //      - 32x32 color images as inputs
         //      - 10 outputs (10 labels)
+        //
+        // http://www.cs.toronto.edu/~kriz/cifar.html
         ////////////////////////////////////////////////////////////////////////////////
 	
         class cifar10_task_t : public task_t

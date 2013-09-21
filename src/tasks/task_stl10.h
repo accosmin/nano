@@ -11,7 +11,7 @@ namespace ncv
         //      - 96x96 color images as inputs
         //      - 10 outputs (10 labels)
         //
-        // http://www.stanford.edu/~acoates//stl10/
+        // http://www.stanford.edu/~acoates/stl10/
         ////////////////////////////////////////////////////////////////////////////////
 	
         class stl10_task_t : public task_t

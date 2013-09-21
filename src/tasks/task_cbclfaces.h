@@ -1,25 +1,27 @@
-#ifndef NANOCV_TASK_CMUFACES_H
-#define NANOCV_TASK_CMUFACES_H
+#ifndef NANOCV_TASK_CBCLFACES_H
+#define NANOCV_TASK_CBCLFACES_H
 
 #include "task.h"
 
 namespace ncv
 {
         ////////////////////////////////////////////////////////////////////////////////
-        // CMU-faces task:
+        // CBCL face task:
         //      - face/non-face classification
         //      - 19x19 grayscale images as inputs
         //      - 2 outputs (binary classification)
+        //
+        // http://cbcl.mit.edu/software-datasets/FaceData2.html
         ////////////////////////////////////////////////////////////////////////////////
 	
-        class cmufaces_task_t : public task_t
+        class cbclfaces_task_t : public task_t
         {
         public:
 
                 // constructor
-                cmufaces_task_t(const string_t& /*params*/ = string_t()) {}
+                cbclfaces_task_t(const string_t& /*params*/ = string_t()) {}
 
-                NCV_MAKE_CLONABLE(cmufaces_task_t, task_t, "CMU faces (face/non-face classification)")
+                NCV_MAKE_CLONABLE(cbclfaces_task_t, task_t, "CBCL faces (face/non-face classification)")
 
                 // load images from the given directory
                 virtual bool load(const string_t& dir);
@@ -40,4 +42,4 @@ namespace ncv
         };
 }
 
-#endif // NANOCV_TASK_CMUFACES_H
+#endif // NANOCV_TASK_CBCLFACES_H

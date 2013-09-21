@@ -10,6 +10,8 @@ namespace ncv
         //      - digit classification
         //      - 28x28 grayscale images as inputs
         //      - 10 outputs (10 labels)
+        //
+        // http://yann.lecun.com/exdb/mnist/
         ////////////////////////////////////////////////////////////////////////////////
 	
         class mnist_task_t : public task_t
