@@ -76,10 +76,10 @@ namespace ncv
 
         struct image_t
         {
-                // load gray/color image from buffer
+                // load gray/color image from file or buffer
                 bool load(const string_t& path);
-                bool load_gray(const char* buffer, size_t rows, size_t cols);
-                bool load_rgba(const char* buffer, size_t rows, size_t cols);
+                bool load_gray(const char* buffer, size_t rows, size_t cols);                   // rows * cols
+                bool load_rgba(const char* buffer, size_t rows, size_t cols, size_t stride);    // rows * cols * 3
 
                 // retrieve the scaled [0, 1] RGB input vector
                 matrix_t make_red(const rect_t& region) const { return get(region, color::make_red); }

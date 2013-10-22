@@ -79,7 +79,7 @@ namespace ncv
                         image_t image;
                         image.m_protocol = p;
                         image.m_annotations.push_back(anno);
-                        image.load_rgba(buffer, n_rows(), n_cols());
+                        image.load_rgba(buffer, n_rows(), n_cols(), n_rows() * n_cols());
 
                         m_images.push_back(image);
                         ++ cnt;
