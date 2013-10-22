@@ -1,6 +1,6 @@
 #include "task_mnist.h"
-#include "core/color.h"
 #include "core/text.h"
+#include "core/logger.h"
 #include "core/math/cast.hpp"
 #include "loss.h"
 #include <fstream>
@@ -34,12 +34,15 @@ namespace ncv
                 char buffer[n_rows() * n_cols()];
                 char label[2];
 
+                log_info() << "MNIST: loading file <" << ifile << "> ...";
+
                 // image and label data streams
                 std::ifstream fimage(ifile.c_str(), std::ios::in | std::ios::binary);
                 std::ifstream flabel(gfile.c_str(), std::ios::in | std::ios::binary);
 
                 if (!fimage.is_open() || !flabel.is_open())
                 {
+                        log_error() << "MNIST: failed to load files!";
                         return 0;
                 }
 
@@ -70,6 +73,8 @@ namespace ncv
                         m_images.push_back(image);
                         ++ cnt;
                 }
+
+                log_info() << "MNIST: loaded " << cnt << " samples.";
 
                 return cnt;
         }

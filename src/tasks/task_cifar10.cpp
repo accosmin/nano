@@ -1,5 +1,5 @@
 #include "task_cifar10.h"
-#include "core/color.h"
+#include "core/logger.h"
 #include "core/math/cast.hpp"
 #include "loss.h"
 #include <fstream>
@@ -52,9 +52,12 @@ namespace ncv
 
         size_t cifar10_task_t::load(const string_t& bfile, protocol p)
         {
+                log_info() << "CIFAR-10: loading file <" << bfile << "> ...";
+
                 std::ifstream istream(bfile.c_str(), std::ios::in | std::ios::binary);
                 if (!istream.is_open())
                 {
+                        log_error() << "CIFAR-10: failed to open file!";
                         return 0;
                 }
 
@@ -84,6 +87,8 @@ namespace ncv
                         m_images.push_back(image);
                         ++ cnt;
                 }
+
+                log_info() << "CIFAR-10: loaded " << cnt << " samples.";
 
                 return cnt;
         }

@@ -1,5 +1,6 @@
 #include "task_stl10.h"
 #include "core/text.h"
+#include "core/logger.h"
 #include "core/math/cast.hpp"
 #include "loss.h"
 #include <fstream>
@@ -50,10 +51,13 @@ namespace ncv
         
         size_t stl10_task_t::load(const string_t& ifile, const string_t& gfile, protocol p)
         {
+                log_info() << "STL-10: loading files <" << ifile << " & " << gfile << "> ...";
+
                 std::ifstream fimage(ifile.c_str(), std::ios::in | std::ios::binary);
                 std::ifstream flabel(gfile.c_str(), std::ios::in | std::ios::binary);                
                 if (!fimage.is_open() || !flabel.is_open())
                 {
+                        log_error() << "STL-10: failed to load files!";
                         return false;
                 }
 
@@ -84,6 +88,8 @@ namespace ncv
                         ++ cnt;
                 }
 
+                log_info() << "STL-10: loaded " << cnt << " samples.";
+
                 return cnt;
         }
 
@@ -91,9 +97,12 @@ namespace ncv
 
         size_t stl10_task_t::load(const string_t& ifile, protocol p)
         {
+                log_info() << "STL-10: loading file <" << ifile << "> ...";
+
                 std::ifstream fimage(ifile.c_str(), std::ios::in | std::ios::binary);
                 if (!fimage.is_open())
                 {
+                        log_error() << "STL-10: failed to open file!";
                         return false;
                 }
 
@@ -111,6 +120,8 @@ namespace ncv
                         m_images.push_back(image);
                         ++ cnt;
                 }
+
+                log_info() << "STL-10: loaded " << cnt << " samples.";
 
                 return cnt;
         }

@@ -1,5 +1,5 @@
 #include "task_cbclfaces.h"
-#include "core/color.h"
+#include "core/logger.h"
 #include "core/image.h"
 #include "loss.h"
 #include <fstream>
@@ -33,6 +33,8 @@ namespace ncv
 
         size_t cbclfaces_task_t::load(const string_t& dir, bool is_face, protocol p)
         {
+                log_info() << "CBCL-faces: loading directory <" << dir << "> ...";
+
                 size_t cnt = 0;
                 if (    boost::filesystem::exists(dir) &&
                         boost::filesystem::is_directory(dir))
@@ -59,6 +61,8 @@ namespace ncv
                                 }
                         }
                 }
+
+                log_info() << "CBCL-faces: loaded " << cnt << " samples.";
 
                 return cnt;
         }
