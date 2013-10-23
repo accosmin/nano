@@ -68,7 +68,7 @@ namespace ncv
 
         // fold image-indexed samples
         typedef std::pair<size_t, protocol>     fold_t;
-        typedef std::map<fold_t, samples_t>    folds_t;
+        typedef std::map<fold_t, samples_t>     folds_t;
 
         ////////////////////////////////////////////////////////////////////////////////
         // image with its annotations
