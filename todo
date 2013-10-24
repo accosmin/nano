@@ -1,3 +1,6 @@
+* info_task:
+	- display the thumbnails with different border colors depending on the assigned target (if any)
+
 * update the readme with a short description of the main command line utilities
 
 * test sample saving for all tasks !!!
