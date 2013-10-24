@@ -1,3 +1,7 @@
+* update the readme with a short description of the main command line utilities
+
+* test sample saving for all tasks !!!
+
 * svhn decoding:
 	- the sections are not decoded correctly: 
 		- the data type of the last two sections is not valid
