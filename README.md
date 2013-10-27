@@ -58,16 +58,17 @@ The easiest way of compiling is to run the `build.sh` bash script. The test prog
 
 ### Examples
 
-The library provides various command line programs and utilities:
+The library provides various command line programs and utilities. Each program displays its possible arguments with short explanations by running it with `--help`.
 
-TODO: ncv_info (prints all registered objects with their IDs and short descriptions)
+* ncv_info - prints all registered objects with their IDs and short descriptions.
 
-TODO: ncv_info_task (loads a task and print a detailed description: #inputs, #outputs, size, folds, training and testing)
+* ncv_info_task - loads a task and print its detailed description. It can be also used to save the loaded image patches as images.
 
-TODO: ncv_trainer (train a model, command line examples)
+* ncv_trainer - train a model on a given task and using a given loss.
 
-TODO: ncv_tester (test a model, command line examples)
+* ncv_tester - test a model on a given task.
 
+TODO: example of models
 TODO: script to run experiments
 
 
