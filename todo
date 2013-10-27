@@ -1,15 +1,3 @@
-* info_task:
-	- display the thumbnails with different border colors depending on the assigned target (if any)
-
-* update the readme with a short description of the main command line utilities
-
-* test sample saving for all tasks !!!
-
-* svhn decoding:
-	- the sections are not decoded correctly: 
-		- the data type of the last two sections is not valid
-		- the number of bytes in the last section is not valid
-
 * convolution_layer<int krows, int kcols>
 - conv4x4, conv8x8, conv12x12, conv16x16
 
@@ -24,6 +12,11 @@
 		- maybe move it to deconvolution.hpp!
 
 		- it could be faster if using the same technique as with conv_add_dynamic
+
+* svhn decoding:
+	- the sections are not decoded correctly: 
+		- the data type of the last two sections is not valid
+		- the number of bytes in the last section is not valid
 
 * serializer: store data in std::vector, push_back values -> (serializer_t() << s << v << m).data() or .size()
 * same for deserializer

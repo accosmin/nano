@@ -10,9 +10,19 @@ void save(const ncv::task_t& task, const ncv::fold_t& fold,
 {
         using namespace ncv;
 
-        const size_t border = 8;
+        const size_t border = 16, radius = 4;
         const size_t rows = task.n_rows() * group_rows + border * (group_rows + 1);
         const size_t cols = task.n_cols() * group_cols + border * (group_cols + 1);
+
+        const rgba_t back_color = color::make_rgba(225, 225, 0);
+
+        random_t<rgba_t> rng(0, 255);
+
+        rgbas_t label_colors(task.n_outputs());
+        for (size_t o = 0; o < task.n_outputs(); o ++)
+        {
+                label_colors[o] = color::make_rgba(rng(), rng(), rng());
+        }
 
         rgba_matrix_t rgba(rows, cols);
 
@@ -20,7 +30,7 @@ void save(const ncv::task_t& task, const ncv::fold_t& fold,
         const samples_t& samples = task.samples(fold);
         for (size_t i = 0, g = 1; i < samples.size(); i += group_rows * group_cols, g ++)
         {
-                rgba.setConstant(color::make_rgba(225, 225, 0));
+                rgba.setConstant(back_color);
 
                 // ... compose the image block
                 for (size_t k = i, r = 0; r < group_rows; r ++)
@@ -32,12 +42,32 @@ void save(const ncv::task_t& task, const ncv::fold_t& fold,
                                         const ncv::sample_t& sample = samples[k];
                                         const ncv::image_t& image = task.image(sample.m_index);
                                         const ncv::rect_t& region = sample.m_region;
+                                        const ncv::vector_t target = image.make_target(sample.m_region);
 
-                                        rgba.block(             task.n_rows() * r + border * (r + 1),
-                                                                task.n_cols() * c + border * (c + 1),
-                                                                task.n_rows(),
-                                                                task.n_cols()) =
-                                        image.m_rgba.block(
+                                        const size_t iy = task.n_rows() * r + border * (r + 1);
+                                        const size_t ix = task.n_cols() * c + border * (c + 1);
+                                        const size_t ih = task.n_rows();
+                                        const size_t iw = task.n_cols();
+
+                                         // border ~ label/target
+                                        if (image.has_target(target))
+                                        {
+                                                for (size_t o = 0; o < task.n_outputs(); o ++)
+                                                {
+                                                        if (target[o] > 0.0)
+                                                        {
+                                                                const rgba_t color = label_colors[o];
+                                                                rgba.block(iy - radius,
+                                                                           ix - radius,
+                                                                           ih + radius * 2,
+                                                                           iw + radius * 2).setConstant(color);
+                                                                break;
+                                                        }
+                                                }
+                                        }
+
+                                        // image patch
+                                        rgba.block(iy, ix, ih, iw) = image.m_rgba.block(
                                                                 geom::top(region),
                                                                 geom::left(region),
                                                                 geom::height(region),

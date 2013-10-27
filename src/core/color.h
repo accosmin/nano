@@ -8,6 +8,7 @@ namespace ncv
         // RGBA
         typedef uint32_t                        rgba_t;
         typedef tmatrix_t<rgba_t>::matrix_t     rgba_matrix_t;
+        typedef std::vector<rgba_t>             rgbas_t;
 
         // CIELab
         typedef Eigen::Matrix
