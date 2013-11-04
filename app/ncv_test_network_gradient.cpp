@@ -77,7 +77,6 @@ int main(int argc, char *argv[])
 
         const strings_t convolution_layer_ids { "conv" };
         const strings_t activation_layer_ids { "", "unit", "tanh", "snorm" };
-        const strings_t pooling_layer_ids { "", "max-pool", "max-abs-pool" };
         const strings_t loss_ids = loss_manager_t::instance().ids();
 
         const color_mode cmd_color = color_mode::luma;
@@ -90,31 +89,27 @@ int main(int argc, char *argv[])
         const size_t cmd_tests = 8;
 
         // evaluate the analytical gradient vs. the finite difference approximation
-        //      for each: number of convolution layers, activation layer, pooling layer
+        //      for each: number of convolution layers, activation layer
         std::set<string_t> descs;
         for (size_t n_layers = 0; n_layers <= cmd_max_layers; n_layers ++)
         {
                 for (const string_t& activation_layer_id : activation_layer_ids)
                 {
-                        for (const string_t& pooling_layer_id : pooling_layer_ids)
+                        for (const string_t& convolution_layer_id : convolution_layer_ids)
                         {
-                                for (const string_t& convolution_layer_id : convolution_layer_ids)
+                                // build the network
+                                string_t desc;
+                                for (size_t l = 0; l < n_layers; l ++)
                                 {
-                                        // build the network
-                                        string_t desc;
-                                        for (size_t l = 0; l < n_layers; l ++)
-                                        {
-                                                random_t<size_t> rgen(2, 6);
-                                                desc += convolution_layer_id + ":"
-                                                        "convs=" + text::to_string(rgen()) + "," +
-                                                        "crows=" + text::to_string(rgen()) + ","
-                                                        "ccols=" + text::to_string(rgen()) + ";";
-                                                desc += activation_layer_id + ";";
-                                                desc += pooling_layer_id + ";";
-                                        }
-
-                                        descs.insert(desc);
+                                        random_t<size_t> rgen(2, 6);
+                                        desc += convolution_layer_id + ":"
+                                                "convs=" + text::to_string(rgen()) + "," +
+                                                "crows=" + text::to_string(rgen()) + ","
+                                                "ccols=" + text::to_string(rgen()) + ";";
+                                        desc += activation_layer_id + ";";
                                 }
+
+                                descs.insert(desc);
                         }
                 }
         }

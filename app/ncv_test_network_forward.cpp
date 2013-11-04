@@ -17,15 +17,9 @@ int main(int argc, char *argv[])
                 "conv:convs=16,crows=8,ccols=8;snorm",
                 "conv:convs=16,crows=8,ccols=8;tanh",
                 "conv:convs=16,crows=8,ccols=8;unit",
-                "conv:convs=16,crows=8,ccols=8;snorm;max-pool",
-                "conv:convs=16,crows=8,ccols=8;tanh;max-pool",
-                "conv:convs=16,crows=8,ccols=8;unit;max-pool",
                 "conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm",
                 "conv:convs=16,crows=8,ccols=8;tanh;conv:convs=16,crows=8,ccols=8;tanh",
-                "conv:convs=16,crows=8,ccols=8;unit;conv:convs=16,crows=8,ccols=8;unit",
-                "conv:convs=16,crows=8,ccols=8;snorm;max-pool;conv:convs=16,crows=8,ccols=8;snorm;max-pool",
-                "conv:convs=16,crows=8,ccols=8;tanh;max-pool;conv:convs=16,crows=8,ccols=8;tanh;max-pool",
-                "conv:convs=16,crows=8,ccols=8;unit;max-pool;conv:convs=16,crows=8,ccols=8;unit;max-pool"
+                "conv:convs=16,crows=8,ccols=8;unit;conv:convs=16,crows=8,ccols=8;unit"
         };
 
         const color_mode cmd_color = color_mode::rgba;
