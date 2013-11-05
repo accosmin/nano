@@ -1,5 +1,5 @@
 #include "forward_network.h"
-#include "layers/layer_convolution.h"
+#include "layers/layer_output.h"
 #include "core/logger.h"
 #include "core/text.h"
 #include "core/math/cast.hpp"
@@ -228,13 +228,10 @@ namespace ncv
                 }
 
                 // create output layer
-                const rlayer_t layer(new conv_layer_t(
-                        "convs=" + text::to_string(n_outputs()) + ","
-                        "crows=" + text::to_string(irows) + ","
-                        "ccols=" + text::to_string(icols)));
+                const rlayer_t layer(new output_layer_t("odims=" + text::to_string(n_outputs())));
                 n_params += layer->resize(idims, irows, icols);
                 m_layers.push_back(layer);
-                layer_ids.push_back("conv");
+                layer_ids.push_back("output");
 
                 print(layer_ids);
 

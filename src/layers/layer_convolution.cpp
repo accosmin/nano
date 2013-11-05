@@ -3,7 +3,6 @@
 #include "core/text.h"
 #include "core/math/cast.hpp"
 #include "core/math/convolution.hpp"
-#include "core/math/for_each.hpp"
 #include "core/math/clamp.hpp"
 #include "core/serializer.h"
 

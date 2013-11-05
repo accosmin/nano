@@ -109,6 +109,10 @@ void test(int isize, int ksize, int n_samples)
         test_conv2D(ncv::math::conv_add_mod8<matrix_t>,                     "md8", idatas, kdata, odata);
         test_conv2D(ncv::math::conv_add_dynamic<matrix_t>,                  "dyn", idatas, kdata, odata);
         test_conv2D(ncv::math::conv_add_eigen_block<matrix_t>,              "egb", idatas, kdata, odata);
+        if (ksize == 8)
+        {
+                test_conv2D(ncv::math::conv_add<8, 8, matrix_t>,            "fx8", idatas, kdata, odata);
+        }
         std::cout << std::endl;
 }
 
@@ -117,7 +121,7 @@ int main(int argc, char* argv[])
         static const int min_isize = 24;
         static const int max_isize = 48;
 	static const int min_ksize = 8;
-        static const int max_ksize = 16;
+        static const int max_ksize = 8;
         static const int n_samples = 10000;
 
         for (int isize = min_isize; isize <= max_isize; isize += 4)

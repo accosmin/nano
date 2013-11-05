@@ -27,6 +27,16 @@ set(CMAKE_CXX_FLAGS_MINSIZEREL          "-Os -DNDEBUG")         # -DEIGEN_NO_DEB
 #set (CMAKE_BUILD_TYPE RELEASE)
 #set (CMAKE_BUILD_TYPE DEBUG)
 
+message("------------------------------------------------------------------------------" "")
+message("CXX FLAGS:                    " "${CMAKE_CXX_FLAGS}")
+message("CXX DEBUG FLAGS:              " "${CMAKE_CXX_FLAGS_DEBUG}")
+message("CXX RELEASE FLAGS:            " "${CMAKE_CXX_FLAGS_RELEASE}")
+message("CXX RELWITHDEBINFO FLAGS:     " "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+message("CXX MINSIZEREL FLAGS:         " "${CMAKE_CXX_FLAGS_MINSIZEREL}")
+message("------------------------------------------------------------------------------" "")
+message("BUILD TYPE:                   " "${CMAKE_BUILD_TYPE}")
+message("------------------------------------------------------------------------------" "")
+
 include_directories(./)
 
 ######################################################################
@@ -119,17 +129,3 @@ install(TARGETS
 #if("${isSystemDir}" STREQUAL "-1")
 #        set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 #endif("${isSystemDir}" STREQUAL "-1")
-
-######################################################################
-# Debugging
-######################################################################
-
-message("------------------------------------------------------------------------------" "")
-message("CXX FLAGS:                    " "${CMAKE_CXX_FLAGS}")
-message("CXX DEBUG FLAGS:              " "${CMAKE_CXX_FLAGS_DEBUG}")
-message("CXX RELEASE FLAGS:            " "${CMAKE_CXX_FLAGS_RELEASE}")
-message("CXX RELWITHDEBINFO FLAGS:     " "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
-message("CXX MINSIZEREL FLAGS:         " "${CMAKE_CXX_FLAGS_MINSIZEREL}")
-message("------------------------------------------------------------------------------" "")
-message("BUILD TYPE:                   " "${CMAKE_BUILD_TYPE}")
-message("------------------------------------------------------------------------------" "")
