@@ -4,7 +4,7 @@ namespace ncv
 {
         //-------------------------------------------------------------------------------------------------
 
-        void worker_pool_t::worker::operator()()
+        void worker_pool_t::worker_t::operator()()
         {
                 task_t task;
                 while (true)
@@ -51,7 +51,7 @@ namespace ncv
         {
                 for (size_t i = 0; i < ncv::n_threads(); i ++)
                 {
-                        m_workers.push_back(std::thread(worker_pool_t::worker(m_data)));
+                        m_workers.push_back(std::thread(worker_pool_t::worker_t(m_data)));
                 }
         }
 

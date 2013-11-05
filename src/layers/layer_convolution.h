@@ -66,13 +66,10 @@ namespace ncv
                 mutable tensor3d_t      m_idata;        // input buffer
                 mutable tensor3d_t      m_odata;        // output buffer
 
-                mutable matrix_t        m_codata;       // convolution buffer
-                mutable matrix_t        m_ckdata;       // convolution buffer
-
-                tensor4d_t              m_kdata;        // convolution/kernel matrices
+                tensor3d_t              m_kdata;        // convolution/kernel matrices
                 tensor3d_t              m_bdata;        // biases (output)
 
-                mutable tensor4d_t      m_gkdata;       // cumulated gradients
+                mutable tensor3d_t      m_gkdata;       // cumulated gradients
                 mutable tensor3d_t      m_gbdata;
         };
 }

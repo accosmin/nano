@@ -71,12 +71,12 @@ namespace ncv
                 };
 
                 // worker
-                class worker
+                class worker_t
                 {
                 public:
 
                         // constructor
-                        worker(data_t& data) : m_data(data) {}
+                        worker_t(data_t& data) : m_data(data) {}
 
                         // execute tasks when available
                         void operator()();

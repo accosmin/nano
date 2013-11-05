@@ -88,14 +88,11 @@ namespace ncv
                 m_idata.resize(idims, irows, icols);
                 m_odata.resize(odims, orows, ocols);
 
-                m_kdata.resize(odims, idims, crows, ccols);
-                m_gkdata.resize(odims, idims, crows, ccols);
+                m_kdata.resize(odims, crows, ccols);
+                m_gkdata.resize(odims, crows, ccols);
 
                 m_bdata.resize(odims, 1, 1);
                 m_gbdata.resize(odims, 1, 1);
-
-                m_codata.resize(orows, ocols);
-                m_ckdata.resize(crows, ccols);
 
                 return m_kdata.size() + m_bdata.size();
         }
@@ -187,10 +184,9 @@ namespace ncv
                         for (size_t i = 0; i < n_idims(); i ++)
                         {
                                 const matrix_t& idata = m_idata(i);
-                                const matrix_t& kdata = m_kdata(o, i);
+                                const matrix_t& kdata = m_kdata(o);
 
-                                math::conv_dynamic(idata, kdata, m_codata);
-                                odata.noalias() += m_codata;
+                                math::conv_add_dynamic(idata, kdata, odata);
                         }
                 }
 
@@ -217,10 +213,9 @@ namespace ncv
                         for (size_t i = 0; i < n_idims(); i ++)
                         {
                                 const matrix_t& idata = m_idata(i);
-                                matrix_t& gkdata = m_gkdata(o, i);
+                                matrix_t& gkdata = m_gkdata(o);
 
-                                math::conv_dynamic(idata, gdata, m_ckdata);
-                                gkdata += m_ckdata;
+                                math::conv_add_dynamic(idata, gdata, gkdata);
                         }
                 }
 
@@ -232,7 +227,7 @@ namespace ncv
 
                         for (size_t i = 0; i < n_idims(); i ++)
                         {
-                                const matrix_t& kdata = m_kdata(o, i);
+                                const matrix_t& kdata = m_kdata(o);
                                 matrix_t& idata = m_idata(i);
 
                                 ncv::backward(odata, kdata, idata);

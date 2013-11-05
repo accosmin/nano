@@ -1,31 +1,28 @@
-* convolution layer:
-	- do not do K1 x K2 convolutions from layer to layer, but K1 + K2 !!!
-
 * convolution_layer<int krows, int kcols>
 - conv4x4, conv8x8, conv12x12, conv16x16
 
 => can make the code much faster
 => split the sumation (use two accumulators instead a single sum)
 
-* back to conv_add:
-	- it is faster and it simplifies the code quite a lot
-
 * change the convolution layer:
 	- make the ::backward function templated after the convolution size (similar to conv_add)
 		- maybe move it to deconvolution.hpp!
 
 		- it could be faster if using the same technique as with conv_add_dynamic
+				
+* serializer: store data in std::vector, push_back values -> (serializer_t() << s << v << m).data() or .size()
+* same for deserializer
+	- BETTER name for serializer! -> vectorizer?!
+	
+idea: variational learning (ebbbost)
+idea: regularized (bound) loss with the same approach as in nips12a.pdf
+	
 
 * svhn decoding:
 	- the sections are not decoded correctly: 
 		- the data type of the last two sections is not valid
 		- the number of bytes in the last section is not valid
 
-* serializer: store data in std::vector, push_back values -> (serializer_t() << s << v << m).data() or .size()
-* same for deserializer
-	- BETTER name for serializer! -> vectorizer?!
-
-* pooling layer with multiple outputs?!
 
 * test program to print model (ncv_describe -> model structure + convolutions as images)
 
@@ -34,8 +31,6 @@
 * could use std::atexit() to save the model at closing -> re-training should reload the current model and continue training
 * better could catch various signals: http://en.cppreference.com/w/cpp/utility/program and safely saved the trained model
 
-* is it possible to find an analytic solution to the line-search problem for a convolution model?!
-
 * visualize convolutions after/during training either using a Qt ui or some images
 
 - perf result:   
@@ -43,8 +38,6 @@
     26.76%  ncv_trainer  libnanocv.so         [.] ncv::conv_layer_t::forward(ncv::tensor3d_t const&) const                                                                   
      3.14%  ncv_trainer  libnanocv.so         [.] ncv::fun1_activation_t::value(double) const                                                                                
      1.07%  ncv_trainer  libnanocv.so         [.] ncv::fun1_activation_t::vgrad(double) const
-
-* update experiments scripts to train convolution models
 
 * make install:
 	- also copy the headers 

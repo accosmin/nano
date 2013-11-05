@@ -12,21 +12,15 @@ common_config="--loss classnll --trainer batch --trainer-params opt=lbfgs,iter=2
 tasks=(
 	"mnist forward-network 10 mnist-affine"
 	"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm 10 mnist-hidden1"
-	"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm;max-pool 10 mnist-hidden1-maxpool"
 	"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm 10 mnist-hidden2"
-	"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm;max-pool;conv:convs=16,crows=8,ccols=8;snorm;max-pool 10 mnist-hidden2-maxpool"	
 	
-	"cbcl-faces forward-network 10 cbclfaces-affine"
-	"cbcl-faces forward-network conv:convs=16,crows=8,ccols=8;snorm 10 cbclfaces-hidden1"
-	"cbcl-faces forward-network conv:convs=16,crows=8,ccols=8;snorm;max-pool 10 cbclfaces-hidden1-maxpool"
-	"cbcl-faces forward-network conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm 10 cbclfaces-hidden2"
-	"cbcl-faces forward-network conv:convs=16,crows=8,ccols=8;snorm;max-pool;conv:convs=16,crows=8,ccols=8;snorm;max-pool 10 cbclfaces-hidden2-maxpool"	
+	#"cbcl-faces forward-network 10 cbclfaces-affine"
+	#"cbcl-faces forward-network conv:convs=16,crows=8,ccols=8;snorm 10 cbclfaces-hidden1"
+	#"cbcl-faces forward-network conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm 10 cbclfaces-hidden2"
 	
-	"cifar10 forward-network 10 cifar10-affine"
-	"cifar10 forward-network conv:convs=16,crows=8,ccols=8;snorm 10 cifar10-hidden1"
-	"cifar10 forward-network conv:convs=16,crows=8,ccols=8;snorm;max-pool 10 cifar10-hidden1-maxpool"
-	"cifar10 forward-network conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm 10 cifar10-hidden2"
-	"cifar10 forward-network conv:convs=16,crows=8,ccols=8;snorm;max-pool;conv:convs=16,crows=8,ccols=8;snorm;max-pool 10 cifar10-hidden2-maxpool"	
+	#"cifar10 forward-network 10 cifar10-affine"
+	#"cifar10 forward-network conv:convs=16,crows=8,ccols=8;snorm 10 cifar10-hidden1"
+	#"cifar10 forward-network conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm 10 cifar10-hidden2"
 	
 	# TODO: STL10
 	)

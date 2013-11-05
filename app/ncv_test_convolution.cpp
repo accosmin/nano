@@ -52,9 +52,11 @@ void init_matrices(int rows, int cols, int count, tmatrices& matrices)
 template <typename tmatrices, typename tmatrix, typename top>
 void test_conv2D(top op, const char* name, const tmatrices& idatas, const tmatrix& kdata, tmatrix& odata)
 {
+        odata.setZero();
+
         const clock_t start = clock();
 
-	const int count = static_cast<int>(idatas.size());
+        const int count = static_cast<int>(idatas.size());
 	for (int i = 0; i < count; i ++)
 	{
 		op(idatas[i], kdata, odata);
@@ -102,11 +104,11 @@ void test(int isize, int ksize, int n_samples)
         init_conv2D(ksize, ksize, krdata, kcdata, kdata);
 
         std::cout << "mix (isize = " << isize << ", ksize = " << ksize << "): \t";
-        test_conv2D(ncv::math::conv<matrix_t>,                          "org", idatas, kdata, odata);
-        test_conv2D(ncv::math::conv_mod4<matrix_t>,                     "md4", idatas, kdata, odata);
-        test_conv2D(ncv::math::conv_mod8<matrix_t>,                     "md8", idatas, kdata, odata);
-        test_conv2D(ncv::math::conv_dynamic<matrix_t>,                  "dyn", idatas, kdata, odata);
-        test_conv2D(ncv::math::conv_eigen_block<matrix_t>,              "egb", idatas, kdata, odata);
+        test_conv2D(ncv::math::conv_add<matrix_t>,                          "org", idatas, kdata, odata);
+        test_conv2D(ncv::math::conv_add_mod4<matrix_t>,                     "md4", idatas, kdata, odata);
+        test_conv2D(ncv::math::conv_add_mod8<matrix_t>,                     "md8", idatas, kdata, odata);
+        test_conv2D(ncv::math::conv_add_dynamic<matrix_t>,                  "dyn", idatas, kdata, odata);
+        test_conv2D(ncv::math::conv_add_eigen_block<matrix_t>,              "egb", idatas, kdata, odata);
         std::cout << std::endl;
 }
 
