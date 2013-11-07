@@ -14,12 +14,12 @@ int main(int argc, char *argv[])
         strings_t cmd_networks =
         {
                 "",
-                "conv:convs=16,crows=8,ccols=8;snorm",
-                "conv:convs=16,crows=8,ccols=8;tanh",
-                "conv:convs=16,crows=8,ccols=8;unit",
-                "conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm",
-                "conv:convs=16,crows=8,ccols=8;tanh;conv:convs=16,crows=8,ccols=8;tanh",
-                "conv:convs=16,crows=8,ccols=8;unit;conv:convs=16,crows=8,ccols=8;unit"
+                "conv8x8:convs=16;snorm",
+                "conv8x8:convs=16;tanh",
+                "conv8x8:convs=16;unit",
+                "conv8x8:convs=16;snorm;conv8x8:convs=16;snorm",
+                "conv8x8:convs=16;tanh;conv8x8:convs=16;tanh",
+                "conv8x8:convs=16;unit;conv8x8:convs=16;unit"
         };
 
         const color_mode cmd_color = color_mode::rgba;

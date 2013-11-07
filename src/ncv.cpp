@@ -14,7 +14,7 @@
 #include "layers/layer_activation_unit.h"
 #include "layers/layer_activation_tanh.h"
 #include "layers/layer_activation_snorm.h"
-#include "layers/layer_convolution.h"
+#include "layers/layer_convolution.hpp"
 
 #include "models/forward_network.h"
 
@@ -49,7 +49,10 @@ namespace ncv
                 layer_manager_t::instance().add("unit", unit_activation_layer_t());
                 layer_manager_t::instance().add("tanh", tanh_activation_layer_t());
                 layer_manager_t::instance().add("snorm", snorm_activation_layer_t());
-                layer_manager_t::instance().add("conv", conv_layer_t());
+                layer_manager_t::instance().add("conv4x4", conv_layer_t<4, 4>());
+                layer_manager_t::instance().add("conv8x8", conv_layer_t<8, 8>());
+                layer_manager_t::instance().add("conv12x12", conv_layer_t<12, 12>());
+                layer_manager_t::instance().add("conv16x16", conv_layer_t<16, 16>());
 
                 // register models
                 model_manager_t::instance().add("forward-network", forward_network_t());

@@ -11,8 +11,8 @@ common_config="--loss classnll --trainer batch --trainer-params opt=lbfgs,iter=2
 # task description = task model model-params trials output
 tasks=(
 	"mnist forward-network 10 mnist-affine"
-	"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm 10 mnist-hidden1"
-	"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm 10 mnist-hidden2"
+	#"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm 10 mnist-hidden1"
+	#"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm 10 mnist-hidden2"
 	
 	#"cbcl-faces forward-network 10 cbclfaces-affine"
 	#"cbcl-faces forward-network conv:convs=16,crows=8,ccols=8;snorm 10 cbclfaces-hidden1"
