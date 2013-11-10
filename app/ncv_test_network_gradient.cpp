@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
         }
 
         for (const string_t& desc : descs)
-        {
+        {                
                 // create network
                 forward_network_t network(desc);
                 network.resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color);

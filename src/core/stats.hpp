@@ -27,7 +27,8 @@ namespace ncv
 
                 void add(const stats_t& other)
                 {
-                        // FIXME: how to combine these two accumulators!
+                        // FIXME: how to combine these two accumulators?!
+                        // => go back to own implementation!
 //                        m_acc(other.m_acc);
                 }
                 

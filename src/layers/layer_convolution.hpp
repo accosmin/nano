@@ -74,51 +74,6 @@ namespace ncv
 
                 //-------------------------------------------------------------------------------------------------
 
-                static void _backward(const matrix_t& ogdata, const matrix_t& kdata, matrix_t& igdata)
-                {
-                        const int krows = math::cast<int>(kdata.rows());
-                        const int kcols = math::cast<int>(kdata.cols());
-                        const int kcols4 = kcols - (kcols % 4);
-
-                        const int orows = math::cast<int>(ogdata.rows());
-                        const int ocols = math::cast<int>(ogdata.cols());
-
-        //                TODO: move this part to core/convolution.h -> deconv_add()
-
-                        for (int r = 0; r < orows; r ++)
-                        {
-                                const scalar_t* pogdata = &ogdata(r, 0);
-
-                                for (int kr = 0; kr < krows; kr ++)
-                                {
-                                        const scalar_t* pkdata = &kdata(kr, 0);
-                                        scalar_t* pigdata = &igdata(r + kr, 0);
-
-                                        for (int c = 0; c < ocols; c ++)
-                                        {
-        //                                        for (int kc = 0; kc < kcols; kc ++)
-        //                                        {
-        //                                                pigdata[c + kc] += pogdata[c] * pkdata[kc];
-        //                                        }
-
-                                                for (int kc = 0; kc < kcols4; kc += 4)
-                                                {
-                                                        pigdata[c + kc + 0] += pogdata[c] * pkdata[kc + 0];
-                                                        pigdata[c + kc + 1] += pogdata[c] * pkdata[kc + 1];
-                                                        pigdata[c + kc + 2] += pogdata[c] * pkdata[kc + 2];
-                                                        pigdata[c + kc + 3] += pogdata[c] * pkdata[kc + 3];
-                                                }
-                                                for (int kc = kcols4; kc < kcols; kc ++)
-                                                {
-                                                        pigdata[c + kc + 0] += pogdata[c] * pkdata[kc];
-                                                }
-                                        }
-                                }
-                        }
-                }
-
-                //-------------------------------------------------------------------------------------------------
-
                 size_t _resize(size_t idims, size_t irows, size_t icols)
                 {
                         const size_t odims = math::clamp(text::from_params<size_t>(m_params, "convs", 16), 1, 256);
@@ -145,9 +100,9 @@ namespace ncv
                         m_odata.resize(odims, orows, ocols);
 
                         m_kdata.resize(odims, crows, ccols);
-                        m_gkdata.resize(odims, crows, ccols);
-
                         m_bdata.resize(odims, 1, 1);
+
+                        m_gkdata.resize(odims, crows, ccols);
                         m_gbdata.resize(odims, 1, 1);
 
                         return m_kdata.size() + m_bdata.size();
@@ -214,8 +169,11 @@ namespace ncv
                         for (size_t o = 0; o < n_odims(); o ++)
                         {
                                 matrix_t& odata = m_odata(o);
+
+                                // bias
                                 odata.setConstant(bias(o));
 
+                                // kernel
                                 for (size_t i = 0; i < n_idims(); i ++)
                                 {
                                         const matrix_t& idata = m_idata(i);
@@ -250,7 +208,7 @@ namespace ncv
                                         const matrix_t& idata = m_idata(i);
                                         matrix_t& gkdata = m_gkdata(o);
 
-                                        math::conv_add<tcrows, tccols>(idata, gdata, gkdata);
+                                        math::conv_add(idata, gdata, gkdata);
                                 }
                         }
 
@@ -270,6 +228,33 @@ namespace ncv
                         }
 
                         return m_idata;
+                }
+
+                //-------------------------------------------------------------------------------------------------
+
+                static void _backward(const matrix_t& ogdata, const matrix_t& kdata, matrix_t& igdata)
+                {
+                        const size_t orows = math::cast<size_t>(ogdata.rows());
+                        const size_t ocols = math::cast<size_t>(ogdata.cols());
+
+                        for (size_t r = 0; r < orows; r ++)
+                        {
+                                const scalar_t* pogdata = &ogdata(r, 0);
+
+                                for (size_t kr = 0; kr < tcrows; kr ++)
+                                {
+                                        const scalar_t* pkdata = &kdata(kr, 0);
+                                        scalar_t* pigdata = &igdata(r + kr, 0);
+
+                                        for (size_t c = 0; c < ocols; c ++)
+                                        {
+                                                for (size_t kc = 0; kc < tccols; kc ++)
+                                                {
+                                                        pigdata[c + kc] += pogdata[c] * pkdata[kc];
+                                                }
+                                        }
+                                }
+                        }
                 }
 
                 //-------------------------------------------------------------------------------------------------

@@ -115,9 +115,11 @@ namespace ncv
                 {
                         matrix_t& odata = m_odata(o);
 
+                        // bias
                         scalar_t& out = odata(0, 0);
                         out = bias(o);
 
+                        // kernel
                         for (size_t i = 0; i < n_idims(); i ++)
                         {
                                 const matrix_t& idata = m_idata(i);
@@ -145,7 +147,7 @@ namespace ncv
                         const scalar_t gout = gdata(0, 0);
 
                         // bias
-                        gbias(o) += gdata.sum();
+                        gbias(o) += gout;
 
                         // kernel
                         for (size_t i = 0; i < n_idims(); i ++)
