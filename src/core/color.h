@@ -6,19 +6,13 @@
 namespace ncv
 {
         // RGBA
-        typedef uint32_t                        rgba_t;
-        typedef tmatrix_t<rgba_t>::matrix_t     rgba_matrix_t;
-        typedef std::vector<rgba_t>             rgbas_t;
+        typedef uint32_t                                                        rgba_t;
+        typedef tensor::matrix_types_t<rgba_t>::matrix_t                        rgba_matrix_t;
+        typedef std::vector<rgba_t>                                             rgbas_t;
 
         // CIELab
-        typedef Eigen::Matrix
-        <
-                scalar_t,
-                3,
-                1,
-                Eigen::ColMajor
-        >                                       cielab_t;
-        typedef tmatrix_t<cielab_t>::matrix_t   cielab_matrix_t;
+        typedef tensor::fixed_size_vector_types_t<scalar_t, 3>::vector_t        cielab_t;
+        typedef tensor::matrix_types_t<cielab_t>::matrix_t                      cielab_matrix_t;
 
         // manipulate colors
         namespace color
