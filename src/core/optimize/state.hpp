@@ -1,7 +1,7 @@
 #ifndef NANOCV_OPTIMIZE_STATE_HPP
 #define NANOCV_OPTIMIZE_STATE_HPP
 
-#include "core/optimize/problem.hpp"
+#include "core/tensor/matrix.hpp"
 
 namespace ncv
 {
@@ -11,7 +11,7 @@ namespace ncv
                 // optimization state:
                 //      current point (x), function value (f), gradient (g),
                 //      descent direction (d) & line-search step (t).
-                ////////////////////////////////////////////////////////////////////////////////////////////////
+                /////////////////////////////////////////////////////////////////////////////////////////////
 
                 template
                 <
@@ -20,8 +20,7 @@ namespace ncv
                 >
                 struct state_t
                 {
-                        typedef problem_t<tscalar, tsize>               tproblem;
-                        typedef typename tproblem::vector_t             tvector;
+                        typedef typename tensor::vector_types_t<tscalar>::vector_t      tvector;
 
                         // constructor
                         state_t(tsize size = 0)
@@ -32,6 +31,10 @@ namespace ncv
                         }
 
                         // constructor
+                        template
+                        <
+                                typename tproblem
+                        >
                         state_t(const tproblem& problem, const tvector& x0)
                                 :       state_t(problem.size())
                         {
@@ -40,6 +43,10 @@ namespace ncv
                         }
 
                         // update current point
+                        template
+                        <
+                                typename tproblem
+                        >
                         void update(const tproblem& problem, tscalar t)
                         {
                                 x.noalias() += t * d;
@@ -70,7 +77,8 @@ namespace ncv
                         typename tscalar,
                         typename tsize
                 >
-                bool operator<(const state_t<tscalar, tsize>& one, const state_t<tscalar, tsize>& other)
+                bool operator<(const state_t<tscalar, tsize>& one,
+                               const state_t<tscalar, tsize>& other)
                 {
                         return one.f < other.f;
                 }

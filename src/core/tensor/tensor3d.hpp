@@ -80,11 +80,14 @@ namespace ncv
         }
 }
 
-// serialize 3D tensor
 namespace boost
 {
         namespace serialization
         {
+                /////////////////////////////////////////////////////////////////////////////////////////
+                // serialize 3D tensor
+                /////////////////////////////////////////////////////////////////////////////////////////
+
                 template
                 <
                         class tarchive,

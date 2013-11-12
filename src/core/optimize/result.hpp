@@ -8,8 +8,7 @@ namespace ncv
         namespace optimize
         {
                 /////////////////////////////////////////////////////////////////////////////////////////////
-                // optimization result:
-                //      solution & statistics
+                // optimization result/solution.
                 /////////////////////////////////////////////////////////////////////////////////////////////
 
                 template
@@ -22,8 +21,7 @@ namespace ncv
                 public:
 
                         typedef state_t<tscalar, tsize>                 tstate;
-                        typedef problem_t<tscalar, tsize>               tproblem;
-                        typedef typename tproblem::vector_t             tvector;
+                        typedef typename tstate::tvector                tvector;
 
                         // constructor (analytic gradient)
                         explicit result_t(tsize size = 0)
@@ -35,6 +33,10 @@ namespace ncv
                         }
 
                         // update solution
+                        template
+                        <
+                                typename tproblem
+                        >
                         void update(const tproblem& problem, const tstate& state) { return _update(problem, state); }
                         void update(const result_t& result) { return _update(result); }
 
@@ -47,6 +49,10 @@ namespace ncv
                 private:
 
                         // implementation: update solution
+                        template
+                        <
+                                typename tproblem
+                        >
                         void _update(const tproblem& problem, const tstate& st)
                         {
                                 m_n_fvals = problem.n_fval_calls();

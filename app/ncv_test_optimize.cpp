@@ -1,6 +1,4 @@
 #include "ncv.h"
-#include "core/random.hpp"
-#include "core/timer.h"
 #include "core/math/clamp.hpp"
 #include "core/math/numeric.hpp"
 #include <boost/program_options.hpp>
@@ -8,7 +6,7 @@
 using namespace ncv;
 
 // display the formatted optimization history
-void print(const optresult_t& result, size_t max_iterations,
+void print(const opt_result_t& result, size_t max_iterations,
            const string_t& header, const string_t& time)
 {
         static const size_t col_size = 32;
@@ -24,7 +22,7 @@ void print(const optresult_t& result, size_t max_iterations,
 }
 
 // optimize a problem starting from random points
-void test(const optproblem_t& problem, size_t max_iters, scalar_t eps,
+void test(const opt_problem_t& problem, size_t max_iters, scalar_t eps,
           const string_t& name, size_t trials)
 {
         const size_t size = problem.size();
@@ -44,15 +42,15 @@ void test(const optproblem_t& problem, size_t max_iters, scalar_t eps,
                 ncv::timer_t timer;
 
                 timer.start();
-                const optresult_t res_gd = optimizer_t::gd(problem, x0, max_iters, eps);
+                const opt_result_t res_gd = optimizer_t::gd(problem, x0, max_iters, eps);
                 print(res_gd, max_iters, name + " (GD)" + name_trial, timer.elapsed());
 
                 timer.start();
-                const optresult_t res_cgd = optimizer_t::cgd(problem, x0, max_iters, eps);
+                const opt_result_t res_cgd = optimizer_t::cgd(problem, x0, max_iters, eps);
                 print(res_cgd, max_iters, name + " (CGD)" + name_trial, timer.elapsed());
 
                 timer.start();
-                const optresult_t res_lbfgs = optimizer_t::lbfgs(problem, x0, max_iters, eps);
+                const opt_result_t res_lbfgs = optimizer_t::lbfgs(problem, x0, max_iters, eps);
                 print(res_lbfgs, max_iters, name + " (LBFGS)" + name_trial, timer.elapsed());
         }
 }
@@ -233,7 +231,7 @@ int main(int argc, char *argv[])
                         return f;
                 };
 
-                const optproblem_t problem(op_size, op_fval);
+                const opt_problem_t problem(op_size, op_fval);
                 test(problem, cmd_iters, cmd_eps, "rosenbrock [" + text::to_string(n) + "D]", cmd_trials);
         }
 
@@ -262,7 +260,7 @@ int main(int argc, char *argv[])
                         return op_fval(x);
                 };
 
-                const optproblem_t problem(op_size, op_fval, op_fval_grad);
+                const opt_problem_t problem(op_size, op_fval, op_fval_grad);
                 test(problem, cmd_iters, cmd_eps, "himmelblau [2D]", cmd_trials);
         }
 

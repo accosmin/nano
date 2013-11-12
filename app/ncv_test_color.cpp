@@ -1,5 +1,4 @@
 #include "ncv.h"
-#include "core/logger.h"
 
 int main(int argc, char *argv[])
 {

@@ -1,7 +1,5 @@
 #include "ncv.h"
 #include "core/math/clamp.hpp"
-#include "core/timer.h"
-#include "core/logger.h"
 #include "models/forward_network.h"
 #include <boost/program_options.hpp>
 

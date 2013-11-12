@@ -1,6 +1,4 @@
 #include "ncv.h"
-#include "core/logger.h"
-#include "core/timer.h"
 #include "core/math/clamp.hpp"
 #include "core/math/bilinear.hpp"
 #include "core/math/transform.hpp"

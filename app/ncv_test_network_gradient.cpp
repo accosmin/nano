@@ -1,6 +1,4 @@
 #include "ncv.h"
-#include "core/optimize/algo.hpp"
-#include "core/random.hpp"
 #include "models/forward_network.h"
 #include <boost/program_options.hpp>
 #include <set>
@@ -46,8 +44,8 @@ static void test_grad(
         };
 
         // construct optimization problem: analytic gradient and finite difference approximation
-        const optproblem_t problem_gd(opt_fn_size, opt_fn_fval, opt_fn_fval_grad);
-        const optproblem_t problem_ax(opt_fn_size, opt_fn_fval);
+        const opt_problem_t problem_gd(opt_fn_size, opt_fn_fval, opt_fn_fval_grad);
+        const opt_problem_t problem_ax(opt_fn_size, opt_fn_fval);
 
         for (size_t t = 0; t < n_tests; t ++)
         {

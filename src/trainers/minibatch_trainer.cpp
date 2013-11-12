@@ -2,10 +2,11 @@
 #include "core/timer.h"
 #include "core/text.h"
 #include "core/math/clamp.hpp"
+#include "core/logger.h"
 
 namespace ncv
 {
-        //-------------------------------------------------------------------------------------------------
+        /////////////////////////////////////////////////////////////////////////////////////////
 
         minibatch_trainer_t::minibatch_trainer_t(const string_t& params)
                 :       m_optimizer(text::from_params<string_t>(params, "opt", "lbfgs")),
@@ -19,19 +20,7 @@ namespace ncv
                 m_epochs = math::clamp(m_epochs, 8, 1024);
         }
 
-        //-------------------------------------------------------------------------------------------------
-
-        static void update(const optresult_t& result, timer_t& timer, size_t epoch, size_t epochs)
-        {
-                ncv::log_info() << "mini-batch trainer: state [epoch = " << epoch << "/" << epochs
-                                << ", loss = " << result.optimum().f
-                                << ", gradient = " << result.optimum().g.lpNorm<Eigen::Infinity>()
-                                << ", calls = " << result.n_fval_calls() << "/" << result.n_grad_calls()
-                                << "] updated in " << timer.elapsed() << ".";
-                timer.start();
-        }
-
-        //-------------------------------------------------------------------------------------------------
+        /////////////////////////////////////////////////////////////////////////////////////////
 
         bool minibatch_trainer_t::train(const task_t& task, const fold_t& fold, const loss_t& loss, model_t& model) const
         {
@@ -57,30 +46,49 @@ namespace ncv
                 samples_t bsamples(m_batchsize);
 
                 // optimization problem: size
-                auto opt_fn_size = [&] ()
+                auto fn_size = [&] ()
                 {
                         return model.n_parameters();
                 };
 
                 // optimization problem: function value
-                auto opt_fn_fval = [&] (const vector_t& x)
+                auto fn_fval = [&] (const vector_t& x)
                 {
                         model.load_params(x);
                         return trainer_t::value_mt(task, bsamples, loss, model);
                 };
 
                 // optimization problem: function value & gradient
-                auto opt_fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
+                auto fn_grad = [&] (const vector_t& x, vector_t& gx)
                 {
                         model.load_params(x);
                         return trainer_t::vgrad_mt(task, bsamples, loss, model, gx);
                 };
 
-                const optproblem_t problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad);
+                // optimization problem: logging
+                auto fn_wlog = [] (const string_t& message)
+                {
+                        log_warning() << message;
+                };
+                auto fn_elog = [] (const string_t& message)
+                {
+                        log_error() << message;
+                };
+                auto fn_ulog = [] (const opt_result_t& result, timer_t& timer, size_t epoch, size_t epochs)
+                {
+                        log_info() << "mini-batch trainer: state [epoch = " << epoch << "/" << epochs
+                                << ", loss = " << result.optimum().f
+                                << ", gradient = " << result.optimum().g.lpNorm<Eigen::Infinity>()
+                                << ", calls = " << result.n_fval_calls() << "/" << result.n_grad_calls()
+                                << "] updated in " << timer.elapsed() << ".";
+                        timer.start();
+                };
+
+                // assembly optimization problem
+                const opt_problem_t problem(fn_size, fn_fval, fn_grad);
+                opt_result_t res(model.n_parameters());
 
                 timer_t timer;
-
-                optresult_t res(model.n_parameters());
 
                 vector_t x(model.n_parameters());
                 model.save_params(x);
@@ -95,21 +103,23 @@ namespace ncv
                                 bsamples[i] = samples[die()];
                         }
 
-                        // optimize the model                                                
-                        const auto updater = std::bind(update, _1, std::ref(timer), epoch + 1, m_epochs);
+                        const auto fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer), epoch + 1, m_epochs);
+                        const scalar_t eps = m_epsilon;
+                        const size_t iters = m_iterations;
 
-                        optresult_t bres;
+                        // optimize the model
+                        opt_result_t bres;
                         if (text::iequals(m_optimizer, "lbfgs"))
                         {
-                                bres = optimizer_t::lbfgs(problem, x, m_iterations, m_epsilon, 6, updater);
+                                bres = optimizer_t::lbfgs(problem, x, iters, eps, 6, fn_wlog, fn_elog, fn_ulog_ref);
                         }
                         else if (text::iequals(m_optimizer, "cgd"))
                         {
-                                bres = optimizer_t::cgd(problem, x, m_iterations, m_epsilon, updater);
+                                bres = optimizer_t::cgd(problem, x, iters, eps, fn_wlog, fn_elog, fn_ulog_ref);
                         }
                         else if (text::iequals(m_optimizer, "gd"))
                         {
-                                bres = optimizer_t::gd(problem, x, m_iterations, m_epsilon, updater);
+                                bres = optimizer_t::gd(problem, x, iters, eps, fn_wlog, fn_elog, fn_ulog_ref);
                         }
                         else
                         {
@@ -135,5 +145,5 @@ namespace ncv
                 return true;
         }
 
-        //-------------------------------------------------------------------------------------------------
+        /////////////////////////////////////////////////////////////////////////////////////////
 }

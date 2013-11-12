@@ -3,9 +3,9 @@
 
 #include "tensor/tensor3d.hpp"
 #include "tensor/tensor4d.hpp"
-#include "optimize/algo.hpp"
-#include <functional>
+#include "optimize/optimizer.hpp"
 #include <string>
+#include <functional>
 #include <cstdint>
 
 namespace ncv
@@ -73,10 +73,29 @@ namespace ncv
                 rgba                    // process red, green & blue color channels
         };
 
-        // optimizer & result
-        typedef optimize::optimizer<scalar_t, size_t>   optimizer_t;
-        typedef optimizer_t::tproblem                   optproblem_t;
-        typedef optimizer_t::tresult                    optresult_t;
+        // optimization data types
+        typedef std::function<size_t(void)>                             opt_opsize_t;
+        typedef std::function<scalar_t(const vector_t&)>                opt_opfval_t;
+        typedef std::function<scalar_t(const vector_t&, vector_t&)>     opt_opgrad_t;
+        typedef std::function<void(const string_t&)>                    opt_opwlog_t;
+        typedef std::function<void(const string_t&)>                    opt_opelog_t;
+
+        typedef optimize::result_t<scalar_t, size_t>                    opt_result_t;
+        typedef std::function<void(const opt_result_t&)>                opt_opulog_t;
+
+        typedef optimize::optimizer_t
+        <
+                scalar_t,
+                size_t,
+                opt_opsize_t,
+                opt_opfval_t,
+                opt_opgrad_t,
+                opt_opwlog_t,
+                opt_opelog_t,
+                opt_opulog_t
+        >                                                               optimizer_t;
+
+        typedef optimizer_t::tproblem                                   opt_problem_t;
 }
 
 #endif // NANOCV_TYPES_H

@@ -2,10 +2,11 @@
 #include "core/timer.h"
 #include "core/text.h"
 #include "core/math/clamp.hpp"
+#include "core/logger.h"
 
 namespace ncv
 {
-        //-------------------------------------------------------------------------------------------------
+        /////////////////////////////////////////////////////////////////////////////////////////
 
         batch_trainer_t::batch_trainer_t(const string_t& params)
                 :       m_optimizer(text::from_params<string_t>(params, "opt", "lbfgs")),
@@ -16,18 +17,7 @@ namespace ncv
                 m_epsilon = math::clamp(m_epsilon, 1e-8, 1e-3);
         }
 
-        //-------------------------------------------------------------------------------------------------
-
-        static void update(const optresult_t& result, timer_t& timer)
-        {
-                ncv::log_info() << "batch trainer: state [loss = " << result.optimum().f
-                                << ", gradient = " << result.optimum().g.lpNorm<Eigen::Infinity>()
-                                << ", calls = " << result.n_fval_calls() << "/" << result.n_grad_calls()
-                                << "] updated in " << timer.elapsed() << ".";
-                timer.start();
-        }
-
-        //-------------------------------------------------------------------------------------------------
+        /////////////////////////////////////////////////////////////////////////////////////////
 
         bool batch_trainer_t::train(const task_t& task, const fold_t& fold, const loss_t& loss, model_t& model) const
         {
@@ -50,47 +40,68 @@ namespace ncv
                 }
 
                 // optimization problem: size
-                auto opt_fn_size = [&] ()
+                auto fn_size = [&] ()
                 {
                         return model.n_parameters();
                 };
 
                 // optimization problem: function value
-                auto opt_fn_fval = [&] (const vector_t& x)
+                auto fn_fval = [&] (const vector_t& x)
                 {
                         model.load_params(x);
                         return trainer_t::value_mt(task, samples, loss, model);
                 };
 
                 // optimization problem: function value & gradient
-                auto opt_fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
+                auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
                         model.load_params(x);
                         return trainer_t::vgrad_mt(task, samples, loss, model, gx);
                 };
 
-                const optproblem_t problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad);
+                // optimization problem: logging
+                auto fn_wlog = [] (const string_t& message)
+                {
+                        log_warning() << message;
+                };
+                auto fn_elog = [] (const string_t& message)
+                {
+                        log_error() << message;
+                };
+                auto fn_ulog = [] (const opt_result_t& result, timer_t& timer)
+                {
+                        log_info() << "batch trainer: state [loss = " << result.optimum().f
+                                << ", gradient = " << result.optimum().g.lpNorm<Eigen::Infinity>()
+                                << ", calls = " << result.n_fval_calls() << "/" << result.n_grad_calls()
+                                << "] updated in " << timer.elapsed() << ".";
+                        timer.start();
+                };
+
+                // assembly optimization problem
+                const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
+                opt_result_t res;
+
+                timer_t timer;
 
                 // optimize the model
                 vector_t x(model.n_parameters());
                 model.save_params(x);
 
-                timer_t timer;
+                const auto fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer));
+                const scalar_t eps = m_epsilon;
+                const size_t iters = m_iterations;
 
-                const auto updater = std::bind(update, _1, std::ref(timer));
-
-                optresult_t res;
                 if (text::iequals(m_optimizer, "lbfgs"))
                 {
-                        res = optimizer_t::lbfgs(problem, x, m_iterations, m_epsilon, 6, updater);
+                        res = optimizer_t::lbfgs(problem, x, iters, eps, 6, fn_wlog, fn_elog, fn_ulog_ref);
                 }
                 else if (text::iequals(m_optimizer, "cgd"))
                 {
-                        res = optimizer_t::cgd(problem, x, m_iterations, m_epsilon, updater);
+                        res = optimizer_t::cgd(problem, x, iters, eps, fn_wlog, fn_elog, fn_ulog_ref);
                 }
                 else if (text::iequals(m_optimizer, "gd"))
                 {
-                        res = optimizer_t::gd(problem, x, m_iterations, m_epsilon, updater);
+                        res = optimizer_t::gd(problem, x, iters, eps, fn_wlog, fn_elog, fn_ulog_ref);
                 }
                 else
                 {
@@ -110,5 +121,5 @@ namespace ncv
                 return true;
         }
 
-        //-------------------------------------------------------------------------------------------------
+        /////////////////////////////////////////////////////////////////////////////////////////
 }

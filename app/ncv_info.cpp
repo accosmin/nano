@@ -1,5 +1,4 @@
 #include "ncv.h"
-#include "core/logger.h"
 
 template
 <
