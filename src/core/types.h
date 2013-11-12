@@ -3,6 +3,7 @@
 
 #include "tensor/tensor3d.hpp"
 #include "tensor/tensor4d.hpp"
+#include "optimize/algo.hpp"
 #include <functional>
 #include <string>
 #include <cstdint>
@@ -71,6 +72,11 @@ namespace ncv
                 luma,                   // process only grayscale color channel
                 rgba                    // process red, green & blue color channels
         };
+
+        // optimizer & result
+        typedef optimize::optimizer<scalar_t, size_t>   optimizer_t;
+        typedef optimizer_t::tproblem                   optproblem_t;
+        typedef optimizer_t::tresult                    optresult_t;
 }
 
 #endif // NANOCV_TYPES_H

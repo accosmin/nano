@@ -1,6 +1,4 @@
 #include "minibatch_trainer.h"
-#include "core/logger.h"
-#include "core/optimize.h"
 #include "core/timer.h"
 #include "core/text.h"
 #include "core/math/clamp.hpp"
@@ -23,7 +21,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        static void update(const optimize::result_t& result, timer_t& timer, size_t epoch, size_t epochs)
+        static void update(const optresult_t& result, timer_t& timer, size_t epoch, size_t epochs)
         {
                 ncv::log_info() << "mini-batch trainer: state [epoch = " << epoch << "/" << epochs
                                 << ", loss = " << result.optimum().f
@@ -78,11 +76,11 @@ namespace ncv
                         return trainer_t::vgrad_mt(task, bsamples, loss, model, gx);
                 };
 
-                const optimize::problem_t problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad);
+                const optproblem_t problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad);
 
                 timer_t timer;
 
-                optimize::result_t res(model.n_parameters());
+                optresult_t res(model.n_parameters());
 
                 vector_t x(model.n_parameters());
                 model.save_params(x);
@@ -100,18 +98,18 @@ namespace ncv
                         // optimize the model                                                
                         const auto updater = std::bind(update, _1, std::ref(timer), epoch + 1, m_epochs);
 
-                        optimize::result_t bres;
+                        optresult_t bres;
                         if (text::iequals(m_optimizer, "lbfgs"))
                         {
-                                bres = optimize::lbfgs(problem, x, m_iterations, m_epsilon, 6, updater);
+                                bres = optimizer_t::lbfgs(problem, x, m_iterations, m_epsilon, 6, updater);
                         }
                         else if (text::iequals(m_optimizer, "cgd"))
                         {
-                                bres = optimize::cgd(problem, x, m_iterations, m_epsilon, updater);
+                                bres = optimizer_t::cgd(problem, x, m_iterations, m_epsilon, updater);
                         }
                         else if (text::iequals(m_optimizer, "gd"))
                         {
-                                bres = optimize::gd(problem, x, m_iterations, m_epsilon, updater);
+                                bres = optimizer_t::gd(problem, x, m_iterations, m_epsilon, updater);
                         }
                         else
                         {
@@ -132,7 +130,7 @@ namespace ncv
                            << ", gradient = " << res.optimum().g.norm()
                            << ", calls = " << res.n_fval_calls() << "/" << res.n_grad_calls()
                            << "], iterations = [" << res.iterations() << "/" << m_iterations
-                           << "], speed = [" << res.speed().avg() << " +/- " << res.speed().stdev() << "].";
+                           << "].";
 
                 return true;
         }

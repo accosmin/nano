@@ -1,6 +1,4 @@
 #include "ncv.h"
-#include "core/optimize.h"
-#include "core/logger.h"
 #include "core/random.hpp"
 #include "core/timer.h"
 #include "core/math/clamp.hpp"
@@ -10,7 +8,7 @@
 using namespace ncv;
 
 // display the formatted optimization history
-void print(const optimize::result_t& result, size_t max_iterations,
+void print(const optresult_t& result, size_t max_iterations,
            const string_t& header, const string_t& time)
 {
         static const size_t col_size = 32;
@@ -21,13 +19,12 @@ void print(const optimize::result_t& result, size_t max_iterations,
         std::cout << header << ": fx = [" << result.optimum().f << "]" << std::endl;
         std::cout << header << ": gn = [" << result.optimum().g.norm() << "]" << std::endl;
         std::cout << header << ": iterations = [" << result.iterations() << "/" << max_iterations
-                  << "], speed = [" << result.speed().avg() << " +/- " << result.speed().stdev()
                   << "], time = [" << time << "]." << std::endl;
         std::cout << del_line << std::endl;
 }
 
 // optimize a problem starting from random points
-void test(const optimize::problem_t& problem, size_t max_iters, scalar_t eps,
+void test(const optproblem_t& problem, size_t max_iters, scalar_t eps,
           const string_t& name, size_t trials)
 {
         const size_t size = problem.size();
@@ -47,26 +44,21 @@ void test(const optimize::problem_t& problem, size_t max_iters, scalar_t eps,
                 ncv::timer_t timer;
 
                 timer.start();
-                const optimize::result_t res_gd = optimize::gd(problem, x0, max_iters, eps);
+                const optresult_t res_gd = optimizer_t::gd(problem, x0, max_iters, eps);
                 print(res_gd, max_iters, name + " (GD)" + name_trial, timer.elapsed());
 
                 timer.start();
-                const optimize::result_t res_cgd = optimize::cgd(problem, x0, max_iters, eps);
+                const optresult_t res_cgd = optimizer_t::cgd(problem, x0, max_iters, eps);
                 print(res_cgd, max_iters, name + " (CGD)" + name_trial, timer.elapsed());
 
                 timer.start();
-                const optimize::result_t res_lbfgs = optimize::lbfgs(problem, x0, max_iters, eps);
+                const optresult_t res_lbfgs = optimizer_t::lbfgs(problem, x0, max_iters, eps);
                 print(res_lbfgs, max_iters, name + " (LBFGS)" + name_trial, timer.elapsed());
         }
 }
 
 int main(int argc, char *argv[])
 {
-        typedef size_t                     size_t;
-        typedef scalar_t                   scalar_t;
-        typedef vector_t                   vector_t;
-        typedef optimize::problem_t        problem_t;
-
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
         po_desc.add_options()("help,h", "help message");
@@ -241,7 +233,7 @@ int main(int argc, char *argv[])
                         return f;
                 };
 
-                const problem_t problem(op_size, op_fval);
+                const optproblem_t problem(op_size, op_fval);
                 test(problem, cmd_iters, cmd_eps, "rosenbrock [" + text::to_string(n) + "D]", cmd_trials);
         }
 
@@ -270,7 +262,7 @@ int main(int argc, char *argv[])
                         return op_fval(x);
                 };
 
-                const problem_t problem(op_size, op_fval, op_fval_grad);
+                const optproblem_t problem(op_size, op_fval, op_fval_grad);
                 test(problem, cmd_iters, cmd_eps, "himmelblau [2D]", cmd_trials);
         }
 

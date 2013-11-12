@@ -1,6 +1,4 @@
 #include "batch_trainer.h"
-#include "core/logger.h"
-#include "core/optimize.h"
 #include "core/timer.h"
 #include "core/text.h"
 #include "core/math/clamp.hpp"
@@ -20,7 +18,7 @@ namespace ncv
 
         //-------------------------------------------------------------------------------------------------
 
-        static void update(const optimize::result_t& result, timer_t& timer)
+        static void update(const optresult_t& result, timer_t& timer)
         {
                 ncv::log_info() << "batch trainer: state [loss = " << result.optimum().f
                                 << ", gradient = " << result.optimum().g.lpNorm<Eigen::Infinity>()
@@ -71,7 +69,7 @@ namespace ncv
                         return trainer_t::vgrad_mt(task, samples, loss, model, gx);
                 };
 
-                const optimize::problem_t problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad);
+                const optproblem_t problem(opt_fn_size, opt_fn_fval, opt_fn_fval_grad);
 
                 // optimize the model
                 vector_t x(model.n_parameters());
@@ -81,18 +79,18 @@ namespace ncv
 
                 const auto updater = std::bind(update, _1, std::ref(timer));
 
-                optimize::result_t res;
+                optresult_t res;
                 if (text::iequals(m_optimizer, "lbfgs"))
                 {
-                        res = optimize::lbfgs(problem, x, m_iterations, m_epsilon, 6, updater);
+                        res = optimizer_t::lbfgs(problem, x, m_iterations, m_epsilon, 6, updater);
                 }
                 else if (text::iequals(m_optimizer, "cgd"))
                 {
-                        res = optimize::cgd(problem, x, m_iterations, m_epsilon, updater);
+                        res = optimizer_t::cgd(problem, x, m_iterations, m_epsilon, updater);
                 }
                 else if (text::iequals(m_optimizer, "gd"))
                 {
-                        res = optimize::gd(problem, x, m_iterations, m_epsilon, updater);
+                        res = optimizer_t::gd(problem, x, m_iterations, m_epsilon, updater);
                 }
                 else
                 {
@@ -107,7 +105,7 @@ namespace ncv
                            << ", gradient = " << res.optimum().g.norm()
                            << ", calls = " << res.n_fval_calls() << "/" << res.n_grad_calls()
                            << "], iterations = [" << res.iterations() << "/" << m_iterations
-                           << "], speed = [" << res.speed().avg() << " +/- " << res.speed().stdev() << "].";
+                           << "].";
 
                 return true;
         }

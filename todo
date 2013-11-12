@@ -1,3 +1,7 @@
+* improve coding style:
+	- comments "//----" vs "/////"
+	- more consistent templated classes: t<xxx> as inputs, t<xxx> as derived
+
 * convolution_layer<int krows, int kcols>
 - conv4x4, conv8x8, conv12x12, conv16x16
 
