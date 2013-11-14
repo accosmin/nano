@@ -13,6 +13,14 @@
 		- maybe move it to deconvolution.hpp!
 
 		- it could be faster if using the same technique as with conv_add_dynamic
+
+* weighted convolutions: O convolutions, OxI scalar weights to sum convoluted inputs
+
+* mini-batch trainer:
+	- batch size = B
+	- use the reservoir boosting method:
+		- R <- R + B random samples	
+		- from R select B samples (randomly, max loss value, or loss-value-based sampled) to train with
 				
 * serializer: store data in std::vector, push_back values -> (serializer_t() << s << v << m).data() or .size()
 * same for deserializer
