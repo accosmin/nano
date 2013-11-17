@@ -2,6 +2,7 @@
 #define NANOCV_TENSOR_TENSOR3D_HPP
 
 #include "core/tensor/storage.hpp"
+#include <boost/serialization/base_object.hpp>
 
 namespace ncv
 {
@@ -77,27 +78,6 @@ namespace ncv
                         // attributes
                         tsize           m_dim1; // #dimension 1
                 };
-        }
-}
-
-namespace boost
-{
-        namespace serialization
-        {
-                /////////////////////////////////////////////////////////////////////////////////////////
-                // serialize 3D tensor
-                /////////////////////////////////////////////////////////////////////////////////////////
-
-                template
-                <
-                        class tarchive,
-                        class tscalar,
-                        class tsize
-                >
-                void serialize(tarchive& ar, ncv::tensor::tensor3d_t<tscalar, tsize>& t3, const unsigned int version)
-                {
-                        ar & t3;
-                }
         }
 }
 

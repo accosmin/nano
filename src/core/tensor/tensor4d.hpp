@@ -2,6 +2,7 @@
 #define NANOCV_TENSOR_TENSOR4D_HPP
 
 #include "core/tensor/storage.hpp"
+#include <boost/serialization/base_object.hpp>
 
 namespace ncv
 {
@@ -68,9 +69,9 @@ namespace ncv
                         <
                                 class tarchive
                         >
-                        void serialize(tarchive & ar, const unsigned int version)
+                        void serialize(tarchive & ar, const unsigned int)
                         {
-                                ar & boost::serialization::base_object<matrix_t>(*this);
+                                ar & boost::serialization::base_object<base_t>(*this);
                                 ar & m_dim1;
                                 ar & m_dim2;
                         }
@@ -81,27 +82,6 @@ namespace ncv
                         tsize           m_dim1; // #dimension 1
                         tsize           m_dim2; // #dimension 2
                 };
-        }
-}
-
-namespace boost
-{
-        namespace serialization
-        {
-                /////////////////////////////////////////////////////////////////////////////////////////
-                // serialize 4D tensor
-                /////////////////////////////////////////////////////////////////////////////////////////
-
-                template
-                <
-                        class tarchive,
-                        class tscalar,
-                        class tsize
-                >
-                void serialize(tarchive& ar, ncv::tensor::tensor4d_t<tscalar, tsize>& t4, const unsigned int version)
-                {
-                        ar & t4;
-                }
         }
 }
 

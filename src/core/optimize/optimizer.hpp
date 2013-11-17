@@ -227,7 +227,7 @@ namespace ncv
                                 const top_elog& op_elog = top_elog(),
                                 const top_ulog& op_ulog = top_ulog())
                         {
-                                assert(problem.size() == math::cast<tsize>(x0.size()));
+                                assert(problem.size() == static_cast<tsize>(x0.size()));
 
                                 tresult result(problem.size());
                                 tstate cstate(problem, x0);
@@ -277,7 +277,7 @@ namespace ncv
                                 const top_elog& op_elog = top_elog(),
                                 const top_ulog& op_ulog = top_ulog())
                         {
-                                assert(problem.size() == math::cast<tsize>(x0.size()));
+                                assert(problem.size() == static_cast<tsize>(x0.size()));
 
                                 tresult result(problem.size());
                                 tstate cstate(problem, x0), pstate = cstate;
@@ -341,7 +341,7 @@ namespace ncv
                                 const top_elog& op_elog = top_elog(),
                                 const top_ulog& op_ulog = top_ulog())
                         {
-                                assert(problem.size() == math::cast<tsize>(x0.size()));
+                                assert(problem.size() == static_cast<tsize>(x0.size()));
 
                                 tresult result(problem.size());
                                 std::deque<tvector> ss, ys;

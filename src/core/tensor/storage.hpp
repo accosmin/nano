@@ -2,7 +2,6 @@
 #define NANOCV_TENSOR_STORAGE_HPP
 
 #include <boost/serialization/access.hpp>
-#include <boost/serialization/base_object.hpp>
 #include <cassert>
 #include "core/tensor/matrix.hpp"
 #include "core/random.hpp"
@@ -123,27 +122,6 @@ namespace ncv
                         tsize           m_cols; // #cols (for each dimension)
                         matrices_t      m_data; // values
                 };
-        }
-}
-
-namespace boost
-{
-        namespace serialization
-        {
-                /////////////////////////////////////////////////////////////////////////////////////////
-                // serialize tensor storage
-                /////////////////////////////////////////////////////////////////////////////////////////
-
-                template
-                <
-                        class tarchive,
-                        class tscalar,
-                        class tsize
-                >
-                void serialize(tarchive& ar, ncv::tensor::storage_t<tscalar, tsize>& st, const unsigned int version)
-                {
-                        ar & st;
-                }
         }
 }
 
