@@ -211,7 +211,7 @@ namespace ncv
                                         matrix_t& gkdata = m_gkdata(o);
 
                                         gweight(o, i) += gdata.cwiseProduct(xdata).sum();
-                                        math::wconv_mod4(idata, gdata, weight(o, i), gkdata);
+                                        math::conv_mod4(idata, gdata, weight(o, i), gkdata);
                                 }
                         }
 
