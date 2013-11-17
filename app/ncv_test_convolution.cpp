@@ -104,17 +104,16 @@ void test(int isize, int ksize, int n_samples)
         init_conv2D(ksize, ksize, krdata, kcdata, kdata);
 
         std::cout << "mix (isize = " << isize << ", ksize = " << ksize << "): \t";
-        test_conv2D(ncv::math::conv<matrix_t, double>,                      "org", idatas, kdata, odata);
-        test_conv2D(ncv::math::conv_mod4<matrix_t, double>,                 "md4", idatas, kdata, odata);
-        test_conv2D(ncv::math::conv_mod8<matrix_t, double>,                 "md8", idatas, kdata, odata);
-        test_conv2D(ncv::math::conv_eigen<matrix_t, double>,                "eig", idatas, kdata, odata);
+        test_conv2D(ncv::math::wconv<matrix_t>,                      "org", idatas, kdata, odata);
+        test_conv2D(ncv::math::wconv_mod4<matrix_t>,                 "md4", idatas, kdata, odata);
+        test_conv2D(ncv::math::wconv_eigen<matrix_t>,                "eig", idatas, kdata, odata);
         if (ksize == 8)
         {
-                test_conv2D(ncv::math::conv<8, 8, matrix_t, double>,        "x8x", idatas, kdata, odata);
+                test_conv2D(ncv::math::wconv<8, 8, matrix_t>,        "x8x", idatas, kdata, odata);
         }
         if (ksize == 16)
         {
-                test_conv2D(ncv::math::conv<16, 16, matrix_t, double>,      "16x", idatas, kdata, odata);
+                test_conv2D(ncv::math::wconv<16, 16, matrix_t>,      "16x", idatas, kdata, odata);
         }
         std::cout << std::endl;
 }

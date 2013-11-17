@@ -181,7 +181,7 @@ namespace ncv
                                         matrix_t& xdata = m_xdata(o, i);
 
                                         xdata.setZero();
-                                        math::conv<tcrows, tccols>(idata, kdata, 1.0, xdata);
+                                        math::conv<tcrows, tccols>(idata, kdata, xdata);
                                         odata += weight(o, i) * xdata;
                                 }
                         }
@@ -210,8 +210,8 @@ namespace ncv
                                         const matrix_t& xdata = m_xdata(o, i);                                        
                                         matrix_t& gkdata = m_gkdata(o);
 
-                                        gweight(o, i) += (gdata.array() * xdata.array()).sum();
-                                        math::conv_mod4(idata, gdata, weight(o, i), gkdata);
+                                        gweight(o, i) += gdata.cwiseProduct(xdata).sum();
+                                        math::wconv_mod4(idata, gdata, weight(o, i), gkdata);
                                 }
                         }
 

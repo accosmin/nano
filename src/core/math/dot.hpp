@@ -71,34 +71,6 @@ namespace ncv
                 <
                         typename tscalar
                 >
-                tscalar dot_mod8(const tscalar* pidata, const tscalar* pkdata, int ksize)
-                {
-                        const int ksize8 = (ksize >> 3) << 3;
-
-                        tscalar sum = 0;
-                        for (int k = 0; k < ksize8; k += 8)
-                        {
-                                sum += pidata[k + 0] * pkdata[k + 0];
-                                sum += pidata[k + 1] * pkdata[k + 1];
-                                sum += pidata[k + 2] * pkdata[k + 2];
-                                sum += pidata[k + 3] * pkdata[k + 3];
-                                sum += pidata[k + 4] * pkdata[k + 4];
-                                sum += pidata[k + 5] * pkdata[k + 5];
-                                sum += pidata[k + 6] * pkdata[k + 6];
-                                sum += pidata[k + 7] * pkdata[k + 7];
-                        }
-                        for (int k = ksize8; k < ksize; k ++)
-                        {
-                                sum += pidata[k + 0] * pkdata[k + 0];
-                        }
-
-                        return sum;
-                }
-
-                template
-                <
-                        typename tscalar
-                >
                 tscalar dot_eigen(const tscalar* pidata, const tscalar* pkdata, int ksize)
                 {
                         typedef typename Eigen::Matrix<tscalar, Eigen::Dynamic, 1, Eigen::ColMajor> tvector;

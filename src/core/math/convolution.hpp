@@ -17,25 +17,48 @@ namespace ncv
                         template
                         <
                                 typename tmatrix,
-                                typename tscalar,
-                                typename tdotop          // column-based dot operator
+                                typename tdotop,         // column-based dot operator
+                                typename tscalar = typename tmatrix::Scalar,
+                                typename tindex = typename tmatrix::Index
                         >
-                        void conv(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata,
-                                  const tdotop& dop, int krows, int kcols)
-                        {
-                                const int orows = static_cast<int>(odata.rows());
-                                const int ocols = static_cast<int>(odata.cols());
-
-                                for (int r = 0; r < orows; r ++)
+                        void conv(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata,
+                                  const tdotop& dop, tindex krows, tindex kcols)
+                        {                                
+                                for (tindex r = 0; r < odata.rows(); r ++)
                                 {
-                                        typename tmatrix::Scalar* podata = &odata(r, 0);
+                                        tscalar* podata = &odata(r, 0);
 
-                                        for (int kr = 0; kr < krows; kr ++)
+                                        for (tindex kr = 0; kr < krows; kr ++)
                                         {
-                                                const typename tmatrix::Scalar* pidata = &idata(r + kr, 0);
-                                                const typename tmatrix::Scalar* pkdata = &kdata(kr, 0);
+                                                const tscalar *pidata = &idata(r + kr, 0), *pkdata = &kdata(kr, 0);
 
-                                                for (int c = 0; c < ocols; c ++)
+                                                for (tindex c = 0; c < odata.cols(); c ++)
+                                                {
+                                                        podata[c] += dop(pidata + c, pkdata, kcols);
+                                                }
+                                        }
+                                }
+                        }
+
+                        template
+                        <
+                                typename tmatrix,
+                                typename tdotop,         // column-based dot operator
+                                typename tscalar = typename tmatrix::Scalar,
+                                typename tindex = typename tmatrix::Index
+                        >
+                        void wconv(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata,
+                                   const tdotop& dop, tindex krows, tindex kcols)
+                        {
+                                for (tindex r = 0; r < odata.rows(); r ++)
+                                {
+                                        tscalar* podata = &odata(r, 0);
+
+                                        for (tindex kr = 0; kr < krows; kr ++)
+                                        {
+                                                const tscalar *pidata = &idata(r + kr, 0), *pkdata = &kdata(kr, 0);
+
+                                                for (tindex c = 0; c < odata.cols(); c ++)
                                                 {
                                                         podata[c] += weight * dop(pidata + c, pkdata, kcols);
                                                 }
@@ -44,84 +67,109 @@ namespace ncv
                         }
                 }
 
-                // 2D convolution: odata = idata * kdata
+                // 2D convolution: odata += (weight *) idata @ kdata
                 //      loop unrolling using 4 operations
                 template
                 <
                         typename tmatrix,
-                        typename tscalar
+                        typename tscalar = typename tmatrix::Scalar
                 >
-                void conv_mod4(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata)
+                void conv_mod4(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
-                        impl::conv(idata, kdata, weight, odata,
-                                math::dot_mod4<typename tmatrix::Scalar>,
-                                static_cast<int>(kdata.rows()), static_cast<int>(kdata.cols()));
+                        impl::conv(idata, kdata, odata, math::dot_mod4<tscalar>, kdata.rows(), kdata.cols());
                 }
 
-                // 2D convolution: odata = idata * kdata
-                //      loop unrolling using 8 operations
                 template
                 <
                         typename tmatrix,
-                        typename tscalar
+                        typename tscalar = typename tmatrix::Scalar
                 >
-                void conv_mod8(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata)
+                void wconv_mod4(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata)
                 {
-                        impl::conv(idata, kdata, weight, odata,
-                                math::dot_mod8<typename tmatrix::Scalar>,
-                                static_cast<int>(kdata.rows()), static_cast<int>(kdata.cols()));
+                        impl::wconv(idata, kdata, weight, odata, math::dot_mod4<tscalar>, kdata.rows(), kdata.cols());
                 }
 
-                // 2D convolution: odata = idata * kdata
+                // 2D convolution: odata += (weight *) idata @ kdata
                 //      no loop unrolling
                 template
                 <
                         typename tmatrix,
-                        typename tscalar
+                        typename tscalar = typename tmatrix::Scalar
                 >
-                void conv(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata)
+                void conv(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
-                        impl::conv(idata, kdata, weight, odata,
-                                math::dot<typename tmatrix::Scalar>,
-                                static_cast<int>(kdata.rows()), static_cast<int>(kdata.cols()));
+                        impl::conv(idata, kdata, odata, math::dot<tscalar>, kdata.rows(), kdata.cols());
                 }
 
-                // 2D convolution: odata = idata * kdata
+                template
+                <
+                        typename tmatrix,
+                        typename tscalar = typename tmatrix::Scalar
+                >
+                void wconv(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata)
+                {
+                        impl::wconv(idata, kdata, weight, odata, math::dot<tscalar>, kdata.rows(), kdata.cols());
+                }
+
+                // 2D convolution: odata += (weight *) idata @ kdata
                 //      for fixed size convolution (number of rows & columns)
                 template
                 <
                         int tkrows,
                         int tkcols,
                         typename tmatrix,
-                        typename tscalar
+                        typename tscalar = typename tmatrix::Scalar
                 >
-                void conv(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata)
+                void conv(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
-                        impl::conv(idata, kdata, weight, odata,
-                                math::dot<tkcols, typename tmatrix::Scalar>,
-                                tkrows, tkcols);
+                        impl::conv(idata, kdata, odata, math::dot<tkcols, tscalar>, tkrows, tkcols);
                 }
 
-                // 2D convolution: odata = idata * kdata
+                template
+                <
+                        int tkrows,
+                        int tkcols,
+                        typename tmatrix,
+                        typename tscalar = typename tmatrix::Scalar
+                >
+                void wconv(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata)
+                {
+                        impl::wconv(idata, kdata, weight, odata, math::dot<tkcols, tscalar>, tkrows, tkcols);
+                }
+
+                // 2D convolution: odata += (weight *) idata @ kdata
                 //      using Eigen blocks
                 template
                 <
                         typename tmatrix,
-                        typename tscalar
+                        typename tindex = typename tmatrix::Index
                 >
-                void conv_eigen(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata)
+                void conv_eigen(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
-                        const int krows = static_cast<int>(kdata.rows());
-                        const int kcols = static_cast<int>(kdata.cols());
-
-                        const int orows = static_cast<int>(odata.rows());
-                        const int ocols = static_cast<int>(odata.cols());
-
-                        for (int r = 0; r < orows; r ++)
+                        for (tindex r = 0; r < odata.rows(); r ++)
                         {
-                                for (int c = 0; c < ocols; c ++)
+                                for (tindex c = 0; c < odata.cols(); c ++)
                                 {
-                                        odata(r, c) += weight * kdata.cwiseProduct(idata.block(r, c, krows, kcols)).sum();
+                                        odata(r, c) +=
+                                        kdata.cwiseProduct(idata.block(r, c, kdata.rows(), kdata.cols())).sum();
+                                }
+                       }
+                }
+
+                template
+                <
+                        typename tmatrix,
+                        typename tscalar = typename tmatrix::Scalar,
+                        typename tindex = typename tmatrix::Index
+                >
+                void wconv_eigen(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata)
+                {
+                        for (tindex r = 0; r < odata.rows(); r ++)
+                        {
+                                for (tindex c = 0; c < odata.cols(); c ++)
+                                {
+                                        odata(r, c) += weight *
+                                        kdata.cwiseProduct(idata.block(r, c, kdata.rows(), kdata.cols())).sum();
                                 }
                        }
                 }
