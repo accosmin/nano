@@ -23,45 +23,81 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        samples_t minibatch_trainer_t::rand_sample(const samples_t& samples) const
+        samples_t minibatch_trainer_t::rand(const samples_t& samples) const
         {
                 samples_t bsamples;
 
                 random_t<size_t> die(0, samples.size() - 1);
                 for (size_t i = 0; i < m_batchsize; i ++)
                 {
-//                        const sample_t sample = samples[die()];
-//                        const scalar_t lvalue = std::numeric_limits<scalar_t>::max();
-
-//                        bsamples.push_back(std::make_pair(lvalue, sample));
-
-                        const sample_t sample = samples[die()];
-                        bsamples.push_back(sample);
+                        const sample_t& sample = samples[die()];
+                        bsamples.emplace_back(sample);
                 }
 
-                return bsamples;
+                return bsamples;        
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        samples_t minibatch_trainer_t::rand_sample(const samples_t& samples,
+        minibatch_trainer_t::lsamples_t minibatch_trainer_t::make_lsamples(const samples_t& samples,
                 const task_t& task, const loss_t& loss, const model_t& model) const
         {
-                samples_t bsamples;
+                lsamples_t lsamples;
 
-                random_t<size_t> die(0, samples.size() - 1);
-                for (size_t i = 0; i < m_batchsize; i ++)
+                for (size_t i = 0; i < samples.size(); i ++)
                 {
-//                        const sample_t sample = samples[die()];
-//                        const scalar_t lvalue = trainer_t::value(task, sample, loss, model);
-
-//                        bsamples.push_back(std::make_pair(lvalue, sample));
-
-                        const sample_t sample = samples[die()];
-                        bsamples.push_back(sample);
+                        lsamples.emplace_back(ncv::lvalue(task, samples[i], loss, model), i);
                 }
 
-                return bsamples;
+                return lsamples;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        samples_t minibatch_trainer_t::lmax(const samples_t& bsamples, const samples_t& samples,
+                const task_t& task, const loss_t& loss, const model_t& model) const
+        {
+                samples_t qsamples = rand(samples);
+                qsamples.insert(qsamples.end(), bsamples.begin(), bsamples.end());
+
+                lsamples_t lsamples = make_lsamples(qsamples, task, loss, model);
+                std::sort(lsamples.begin(), lsamples.end());
+
+                // select the samples with the maximum loss value
+                samples_t esamples;
+                for (size_t i = m_batchsize; i < lsamples.size(); i ++)
+                {
+                        esamples.emplace_back(qsamples[lsamples[i].second]);
+                }
+
+                return esamples;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        samples_t minibatch_trainer_t::lwei(const samples_t& bsamples, const samples_t& samples,
+                const task_t& task, const loss_t& loss, const model_t& model) const
+        {
+                samples_t qsamples = rand(samples);
+                qsamples.insert(qsamples.end(), bsamples.begin(), bsamples.end());
+
+                lsamples_t lsamples = make_lsamples(qsamples, task, loss, model);
+
+                // todo: select the samples randomly proportional to the loss value
+                const scalar_t lsum = std::accumulate(lsamples.begin(), lsamples.end(), 0.0,
+                                                      [] (scalar_t sum, const lsample_t& l) { return sum + l.first; });
+
+
+
+                std::sort(lsamples.begin(), lsamples.end());
+
+                samples_t esamples;
+//                for (size_t i = m_batchsize; i < lsamples.size(); i ++)
+//                {
+//                        esamples.emplace_back(lsamples[i].second);
+//                }
+
+                return esamples;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -79,7 +115,7 @@ namespace ncv
                 model.random_params();
 
                 // prune training data
-                const samples_t samples = trainer_t::prune_annotated(task, task.samples(fold));
+                const samples_t samples = ncv::prune_annotated(task, task.samples(fold));
                 if (samples.empty())
                 {
                         log_error() << "mini-batch trainer: no annotated training samples!";
@@ -87,7 +123,7 @@ namespace ncv
                 }
 
                 // current mini-batch of samples
-                samples_t bsamples;
+                samples_t bsamples = rand(samples);
 
                 // optimization problem: size
                 auto fn_size = [&] ()
@@ -99,14 +135,14 @@ namespace ncv
                 auto fn_fval = [&] (const vector_t& x)
                 {
                         model.load_params(x);
-                        return trainer_t::value_mt(task, bsamples, loss, model);
+                        return ncv::lvalue_mt(task, bsamples, loss, model);
                 };
 
                 // optimization problem: function value & gradient
                 auto fn_grad = [&] (const vector_t& x, vector_t& gx)
                 {
                         model.load_params(x);
-                        return trainer_t::vgrad_mt(task, bsamples, loss, model, gx);
+                        return ncv::lvgrad_mt(task, bsamples, loss, model, gx);
                 };
 
                 // optimization problem: logging
@@ -143,22 +179,18 @@ namespace ncv
                         // update the current mini-batch
                         if (text::iequals(m_sampling, "once"))
                         {
-                                if (epoch == 0)
-                                {
-                                        bsamples = rand_sample(samples);
-                                }
                         }
                         else if (text::iequals(m_sampling, "rand"))
                         {
-                                bsamples = rand_sample(samples);
+                                bsamples = rand(samples);
                         }
                         else if (text::iequals(m_sampling, "lmax"))
                         {
-
+                                bsamples = lmax(bsamples, samples, task, loss, model);
                         }
                         else if (text::iequals(m_sampling, "lwei"))
                         {
-
+                                bsamples = lwei(bsamples, samples, task, loss, model);
                         }
                         else
                         {

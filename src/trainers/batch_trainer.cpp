@@ -32,7 +32,7 @@ namespace ncv
                 model.random_params();
 
                 // prune training data
-                const samples_t samples = trainer_t::prune_annotated(task, task.samples(fold));
+                const samples_t samples = ncv::prune_annotated(task, task.samples(fold));
                 if (samples.empty())
                 {
                         log_error() << "batch trainer: no annotated training samples!";
@@ -49,14 +49,14 @@ namespace ncv
                 auto fn_fval = [&] (const vector_t& x)
                 {
                         model.load_params(x);
-                        return trainer_t::value_mt(task, samples, loss, model);
+                        return ncv::lvalue_mt(task, samples, loss, model);
                 };
 
                 // optimization problem: function value & gradient
                 auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
                         model.load_params(x);
-                        return trainer_t::vgrad_mt(task, samples, loss, model, gx);
+                        return ncv::lvgrad_mt(task, samples, loss, model, gx);
                 };
 
                 // optimization problem: logging

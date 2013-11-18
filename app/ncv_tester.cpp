@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
                 // test
                 timer.start();
                 scalar_t lvalue, lerror;
-                ncv::test(*rmodel, *rtask, test_fold, *rloss, lvalue, lerror);
+                ncv::test(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror);
                 log_info() << "<<< test error: ["
                            << lvalue << "/" << lerror << "] in " << timer.elapsed() << ".";
 

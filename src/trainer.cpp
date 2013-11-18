@@ -5,6 +5,32 @@ namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        namespace impl
+        {
+                static scalar_t lvalue(const task_t& task, const sample_t& sample, const loss_t& loss, const model_t& model)
+                {
+                        const image_t& image = task.image(sample.m_index);
+                        const vector_t target = image.make_target(sample.m_region);
+                        assert(image.has_target(target));
+
+                        const vector_t output = model.value(image, sample.m_region);
+                        return loss.value(target, output);
+                }
+
+                static scalar_t lvgrad(const task_t& task, const sample_t& sample, const loss_t& loss, const model_t& model)
+                {
+                        const image_t& image = task.image(sample.m_index);
+                        const vector_t target = image.make_target(sample.m_region);
+                        assert(image.has_target(target));
+
+                        const vector_t output = model.value(image, sample.m_region);
+                        model.cumulate_grad(loss.vgrad(target, output));
+                        return loss.value(target, output);
+                }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
         struct value_data_t
         {
                 // constructor
@@ -19,13 +45,7 @@ namespace ncv
                 }
                 void update(const task_t& task, const sample_t& sample, const loss_t& loss, const model_t& model)
                 {
-                        const image_t& image = task.image(sample.m_index);
-                        const vector_t target = image.make_target(sample.m_region);
-                        assert(image.has_target(target));
-
-                        const vector_t output = model.value(image, sample.m_region);
-
-                        m_value += loss.value(target, output);
+                        m_value += impl::lvalue(task, sample, loss, model);
                         m_count ++;
                 }
 
@@ -68,16 +88,8 @@ namespace ncv
                 }
                 void update(const task_t& task, const sample_t& sample, const loss_t& loss, const model_t& model)
                 {
-                        const image_t& image = task.image(sample.m_index);
-                        const vector_t target = image.make_target(sample.m_region);
-                        assert(image.has_target(target));
-
-                        const vector_t output = model.value(image, sample.m_region);
-
-                        m_value += loss.value(target, output);
+                        m_value += impl::lvgrad(task, sample, loss, model);
                         m_count ++;
-
-                        model.cumulate_grad(loss.vgrad(target, output));
                 }
                 void store() const
                 {
@@ -109,7 +121,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        samples_t trainer_t::prune_annotated(const task_t& task, const samples_t& samples)
+        samples_t prune_annotated(const task_t& task, const samples_t& samples)
         {
                 samples_t pruned_samples;
 
@@ -129,22 +141,14 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        scalar_t trainer_t::value(
-                const task_t& task, const sample_t& sample, const loss_t& loss,
-                const model_t& model)
+        scalar_t lvalue(const task_t& task, const sample_t& sample, const loss_t& loss, const model_t& model)
         {
-                value_data_t cum_data;
-
-                cum_data.update(task, sample, loss, model);
-
-                return cum_data.value();
+                return impl::lvalue(task, sample, loss, model);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        scalar_t trainer_t::value_st(
-                const task_t& task, const samples_t& samples, const loss_t& loss,
-                const model_t& model)
+        scalar_t lvalue_st(const task_t& task, const samples_t& samples, const loss_t& loss, const model_t& model)
         {
                 value_data_t cum_data;
 
@@ -158,9 +162,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        scalar_t trainer_t::value_mt(
-                const task_t& task, const samples_t& samples, const loss_t& loss,
-                const model_t& model)
+        scalar_t lvalue_mt(const task_t& task, const samples_t& samples, const loss_t& loss, const model_t& model)
         {
                 value_data_t cum_data;
 
@@ -186,9 +188,8 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        scalar_t trainer_t::vgrad_st(
-                const task_t& task, const samples_t& samples, const loss_t& loss,
-                const model_t& model, vector_t& lgrad)
+        scalar_t lvgrad_st(const task_t& task, const samples_t& samples, const loss_t& loss, const model_t& model,
+                vector_t& lgrad)
         {
                 vgrad_data_t cum_data(model.n_parameters());
 
@@ -207,9 +208,8 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        scalar_t trainer_t::vgrad_mt(
-                const task_t& task, const samples_t& samples, const loss_t& loss,
-                const model_t& model, vector_t& lgrad)
+        scalar_t lvgrad_mt(const task_t& task, const samples_t& samples, const loss_t& loss, const model_t& model,
+                vector_t& lgrad)
         {
                 vgrad_data_t cum_data(model.n_parameters());
 
@@ -239,3 +239,4 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 }
+	

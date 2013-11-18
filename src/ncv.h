@@ -27,7 +27,7 @@ namespace ncv
         void init();
 
         // evaluate a model (compute the average loss value & error)
-        size_t test(const model_t& model, const task_t& task, const fold_t& fold, const loss_t& loss,
+        size_t test(const task_t& task, const fold_t& fold, const loss_t& loss, const model_t& model,
                 scalar_t& lvalue, scalar_t& lerror);
 }
 

@@ -1,5 +1,5 @@
 #include "ncv.h"
-#include <cfenv>
+#include "core/thread.h"
 
 #include "losses/loss_classnll.h"
 #include "losses/loss_logistic.h"
@@ -20,6 +20,8 @@
 
 #include "trainers/batch_trainer.h"
 #include "trainers/minibatch_trainer.h"
+
+#include <cfenv>
 
 namespace ncv
 {
@@ -64,7 +66,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        size_t test(const model_t& model, const task_t& task, const fold_t& fold, const loss_t& loss,
+        size_t test(const task_t& task, const fold_t& fold, const loss_t& loss, const model_t& model,
                 scalar_t& lvalue, scalar_t& lerror)
         {
                 lvalue = lerror = 0.0;
