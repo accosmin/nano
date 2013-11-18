@@ -200,7 +200,7 @@ int main(int argc, char *argv[])
                    << " in [" << estats.min() << ", " << estats.max() << "].";
 
         // save the best model (if any trained)
-        if (!models.empty())
+        if (!models.empty() && !cmd_output.empty())
         {
                 timer.start();
                 if (!models.begin()->second->save(cmd_output))

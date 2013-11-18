@@ -11,6 +11,9 @@
 UPDATE the experiment script:
 	- vary the model (linear, hidenX)
 	- vary the trainer (batch, mini-batch with different sampling methods)
+
+* refactor the trainer_t::v* functions:
+	- too much duplicated code!
 				
 * serializer: store data in std::vector, push_back values -> (serializer_t() << s << v << m).data() or .size()
 * same for deserializer

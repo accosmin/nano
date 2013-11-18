@@ -10,10 +10,11 @@ namespace ncv
         //      on a random mini-batch of fixed size in epochs.
         //
         // parameters:
-        //      opt=lbfgs[,cgd,gd]      - optimization method
-        //      iter=16[4,128]          - maximum number of optimization iterations per epoch
-        //      batch=1024[100,10000]   - mini-batch size / epoch
-        //      epoch=256[8,1024]       - number of epochs
+        //      opt=lbfgs[,cgd,gd]              - optimization method
+        //      iter=4[1,128]                   - maximum number of optimization iterations per epoch
+        //      batch=1024[100,10000]           - mini-batch size / epoch
+        //      epoch=256[8,1024]               - number of epochs
+        //      sample=lwei[,once,rand,lmax]    - sampling strategy for each epoch
         /////////////////////////////////////////////////////////////////////////////////////////
 
         class minibatch_trainer_t : public trainer_t
@@ -24,11 +25,18 @@ namespace ncv
                 minibatch_trainer_t(const string_t& params = string_t());
 
                 NCV_MAKE_CLONABLE(minibatch_trainer_t, trainer_t,
-                                  "mini-batch trainer, parameters: opt=lbfgs[,cgd,gd],iter=16[4,128],"\
-                                  "batch=1024[100,10000],epoch=256[8,1024]")
+                                  "mini-batch trainer, parameters: opt=lbfgs[,cgd,gd],iter=4[1,128],"\
+                                  "batch=1024[100,10000],epoch=256[8,1024],"\
+                                  "sample=lwei[,once,rand,lmax]")
 
                 // train the model
                 virtual bool train(const task_t&, const fold_t&, const loss_t&, model_t&) const;
+
+        private:
+
+                // sample a random mini-batch
+                samples_t rand_sample(const samples_t&) const;
+                samples_t rand_sample(const samples_t&, const task_t&, const loss_t&, const model_t&) const;
 
         private:
 
@@ -38,6 +46,7 @@ namespace ncv
                 size_t          m_batchsize;
                 size_t          m_epochs;
                 scalar_t        m_epsilon;
+                string_t        m_sampling;
         };
 }
 

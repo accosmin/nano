@@ -10,7 +10,7 @@ namespace ncv
 
         batch_trainer_t::batch_trainer_t(const string_t& params)
                 :       m_optimizer(text::from_params<string_t>(params, "opt", "lbfgs")),
-                        m_iterations(text::from_params<size_t>(params, "iter", 256)),
+                        m_iterations(text::from_params<size_t>(params, "iter", 1024)),
                         m_epsilon(text::from_params<scalar_t>(params, "eps", 1e-6))
         {
                 m_iterations = math::clamp(m_iterations, 4, 4096);
@@ -72,8 +72,8 @@ namespace ncv
                 {
                         log_info() << "batch trainer: state [loss = " << result.optimum().f
                                 << ", gradient = " << result.optimum().g.lpNorm<Eigen::Infinity>()
-                                << ", calls = " << result.n_fval_calls() << "/" << result.n_grad_calls()
-                                << "] updated in " << timer.elapsed() << ".";
+                                << ", calls = " << result.n_fval_calls() << " fun/" << result.n_grad_calls()
+                                << " grad] updated in " << timer.elapsed() << ".";
                         timer.start();
                 };
 

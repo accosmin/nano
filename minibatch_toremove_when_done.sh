@@ -1,0 +1,1 @@
+./build/ncv_trainer --task mnist --task-dir /home/cosmin/experiments/databases/mnist --loss classnll --model forward-network --model-params conv8x8:convs=2\;snorm --trainer mini-batch --trainer-params batch=1024,epoch=8,opt=lbfgs,iter=4,eps=1e-6 --trials 1

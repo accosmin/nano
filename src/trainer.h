@@ -32,6 +32,7 @@ namespace ncv
 
                 // compute loss value & gradient (given the model)
                 //      (single & multi-threaded versions)
+                static scalar_t value(const task_t&, const sample_t&, const loss_t&, const model_t&);
                 static scalar_t value_st(const task_t&, const samples_t&, const loss_t&, const model_t&);
                 static scalar_t value_mt(const task_t&, const samples_t&, const loss_t&, const model_t&);
                 static scalar_t vgrad_st(const task_t&, const samples_t&, const loss_t&, const model_t&, vector_t&);

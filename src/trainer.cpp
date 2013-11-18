@@ -129,6 +129,19 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        scalar_t trainer_t::value(
+                const task_t& task, const sample_t& sample, const loss_t& loss,
+                const model_t& model)
+        {
+                value_data_t cum_data;
+
+                cum_data.update(task, sample, loss, model);
+
+                return cum_data.value();
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
         scalar_t trainer_t::value_st(
                 const task_t& task, const samples_t& samples, const loss_t& loss,
                 const model_t& model)

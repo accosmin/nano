@@ -13,11 +13,55 @@ namespace ncv
                         m_iterations(text::from_params<size_t>(params, "iter", 16)),
                         m_batchsize(text::from_params<size_t>(params, "batch", 1024)),
                         m_epochs(text::from_params<size_t>(params, "epoch", 256)),
-                        m_epsilon(1e-6)
+                        m_epsilon(1e-6),
+                        m_sampling(text::from_params<string_t>(params, "sample", "lwei"))
         {
                 m_iterations = math::clamp(m_iterations, 4, 128);
                 m_batchsize = math::clamp(m_batchsize, 100, 10000);
                 m_epochs = math::clamp(m_epochs, 8, 1024);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        samples_t minibatch_trainer_t::rand_sample(const samples_t& samples) const
+        {
+                samples_t bsamples;
+
+                random_t<size_t> die(0, samples.size() - 1);
+                for (size_t i = 0; i < m_batchsize; i ++)
+                {
+//                        const sample_t sample = samples[die()];
+//                        const scalar_t lvalue = std::numeric_limits<scalar_t>::max();
+
+//                        bsamples.push_back(std::make_pair(lvalue, sample));
+
+                        const sample_t sample = samples[die()];
+                        bsamples.push_back(sample);
+                }
+
+                return bsamples;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        samples_t minibatch_trainer_t::rand_sample(const samples_t& samples,
+                const task_t& task, const loss_t& loss, const model_t& model) const
+        {
+                samples_t bsamples;
+
+                random_t<size_t> die(0, samples.size() - 1);
+                for (size_t i = 0; i < m_batchsize; i ++)
+                {
+//                        const sample_t sample = samples[die()];
+//                        const scalar_t lvalue = trainer_t::value(task, sample, loss, model);
+
+//                        bsamples.push_back(std::make_pair(lvalue, sample));
+
+                        const sample_t sample = samples[die()];
+                        bsamples.push_back(sample);
+                }
+
+                return bsamples;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +87,7 @@ namespace ncv
                 }
 
                 // current mini-batch of samples
-                samples_t bsamples(m_batchsize);
+                samples_t bsamples;
 
                 // optimization problem: size
                 auto fn_size = [&] ()
@@ -79,8 +123,8 @@ namespace ncv
                         log_info() << "mini-batch trainer: state [epoch = " << epoch << "/" << epochs
                                 << ", loss = " << result.optimum().f
                                 << ", gradient = " << result.optimum().g.lpNorm<Eigen::Infinity>()
-                                << ", calls = " << result.n_fval_calls() << "/" << result.n_grad_calls()
-                                << "] updated in " << timer.elapsed() << ".";
+                                << ", calls = " << result.n_fval_calls() << " fun/ " << result.n_grad_calls()
+                                << " grad] updated in " << timer.elapsed() << ".";
                         timer.start();
                 };
 
@@ -95,12 +139,31 @@ namespace ncv
 
                 // mini-batch optimization
                 for (size_t epoch = 0; epoch < m_epochs; epoch ++)
-                {
-                        // select random mini-batch
-                        random_t<size_t> die(0, samples.size() - 1);
-                        for (size_t i = 0; i < m_batchsize; i ++)
+                {                        
+                        // update the current mini-batch
+                        if (text::iequals(m_sampling, "once"))
                         {
-                                bsamples[i] = samples[die()];
+                                if (epoch == 0)
+                                {
+                                        bsamples = rand_sample(samples);
+                                }
+                        }
+                        else if (text::iequals(m_sampling, "rand"))
+                        {
+                                bsamples = rand_sample(samples);
+                        }
+                        else if (text::iequals(m_sampling, "lmax"))
+                        {
+
+                        }
+                        else if (text::iequals(m_sampling, "lwei"))
+                        {
+
+                        }
+                        else
+                        {
+                                log_error() << "mini-batch trainer: invalid sampling method <" << m_sampling << ">!";
+                                return false;
                         }
 
                         const auto fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer), epoch + 1, m_epochs);
