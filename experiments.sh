@@ -4,13 +4,24 @@
 dir_results=/home/cosmin/experiments/results
 dir_db=/home/cosmin/experiments/databases
 
-trainer=./build/ncv_trainer
+exe_trainer=./build/ncv_trainer
 
-common_config="--loss classnll --trainer batch --trainer-params opt=lbfgs,iter=256,eps=1e-6"
+batch_params="iter=1024,opt=lbfgs,eps=1e-6"
+minibatch_once_params="sample=once,batch=1024,epoch=64,iter=16,opt=lbfgs,eps=1e-6"
+minibatch_rand_params="sample=rand,batch=1024,epoch=64,iter=16,opt=lbfgs,eps=1e-6"
+minibatch_lmax_params="sample=lmax,batch=1024,epoch=64,iter=16,opt=lbfgs,eps=1e-6"
+minibatch_lwei_params="sample=lwei,batch=1024,epoch=64,iter=16,opt=lbfgs,eps=1e-6"
 
-# task description = task model model-params trials output
+common_config="--loss classnll"
+
+# task description = task model [model-params] trainer trainer-params trials output
 tasks=(
-	"mnist forward-network 10 mnist-affine"
+	"mnist forward-network batch ${batch_params} 10 mnist-affine-batch"
+	"mnist forward-network mini-batch ${minibatch_once_params} 10 mnist-affine-minibatch-once"
+	"mnist forward-network mini-batch ${minibatch_rand_params} 10 mnist-affine-minibatch-rand"
+	"mnist forward-network mini-batch ${minibatch_lmax_params} 10 mnist-affine-minibatch-lmax"
+	"mnist forward-network mini-batch ${minibatch_lwei_params} 10 mnist-affine-minibatch-lwei"
+	
 	#"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm 10 mnist-hidden1"
 	#"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm 10 mnist-hidden2"
 	
@@ -39,31 +50,40 @@ do
 
 	task_dir=${dir_db}/${task_id}
 
-	if [[ ${#arr[*]} -eq 5 ]]
+	if [[ ${#arr[*]} -eq 7 ]]
 	then 
 		model_params=${arr[2]}
-		trials=${arr[3]}	
-		output=${dir_exp}/${arr[4]}.model
-	        log=${dir_exp}/${arr[4]}.log
+		trainer_id=${arr[3]}
+		trainer_params=${arr[4]}
+		trials=${arr[5]}	
+		output=${dir_exp}/${arr[6]}.model
+	        log=${dir_exp}/${arr[6]}.log
 	else
 		model_params=
-		trials=${arr[2]}
-		output=${dir_exp}/${arr[3]}.model
-	        log=${dir_exp}/${arr[3]}.log
+		trainer_id=${arr[2]}
+                trainer_params=${arr[3]}
+                trials=${arr[4]}        
+                output=${dir_exp}/${arr[5]}.model
+                log=${dir_exp}/${arr[5]}.log
 	fi	
 
+	config=""
+	config=${config}" --task ${task_id} --task-dir ${task_dir}"
+	config=${config}" --trials ${trials} --output ${output} ${common_config}"                
 	if [[ -z ${model_params} ]]
 	then
-		config="--task ${task_id} --task-dir ${task_dir} --trials ${trials} --model ${model_id} --output ${output} ${common_config}"
+		config=${config}" --model ${model_id}"
 	else
-		config="--task ${task_id} --task-dir ${task_dir} --trials ${trials} --model ${model_id} --model-params ${model_params} --output ${output} ${common_config}"
+                config=${config}" --model ${model_id} --model-params ${model_params}"
 	fi
+	config=${config}" --trainer ${trainer_id} --trainer-params ${trainer_params}"
 	
 	echo "running <${task_id}> ..."
-	echo -e "\twith model <${model_id}><${model_params}>"
-	echo -e "\twith param <${common_config}>"
+	echo -e "\twith model   <${model_id}><${model_params}>"
+        echo -e "\twith trainer <${trainer_id}><${trainer_params}>"
+	echo -e "\twith param   <${common_config}>"
 
-	time ${trainer} ${config} > ${log}
+	#time ${exe_trainer} ${config} > ${log}
 
 	echo -e "\tlog saved to <${log}>"
 	echo

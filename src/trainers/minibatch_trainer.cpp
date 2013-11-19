@@ -89,6 +89,8 @@ namespace ncv
         samples_t minibatch_trainer_t::lwei(const samples_t& bsamples, const samples_t& samples,
                 const task_t& task, const loss_t& loss, const model_t& model) const
         {
+                // fixme: double check this implementation!
+
                 samples_t qsamples = rand(samples);
                 qsamples.insert(qsamples.end(), bsamples.begin(), bsamples.end());
 
@@ -113,8 +115,6 @@ namespace ncv
                                 }
                         }
                 }
-
-                std::cout << "blvalues.size() = " << blvalues.size() << std::endl;
 
                 return make_samples(qsamples, blvalues);
         }
