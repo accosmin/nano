@@ -34,7 +34,7 @@ namespace ncv
 
         private:
 
-                // sample a random mini-batch
+                // random sampling
                 samples_t rand(const samples_t&) const;
 
                 // maximum loss value sampling
@@ -43,11 +43,11 @@ namespace ncv
                 // loss value proportional sampling
                 samples_t lwei(const samples_t&, const samples_t&, const task_t&, const loss_t&, const model_t&) const;
 
-                // store loss values for the given samples
-                typedef std::pair<scalar_t, size_t>     lsample_t;
-                typedef std::vector<lsample_t>          lsamples_t;
-                lsamples_t make_lsamples(const samples_t&, const task_t&, const loss_t&, const model_t&) const;
-                samples_t make_samples(const samples_t&, const lsamples_t&) const;
+                // <loss value, sample index>
+                typedef std::pair<scalar_t, size_t>     lvalue_t;
+                typedef std::vector<lvalue_t>           lvalues_t;
+                lvalues_t make_lvalues(const samples_t&, const task_t&, const loss_t&, const model_t&) const;
+                samples_t make_samples(const samples_t&, const lvalues_t&) const;
 
         private:
 

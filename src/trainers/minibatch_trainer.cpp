@@ -23,33 +23,49 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        minibatch_trainer_t::lvalues_t minibatch_trainer_t::make_lvalues(const samples_t& samples,
+                const task_t& task, const loss_t& loss, const model_t& model) const
+        {
+                lvalues_t lvalues;
+
+                for (size_t i = 0; i < samples.size(); i ++)
+                {
+                        lvalues.emplace_back(ncv::lvalue(task, samples[i], loss, model), i);
+                }
+
+                return lvalues;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        samples_t minibatch_trainer_t::make_samples(const samples_t& samples, const lvalues_t& lvalues) const
+        {
+                samples_t bsamples;
+
+                for (size_t i = 0; i < lvalues.size(); i ++)
+                {
+                        const sample_t& sample = samples[lvalues[i].second];
+                        bsamples.emplace_back(sample);
+                }
+
+                return bsamples;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
         samples_t minibatch_trainer_t::rand(const samples_t& samples) const
         {
                 samples_t bsamples;
 
-                random_t<size_t> die(0, samples.size() - 1);
                 for (size_t i = 0; i < m_batchsize; i ++)
                 {
+                        random_t<size_t> die(0, samples.size() - 1);
+
                         const sample_t& sample = samples[die()];
                         bsamples.emplace_back(sample);
                 }
 
                 return bsamples;        
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        minibatch_trainer_t::lsamples_t minibatch_trainer_t::make_lsamples(const samples_t& samples,
-                const task_t& task, const loss_t& loss, const model_t& model) const
-        {
-                lsamples_t lsamples;
-
-                for (size_t i = 0; i < samples.size(); i ++)
-                {
-                        lsamples.emplace_back(ncv::lvalue(task, samples[i], loss, model), i);
-                }
-
-                return lsamples;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -60,17 +76,12 @@ namespace ncv
                 samples_t qsamples = rand(samples);
                 qsamples.insert(qsamples.end(), bsamples.begin(), bsamples.end());
 
-                lsamples_t lsamples = make_lsamples(qsamples, task, loss, model);
-                std::sort(lsamples.begin(), lsamples.end());
+                lvalues_t qlvalues = make_lvalues(qsamples, task, loss, model);
 
-                // select the samples with the maximum loss value
-                samples_t esamples;
-                for (size_t i = m_batchsize; i < lsamples.size(); i ++)
-                {
-                        esamples.emplace_back(qsamples[lsamples[i].second]);
-                }
+                std::sort(qlvalues.begin(), qlvalues.end());
+                const lvalues_t blvalues(qlvalues.begin() + m_batchsize, qlvalues.end());
 
-                return esamples;
+                return make_samples(qsamples, blvalues);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -81,23 +92,31 @@ namespace ncv
                 samples_t qsamples = rand(samples);
                 qsamples.insert(qsamples.end(), bsamples.begin(), bsamples.end());
 
-                lsamples_t lsamples = make_lsamples(qsamples, task, loss, model);
+                lvalues_t qlvalues = make_lvalues(qsamples, task, loss, model);
 
-                // todo: select the samples randomly proportional to the loss value
-                const scalar_t lsum = std::accumulate(lsamples.begin(), lsamples.end(), 0.0,
-                                                      [] (scalar_t sum, const lsample_t& l) { return sum + l.first; });
+                const scalar_t lsum = std::accumulate(qlvalues.begin(), qlvalues.end(), 0.0,
+                                      [] (scalar_t sum, const lvalue_t& lv) { return sum + lv.first; });
 
+                const scalar_t pdiv = m_batchsize / (lsum + std::numeric_limits<scalar_t>::epsilon());
 
+                lvalues_t blvalues;
+                for (size_t i = 0; i < qlvalues.size(); i ++)
+                {
+                        for (   scalar_t prob = qlvalues[i].first * pdiv;
+                                prob > std::numeric_limits<scalar_t>::epsilon();
+                                prob -= 1.0)
+                        {
+                                random_t<scalar_t> die(0.0, 1.0);
+                                if (prob > die())
+                                {
+                                        blvalues.push_back(qlvalues[i]);
+                                }
+                        }
+                }
 
-                std::sort(lsamples.begin(), lsamples.end());
+                std::cout << "blvalues.size() = " << blvalues.size() << std::endl;
 
-                samples_t esamples;
-//                for (size_t i = m_batchsize; i < lsamples.size(); i ++)
-//                {
-//                        esamples.emplace_back(lsamples[i].second);
-//                }
-
-                return esamples;
+                return make_samples(qsamples, blvalues);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
