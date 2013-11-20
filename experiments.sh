@@ -7,23 +7,13 @@ dir_db=/home/cosmin/experiments/databases
 exe_trainer=./build/ncv_trainer
 
 batch_params="iter=1024,opt=lbfgs,eps=1e-6"
-minibatch_once_params="sample=once,batch=1024,epoch=64,iter=16,opt=lbfgs,eps=1e-6"
-minibatch_rand_params="sample=rand,batch=1024,epoch=64,iter=16,opt=lbfgs,eps=1e-6"
-minibatch_lmax_params="sample=lmax,batch=1024,epoch=64,iter=16,opt=lbfgs,eps=1e-6"
-minibatch_lwei_params="sample=lwei,batch=1024,epoch=64,iter=16,opt=lbfgs,eps=1e-6"
-
 common_config="--loss classnll"
 
 # task description = task model [model-params] trainer trainer-params trials output
 tasks=(
-	"mnist forward-network batch ${batch_params} 10 mnist-affine-batch"
-	"mnist forward-network mini-batch ${minibatch_once_params} 10 mnist-affine-minibatch-once"
-	"mnist forward-network mini-batch ${minibatch_rand_params} 10 mnist-affine-minibatch-rand"
-	"mnist forward-network mini-batch ${minibatch_lmax_params} 10 mnist-affine-minibatch-lmax"
-	"mnist forward-network mini-batch ${minibatch_lwei_params} 10 mnist-affine-minibatch-lwei"
-	
-	#"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm 10 mnist-hidden1"
-	#"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm 10 mnist-hidden2"
+	"mnist forward-network batch ${batch_params} 10 mnist-affine-batch"	
+	"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm batch ${batch_params} 10 mnist-hidden1-batch"
+	"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm batch ${batch_params} 10 mnist-hidden2-batch"
 	
 	#"cbcl-faces forward-network 10 cbclfaces-affine"
 	#"cbcl-faces forward-network conv:convs=16,crows=8,ccols=8;snorm 10 cbclfaces-hidden1"

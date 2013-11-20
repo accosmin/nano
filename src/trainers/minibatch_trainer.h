@@ -14,7 +14,7 @@ namespace ncv
         //      iter=4[1,128]                   - maximum number of optimization iterations per epoch
         //      batch=1024[100,10000]           - mini-batch size / epoch
         //      epoch=256[8,1024]               - number of epochs
-        //      sample=lwei[,once,rand,lmax]    - sampling strategy for each epoch
+        //      sample=rand[,lwei,lmax]         - sampling strategy for each epoch
         /////////////////////////////////////////////////////////////////////////////////////////
 
         class minibatch_trainer_t : public trainer_t
@@ -27,7 +27,7 @@ namespace ncv
                 NCV_MAKE_CLONABLE(minibatch_trainer_t, trainer_t,
                                   "mini-batch trainer, parameters: opt=lbfgs[,cgd,gd],iter=4[1,128],"\
                                   "batch=1024[100,10000],epoch=256[8,1024],"\
-                                  "sample=lwei[,once,rand,lmax]")
+                                  "sample=rand[,lwei,lmax]")
 
                 // train the model
                 virtual bool train(const task_t&, const fold_t&, const loss_t&, model_t&) const;
@@ -35,19 +35,19 @@ namespace ncv
         private:
 
                 // random sampling
-                samples_t rand(const samples_t&) const;
+                static void rand(const samples_t&, size_t, samples_t&);
 
-                // maximum loss value sampling
-                samples_t lmax(const samples_t&, const samples_t&, const task_t&, const loss_t&, const model_t&) const;
+//                // maximum loss value sampling
+//                samples_t lmax(const samples_t&, const samples_t&, const task_t&, const loss_t&, const model_t&) const;
 
-                // loss value proportional sampling
-                samples_t lwei(const samples_t&, const samples_t&, const task_t&, const loss_t&, const model_t&) const;
+//                // loss value proportional sampling
+//                samples_t lwei(const samples_t&, const samples_t&, const task_t&, const loss_t&, const model_t&) const;
 
-                // <loss value, sample index>
-                typedef std::pair<scalar_t, size_t>     lvalue_t;
-                typedef std::vector<lvalue_t>           lvalues_t;
-                lvalues_t make_lvalues(const samples_t&, const task_t&, const loss_t&, const model_t&) const;
-                samples_t make_samples(const samples_t&, const lvalues_t&) const;
+//                // <loss value, sample index>
+//                typedef std::pair<scalar_t, size_t>     lvalue_t;
+//                typedef std::vector<lvalue_t>           lvalues_t;
+//                lvalues_t make_lvalues(const samples_t&, const task_t&, const loss_t&, const model_t&) const;
+//                samples_t make_samples(const samples_t&, const lvalues_t&) const;
 
         private:
 

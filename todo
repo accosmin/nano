@@ -1,15 +1,6 @@
-* mini-batch trainer strategies:
-	- RAND2 -> replace randomly half of the current training batch
-	- LMIN2 -> replace the samples with the lowest loss with random samples
-	- LWEI2 -> similar ...
-
 * can make the ::backward function templated after the convolution size (similar to conv_add)
 	- maybe move it to deconvolution.hpp!
 	- it could be faster if using the same technique as with conv_add_dynamic
-
-UPDATE the experiment script:
-	- vary the model (linear, hidenX)
-	- vary the trainer (batch, mini-batch with different sampling methods)
 
 * refactor the trainer_t::v* functions:
 	- too much duplicated code!

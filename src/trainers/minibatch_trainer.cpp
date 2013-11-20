@@ -14,7 +14,7 @@ namespace ncv
                         m_batchsize(text::from_params<size_t>(params, "batch", 1024)),
                         m_epochs(text::from_params<size_t>(params, "epoch", 256)),
                         m_epsilon(1e-6),
-                        m_sampling(text::from_params<string_t>(params, "sample", "lwei"))
+                        m_sampling(text::from_params<string_t>(params, "sample", "rand"))
         {
                 m_iterations = math::clamp(m_iterations, 4, 128);
                 m_batchsize = math::clamp(m_batchsize, 100, 10000);
@@ -23,106 +23,124 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        minibatch_trainer_t::lvalues_t minibatch_trainer_t::make_lvalues(const samples_t& samples,
-                const task_t& task, const loss_t& loss, const model_t& model) const
-        {
-                lvalues_t lvalues;
+//        minibatch_trainer_t::lvalues_t minibatch_trainer_t::make_lvalues(const samples_t& samples,
+//                const task_t& task, const loss_t& loss, const model_t& model) const
+//        {
+//                lvalues_t lvalues;
 
-                for (size_t i = 0; i < samples.size(); i ++)
-                {
-                        lvalues.emplace_back(ncv::lvalue(task, samples[i], loss, model), i);
-                }
+//                for (size_t i = 0; i < samples.size(); i ++)
+//                {
+//                        lvalues.emplace_back(ncv::lvalue(task, samples[i], loss, model), i);
+//                }
 
-                return lvalues;
-        }
+//                return lvalues;
+//        }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
+//        /////////////////////////////////////////////////////////////////////////////////////////
 
-        samples_t minibatch_trainer_t::make_samples(const samples_t& samples, const lvalues_t& lvalues) const
-        {
-                samples_t bsamples;
+//        samples_t minibatch_trainer_t::make_samples(const samples_t& samples, const lvalues_t& lvalues) const
+//        {
+//                samples_t bsamples;
 
-                for (size_t i = 0; i < lvalues.size(); i ++)
-                {
-                        const sample_t& sample = samples[lvalues[i].second];
-                        bsamples.emplace_back(sample);
-                }
+//                for (size_t i = 0; i < lvalues.size(); i ++)
+//                {
+//                        const sample_t& sample = samples[lvalues[i].second];
+//                        bsamples.emplace_back(sample);
+//                }
 
-                return bsamples;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        samples_t minibatch_trainer_t::rand(const samples_t& samples) const
-        {
-                samples_t bsamples;
-
-                for (size_t i = 0; i < m_batchsize; i ++)
-                {
-                        random_t<size_t> die(0, samples.size() - 1);
-
-                        const sample_t& sample = samples[die()];
-                        bsamples.emplace_back(sample);
-                }
-
-                return bsamples;        
-        }
+//                return bsamples;
+//        }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        samples_t minibatch_trainer_t::lmax(const samples_t& bsamples, const samples_t& samples,
-                const task_t& task, const loss_t& loss, const model_t& model) const
+        void minibatch_trainer_t::rand(const samples_t& tsamples, size_t size, samples_t& samples)
         {
-                samples_t qsamples = rand(samples);
-                qsamples.insert(qsamples.end(), bsamples.begin(), bsamples.end());
-
-                lvalues_t qlvalues = make_lvalues(qsamples, task, loss, model);
-
-                std::sort(qlvalues.begin(), qlvalues.end());
-                const lvalues_t blvalues(qlvalues.begin() + m_batchsize, qlvalues.end());
-
-                return make_samples(qsamples, blvalues);
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        samples_t minibatch_trainer_t::lwei(const samples_t& bsamples, const samples_t& samples,
-                const task_t& task, const loss_t& loss, const model_t& model) const
-        {
-                // fixme: double check this implementation!
-
-                samples_t qsamples = rand(samples);
-                qsamples.insert(qsamples.end(), bsamples.begin(), bsamples.end());
-
-                lvalues_t qlvalues = make_lvalues(qsamples, task, loss, model);
-
-                const scalar_t lsum = std::accumulate(qlvalues.begin(), qlvalues.end(), 0.0,
-                                      [] (scalar_t sum, const lvalue_t& lv) { return sum + lv.first; });
-
-                const scalar_t pdiv = m_batchsize / (lsum + std::numeric_limits<scalar_t>::epsilon());
-
-                lvalues_t blvalues;
-                for (size_t i = 0; i < qlvalues.size(); i ++)
+                // initialize with random samples
+                if (true)//tsamples.size() != size)
                 {
-                        for (   scalar_t prob = qlvalues[i].first * pdiv;
-                                prob > std::numeric_limits<scalar_t>::epsilon();
-                                prob -= 1.0)
+                        samples.clear();
+
+                        for (size_t i = 0; i < size; i ++)
                         {
-                                random_t<scalar_t> die(0.0, 1.0);
-                                if (prob > die())
-                                {
-                                        blvalues.push_back(qlvalues[i]);
-                                }
+                                random_t<size_t> die(0, tsamples.size() - 1);
+                                samples.emplace_back(tsamples[die()]);
                         }
                 }
 
-                return make_samples(qsamples, blvalues);
+                // replace at random 50% of samples with new random samples
+                else
+                {
+                        const size_t rprob = 2;
+
+                        for (size_t i = 0; i < size; i ++)
+                        {
+                                random_t<size_t> rdie(0, rprob - 1);
+                                if (rdie() == 0)
+                                {
+                                        random_t<size_t> die(0, tsamples.size() - 1);
+                                        samples[i] = tsamples[die()];
+                                }
+                        }
+                }
         }
+
+//        /////////////////////////////////////////////////////////////////////////////////////////
+
+//        samples_t minibatch_trainer_t::lmax(const samples_t& bsamples, const samples_t& samples,
+//                const task_t& task, const loss_t& loss, const model_t& model) const
+//        {
+//                samples_t qsamples = rand(samples);
+//                qsamples.insert(qsamples.end(), bsamples.begin(), bsamples.end());
+
+//                lvalues_t qlvalues = make_lvalues(qsamples, task, loss, model);
+
+//                std::sort(qlvalues.begin(), qlvalues.end());
+//                const lvalues_t blvalues(qlvalues.begin() + m_batchsize, qlvalues.end());
+
+//                return make_samples(qsamples, blvalues);
+//        }
+
+//        /////////////////////////////////////////////////////////////////////////////////////////
+
+//        samples_t minibatch_trainer_t::lwei(const samples_t& bsamples, const samples_t& samples,
+//                const task_t& task, const loss_t& loss, const model_t& model) const
+//        {
+//                // fixme: double check this implementation!
+
+//                samples_t qsamples = rand(samples);
+//                qsamples.insert(qsamples.end(), bsamples.begin(), bsamples.end());
+
+//                lvalues_t qlvalues = make_lvalues(qsamples, task, loss, model);
+
+//                const scalar_t lsum = std::accumulate(qlvalues.begin(), qlvalues.end(), 0.0,
+//                                      [] (scalar_t sum, const lvalue_t& lv) { return sum + lv.first; });
+
+//                const scalar_t pdiv = m_batchsize / (lsum + std::numeric_limits<scalar_t>::epsilon());
+
+//                lvalues_t blvalues;
+//                for (size_t i = 0; i < qlvalues.size(); i ++)
+//                {
+//                        for (   scalar_t prob = qlvalues[i].first * pdiv;
+//                                prob > std::numeric_limits<scalar_t>::epsilon();
+//                                prob -= 1.0)
+//                        {
+//                                random_t<scalar_t> die(0.0, 1.0);
+//                                if (prob > die())
+//                                {
+//                                        blvalues.push_back(qlvalues[i]);
+//                                }
+//                        }
+//                }
+
+//                return make_samples(qsamples, blvalues);
+//        }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
         bool minibatch_trainer_t::train(const task_t& task, const fold_t& fold, const loss_t& loss, model_t& model) const
         {
+                throw std::runtime_error("mini-batch trainer: not working yet!");
+
                 if (fold.second != protocol::train)
                 {
                         log_error() << "mini-batch trainer: cannot only train models with training samples!";
@@ -142,7 +160,7 @@ namespace ncv
                 }
 
                 // current mini-batch of samples
-                samples_t bsamples = rand(samples);
+                samples_t bsamples;
 
                 // optimization problem: size
                 auto fn_size = [&] ()
@@ -196,21 +214,18 @@ namespace ncv
                 for (size_t epoch = 0; epoch < m_epochs; epoch ++)
                 {                        
                         // update the current mini-batch
-                        if (text::iequals(m_sampling, "once"))
+                        if (text::iequals(m_sampling, "rand"))
                         {
+                                rand(samples, m_batchsize, bsamples);
                         }
-                        else if (text::iequals(m_sampling, "rand"))
-                        {
-                                bsamples = rand(samples);
-                        }
-                        else if (text::iequals(m_sampling, "lmax"))
-                        {
-                                bsamples = lmax(bsamples, samples, task, loss, model);
-                        }
-                        else if (text::iequals(m_sampling, "lwei"))
-                        {
-                                bsamples = lwei(bsamples, samples, task, loss, model);
-                        }
+//                        else if (text::iequals(m_sampling, "lmax"))
+//                        {
+//                                bsamples = lmax(bsamples, samples, task, loss, model);
+//                        }
+//                        else if (text::iequals(m_sampling, "lwei"))
+//                        {
+//                                bsamples = lwei(bsamples, samples, task, loss, model);
+//                        }
                         else
                         {
                                 log_error() << "mini-batch trainer: invalid sampling method <" << m_sampling << ">!";
@@ -244,6 +259,9 @@ namespace ncv
                         // update the model
                         x = bres.optimum().x;
                         res.update(bres);
+
+                        // average loss
+                        log_info() << "mini-batch trainer: loss = " << ncv::lvalue_mt(task, samples, loss, model) << ".";
                 }
 
                 // update the model
