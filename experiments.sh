@@ -12,16 +12,16 @@ common_config="--loss classnll"
 # task description = task model [model-params] trainer trainer-params trials output
 tasks=(
 	"mnist forward-network batch ${batch_params} 10 mnist-affine-batch"	
-	"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm batch ${batch_params} 10 mnist-hidden1-batch"
-	"mnist forward-network conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm batch ${batch_params} 10 mnist-hidden2-batch"
+	"mnist forward-network conv8x8:convs=16;snorm batch ${batch_params} 10 mnist-hidden1-batch"
+	"mnist forward-network conv8x8:convs=16;snorm;conv8x8:convs=16;snorm batch ${batch_params} 10 mnist-hidden2-batch"
 	
-	#"cbcl-faces forward-network 10 cbclfaces-affine"
-	#"cbcl-faces forward-network conv:convs=16,crows=8,ccols=8;snorm 10 cbclfaces-hidden1"
-	#"cbcl-faces forward-network conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm 10 cbclfaces-hidden2"
+	"cbcl-faces forward-network batch ${batch_params} 10 cbclfaces-affine"
+	"cbcl-faces forward-network conv8x8:convs=16;snorm batch ${batch_params} 10 cbclfaces-hidden1"
+	"cbcl-faces forward-network conv8x8:convs=16;snorm;conv8x8:convs=16;snorm batch ${batch_params} 10 cbclfaces-hidden2"
 	
-	#"cifar10 forward-network 10 cifar10-affine"
-	#"cifar10 forward-network conv:convs=16,crows=8,ccols=8;snorm 10 cifar10-hidden1"
-	#"cifar10 forward-network conv:convs=16,crows=8,ccols=8;snorm;conv:convs=16,crows=8,ccols=8;snorm 10 cifar10-hidden2"
+	"cifar10 forward-network batch ${batch_params} 10 cifar10-affine"
+	"cifar10 forward-network conv8x8:convs=16;snorm batch ${batch_params} 10 cifar10-hidden1"
+	"cifar10 forward-network conv8x8:convs=16;snorm;conv8x8:convs=16;snorm batch ${batch_params} 10 cifar10-hidden2"
 	
 	# TODO: STL10
 	)
