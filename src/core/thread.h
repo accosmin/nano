@@ -23,7 +23,7 @@ namespace ncv
         >
         void thread_loop(tsize N, toperator op)
         {
-                worker_pool_t& pool = worker_pool_t::instance();
+                worker_pool_t pool;
 
                 const tsize n_tasks = static_cast<tsize>(ncv::n_threads());
                 for (tsize t = 0; t < n_tasks; t ++)
@@ -53,7 +53,7 @@ namespace ncv
         >
         void thread_loop_cumulate(tsize N, toperator_init op_init, toperator op, toperator_cumulate op_cumulate)
         {
-                worker_pool_t& pool = worker_pool_t::instance();
+                worker_pool_t pool;
 
                 const tsize n_tasks = static_cast<tsize>(ncv::n_threads());
 

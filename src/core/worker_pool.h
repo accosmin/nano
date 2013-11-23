@@ -1,7 +1,6 @@
 #ifndef NANOCV_WORKER_POOL_H
 #define NANOCV_WORKER_POOL_H
 
-#include "singleton.hpp"
 #include <thread>
 #include <vector>
 #include <condition_variable>
@@ -21,7 +20,7 @@ namespace ncv
         }
 
         // worker pool
-        class worker_pool_t : public singleton_t<worker_pool_t>
+        class worker_pool_t
         {
         public:
 

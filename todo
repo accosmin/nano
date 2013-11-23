@@ -1,6 +1,6 @@
-* can make the ::backward function templated after the convolution size (similar to conv_add)
-	- maybe move it to deconvolution.hpp!
-	- it could be faster if using the same technique as with conv_add_dynamic
+* FASTER convolutions and faster training:
+	- make the stochastic methods work
+	- faster ::backward function 
 
 * refactor the trainer_t::v* functions:
 	- too much duplicated code!
@@ -11,13 +11,11 @@
 	
 idea: variational learning (ebbbost)
 idea: regularized (bound) loss with the same approach as in nips12a.pdf
-	
 
 * svhn decoding:
 	- the sections are not decoded correctly: 
 		- the data type of the last two sections is not valid
 		- the number of bytes in the last section is not valid
-
 
 * test program to print model (ncv_describe -> model structure + convolutions as images)
 

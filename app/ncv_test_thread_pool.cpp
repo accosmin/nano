@@ -5,7 +5,7 @@ int main(int argc, char *argv[])
 {
         using namespace ncv;
 
-        worker_pool_t& pool = worker_pool_t::instance();
+        worker_pool_t pool;
 
         const size_t n_tests = 8;
         const size_t n_max_jobs = pool.n_workers() * 16;
