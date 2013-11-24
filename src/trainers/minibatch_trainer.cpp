@@ -98,9 +98,26 @@ namespace ncv
                 {                        
                         // update the current mini-batch
                         random_t<size_t> die(0, samples.size() - 1);
-                        for (size_t i = 0; i < m_batchsize; i ++)
+                        if (epoch == 0)
                         {
-                                bsamples[i] = samples[die()];
+                                // initial: random samples
+                                for (sample_t& sample : bsamples)
+                                {
+                                        sample = samples[die()];
+                                }
+                        }
+                        else
+                        {
+                                // iterate: replace 50% at random with random samples
+                                random_t<size_t> rdie(0, 1);
+                                for (sample_t& sample : bsamples)
+                                {
+                                        if (rdie() == 0)
+                                        {
+                                                sample = samples[die()];
+                                        }
+                                }
+
                         }
 
                         const auto fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer), epoch + 1, m_epochs);
@@ -132,10 +149,10 @@ namespace ncv
                         res.update(bres);
 
                         // average loss
-                        timer.start();
-                        const scalar_t lvalue = ncv::lvalue_mt(task, samples, loss, model);
-                        log_info() << "mini-batch trainer: epoch finished, average loss = "
-                                   << lvalue << " [" << timer.elapsed() << "].";
+//                        timer.start();
+//                        const scalar_t lvalue = ncv::lvalue_mt(task, samples, loss, model);
+//                        log_info() << "mini-batch trainer: epoch finished, average loss = "
+//                                   << lvalue << " [" << timer.elapsed() << "].";
                 }
 
                 // update the model
