@@ -23,8 +23,8 @@ namespace ncv
                         typedef state_t<tscalar, tsize>                 tstate;
                         typedef typename tstate::tvector                tvector;
 
-                        // constructor (analytic gradient)
-                        explicit result_t(tsize size = 0)
+                        // constructor
+                        result_t(tsize size = 0)
                                 :       m_optimum(size),
                                         m_iterations(0),
                                         m_n_fvals(0),
