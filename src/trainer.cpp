@@ -148,6 +148,13 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        scalar_t lvgrad(const task_t& task, const sample_t& sample, const loss_t& loss, const model_t& model)
+        {
+                return impl::lvgrad(task, sample, loss, model);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
         scalar_t lvalue_st(const task_t& task, const samples_t& samples, const loss_t& loss, const model_t& model)
         {
                 value_data_t cum_data;
