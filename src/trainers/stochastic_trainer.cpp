@@ -136,8 +136,8 @@ namespace ncv
                         }
 
                         const auto fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer), epoch + 1, m_epochs);
-                        const scalar_t eps = m_epsilon;
-                        const size_t iters = m_iterations;
+//                        const scalar_t eps = m_epsilon;
+//                        const size_t iters = m_iterations;
 
                         // optimize the model
                         opt_result_t bres;
@@ -174,11 +174,11 @@ namespace ncv
                 model.load_params(res.optimum().x);
 
                 // OK
-                log_info() << "stochastic trainer: optimum [loss = " << res.optimum().f
-                           << ", gradient = " << res.optimum().g.norm()
-                           << ", calls = " << res.n_fval_calls() << "/" << res.n_grad_calls()
-                           << "], iterations = [" << res.iterations() << "/" << m_iterations
-                           << "].";
+//                log_info() << "stochastic trainer: optimum [loss = " << res.optimum().f
+//                           << ", gradient = " << res.optimum().g.norm()
+//                           << ", calls = " << res.n_fval_calls() << "/" << res.n_grad_calls()
+//                           << "], iterations = [" << res.iterations() << "/" << m_iterations
+//                           << "].";
 
                 return true;
         }

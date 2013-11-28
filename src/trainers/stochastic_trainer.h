@@ -30,7 +30,7 @@ namespace ncv
 
         private:
 
-                // SGD parameters
+                // SGD parametrization
                 static scalar_t log_min_lambda() { return -6.0; }
                 static scalar_t log_max_lambda() { return +0.0; }
                 static scalar_t make_lambda(scalar_t log_lambda) { return std::pow(10.0, log_lambda); }
@@ -40,9 +40,113 @@ namespace ncv
                         return gamma / (1.0 + gamma * lambda * iteration);
                 }
 
+                // store a SGD parameter configuration
+                //      useful for tuning the learning parameters
+                struct sgd_state_t;
+                typedef std::vector<sgd_state_t> sgd_states_t;
+
+                struct sgd_state_t
+                {
+                        // constructor
+                        sgd_state_t(size_t depth = 0,
+                                    scalar_t gamma = 1.0,
+                                    scalar_t log_lambda = 0.0,
+                                    scalar_t log_dlambda = 1.0,
+                                    const vector_t& x = vector_t())
+                                :       m_depth(depth),
+                                        m_gamma(gamma),
+                                        m_log_lambda(log_lambda),
+                                        m_log_dlambda(log_dlambda),
+                                        m_x(x),
+                                        m_fx(std::numeric_limits<scalar_t>::max())
+                        {
+                        }
+
+                        // configuration to further explore
+                        sgd_states_t explorables() const
+                        {
+                                const scalar_t delta = m_log_dlambda / 3.0;
+                                return
+                                {
+                                        sgd_state_t(m_depth + 1, m_gamma, m_log_lambda - delta, delta, m_x),
+                                        sgd_state_t(m_depth + 1, m_gamma, m_log_lambda,         delta, m_x),
+                                        sgd_state_t(m_depth + 1, m_gamma, m_log_lambda + delta, delta, m_x)
+
+                                };
+                        }
+
+                        // check if the state was explored
+                        bool processed() const
+                        {
+                                return m_fx < 1e+40;
+                        }
+
+                        // attributes
+                        size_t          m_depth;                // exploration (accuracy) depth
+                        scalar_t        m_gamma;                // learning parameter
+                        scalar_t        m_log_lambda;           // learning parameter
+                        scalar_t        m_log_dlambda;          // current variation of the learning parameter
+                        vector_t        m_x;                    // model parameter
+                        scalar_t        m_fx;                   // loss value
+                };
+
+                struct sgd_world_t
+                {
+                        // constructor
+                        sgd_world_t(size_t max_depth = 8,
+                                    const vector_t& x0 = vector_t())
+                                :       m_max_depth(max_depth),
+                                        m_states(
+                                        {
+                                                {0, 1.0, -6.0, 1.0, x0},
+                                                {0, 1.0, -5.0, 1.0, x0},
+                                                {0, 1.0, -4.0, 1.0, x0},
+                                                {0, 1.0, -3.0, 1.0, x0},
+                                                {0, 1.0, -2.0, 1.0, x0},
+                                                {0, 1.0, -1.0, 1.0, x0},
+                                                {0, 1.0, +0.0, 1.0, x0}
+                                        })
+                        {
+                        }
+
+                        // enqueued new explored state
+                        void enqueue(const sgd_state_t& state)
+                        {
+                                const std::lock_guard<std::mutex> lock(m_mutex);
+
+                                if (state.m_depth < m_max_depth)
+                                {
+                                        const sgd_states_t states = state.explorables();
+                                        m_states.insert(m_states.end(), states.begin(), states.end());
+                                }
+                                else
+                                {
+                                        m_states.push_back(state);
+                                }
+                        }
+
+                        // check if any state can be explored
+                        bool enquire(sgd_state_t& state)
+                        {
+                                // TODO:
+                                //      - check if maximum depth was reached => STOP
+                                //      - get the unexplored state with the maximum depth
+                        }
+
+                        // attributes
+                        std::mutex      m_mutex;
+                        size_t          m_max_depth;            // maximum exploration depth
+                        sgd_states_t    m_states;               // current (explored, to explore) states
+                };
+
                 // stochastic gradient descent (SGD)
                 void sgd(const task_t&, const samples_t&, const loss_t&, const model_t&,
                          vector_t& x, scalar_t gamma, scalar_t lambda, size_t iterations) const;
+
+//                * class to store processed and enqueued states: [age = 0-8][{lambda, lambda delta, x, f(x)}] + current age + synchronization access
+//                * threading algorithm (RUN): if no job available, then go to the most recent age where there is job that was not expanded and run it; otherwise, take a job from the most recent age
+//                * threading algorithm (DONE): if maximum age was reached, then exit; otherwise, expand the current state (lambda - dl, l, l + dl) with dl = dl / 3
+
 
 //                // A:
 //                // [amin, amax, adelta, x0, #iterations]
