@@ -82,7 +82,6 @@ namespace ncv
                 vector_t x(model.n_parameters());
                 model.save_params(x);
 
-                const size_t max_depth = 8;
                 const size_t n_workers = std::max(size_t(4), 2 * ncv::n_threads());
 
                 std::vector<state_t> states(n_workers);
@@ -119,7 +118,7 @@ namespace ncv
                                                 1.0, make_lambda(state.m_log_lambda), iterations, evalsize);
 
                                         const worker_pool_t::lock_t lock(mutex);
-                                        log_info() << "stochastic trainer: [depth = " << depth << "/" << max_depth
+                                        log_info() << "stochastic trainer: [depth = " << depth << "/" << m_depth
                                                    << ", lambda = " << make_lambda(state.m_log_lambda)
                                                    << ", param = [" << state.m_param.minCoeff() << ", "
                                                    << state.m_param.maxCoeff()

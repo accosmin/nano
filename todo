@@ -1,6 +1,4 @@
-* FASTER convolutions and faster training:
-	- make the stochastic methods work
-	- faster ::backward function 
+* TODO: make the stochastic & minibatch trainers work (VERY hard to tune, poor performance compare to the batch version)
 
 * refactor the trainer_t::v* functions:
 	- too much duplicated code!
@@ -8,6 +6,10 @@
 * serializer: store data in std::vector, push_back values -> (serializer_t() << s << v << m).data() or .size()
 * same for deserializer
 	- BETTER name for serializer! -> vectorizer?!
+
+* test program to print model (ncv_describe -> model structure + convolutions as images)
+
+* thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
 	
 idea: variational learning (ebbbost)
 idea: regularized (bound) loss with the same approach as in nips12a.pdf
@@ -16,10 +18,6 @@ idea: regularized (bound) loss with the same approach as in nips12a.pdf
 	- the sections are not decoded correctly: 
 		- the data type of the last two sections is not valid
 		- the number of bytes in the last section is not valid
-
-* test program to print model (ncv_describe -> model structure + convolutions as images)
-
-* thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
 
 * could use std::atexit() to save the model at closing -> re-training should reload the current model and continue training
 * better could catch various signals: http://en.cppreference.com/w/cpp/utility/program and safely saved the trained model
