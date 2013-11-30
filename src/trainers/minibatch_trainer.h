@@ -27,7 +27,7 @@ namespace ncv
                                   "mini-batch trainer, parameters: opt=lbfgs[,cgd,gd],iters=4[1,128],batch=1024[100,10000],epoch=256[8,1024]")
 
                 // train the model
-                virtual bool train(const task_t&, const fold_t&, const loss_t&, model_t&) const;
+                virtual bool train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const;
 
         private:
 

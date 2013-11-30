@@ -22,7 +22,8 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        bool minibatch_trainer_t::train(const task_t& task, const fold_t& fold, const loss_t& loss, model_t& model) const
+        bool minibatch_trainer_t::train(
+                const task_t& task, const fold_t& fold, const loss_t& loss, size_t nthreads, model_t& model) const
         {
                 if (fold.second != protocol::train)
                 {
@@ -55,14 +56,14 @@ namespace ncv
                 auto fn_fval = [&] (const vector_t& x)
                 {
                         model.load_params(x);
-                        return ncv::lvalue_mt(task, bsamples, loss, model);
+                        return ncv::lvalue_mt(task, bsamples, loss, nthreads, model);
                 };
 
                 // optimization problem: function value & gradient
                 auto fn_grad = [&] (const vector_t& x, vector_t& gx)
                 {
                         model.load_params(x);
-                        return ncv::lvgrad_mt(task, bsamples, loss, model, gx);
+                        return ncv::lvgrad_mt(task, bsamples, loss, nthreads, model, gx);
                 };
 
                 // optimization problem: logging

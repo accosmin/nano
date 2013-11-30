@@ -20,9 +20,9 @@ namespace ncv
         scalar_t lvalue(const task_t&, const sample_t&, const loss_t&, const model_t&);
         scalar_t lvgrad(const task_t&, const sample_t&, const loss_t&, const model_t&);
         scalar_t lvalue_st(const task_t&, const samples_t&, const loss_t&, const model_t&);
-        scalar_t lvalue_mt(const task_t&, const samples_t&, const loss_t&, const model_t&);
+        scalar_t lvalue_mt(const task_t&, const samples_t&, const loss_t&, size_t nthreads, const model_t&);
         scalar_t lvgrad_st(const task_t&, const samples_t&, const loss_t&, const model_t&, vector_t&);
-        scalar_t lvgrad_mt(const task_t&, const samples_t&, const loss_t&, const model_t&, vector_t&);
+        scalar_t lvgrad_mt(const task_t&, const samples_t&, const loss_t&, size_t nthreads, const model_t&, vector_t&);
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // generic trainer:
@@ -37,7 +37,7 @@ namespace ncv
                 virtual ~trainer_t() {}
 
                 // train the model
-                virtual bool train(const task_t&, const fold_t&, const loss_t&, model_t&) const = 0;
+                virtual bool train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const = 0;
         };
 }
 

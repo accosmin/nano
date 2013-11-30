@@ -25,7 +25,7 @@ namespace ncv
                                   "batch trainer, parameters: opt=lbfgs[,cgd,gd],iters=1024[4,4096],eps=1e-6[1e-8,1e-3]")
 
                 // train the model
-                virtual bool train(const task_t&, const fold_t&, const loss_t&, model_t&) const;
+                virtual bool train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const;
 
         private:
 

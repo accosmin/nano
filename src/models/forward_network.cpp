@@ -130,8 +130,9 @@ namespace ncv
                 for (const rlayer_t& layer : m_layers)
                 {
                         const size_t fanin = layer->n_idims() * layer->n_irows() * layer->n_icols();
-                        const scalar_t min = -1.0 / sqrt(1.0 + fanin);
-                        const scalar_t max = +1.0 / sqrt(1.0 + fanin);
+                        const size_t fanout = layer->n_odims() * layer->n_orows() * layer->n_ocols();
+                        const scalar_t min = -std::sqrt(6.0 / (1.0 + fanin + fanout));
+                        const scalar_t max = +std::sqrt(6.0 / (1.0 + fanin + fanout));
 
                         layer->random_params(min, max);
                 }

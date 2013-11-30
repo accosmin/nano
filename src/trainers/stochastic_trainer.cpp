@@ -59,7 +59,8 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        bool stochastic_trainer_t::train(const task_t& task, const fold_t& fold, const loss_t& loss, model_t& model) const
+        bool stochastic_trainer_t::train(
+                const task_t& task, const fold_t& fold, const loss_t& loss, size_t nthreads, model_t& model) const
         {
                 if (fold.second != protocol::train)
                 {
@@ -82,7 +83,7 @@ namespace ncv
                 vector_t x(model.n_parameters());
                 model.save_params(x);
 
-                const size_t n_workers = std::max(size_t(4), 2 * ncv::n_threads());
+                const size_t n_workers = std::max(size_t(4), 2 * nthreads);
 
                 std::vector<state_t> states(n_workers);
                 for (state_t& state : states)

@@ -169,7 +169,8 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        scalar_t lvalue_mt(const task_t& task, const samples_t& samples, const loss_t& loss, const model_t& model)
+        scalar_t lvalue_mt(
+                const task_t& task, const samples_t& samples, const loss_t& loss, size_t nthreads, const model_t& model)
         {
                 value_data_t cum_data;
 
@@ -187,7 +188,8 @@ namespace ncv
                         [&] (const value_data_t& data)
                         {
                                 cum_data += data;
-                        }
+                        },
+                        nthreads
                 );
 
                 return cum_data.value();
@@ -215,8 +217,9 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        scalar_t lvgrad_mt(const task_t& task, const samples_t& samples, const loss_t& loss, const model_t& model,
-                vector_t& lgrad)
+        scalar_t lvgrad_mt(
+                const task_t& task, const samples_t& samples, const loss_t& loss, size_t nthreads,
+                const model_t& model, vector_t& lgrad)
         {
                 vgrad_data_t cum_data(model.n_parameters());
 
@@ -237,7 +240,8 @@ namespace ncv
                         {
                                 data.store();
                                 cum_data += data;
-                        }
+                        },
+                        nthreads
                 );
 
                 lgrad = cum_data.vgrad();

@@ -17,7 +17,13 @@ int main(int argc, char *argv[])
                 "conv8x8:convs=16;unit",
                 "conv8x8:convs=16;snorm;conv8x8:convs=16;snorm",
                 "conv8x8:convs=16;tanh;conv8x8:convs=16;tanh",
-                "conv8x8:convs=16;unit;conv8x8:convs=16;unit"
+                "conv8x8:convs=16;unit;conv8x8:convs=16;unit",
+                "conv8x8:convs=16;snorm;conv8x8:convs=16;snorm;conv8x8:convs=16;snorm",
+                "conv8x8:convs=16;tanh;conv8x8:convs=16;tanh;conv8x8:convs=16;tanh",
+                "conv8x8:convs=16;unit;conv8x8:convs=16;unit;conv8x8:convs=16;unit"
+                "conv8x8:convs=16;snorm;conv8x8:convs=16;snorm;conv8x8:convs=16;snorm;conv8x8:convs=16;snorm",
+                "conv8x8:convs=16;tanh;conv8x8:convs=16;tanh;conv8x8:convs=16;tanh;conv8x8:convs=16;tanh",
+                "conv8x8:convs=16;unit;conv8x8:convs=16;unit;conv8x8:convs=16;unit;conv8x8:convs=16;unit"
         };
 
         const color_mode cmd_color = color_mode::rgba;

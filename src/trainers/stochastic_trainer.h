@@ -25,7 +25,7 @@ namespace ncv
                                   "stochastic trainer, parameters: iters=1024[100,10000],depth=4[2,16]")
 
                 // train the model
-                virtual bool train(const task_t&, const fold_t&, const loss_t&, model_t&) const;
+                virtual bool train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const;
 
         private:
 

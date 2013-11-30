@@ -58,6 +58,9 @@ int main(int argc, char *argv[])
         po_desc.add_options()("trainer-params",
                 boost::program_options::value<string_t>()->default_value(""),
                 "trainer parameters (if any) as specified in the chosen trainer's description");
+        po_desc.add_options()("threads",
+                boost::program_options::value<size_t>()->default_value(0),
+                "number of threads to use (0 - all available)");
         po_desc.add_options()("trials",
                 boost::program_options::value<size_t>(),
                 "number of models to train & evaluate");
@@ -91,6 +94,7 @@ int main(int argc, char *argv[])
         const string_t cmd_model_params = po_vm["model-params"].as<string_t>();
         const string_t cmd_trainer = po_vm["trainer"].as<string_t>();
         const string_t cmd_trainer_params = po_vm["trainer-params"].as<string_t>();
+        const size_t cmd_threads = po_vm["threads"].as<size_t>();
         const size_t cmd_trials = po_vm["trials"].as<size_t>();
         const string_t cmd_output = po_vm["output"].as<string_t>();
 
@@ -171,7 +175,7 @@ int main(int argc, char *argv[])
 
                         // train
                         timer.start();
-                        if (!rtrainer->train(*rtask, train_fold, *rloss, *rmodel))
+                        if (!rtrainer->train(*rtask, train_fold, *rloss, cmd_threads, *rmodel))
                         {
                                 log_error() << "<<< failed to train model <" << cmd_model << ">!";
                                 break;

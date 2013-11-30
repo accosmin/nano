@@ -7,21 +7,25 @@ dir_db=/home/cosmin/experiments/databases
 exe_trainer=./build/ncv_trainer
 
 batch_params="opt=lbfgs,eps=1e-6,iters=1024"
-common_config="--loss classnll"
+common_params="--loss classnll --threads 1"
+conv_params="conv8x8:convs=16;snorm"
 
 # task description = task model [model-params] trainer trainer-params trials output
 tasks=(
-	"mnist forward-network batch ${batch_params} 10 mnist-affine-batch"	
-	"mnist forward-network conv8x8:convs=16;snorm batch ${batch_params} 10 mnist-hidden1-batch"
-	"mnist forward-network conv8x8:convs=16;snorm;conv8x8:convs=16;snorm batch ${batch_params} 10 mnist-hidden2-batch"
+	"mnist forward-network batch ${batch_params} 10 mnist-affine"	
+	"mnist forward-network ${conv_params} batch ${batch_params} 10 mnist-hidden1"
+	"mnist forward-network ${conv_params};${conv_params} batch ${batch_params} 10 mnist-hidden2"
+	"mnist forward-network ${conv_params};${conv_params};${conv_params} batch ${batch_params} 10 mnist-hidden3"
 	
 	"cbcl-faces forward-network batch ${batch_params} 10 cbclfaces-affine"
-	"cbcl-faces forward-network conv8x8:convs=16;snorm batch ${batch_params} 10 cbclfaces-hidden1"
-	"cbcl-faces forward-network conv8x8:convs=16;snorm;conv8x8:convs=16;snorm batch ${batch_params} 10 cbclfaces-hidden2"
+	"cbcl-faces forward-network ${conv_params} batch ${batch_params} 10 cbclfaces-hidden1"
+	"cbcl-faces forward-network ${conv_params};${conv_params} batch ${batch_params} 10 cbclfaces-hidden2"
+	"cbcl-faces forward-network ${conv_params};${conv_params};${conv_params} batch ${batch_params} 10 cbclfaces-hidden3"
 	
 	"cifar10 forward-network batch ${batch_params} 10 cifar10-affine"
-	"cifar10 forward-network conv8x8:convs=16;snorm batch ${batch_params} 10 cifar10-hidden1"
-	"cifar10 forward-network conv8x8:convs=16;snorm;conv8x8:convs=16;snorm batch ${batch_params} 10 cifar10-hidden2"
+	"cifar10 forward-network ${conv_params} batch ${batch_params} 10 cifar10-hidden1"
+	"cifar10 forward-network ${conv_params};${conv_params} batch ${batch_params} 10 cifar10-hidden2"
+	"cifar10 forward-network ${conv_params};${conv_params};${conv_params} batch ${batch_params} 10 cifar10-hidden3"
 	
 	# TODO: STL10
 	)
@@ -59,7 +63,7 @@ do
 
 	config=""
 	config=${config}" --task ${task_id} --task-dir ${task_dir}"
-	config=${config}" --trials ${trials} --output ${output} ${common_config}"                
+	config=${config}" --trials ${trials} --output ${output} ${common_params}"                
 	if [[ -z ${model_params} ]]
 	then
 		config=${config}" --model ${model_id}"
@@ -71,7 +75,7 @@ do
 	echo "running <${task_id}> ..."
 	echo -e "\twith model   <${model_id}><${model_params}>"
         echo -e "\twith trainer <${trainer_id}><${trainer_params}>"
-	echo -e "\twith param   <${common_config}>"
+	echo -e "\twith param   <${common_params}>"
 
 	#time ${exe_trainer} ${config} > ${log}
 
