@@ -90,7 +90,7 @@ namespace ncv
                         state.m_model = model.clone();
                 }
 
-                ncv::worker_pool_t worker_pool(1);
+                ncv::worker_pool_t worker_pool;
 
                 // search the optimum learning parameter: each worker thread tests a value
                 scalar_t min_log_lambda = 0.0;
