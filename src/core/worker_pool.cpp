@@ -46,10 +46,10 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        worker_pool_t::worker_pool_t()
+        worker_pool_t::worker_pool_t(size_t threads)
                 :       m_data()
         {
-                for (size_t i = 0; i < ncv::n_threads(); i ++)
+                for (size_t i = 0; i < (threads == 0 ? ncv::n_threads() : threads); i ++)
                 {
                         m_workers.push_back(std::thread(worker_pool_t::worker_t(m_data)));
                 }

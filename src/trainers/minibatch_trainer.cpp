@@ -10,7 +10,7 @@ namespace ncv
 
         minibatch_trainer_t::minibatch_trainer_t(const string_t& params)
                 :       m_optimizer(text::from_params<string_t>(params, "opt", "lbfgs")),
-                        m_iterations(text::from_params<size_t>(params, "iter", 16)),
+                        m_iterations(text::from_params<size_t>(params, "iters", 16)),
                         m_batchsize(text::from_params<size_t>(params, "batch", 1024)),
                         m_epochs(text::from_params<size_t>(params, "epoch", 256)),
                         m_epsilon(1e-6)

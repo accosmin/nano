@@ -11,7 +11,7 @@ namespace ncv
         //
         // parameters:
         //      opt=lbfgs[,cgd,gd]              - optimization method
-        //      iter=4[1,128]                   - maximum number of optimization iterations per epoch
+        //      iters=4[1,128]                  - maximum number of optimization iterations per epoch
         //      batch=1024[100,10000]           - mini-batch size / epoch
         //      epoch=256[8,1024]               - number of epochs
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -24,7 +24,7 @@ namespace ncv
                 minibatch_trainer_t(const string_t& params = string_t());
 
                 NCV_MAKE_CLONABLE(minibatch_trainer_t, trainer_t,
-                                  "mini-batch trainer, parameters: opt=lbfgs[,cgd,gd],iter=4[1,128],batch=1024[100,10000],epoch=256[8,1024]")
+                                  "mini-batch trainer, parameters: opt=lbfgs[,cgd,gd],iters=4[1,128],batch=1024[100,10000],epoch=256[8,1024]")
 
                 // train the model
                 virtual bool train(const task_t&, const fold_t&, const loss_t&, model_t&) const;

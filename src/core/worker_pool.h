@@ -31,7 +31,7 @@ namespace ncv
                 typedef std::condition_variable         condition_t;
 
                 // constructor
-                worker_pool_t();
+                worker_pool_t(size_t threads = 0);
 
                 // destructor
                 ~worker_pool_t();

@@ -10,7 +10,7 @@ namespace ncv
 
         batch_trainer_t::batch_trainer_t(const string_t& params)
                 :       m_optimizer(text::from_params<string_t>(params, "opt", "lbfgs")),
-                        m_iterations(text::from_params<size_t>(params, "iter", 1024)),
+                        m_iterations(text::from_params<size_t>(params, "iters", 1024)),
                         m_epsilon(text::from_params<scalar_t>(params, "eps", 1e-6))
         {
                 m_iterations = math::clamp(m_iterations, 4, 4096);
