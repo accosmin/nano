@@ -22,8 +22,10 @@ namespace ncv
         scalar_t stochastic_trainer_t::sgd(
                 const task_t& task, const samples_t& samples, const loss_t& loss, model_t& model, vector_t& x,
                 scalar_t gamma, scalar_t lambda, size_t iterations, size_t evalsize) const
-        {
-                // SGD steps
+        {                
+                vector_t avg_x = x;
+
+                // (A=average)SGD steps
                 random_t<size_t> die(0, samples.size() - 1);
                 for (size_t iteration = 0; iteration < iterations; iteration ++)
                 {
@@ -43,7 +45,10 @@ namespace ncv
                         }
 
                         x -= d * g;
+                        avg_x += x;
                 }
+
+                model.load_params(avg_x / (1.0 + iterations));
 
                 // evaluate model
                 samples_t esamples;
@@ -99,7 +104,7 @@ namespace ncv
 
                 for (   size_t depth = 0, iterations = m_iterations, evalsize = iterations;
                         depth < m_depth;
-                        depth ++, iterations = iterations * 2, evalsize = iterations)
+                        depth ++, iterations = iterations, evalsize = 4 * m_iterations)
                 {
                         worker_pool_t::mutex_t mutex;
 
@@ -119,7 +124,8 @@ namespace ncv
                                                 1.0, make_lambda(state.m_log_lambda), iterations, evalsize);
 
                                         const worker_pool_t::lock_t lock(mutex);
-                                        log_info() << "stochastic trainer: [depth = " << depth << "/" << m_depth
+                                        log_info() << "stochastic trainer: [depth = "
+                                                   << (depth + 1) << "/" << m_depth
                                                    << ", lambda = " << make_lambda(state.m_log_lambda)
                                                    << ", param = [" << state.m_param.minCoeff() << ", "
                                                    << state.m_param.maxCoeff()
@@ -146,7 +152,8 @@ namespace ncv
 
                         // log
                         log_info() << "stochastic trainer: optimum lambda = "
-                                   << make_lambda(opt_state.m_log_lambda) << ".";
+                                   << make_lambda(opt_state.m_log_lambda)
+                                   << " (loss = " << opt_state.m_lvalue << ").";
                 }
 
                 // update the model
