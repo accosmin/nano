@@ -29,14 +29,22 @@ namespace ncv
 
         private:
 
-                // SGD parametrization
-                static scalar_t make_lambda(scalar_t log_lambda)
+                // utility functions: update the searching grid for the optimum parameters
+                static scalar_t make_param(scalar_t log_param)
                 {
-                        return std::pow(10.0, log_lambda);
+                        return std::pow(10.0, log_param);
                 }
+                static void update_range(scalar_t& min, scalar_t& max, scalar_t opt, scalar_t delta)
+                {
+                        max = opt + delta;
+                        min = opt - delta;
+                }
+
+                // SGD parametrization
                 static scalar_t learning_rate(scalar_t gamma, scalar_t lambda, size_t iteration)
                 {
-                        return gamma / (1.0 + gamma * lambda * iteration);
+                        // learning rate recommended by Bottou
+                        return gamma / (1.0 + gamma * lambda * iteration);                        
                 }
 
                 // stochastic gradient descent (SGD)
@@ -44,13 +52,13 @@ namespace ncv
                              scalar_t gamma, scalar_t lambda, size_t iterations, size_t evalsize) const;
 
                 // learning parameter state to evaluate:
-                //      <learning parameter value, model copy, model parameter copy, loss value>
+                //      <learning parameters, model copy, model parameter copy>
                 struct state_t
                 {
                         scalar_t        m_log_lambda;
+                        scalar_t        m_log_gamma;
                         rmodel_t        m_model;
                         vector_t        m_param;
-                        scalar_t        m_lvalue;
                 };
 
         private:

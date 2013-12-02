@@ -89,18 +89,22 @@ namespace ncv
                 model.save_params(x);
 
                 const size_t n_workers = std::max(size_t(4), 2 * nthreads);
+                ncv::worker_pool_t worker_pool(nthreads);
 
-                std::vector<state_t> states(n_workers);
-                for (state_t& state : states)
+                // create worker buffers: (gamma, lambda) + loss values
+                tensor::matrix_types_t<state_t>::matrix_t states(n_workers, n_workers);
+                matrix_t lvalues(n_workers, n_workers);
+
+                for (size_t i = 0; i < static_cast<size_t>(states.size()); i ++)
                 {
-                        state.m_model = model.clone();
+                        states(i).m_model = model.clone();      // create model copies once!
                 }
 
-                ncv::worker_pool_t worker_pool;
-
-                // search the optimum learning parameter: each worker thread tests a value
+                // search the optimum learning parameters: each worker thread tests a value
                 scalar_t min_log_lambda = 0.0;
                 scalar_t max_log_lambda = 6.0;
+                scalar_t min_log_gamma = 0.0;
+                scalar_t max_log_gamma = 4.0;
 
                 for (   size_t depth = 0, iterations = m_iterations, evalsize = iterations;
                         depth < m_depth;
@@ -108,52 +112,60 @@ namespace ncv
                 {
                         worker_pool_t::mutex_t mutex;
 
-                        // create workers
+                        // create workers (one for each learning parameter set)
+                        const scalar_t delta_log_gamma = (max_log_gamma - min_log_gamma) / (n_workers - 1.0);
                         const scalar_t delta_log_lambda = (max_log_lambda - min_log_lambda) / (n_workers - 1.0);
-                        for (size_t n = 0; n < n_workers; n ++)
+
+                        for (size_t nl = 0; nl < n_workers; nl ++)              // lambda
                         {
-                                worker_pool.enqueue([=, &states, &task, &samples, &loss, &x, &mutex] ()
+                                for (size_t ng = 0; ng < n_workers; ng ++)      // gamma
                                 {
-                                        state_t& state = states[n];
-                                        state.m_log_lambda = min_log_lambda + delta_log_lambda * n;
-                                        state.m_param = x;
+                                        worker_pool.enqueue([=, &states, &lvalues, &task, &samples, &loss, &x, &mutex]()
+                                        {
+                                                // prepare parameters
+                                                state_t& state = states(nl, ng);
+                                                state.m_log_lambda = min_log_lambda + delta_log_lambda * nl;
+                                                state.m_log_gamma = min_log_gamma + delta_log_gamma * ng;
+                                                state.m_param = x;
 
-                                        timer_t timer;
-                                        state.m_lvalue = sgd(
-                                                task, samples, loss, *state.m_model, state.m_param,
-                                                1.0, make_lambda(state.m_log_lambda), iterations, evalsize);
+                                                // average stochastic gradient descent (ASGD)
+                                                timer_t timer;
+                                                lvalues(nl, ng) = sgd(
+                                                        task, samples, loss, *state.m_model, state.m_param,
+                                                        make_param(state.m_log_gamma),
+                                                        make_param(state.m_log_gamma),
+                                                        iterations, evalsize);
 
-                                        const worker_pool_t::lock_t lock(mutex);
-                                        log_info() << "stochastic trainer: [depth = "
-                                                   << (depth + 1) << "/" << m_depth
-                                                   << ", lambda = " << make_lambda(state.m_log_lambda)
-                                                   << ", param = [" << state.m_param.minCoeff() << ", "
-                                                   << state.m_param.maxCoeff()
-                                                   << "], loss = " << state.m_lvalue
-                                                   << "] processed in " << timer.elapsed() << ".";
-                                        timer.start();
-                                });
+                                                const worker_pool_t::lock_t lock(mutex);
+                                                log_info() << "stochastic trainer: [depth = "
+                                                           << (depth + 1) << "/" << m_depth
+                                                           << ", gamma = " << make_param(state.m_log_gamma)
+                                                           << ", lambda = " << make_param(state.m_log_lambda)
+                                                           << ", param = ["
+                                                           << state.m_param.minCoeff() << ", "
+                                                           << state.m_param.maxCoeff()
+                                                           << "], loss = " << lvalues(nl, ng)
+                                                           << "] processed in " << timer.elapsed() << ".";
+                                                timer.start();
+                                        });
+                                }
                         }
 
                         worker_pool.wait();
 
                         // select the optimum learning parameter to expand
-                        const state_t& opt_state = *std::min_element(states.begin(), states.end(),
-                                [] (const state_t& state1, const state_t& state2)
-                        {
-                                return state1.m_lvalue < state2.m_lvalue;
-                        });
+                        matrix_t::Index nl, ng;
+                        const scalar_t opt_lvalue = lvalues.minCoeff(&nl, &ng);
+                        const state_t& opt_state = states(nl, ng);
 
-                        const scalar_t opt_log_lambda = opt_state.m_log_lambda;
-                        min_log_lambda = opt_log_lambda - delta_log_lambda;
-                        max_log_lambda = opt_log_lambda + delta_log_lambda;
-
+                        update_range(min_log_gamma, max_log_gamma, opt_state.m_log_gamma, delta_log_gamma);
+                        update_range(min_log_lambda, max_log_lambda, opt_state.m_log_lambda, delta_log_lambda);
                         x = opt_state.m_param;
 
                         // log
-                        log_info() << "stochastic trainer: optimum lambda = "
-                                   << make_lambda(opt_state.m_log_lambda)
-                                   << " (loss = " << opt_state.m_lvalue << ").";
+                        log_info() << "stochastic trainer: optimum gamma = " << make_param(opt_state.m_log_gamma)
+                                   << ", lambda = " << make_param(opt_state.m_log_lambda)
+                                   << " (loss = " << opt_lvalue << ").";
                 }
 
                 // update the model

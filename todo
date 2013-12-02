@@ -1,5 +1,8 @@
 * TODO: make the stochastic & minibatch trainers work (VERY hard to tune, poor performance compare to the batch version)
 
+* improve ASGD 2D-grid tuning:
+	- a 2-hidden layer network can barely obtain the same performance of an affine model (batch trained)
+
 * refactor the trainer_t::v* functions:
 	- too much duplicated code!
 				
@@ -20,9 +23,7 @@ idea: regularized (bound) loss with the same approach as in nips12a.pdf
 		- the number of bytes in the last section is not valid
 
 * could use std::atexit() to save the model at closing -> re-training should reload the current model and continue training
-* better could catch various signals: http://en.cppreference.com/w/cpp/utility/program and safely saved the trained model
-
-* visualize convolutions after/during training either using a Qt ui or some images
+* better could catch various signals: http://en.cppreference.com/w/cpp/utility/program and safely save the trained model
 
 - perf result:   
     66.69%  ncv_trainer  libnanocv.so         [.] ncv::conv_layer_t::backward(ncv::tensor3d_t const&) const                                                                  
@@ -33,9 +34,6 @@ idea: regularized (bound) loss with the same approach as in nips12a.pdf
 * make install:
 	- also copy the headers 
 
-- update the experimentation script:
-	- evaluate different architecture: vary the number of layers, the activation functions and switch on and off the pooling
-
 - implement other training methods for the convolution network:
 	- auto-encoding: using the unlabeled data (could also try with all samples)
 	- train a single layer at a time
@@ -44,10 +42,6 @@ idea: regularized (bound) loss with the same approach as in nips12a.pdf
 	- could add options to filter the input: e.g. smoothing, normalization, contrast equalization
 
 	- autoencoders: how to generate samples ?!
-
-- small ui application to visualize task images
-
-- faster RGB to CIELab transform (goal: 1s single-thread version of the color testing program)
 
 - add other datasets:
 	- INRIA car and person datasets
