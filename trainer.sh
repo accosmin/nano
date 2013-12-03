@@ -9,7 +9,7 @@ trainer="--trainer stochastic --trainer-params iters=8096,depth=16"
 
 params=""
 params=${params}" --task mnist --task-dir /home/cosmin/experiments/databases/mnist/"
-params=${params}" --loss classnll --trials 1"
+params=${params}" --loss classnll --trials 1 --threads 1"
 params=${params}" ${trainer} ${model}"
 
 ./build/ncv_trainer ${params}

@@ -139,12 +139,9 @@ namespace ncv
                                                 const worker_pool_t::lock_t lock(mutex);
                                                 log_info() << "stochastic trainer: [depth = "
                                                            << (depth + 1) << "/" << m_depth
-                                                           << ", gamma = " << make_param(state.m_log_gamma)
-                                                           << ", lambda = " << make_param(state.m_log_lambda)
-                                                           << ", param = ["
-                                                           << state.m_param.minCoeff() << ", "
-                                                           << state.m_param.maxCoeff()
-                                                           << "], loss = " << lvalues(nl, ng)
+                                                           << ", param = (" << make_param(state.m_log_gamma)
+                                                           << ", " << make_param(state.m_log_lambda)
+                                                           << "), loss = " << lvalues(nl, ng)
                                                            << "] processed in " << timer.elapsed() << ".";
                                                 timer.start();
                                         });
@@ -163,9 +160,9 @@ namespace ncv
                         x = opt_state.m_param;
 
                         // log
-                        log_info() << "stochastic trainer: optimum gamma = " << make_param(opt_state.m_log_gamma)
-                                   << ", lambda = " << make_param(opt_state.m_log_lambda)
-                                   << " (loss = " << opt_lvalue << ").";
+                        log_info() << "stochastic trainer: optimum param = (" << make_param(opt_state.m_log_gamma)
+                                   << ", " << make_param(opt_state.m_log_lambda)
+                                   << "), loss = " << opt_lvalue << ".";
                 }
 
                 // update the model
