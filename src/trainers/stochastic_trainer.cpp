@@ -101,10 +101,10 @@ namespace ncv
                 }
 
                 // search the optimum learning parameters: each worker thread tests a value
-                scalar_t min_log_lambda = 0.0;
-                scalar_t max_log_lambda = 6.0;
-                scalar_t min_log_gamma = 0.0;
-                scalar_t max_log_gamma = 4.0;
+                scalar_t min_log_lambda = -4.0;
+                scalar_t max_log_lambda = +1.0;
+                scalar_t min_log_gamma = -4.0;
+                scalar_t max_log_gamma = +1.0;
 
                 for (   size_t depth = 0, iterations = m_iterations, evalsize = iterations;
                         depth < m_depth;
