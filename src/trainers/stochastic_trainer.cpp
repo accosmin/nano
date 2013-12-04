@@ -26,9 +26,9 @@ namespace ncv
                 vector_t avg_x = x;
 
                 // (A=average)SGD steps
-                random_t<size_t> die(0, samples.size() - 1);
                 for (size_t iteration = 0; iteration < iterations; iteration ++)
-                {
+                {                        
+                        random_t<size_t> die(0, samples.size() - 1);
                         const sample_t& sample = samples[die()];
 
                         model.zero_grad();
@@ -51,12 +51,12 @@ namespace ncv
                 model.load_params(avg_x / (1.0 + iterations));
 
                 // evaluate model
-                samples_t esamples;
-                for (size_t i = 0; i < evalsize; i ++)
-                {
-                        const sample_t& sample = samples[die()];
+                random_t<size_t> die(0, samples.size() - 1);
 
-                        esamples.emplace_back(sample);
+                samples_t esamples(evalsize);
+                for (sample_t& sample : esamples)
+                {
+                        sample = samples[die()];
                 }
 
                 return ncv::lvalue_st(task, esamples, loss, model);
