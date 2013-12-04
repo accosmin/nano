@@ -1,11 +1,11 @@
 #include "ncv.h"
-#include "core/thread.h"
+#include "core/thread/thread.h"
 
 int main(int argc, char *argv[])
 {
         using namespace ncv;
 
-        worker_pool_t pool;
+        thread_pool_t pool;
 
         const size_t n_tests = 8;
         const size_t n_max_jobs = pool.n_workers() * 16;

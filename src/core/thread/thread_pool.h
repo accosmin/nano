@@ -1,5 +1,5 @@
-#ifndef NANOCV_WORKER_POOL_H
-#define NANOCV_WORKER_POOL_H
+#ifndef NANOCV_THREAD_POOL_H
+#define NANOCV_THREAD_POOL_H
 
 #include <thread>
 #include <vector>
@@ -19,8 +19,8 @@ namespace ncv
                 return static_cast<size_t>(std::thread::hardware_concurrency());
         }
 
-        // worker pool
-        class worker_pool_t
+        // thread pool
+        class thread_pool_t
         {
         public:
 
@@ -31,10 +31,14 @@ namespace ncv
                 typedef std::condition_variable         condition_t;
 
                 // constructor
-                worker_pool_t(size_t threads = 0);
+                thread_pool_t(size_t threads = 0);
 
                 // destructor
-                ~worker_pool_t();
+                ~thread_pool_t();
+
+                // disable copying
+                thread_pool_t(const thread_pool_t&) = delete;
+                thread_pool_t& operator=(const thread_pool_t&) = delete;
 
                 // add a new worker to execute
                 template<class F>
@@ -105,5 +109,5 @@ namespace ncv
         };
 }
 
-#endif // NANOCV_WORKER_POOL_H
+#endif // NANOCV_THREAD_POOL_H
 

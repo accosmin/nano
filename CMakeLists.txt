@@ -49,6 +49,7 @@ file(GLOB nanocv_sources
         src/core/tensor/*.*
         src/core/optimize/*.*
         src/core/math/*.*
+        src/core/thread/*.*
         src/losses/*.*
         src/layers/*.*
         src/tasks/*.*

@@ -1,10 +1,10 @@
-#include "worker_pool.h"
+#include "thread_pool.h"
 
 namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void worker_pool_t::worker_t::operator()()
+        void thread_pool_t::worker_t::operator()()
         {
                 task_t task;
                 while (true)
@@ -46,19 +46,19 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        worker_pool_t::worker_pool_t(size_t threads)
+        thread_pool_t::thread_pool_t(size_t threads)
                 :       m_data()
         {
                 const size_t n_threads = (threads == 0) ? ncv::n_threads() : std::min(threads, ncv::n_threads());
                 for (size_t i = 0; i < n_threads; i ++)
                 {
-                        m_workers.push_back(std::thread(worker_pool_t::worker_t(m_data)));
+                        m_workers.push_back(std::thread(thread_pool_t::worker_t(m_data)));
                 }
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        worker_pool_t::~worker_pool_t()
+        thread_pool_t::~thread_pool_t()
         {
                 // stop & join
                 m_data.m_stop = true;
@@ -72,7 +72,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void worker_pool_t::wait()
+        void thread_pool_t::wait()
         {
                 // wait for all tasks to be taken and the workers to finish
                 lock_t lock(m_data.m_mutex);

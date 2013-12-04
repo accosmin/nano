@@ -2,8 +2,8 @@
 #include "core/timer.h"
 #include "core/text.h"
 #include "core/math/clamp.hpp"
+#include "core/thread/thread.h"
 #include "core/logger.h"
-#include "core/thread.h"
 
 namespace ncv
 {
@@ -89,7 +89,7 @@ namespace ncv
                 model.save_params(x);
 
                 const size_t n_workers = std::max(size_t(4), 2 * nthreads);
-                ncv::worker_pool_t worker_pool(nthreads);
+                ncv::thread_pool_t worker_pool(nthreads);
 
                 // create worker buffers: (gamma, lambda) + loss values
                 tensor::matrix_types_t<state_t>::matrix_t states(n_workers, n_workers);
@@ -110,7 +110,7 @@ namespace ncv
                         depth < m_depth;
                         depth ++, iterations = iterations, evalsize = 4 * m_iterations)
                 {
-                        worker_pool_t::mutex_t mutex;
+                        thread_pool_t::mutex_t mutex;
 
                         // create workers (one for each learning parameter set)
                         const scalar_t delta_log_gamma = (max_log_gamma - min_log_gamma) / (n_workers - 1.0);
@@ -136,7 +136,7 @@ namespace ncv
                                                         make_param(state.m_log_gamma),
                                                         iterations, evalsize);
 
-                                                const worker_pool_t::lock_t lock(mutex);
+                                                const thread_pool_t::lock_t lock(mutex);
                                                 log_info() << "stochastic trainer: [depth = "
                                                            << (depth + 1) << "/" << m_depth
                                                            << ", param = (" << make_param(state.m_log_gamma)

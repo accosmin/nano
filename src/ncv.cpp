@@ -1,5 +1,4 @@
 #include "ncv.h"
-#include "core/thread.h"
 
 #include "losses/loss_classnll.h"
 #include "losses/loss_logistic.h"

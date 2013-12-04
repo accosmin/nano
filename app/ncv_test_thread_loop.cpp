@@ -1,6 +1,6 @@
 #include "ncv.h"
 #include "core/stats.hpp"
-#include "core/thread.h"
+#include "core/thread/thread.h"
 #include <omp.h>
 
 // run loop for the given number of trials using no threads

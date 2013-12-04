@@ -1,5 +1,5 @@
 #include "trainer.h"
-#include "core/thread.h"
+#include "core/thread/thread.h"
 
 namespace ncv
 {
