@@ -2,7 +2,6 @@
 #define NANOCV_H
 
 #include "core/text.h"
-#include "core/random.hpp"
 #include "core/logger.h"
 #include "core/timer.h"
 #include "loss.h"

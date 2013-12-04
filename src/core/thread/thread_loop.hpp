@@ -1,5 +1,5 @@
-#ifndef NANOCV_THREAD_H
-#define NANOCV_THREAD_H
+#ifndef NANOCV_THREAD_LOOP_H
+#define NANOCV_THREAD_LOOP_H
 
 #include "thread_pool.h"
 
@@ -84,5 +84,5 @@ namespace ncv
         }
 }
 
-#endif // NANOCV_THREAD_H
+#endif // NANOCV_THREAD_LOOP_H
 

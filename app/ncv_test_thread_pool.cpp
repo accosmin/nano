@@ -1,5 +1,5 @@
 #include "ncv.h"
-#include "core/thread/thread.h"
+#include "core/thread/thread_pool.h"
 
 int main(int argc, char *argv[])
 {

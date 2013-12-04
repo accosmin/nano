@@ -2,7 +2,8 @@
 #include "core/timer.h"
 #include "core/text.h"
 #include "core/math/clamp.hpp"
-#include "core/thread/thread.h"
+#include "core/thread/thread_pool.h"
+#include "core/random/usampler.hpp"
 #include "core/logger.h"
 
 namespace ncv
@@ -26,11 +27,9 @@ namespace ncv
                 vector_t avg_x = x;
 
                 // (A=average)SGD steps
-                for (size_t iteration = 0; iteration < iterations; iteration ++)
-                {                        
-                        random_t<size_t> die(0, samples.size() - 1);
-                        const sample_t& sample = samples[die()];
-
+                size_t iteration = 0;
+                ncv::uniform_sample(samples, iterations, [&] (const sample_t& sample)
+                {
                         model.zero_grad();
                         model.load_params(x);
 
@@ -38,27 +37,20 @@ namespace ncv
                         const scalar_t d = learning_rate(gamma, lambda, iteration);
                         const vector_t g = model.grad();
 
-                        if (    std::isinf(f) || std::isinf(g.minCoeff()) || std::isinf(g.maxCoeff()) ||
-                                std::isnan(f) || std::isnan(g.minCoeff()) || std::isnan(g.maxCoeff()))
+                        if (    !std::isinf(f) && !std::isinf(g.minCoeff()) && !std::isinf(g.maxCoeff()) &&
+                                !std::isnan(f) && !std::isnan(g.minCoeff()) && !std::isnan(g.maxCoeff()))
                         {
-                                return std::numeric_limits<scalar_t>::max();
+                                x -= d * g;
                         }
 
-                        x -= d * g;
                         avg_x += x;
-                }
+                        ++ iteration;
+                });
 
                 model.load_params(avg_x / (1.0 + iterations));
 
                 // evaluate model
-                random_t<size_t> die(0, samples.size() - 1);
-
-                samples_t esamples(evalsize);
-                for (sample_t& sample : esamples)
-                {
-                        sample = samples[die()];
-                }
-
+                const samples_t esamples = ncv::uniform_sample(samples, evalsize);
                 return ncv::lvalue_st(task, esamples, loss, model);
         }
 
