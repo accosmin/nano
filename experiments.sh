@@ -6,25 +6,29 @@ dir_db=/home/cosmin/experiments/databases
 
 exe_trainer=./build/ncv_trainer
 
-batch_params="opt=lbfgs,eps=1e-4,iters=1024"
+batch_params="opt=lbfgs,eps=1e-6,iters=1024"
 common_params="--loss classnll --threads 1"
-conv_params="conv8x8:convs=16;snorm"
+
+network0=""
+network1=${network0}"conv8x8:convs=16;snorm"
+network2=${network1}"conv8x8:convs=16;snorm"
+network3=${network2}"conv8x8:convs=16;snorm"
 
 # task description = task model [model-params] trainer trainer-params trials output
 tasks=(
-	"mnist forward-network batch ${batch_params} 1 mnist-affine"	
-	"mnist forward-network ${conv_params} batch ${batch_params} 1 mnist-hidden1"
-	"mnist forward-network ${conv_params};${conv_params} batch ${batch_params} 1 mnist-hidden2"
-	"mnist forward-network ${conv_params};${conv_params};${conv_params} batch ${batch_params} 1 mnist-hidden3"
+	"mnist forward-network ${network0} batch ${batch_params} 1 mnist-network0"	
+	"mnist forward-network ${network1} batch ${batch_params} 1 mnist-network1"
+	"mnist forward-network ${network2} batch ${batch_params} 1 mnist-network2"
+	"mnist forward-network ${network3} batch ${batch_params} 1 mnist-network3"
 	
-	"cbcl-faces forward-network batch ${batch_params} 1 cbclfaces-affine"
-	"cbcl-faces forward-network ${conv_params} batch ${batch_params} 1 cbclfaces-hidden1"
-	"cbcl-faces forward-network ${conv_params};${conv_params} batch ${batch_params} 1 cbclfaces-hidden2"
+	"cbcl-faces forward-network ${network0} batch ${batch_params} 1 cbclfaces-network0"
+	"cbcl-faces forward-network ${network1} batch ${batch_params} 1 cbclfaces-network1"
+	"cbcl-faces forward-network ${network2} batch ${batch_params} 1 cbclfaces-network2"
 	
-	"cifar10 forward-network batch ${batch_params} 1 cifar10-affine"
-	"cifar10 forward-network ${conv_params} batch ${batch_params} 1 cifar10-hidden1"
-	"cifar10 forward-network ${conv_params};${conv_params} batch ${batch_params} 1 cifar10-hidden2"
-	"cifar10 forward-network ${conv_params};${conv_params};${conv_params} batch ${batch_params} 1 cifar10-hidden3"
+	"cifar10 forward-network ${network0} batch ${batch_params} 1 cifar10-network0"
+	"cifar10 forward-network ${network1} batch ${batch_params} 1 cifar10-network1"
+	"cifar10 forward-network ${network2} batch ${batch_params} 1 cifar10-network2"
+	"cifar10 forward-network ${network3} batch ${batch_params} 1 cifar10-network3"
 	
 	# TODO: STL10
 	)

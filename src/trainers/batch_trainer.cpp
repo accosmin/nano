@@ -20,11 +20,26 @@ namespace ncv
         /////////////////////////////////////////////////////////////////////////////////////////
 
         bool batch_trainer_t::train(
-                const task_t& task, const samples_t& samples, const loss_t& loss, size_t nthreads,
-                scalar_t lambda, model_t& model) const
+                const task_t& task, const fold_t& fold, const loss_t& loss, size_t nthreads,
+                model_t& model) const
         {
-                const scalar_t scalef = lambda * 0.5 / model.n_parameters();
-                const scalar_t scaleg = scalef * 2.0;
+                if (fold.second != protocol::train)
+                {
+                        log_error() << "batch trainer: cannot only train models with training samples!";
+                        return false;
+                }
+
+                // initialize the model
+                model.resize(task);
+                model.random_params();
+
+                // prune training data
+                const samples_t samples = ncv::prune_annotated(task, task.samples(fold));
+                if (samples.empty())
+                {
+                        log_error() << "batch trainer: no annotated training samples!";
+                        return false;
+                }
 
                 // optimization problem: size
                 auto fn_size = [&] ()
@@ -36,19 +51,14 @@ namespace ncv
                 auto fn_fval = [&] (const vector_t& x)
                 {
                         model.load_params(x);
-
-                        const scalar_t fx = ncv::lvalue_mt(task, samples, loss, nthreads, model);
-                        return fx + scalef * x.squaredNorm();
+                        return ncv::lvalue_mt(task, samples, loss, nthreads, model);
                 };
 
                 // optimization problem: function value & gradient
                 auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
                         model.load_params(x);
-
-                        const scalar_t fx = ncv::lvgrad_mt(task, samples, loss, nthreads, model, gx);
-                        gx.noalias() += scaleg * x;
-                        return fx + scalef * x.squaredNorm();
+                        return ncv::lvgrad_mt(task, samples, loss, nthreads, model, gx);
                 };
 
                 // optimization problem: logging
@@ -60,10 +70,9 @@ namespace ncv
                 {
                         log_error() << message;
                 };
-                auto fn_ulog = [=] (const opt_result_t& result, timer_t& timer)
+                auto fn_ulog = [] (const opt_result_t& result, timer_t& timer)
                 {
-                        log_info() << "batch trainer: state [lambda = " << lambda
-                                   << ", loss = " << result.optimum().f
+                        log_info() << "batch trainer: state [loss = " << result.optimum().f
                                    << ", gradient = " << result.optimum().g.lpNorm<Eigen::Infinity>()
                                    << ", calls = " << result.n_fval_calls() << " fun/" << result.n_grad_calls()
                                    << " grad] updated in " << timer.elapsed() << ".";
@@ -105,50 +114,11 @@ namespace ncv
                 model.load_params(res.optimum().x);
 
                 // OK
-                log_info() << "batch trainer: optimum [lambda = " << lambda
-                           << ", loss = " << res.optimum().f
+                log_info() << "batch trainer: optimum [loss = " << res.optimum().f
                            << ", gradient = " << res.optimum().g.norm()
                            << ", calls = " << res.n_fval_calls() << "/" << res.n_grad_calls()
                            << "], iterations = [" << res.iterations() << "/" << m_iterations
                            << "].";
-
-                return true;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        bool batch_trainer_t::train(
-                const task_t& task, const fold_t& fold, const loss_t& loss, size_t nthreads,
-                model_t& model) const
-        {
-                if (fold.second != protocol::train)
-                {
-                        log_error() << "batch trainer: cannot only train models with training samples!";
-                        return false;
-                }
-
-                // initialize the model
-                model.resize(task);
-                model.random_params();
-
-                // prune training data
-                const samples_t samples = ncv::prune_annotated(task, task.samples(fold));
-                if (samples.empty())
-                {
-                        log_error() << "batch trainer: no annotated training samples!";
-                        return false;
-                }
-
-//                samples = samples_t(samples.begin(), samples.begin() + 5000);
-
-                // smooth the loss with a L2 regularization term
-                for (scalar_t lambda : { 10.0, 1.0, 0.1, 0.01 })
-                {
-                        if (!train(task, samples, loss, nthreads, lambda, model))
-                        {
-                                return false;
-                        }
-                }
 
                 return true;
         }
