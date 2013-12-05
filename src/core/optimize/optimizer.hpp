@@ -410,7 +410,7 @@ namespace ncv
                                         cstate.d = -r;
 
                                         // update solution
-                                        const tscalar t = ls_strong_wolfe(problem, cstate, op_wlog, ft, gt, 1e-4, 0.9);
+                                        const tscalar t = ls_strong_wolfe(problem, cstate, op_wlog, ft, gt, 0.1, 0.9);
                                         if (t < std::numeric_limits<tscalar>::epsilon())
                                         {
                                                 if (op_elog)

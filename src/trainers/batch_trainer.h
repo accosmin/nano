@@ -29,6 +29,12 @@ namespace ncv
 
         private:
 
+                // train a model given a L2-regularization term weighted with <lambda>
+                bool train(const task_t&, const samples_t&, const loss_t&, size_t nthreads, scalar_t lambda,
+                           model_t&) const;
+
+        private:
+
                 // attributes
                 string_t        m_optimizer;
                 size_t          m_iterations;
