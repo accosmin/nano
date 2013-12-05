@@ -361,7 +361,7 @@ namespace ncv
                                         }
 
                                         // check convergence
-                                        if (cstate.converged(epsilon))
+                                        if (i > hist_size && cstate.converged(epsilon))
                                         {
                                                 break;
                                         }
