@@ -10,7 +10,6 @@ namespace ncv
         //      the parameters are tuned in epochs of <batch> fixed size.
         //
         // parameters:
-        //      iters=1024[100,10000]      - number of iterations per tuning depth
         //      depth=4[2,16]              - tunning depth (accuracy)
         /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -22,7 +21,7 @@ namespace ncv
                 stochastic_trainer_t(const string_t& params = string_t());
 
                 NCV_MAKE_CLONABLE(stochastic_trainer_t, trainer_t,
-                                  "stochastic trainer, parameters: iters=1024[100,10000],depth=4[2,16]")
+                                  "stochastic trainer, parameters: depth=4[2,16]")
 
                 // train the model
                 virtual bool train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const;
@@ -64,7 +63,6 @@ namespace ncv
         private:
 
                 // attributes
-                size_t                  m_iterations;
                 size_t                  m_depth;
         };
 }

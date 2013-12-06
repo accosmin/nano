@@ -11,10 +11,8 @@ namespace ncv
         /////////////////////////////////////////////////////////////////////////////////////////
 
         stochastic_trainer_t::stochastic_trainer_t(const string_t& params)
-                :       m_iterations(text::from_params<size_t>(params, "iters", 1024)),
-                        m_depth(text::from_params<size_t>(params, "depth", 4))
+                :       m_depth(text::from_params<size_t>(params, "depth", 4))
         {
-                m_iterations = math::clamp(m_iterations, 100, 10000);
                 m_depth = math::clamp(m_depth, 2, 16);
         }
 
@@ -98,9 +96,9 @@ namespace ncv
                 scalar_t min_log_gamma = -4.0;
                 scalar_t max_log_gamma = +1.0;
 
-                for (   size_t depth = 0, iterations = m_iterations, evalsize = iterations;
+                for (   size_t depth = 0, iterations = (samples.size() >> m_depth), evalsize = iterations;
                         depth < m_depth;
-                        depth ++, iterations = iterations, evalsize = 4 * m_iterations)
+                        depth ++, iterations <<= 1)
                 {
                         thread_pool_t::mutex_t mutex;
 
