@@ -21,14 +21,13 @@ namespace ncv
         scalar_t stochastic_trainer_t::sgd(
                 const task_t& task, const samples_t& samples, const loss_t& loss, model_t& model, vector_t& x,
                 scalar_t gamma, scalar_t lambda, size_t iterations, size_t evalsize) const
-        {                
+        {
                 vector_t avg_x = x;
 
                 // (A=average)SGD steps
                 size_t iteration = 0;
                 ncv::uniform_sample(samples, iterations, [&] (const sample_t& sample)
                 {
-                        model.zero_grad();
                         model.load_params(x);
 
                         const scalar_t f = ncv::lvgrad(task, sample, loss, model);
@@ -38,10 +37,10 @@ namespace ncv
                         if (    !std::isinf(f) && !std::isinf(g.minCoeff()) && !std::isinf(g.maxCoeff()) &&
                                 !std::isnan(f) && !std::isnan(g.minCoeff()) && !std::isnan(g.maxCoeff()))
                         {
-                                x -= d * g;
+                                x.noalias() -= d * g;
                         }
 
-                        avg_x += x;
+                        avg_x.noalias() += x;
                         ++ iteration;
                 });
 
@@ -91,14 +90,14 @@ namespace ncv
                 }
 
                 // search the optimum learning parameters: each worker thread tests a value
-                scalar_t min_log_lambda = -4.0;
-                scalar_t max_log_lambda = +1.0;
-                scalar_t min_log_gamma = -4.0;
-                scalar_t max_log_gamma = +1.0;
+                scalar_t min_log_lambda = -3.0;
+                scalar_t max_log_lambda = +3.0;
+                scalar_t min_log_gamma = -3.0;
+                scalar_t max_log_gamma = +3.0;
 
-                for (   size_t depth = 0, iterations = (samples.size() >> m_depth), evalsize = iterations;
+                for (   size_t depth = 0, iterations = 1024, evalsize = 1024; //(samples.size() >> m_depth), evalsize = iterations;
                         depth < m_depth;
-                        depth ++, iterations <<= 1)
+                        depth ++, iterations <<= 1, evalsize <<= 1)
                 {
                         thread_pool_t::mutex_t mutex;
 
@@ -113,9 +112,9 @@ namespace ncv
                                         worker_pool.enqueue([=, &states, &lvalues, &task, &samples, &loss, &x, &mutex]()
                                         {
                                                 // prepare parameters
-                                                state_t& state = states(nl, ng);
-                                                state.m_log_lambda = min_log_lambda + delta_log_lambda * nl;
+                                                state_t& state = states(nl, ng);                                                
                                                 state.m_log_gamma = min_log_gamma + delta_log_gamma * ng;
+                                                state.m_log_lambda = min_log_lambda + delta_log_lambda * nl;
                                                 state.m_param = x;
 
                                                 // average stochastic gradient descent (ASGD)
@@ -123,7 +122,7 @@ namespace ncv
                                                 lvalues(nl, ng) = sgd(
                                                         task, samples, loss, *state.m_model, state.m_param,
                                                         make_param(state.m_log_gamma),
-                                                        make_param(state.m_log_gamma),
+                                                        make_param(state.m_log_lambda),
                                                         iterations, evalsize);
 
                                                 const thread_pool_t::lock_t lock(mutex);

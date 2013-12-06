@@ -23,6 +23,7 @@ namespace ncv
                 if (!samples.empty())
                 {
                         random_t<tsize> die(tsize(0), static_cast<tsize>(samples.size()) - 1);
+
                         for (tsize i = 0; i < size; i ++)
                         {
                                 const tsample& sample = samples[die()];
@@ -45,9 +46,10 @@ namespace ncv
                 if (!samples.empty())
                 {
                         random_t<tsize> die(tsize(0), static_cast<tsize>(samples.size()) - 1);
+
                         for (tsize i = 0; i < size; i ++)
                         {
-                                const tsample& sample = samples[die()];
+                                const tsample& sample = samples[die()];                                
                                 op(sample);
                         }
                 }
