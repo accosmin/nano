@@ -7,12 +7,12 @@ dir_db=/home/cosmin/experiments/databases
 exe_trainer=./build/ncv_trainer
 
 batch_params="opt=lbfgs,eps=1e-6,iters=1024"
-common_params="--loss classnll --threads 1"
+common_params="--loss classnll --threads 4"
 
 network0=""
-network1=${network0}"conv8x8:convs=16;snorm"
-network2=${network1}"conv8x8:convs=16;snorm"
-network3=${network2}"conv8x8:convs=16;snorm"
+network1=${network0}"conv8x8:convs=16;snorm;"
+network2=${network1}"conv8x8:convs=16;snorm;"
+network3=${network2}"conv8x8:convs=16;snorm;"
 
 # task description = task model [model-params] trainer trainer-params trials output
 tasks=(
