@@ -90,14 +90,23 @@ namespace ncv
                 }
 
                 // search the optimum learning parameters: each worker thread tests a value
-                scalar_t min_log_lambda = -3.0;
-                scalar_t max_log_lambda = +3.0;
-                scalar_t min_log_gamma = -3.0;
-                scalar_t max_log_gamma = +3.0;
+                scalar_t min_log_lambda = -4.0;
+                scalar_t max_log_lambda = +1.0;
+                scalar_t min_log_gamma = -4.0;
+                scalar_t max_log_gamma = +1.0;
 
-                for (   size_t depth = 0, iterations = 1024, evalsize = 1024; //(samples.size() >> m_depth), evalsize = iterations;
+
+
+//                TODO:
+//                - tune the optimum (lambda, gamma) on a fixed number of iterations (as iters=1024) - evalsize = iters
+//                - then use the optimum parameters to run a fixed number of epochs (1 epoch = #samples) - evalsize = #samples
+//                        - using multiple threads (maybe one thread will randomly do better than the others)
+
+
+
+                for (   size_t depth = 0, iterations = 1024, evalsize = 4096;//(samples.size() >> m_depth), evalsize = iterations;
                         depth < m_depth;
-                        depth ++, iterations <<= 1, evalsize <<= 1)
+                        depth ++)//, iterations <<= 1, evalsize <<= 1)
                 {
                         thread_pool_t::mutex_t mutex;
 

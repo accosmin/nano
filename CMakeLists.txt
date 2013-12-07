@@ -12,10 +12,10 @@ set(Boost_USE_MULTITHREADED ON)
 find_package(Boost COMPONENTS thread serialization program_options filesystem system)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
-# QT
-find_package(Qt5Gui)
-include_directories(${Qt5Gui_INCLUDE_DIRS})
-add_definitions(${Qt5Gui_DEFINITIONS})
+# Image formats
+find_package(PNG REQUIRED)
+find_package(JPEG REQUIRED)
+find_package(TIFF REQUIRED)
 
 # Set the compiler flags
 set(CMAKE_CXX_FLAGS                     "-Wall -std=c++11 -fopenmp")
@@ -80,7 +80,9 @@ set(libs "${libs};${Boost_SERIALIZATION_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_SYSTEM_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_FILESYSTEM_LIBRARY_RELEASE}")
-set(libs "${libs};${Qt5Gui_LIBRARIES}")
+set(libs "${libs};${JPEG_LIBRARIES}")
+set(libs "${libs};${TIFF_LIBRARIES}")
+set(libs "${libs};${PNG_LIBRARIES}")
 
 # Set the executables
 set(nanocv_programs

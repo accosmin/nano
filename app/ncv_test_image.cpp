@@ -11,19 +11,19 @@ int main(int argc, char *argv[])
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
         po_desc.add_options()("help,h", "help message");
-        po_desc.add_options()("input",
+        po_desc.add_options()("input,i",
                 boost::program_options::value<ncv::string_t>(),
                 "input image path");
-        po_desc.add_options()("scale",
+        po_desc.add_options()("scale,s",
                 boost::program_options::value<ncv::scalar_t>()->default_value(1.0),
                 "scaling factor [0.1, 10.0]");
-        po_desc.add_options()("width",
+        po_desc.add_options()("width,w",
                 boost::program_options::value<ncv::size_t>()->default_value(0),
                 "scaling width [0, 4096] (considered if positive)");
-        po_desc.add_options()("height",
+        po_desc.add_options()("height,h",
                 boost::program_options::value<ncv::size_t>()->default_value(0),
                 "scaling height [0, 4096] (considered if positive)");
-        po_desc.add_options()("output",
+        po_desc.add_options()("output,o",
                 boost::program_options::value<ncv::string_t>(),
                 "output image path");
 	
@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
 
         // transform RGBA to CIELab
         timer.start();
+        cielab_image.resize(rgba_image.rows(), rgba_image.cols());
         ncv::math::transform(rgba_image, cielab_image, ncv::color::make_cielab);
         ncv::log_info() << "transformed RGBA to CIELab in " << timer.elapsed() << ".";
 
@@ -87,6 +88,7 @@ int main(int argc, char *argv[])
 
         // transform CIELab to RGBA
         timer.start();
+        rgba_image.resize(cielab_image_scaled.rows(), cielab_image_scaled.cols());
         ncv::math::transform(cielab_image_scaled, rgba_image,
                              [](const ncv::cielab_t& cielab) { return ncv::color::make_rgba(cielab); });
         ncv::log_info() << "transformed CIELab to RGBA in " << timer.elapsed() << ".";

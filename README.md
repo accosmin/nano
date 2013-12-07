@@ -54,7 +54,7 @@ batch approach, however the convergence (even to a local minimum) is not guarant
 
 ### Compilation
 
-To compile (and install) CMake, a C++11 compiler, Boost, Eigen and Qt are required. The library is tested so far only on ArchLinux x64, but the 
+To compile (and install) CMake, a C++11 compiler, Boost, Eigen, libTIFF, libPNG and libJPEG are required. The library is tested so far only on ArchLinux x64, but the 
 code is written to be cross-platform.
 
 The easiest way of compiling is to run the `build.sh` bash script. The test programs and utilities will be found in the created `build` directory.
@@ -71,9 +71,7 @@ The library provides various command line programs and utilities. Each program d
 
 * **ncv_tester** - test a model on a given task.
 
-TODO: example of models
-
-TODO: script to run experiments
+The `experiments.sh` contains examples on how to train various models on different tasks.
 
 
 

@@ -1,5 +1,5 @@
 model="--model forward-network"
-#model="--model forward-network --model-params conv8x8:convs=16;snorm"
+model="--model forward-network --model-params conv8x8:convs=16;snorm"
 #model="--model forward-network --model-params conv8x8:convs=16;snorm;conv8x8:convs=8;snorm"
 #model="--model forward-network --model-params conv8x8:convs=16;snorm;conv8x8:convs=8;snorm;conv8x8:convs=8;snorm"
 
