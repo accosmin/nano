@@ -1,11 +1,6 @@
-* TODO: make the stochastic & minibatch trainers work (VERY hard to tune, poor performance compare to the batch version)
+* investigate why the stochastic trainer is not converging for >=2 hidden layers!!!
 
-* batch trainer:
-	- check if any speed improvement if using a convex relaxation:
-		- add a lambda * L2, optimize, decrease lambda and repeat 
-
-* improve ASGD 2D-grid tuning:
-	- a 2-hidden layer network can barely obtain the same performance of an affine model (batch trained)
+ TODO: make the stochastic & minibatch trainers work (VERY hard to tune, poor performance compare to the batch version)
 
 * refactor the trainer_t::v* functions:
 	- too much duplicated code!
