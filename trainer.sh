@@ -5,7 +5,7 @@ model="--model forward-network --model-params conv8x8:convs=16;snorm"
 
 #trainer="--trainer batch --trainer-params opt=lbfgs,iters=128,eps=1e-5"
 #trainer="--trainer minibatch --trainer-params opt=cgd,iters=2,batch=1024,epoch=256"
-trainer="--trainer stochastic --trainer-params depth=8"
+trainer="--trainer stochastic --trainer-params batch=8"
 
 params=""
 params=${params}" --task mnist --task-dir /home/cosmin/experiments/databases/mnist/"
