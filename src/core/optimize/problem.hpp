@@ -87,7 +87,7 @@ namespace ncv
                         }
 
                         // implementation: approximate gradient (if no analytic gradient provided)
-                        void eval_grad(const vector_t x, vector_t& g) const
+                        void eval_grad(const vector_t& x, vector_t& g) const
                         {
                                 const tsize n = size();
                                 const tscalar d = 1e-6;//std::numeric_limits<tscalar>::epsilon();

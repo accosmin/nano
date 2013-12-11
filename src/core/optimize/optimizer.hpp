@@ -70,7 +70,7 @@ namespace ncv
                                 const tvector& x0,
                                 tsize max_iterations,           // maximum number of iterations
                                 tscalar epsilon,                // convergence precision
-                                tsize hist_size = 8,            // hessian approximation history size
+                                tsize hist_size = 6,            // hessian approximation history size
                                 const top_wlog& op_wlog = top_wlog(),
                                 const top_elog& op_elog = top_elog(),
                                 const top_ulog& op_ulog = top_ulog())
@@ -361,7 +361,7 @@ namespace ncv
                                         }
 
                                         // check convergence
-                                        if (i > hist_size && cstate.converged(epsilon))
+                                        if (cstate.converged(epsilon))
                                         {
                                                 break;
                                         }
@@ -410,7 +410,7 @@ namespace ncv
                                         cstate.d = -r;
 
                                         // update solution
-                                        const tscalar t = ls_strong_wolfe(problem, cstate, op_wlog, ft, gt, 0.1, 0.9);
+                                        const tscalar t = ls_strong_wolfe(problem, cstate, op_wlog, ft, gt, 1e-4, 0.9);
                                         if (t < std::numeric_limits<tscalar>::epsilon())
                                         {
                                                 if (op_elog)

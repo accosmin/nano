@@ -70,6 +70,7 @@ namespace ncv
                 tensor3d_t data;
 
                 const rect_t region = geom::make_rect(x, y, n_cols(), n_rows());
+
                 switch (m_color)
                 {
                 case color_mode::luma:
