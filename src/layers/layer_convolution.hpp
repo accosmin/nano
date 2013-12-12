@@ -7,7 +7,7 @@
 #include "core/math/cast.hpp"
 #include "core/math/convolution.hpp"
 #include "core/math/clamp.hpp"
-#include "core/serializer.h"
+#include "core/vectorizer.h"
 
 namespace ncv
 {
@@ -44,9 +44,9 @@ namespace ncv
                 virtual void zero_grad() const { _zero_grad(); }
 
                 // serialize parameters & gradients
-                virtual serializer_t& save_params(serializer_t& s) const { return s << m_kdata << m_bdata << m_wdata; }
-                virtual serializer_t& save_grad(serializer_t& s) const { return s << m_gkdata << m_gbdata << m_gwdata; }
-                virtual deserializer_t& load_params(deserializer_t& s) { return s >> m_kdata >> m_bdata >> m_wdata; }
+                virtual ovectorizer_t& save_params(ovectorizer_t& s) const { return _save_params(s); }
+                virtual ovectorizer_t& save_grad(ovectorizer_t& s) const { return _save_grad(s); }
+                virtual ivectorizer_t& load_params(ivectorizer_t& s) { return _load_params(s); }
 
                 // process inputs (compute outputs & gradients)
                 virtual const tensor3d_t& forward(const tensor3d_t& input) const { return _forward(input); }
@@ -139,6 +139,27 @@ namespace ncv
                         m_gkdata.zero();
                         m_gwdata.zero();
                         m_gbdata.zero();
+                }
+
+                /////////////////////////////////////////////////////////////////////////////////////////
+
+                ovectorizer_t& _save_params(ovectorizer_t& s) const
+                {
+                        return s << m_kdata << m_bdata << m_wdata;
+                }
+
+                /////////////////////////////////////////////////////////////////////////////////////////
+
+                ovectorizer_t& _save_grad(ovectorizer_t& s) const
+                {
+                        return s << m_gkdata << m_gbdata << m_gwdata;
+                }
+
+                /////////////////////////////////////////////////////////////////////////////////////////
+
+                ivectorizer_t& _load_params(ivectorizer_t& s)
+                {
+                        return s >> m_kdata >> m_bdata >> m_wdata;
                 }
 
                 /////////////////////////////////////////////////////////////////////////////////////////

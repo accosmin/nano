@@ -1,10 +1,10 @@
-#include "serializer.h"
+#include "vectorizer.h"
 
 namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        serializer_t::serializer_t(vector_t& data)
+        ovectorizer_t::ovectorizer_t(vector_t& data)
                 :       m_data(data),
                         m_pos(0)
         {
@@ -12,7 +12,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        serializer_t& serializer_t::operator<<(const tensor4d_t& t)
+        ovectorizer_t& ovectorizer_t::operator<<(const tensor4d_t& t)
         {
                 for (size_t d1 = 0; d1 < t.n_dim1(); d1 ++)
                 {
@@ -27,7 +27,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        serializer_t& serializer_t::operator<<(const tensor3d_t& t)
+        ovectorizer_t& ovectorizer_t::operator<<(const tensor3d_t& t)
         {
                 for (size_t d1 = 0; d1 < t.n_dim1(); d1 ++)
                 {
@@ -39,7 +39,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        serializer_t& serializer_t::operator<<(const matrix_t& mat)
+        ovectorizer_t& ovectorizer_t::operator<<(const matrix_t& mat)
         {
                 std::copy(mat.data(), mat.data() + mat.size(), m_data.data() + m_pos);
                 m_pos += mat.size();
@@ -49,7 +49,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        serializer_t& serializer_t::operator<<(const vector_t& vec)
+        ovectorizer_t& ovectorizer_t::operator<<(const vector_t& vec)
         {
                 std::copy(vec.data(), vec.data() + vec.size(), m_data.data() + m_pos);
                 m_pos += vec.size();
@@ -59,7 +59,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        serializer_t& serializer_t::operator<<(scalar_t val)
+        ovectorizer_t& ovectorizer_t::operator<<(scalar_t val)
         {
                 m_data(m_pos ++) = val;
                 m_pos ++;
@@ -69,7 +69,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        deserializer_t::deserializer_t(const vector_t& data)
+        ivectorizer_t::ivectorizer_t(const vector_t& data)
                 :       m_data(data),
                         m_pos(0)
         {
@@ -77,7 +77,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        deserializer_t& deserializer_t::operator>>(tensor4d_t& t)
+        ivectorizer_t& ivectorizer_t::operator>>(tensor4d_t& t)
         {
                 for (size_t d1 = 0; d1 < t.n_dim1(); d1 ++)
                 {
@@ -92,7 +92,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        deserializer_t& deserializer_t::operator>>(tensor3d_t& t)
+        ivectorizer_t& ivectorizer_t::operator>>(tensor3d_t& t)
         {
                 for (size_t d1 = 0; d1 < t.n_dim1(); d1 ++)
                 {
@@ -104,7 +104,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        deserializer_t& deserializer_t::operator>>(matrix_t& mat)
+        ivectorizer_t& ivectorizer_t::operator>>(matrix_t& mat)
         {
                 auto segm = m_data.segment(m_pos, mat.size());
                 std::copy(segm.data(), segm.data() + segm.size(), mat.data());
@@ -115,7 +115,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        deserializer_t& deserializer_t::operator>>(vector_t& vec)
+        ivectorizer_t& ivectorizer_t::operator>>(vector_t& vec)
         {
                 vec = m_data.segment(m_pos, vec.size());
                 m_pos += vec.size();
@@ -125,7 +125,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        deserializer_t& deserializer_t::operator>>(scalar_t& val)
+        ivectorizer_t& ivectorizer_t::operator>>(scalar_t& val)
         {
                 val = m_data(m_pos ++);
 

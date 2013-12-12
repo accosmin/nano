@@ -1,13 +1,9 @@
 * investigate why the stochastic trainer is not converging for >=2 hidden layers!!!
+TODO: make the stochastic & minibatch trainers work (VERY hard to tune, poor performance compare to the batch version)
 
- TODO: make the stochastic & minibatch trainers work (VERY hard to tune, poor performance compare to the batch version)
-
-* refactor the trainer_t::v* functions:
-	- too much duplicated code!
-				
-* serializer: store data in std::vector, push_back values -> (serializer_t() << s << v << m).data() or .size()
-* same for deserializer
-	- BETTER name for serializer! -> vectorizer?!
+* faster convolution layers:
+	- I - stochastic trainer -> make the iterations first
+	- II - forward & backward steps
 
 * test program to print model (ncv_describe -> model structure + convolutions as images)
 

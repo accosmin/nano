@@ -1,29 +1,27 @@
-#ifndef NANOCV_SERIALIZER_H
-#define NANOCV_SERIALIZER_H
+#ifndef NANOCV_VECTORIZER_H
+#define NANOCV_VECTORIZER_H
 
 #include "types.h"
 
 namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
-        // serialize data to vectors.
+        // serialize data to/from vectors.
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        // FIXME: better name for these classes! vectorize?! linearize?!
-
-        class serializer_t
+        class ovectorizer_t
         {
         public:
 
                 // constructor
-                serializer_t(vector_t& data);
+                ovectorizer_t(vector_t& data);
 
                 // serialize data
-                serializer_t& operator<<(scalar_t val);
-                serializer_t& operator<<(const vector_t& vec);
-                serializer_t& operator<<(const matrix_t& mat);
-                serializer_t& operator<<(const tensor3d_t& t);
-                serializer_t& operator<<(const tensor4d_t& t);
+                ovectorizer_t& operator<<(scalar_t val);
+                ovectorizer_t& operator<<(const vector_t& vec);
+                ovectorizer_t& operator<<(const matrix_t& mat);
+                ovectorizer_t& operator<<(const tensor3d_t& t);
+                ovectorizer_t& operator<<(const tensor4d_t& t);
 
         private:
 
@@ -37,7 +35,7 @@ namespace ncv
         <
                 typename tdata
         >
-        serializer_t& operator<<(serializer_t& s, const std::vector<tdata>& datas)
+        ovectorizer_t& operator<<(ovectorizer_t& s, const std::vector<tdata>& datas)
         {
                 for (const tdata& data : datas)
                 {
@@ -47,19 +45,19 @@ namespace ncv
                 return s;
         }
 
-        class deserializer_t
+        class ivectorizer_t
         {
         public:
 
                 // constructor
-                deserializer_t(const vector_t& data);
+                ivectorizer_t(const vector_t& data);
 
                 // deserialize data
-                deserializer_t& operator>>(scalar_t& val);
-                deserializer_t& operator>>(vector_t& vec);
-                deserializer_t& operator>>(matrix_t& mat);
-                deserializer_t& operator>>(tensor3d_t& t);
-                deserializer_t& operator>>(tensor4d_t& t);
+                ivectorizer_t& operator>>(scalar_t& val);
+                ivectorizer_t& operator>>(vector_t& vec);
+                ivectorizer_t& operator>>(matrix_t& mat);
+                ivectorizer_t& operator>>(tensor3d_t& t);
+                ivectorizer_t& operator>>(tensor4d_t& t);
 
         private:
 
@@ -73,7 +71,7 @@ namespace ncv
         <
                 typename tdata
         >
-        deserializer_t& operator>>(deserializer_t& s, std::vector<tdata>& datas)
+        ivectorizer_t& operator>>(ivectorizer_t& s, std::vector<tdata>& datas)
         {
                 for (tdata& data : datas)
                 {
@@ -84,4 +82,4 @@ namespace ncv
         }
 }
 
-#endif // NANOCV_SERIALIZER_H
+#endif // NANOCV_VECTORIZER_H

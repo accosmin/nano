@@ -30,9 +30,9 @@ namespace ncv
                 virtual void zero_grad() const;
 
                 // serialize parameters & gradients
-                virtual serializer_t& save_params(serializer_t& s) const;
-                virtual serializer_t& save_grad(serializer_t& s) const;
-                virtual deserializer_t& load_params(deserializer_t& s);
+                virtual ovectorizer_t& save_params(ovectorizer_t& s) const;
+                virtual ovectorizer_t& save_grad(ovectorizer_t& s) const;
+                virtual ivectorizer_t& load_params(ivectorizer_t& s);
 
                 // process inputs (compute outputs & gradients)
                 virtual const tensor3d_t& forward(const tensor3d_t& input) const;

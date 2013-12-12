@@ -1,7 +1,7 @@
 #include "layer_output.h"
 #include "core/math/clamp.hpp"
 #include "core/text.h"
-#include "core/serializer.h"
+#include "core/vectorizer.h"
 
 namespace ncv
 {
@@ -60,21 +60,21 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        serializer_t& output_layer_t::save_params(serializer_t& s) const
+        ovectorizer_t& output_layer_t::save_params(ovectorizer_t& s) const
         {
                 return s << m_kdata << m_bdata;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        serializer_t& output_layer_t::save_grad(serializer_t& s) const
+        ovectorizer_t& output_layer_t::save_grad(ovectorizer_t& s) const
         {
                 return s << m_gkdata << m_gbdata;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        deserializer_t& output_layer_t::load_params(deserializer_t& s)
+        ivectorizer_t& output_layer_t::load_params(ivectorizer_t& s)
         {
                 return s >> m_kdata >> m_bdata;
         }

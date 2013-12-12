@@ -20,8 +20,8 @@ namespace ncv
         //              a set of outputs of size (orows, ocols).
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        class serializer_t;
-        class deserializer_t;
+        class ivectorizer_t;
+        class ovectorizer_t;
 
         class layer_t : public clonable_t<layer_t>
         {
@@ -39,9 +39,9 @@ namespace ncv
                 virtual void zero_grad() const = 0;
 
                 // serialize parameters & gradients
-                virtual serializer_t& save_params(serializer_t& s) const = 0;
-                virtual serializer_t& save_grad(serializer_t& s) const = 0;
-                virtual deserializer_t& load_params(deserializer_t& s) = 0;
+                virtual ovectorizer_t& save_params(ovectorizer_t& s) const = 0;
+                virtual ovectorizer_t& save_grad(ovectorizer_t& s) const = 0;
+                virtual ivectorizer_t& load_params(ivectorizer_t& s) = 0;
 
                 // process inputs (compute outputs & gradients)
                 virtual const tensor3d_t& forward(const tensor3d_t& input) const = 0;

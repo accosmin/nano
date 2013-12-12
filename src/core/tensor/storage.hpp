@@ -40,7 +40,10 @@ namespace ncv
                         // reset values
                         void zero()
                         {
-                                constant(0);
+                                for (matrix_t& mat : m_data)
+                                {
+                                        mat.setZero();
+                                }
                         }
 
                         void constant(tscalar value)

@@ -7,7 +7,8 @@ namespace ncv
 
         namespace impl
         {
-                static scalar_t lvalue(const task_t& task, const sample_t& sample, const loss_t& loss, const model_t& model)
+                static scalar_t lvalue(
+                        const task_t& task, const sample_t& sample, const loss_t& loss, const model_t& model)
                 {
                         const image_t& image = task.image(sample.m_index);
                         const vector_t target = image.make_target(sample.m_region);
@@ -17,7 +18,8 @@ namespace ncv
                         return loss.value(target, output);
                 }
 
-                static scalar_t lvgrad(const task_t& task, const sample_t& sample, const loss_t& loss, const model_t& model)
+                static scalar_t lvgrad(
+                        const task_t& task, const sample_t& sample, const loss_t& loss, const model_t& model)
                 {
                         const image_t& image = task.image(sample.m_index);
                         const vector_t target = image.make_target(sample.m_region);
@@ -57,7 +59,10 @@ namespace ncv
                         return *this;
                 }
 
-                scalar_t value() const { return m_value / ((m_count == 0) ? 1.0 : m_count); }
+                scalar_t value() const
+                {
+                        return m_value / ((m_count == 0) ? 1.0 : m_count);
+                }
 
                 // attributes
                 scalar_t        m_value;

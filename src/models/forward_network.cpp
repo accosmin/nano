@@ -3,7 +3,7 @@
 #include "core/logger.h"
 #include "core/text.h"
 #include "core/math/cast.hpp"
-#include "core/serializer.h"
+#include "core/vectorizer.h"
 
 namespace ncv
 {
@@ -26,7 +26,7 @@ namespace ncv
 
                 const tensor3d_t& output = *input;
                 vector_t result(output.size());                
-                serializer_t(result) << output;
+                ovectorizer_t(result) << output;
 
                 return result;
         }
@@ -46,7 +46,7 @@ namespace ncv
         void forward_network_t::cumulate_grad(const vector_t& vgradient) const
         {
                 tensor3d_t _gradient(n_outputs(), 1, 1);
-                deserializer_t(vgradient) >> _gradient;
+                ivectorizer_t(vgradient) >> _gradient;
 
                 const tensor3d_t* gradient = &_gradient;
                 for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
@@ -61,7 +61,7 @@ namespace ncv
         {
                 vector_t mgradient(n_parameters());
 
-                serializer_t s(mgradient);
+                ovectorizer_t s(mgradient);
                 for (const rlayer_t& layer : m_layers)
                 {
                         layer->save_grad(s);
@@ -76,7 +76,7 @@ namespace ncv
         {
                 if (math::cast<size_t>(x.size()) == n_parameters())
                 {
-                        serializer_t s(x);
+                        ovectorizer_t s(x);
                         for (const rlayer_t& layer : m_layers)
                         {
                                 layer->save_params(s);
@@ -97,7 +97,7 @@ namespace ncv
         {
                 if (math::cast<size_t>(x.size()) == n_parameters())
                 {
-                        deserializer_t s(x);
+                        ivectorizer_t s(x);
                         for (const rlayer_t& layer : m_layers)
                         {
                                 layer->load_params(s);
