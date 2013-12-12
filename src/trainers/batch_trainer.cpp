@@ -95,7 +95,7 @@ namespace ncv
 
                 if (text::iequals(m_optimizer, "lbfgs"))
                 {
-                        res = optimizer_t::lbfgs(problem, x, iters, eps, 8, fn_wlog, fn_elog, fn_ulog_ref);
+                        res = optimizer_t::lbfgs(problem, x, iters, eps, 6, fn_wlog, fn_elog, fn_ulog_ref);
                 }
                 else if (text::iequals(m_optimizer, "cgd"))
                 {
