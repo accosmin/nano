@@ -4,9 +4,8 @@
 #include "layer.h"
 #include "core/logger.h"
 #include "core/text.h"
-#include "core/math/cast.hpp"
+#include "core/math/math.hpp"
 #include "core/math/convolution.hpp"
-#include "core/math/clamp.hpp"
 #include "core/vectorizer.h"
 
 namespace ncv
@@ -203,7 +202,7 @@ namespace ncv
 
                                         xdata.setZero();
                                         math::conv<tcrows, tccols>(idata, kdata, xdata);
-                                        odata += weight(o, i) * xdata;
+                                        odata.noalias() += weight(o, i) * xdata;
                                 }
                         }
 
@@ -228,7 +227,7 @@ namespace ncv
                                 for (size_t i = 0; i < n_idims(); i ++)
                                 {
                                         const matrix_t& idata = m_idata(i);
-                                        const matrix_t& xdata = m_xdata(o, i);                                        
+                                        const matrix_t& xdata = m_xdata(o, i);
                                         matrix_t& gkdata = m_gkdata(o);
 
                                         gweight(o, i) += gdata.cwiseProduct(xdata).sum();

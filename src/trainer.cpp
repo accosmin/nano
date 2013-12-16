@@ -1,4 +1,5 @@
 #include "trainer.h"
+#include "core/math/math.hpp"
 #include "core/thread/thread_loop.hpp"
 
 namespace ncv

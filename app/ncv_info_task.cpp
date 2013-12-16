@@ -1,5 +1,4 @@
 #include "ncv.h"
-#include "core/math/clamp.hpp"
 #include <boost/program_options.hpp>
 
 void save(const ncv::task_t& task, const ncv::fold_t& fold,

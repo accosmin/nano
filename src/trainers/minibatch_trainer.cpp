@@ -1,7 +1,7 @@
 #include "minibatch_trainer.h"
 #include "core/timer.h"
 #include "core/text.h"
-#include "core/math/clamp.hpp"
+#include "core/math/math.hpp"
 #include "core/logger.h"
 
 namespace ncv

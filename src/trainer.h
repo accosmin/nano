@@ -4,7 +4,6 @@
 #include "task.h"
 #include "loss.h"
 #include "model.h"
-#include "core/math/clamp.hpp"
 
 namespace ncv
 {

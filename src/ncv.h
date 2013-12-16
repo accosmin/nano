@@ -4,6 +4,7 @@
 #include "core/text.h"
 #include "core/logger.h"
 #include "core/timer.h"
+#include "core/math/math.hpp"
 #include "loss.h"
 #include "layer.h"
 #include "task.h"

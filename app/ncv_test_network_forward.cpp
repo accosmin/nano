@@ -1,5 +1,4 @@
 #include "ncv.h"
-#include "core/math/clamp.hpp"
 #include "models/forward_network.h"
 #include <boost/program_options.hpp>
 
@@ -20,7 +19,7 @@ int main(int argc, char *argv[])
                 "conv8x8:convs=16;unit;conv8x8:convs=16;unit",
                 "conv8x8:convs=16;snorm;conv8x8:convs=16;snorm;conv8x8:convs=16;snorm",
                 "conv8x8:convs=16;tanh;conv8x8:convs=16;tanh;conv8x8:convs=16;tanh",
-                "conv8x8:convs=16;unit;conv8x8:convs=16;unit;conv8x8:convs=16;unit"
+                "conv8x8:convs=16;unit;conv8x8:convs=16;unit;conv8x8:convs=16;unit",
                 "conv8x8:convs=16;snorm;conv8x8:convs=16;snorm;conv8x8:convs=16;snorm;conv8x8:convs=16;snorm",
                 "conv8x8:convs=16;tanh;conv8x8:convs=16;tanh;conv8x8:convs=16;tanh;conv8x8:convs=16;tanh",
                 "conv8x8:convs=16;unit;conv8x8:convs=16;unit;conv8x8:convs=16;unit;conv8x8:convs=16;unit"
@@ -32,11 +31,9 @@ int main(int argc, char *argv[])
         const size_t cmd_outputs = 10;
         const size_t cmd_samples = 10000;
 
-        for (size_t n = 0; n < cmd_networks.size(); n ++)
+        for (const string_t& cmd_network : cmd_networks)
         {
-                const string_t cmd_network = cmd_networks[n];
-
-                log_info() << "<<< running network [" << cmd_networks[n] << "] ...";
+                log_info() << "<<< running network [" << cmd_network << "] ...";
 
                 // create feed-forward network
                 ncv::forward_network_t network(cmd_network);

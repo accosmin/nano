@@ -1,7 +1,7 @@
 #include "task_mnist.h"
 #include "core/text.h"
 #include "core/logger.h"
-#include "core/math/cast.hpp"
+#include "core/math/math.hpp"
 #include "loss.h"
 #include <fstream>
 

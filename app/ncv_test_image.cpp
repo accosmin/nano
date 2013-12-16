@@ -1,7 +1,5 @@
 #include "ncv.h"
-#include "core/math/clamp.hpp"
 #include "core/math/bilinear.hpp"
-#include "core/math/transform.hpp"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])

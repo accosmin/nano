@@ -1,6 +1,4 @@
 #include "ncv.h"
-#include "core/math/clamp.hpp"
-#include "core/math/numeric.hpp"
 #include <boost/program_options.hpp>
 
 using namespace ncv;
