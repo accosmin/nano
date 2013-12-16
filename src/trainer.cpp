@@ -146,6 +146,22 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        void split_train_valid(const samples_t& samples, size_t vpercentage, samples_t& tsamples, samples_t& vsamples)
+        {
+                vpercentage = math::clamp(vpercentage, size_t(1), size_t(99));
+
+                tsamples.clear();
+                vsamples.clear();
+
+                random_t<size_t> rnd(0, 100);
+                for (size_t i = 0; i < samples.size(); i ++)
+                {
+                        (rnd() < vpercentage ? vsamples : tsamples).push_back(samples[i]);
+                }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
         scalar_t lvalue(const task_t& task, const sample_t& sample, const loss_t& loss, const model_t& model)
         {
                 return impl::lvalue(task, sample, loss, model);

@@ -4,6 +4,7 @@
 #include "task.h"
 #include "loss.h"
 #include "model.h"
+#include "core/math/clamp.hpp"
 
 namespace ncv
 {
@@ -14,6 +15,11 @@ namespace ncv
 
         // prune samples
         samples_t prune_annotated(const task_t&, const samples_t&);
+
+        // split samples into:
+        //      training        - (100 - vpercentage)%
+        //      validation      - vpercentage%
+        void split_train_valid(const samples_t&, size_t vpercentage, samples_t& tsamples, samples_t& vsamples);
 
         // compute loss value & gradient (given a model and some samples)
         //      (single & multi-threaded versions)
