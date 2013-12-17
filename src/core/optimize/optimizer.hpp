@@ -1,9 +1,8 @@
 #ifndef NANOCV_OPTIMIZE_OPTIMIZER_HPP
 #define NANOCV_OPTIMIZE_OPTIMIZER_HPP
 
-#include "core/optimize/result.hpp"
+#include "core/optimize/linesearch.hpp"
 #include "core/optimize/problem.hpp"
-#include <type_traits>
 #include <deque>
 
 namespace ncv
@@ -11,431 +10,301 @@ namespace ncv
         namespace optimize
         {
                 /////////////////////////////////////////////////////////////////////////////////////////
-                // optimization methods (GD, CGD, LBFGS) starting from the initial value (guess) x0.
+                // check and force a descent direction
                 /////////////////////////////////////////////////////////////////////////////////////////
 
                 template
                 <
-                        typename tscalar,
-                        typename tsize,
-                        typename top_size,              // dimensionality operator: size = op()
-                        typename top_fval,              // function value operator: f = op(x)
-                        typename top_grad,              // function value and gradient operator: f = op(x, g)
-                        typename top_wlog,              // warning logging operator: op("message")
-                        typename top_elog,              // error logging operator: op("message")
-                        typename top_ulog,              // update (with current result/solution) logging operator: op(result)
+                        typename tstate,
+                        typename twlog,
 
-                        // disable for not valid types!
-                        typename tvalid_tscalar = typename std::enable_if<std::is_floating_point<tscalar>::value>::type,
-                        typename tvalid_tsize = typename std::enable_if<std::is_integral<tsize>::value>::type
+                        typename tscalar = typename tstate::tscalar
                 >
-                class optimizer_t
+                tscalar descent(tstate& st, const twlog& wlog)
                 {
-                public:
-
-                        typedef problem_t<tscalar, tsize, top_size, top_fval, top_grad>         tproblem;
-                        typedef result_t<tscalar, tsize>                                        tresult;
-                        typedef typename tresult::tstate                                        tstate;
-                        typedef typename tresult::tvector                                       tvector;
-
-                        // gradient descent starting from the initial value (guess) x0
-                        static tresult gd(
-                                const tproblem& problem,
-                                const tvector& x0,
-                                tsize max_iterations,           // maximum number of iterations
-                                tscalar epsilon,                // convergence precision
-                                const top_wlog& op_wlog = top_wlog(),
-                                const top_elog& op_elog = top_elog(),
-                                const top_ulog& op_ulog = top_ulog())
+                        tscalar dg = st.d.dot(st.g);
+                        if (dg > std::numeric_limits<tscalar>::min())
                         {
-                                return _gd(problem, x0, max_iterations, epsilon, op_wlog, op_elog, op_ulog);
-                        }
-
-                        // conjugate gradient descent starting from the initial value (guess) x0
-                        static tresult cgd(
-                                const tproblem& problem,
-                                const tvector& x0,
-                                tsize max_iterations,           // maximum number of iterations
-                                tscalar epsilon,                // convergence precision
-                                const top_wlog& op_wlog = top_wlog(),
-                                const top_elog& op_elog = top_elog(),
-                                const top_ulog& op_ulog = top_ulog())
-                        {
-                                return _cgd(problem, x0, max_iterations, epsilon, op_wlog, op_elog, op_ulog);
-                        }
-
-                        // limited memory bfgs (l-bfgs) starting from the initial value (guess) x0
-                        static tresult lbfgs(
-                                const tproblem& problem,
-                                const tvector& x0,
-                                tsize max_iterations,           // maximum number of iterations
-                                tscalar epsilon,                // convergence precision
-                                tsize hist_size = 6,            // hessian approximation history size
-                                const top_wlog& op_wlog = top_wlog(),
-                                const top_elog& op_elog = top_elog(),
-                                const top_ulog& op_ulog = top_ulog())
-                        {
-                                return _lbfgs(problem, x0, max_iterations, epsilon, hist_size, op_wlog, op_elog, op_ulog);
-                        }
-
-                private:
-
-                        /////////////////////////////////////////////////////////////////////////////////////////
-
-                        // check and force a descent direction
-                        static tscalar descent(tstate& st, const top_wlog& wlog)
-                        {
-                                tscalar dg = st.d.dot(st.g);
-                                if (dg > std::numeric_limits<tscalar>::min())
+                                if (wlog)
                                 {
-                                        if (wlog)
-                                        {
-                                                wlog("not a descent direction!");
-                                        }
-                                        st.d = -st.g;
-                                        dg = st.d.dot(st.g);
+                                        wlog("not a descent direction!");
+                                }
+                                st.d = -st.g;
+                                dg = st.d.dot(st.g);
+                        }
+
+                        return dg;
+                }
+
+                /////////////////////////////////////////////////////////////////////////////////////////
+                // gradient descent starting from the initial value (guess) x0
+                /////////////////////////////////////////////////////////////////////////////////////////
+
+                template
+                <
+                        typename tproblem,
+
+                        // dependent types
+                        typename tscalar = typename tproblem::tscalar,
+                        typename tsize = typename tproblem::tsize,
+                        typename tvector = typename tproblem::tvector,
+                        typename tresult = typename tproblem::tresult,
+                        typename tstate = typename tproblem::tstate,
+
+                        typename twlog = typename tproblem::twlog,
+                        typename telog = typename tproblem::telog,
+                        typename tulog = typename tproblem::tulog
+                >
+                tresult gd(
+                        const tproblem& problem,
+                        const tvector& x0,
+                        tsize max_iterations,
+                        tscalar epsilon,
+                        const twlog& op_wlog = twlog(),
+                        const telog& op_elog = telog(),
+                        const tulog& op_ulog = tulog())
+                {
+                        assert(problem.size() == static_cast<tsize>(x0.size()));
+
+                        tresult result(problem.size());
+                        tstate cstate(problem, x0);
+
+                        // iterate until convergence
+                        for (tsize i = 0; i < max_iterations; i ++)
+                        {
+                                result.update(problem, cstate);
+                                if (op_ulog)
+                                {
+                                        op_ulog(result);
                                 }
 
-                                return dg;
-                        }
-
-                        /////////////////////////////////////////////////////////////////////////////////////////
-
-                private:
-
-                        /////////////////////////////////////////////////////////////////////////////////////////
-                        // line-search methods to find the scalar that reduces
-                        //      the function value (the most) along the direction d: argmin(t) f(x + t * d).
-                        /////////////////////////////////////////////////////////////////////////////////////////
-
-                        // Armijo (sufficient decrease) condition
-                        static tscalar ls_armijo(const tproblem& problem, tstate& st, const top_wlog& wlog,
-                                tscalar alpha = 0.2, tscalar beta = 0.7, tsize max_iters = 64)
-                        {
-                                const tscalar dg = descent(st, wlog);
-
-                                tscalar t = 1;
-                                for (tsize i = 0; i < max_iters; i ++, t = beta * t)
+                                // check convergence
+                                if (cstate.converged(epsilon))
                                 {
-                                        if (problem.f(st.x + t * st.d) < st.f + t * alpha * dg)
-                                        {
-                                                return t;
-                                        }
+                                        break;
                                 }
 
-                                return 0;
+                                // descent direction
+                                cstate.d = -cstate.g;
+
+                                // update solution
+                                const tscalar t = ls_armijo(problem, cstate, op_wlog);
+                                if (t < std::numeric_limits<tscalar>::epsilon())
+                                {
+                                        if (op_elog)
+                                        {
+                                                op_elog("line-search failed for GD!");
+                                        }
+                                        break;
+                                }
+                                cstate.update(problem, t);
                         }
 
-                        /////////////////////////////////////////////////////////////////////////////////////////
+                        return result;
+                }
 
-                        // helper function: strong Wolfe (sufficient decrease and curvature) conditions
-                        static tscalar ls_zoom(const tproblem& problem, const tstate& st,
-                                tscalar& ft, tvector& gt,
-                                tscalar tlo, tscalar thi, tscalar ftlo, tscalar fthi,
-                                tscalar c1, tscalar c2, tsize max_iters = 64)
+                /////////////////////////////////////////////////////////////////////////////////////////
+                // conjugate gradient descent starting from the initial value (guess) x0
+                /////////////////////////////////////////////////////////////////////////////////////////
+
+                template
+                <
+                        typename tproblem,
+
+                        // dependent types
+                        typename tscalar = typename tproblem::tscalar,
+                        typename tsize = typename tproblem::tsize,
+                        typename tvector = typename tproblem::tvector,
+                        typename tresult = typename tproblem::tresult,
+                        typename tstate = typename tproblem::tstate,
+
+                        typename twlog = typename tproblem::twlog,
+                        typename telog = typename tproblem::telog,
+                        typename tulog = typename tproblem::tulog
+                >
+                tresult cgd(
+                        const tproblem& problem,
+                        const tvector& x0,
+                        tsize max_iterations,           // maximum number of iterations
+                        tscalar epsilon,                // convergence precision
+                        const twlog& op_wlog = twlog(),
+                        const telog& op_elog = telog(),
+                        const tulog& op_ulog = tulog())
+                {
+                        assert(problem.size() == static_cast<tsize>(x0.size()));
+
+                        tresult result(problem.size());
+                        tstate cstate(problem, x0), pstate = cstate;
+
+                        tscalar ft;
+                        tvector gt;
+
+                        // iterate until convergence
+                        for (tsize i = 0; i < max_iterations; i ++)
                         {
-                                const tscalar dg = st.d.dot(st.g);
-
-                                // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
-                                for (tsize i = 0; i < max_iters; i ++)
+                                result.update(problem, cstate);
+                                if (op_ulog)
                                 {
-                                        const tscalar t = (tlo + thi) / 2;
-
-                                        // check sufficient decrease
-                                        ft = problem.f(st.x + t * st.d, gt);
-                                        if (ft > st.f + c1 * t * dg || ft >= ftlo)
-                                        {
-                                                thi = t;
-                                                fthi = ft;
-                                        }
-
-                                        // check curvature
-                                        else
-                                        {
-                                                const tscalar dg1 = gt.dot(st.d);
-                                                if (std::fabs(dg1) <= -c2 * dg)
-                                                {
-                                                        return t;
-                                                }
-
-                                                if (dg1 * (thi - tlo) >= 0)
-                                                {
-                                                        thi = tlo;
-                                                        fthi = ftlo;
-                                                }
-
-                                                tlo = t;
-                                                ftlo = ft;
-                                        }
+                                        op_ulog(result);
                                 }
 
-                                return 0;
-                        }
-
-                        /////////////////////////////////////////////////////////////////////////////////////////
-
-                        // strong Wolfe (sufficient decrease and curvature) conditions
-                        static tscalar ls_strong_wolfe(const tproblem& problem, tstate& st, const top_wlog& wlog,
-                                tscalar& ft, tvector& gt,
-                                tscalar c1 = 1e-4, tscalar c2 = 0.1, tsize max_iters = 64)
-                        {
-                                const tscalar dg = descent(st, wlog);
-
-                                const tscalar tmax = 1000;
-
-                                tscalar t0 = 0, ft0 = std::numeric_limits<tscalar>::max();
-                                tscalar t = 1;
-
-                                // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
-                                for (tsize i = 0; i < max_iters; i ++)
+                                // check convergence
+                                if (cstate.converged(epsilon))
                                 {
-                                        // check sufficient decrease
-                                        ft = problem.f(st.x + t * st.d, gt);
-                                        if (ft > st.f + c1 * t * dg || ft >= ft0)
-                                        {
-                                                return ls_zoom(problem, st, ft, gt, t0, t, ft0, ft, c1, c2, max_iters);
-                                        }
-
-                                        // check curvature
-                                        const tscalar dg1 = gt.dot(st.d);
-                                        if (std::fabs(dg1) <= -c2 * dg)
-                                        {
-                                                return t;
-                                        }
-
-                                        if (dg1 >= 0)
-                                        {
-                                                return ls_zoom(problem, st, ft, gt, t, t0, ft, ft0, c1, c2, max_iters);
-                                        }
-
-                                        t0 = t;
-                                        t = std::min(tmax, t * 3);
-                                        ft0 = ft;
+                                        break;
                                 }
 
-                                return 0;
-                        }
-
-                        /////////////////////////////////////////////////////////////////////////////////////////
-
-                        static tresult _gd(
-                                const tproblem& problem,
-                                const tvector& x0,
-                                tsize max_iterations,
-                                tscalar epsilon,
-                                const top_wlog& op_wlog = top_wlog(),
-                                const top_elog& op_elog = top_elog(),
-                                const top_ulog& op_ulog = top_ulog())
-                        {
-                                assert(problem.size() == static_cast<tsize>(x0.size()));
-
-                                tresult result(problem.size());
-                                tstate cstate(problem, x0);
-
-                                // iterate until convergence
-                                for (tsize i = 0; i < max_iterations; i ++)
+                                // descent direction (Polak–Ribière updates)
+                                if (i == 0)
                                 {
-                                        result.update(problem, cstate);
-                                        if (op_ulog)
-                                        {
-                                                op_ulog(result);
-                                        }
-
-                                        // check convergence
-                                        if (cstate.converged(epsilon))
-                                        {
-                                                break;
-                                        }
-
-                                        // descent direction
                                         cstate.d = -cstate.g;
-
-                                        // update solution
-                                        const tscalar t = ls_armijo(problem, cstate, op_wlog);
-                                        if (t < std::numeric_limits<tscalar>::epsilon())
-                                        {
-                                                if (op_elog)
-                                                {
-                                                        op_elog("line-search failed for GD!");
-                                                }
-                                                break;
-                                        }
-                                        cstate.update(problem, t);
                                 }
-
-                                return result;
-                        }
-
-                        /////////////////////////////////////////////////////////////////////////////////////////
-
-                        static tresult _cgd(
-                                const tproblem& problem,
-                                const tvector& x0,
-                                tsize max_iterations,
-                                tscalar epsilon,
-                                const top_wlog& op_wlog = top_wlog(),
-                                const top_elog& op_elog = top_elog(),
-                                const top_ulog& op_ulog = top_ulog())
-                        {
-                                assert(problem.size() == static_cast<tsize>(x0.size()));
-
-                                tresult result(problem.size());
-                                tstate cstate(problem, x0), pstate = cstate;
-
-                                tscalar ft;
-                                tvector gt;
-
-                                // iterate until convergence
-                                for (tsize i = 0; i < max_iterations; i ++)
+                                else
                                 {
-                                        result.update(problem, cstate);
-                                        if (op_ulog)
-                                        {
-                                                op_ulog(result);
-                                        }
-
-                                        // check convergence
-                                        if (cstate.converged(epsilon))
-                                        {
-                                                break;
-                                        }
-
-                                        // descent direction (Polak–Ribière updates)
-                                        if (i == 0)
-                                        {
-                                                cstate.d = -cstate.g;
-                                        }
-                                        else
-                                        {
-                                                const tscalar beta = cstate.g.dot(cstate.g - pstate.g) /
-                                                                      pstate.g.dot(pstate.g);
-                                                cstate.d = -cstate.g + std::max(static_cast<tscalar>(0), beta) * pstate.d;
-                                        }
-
-                                        // update solution
-                                        const tscalar t = ls_strong_wolfe(problem, cstate, op_wlog, ft, gt, 1e-4, 0.1);
-                                        if (t < std::numeric_limits<tscalar>::epsilon())
-                                        {
-                                                if (op_elog)
-                                                {
-                                                        op_elog("line-search failed for CGD!");
-                                                }
-                                                break;
-                                        }
-                                        pstate = cstate;
-                                        cstate.update(t, ft, gt);
+                                        const tscalar beta = cstate.g.dot(cstate.g - pstate.g) /
+                                                              pstate.g.dot(pstate.g);
+                                        cstate.d = -cstate.g + std::max(static_cast<tscalar>(0), beta) * pstate.d;
                                 }
 
-                                return result;
-                        }
-
-                        /////////////////////////////////////////////////////////////////////////////////////////
-
-                        static tresult _lbfgs(
-                                const tproblem& problem,
-                                const tvector& x0,
-                                tsize max_iterations,
-                                tscalar epsilon,
-                                tsize hist_size = 8,
-                                const top_wlog& op_wlog = top_wlog(),
-                                const top_elog& op_elog = top_elog(),
-                                const top_ulog& op_ulog = top_ulog())
-                        {
-                                assert(problem.size() == static_cast<tsize>(x0.size()));
-
-                                tresult result(problem.size());
-                                std::deque<tvector> ss, ys;
-                                tstate cstate(problem, x0), pstate = cstate;
-
-                                tvector q, r;
-                                tscalar ft;
-                                tvector gt;
-
-                                // iterate until convergence
-                                for (tsize i = 0; i < max_iterations; i ++)
+                                // update solution
+                                const tscalar t = ls_strong_wolfe(problem, cstate, op_wlog, ft, gt, 1e-4, 0.1);
+                                if (t < std::numeric_limits<tscalar>::epsilon())
                                 {
-                                        result.update(problem, cstate);
-                                        if (op_ulog)
+                                        if (op_elog)
                                         {
-                                                op_ulog(result);
+                                                op_elog("line-search failed for CGD!");
                                         }
-
-                                        // check convergence
-                                        if (cstate.converged(epsilon))
-                                        {
-                                                break;
-                                        }
-
-                                        // descent direction
-                                        //      (LBFGS - Nocedal & Wright (numerical optimization 2nd) notations @ p.178)
-                                        q = cstate.g;
-
-                                        typename std::deque<tvector>::const_reverse_iterator itr_s = ss.rbegin();
-                                        typename std::deque<tvector>::const_reverse_iterator itr_y = ys.rbegin();
-                                        std::vector<tscalar> alphas;
-                                        for (tsize j = 1; j <= hist_size && i >= j; j ++)
-                                        {
-                                                const tvector& s = (*itr_s ++);
-                                                const tvector& y = (*itr_y ++);
-
-                                                const tscalar alpha = s.dot(q) / s.dot(y);
-                                                q.noalias() -= alpha * y;
-                                                alphas.push_back(alpha);
-                                        }
-
-                                        if (i == 0)
-                                        {
-                                                r = q;
-                                        }
-                                        else
-                                        {
-                                                const tvector& s = *ss.rbegin();
-                                                const tvector& y = *ys.rbegin();
-                                                r = s.dot(y) / y.dot(y) * q;
-                                        }
-
-                                        typename std::deque<tvector>::const_iterator it_s = ss.begin();
-                                        typename std::deque<tvector>::const_iterator it_y = ys.begin();
-                                        typename std::vector<tscalar>::const_reverse_iterator itr_alpha = alphas.rbegin();
-                                        for (tsize j = 1; j <= hist_size && i >= j; j ++)
-                                        {
-                                                const tvector& s = (*it_s ++);
-                                                const tvector& y = (*it_y ++);
-
-                                                const tscalar alpha = *(itr_alpha ++);
-                                                const tscalar beta = y.dot(r) / s.dot(y);
-                                                r.noalias() += s * (alpha - beta);
-                                        }
-
-                                        cstate.d = -r;
-
-                                        // update solution
-                                        const tscalar t = ls_strong_wolfe(problem, cstate, op_wlog, ft, gt, 1e-4, 0.9);
-                                        if (t < std::numeric_limits<tscalar>::epsilon())
-                                        {
-                                                if (op_elog)
-                                                {
-                                                        op_elog("line-search failed for LBFGS!");
-                                                }
-                                                break;
-                                        }
-                                        pstate = cstate;
-                                        cstate.update(t, ft, gt);
-
-                                        ss.push_back(cstate.x - pstate.x);
-                                        ys.push_back(cstate.g - pstate.g);
-                                        if (ss.size() > hist_size)
-                                        {
-                                                ss.pop_front();
-                                                ys.pop_front();
-                                        }
+                                        break;
                                 }
-
-                                return result;
+                                pstate = cstate;
+                                cstate.update(t, ft, gt);
                         }
 
-                        /////////////////////////////////////////////////////////////////////////////////////////
-                };
+                        return result;
+                }
+
+                /////////////////////////////////////////////////////////////////////////////////////////
+                // limited memory bfgs (l-bfgs) starting from the initial value (guess) x0
+                /////////////////////////////////////////////////////////////////////////////////////////
+
+                template
+                <
+                        typename tproblem,
+
+                        // dependent types
+                        typename tscalar = typename tproblem::tscalar,
+                        typename tsize = typename tproblem::tsize,
+                        typename tvector = typename tproblem::tvector,
+                        typename tresult = typename tproblem::tresult,
+                        typename tstate = typename tproblem::tstate,
+
+                        typename twlog = typename tproblem::twlog,
+                        typename telog = typename tproblem::telog,
+                        typename tulog = typename tproblem::tulog
+                >
+                tresult lbfgs(
+                        const tproblem& problem,
+                        const tvector& x0,
+                        tsize max_iterations,           // maximum number of iterations
+                        tscalar epsilon,                // convergence precision
+                        const twlog& op_wlog = twlog(),
+                        const telog& op_elog = telog(),
+                        const tulog& op_ulog = tulog())
+                {
+                        assert(problem.size() == static_cast<tsize>(x0.size()));
+
+                        const tsize hist_size = tsize(6);
+
+                        tresult result(problem.size());
+                        std::deque<tvector> ss, ys;
+                        tstate cstate(problem, x0), pstate = cstate;
+
+                        tvector q, r;
+                        tscalar ft;
+                        tvector gt;
+
+                        // iterate until convergence
+                        for (tsize i = 0; i < max_iterations; i ++)
+                        {
+                                result.update(problem, cstate);
+                                if (op_ulog)
+                                {
+                                        op_ulog(result);
+                                }
+
+                                // check convergence
+                                if (cstate.converged(epsilon))
+                                {
+                                        break;
+                                }
+
+                                // descent direction
+                                //      (LBFGS - Nocedal & Wright (numerical optimization 2nd) notations @ p.178)
+                                q = cstate.g;
+
+                                typename std::deque<tvector>::const_reverse_iterator itr_s = ss.rbegin();
+                                typename std::deque<tvector>::const_reverse_iterator itr_y = ys.rbegin();
+                                std::vector<tscalar> alphas;
+                                for (tsize j = 1; j <= hist_size && i >= j; j ++)
+                                {
+                                        const tvector& s = (*itr_s ++);
+                                        const tvector& y = (*itr_y ++);
+
+                                        const tscalar alpha = s.dot(q) / s.dot(y);
+                                        q.noalias() -= alpha * y;
+                                        alphas.push_back(alpha);
+                                }
+
+                                if (i == 0)
+                                {
+                                        r = q;
+                                }
+                                else
+                                {
+                                        const tvector& s = *ss.rbegin();
+                                        const tvector& y = *ys.rbegin();
+                                        r = s.dot(y) / y.dot(y) * q;
+                                }
+
+                                typename std::deque<tvector>::const_iterator it_s = ss.begin();
+                                typename std::deque<tvector>::const_iterator it_y = ys.begin();
+                                typename std::vector<tscalar>::const_reverse_iterator itr_alpha = alphas.rbegin();
+                                for (tsize j = 1; j <= hist_size && i >= j; j ++)
+                                {
+                                        const tvector& s = (*it_s ++);
+                                        const tvector& y = (*it_y ++);
+
+                                        const tscalar alpha = *(itr_alpha ++);
+                                        const tscalar beta = y.dot(r) / s.dot(y);
+                                        r.noalias() += s * (alpha - beta);
+                                }
+
+                                cstate.d = -r;
+
+                                // update solution
+                                const tscalar t = ls_strong_wolfe(problem, cstate, op_wlog, ft, gt, 1e-4, 0.9);
+                                if (t < std::numeric_limits<tscalar>::epsilon())
+                                {
+                                        if (op_elog)
+                                        {
+                                                op_elog("line-search failed for LBFGS!");
+                                        }
+                                        break;
+                                }
+                                pstate = cstate;
+                                cstate.update(t, ft, gt);
+
+                                ss.push_back(cstate.x - pstate.x);
+                                ys.push_back(cstate.g - pstate.g);
+                                if (ss.size() > hist_size)
+                                {
+                                        ss.pop_front();
+                                        ys.pop_front();
+                                }
+                        }
+
+                        return result;
+                }
         }
 }
 

@@ -40,15 +40,15 @@ void test(const opt_problem_t& problem, size_t max_iters, scalar_t eps,
                 ncv::timer_t timer;
 
                 timer.start();
-                const opt_result_t res_gd = optimizer_t::gd(problem, x0, max_iters, eps);
+                const opt_result_t res_gd = optimize::gd(problem, x0, max_iters, eps);
                 print(res_gd, max_iters, name + " (GD)" + name_trial, timer.elapsed());
 
                 timer.start();
-                const opt_result_t res_cgd = optimizer_t::cgd(problem, x0, max_iters, eps);
+                const opt_result_t res_cgd = optimize::cgd(problem, x0, max_iters, eps);
                 print(res_cgd, max_iters, name + " (CGD)" + name_trial, timer.elapsed());
 
                 timer.start();
-                const opt_result_t res_lbfgs = optimizer_t::lbfgs(problem, x0, max_iters, eps);
+                const opt_result_t res_lbfgs = optimize::lbfgs(problem, x0, max_iters, eps);
                 print(res_lbfgs, max_iters, name + " (LBFGS)" + name_trial, timer.elapsed());
         }
 }

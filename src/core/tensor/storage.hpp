@@ -23,8 +23,8 @@ namespace ncv
                 {
                 public:
 
-                        typedef typename matrix_types_t<tscalar>::matrix_t       matrix_t;
-                        typedef typename matrix_types_t<tscalar>::matrices_t     matrices_t;
+                        typedef typename matrix_types_t<tscalar>::tmatrix       tmatrix;
+                        typedef typename matrix_types_t<tscalar>::tmatrices     tmatrices;
 
                         // constructor
                         storage_t(tsize size = 0, tsize rows = 0, tsize cols = 0)
@@ -40,7 +40,7 @@ namespace ncv
                         // reset values
                         void zero()
                         {
-                                for (matrix_t& mat : m_data)
+                                for (tmatrix& mat : m_data)
                                 {
                                         mat.setZero();
                                 }
@@ -48,7 +48,7 @@ namespace ncv
 
                         void constant(tscalar value)
                         {
-                                for (matrix_t& mat : m_data)
+                                for (tmatrix& mat : m_data)
                                 {
                                         mat.setConstant(value);
                                 }
@@ -57,7 +57,7 @@ namespace ncv
                         void random(tscalar min = -1, tscalar max = 1)
                         {
                                 random_t<tscalar> rgen(min, max);
-                                for (matrix_t& mat : m_data)
+                                for (tmatrix& mat : m_data)
                                 {
                                         rgen(mat.data(), mat.data() + mat.size());
                                 }
@@ -90,7 +90,7 @@ namespace ncv
                                 m_cols = cols;
 
                                 m_data.resize(size);
-                                for (matrix_t& mat : m_data)
+                                for (tmatrix& mat : m_data)
                                 {
                                         mat.resize(rows, cols);
                                         mat.setZero();
@@ -100,8 +100,8 @@ namespace ncv
                         }
 
                         // access functions
-                        const matrix_t& get(tsize i) const { return m_data[i]; }
-                        matrix_t& get(tsize i) { return m_data[i]; }
+                        const tmatrix& get(tsize i) const { return m_data[i]; }
+                        tmatrix& get(tsize i) { return m_data[i]; }
 
                 private:
 
@@ -123,7 +123,7 @@ namespace ncv
                         // attributes
                         tsize           m_rows; // #rows (for each dimension)
                         tsize           m_cols; // #cols (for each dimension)
-                        matrices_t      m_data; // values
+                        tmatrices       m_data; // values
                 };
         }
 }

@@ -41,6 +41,10 @@ namespace ncv
                         return false;
                 }
 
+                // select training and validation dataset
+                samples_t tsamples, vsamples;
+                ncv::split_train_valid(samples, 10, tsamples, vsamples);
+
                 // optimization problem: size
                 auto fn_size = [&] ()
                 {
@@ -89,21 +93,21 @@ namespace ncv
                 vector_t x(model.n_parameters());
                 model.save_params(x);
 
-                const auto fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer));
+                const opt_opulog_t fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer));
                 const scalar_t eps = m_epsilon;
                 const size_t iters = m_iterations;
 
                 if (text::iequals(m_optimizer, "lbfgs"))
                 {
-                        res = optimizer_t::lbfgs(problem, x, iters, eps, 6, fn_wlog, fn_elog, fn_ulog_ref);
+                        res = optimize::lbfgs(problem, x, iters, eps, fn_wlog, fn_elog, fn_ulog_ref);
                 }
                 else if (text::iequals(m_optimizer, "cgd"))
                 {
-                        res = optimizer_t::cgd(problem, x, iters, eps, fn_wlog, fn_elog, fn_ulog_ref);
+                        res = optimize::cgd(problem, x, iters, eps, fn_wlog, fn_elog, fn_ulog_ref);
                 }
                 else if (text::iequals(m_optimizer, "gd"))
                 {
-                        res = optimizer_t::gd(problem, x, iters, eps, fn_wlog, fn_elog, fn_ulog_ref);
+                        res = optimize::gd(problem, x, iters, eps, fn_wlog, fn_elog, fn_ulog_ref);
                 }
                 else
                 {

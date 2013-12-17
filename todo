@@ -1,11 +1,20 @@
-* investigate why the stochastic trainer is not converging for >=2 hidden layers!!!
-TODO: make the stochastic & minibatch trainers work (VERY hard to tune, poor performance compare to the batch version)
+- SGD and ASGD as GENERIC optimization methods: given a problem
 
-* faster convolution layers:
-	- I - stochastic trainer -> make the iterations first
-	- II - forward & backward steps
+- remove the mini-batch trainer
 
-* test program to print model (ncv_describe -> model structure + convolutions as images)
+* trainers: compute both the loss value and the error (diplay both)
+        - stop training if the validation error is increasing
+        
+        - trainer_t::optimize(samples, vpercentage, loss, nthreads, model)
+
+* test program to print model (ncv_info_model -> model structure + convolutions as images)
+        - may move the info_task drawing functions to the lib
+
+* faster: convolution layer
+	- reduce the number of loops - concatenate convolutions?!
+
+* stochastic trainer:
+	- monitor the loss on a small validation subset after the optimum learning rates have been found
 
 * thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
 	

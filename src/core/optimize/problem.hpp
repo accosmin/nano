@@ -1,7 +1,10 @@
 #ifndef NANOCV_OPTIMIZE_PROBLEM_HPP
 #define NANOCV_OPTIMIZE_PROBLEM_HPP
 
-#include "core/tensor/matrix.hpp"
+#include "core/optimize/result.hpp"
+#include <type_traits>
+#include <functional>
+#include <string>
 
 namespace ncv
 {
@@ -13,17 +16,34 @@ namespace ncv
 
                 template
                 <
-                        typename tscalar,
-                        typename tsize,
+                        typename tscalar_,
+                        typename tsize_,
                         typename top_size,              // dimensionality operator: size = op()
                         typename top_fval,              // function value operator: f = op(x)
-                        typename top_grad               // function value and gradient operator: f = op(x, g)
+                        typename top_grad,              // function value and gradient operator: f = op(x, g)
+
+                        // disable for not valid types!
+                        typename tvalid_tscalar = typename std::enable_if<std::is_floating_point<tscalar_>::value>::type,
+                        typename tvalid_tsize = typename std::enable_if<std::is_integral<tsize_>::value>::type
                 >
                 class problem_t
                 {
                 public:
+                        typedef tscalar_                                                tscalar;
+                        typedef tsize_                                                  tsize;
 
-                        typedef typename tensor::vector_types_t<tscalar>::vector_t      vector_t;
+                        typedef typename tensor::vector_types_t<tscalar>::tvector       tvector;
+
+                        // optimization final result
+                        typedef result_t<tscalar, tsize>                                tresult;
+
+                        // optimization current state
+                        typedef typename tresult::tstate                                tstate;
+
+                        // logging: warning, error, update (with the current state)
+                        typedef std::function<void(const std::string&)>                 twlog;
+                        typedef std::function<void(const std::string&)>                 telog;
+                        typedef std::function<void(const tresult&)>                     tulog;
 
                         // constructor (analytic gradient)
                         explicit problem_t(
@@ -48,8 +68,8 @@ namespace ncv
 
                         // compute dimensionality & function value & gradient
                         tsize size() const { return _size(); }
-                        tscalar f(const vector_t& x) const { return _f(x); }
-                        tscalar f(const vector_t& x, vector_t& g) const { return _f(x, g); }
+                        tscalar f(const tvector& x) const { return _f(x); }
+                        tscalar f(const tvector& x, tvector& g) const { return _f(x, g); }
 
                         // access functions
                         tsize n_fval_calls() const { return m_n_fvals; }
@@ -64,14 +84,14 @@ namespace ncv
                         }
 
                         // implementation: function value
-                        tscalar _f(const vector_t& x) const
+                        tscalar _f(const tvector& x) const
                         {
                                 m_n_fvals ++;
                                 return m_op_fval(x);
                         }
 
                         // implementation: function value & gradient
-                        tscalar _f(const vector_t& x, vector_t& g) const
+                        tscalar _f(const tvector& x, tvector& g) const
                         {
                                 if (m_op_grad)
                                 {
@@ -87,12 +107,12 @@ namespace ncv
                         }
 
                         // implementation: approximate gradient (if no analytic gradient provided)
-                        void eval_grad(const vector_t& x, vector_t& g) const
+                        void eval_grad(const tvector& x, tvector& g) const
                         {
                                 const tsize n = size();
                                 const tscalar d = 1e-6;//std::numeric_limits<tscalar>::epsilon();
 
-                                vector_t xp = x, xn = x;
+                                tvector xp = x, xn = x;
 
                                 g.resize(n);
                                 for (tsize i = 0; i < n; i ++)

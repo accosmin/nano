@@ -121,7 +121,7 @@ namespace ncv
 
                         }
 
-                        const auto fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer), epoch + 1, m_epochs);
+                        const opt_opulog_t fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer), epoch + 1, m_epochs);
                         const scalar_t eps = m_epsilon;
                         const size_t iters = m_iterations;
 
@@ -129,15 +129,15 @@ namespace ncv
                         opt_result_t bres;
                         if (text::iequals(m_optimizer, "lbfgs"))
                         {
-                                bres = optimizer_t::lbfgs(problem, x, iters, eps, 6, fn_wlog, fn_elog, fn_ulog_ref);
+                                bres = optimize::lbfgs(problem, x, iters, eps, fn_wlog, fn_elog, fn_ulog_ref);
                         }
                         else if (text::iequals(m_optimizer, "cgd"))
                         {
-                                bres = optimizer_t::cgd(problem, x, iters, eps, fn_wlog, fn_elog, fn_ulog_ref);
+                                bres = optimize::cgd(problem, x, iters, eps, fn_wlog, fn_elog, fn_ulog_ref);
                         }
                         else if (text::iequals(m_optimizer, "gd"))
                         {
-                                bres = optimizer_t::gd(problem, x, iters, eps, fn_wlog, fn_elog, fn_ulog_ref);
+                                bres = optimize::gd(problem, x, iters, eps, fn_wlog, fn_elog, fn_ulog_ref);
                         }
                         else
                         {

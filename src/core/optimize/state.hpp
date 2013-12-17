@@ -15,12 +15,13 @@ namespace ncv
 
                 template
                 <
-                        typename tscalar,
+                        typename tscalar_,
                         typename tsize
                 >
                 struct state_t
                 {
-                        typedef typename tensor::vector_types_t<tscalar>::vector_t      tvector;
+                        typedef tscalar_                                                tscalar;
+                        typedef typename tensor::vector_types_t<tscalar>::tvector       tvector;
 
                         // constructor
                         state_t(tsize size = 0)

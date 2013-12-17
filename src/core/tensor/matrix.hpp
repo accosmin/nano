@@ -18,7 +18,7 @@ namespace ncv
                 >
                 struct vector_types_t
                 {
-                        typedef tvalue                                  type_t;
+                        typedef tvalue                                  tscalar;
 
                         typedef Eigen::Matrix
                         <
@@ -26,10 +26,10 @@ namespace ncv
                                 Eigen::Dynamic,
                                 1,
                                 Eigen::ColMajor
-                        >                                               vector_t;
-                        typedef std::vector<vector_t>                   vectors_t;
-                        typedef typename vectors_t::const_iterator      vectors_const_it;
-                        typedef typename vectors_t::iterator            vectors_it;
+                        >                                               tvector;
+                        typedef std::vector<tvector>                    tvectors;
+                        typedef typename tvectors::const_iterator       tvectors_const_it;
+                        typedef typename tvectors::iterator             tvectors_it;
                 };
 
                 /////////////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ namespace ncv
                 >
                 struct fixed_size_vector_types_t
                 {
-                        typedef tvalue                                  type_t;
+                        typedef tvalue                                  tscalar;
 
                         typedef Eigen::Matrix
                         <
@@ -51,10 +51,10 @@ namespace ncv
                                 trows,
                                 1,
                                 Eigen::ColMajor
-                        >                                               vector_t;
-                        typedef std::vector<vector_t>                   vectors_t;
-                        typedef typename vectors_t::const_iterator      vectors_const_it;
-                        typedef typename vectors_t::iterator            vectors_it;
+                        >                                               tvector;
+                        typedef std::vector<tvector>                    tvectors;
+                        typedef typename tvectors::const_iterator       tvectors_const_it;
+                        typedef typename tvectors::iterator             tvectors_it;
                 };
 
                 /////////////////////////////////////////////////////////////////////////////////////////
@@ -67,18 +67,18 @@ namespace ncv
                 >
                 struct matrix_types_t
                 {
-                        typedef tvalue                                  type_t;
+                        typedef tvalue                                  tscalar;
 
                         typedef Eigen::Matrix
                         <       tvalue,
                                 Eigen::Dynamic,
                                 Eigen::Dynamic,
                                 Eigen::RowMajor
-                        >                                               matrix_t;
-                        typedef std::vector<matrix_t>                   matrices_t;
-                        typedef typename matrices_t::const_iterator     matrices_const_it;
-                        typedef typename matrices_t::iterator           matrices_it;
-                        typedef typename matrix_t::Index                index_t;
+                        >                                               tmatrix;
+                        typedef std::vector<tmatrix>                    tmatrices;
+                        typedef typename tmatrices::const_iterator      tmatrices_const_it;
+                        typedef typename tmatrices::iterator            tmatrices_it;
+                        typedef typename tmatrix::Index                 tindex;
                 };
 
                 /////////////////////////////////////////////////////////////////////////////////////////
@@ -93,18 +93,18 @@ namespace ncv
                 >
                 struct fixed_size_matrix_types_t
                 {
-                        typedef tvalue                                  type_t;
+                        typedef tvalue                                  tscalar;
 
                         typedef Eigen::Matrix
                         <       tvalue,
                                 trows,
                                 tcols,
                                 Eigen::RowMajor
-                        >                                               matrix_t;
-                        typedef std::vector<matrix_t>                   matrices_t;
-                        typedef typename matrices_t::const_iterator     matrices_const_it;
-                        typedef typename matrices_t::iterator           matrices_it;
-                        typedef typename matrix_t::Index                index_t;
+                        >                                               tmatrix;
+                        typedef std::vector<tmatrix>                    tmatrices;
+                        typedef typename tmatrices::const_iterator      tmatrices_const_it;
+                        typedef typename tmatrices::iterator            tmatrices_it;
+                        typedef typename tmatrix::Index                 tindex;
                 };
         }
 }

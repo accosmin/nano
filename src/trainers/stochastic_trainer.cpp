@@ -87,8 +87,8 @@ namespace ncv
                 const size_t n_workers = std::max(size_t(4), worker_pool.n_workers());
 
                 // create worker buffers: (gamma, lambda) + loss values
-                tensor::matrix_types_t<state_t>::matrix_t states(n_workers, n_workers);
-                tensor::matrix_types_t<scalar_t>::matrix_t lvalues(n_workers, n_workers);
+                tensor::matrix_types_t<state_t>::tmatrix states(n_workers, n_workers);
+                tensor::matrix_types_t<scalar_t>::tmatrix lvalues(n_workers, n_workers);
 
                 // search the optimum learning parameters: each worker thread tests a value
                 scalar_t min_log_gamma = -4.0;

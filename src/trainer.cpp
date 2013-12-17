@@ -1,6 +1,9 @@
 #include "trainer.h"
 #include "core/math/math.hpp"
 #include "core/thread/thread_loop.hpp"
+#include "core/logger.h"
+#include "core/timer.h"
+#include "core/text.h"
 
 namespace ncv
 {
@@ -60,10 +63,7 @@ namespace ncv
                         return *this;
                 }
 
-                scalar_t value() const
-                {
-                        return m_value / ((m_count == 0) ? 1.0 : m_count);
-                }
+                scalar_t value() const { return m_value / ((m_count == 0) ? 1.0 : m_count); }
 
                 // attributes
                 scalar_t        m_value;
@@ -269,6 +269,99 @@ namespace ncv
                 lgrad = cum_data.vgrad();
                 return cum_data.value();
         }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+//        bool trainer_t::optimize(
+//                const task_t& task, const samples_t& tsamples, const samples_t& vsamples, const loss_t& loss,
+//                const string_t& optimizer, scalar_t epsilon, size_t iterations, size_t nthreads,
+//                model_t& model) const
+//        {
+//                vector_t optx(model.n_parameters());
+//                model.save_params(optx);
+
+//                // optimization problem: size
+//                auto fn_size = [&] ()
+//                {
+//                        return model.n_parameters();
+//                };
+
+//                // optimization problem: function value
+//                auto fn_fval = [&] (const vector_t& x)
+//                {
+//                        model.load_params(x);
+//                        return ncv::lvalue_mt(task, tsamples, loss, nthreads, model);
+//                };
+
+//                // optimization problem: function value & gradient
+//                auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
+//                {
+//                        model.load_params(x);
+//                        return ncv::lvgrad_mt(task, tsamples, loss, nthreads, model, gx);
+//                };
+
+//                // optimization problem: logging
+//                auto fn_wlog = [] (const string_t& message)
+//                {
+//                        log_warning() << message;
+//                };
+//                auto fn_elog = [] (const string_t& message)
+//                {
+//                        log_error() << message;
+//                };
+//                auto fn_ulog = [] (const opt_result_t& result, timer_t& timer)
+//                {
+//                        log_info() << "trainer: state [loss = " << result.optimum().f
+//                                   << ", gradient = " << result.optimum().g.lpNorm<Eigen::Infinity>()
+//                                   << ", calls = " << result.n_fval_calls() << " fun/" << result.n_grad_calls()
+//                                   << " grad] updated in " << timer.elapsed() << ".";
+//                        timer.start();
+//                };
+
+//                // assembly optimization problem
+//                const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
+//                opt_result_t res;
+
+//                timer_t timer;
+
+//                // optimize the model
+//                vector_t x(model.n_parameters());
+//                model.save_params(x);
+
+//                const auto fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer));
+
+//                if (text::iequals(optimizer, "lbfgs"))
+//                {
+//                        res = optimize::lbfgs(problem, x, iterations, epsilon, 6, fn_wlog, fn_elog, fn_ulog_ref);
+//                }
+//                else if (text::iequals(optimizer, "cgd"))
+//                {
+//                        res = optimize::cgd(problem, x, iterations, epsilon, fn_wlog, fn_elog, fn_ulog_ref);
+//                }
+//                else if (text::iequals(optimizer, "gd"))
+//                {
+//                        res = optimize::gd(problem, x, iterations, epsilon, fn_wlog, fn_elog, fn_ulog_ref);
+//                }
+
+//                // TODO: SGD and ASGD generic optimization methods!!!
+
+//                else
+//                {
+//                        log_error() << "trainer: invalid optimization method <" << optimizer << ">!";
+//                        return false;
+//                }
+
+//                model.load_params(res.optimum().x);
+
+//                // OK
+//                log_info() << "trainer: optimum [loss = " << res.optimum().f
+//                           << ", gradient = " << res.optimum().g.norm()
+//                           << ", calls = " << res.n_fval_calls() << "/" << res.n_grad_calls()
+//                           << "], iterations = [" << res.iterations() << "/" << iterations
+//                           << "].";
+
+//                return true;
+//        }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 }
