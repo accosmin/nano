@@ -1,9 +1,9 @@
 #include "trainer.h"
-#include "core/math/math.hpp"
-#include "core/thread/thread_loop.hpp"
+#include "core/math.hpp"
 #include "core/logger.h"
 #include "core/timer.h"
 #include "core/text.h"
+#include "thread/thread_loop.hpp"
 
 namespace ncv
 {

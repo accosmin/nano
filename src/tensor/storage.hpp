@@ -3,8 +3,8 @@
 
 #include <boost/serialization/access.hpp>
 #include <cassert>
-#include "core/tensor/matrix.hpp"
-#include "core/random/random.hpp"
+#include "matrix.hpp"
+#include "core/random.hpp"
 
 namespace ncv
 {

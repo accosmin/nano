@@ -1,7 +1,7 @@
 #ifndef NANOCV_OPTIMIZE_STATE_HPP
 #define NANOCV_OPTIMIZE_STATE_HPP
 
-#include "core/tensor/matrix.hpp"
+#include "tensor/matrix.hpp"
 
 namespace ncv
 {

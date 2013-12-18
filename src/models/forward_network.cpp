@@ -2,7 +2,7 @@
 #include "layers/layer_output.h"
 #include "core/logger.h"
 #include "core/text.h"
-#include "core/math/math.hpp"
+#include "core/math.hpp"
 #include "core/vectorizer.h"
 
 namespace ncv

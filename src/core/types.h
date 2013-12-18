@@ -3,7 +3,7 @@
 
 #include "tensor/tensor3d.hpp"
 #include "tensor/tensor4d.hpp"
-#include "optimize/optimizer.hpp"
+#include "optimize/problem.hpp"
 #include <string>
 #include <cstdint>
 

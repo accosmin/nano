@@ -4,8 +4,8 @@
 #include "layer.h"
 #include "core/logger.h"
 #include "core/text.h"
-#include "core/math/math.hpp"
-#include "core/math/convolution.hpp"
+#include "core/math.hpp"
+#include "core/convolution.hpp"
 #include "core/vectorizer.h"
 
 namespace ncv

@@ -1,5 +1,5 @@
 #include <eigen3/Eigen/Core>
-#include "core/math/convolution.hpp"
+#include "core/convolution.hpp"
 #include <iomanip>
 #include <ctime>
 #include <iostream>

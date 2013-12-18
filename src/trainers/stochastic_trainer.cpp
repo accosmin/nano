@@ -1,10 +1,10 @@
 #include "stochastic_trainer.h"
 #include "core/timer.h"
 #include "core/text.h"
-#include "core/math/math.hpp"
-#include "core/thread/thread_pool.h"
-#include "core/random/usampler.hpp"
+#include "core/math.hpp"
+#include "core/usampler.hpp"
 #include "core/logger.h"
+#include "thread/thread_pool.h"
 
 namespace ncv
 {

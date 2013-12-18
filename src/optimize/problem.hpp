@@ -1,7 +1,7 @@
 #ifndef NANOCV_OPTIMIZE_PROBLEM_HPP
 #define NANOCV_OPTIMIZE_PROBLEM_HPP
 
-#include "core/optimize/result.hpp"
+#include "result.hpp"
 #include <type_traits>
 #include <functional>
 #include <string>

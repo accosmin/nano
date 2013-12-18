@@ -1,8 +1,11 @@
 #include "minibatch_trainer.h"
 #include "core/timer.h"
 #include "core/text.h"
-#include "core/math/math.hpp"
+#include "core/math.hpp"
 #include "core/logger.h"
+#include "optimize/opt_gd.hpp"
+#include "optimize/opt_cgd.hpp"
+#include "optimize/opt_lbfgs.hpp"
 
 namespace ncv
 {

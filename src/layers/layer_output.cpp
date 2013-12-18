@@ -1,5 +1,5 @@
 #include "layer_output.h"
-#include "core/math/math.hpp"
+#include "core/math.hpp"
 #include "core/text.h"
 #include "core/vectorizer.h"
 

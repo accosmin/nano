@@ -2,10 +2,8 @@
 #define NANOCV_CAST_H
 
 #include <type_traits>
-#include <limits>
 #include <algorithm>
 #include <boost/algorithm/clamp.hpp>
-#include <boost/math/constants/constants.hpp>
 
 namespace ncv
 {
@@ -16,9 +14,6 @@ namespace ncv
         namespace math
         {
                 // forward boost functions
-                using boost::math::constants::pi;
-                using namespace boost::math::constants;
-
                 using boost::algorithm::clamp;
                 using boost::algorithm::clamp_range;
 
@@ -84,39 +79,6 @@ namespace ncv
                 tvalue cube(tvalue value)
                 {
                         return value * square(value);
-                }
-
-                // check two values if approximatively equal
-                template
-                <
-                        typename tvalue
-                >
-                bool equal(tvalue value1, tvalue value2, tvalue epsilon = std::numeric_limits<tvalue>::epsilon())
-                {
-                        return value1 < value2 + epsilon && value2 < value1 + epsilon;
-                }
-
-                // sign value: x / |x|
-                template
-                <
-                        typename tvalue,
-                        typename tresult
-                >
-                tresult sign(tvalue value)
-                {
-                        static const tvalue zero = static_cast<tvalue>(0);
-                        return  value > zero ? static_cast<tresult>(1) :
-                                (value < zero ? static_cast<tresult>(-1) : static_cast<tresult>(0));
-                }
-
-                // kronocker: 1 (if true), 0 (else)
-                template
-                <
-                        typename tresult
-                >
-                tresult kronocker(bool condition)
-                {
-                        return condition ? static_cast<tresult>(1) : static_cast<tresult>(0);
                 }
 
                 // transform coefficient-wise a matrix: out = op(in)

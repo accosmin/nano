@@ -1,7 +1,7 @@
 #ifndef NANOCV_OPTIMIZE_RESULT_HPP
 #define NANOCV_OPTIMIZE_RESULT_HPP
 
-#include "core/optimize/state.hpp"
+#include "state.hpp"
 
 namespace ncv
 {
