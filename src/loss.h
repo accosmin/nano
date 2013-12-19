@@ -1,8 +1,8 @@
 #ifndef NANOCV_LOSS_H
 #define NANOCV_LOSS_H
 
-#include "core/manager.hpp"
-#include "core/types.h"
+#include "util/manager.hpp"
+#include "types.h"
 
 namespace ncv
 {

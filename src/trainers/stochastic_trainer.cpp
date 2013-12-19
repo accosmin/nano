@@ -1,9 +1,9 @@
 #include "stochastic_trainer.h"
-#include "core/timer.h"
-#include "core/text.h"
-#include "core/math.hpp"
-#include "core/usampler.hpp"
-#include "core/logger.h"
+#include "util/timer.h"
+#include "text.h"
+#include "math.hpp"
+#include "usampler.hpp"
+#include "util/logger.h"
 #include "thread/thread_pool.h"
 
 namespace ncv

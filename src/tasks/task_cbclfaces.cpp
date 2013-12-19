@@ -1,6 +1,6 @@
 #include "task_cbclfaces.h"
-#include "core/logger.h"
-#include "core/image.h"
+#include "util/logger.h"
+#include "image.h"
 #include "loss.h"
 #include <fstream>
 #include <boost/filesystem.hpp>

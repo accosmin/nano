@@ -1,13 +1,13 @@
 #ifndef NANOCV_H
 #define NANOCV_H
 
-#include "core/text.h"
-#include "core/logger.h"
-#include "core/timer.h"
-#include "core/math.hpp"
+#include "text.h"
+#include "math.hpp"
 #include "optimize/opt_gd.hpp"
 #include "optimize/opt_cgd.hpp"
 #include "optimize/opt_lbfgs.hpp"
+#include "util/logger.h"
+#include "util/timer.h"
 #include "loss.h"
 #include "layer.h"
 #include "task.h"

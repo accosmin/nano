@@ -4,7 +4,7 @@
 #include <boost/serialization/access.hpp>
 #include <cassert>
 #include "matrix.hpp"
-#include "core/random.hpp"
+#include "util/random.hpp"
 
 namespace ncv
 {

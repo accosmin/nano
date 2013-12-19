@@ -1,5 +1,5 @@
 #include "ncv.h"
-#include "core/stats.hpp"
+#include "util/stats.hpp"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])

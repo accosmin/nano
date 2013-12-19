@@ -1,8 +1,8 @@
 #include "trainer.h"
-#include "core/math.hpp"
-#include "core/logger.h"
-#include "core/timer.h"
-#include "core/text.h"
+#include "math.hpp"
+#include "util/logger.h"
+#include "util/timer.h"
+#include "text.h"
 #include "thread/thread_loop.hpp"
 
 namespace ncv

@@ -1,5 +1,5 @@
 #include "ncv.h"
-#include "core/bilinear.hpp"
+#include "bilinear.hpp"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])

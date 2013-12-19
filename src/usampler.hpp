@@ -1,7 +1,7 @@
 #ifndef NANOCV_USAMPLER_H
 #define NANOCV_USAMPLER_H
 
-#include "random.hpp"
+#include "util/random.hpp"
 
 namespace ncv
 {

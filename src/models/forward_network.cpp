@@ -1,9 +1,9 @@
 #include "forward_network.h"
 #include "layers/layer_output.h"
-#include "core/logger.h"
-#include "core/text.h"
-#include "core/math.hpp"
-#include "core/vectorizer.h"
+#include "util/logger.h"
+#include "text.h"
+#include "math.hpp"
+#include "vectorizer.h"
 
 namespace ncv
 {

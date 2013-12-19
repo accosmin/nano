@@ -1,5 +1,5 @@
 #include "ncv.h"
-#include "core/stats.hpp"
+#include "util/stats.hpp"
 #include "thread/thread_loop.hpp"
 #include <omp.h>
 

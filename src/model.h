@@ -1,8 +1,8 @@
 #ifndef NANOCV_MODEL_H
 #define NANOCV_MODEL_H
 
-#include "core/manager.hpp"
-#include "core/geom.h"
+#include "util/manager.hpp"
+#include "geom.h"
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 
