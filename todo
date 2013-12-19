@@ -1,7 +1,5 @@
 - SGD and ASGD as GENERIC optimization methods: given a problem
 
-- remove the mini-batch trainer
-
 * trainers: compute both the loss value and the error (diplay both)
         - stop training if the validation error is increasing
         
