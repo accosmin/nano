@@ -2,6 +2,7 @@
 #define NANOCV_OPTIMIZE_OPTIMIZER_CGD_HPP
 
 #include "ls_wolfe.hpp"
+#include <cassert>
 
 namespace ncv
 {

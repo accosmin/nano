@@ -2,6 +2,7 @@
 #define NANOCV_OPTIMIZE_OPTIMIZER_GD_HPP
 
 #include "ls_armijo.hpp"
+#include <cassert>
 
 namespace ncv
 {
