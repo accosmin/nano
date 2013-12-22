@@ -1,12 +1,7 @@
-- SGD and ASGD as GENERIC optimization methods: given a problem
-        - update within the stochastic trainer: f() should return the function value for a small random subset, g() - gradient for a sample
-        
 - state_t should be merged with result_t -> way too many copies of x:
         - maybe inside (best_x, best_f, best_g) x (crt_x, crt_f, crt_g)
         
         - ...
-
-* compute and show both the loss and the error values
 
 * trainers: compute both the loss value and the error (diplay both)
         - stop training if the validation error is increasing

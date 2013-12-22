@@ -2,11 +2,11 @@
 #define NANOCV_CONV_LAYER_HPP
 
 #include "layer.h"
-#include "util/logger.h"
 #include "text.h"
-#include "math.hpp"
-#include "convolution.hpp"
 #include "vectorizer.h"
+#include "util/logger.h"
+#include "util/math.hpp"
+#include "util/convolution.hpp"
 
 namespace ncv
 {

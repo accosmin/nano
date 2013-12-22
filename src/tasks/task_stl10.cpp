@@ -1,7 +1,7 @@
 #include "task_stl10.h"
 #include "text.h"
 #include "util/logger.h"
-#include "math.hpp"
+#include "util/math.hpp"
 #include "loss.h"
 #include <fstream>
 

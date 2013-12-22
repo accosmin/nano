@@ -1,7 +1,7 @@
 #include "layer_output.h"
-#include "math.hpp"
 #include "text.h"
 #include "vectorizer.h"
+#include "util/math.hpp"
 
 namespace ncv
 {

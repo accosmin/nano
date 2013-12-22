@@ -2,17 +2,17 @@
 #define NANOCV_H
 
 #include "text.h"
-#include "math.hpp"
-#include "optimize/opt_gd.hpp"
-#include "optimize/opt_cgd.hpp"
-#include "optimize/opt_lbfgs.hpp"
-#include "util/logger.h"
-#include "util/timer.h"
 #include "loss.h"
 #include "layer.h"
 #include "task.h"
 #include "model.h"
 #include "trainer.h"
+#include "optimize/opt_gd.hpp"
+#include "optimize/opt_cgd.hpp"
+#include "optimize/opt_lbfgs.hpp"
+#include "util/logger.h"
+#include "util/timer.h"
+#include "util/math.hpp"
 
 namespace ncv
 {

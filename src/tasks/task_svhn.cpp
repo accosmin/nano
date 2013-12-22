@@ -1,5 +1,5 @@
 #include "task_svhn.h"
-#include "math.hpp"
+#include "util/math.hpp"
 #include "util/logger.h"
 #include "loss.h"
 #include <fstream>

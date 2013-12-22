@@ -1,6 +1,6 @@
 #include "task_cifar10.h"
 #include "util/logger.h"
-#include "math.hpp"
+#include "util/math.hpp"
 #include "loss.h"
 #include <fstream>
 

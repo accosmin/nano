@@ -1,10 +1,11 @@
 #include "stochastic_trainer.h"
 #include "util/timer.h"
 #include "util/logger.h"
+#include "util/math.hpp"
+#include "util/usampler.hpp"
+#include "optimize/opt_sgd.hpp"
 #include "optimize/opt_asgd.hpp"
 #include "text.h"
-#include "math.hpp"
-#include "usampler.hpp"
 #include "thread/thread_pool.h"
 
 namespace ncv
@@ -12,7 +13,8 @@ namespace ncv
         /////////////////////////////////////////////////////////////////////////////////////////
 
         stochastic_trainer_t::stochastic_trainer_t(const string_t& params)
-                :       m_epoch(text::from_params<size_t>(params, "epoch", 4))
+                :       m_optimizer(text::from_params<string_t>(params, "opt", "asgd")),
+                        m_epoch(text::from_params<size_t>(params, "epoch", 4))
         {
                 m_epoch = math::clamp(m_epoch, 2, 16);
         }
@@ -36,7 +38,8 @@ namespace ncv
                 {
                         model.load_params(x);
 
-                        const samples_t usamples = ncv::uniform_sample(samples, evalsize);
+                        const bool all = evalsize == samples.size();
+                        const samples_t usamples = all ? samples : ncv::uniform_sample(samples, evalsize);
                         return ncv::lvalue_st(task, usamples, loss, model);
                 };
 
@@ -49,9 +52,22 @@ namespace ncv
                         return ncv::lvgrad(task, sample, loss, model);
                 };
 
-                // assembly optimization problem
+                // assembly optimization problem & optimize the model
                 const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
-                const opt_result_t res = optimize::asgd(problem, x, iterations, gamma, lambda);
+                opt_result_t res;
+
+                if (text::iequals(m_optimizer, "asgd"))
+                {
+                        res = optimize::asgd(problem, x, iterations, gamma, lambda);
+                }
+                else if (text::iequals(m_optimizer, "sgd"))
+                {
+                        res = optimize::sgd(problem, x, iterations, gamma, lambda);
+                }
+                else
+                {
+                        log_error() << "stochastic trainer: invalid optimization method <" << m_optimizer << ">!";
+                }
 
                 x = res.optimum().x;
                 return res.optimum().f;

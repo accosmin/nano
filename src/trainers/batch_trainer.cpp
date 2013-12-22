@@ -1,8 +1,8 @@
 #include "batch_trainer.h"
 #include "util/timer.h"
-#include "text.h"
-#include "math.hpp"
+#include "util/math.hpp"
 #include "util/logger.h"
+#include "text.h"
 #include "optimize/opt_gd.hpp"
 #include "optimize/opt_cgd.hpp"
 #include "optimize/opt_lbfgs.hpp"
@@ -86,13 +86,12 @@ namespace ncv
                         timer.start();
                 };
 
-                // assembly optimization problem
+                // assembly optimization problem & optimize the model
                 const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
                 opt_result_t res;
 
                 timer_t timer;
 
-                // optimize the model
                 vector_t x(model.n_parameters());
                 model.save_params(x);
 
