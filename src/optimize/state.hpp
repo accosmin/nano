@@ -40,7 +40,7 @@ namespace ncv
                                 :       state_t(problem.size())
                         {
                                 x = x0;
-                                f = problem.f(x, g);
+                                f = problem(x, g);
                         }
 
                         // update current point
@@ -51,7 +51,7 @@ namespace ncv
                         void update(const tproblem& problem, tscalar t)
                         {
                                 x.noalias() += t * d;
-                                f = problem.f(x, g);
+                                f = problem(x, g);
                         }
 
                         void update(tscalar t, tscalar ft, const tvector& gt)

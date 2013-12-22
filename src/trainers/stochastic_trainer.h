@@ -36,13 +36,6 @@ namespace ncv
                         min = opt - delta;
                 }
 
-                // SGD parametrization
-                static scalar_t learning_rate(scalar_t gamma, scalar_t lambda, size_t iteration)
-                {
-                        // learning rate recommended by Bottou
-                        return gamma / (1.0 + gamma * lambda * iteration);                        
-                }
-
                 // SGD algorithm
                 scalar_t sgd(const task_t&, const samples_t&, const loss_t&, model_t&, vector_t& x,
                              scalar_t gamma, scalar_t lambda, size_t iterations, size_t evalsize) const;

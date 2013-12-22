@@ -59,8 +59,8 @@ static void test_grad(
                 input.random(-0.1 / sqrt(n_parameters), 0.1 / sqrt(n_parameters));
 
                 vector_t gx_gd, gx_ax;
-                problem_gd.f(x, gx_gd);
-                problem_ax.f(x, gx_ax);
+                problem_gd(x, gx_gd);
+                problem_ax(x, gx_ax);
 
                 log_info() << header << " [" << (t + 1) << "/" << n_tests
                            << "]: gradient difference (analytic vs. finite difference) = "

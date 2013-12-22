@@ -1,9 +1,10 @@
 #include "stochastic_trainer.h"
 #include "util/timer.h"
+#include "util/logger.h"
+#include "optimize/opt_asgd.hpp"
 #include "text.h"
 #include "math.hpp"
 #include "usampler.hpp"
-#include "util/logger.h"
 #include "thread/thread_pool.h"
 
 namespace ncv
@@ -22,35 +23,38 @@ namespace ncv
                 const task_t& task, const samples_t& samples, const loss_t& loss, model_t& model, vector_t& x,
                 scalar_t gamma, scalar_t lambda, size_t iterations, size_t evalsize) const
         {
-                vector_t avg_x = x;
+                random_t<size_t> rng(0, samples.size());
 
-                // (A=average)SGD steps
-                size_t iteration = 0;
-                ncv::uniform_sample(samples, iterations, [&] (const sample_t& sample)
+                // optimization problem: size
+                auto fn_size = [&] ()
+                {
+                        return model.n_parameters();
+                };
+
+                // optimization problem: function value
+                auto fn_fval = [&] (const vector_t& x)
                 {
                         model.load_params(x);
 
-                        const scalar_t f = ncv::lvgrad(task, sample, loss, model);
-                        const scalar_t d = learning_rate(gamma, lambda, iteration);
-                        const vector_t g = model.grad();
+                        const samples_t usamples = ncv::uniform_sample(samples, evalsize);
+                        return ncv::lvalue_st(task, usamples, loss, model);
+                };
 
-                        if (    !std::isinf(f) && !std::isinf(g.minCoeff()) && !std::isinf(g.maxCoeff()) &&
-                                !std::isnan(f) && !std::isnan(g.minCoeff()) && !std::isnan(g.maxCoeff()))
-                        {
-                                x.noalias() -= d * g;
-                        }
+                // optimization problem: function value & gradient
+                auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
+                {
+                        model.load_params(x);
 
-                        avg_x.noalias() += x;
-                        ++ iteration;
-                });
+                        const sample_t& sample = samples[rng() % samples.size()];
+                        return ncv::lvgrad(task, sample, loss, model);
+                };
 
-                x = avg_x / (1.0 + iterations);
-                model.load_params(x);
+                // assembly optimization problem
+                const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
+                const opt_result_t res = optimize::asgd(problem, x, iterations, gamma, lambda);
 
-                // evaluate model
-                const samples_t esamples = (evalsize == samples.size()) ?
-                                samples : ncv::uniform_sample(samples, evalsize);
-                return ncv::lvalue_st(task, esamples, loss, model);
+                x = res.optimum().x;
+                return res.optimum().f;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

@@ -36,7 +36,7 @@ namespace ncv
                         tscalar t = 1;
                         for (tsize i = 0; i < max_iters; i ++, t = beta * t)
                         {
-                                if (problem.f(st.x + t * st.d) < st.f + t * alpha * dg)
+                                if (problem(st.x + t * st.d) < st.f + t * alpha * dg)
                                 {
                                         return t;
                                 }

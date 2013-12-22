@@ -43,13 +43,6 @@ namespace ncv
 
                 // train the model
                 virtual bool train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const = 0;
-
-//        protected:
-
-//                //
-//                bool optimize(const task_t&, const samples_t& tsamples, const samples_t& vsamples, const loss_t&,
-//                              const string_t& optimizer, scalar_t epsilon, size_t iterations, size_t nthreads,
-//                              model_t&) const;
         };
 }
 

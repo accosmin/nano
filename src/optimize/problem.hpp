@@ -68,8 +68,8 @@ namespace ncv
 
                         // compute dimensionality & function value & gradient
                         tsize size() const { return _size(); }
-                        tscalar f(const tvector& x) const { return _f(x); }
-                        tscalar f(const tvector& x, tvector& g) const { return _f(x, g); }
+                        tscalar operator()(const tvector& x) const { return _f(x); }
+                        tscalar operator()(const tvector& x, tvector& g) const { return _f(x, g); }
 
                         // access functions
                         tsize n_fval_calls() const { return m_n_fvals; }
@@ -102,7 +102,7 @@ namespace ncv
                                 else
                                 {
                                         eval_grad(x, g);
-                                        return f(x);
+                                        return _f(x);
                                 }
                         }
 
@@ -125,7 +125,7 @@ namespace ncv
 
                                         xp(i) += d;
                                         xn(i) -= d;
-                                        g(i) = f(xp) - f(xn);
+                                        g(i) = _f(xp) - _f(xn);
                                 }
 
                                 g /= d * 2;

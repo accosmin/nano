@@ -42,7 +42,7 @@ namespace ncv
                                 const tscalar t = (tlo + thi) / 2;
 
                                 // check sufficient decrease
-                                ft = problem.f(st.x + t * st.d, gt);
+                                ft = problem(st.x + t * st.d, gt);
                                 if (ft > st.f + c1 * t * dg || ft >= ftlo)
                                 {
                                         thi = t;
@@ -102,7 +102,7 @@ namespace ncv
                         for (tsize i = 0; i < max_iters; i ++)
                         {
                                 // check sufficient decrease
-                                ft = problem.f(st.x + t * st.d, gt);
+                                ft = problem(st.x + t * st.d, gt);
                                 if (ft > st.f + c1 * t * dg || ft >= ft0)
                                 {
                                         return ls_zoom(problem, st, ft, gt, t0, t, ft0, ft, c1, c2, max_iters);

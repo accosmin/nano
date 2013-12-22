@@ -1,5 +1,5 @@
-#ifndef NANOCV_OPTIMIZE_OPTIMIZER_SGD_HPP
-#define NANOCV_OPTIMIZE_OPTIMIZER_SGD_HPP
+#ifndef NANOCV_OPTIMIZE_OPTIMIZER_ASGD_HPP
+#define NANOCV_OPTIMIZE_OPTIMIZER_ASGD_HPP
 
 #include <cassert>
 #include <cmath>
@@ -9,7 +9,7 @@ namespace ncv
         namespace optimize
         {
                 /////////////////////////////////////////////////////////////////////////////////////////
-                // stochastic gradient descent starting from the initial value (guess) x0.
+                // average stochastic gradient descent starting from the initial value (guess) x0.
                 /////////////////////////////////////////////////////////////////////////////////////////
 
                 template
@@ -17,7 +17,7 @@ namespace ncv
                         typename tscalar,
                         typename tsize
                 >
-                tscalar sgd_learning_rate(tscalar gamma, tscalar lambda, tsize iteration)
+                tscalar asgd_learning_rate(tscalar gamma, tscalar lambda, tsize iteration)
                 {
                         // learning rate recommended by Bottou
                         return gamma / (1 + gamma * lambda * iteration);
@@ -34,7 +34,7 @@ namespace ncv
                         typename tresult = typename tproblem::tresult,
                         typename tstate = typename tproblem::tstate
                 >
-                tresult sgd(
+                tresult asgd(
                         const tproblem& problem,
                         const tvector& x0,
                         tsize iterations,
@@ -43,20 +43,24 @@ namespace ncv
                 {
                         assert(problem.size() == static_cast<tsize>(x0.size()));
 
-                        tvector x = x0, g = x;
+                        tvector x = x0, sumx = x, g = x;
 
                         // (A=average)SGD steps
                         for (tsize i = 0; i < iterations; i ++)
                         {
                                 const tscalar f = problem(x, g);
-                                const tscalar d = sgd_learning_rate(gamma, lambda, i);
+                                const tscalar d = asgd_learning_rate(gamma, lambda, i);
 
                                 if (    !std::isinf(f) && !std::isinf(g.minCoeff()) && !std::isinf(g.maxCoeff()) &&
                                         !std::isnan(f) && !std::isnan(g.minCoeff()) && !std::isnan(g.maxCoeff()))
                                 {
                                         x.noalias() -= d * g;
                                 }
+
+                                sumx.noalias() += x;
                         }
+
+                        x.noalias() = sumx / (1.0 + iterations);
 
                         // evaluate solution
                         tstate cstate(problem.size());
@@ -70,4 +74,4 @@ namespace ncv
         }
 }
 
-#endif // NANOCV_OPTIMIZE_OPTIMIZER_SGD_HPP
+#endif // NANOCV_OPTIMIZE_OPTIMIZER_ASGD_HPP
