@@ -31,7 +31,8 @@ namespace ncv
 
         size_t mnist_task_t::load(const string_t& ifile, const string_t& gfile, protocol p)
         {
-                char buffer[n_rows() * n_cols()];
+                std::vector<char> vbuffer(n_rows() * n_cols());
+                char* buffer = vbuffer.data();
                 char label[2];
 
                 log_info() << "MNIST: loading file <" << ifile << "> ...";

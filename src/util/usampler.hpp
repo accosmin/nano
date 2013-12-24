@@ -1,7 +1,8 @@
 #ifndef NANOCV_USAMPLER_H
 #define NANOCV_USAMPLER_H
 
-#include "random.hpp"
+#include <vector>
+#include "math.hpp"
 
 namespace ncv
 {
@@ -10,23 +11,22 @@ namespace ncv
         //      the selection probability of a sample is constant.
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        // uniform sampling: create a random subset of given size
+        // create a random subset of given size
         template
         <
                 typename tsample,
-                typename tsize
+                typename tsize,
+                typename tgenerator
         >
-        std::vector<tsample> uniform_sample(const std::vector<tsample>& samples, tsize size)
+        std::vector<tsample> uniform_sample(const std::vector<tsample>& samples, tsize size, tgenerator rng)
         {
                 std::vector<tsample> usamples;
 
                 if (!samples.empty())
                 {
-                        random_t<tsize> die(tsize(0), static_cast<tsize>(samples.size()) - 1);
-
                         for (tsize i = 0; i < size; i ++)
                         {
-                                const tsample& sample = samples[die()];
+                                const tsample& sample = samples[rng() % samples.size()];
                                 usamples.emplace_back(sample);
                         }
                 }
@@ -34,24 +34,43 @@ namespace ncv
                 return usamples;
         }
 
-        // uniform sampling: run a functor for a random subset of given size
+        // run a functor for a random subset of given size
         template
         <
                 typename tsample,
                 typename tsize,
+                typename tgenerator,
                 typename toperator
         >
-        void uniform_sample(const std::vector<tsample>& samples, tsize size, const toperator& op)
+        void uniform_sample(const std::vector<tsample>& samples, tsize size, tgenerator rng, const toperator& op)
         {
                 if (!samples.empty())
                 {
-                        random_t<tsize> die(tsize(0), static_cast<tsize>(samples.size()) - 1);
-
                         for (tsize i = 0; i < size; i ++)
                         {
-                                const tsample& sample = samples[die()];                                
+                                const tsample& sample = samples[rng() % samples.size()];
                                 op(sample);
                         }
+                }
+        }
+
+        // split the given samples in two subsets of (percentage1)% and (100 - percentage1)% proportion
+        template
+        <
+                typename tsample,
+                typename tsize,
+                typename tgenerator
+        >
+        void uniform_split(const std::vector<tsample>& samples, tsize percentage1, tgenerator rng,
+                std::vector<tsample>& usamples1, std::vector<tsample>& usamples2)
+        {
+                usamples1.clear();
+                usamples2.clear();
+
+                percentage1 = math::clamp(percentage1, tsize(1), tsize(99));
+                for (tsize i = 0; i < samples.size(); i ++)
+                {
+                        ((rng() % 100) < percentage1 ? usamples1 : usamples2).emplace_back(samples[i]);
                 }
         }
 }

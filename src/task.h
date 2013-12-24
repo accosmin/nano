@@ -11,6 +11,9 @@ namespace ncv
         typedef manager_t<task_t>               task_manager_t;
         typedef task_manager_t::robject_t       rtask_t;
 
+        // prune samples
+        samples_t prune_annotated(const task_t&, const samples_t&);
+
         ////////////////////////////////////////////////////////////////////////////////
         // generic computer vision task consisting of a set of (annotated) images
         //      and a protocol (training + testing).

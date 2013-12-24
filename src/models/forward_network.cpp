@@ -43,10 +43,11 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void forward_network_t::cumulate_grad(const vector_t& vgradient) const
+        void forward_network_t::cumulate_grad(const vector_t& ograd) const
         {
+                assert(ograd.size() == n_outputs());
                 tensor3d_t _gradient(n_outputs(), 1, 1);
-                ivectorizer_t(vgradient) >> _gradient;
+                ivectorizer_t(ograd) >> _gradient;
 
                 const tensor3d_t* gradient = &_gradient;
                 for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)

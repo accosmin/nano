@@ -1,12 +1,8 @@
-- state_t should be merged with result_t -> way too many copies of x:
-        - maybe inside (best_x, best_f, best_g) x (crt_x, crt_f, crt_g)
-        
-        - ...
+- remove optimize::result_t:
+        - return the optimum state as the optimization result
+        - don't store the number of function value & gradient calls in the state (or result) => can get them from the problem
 
-* trainers: compute both the loss value and the error (diplay both)
-        - stop training if the validation error is increasing
-        
-        - trainer_t::optimize(samples, vpercentage, loss, nthreads, model)
+        - state_t::update(state_t) ...
 
 * test program to print model (ncv_info_model -> model structure + convolutions as images)
         - may move the info_task drawing functions to the lib

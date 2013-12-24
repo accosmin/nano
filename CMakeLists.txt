@@ -18,7 +18,7 @@ find_package(JPEG REQUIRED)
 find_package(TIFF REQUIRED)
 
 # Set the compiler flags
-set(CMAKE_CXX_FLAGS                     "-Wall -std=c++11 -fopenmp")
+set(CMAKE_CXX_FLAGS                     "-Wall -std=c++11 -fopenmp -pedantic-errors")
 set(CMAKE_CXX_FLAGS_DEBUG               "-Og")                  # -fsanitize=address")
 set(CMAKE_CXX_FLAGS_RELEASE             "-O4 -DNDEBUG")         # -DEIGEN_NO_DEBUG")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O2 -g -DNDEBUG")      # -DEIGEN_NO_DEBUG")

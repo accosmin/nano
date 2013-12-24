@@ -25,52 +25,57 @@ namespace ncv
                 const task_t& task, const samples_t& samples, const loss_t& loss, model_t& model, vector_t& x,
                 scalar_t gamma, scalar_t lambda, size_t iterations, size_t evalsize) const
         {
-                random_t<size_t> rng(0, samples.size());
+                // TODO
+//                random_t<size_t> rng(0, samples.size());
+//                data_t<true> gdata(model);
 
-                // optimization problem: size
-                auto fn_size = [&] ()
-                {
-                        return model.n_parameters();
-                };
+//                // optimization problem: size
+//                auto fn_size = [&] ()
+//                {
+//                        return data.n_parameters();
+//                };
 
-                // optimization problem: function value
-                auto fn_fval = [&] (const vector_t& x)
-                {
-                        model.load_params(x);
+//                // optimization problem: function value
+//                auto fn_fval = [&] (const vector_t& x)
+//                {
+//                        data.load_params(x);
 
-                        const bool all = evalsize == samples.size();
-                        const samples_t usamples = all ? samples : ncv::uniform_sample(samples, evalsize);
-                        return ncv::lvalue_st(task, usamples, loss, model);
-                };
+//                        const bool all = evalsize == samples.size();
+//                        const samples_t usamples = all ? samples : ncv::uniform_sample(samples, evalsize);
+//                        data cumulate_st(task, usamples, loss)
+//                };
 
-                // optimization problem: function value & gradient
-                auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
-                {
-                        model.load_params(x);
+//                // optimization problem: function value & gradient
+//                auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
+//                {
+//                        data.load_params(x);
 
-                        const sample_t& sample = samples[rng() % samples.size()];
-                        return ncv::lvgrad(task, sample, loss, model);
-                };
 
-                // assembly optimization problem & optimize the model
-                const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
-                opt_result_t res;
+//                        const sample_t& sample = samples[rng() % samples.size()];
+//                        return ncv::lvgrad(task, sample, loss, model);
+//                };
 
-                if (text::iequals(m_optimizer, "asgd"))
-                {
-                        res = optimize::asgd(problem, x, iterations, gamma, lambda);
-                }
-                else if (text::iequals(m_optimizer, "sgd"))
-                {
-                        res = optimize::sgd(problem, x, iterations, gamma, lambda);
-                }
-                else
-                {
-                        log_error() << "stochastic trainer: invalid optimization method <" << m_optimizer << ">!";
-                }
+//                // assembly optimization problem & optimize the model
+//                const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
+//                opt_result_t res;
 
-                x = res.optimum().x;
-                return res.optimum().f;
+//                if (text::iequals(m_optimizer, "asgd"))
+//                {
+//                        res = optimize::asgd(problem, x, iterations, gamma, lambda);
+//                }
+//                else if (text::iequals(m_optimizer, "sgd"))
+//                {
+//                        res = optimize::sgd(problem, x, iterations, gamma, lambda);
+//                }
+//                else
+//                {
+//                        log_error() << "stochastic trainer: invalid optimization method <" << m_optimizer << ">!";
+//                }
+
+//                x = res.optimum().x;
+//                return res.optimum().f;
+
+                return 0.0;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

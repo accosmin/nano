@@ -2,10 +2,7 @@
 #define NANOCV_H
 
 #include "text.h"
-#include "loss.h"
 #include "layer.h"
-#include "task.h"
-#include "model.h"
 #include "trainer.h"
 #include "optimize/opt_gd.hpp"
 #include "optimize/opt_cgd.hpp"
@@ -13,6 +10,8 @@
 #include "util/logger.h"
 #include "util/timer.h"
 #include "util/math.hpp"
+#include "util/stats.hpp"
+#include "thread/thread_loop.hpp"
 
 namespace ncv
 {

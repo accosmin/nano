@@ -61,7 +61,8 @@ namespace ncv
                         return false;
                 }
 
-                char buffer[n_rows() * n_cols() * 3];
+                std::vector<char> vbuffer(n_rows() * n_cols() * 3);
+                char* buffer = vbuffer.data();
                 char label[1];
                 
                 // load images and annotations
@@ -106,7 +107,8 @@ namespace ncv
                         return false;
                 }
 
-                char buffer[n_rows() * n_cols() * 3];
+                std::vector<char> vbuffer(n_rows() * n_cols() * 3);
+                char* buffer = vbuffer.data();
 
                 // load images
                 size_t cnt = 0;

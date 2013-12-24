@@ -12,23 +12,6 @@ namespace ncv
         typedef manager_t<trainer_t>            trainer_manager_t;
         typedef trainer_manager_t::robject_t    rtrainer_t;
 
-        // prune samples
-        samples_t prune_annotated(const task_t&, const samples_t&);
-
-        // split samples into:
-        //      training        - (100 - vpercentage)%
-        //      validation      - vpercentage%
-        void split_train_valid(const samples_t&, size_t vpercentage, samples_t& tsamples, samples_t& vsamples);
-
-        // compute loss value & gradient (given a model and some samples)
-        //      (single & multi-threaded versions)
-        scalar_t lvalue(const task_t&, const sample_t&, const loss_t&, const model_t&);
-        scalar_t lvgrad(const task_t&, const sample_t&, const loss_t&, const model_t&);
-        scalar_t lvalue_st(const task_t&, const samples_t&, const loss_t&, const model_t&);
-        scalar_t lvalue_mt(const task_t&, const samples_t&, const loss_t&, size_t nthreads, const model_t&);
-        scalar_t lvgrad_st(const task_t&, const samples_t&, const loss_t&, const model_t&, vector_t&);
-        scalar_t lvgrad_mt(const task_t&, const samples_t&, const loss_t&, size_t nthreads, const model_t&, vector_t&);
-
         /////////////////////////////////////////////////////////////////////////////////////////
         // generic trainer:
         //      optimizes a model on a given task.
