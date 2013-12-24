@@ -20,14 +20,13 @@ namespace ncv
                         typename tscalar = typename tproblem::tscalar,
                         typename tsize = typename tproblem::tsize,
                         typename tvector = typename tproblem::tvector,
-                        typename tresult = typename tproblem::tresult,
                         typename tstate = typename tproblem::tstate,
 
                         typename twlog = typename tproblem::twlog,
                         typename telog = typename tproblem::telog,
                         typename tulog = typename tproblem::tulog
                 >
-                tresult cgd(
+                tstate cgd(
                         const tproblem& problem,
                         const tvector& x0,
                         tsize max_iterations,           // maximum number of iterations
@@ -38,7 +37,6 @@ namespace ncv
                 {
                         assert(problem.size() == static_cast<tsize>(x0.size()));
 
-                        tresult result(problem.size());
                         tstate cstate(problem, x0), pstate = cstate;
 
                         tscalar ft;
@@ -47,10 +45,9 @@ namespace ncv
                         // iterate until convergence
                         for (tsize i = 0; i < max_iterations; i ++)
                         {
-                                result.update(problem, cstate);
                                 if (op_ulog)
                                 {
-                                        op_ulog(result);
+                                        op_ulog(cstate);
                                 }
 
                                 // check convergence
@@ -82,10 +79,10 @@ namespace ncv
                                         break;
                                 }
                                 pstate = cstate;
-                                cstate.update(t, ft, gt);
+                                cstate.update(problem, t, ft, gt);
                         }
 
-                        return result;
+                        return cstate;
                 }
         }
 }

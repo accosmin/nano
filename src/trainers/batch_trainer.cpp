@@ -82,9 +82,6 @@ namespace ncv
                         // update the optimum state
                         opt_state.update(x, tvalue, terror, vvalue, verror);
 
-                        log_info() << "batch trainer: state [tloss = " << tvalue << "/" << terror
-                                   << ", vloss = " << vvalue << "/" << verror << "].";
-
                         return tvalue;
                 };
 
@@ -108,18 +105,19 @@ namespace ncv
                 {
                         log_error() << message;
                 };
-                auto fn_ulog = [] (const opt_result_t& result, timer_t& timer)
+                auto fn_ulog = [&] (const opt_state_t& result, timer_t& timer)
                 {
-                        log_info() << "batch trainer: state [loss = " << result.optimum().f
-                                   << ", gradient = " << result.optimum().g.lpNorm<Eigen::Infinity>()
-                                   << ", calls = " << result.n_fval_calls() << " fun/" << result.n_grad_calls()
-                                   << " grad] updated in " << timer.elapsed() << ".";
+                        log_info() << "batch trainer: state [loss = " << result.f
+                                   << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
+                                   << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
+                                   << "], optimum = [train = " << opt_state.m_tvalue << "/" << opt_state.m_terror
+                                   << ", valid = " << opt_state.m_vvalue << "/" << opt_state.m_verror
+                                   << "] updated in " << timer.elapsed() << ".";
                         timer.start();
                 };
 
                 // assembly optimization problem & optimize the model
                 const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
-                opt_result_t res;
 
                 vector_t x(model.n_parameters());
                 model.save_params(x);
@@ -130,15 +128,15 @@ namespace ncv
 
                 if (text::iequals(m_optimizer, "lbfgs"))
                 {
-                        res = optimize::lbfgs(problem, x, iters, eps, fn_wlog, fn_elog, fn_ulog_ref);
+                        optimize::lbfgs(problem, x, iters, eps, fn_wlog, fn_elog, fn_ulog_ref);
                 }
                 else if (text::iequals(m_optimizer, "cgd"))
                 {
-                        res = optimize::cgd(problem, x, iters, eps, fn_wlog, fn_elog, fn_ulog_ref);
+                        optimize::cgd(problem, x, iters, eps, fn_wlog, fn_elog, fn_ulog_ref);
                 }
                 else if (text::iequals(m_optimizer, "gd"))
                 {
-                        res = optimize::gd(problem, x, iters, eps, fn_wlog, fn_elog, fn_ulog_ref);
+                        optimize::gd(problem, x, iters, eps, fn_wlog, fn_elog, fn_ulog_ref);
                 }
                 else
                 {
@@ -146,17 +144,9 @@ namespace ncv
                         return false;
                 }
 
-                // FIXME: print optimum state, load parameters from there!
-
-                model.load_params(res.optimum().x);
+                model.load_params(opt_state.m_params);
 
                 // OK
-                log_info() << "batch trainer: optimum [loss = " << res.optimum().f
-                           << ", gradient = " << res.optimum().g.norm()
-                           << ", calls = " << res.n_fval_calls() << "/" << res.n_grad_calls()
-                           << "], iterations = [" << res.iterations() << "/" << m_iterations
-                           << "].";
-
                 return true;
         }
 

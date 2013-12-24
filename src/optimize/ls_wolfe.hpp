@@ -22,7 +22,6 @@ namespace ncv
                         typename tscalar = typename tproblem::tscalar,
                         typename tsize = typename tproblem::tsize,
                         typename tvector = typename tproblem::tvector,
-                        typename tresult = typename tproblem::tresult,
                         typename tstate = typename tproblem::tstate,
 
                         typename twlog = typename tproblem::twlog,
@@ -80,7 +79,6 @@ namespace ncv
                         typename tscalar = typename tproblem::tscalar,
                         typename tsize = typename tproblem::tsize,
                         typename tvector = typename tproblem::tvector,
-                        typename tresult = typename tproblem::tresult,
                         typename tstate = typename tproblem::tstate,
 
                         typename twlog = typename tproblem::twlog,

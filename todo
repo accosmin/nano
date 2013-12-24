@@ -1,8 +1,8 @@
-- remove optimize::result_t:
-        - return the optimum state as the optimization result
-        - don't store the number of function value & gradient calls in the state (or result) => can get them from the problem
-
-        - state_t::update(state_t) ...
+- make the batch trainer work again:
+        - store the optimize::state_t's parameter in the model
+        
+- make the stochastic trainer work:
+        - do multiple 1024 iterations with the current best learning parameters (stop decreasing if <0.1)
 
 * test program to print model (ncv_info_model -> model structure + convolutions as images)
         - may move the info_task drawing functions to the lib

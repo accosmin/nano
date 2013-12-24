@@ -4,24 +4,22 @@
 using namespace ncv;
 
 // display the formatted optimization history
-void print(const opt_result_t& result, size_t max_iterations,
-           const string_t& header, const string_t& time)
+void print(const opt_state_t& result, size_t max_iterations, const string_t& header, const string_t& time)
 {
         static const size_t col_size = 32;
         static const string_t del_line(4 * col_size + 4, '-');
 
         std::cout << del_line << std::endl;
-        std::cout << header << ": x  = [" << result.optimum().x.transpose() << "]" << std::endl;
-        std::cout << header << ": fx = [" << result.optimum().f << "]" << std::endl;
-        std::cout << header << ": gn = [" << result.optimum().g.norm() << "]" << std::endl;
-        std::cout << header << ": iterations = [" << result.iterations() << "/" << max_iterations
+        std::cout << header << ": x  = [" << result.x.transpose() << "]" << std::endl;
+        std::cout << header << ": fx = [" << result.f << "]" << std::endl;
+        std::cout << header << ": gn = [" << result.g.norm() << "]" << std::endl;
+        std::cout << header << ": iterations = [" << result.n_iterations() << "/" << max_iterations
                   << "], time = [" << time << "]." << std::endl;
         std::cout << del_line << std::endl;
 }
 
 // optimize a problem starting from random points
-void test(const opt_problem_t& problem, size_t max_iters, scalar_t eps,
-          const string_t& name, size_t trials)
+void test(const opt_problem_t& problem, size_t max_iters, scalar_t eps, const string_t& name, size_t trials)
 {
         const size_t size = problem.size();
 
@@ -40,15 +38,18 @@ void test(const opt_problem_t& problem, size_t max_iters, scalar_t eps,
                 ncv::timer_t timer;
 
                 timer.start();
-                const opt_result_t res_gd = optimize::gd(problem, x0, max_iters, eps);
+                problem.reset();
+                const opt_state_t res_gd = optimize::gd(problem, x0, max_iters, eps);
                 print(res_gd, max_iters, name + " (GD)" + name_trial, timer.elapsed());
 
                 timer.start();
-                const opt_result_t res_cgd = optimize::cgd(problem, x0, max_iters, eps);
+                problem.reset();
+                const opt_state_t res_cgd = optimize::cgd(problem, x0, max_iters, eps);
                 print(res_cgd, max_iters, name + " (CGD)" + name_trial, timer.elapsed());
 
                 timer.start();
-                const opt_result_t res_lbfgs = optimize::lbfgs(problem, x0, max_iters, eps);
+                problem.reset();
+                const opt_state_t res_lbfgs = optimize::lbfgs(problem, x0, max_iters, eps);
                 print(res_lbfgs, max_iters, name + " (LBFGS)" + name_trial, timer.elapsed());
         }
 }

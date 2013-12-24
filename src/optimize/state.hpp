@@ -27,7 +27,10 @@ namespace ncv
                         state_t(tsize size = 0)
                                 :       x(size), g(size), d(size),
                                         f(std::numeric_limits<tscalar>::max()),
-                                        t(1.0)
+                                        t(1.0),
+                                        m_iterations(0),
+                                        m_n_fvals(0),
+                                        m_n_grads(0)
                         {
                         }
 
@@ -43,7 +46,7 @@ namespace ncv
                                 f = problem(x, g);
                         }
 
-                        // update current point
+                        // update current state
                         template
                         <
                                 typename tproblem
@@ -52,13 +55,25 @@ namespace ncv
                         {
                                 x.noalias() += t * d;
                                 f = problem(x, g);
+
+                                m_iterations ++;
+                                m_n_fvals += problem.n_fval_calls();
+                                m_n_grads += problem.n_grad_calls();
                         }
 
-                        void update(tscalar t, tscalar ft, const tvector& gt)
+                        template
+                        <
+                                typename tproblem
+                        >
+                        void update(const tproblem& problem, tscalar t, tscalar ft, const tvector& gt)
                         {
                                 x.noalias() += t * d;
                                 f = ft;
                                 g = gt;
+
+                                m_iterations ++;
+                                m_n_fvals += problem.n_fval_calls();
+                                m_n_grads += problem.n_grad_calls();
                         }
 
                         // check convergence: the gradient is relatively small
@@ -67,9 +82,17 @@ namespace ncv
                                 return (g.template lpNorm<Eigen::Infinity>()) < epsilon * (1.0 + std::fabs(f));
                         }
 
+                        // access functions
+                        tsize n_iterations() const { return m_iterations; }
+                        tsize n_fval_calls() const { return m_n_fvals; }
+                        tsize n_grad_calls() const { return m_n_grads; }
+
                         // attributes
                         tvector         x, g, d;
                         tscalar         f, t;
+                        tsize           m_iterations;
+                        tsize           m_n_fvals;
+                        tsize           m_n_grads;
                 };
 
                 // compare two optimization states

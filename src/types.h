@@ -86,7 +86,7 @@ namespace ncv
                 opt_opgrad_t
         >                                                               opt_problem_t;
 
-        typedef opt_problem_t::tresult                                  opt_result_t;
+        typedef opt_problem_t::tstate                                   opt_state_t;
 
         typedef opt_problem_t::twlog                                    opt_opwlog_t;
         typedef opt_problem_t::telog                                    opt_opelog_t;

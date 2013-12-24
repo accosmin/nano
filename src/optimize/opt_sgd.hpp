@@ -31,10 +31,9 @@ namespace ncv
                         typename tscalar = typename tproblem::tscalar,
                         typename tsize = typename tproblem::tsize,
                         typename tvector = typename tproblem::tvector,
-                        typename tresult = typename tproblem::tresult,
                         typename tstate = typename tproblem::tstate
                 >
-                tresult sgd(
+                tstate sgd(
                         const tproblem& problem,
                         const tvector& x0,
                         tsize iterations,
@@ -62,10 +61,7 @@ namespace ncv
                         tstate cstate(problem.size());
                         cstate.x = x;
                         cstate.f = problem(x);
-
-                        tresult result(problem.size());
-                        result.update(problem, cstate);
-                        return result;
+                        return cstate;
                 }
         }
 }

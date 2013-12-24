@@ -1,7 +1,7 @@
 #ifndef NANOCV_OPTIMIZE_PROBLEM_HPP
 #define NANOCV_OPTIMIZE_PROBLEM_HPP
 
-#include "result.hpp"
+#include "state.hpp"
 #include <type_traits>
 #include <functional>
 #include <string>
@@ -34,16 +34,13 @@ namespace ncv
 
                         typedef typename tensor::vector_types_t<tscalar>::tvector       tvector;
 
-                        // optimization final result
-                        typedef result_t<tscalar, tsize>                                tresult;
-
-                        // optimization current state
-                        typedef typename tresult::tstate                                tstate;
+                        // optimization current/optimum state
+                        typedef state_t<tscalar, tsize>                                 tstate;
 
                         // logging: warning, error, update (with the current state)
                         typedef std::function<void(const std::string&)>                 twlog;
                         typedef std::function<void(const std::string&)>                 telog;
-                        typedef std::function<void(const tresult&)>                     tulog;
+                        typedef std::function<void(const tstate&)>                      tulog;
 
                         // constructor (analytic gradient)
                         explicit problem_t(
@@ -52,10 +49,9 @@ namespace ncv
                                 const top_grad& op_grad)
                                 :       m_op_size(op_size),
                                         m_op_fval(op_fval),
-                                        m_op_grad(op_grad),
-                                        m_n_fvals(0),
-                                        m_n_grads(0)
+                                        m_op_grad(op_grad)
                         {
+                                reset();
                         }
 
                         // constructor (no analytic gradient, can be estimated)
@@ -64,6 +60,13 @@ namespace ncv
                                 const top_fval& op_fval)
                                 :       problem_t(op_size, op_fval, top_grad())
                         {
+                        }
+
+                        // reset statistics
+                        void reset() const
+                        {
+                                m_n_fvals = 0;
+                                m_n_grads = 0;
                         }
 
                         // compute dimensionality & function value & gradient

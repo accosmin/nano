@@ -21,14 +21,13 @@ namespace ncv
                         typename tscalar = typename tproblem::tscalar,
                         typename tsize = typename tproblem::tsize,
                         typename tvector = typename tproblem::tvector,
-                        typename tresult = typename tproblem::tresult,
                         typename tstate = typename tproblem::tstate,
 
                         typename twlog = typename tproblem::twlog,
                         typename telog = typename tproblem::telog,
                         typename tulog = typename tproblem::tulog
                 >
-                tresult lbfgs(
+                tstate lbfgs(
                         const tproblem& problem,
                         const tvector& x0,
                         tsize max_iterations,           // maximum number of iterations
@@ -41,7 +40,6 @@ namespace ncv
 
                         const tsize hist_size = tsize(6);
 
-                        tresult result(problem.size());
                         std::deque<tvector> ss, ys;
                         tstate cstate(problem, x0), pstate = cstate;
 
@@ -52,10 +50,9 @@ namespace ncv
                         // iterate until convergence
                         for (tsize i = 0; i < max_iterations; i ++)
                         {
-                                result.update(problem, cstate);
                                 if (op_ulog)
                                 {
-                                        op_ulog(result);
+                                        op_ulog(cstate);
                                 }
 
                                 // check convergence
@@ -118,7 +115,7 @@ namespace ncv
                                         break;
                                 }
                                 pstate = cstate;
-                                cstate.update(t, ft, gt);
+                                cstate.update(problem, t, ft, gt);
 
                                 ss.push_back(cstate.x - pstate.x);
                                 ys.push_back(cstate.g - pstate.g);
@@ -129,7 +126,7 @@ namespace ncv
                                 }
                         }
 
-                        return result;
+                        return cstate;
                 }
         }
 }
