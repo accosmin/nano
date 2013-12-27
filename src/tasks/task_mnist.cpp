@@ -54,7 +54,7 @@ namespace ncv
                 // load annotations and images
                 size_t cnt = 0;
                 while ( flabel.read(label, 1) &&
-                        fimage.read(buffer, sizeof(buffer)))
+                        fimage.read(buffer, vbuffer.size()))
                 {
                         const size_t ilabel = math::cast<size_t>(label[0]);
                         if (ilabel >= n_outputs())

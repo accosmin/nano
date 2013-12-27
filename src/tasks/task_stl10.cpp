@@ -68,7 +68,7 @@ namespace ncv
                 // load images and annotations
                 size_t cnt = 0;
                 while ( flabel.read(label, 1) &&
-                        fimage.read(buffer, sizeof(buffer)))
+                        fimage.read(buffer, vbuffer.size()))
                 {
                         const size_t ilabel = math::cast<size_t>(label[0]) - 1;
                         if (ilabel >= n_outputs())
@@ -112,7 +112,7 @@ namespace ncv
 
                 // load images
                 size_t cnt = 0;
-                while (fimage.read(buffer, sizeof(buffer)))
+                while (fimage.read(buffer, vbuffer.size()))
                 {
                         image_t image;
                         image.m_protocol = p;

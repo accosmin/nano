@@ -205,8 +205,7 @@ namespace ncv
                         return false;
                 }
 
-                vector_t x(model.n_parameters());
-                model.save_params(x);
+                vector_t x = model.params();
 
                 // tune SGD parameters
                 scalar_t opt_log_gamma, opt_log_lambda;

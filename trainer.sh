@@ -8,12 +8,12 @@ model1="--model forward-network --model-params ${network1}"
 model2="--model forward-network --model-params ${network2}"
 model3="--model forward-network --model-params ${network3}"
 
-trainer="--trainer batch --trainer-params opt=lbfgs,iters=128,eps=1e-5"
+trainer="--trainer batch --trainer-params opt=lbfgs,iters=256,eps=1e-6"
 #trainer="--trainer stochastic --trainer-params opt=asgd,batch=2"
 
 params=""
 params=${params}" --task mnist --task-dir /home/cosmin/experiments/databases/mnist/"
-params=${params}" --loss logistic --trials 10 --threads 1"
-params=${params}" ${trainer} ${model1}"
+params=${params}" --loss logistic --trials 1 --threads 1"
+params=${params}" ${trainer} ${model0}"
 
 ./build/ncv_trainer ${params}

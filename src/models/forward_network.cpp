@@ -45,7 +45,7 @@ namespace ncv
 
         void forward_network_t::cumulate_grad(const vector_t& ograd) const
         {
-                assert(ograd.size() == n_outputs());
+                assert(static_cast<size_t>(ograd.size()) == n_outputs());
                 tensor3d_t _gradient(n_outputs(), 1, 1);
                 ivectorizer_t(ograd) >> _gradient;
 
@@ -73,23 +73,17 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        bool forward_network_t::save_params(vector_t& x) const
+        vector_t forward_network_t::params() const
         {
-                if (math::cast<size_t>(x.size()) == n_parameters())
-                {
-                        ovectorizer_t s(x);
-                        for (const rlayer_t& layer : m_layers)
-                        {
-                                layer->save_params(s);
-                        }
+                vector_t x(n_parameters());
 
-                        return true;
+                ovectorizer_t s(x);
+                for (const rlayer_t& layer : m_layers)
+                {
+                        layer->save_params(s);
                 }
 
-                else
-                {
-                        return false;
-                }
+                return x;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -102,9 +96,9 @@ namespace ncv
                         for (const rlayer_t& layer : m_layers)
                         {
                                 layer->load_params(s);
+                                layer->zero_grad();
                         }
 
-                        zero_grad();
                         return true;
                 }
 

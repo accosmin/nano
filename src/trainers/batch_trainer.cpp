@@ -39,7 +39,7 @@ namespace ncv
                 model.resize(task);
                 model.random_params();
 
-                // prune training data
+                // prune training & validation data
                 const samples_t samples = ncv::prune_annotated(task, task.samples(fold));
                 if (samples.empty())
                 {
@@ -47,17 +47,16 @@ namespace ncv
                         return false;
                 }
 
-                // select training and validation dataset
                 samples_t tsamples, vsamples;
                 ncv::uniform_split(samples, size_t(90), random_t<size_t>(0, samples.size()), tsamples, vsamples);
 
+                // construct the optimization problem
                 timer_t timer;
 
                 trainer_state_t opt_state(model.n_parameters());
                 trainer_data_t<false> ldata(model);
                 trainer_data_t<true>  gdata(model);
 
-                // construct the optimization problem
                 auto fn_size = [&] ()
                 {
                         return ldata.n_parameters();
@@ -65,16 +64,14 @@ namespace ncv
 
                 auto fn_fval = [&] (const vector_t& x)
                 {
+                        // training samples: loss value
                         ldata.load_params(x);
-
-                        // evaluate model on the training samples (loss value)
-                        ldata.init();
                         ldata.update_mt(task, tsamples, loss, nthreads);
                         const scalar_t tvalue = ldata.value();
                         const scalar_t terror = ldata.error();
 
-                        // ... and the validation samples (loss value)
-                        ldata.init();
+                        // validation samples: loss value
+                        ldata.load_params(x);
                         ldata.update_mt(task, vsamples, loss, nthreads);
                         const scalar_t vvalue = ldata.value();
                         const scalar_t verror = ldata.error();
@@ -87,14 +84,23 @@ namespace ncv
 
                 auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
+                        // training samples: loss value & gradient
                         gdata.load_params(x);
-
-                        // evaluate model on the training samples (loss value & gradient)
-                        gdata.init();
                         gdata.update_mt(task, tsamples, loss, nthreads);
-
+                        const scalar_t tvalue = gdata.value();
+                        const scalar_t terror = gdata.error();
                         gx = gdata.vgrad();
-                        return gdata.value();
+
+                        // validation samples: loss value
+                        ldata.load_params(x);
+                        ldata.update_mt(task, vsamples, loss, nthreads);
+                        const scalar_t vvalue = ldata.value();
+                        const scalar_t verror = ldata.error();
+
+                        // update the optimum state
+                        opt_state.update(x, tvalue, terror, vvalue, verror);
+
+                        return tvalue;
                 };
 
                 auto fn_wlog = [] (const string_t& message)
@@ -107,11 +113,16 @@ namespace ncv
                 };
                 auto fn_ulog = [&] (const opt_state_t& result, timer_t& timer)
                 {
+                        const scalar_t tvalue = opt_state.m_tvalue;
+                        const scalar_t terror = opt_state.m_terror;
+                        const scalar_t vvalue = opt_state.m_vvalue;
+                        const scalar_t verror = opt_state.m_verror;
+
                         log_info() << "batch trainer: state [loss = " << result.f
                                    << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
                                    << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
-                                   << "], optimum = [train = " << opt_state.m_tvalue << "/" << opt_state.m_terror
-                                   << ", valid = " << opt_state.m_vvalue << "/" << opt_state.m_verror
+                                   << ", train* = " << tvalue << "/" << terror
+                                   << ", valid* = " << vvalue << "/" << verror
                                    << "] updated in " << timer.elapsed() << ".";
                         timer.start();
                 };
@@ -119,8 +130,7 @@ namespace ncv
                 // assembly optimization problem & optimize the model
                 const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
 
-                vector_t x(model.n_parameters());
-                model.save_params(x);
+                const vector_t x = model.params();
 
                 const opt_opulog_t fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer));
                 const scalar_t eps = m_epsilon;

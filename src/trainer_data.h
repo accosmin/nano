@@ -10,7 +10,7 @@
 namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
-        // helper class to cumulate sample evaluations (loss value, error and gradient)
+        // helper class to cumulate sample evaluations (loss value, error and gradient).
         /////////////////////////////////////////////////////////////////////////////////////////
                 
         template
@@ -47,7 +47,6 @@ namespace ncv
                         m_error = 0.0;
                         m_count = 0;
                         m_vgrad.setZero();
-                        m_model->zero_grad();
                 }
 
                 // load parameters
@@ -56,6 +55,7 @@ namespace ncv
                         assert(m_model);
 
                         m_model->load_params(x);
+                        init();
                 }
 
                 // update statistics for a sample
@@ -85,6 +85,7 @@ namespace ncv
                         {
                                 update(task, samples[i], loss);
                         }
+                        finalize();
                 }
 
                 // update statistics for a set of samples - multi-threaded version
@@ -102,8 +103,9 @@ namespace ncv
                                 {
                                         data.update(task, samples[i], loss);
                                 },
-                                [&] (const trainer_data_t& data)
+                                [&] (trainer_data_t& data)
                                 {
+                                        data.finalize();
                                         this->operator +=(data);
                                 },
                                 nthreads
@@ -131,10 +133,11 @@ namespace ncv
                 }
 
                 // access functions
-                scalar_t value() const { return m_value / ((m_count == 0) ? 1.0 : m_count); }
-                scalar_t error() const { return m_error / ((m_count == 0) ? 1.0 : m_count); }
-                vector_t vgrad() const { return m_vgrad / ((m_count == 0) ? 1.0 : m_count); }
+                scalar_t value() const { return m_value / ((size() == 0) ? 1.0 : size()); }
+                scalar_t error() const { return m_error / ((size() == 0) ? 1.0 : size()); }
+                vector_t vgrad() const { return m_vgrad / ((size() == 0) ? 1.0 : size()); }
                 size_t n_parameters() const { assert(m_model); return m_model->n_parameters(); }
+                size_t size() const { return m_count; }
 
         private:
 

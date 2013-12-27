@@ -51,7 +51,7 @@ namespace ncv
                 bool load(const string_t& path);
 
                 // save/load/initialize parameters from vector
-                virtual bool save_params(vector_t& x) const = 0;
+                virtual vector_t params() const = 0;
                 virtual bool load_params(const vector_t& x) = 0;
                 virtual void zero_params() = 0;
                 virtual void random_params() = 0;

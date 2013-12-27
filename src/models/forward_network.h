@@ -41,7 +41,7 @@ namespace ncv
                 virtual vector_t grad() const;
 
                 // save/load/initialize parameters
-                virtual bool save_params(vector_t& x) const;
+                virtual vector_t params() const;
                 virtual bool load_params(const vector_t& x);
                 virtual void zero_params();
                 virtual void random_params();
