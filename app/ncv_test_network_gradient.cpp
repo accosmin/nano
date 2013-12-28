@@ -34,11 +34,9 @@ static void test_grad(
         auto opt_fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
         {
                 model.load_params(x);
-                model.zero_grad();
 
                 const vector_t output = model.value(input);
-                model.cumulate_grad(loss->vgrad(target, output));
-                gx = model.grad();
+                gx = model.gradient(loss->vgrad(target, output));
 
                 return loss->value(target, output);
         };
@@ -56,7 +54,7 @@ static void test_grad(
                 rgen(target.data(), target.data() + target.size());
                 rgen(params.data(), params.data() + params.size());
 
-                input.random(-0.1 / sqrt(n_parameters), 0.1 / sqrt(n_parameters));
+                input.random(-0.1 / sqrt(n_parameters), +0.1 / sqrt(n_parameters));
 
                 vector_t gx_gd, gx_ax;
                 problem_gd(x, gx_gd);

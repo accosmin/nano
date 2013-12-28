@@ -36,7 +36,6 @@ namespace ncv
                 // reset parameters
                 virtual void zero_params() {}
                 virtual void random_params(scalar_t min, scalar_t max) {}
-                virtual void zero_grad() const {}
 
                 // serialize parameters & gradients
                 virtual ovectorizer_t& save_params(ovectorizer_t& s) const { return s; }

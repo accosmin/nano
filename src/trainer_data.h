@@ -70,7 +70,7 @@ namespace ncv
                         const vector_t output = m_model->value(image, sample.m_region);
                         if (tgradient)
                         {
-                                m_model->cumulate_grad(loss.vgrad(target, output));
+                                m_vgrad += m_model->gradient(loss.vgrad(target, output));
                         }
 
                         m_value += loss.value(target, output);
@@ -85,7 +85,6 @@ namespace ncv
                         {
                                 update(task, samples[i], loss);
                         }
-                        finalize();
                 }
 
                 // update statistics for a set of samples - multi-threaded version
@@ -105,21 +104,10 @@ namespace ncv
                                 },
                                 [&] (trainer_data_t& data)
                                 {
-                                        data.finalize();
                                         this->operator +=(data);
                                 },
                                 nthreads
                         );
-                }
-
-                // finalize & cumulate statistics
-                void finalize()
-                {
-                        assert(m_model);
-                        if (tgradient)
-                        {
-                                m_vgrad = m_model->grad();
-                        }
                 }
 
                 // cumulate loss value & gradient

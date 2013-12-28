@@ -1,22 +1,17 @@
-- BUG: the gradient of the output layer is not correctly computed:
-        - it is exactly zero for the fully connected part!
-
-- make the batch trainer work again:
-        - the error value is not correctly computed!!!
-        
 - redesign the trainer_data_t:
         - awkward update_st (with finalize) vs update_mt (no finalize required)
-        
-* double check that Eigen is using vectorized code:
-http://eigen.tuxfamily.org/index.php?title=FAQ#Vectorization
-* check if EIGEN_VECTORIZE is defined
-* check if a 8x8 fixed size matrix block is faster to use for convolutions (e.g. store the kernel as an Ox8x8 tensor
-        
-- valgrind the batch trainer
-        
+
 - make the stochastic trainer work:
         - do multiple 1024 iterations with the current best learning parameters (stop decreasing if <0.1)
 
+- valgrind the batch & stochastic trainer
+
+- non-templated convolution layer
+        
+* double check that Eigen is using vectorized code:
+http://eigen.tuxfamily.org/index.php?title=FAQ#Vectorization
+* check if a 8x8 fixed size matrix block is faster to use for convolutions (e.g. store the kernel as an Ox8x8 tensor
+        
 * test program to print model (ncv_info_model -> model structure + convolutions as images)
         - may move the info_task drawing functions to the lib
 

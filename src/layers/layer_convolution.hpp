@@ -40,7 +40,6 @@ namespace ncv
                 // reset parameters
                 virtual void zero_params() { _zero_params(); }
                 virtual void random_params(scalar_t min, scalar_t max) { _random_params(min, max); }
-                virtual void zero_grad() const { _zero_grad(); }
 
                 // serialize parameters & gradients
                 virtual ovectorizer_t& save_params(ovectorizer_t& s) const { return _save_params(s); }
@@ -118,7 +117,6 @@ namespace ncv
                         m_kdata.zero();
                         m_wdata.zero();
                         m_bdata.zero();
-                        zero_grad();
                 }
 
                 /////////////////////////////////////////////////////////////////////////////////////////
@@ -128,16 +126,6 @@ namespace ncv
                         m_kdata.random(min, max);
                         m_wdata.random(min, max);
                         m_bdata.random(min, max);
-                        zero_grad();
-                }
-
-                /////////////////////////////////////////////////////////////////////////////////////////
-
-                void _zero_grad() const
-                {
-                        m_gkdata.zero();
-                        m_gwdata.zero();
-                        m_gbdata.zero();
                 }
 
                 /////////////////////////////////////////////////////////////////////////////////////////
@@ -185,7 +173,7 @@ namespace ncv
                         assert(n_irows() <= input.n_rows());
                         assert(n_icols() <= input.n_cols());
 
-                        // convolution output: odata = bias + weight * (idata conv kdata)
+                        // convolution output: odata = bias + weight * (idata @ kdata)
                         m_idata = input;
 
                         for (size_t o = 0; o < n_odims(); o ++)
@@ -200,9 +188,8 @@ namespace ncv
                                         const matrix_t& kdata = m_kdata(o);
                                         matrix_t& xdata = m_xdata(o, i);
 
-                                        xdata.setZero();
-                                        math::conv<tcrows, tccols>(idata, kdata, xdata);
-                                        odata.noalias() += weight(o, i) * xdata;
+                                        math::conv<false, tcrows, tccols>(idata, kdata, xdata);
+                                        odata += weight(o, i) * xdata;
                                 }
                         }
 
@@ -221,17 +208,18 @@ namespace ncv
                         for (size_t o = 0; o < n_odims(); o ++)
                         {
                                 const matrix_t& gdata = gradient(o);
+                                matrix_t& gkdata = m_gkdata(o);
 
-                                gbias(o) += gdata.sum();
+                                gkdata.setZero();
+                                gbias(o) = gdata.sum();
 
                                 for (size_t i = 0; i < n_idims(); i ++)
                                 {
                                         const matrix_t& idata = m_idata(i);
                                         const matrix_t& xdata = m_xdata(o, i);
-                                        matrix_t& gkdata = m_gkdata(o);
 
-                                        gweight(o, i) += gdata.cwiseProduct(xdata).sum();
-                                        math::wconv_mod4(idata, gdata, weight(o, i), gkdata);
+                                        gweight(o, i) = gdata.cwiseProduct(xdata).sum();
+                                        math::wconv_mod4<true>(idata, gdata, weight(o, i), gkdata);
                                 }
                         }
 
@@ -241,10 +229,10 @@ namespace ncv
                         for (size_t o = 0; o < n_odims(); o ++)
                         {
                                 const matrix_t& gdata = gradient(o);
+                                const matrix_t& kdata = m_kdata(o);
 
                                 for (size_t i = 0; i < n_idims(); i ++)
                                 {
-                                        const matrix_t& kdata = m_kdata(o);
                                         matrix_t& idata = m_idata(i);
 
                                         backward(gdata, kdata, weight(o, i), idata);
@@ -272,9 +260,11 @@ namespace ncv
 
                                         for (size_t c = 0; c < ocols; c ++)
                                         {
+                                                const scalar_t w = weight * pogdata[c];
+
                                                 for (size_t kc = 0; kc < tccols; kc ++)
                                                 {
-                                                        pigdata[c + kc] += weight * pogdata[c] * pkdata[kc];
+                                                        pigdata[c + kc] += w * pkdata[kc];
                                                 }
                                         }
                                 }

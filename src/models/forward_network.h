@@ -35,16 +35,14 @@ namespace ncv
                 // compute the model output
                 virtual vector_t value(const tensor3d_t& input) const;
 
-                // initialize/cumulate gradient
-                virtual void zero_grad() const;
-                virtual void cumulate_grad(const vector_t& ograd) const;
-                virtual vector_t grad() const;
-
                 // save/load/initialize parameters
-                virtual vector_t params() const;
                 virtual bool load_params(const vector_t& x);
                 virtual void zero_params();
                 virtual void random_params();
+
+                // access current parameters/gradient
+                virtual vector_t params() const;
+                virtual vector_t gradient(const vector_t& ograd) const;
 
         protected:
 

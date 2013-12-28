@@ -41,20 +41,18 @@ namespace ncv
                 vector_t value(const image_t& image, const rect_t& region) const;
                 virtual vector_t value(const tensor3d_t& input) const = 0;
 
-                // initialize/cumulate the gradient
-                virtual void zero_grad() const = 0;
-                virtual void cumulate_grad(const vector_t& ograd) const = 0;
-                virtual vector_t grad() const = 0;
-
                 // save/load from file
                 bool save(const string_t& path) const;
                 bool load(const string_t& path);
 
                 // save/load/initialize parameters from vector
-                virtual vector_t params() const = 0;
                 virtual bool load_params(const vector_t& x) = 0;
                 virtual void zero_params() = 0;
                 virtual void random_params() = 0;
+
+                // access current parameters/gradient
+                virtual vector_t params() const = 0;
+                virtual vector_t gradient(const vector_t& ograd) const = 0;
 
                 // access functions
                 size_t n_rows() const { return m_rows; }

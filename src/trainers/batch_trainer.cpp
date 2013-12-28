@@ -118,12 +118,12 @@ namespace ncv
                         const scalar_t vvalue = opt_state.m_vvalue;
                         const scalar_t verror = opt_state.m_verror;
 
-                        log_info() << "batch trainer: state [loss = " << result.f
+                        log_info() << "batch trainer: [loss = " << result.f
                                    << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
                                    << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
                                    << ", train* = " << tvalue << "/" << terror
                                    << ", valid* = " << vvalue << "/" << verror
-                                   << "] updated in " << timer.elapsed() << ".";
+                                   << "] done in " << timer.elapsed() << ".";
                         timer.start();
                 };
 

@@ -38,7 +38,6 @@ namespace ncv
         {
                 m_kdata.zero();
                 m_bdata.zero();
-                zero_grad();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -47,15 +46,6 @@ namespace ncv
         {
                 m_kdata.random(min, max);
                 m_bdata.random(min, max);
-                zero_grad();
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        void output_layer_t::zero_grad() const
-        {
-                m_gkdata.zero();
-                m_gbdata.zero();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -147,7 +137,7 @@ namespace ncv
                         const scalar_t gout = gdata(0, 0);
 
                         // bias
-                        gbias(o) += gout;
+                        gbias(o) = gout;
 
                         // kernel
                         for (size_t i = 0; i < n_idims(); i ++)
@@ -155,7 +145,7 @@ namespace ncv
                                 const matrix_t& idata = m_idata(i);
                                 matrix_t& gkdata = m_gkdata(o, i);
 
-                                gkdata += gout * idata;
+                                gkdata = gout * idata;
                         }
                 }
 
