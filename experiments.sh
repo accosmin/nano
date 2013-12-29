@@ -10,9 +10,9 @@ batch_params="opt=lbfgs,eps=1e-6,iters=1024"
 common_params="--loss classnll --threads 4"
 
 network0=""
-network1=${network0}"conv8x8:convs=16;snorm;"
-network2=${network1}"conv8x8:convs=16;snorm;"
-network3=${network2}"conv8x8:convs=16;snorm;"
+network1=${network0}"conv:count=32,rows=8,cols=8;snorm;"
+network2=${network1}"conv:count=16,rows=8,cols=8;snorm;"
+network3=${network2}"conv:count=8,rows=8,cols=8;snorm;"
 
 # task description = task model [model-params] trainer trainer-params trials output
 tasks=(

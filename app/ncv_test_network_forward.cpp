@@ -8,21 +8,26 @@ int main(int argc, char *argv[])
 
         using namespace ncv;
 
+        const string_t cmd_layer = "conv:count=16,rows=8,cols=8;";
+        const string_t cmd_layer_snorm = cmd_layer + "snorm;";
+        const string_t cmd_layer_tanh = cmd_layer + "tanh;";
+        const string_t cmd_layer_unit = cmd_layer + "unit;";
+
         strings_t cmd_networks =
         {
                 "",
-                "conv8x8:convs=16;snorm",
-                "conv8x8:convs=16;tanh",
-                "conv8x8:convs=16;unit",
-                "conv8x8:convs=16;snorm;conv8x8:convs=16;snorm",
-                "conv8x8:convs=16;tanh;conv8x8:convs=16;tanh",
-                "conv8x8:convs=16;unit;conv8x8:convs=16;unit",
-                "conv8x8:convs=16;snorm;conv8x8:convs=16;snorm;conv8x8:convs=16;snorm",
-                "conv8x8:convs=16;tanh;conv8x8:convs=16;tanh;conv8x8:convs=16;tanh",
-                "conv8x8:convs=16;unit;conv8x8:convs=16;unit;conv8x8:convs=16;unit",
-                "conv8x8:convs=16;snorm;conv8x8:convs=16;snorm;conv8x8:convs=16;snorm;conv8x8:convs=16;snorm",
-                "conv8x8:convs=16;tanh;conv8x8:convs=16;tanh;conv8x8:convs=16;tanh;conv8x8:convs=16;tanh",
-                "conv8x8:convs=16;unit;conv8x8:convs=16;unit;conv8x8:convs=16;unit;conv8x8:convs=16;unit"
+
+                cmd_layer_snorm,
+                cmd_layer_tanh,
+                cmd_layer_unit,
+
+                cmd_layer_snorm + cmd_layer_snorm,
+                cmd_layer_tanh + cmd_layer_tanh,
+                cmd_layer_unit + cmd_layer_unit,
+
+                cmd_layer_snorm + cmd_layer_snorm + cmd_layer_snorm,
+                cmd_layer_tanh + cmd_layer_tanh + cmd_layer_tanh,
+                cmd_layer_unit + cmd_layer_unit + cmd_layer_unit
         };
 
         const color_mode cmd_color = color_mode::rgba;

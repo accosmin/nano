@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 {
         ncv::init();
 
-        const strings_t conv_layer_ids { "conv4x4" };
+        const strings_t conv_layer_ids { "conv" };
         const strings_t activation_layer_ids { "", "unit", "tanh", "snorm" };
         const strings_t loss_ids = loss_manager_t::instance().ids();
 
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
                                 for (size_t l = 0; l < n_layers; l ++)
                                 {
                                         random_t<size_t> rgen(2, 6);
-                                        desc += conv_layer_id + ":convs=" + text::to_string(rgen()) + ";";
+                                        desc += conv_layer_id + ":count=" + text::to_string(rgen()) + ",rows=4,cols=4;";
                                         desc += activation_layer_id + ";";
                                 }
 

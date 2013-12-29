@@ -1,52 +1,33 @@
-- valgrind the batch & stochastic trainer
-
-- non-templated convolution layer
-        
-* double check that Eigen is using vectorized code:
-http://eigen.tuxfamily.org/index.php?title=FAQ#Vectorization
-* check if a 8x8 fixed size matrix block is faster to use for convolutions (e.g. store the kernel as an Ox8x8 tensor
-        
-* test program to print model (ncv_info_model -> model structure + convolutions as images)
+- test program to print model (ncv_info_model -> model structure + convolutions as images)
         - may move the info_task drawing functions to the lib
 
-* faster: convolution layer
+- faster: convolution layer
 	- reduce the number of loops - concatenate convolutions?!
 
-* stochastic trainer:
-	- monitor the loss on a small validation subset after the optimum learning rates have been found
-
-* thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
+- thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
 	
 idea: variational learning (ebbbost)
 idea: regularized (bound) loss with the same approach as in nips12a.pdf
 
-* svhn decoding:
+- svhn decoding:
 	- the sections are not decoded correctly: 
 		- the data type of the last two sections is not valid
 		- the number of bytes in the last section is not valid
 
-* could use std::atexit() to save the model at closing -> re-training should reload the current model and continue training
-* better could catch various signals: http://en.cppreference.com/w/cpp/utility/program and safely save the trained model
-
-- perf result:   
-    66.69%  ncv_trainer  libnanocv.so         [.] ncv::conv_layer_t::backward(ncv::tensor3d_t const&) const                                                                  
-    26.76%  ncv_trainer  libnanocv.so         [.] ncv::conv_layer_t::forward(ncv::tensor3d_t const&) const                                                                   
-     3.14%  ncv_trainer  libnanocv.so         [.] ncv::fun1_activation_t::value(double) const                                                                                
-     1.07%  ncv_trainer  libnanocv.so         [.] ncv::fun1_activation_t::vgrad(double) const
-
-* make install:
-	- also copy the headers 
-
 - implement other training methods for the convolution network:
-	- auto-encoding: using the unlabeled data (could also try with all samples)
-	- train a single layer at a time
-	- regularization: l2, symmetry
-	- could use genetic algorithms and encode a convolution matrix using e.g. 16 possible values, can impose symmetry-like constrains 
-	- could add options to filter the input: e.g. smoothing, normalization, contrast equalization
+        - auto-encoding: using the unlabeled data (could also try with all samples)
+        - train a single layer at a time
+        - regularization: l2, symmetry
+        - could use genetic algorithms and encode a convolution matrix using e.g. 16 possible values, can impose symmetry-like constrains 
+        - could add options to filter the input: e.g. smoothing, normalization, contrast equalization
 
-	- autoencoders: how to generate samples ?!
+        - autoencoders: how to generate samples ?!
 
 - add other datasets:
-	- INRIA car and person datasets
-	- NORB, inria pedestrian detection, inria human detection, dymlerchrysler human detection, face detection, PASCALVoc2011, CALTECH101...
+        - INRIA car and person datasets
+        - NORB, inria pedestrian detection, inria human detection, dymlerchrysler human detection, face detection, PASCALVoc2011, CALTECH101...
+
+- make install:
+	- also copy the headers 
+
 
