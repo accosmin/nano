@@ -6,85 +6,29 @@
 #include "optimize/opt_sgd.hpp"
 #include "optimize/opt_asgd.hpp"
 #include "text.h"
-#include "thread/thread_pool.h"
+#include "trainer_data.h"
 
 namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        stochastic_trainer_t::stochastic_trainer_t(const string_t& params)
-                :       m_optimizer(text::from_params<string_t>(params, "opt", "asgd")),
-                        m_epoch(text::from_params<size_t>(params, "epoch", 4))
+        struct stochastic_state_t
         {
-                m_epoch = math::clamp(m_epoch, 2, 16);
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        scalar_t stochastic_trainer_t::sgd(
-                const task_t& task, const samples_t& samples, const loss_t& loss, model_t& model, vector_t& x,
-                scalar_t gamma, scalar_t lambda, size_t iterations, size_t evalsize) const
-        {
-                // TODO
-//                random_t<size_t> rng(0, samples.size());
-//                data_t<true> gdata(model);
-
-//                // optimization problem: size
-//                auto fn_size = [&] ()
-//                {
-//                        return data.n_parameters();
-//                };
-
-//                // optimization problem: function value
-//                auto fn_fval = [&] (const vector_t& x)
-//                {
-//                        data.load_params(x);
-
-//                        const bool all = evalsize == samples.size();
-//                        const samples_t usamples = all ? samples : ncv::uniform_sample(samples, evalsize);
-//                        data cumulate_st(task, usamples, loss)
-//                };
-
-//                // optimization problem: function value & gradient
-//                auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
-//                {
-//                        data.load_params(x);
-
-
-//                        const sample_t& sample = samples[rng() % samples.size()];
-//                        return ncv::lvgrad(task, sample, loss, model);
-//                };
-
-//                // assembly optimization problem & optimize the model
-//                const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
-//                opt_result_t res;
-
-//                if (text::iequals(m_optimizer, "asgd"))
-//                {
-//                        res = optimize::asgd(problem, x, iterations, gamma, lambda);
-//                }
-//                else if (text::iequals(m_optimizer, "sgd"))
-//                {
-//                        res = optimize::sgd(problem, x, iterations, gamma, lambda);
-//                }
-//                else
-//                {
-//                        log_error() << "stochastic trainer: invalid optimization method <" << m_optimizer << ">!";
-//                }
-
-//                x = res.optimum().x;
-//                return res.optimum().f;
-
-                return 0.0;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        struct state_t
-        {
-                void init(const model_t& model, const vector_t& x, scalar_t log_gamma, scalar_t log_lambda)
+                stochastic_state_t() :     m_log_lambda(-4.0),
+                                m_log_gamma(-4.0),
+                                m_value(std::numeric_limits<scalar_t>::max()),
+                                m_error(std::numeric_limits<scalar_t>::max())
                 {
-                        m_model = model.clone();
+                }
+
+                void init(const model_t& model)
+                {
+                        m_ldata.init(model);
+                        m_gdata.init(model);
+                }
+
+                void init(const vector_t& x, scalar_t log_gamma, scalar_t log_lambda)
+                {
                         m_param = x;
                         m_log_gamma = log_gamma;
                         m_log_lambda = log_lambda;
@@ -93,93 +37,86 @@ namespace ncv
                 scalar_t gamma() const { return std::pow(10.0, m_log_gamma); }
                 scalar_t lambda() const { return std::pow(10.0, m_log_lambda); }
 
-                scalar_t        m_log_lambda;
-                scalar_t        m_log_gamma;
-                rmodel_t        m_model;
-                vector_t        m_param;
+                scalar_t                m_log_lambda;
+                scalar_t                m_log_gamma;
+                vector_t                m_param;
+                scalar_t                m_value;
+                scalar_t                m_error;
+
+                trainer_data_skipgrad_t m_ldata;
+                trainer_data_withgrad_t m_gdata;
         };
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void stochastic_trainer_t::tune_sgd(
-                const task_t& task, const samples_t& samples, const loss_t& loss,
-                size_t nthreads, model_t& model, vector_t& x,
-                scalar_t& opt_log_gamma, scalar_t& opt_log_lambda) const
+        bool operator<(const stochastic_state_t& state1, const stochastic_state_t& state2)
         {
-                ncv::thread_pool_t worker_pool(nthreads);
-                thread_pool_t::mutex_t mutex;
+                return state1.m_error < state2.m_error;
+        }
 
-                const size_t n_workers = std::max(size_t(4), worker_pool.n_workers());
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-                // create worker buffers: (gamma, lambda) + loss values
-                tensor::matrix_types_t<state_t>::tmatrix states(n_workers, n_workers);
-                tensor::matrix_types_t<scalar_t>::tmatrix lvalues(n_workers, n_workers);
+        stochastic_trainer_t::stochastic_trainer_t(const string_t& params)
+                :       m_optimizer(text::from_params<string_t>(params, "opt", "asgd")),
+                        m_epoch(text::from_params<size_t>(params, "epoch", 4))
+        {
+                m_epoch = math::clamp(m_epoch, 1, 16);
+        }
 
-                // search the optimum learning parameters: each worker thread tests a value
-                scalar_t min_log_gamma = -4.0;
-                scalar_t max_log_gamma = +1.0;
-                scalar_t min_log_lambda = -4.0;
-                scalar_t max_log_lambda = +1.0;
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-                const scalar_t min_delta_log = 1e-1;
-                const size_t tune_iters = 1024;
-                const size_t tune_evals = 4096;
+        void stochastic_trainer_t::sgd(
+                const task_t& task, const samples_t& samples, const loss_t& loss,
+                size_t iterations, size_t evalsize, stochastic_state_t& state) const
+        {
+                random_t<size_t> rng(0, samples.size());
 
-                while ( max_log_gamma - min_log_gamma > min_delta_log &&
-                        max_log_lambda - min_log_lambda > min_delta_log)
+                // optimization problem: size
+                auto fn_size = [&] ()
                 {
-                        // create workers (one for each learning parameter set)
-                        const scalar_t delta_log_gamma = (max_log_gamma - min_log_gamma) / (n_workers - 1.0);
-                        const scalar_t delta_log_lambda = (max_log_lambda - min_log_lambda) / (n_workers - 1.0);
+                        return state.m_ldata.n_parameters();
+                };
 
-                        for (size_t nl = 0; nl < n_workers; nl ++)              // lambda
-                        {
-                                for (size_t ng = 0; ng < n_workers; ng ++)      // gamma
-                                {
-                                        worker_pool.enqueue(
-                                                [=, &states, &lvalues, &task, &samples, &loss, &model, &x, &mutex]()
-                                        {
-                                                // prepare parameters
-                                                state_t& state = states(nl, ng);
-                                                state.init(model, x,
-                                                           min_log_gamma + delta_log_gamma * ng,
-                                                           min_log_lambda + delta_log_lambda * nl);
+                // optimization problem: function value
+                auto fn_fval = [&] (const vector_t& x)
+                {
+                        const samples_t usamples = evalsize == samples.size() ?
+                                samples : ncv::uniform_sample(samples, evalsize, rng);
 
-                                                // average stochastic gradient descent (ASGD)
-                                                timer_t timer;
-                                                const scalar_t lvalue = lvalues(nl, ng) = sgd(
-                                                        task, samples, loss, *state.m_model, state.m_param,
-                                                        state.gamma(), state.lambda(), tune_iters, tune_evals);
+                        state.m_ldata.load_params(x);
+                        state.m_ldata.update_st(task, usamples, loss);
 
-                                                const thread_pool_t::lock_t lock(mutex);
-                                                log_info() << "stochastic trainer: tuning step [param = ("
-                                                           << state.gamma() << ", " << state.lambda()
-                                                           << "), loss = " << lvalue
-                                                           << "] processed in " << timer.elapsed() << ".";
-                                        });
-                                }
-                        }
+                        state.m_param = x;
+                        state.m_value = state.m_ldata.value();
+                        state.m_error = state.m_ldata.error();
+                        return state.m_value;
+                };
 
-                        worker_pool.wait();
+                // optimization problem: function value & gradient
+                auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
+                {
+                        state.m_gdata.load_params(x);
+                        state.m_gdata.update(task, samples[rng() % samples.size()], loss);
 
-                        // select the optimum learning parameter to expand
-                        matrix_t::Index nl, ng;
-                        const scalar_t opt_lvalue = lvalues.minCoeff(&nl, &ng);
-                        const state_t& opt_state = states(nl, ng);
+                        gx = state.m_gdata.vgrad();
+                        return state.m_gdata.value();
+                };
 
-                        update_range(min_log_gamma, max_log_gamma, opt_state.m_log_gamma, delta_log_gamma);
-                        update_range(min_log_lambda, max_log_lambda, opt_state.m_log_lambda, delta_log_lambda);
-                        x = opt_state.m_param;
+                // assembly optimization problem & optimize the model
+                const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
 
-                        // log
-                        log_info() << "stochastic trainer: tuning step finalized [param = ("
-                                   << opt_state.gamma() << ", " << opt_state.lambda()
-                                   << "), loss = " << opt_lvalue << "].";
+                if (text::iequals(m_optimizer, "asgd"))
+                {
+                        optimize::asgd(problem, state.m_param, iterations, state.gamma(), state.lambda());
                 }
-
-                // OK
-                opt_log_gamma = 0.5 * (min_log_gamma + max_log_gamma);
-                opt_log_lambda = 0.5 * (min_log_lambda + max_log_lambda);
+                else if (text::iequals(m_optimizer, "sgd"))
+                {
+                        optimize::sgd(problem, state.m_param, iterations, state.gamma(), state.lambda());
+                }
+                else
+                {
+                        log_error() << "stochastic trainer: invalid optimization method <" << m_optimizer << ">!";
+                }
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -207,48 +144,87 @@ namespace ncv
 
                 vector_t x = model.params();
 
-                // tune SGD parameters
-                scalar_t opt_log_gamma, opt_log_lambda;
-                tune_sgd(task, samples, loss, nthreads, model, x, opt_log_gamma, opt_log_lambda);
-
-                // optimize using the optimal SGD parameters
-                const size_t opt_iters = m_epoch * samples.size();
-                const size_t opt_evals = samples.size();
-
+                // create worker buffers: optimize given a (gamma, lambda) parametrization
                 ncv::thread_pool_t worker_pool(nthreads);
                 thread_pool_t::mutex_t mutex;
 
-                const size_t n_workers = worker_pool.n_workers();
-                std::vector<state_t> states(n_workers);
-                std::vector<scalar_t> lvalues(n_workers);
+                const size_t n_workers = std::max(size_t(4), worker_pool.n_workers());
 
-                for (size_t n = 0; n < n_workers; n ++)
+                std::vector<stochastic_state_t> states(n_workers * n_workers);
+                for (size_t i = 0; i < states.size(); i ++)
                 {
-                        worker_pool.enqueue([=, &states, &lvalues, &task, &samples, &loss, &model, &x, &mutex]()
-                        {
-                                // prepare parameters
-                                state_t& state = states[n];
-                                state.init(model, x, opt_log_gamma, opt_log_lambda);
-
-                                // average stochastic gradient descent (ASGD)
-                                timer_t timer;
-                                const scalar_t lvalue = lvalues[n] = sgd(
-                                        task, samples, loss, *state.m_model, state.m_param,
-                                        state.gamma(), state.lambda(), opt_iters, opt_evals);
-
-                                const thread_pool_t::lock_t lock(mutex);
-                                log_info() << "stochastic trainer: optimization step [param = ("
-                                           << state.gamma() << ", " << state.lambda() << "), loss = " << lvalue
-                                           << "] processed in " << timer.elapsed() << ".";
-                        });
+                        states[i].init(model);
                 }
 
-                worker_pool.wait();
+                // search the optimum learning parameters: each worker thread tests a value
+                scalar_t min_log_gamma = -4.0;
+                scalar_t max_log_gamma = +1.0;
+                scalar_t min_log_lambda = -4.0;
+                scalar_t max_log_lambda = +1.0;
+                scalar_t min_delta = +0.02;
 
-                // update the model
-                const size_t opt_index = std::min_element(lvalues.begin(), lvalues.end()) - lvalues.begin();
-                model.load_params(states[opt_index].m_param);
+                const size_t tune_iters = std::max(size_t(1024), samples.size() / 64);
+                const size_t tune_evals = 4 * tune_iters;
+                const size_t opt_iters = m_epoch * samples.size();
+                const size_t opt_evals = samples.size();
 
+                for (size_t e = 0, tuned = 0; !tuned; e ++)
+                {
+                        tuned = max_log_gamma < min_log_gamma + min_delta &&
+                                max_log_lambda < min_log_lambda + min_delta;
+
+                        const size_t iters = tuned ? opt_iters : tune_iters;
+                        const size_t evals = tuned ? opt_evals : tune_evals;
+
+                        // create workers (one for each learning parameter set)
+                        const scalar_t delta_log_gamma = (max_log_gamma - min_log_gamma) / (n_workers - 1.0);
+                        const scalar_t delta_log_lambda = (max_log_lambda - min_log_lambda) / (n_workers - 1.0);
+
+                        for (size_t nl = 0; nl < n_workers; nl ++)              // lambda
+                        {
+                                for (size_t ng = 0; ng < n_workers; ng ++)      // gamma
+                                {
+                                        worker_pool.enqueue([=, &states, &task, &samples, &loss, &model, &x, &mutex]()
+                                        {
+                                                // prepare parameters
+                                                stochastic_state_t& state = states[nl * n_workers + ng];
+                                                state.init(x,
+                                                           min_log_gamma + delta_log_gamma * ng,
+                                                           min_log_lambda + delta_log_lambda * nl);
+
+                                                // stochastic optimization
+                                                timer_t timer;
+                                                sgd(task, samples, loss, iters, evals, state);
+
+                                                const thread_pool_t::lock_t lock(mutex);
+                                                log_info() << "stochastic trainer: step [" << (e + 1)
+                                                           << ", param = (" << state.gamma() << ", " << state.lambda()
+                                                           << "), loss = " << state.m_value << "/" << state.m_error
+                                                           << "] done in " << timer.elapsed() << ".";
+                                        });
+                                }
+                        }
+
+                        worker_pool.wait();
+
+                        // select the optimum learning parameter to expand
+                        std::sort(states.begin(), states.end());
+                        const stochastic_state_t& opt_state = states[0];
+
+                        update_range(min_log_gamma, max_log_gamma, opt_state.m_log_gamma, delta_log_gamma);
+                        update_range(min_log_lambda, max_log_lambda, opt_state.m_log_lambda, delta_log_lambda);
+                        x = opt_state.m_param;
+
+                        model.load_params(x);
+
+                        // log
+                        log_info() << "stochastic trainer: step finalized [" << (e + 1)
+                                   << ", param = (" << opt_state.gamma() << ", " << opt_state.lambda()
+                                   << "), loss* = " << opt_state.m_value << "/" << opt_state.m_error
+                                   << ", iters = " << iters << "/" << evals << "].";
+                }
+
+                // OK
                 return true;
         }
 

@@ -54,8 +54,8 @@ namespace ncv
                 timer_t timer;
 
                 trainer_state_t opt_state(model.n_parameters());
-                trainer_data_t<false> ldata(model);
-                trainer_data_t<true>  gdata(model);
+                trainer_data_skipgrad_t ldata(model);
+                trainer_data_withgrad_t gdata(model);
 
                 auto fn_size = [&] ()
                 {

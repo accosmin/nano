@@ -12,8 +12,10 @@ namespace ncv
         //
         // parameters:
         //      opt=asgd[,sgd]                  - optimization method
-        //      epoch=4[2,16]                   - optimization iterations (~ #samples)
+        //      epoch=4[1,16]                   - optimization iterations (~ #samples)
         /////////////////////////////////////////////////////////////////////////////////////////
+
+        class stochastic_state_t;
 
         class stochastic_trainer_t : public trainer_t
         {
@@ -23,7 +25,7 @@ namespace ncv
                 stochastic_trainer_t(const string_t& params = string_t());
 
                 NCV_MAKE_CLONABLE(stochastic_trainer_t, trainer_t,
-                                  "stochastic trainer, parameters: opt=asgd[,sgd],epoch=4[2,16]")
+                                  "stochastic trainer, parameters: opt=asgd[,sgd],epoch=4[1,16]")
 
                 // train the model
                 virtual bool train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const;
@@ -38,12 +40,8 @@ namespace ncv
                 }
 
                 // SGD algorithm
-                scalar_t sgd(const task_t&, const samples_t&, const loss_t&, model_t&, vector_t& x,
-                             scalar_t gamma, scalar_t lambda, size_t iterations, size_t evalsize) const;
-
-                // tune SGD learning parameters
-                void tune_sgd(const task_t&, const samples_t&, const loss_t&, size_t nthreads, model_t&, vector_t&,
-                              scalar_t& opt_log_gamma, scalar_t& opt_log_lambda) const;
+                void sgd(const task_t&, const samples_t&, const loss_t&,
+                         size_t iterations, size_t evalsize, stochastic_state_t& state) const;
 
         private:
 

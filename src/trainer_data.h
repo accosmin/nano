@@ -17,6 +17,15 @@ namespace ncv
         <
                 bool tgradient
         >
+        class trainer_data_t;
+
+        typedef trainer_data_t<true>    trainer_data_withgrad_t;
+        typedef trainer_data_t<false>   trainer_data_skipgrad_t;
+
+        template
+        <
+                bool tgradient
+        >
         class trainer_data_t
         {
         public:

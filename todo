@@ -1,9 +1,3 @@
-- redesign the trainer_data_t:
-        - awkward update_st (with finalize) vs update_mt (no finalize required)
-
-- make the stochastic trainer work:
-        - do multiple 1024 iterations with the current best learning parameters (stop decreasing if <0.1)
-
 - valgrind the batch & stochastic trainer
 
 - non-templated convolution layer
