@@ -1,7 +1,6 @@
 # NanoCV
 
-This small (nano) library is used as a sandbox for implementing deep-models, such as neural networks and convolution networks, and testing them on various image 
-classification and object detection problems. 
+This small (nano) library is used as a sandbox for training and testing (deep) models, such as neural networks and convolution networks, on various image classification and object detection problems. 
 
 ## Concepts
 
