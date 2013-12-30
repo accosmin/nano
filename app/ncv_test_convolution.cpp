@@ -107,6 +107,7 @@ void test(int isize, int ksize, int n_samples)
         test_conv2D(ncv::math::wconv<true, matrix_t>,                "org", idatas, kdata, odata);
         test_conv2D(ncv::math::wconv_mod4<true, matrix_t>,           "md4", idatas, kdata, odata);
         test_conv2D(ncv::math::wconv_eigen<true, matrix_t>,          "eig", idatas, kdata, odata);
+        test_conv2D(ncv::math::wconv_eigen_block<true, matrix_t>,    "eib", idatas, kdata, odata);
         if (ksize == 8)
         {
                 test_conv2D(ncv::math::wconv<true, 8, 8, matrix_t>,  "x8x", idatas, kdata, odata);

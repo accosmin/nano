@@ -127,6 +127,30 @@ namespace ncv
                 {
                         impl::wconv<tcumulate>(idata, kdata, weight, odata, math::dot<tscalar>, kdata.rows(), kdata.cols());
                 }
+                
+                // 2D convolution: odata = (weight *) idata @ kdata
+                //      use Eigen for dot product
+                template
+                <
+                        bool tcumulate,
+                        typename tmatrix,
+                        typename tscalar = typename tmatrix::Scalar
+                >
+                void conv_eigen(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
+                {
+                        impl::conv<tcumulate>(idata, kdata, odata, math::dot_eigen<tscalar>, kdata.rows(), kdata.cols());
+                }
+
+                template
+                <
+                        bool tcumulate,
+                        typename tmatrix,
+                        typename tscalar = typename tmatrix::Scalar
+                >
+                void wconv_eigen(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata)
+                {
+                        impl::wconv<tcumulate>(idata, kdata, weight, odata, math::dot_eigen<tscalar>, kdata.rows(), kdata.cols());
+                }
 
                 // 2D convolution: odata = (weight *) idata @ kdata
                 //      for fixed size convolution (number of rows & columns)
@@ -165,7 +189,7 @@ namespace ncv
                         typename tscalar = typename tmatrix::Scalar,
                         typename tindex = typename tmatrix::Index
                 >
-                void conv_eigen(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
+                void conv_eigen_block(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
                         for (tindex r = 0; r < odata.rows(); r ++)
                         {
@@ -193,7 +217,7 @@ namespace ncv
                         typename tscalar = typename tmatrix::Scalar,
                         typename tindex = typename tmatrix::Index
                 >
-                void wconv_eigen(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata)
+                void wconv_eigen_block(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata)
                 {
                         for (tindex r = 0; r < odata.rows(); r ++)
                         {
