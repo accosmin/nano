@@ -90,7 +90,7 @@ namespace ncv
                 >
                 void conv_mod4(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
-                        impl::conv<tcumulate>(idata, kdata, odata, math::dot_mod4<tscalar>, kdata.rows(), kdata.cols());
+	                impl::conv<tcumulate>(idata, kdata, odata, math::dot_mod4<tscalar>, kdata.rows(), kdata.cols());
                 }
 
                 template
@@ -102,6 +102,28 @@ namespace ncv
                 void wconv_mod4(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata)
                 {
                         impl::wconv<tcumulate>(idata, kdata, weight, odata, math::dot_mod4<tscalar>, kdata.rows(), kdata.cols());
+                }
+
+                template
+                <
+                        bool tcumulate,
+                        typename tmatrix,
+                        typename tscalar = typename tmatrix::Scalar
+                >
+                void conv_mod4x(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
+                {
+	                impl::conv<tcumulate>(idata, kdata, odata, math::dot_mod4x<tscalar>, kdata.rows(), kdata.cols());
+                }
+
+                template
+                <
+                        bool tcumulate,
+                        typename tmatrix,
+                        typename tscalar = typename tmatrix::Scalar
+                >
+                void wconv_mod4x(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata)
+                {
+                        impl::wconv<tcumulate>(idata, kdata, weight, odata, math::dot_mod4x<tscalar>, kdata.rows(), kdata.cols());
                 }
 
                 // 2D convolution: odata = (weight *) idata @ kdata
