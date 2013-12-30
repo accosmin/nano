@@ -47,8 +47,8 @@ the training samples as a numerical optimization criteria. Implemented instances
 * **batch** - a single iteration typically consists of a pass through all training samples. There are several options available: *L-BFGS*, conjugate gradient 
 descent (*CGD*) and gradient descent (*GD*).
 
-* **mini-batch** - an iteration or *epoch* consists of running an optimization algorithm (LBFGS, CGD, GD) for a randomly selected sub-set of samples. It can be faster than the 
-batch approach, however the convergence (even to a local minimum) is not guaranteed. 
+* **stochastic** - an iteration consists of picking a random sample to update the descent direction. There are several options available: *SGD* (stochastic gradient descent) and *ASGD* (average stochastic gradient descent).
+The training is split in two phases: the tuning phase estimates the optimum learning rate parameters on a small subset of samples, while the optimization phase uses the optimum parameters to train the model.
 
 ## Usage
 
