@@ -29,22 +29,6 @@ namespace ncv
 
                 template
                 <
-                        int tksize,
-                        typename tscalar
-                >
-                tscalar dot(const tscalar* pidata, const tscalar* pkdata, int)
-                {
-                        tscalar sum = 0;
-                        for (int k = 0; k < tksize; k ++)
-                        {
-                                sum += pidata[k] * pkdata[k];
-                        }
-
-                        return sum;
-                }
-
-                template
-                <
                         typename tscalar
                 >
                 tscalar dot_mod4(const tscalar* pidata, const tscalar* pkdata, int ksize)
@@ -87,7 +71,6 @@ namespace ncv
 
                         return sum;
                 }
-
                 template
                 <
                         typename tscalar
