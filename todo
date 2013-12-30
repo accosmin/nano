@@ -1,3 +1,5 @@
+- faster ::backward() -> almost 4 times slower than ::forward()
+
 - test program to print model (ncv_info_model -> model structure + convolutions as images)
         - may move the info_task drawing functions to the lib
 
