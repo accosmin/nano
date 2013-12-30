@@ -83,7 +83,7 @@ set(libs "${libs};${TIFF_LIBRARIES}")
 set(libs "${libs};${PNG_LIBRARIES}")
 
 # Set the executables
-set(nanocv_programs
+set(nanocv_test_programs
         ncv_test_thread_loop
         ncv_test_thread_pool
         ncv_test_optimize
@@ -92,17 +92,22 @@ set(nanocv_programs
         ncv_test_convolution
         ncv_test_network_gradient
         ncv_test_network_forward
-	ncv_test_network_backward
+	ncv_test_network_backward)
 
+set(nanocv_programs
         ncv_max_threads
-        ncv_info_task
         ncv_info
+        ncv_info_task
         ncv_trainer
         ncv_tester)
 
 # Build executables
+foreach(proj ${nanocv_test_programs})
+        add_executable(${proj} test/${proj}.cpp)
+        target_link_libraries(${proj} ${libs})
+endforeach()
 foreach(proj ${nanocv_programs})
-        add_executable(${proj} app/${proj}.cpp)
+        add_executable(${proj} bin/${proj}.cpp)
         target_link_libraries(${proj} ${libs})
 endforeach()
 
