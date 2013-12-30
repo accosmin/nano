@@ -8,31 +8,17 @@ int main(int argc, char *argv[])
 
         using namespace ncv;
 
-        const string_t cmd_layer = "conv:count=16,rows=8,cols=8;";
-        const string_t cmd_layer_snorm = cmd_layer + "snorm;";
-        const string_t cmd_layer_tanh = cmd_layer + "tanh;";
-        const string_t cmd_layer_unit = cmd_layer + "unit;";
-
         strings_t cmd_networks =
         {
                 "",
-
-                cmd_layer_snorm,
-                cmd_layer_tanh,
-                cmd_layer_unit,
-
-                cmd_layer_snorm + cmd_layer_snorm,
-                cmd_layer_tanh + cmd_layer_tanh,
-                cmd_layer_unit + cmd_layer_unit,
-
-                cmd_layer_snorm + cmd_layer_snorm + cmd_layer_snorm,
-                cmd_layer_tanh + cmd_layer_tanh + cmd_layer_tanh,
-                cmd_layer_unit + cmd_layer_unit + cmd_layer_unit
+                "conv:count=16,rows=8,cols=8;snorm;",
+                "conv:count=16,rows=8,cols=8;snorm;conv:count=8,rows=8,cols=8;snorm;",
+                "conv:count=16,rows=8,cols=8;snorm;conv:count=8,rows=8,cols=8;snorm;conv:count=4,rows=8,cols=8;snorm;"
         };
 
-        const color_mode cmd_color = color_mode::rgba;
-        const size_t cmd_rows = 32;
-        const size_t cmd_cols = 32;
+        const color_mode cmd_color = color_mode::luma;
+        const size_t cmd_rows = 24;
+        const size_t cmd_cols = 24;
         const size_t cmd_outputs = 10;
         const size_t cmd_samples = 10000;
 
