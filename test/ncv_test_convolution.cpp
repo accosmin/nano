@@ -1,12 +1,14 @@
-#include <eigen3/Eigen/Core>
+#include "util/dot.hpp"
 #include "util/convolution.hpp"
 #include <iomanip>
 #include <ctime>
 #include <iostream>
+#include <functional>
 
-typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> matrix_t;
-typedef Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::ColMajor> vector_t;
-typedef std::vector<matrix_t> matrices_t;
+typedef double                                                                          scalar_t;
+typedef Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>        matrix_t;
+typedef Eigen::Matrix<scalar_t, Eigen::Dynamic, 1, Eigen::ColMajor>                     vector_t;
+typedef std::vector<matrix_t>                                                           matrices_t;
 
 template <typename tvector>
 void init_conv1D(int size, tvector& vector)
@@ -69,26 +71,24 @@ void test_conv2D(top op, const char* name, const tmatrices& idatas, const tmatri
                   << " (" << std::fixed << odata.sum() << ")\t";
 }
 
-template <typename tmatrices, typename tvector, typename tmatrix, typename top>
-void test_sep_conv2D(top op, const char* name, const tmatrices& idatas, const tvector& krdata, const tvector& kcdata,
-        tmatrix& bdata, tmatrix& odata)
+template <typename tmatrices, typename tmatrix, typename top>
+void test_conv2D_dot(top op, const char* name, const tmatrices& idatas, const tmatrix& kdata, tmatrix& odata)
 {
+        odata.setZero();
+
         const clock_t start = clock();
 
         const int count = static_cast<int>(idatas.size());
         for (int i = 0; i < count; i ++)
         {
-                op(idatas[i], krdata, kcdata, bdata, odata);
+                ncv::math::wconv_dot<true>(idatas[i], kdata, 1.0, odata, op);
         }
 
         const clock_t stop = clock();
 
         std::cout.precision(3);
-        std::cout << name << " - ";
-        std::cout.precision(3);
-        std::cout << ((stop - start + 0.0) / (CLOCKS_PER_SEC + 0.0));
-        std::cout.precision(3);
-        std::cout << " (" << std::fixed << odata.sum() << ")\t";
+        std::cout << name << " - " << ((stop - start + 0.0) / (CLOCKS_PER_SEC + 0.0))
+                  << " (" << std::fixed << odata.sum() << ")\t";
 }
 
 void test(int isize, int ksize, int n_samples)
@@ -104,14 +104,14 @@ void test(int isize, int ksize, int n_samples)
         init_conv2D(ksize, ksize, krdata, kcdata, kdata);
 
         std::cout << "mix (isize = " << isize << ", ksize = " << ksize << "): \t";
-        test_conv2D(ncv::math::wconv<true, matrix_t>,                "org", idatas, kdata, odata);
-        test_conv2D(ncv::math::wconv_mod4<true, matrix_t>,           "m4-", idatas, kdata, odata);
+        test_conv2D_dot(ncv::math::dot<scalar_t, matrix_t::Index>,              "org", idatas, kdata, odata);
+        test_conv2D_dot(ncv::math::dot_mod4<scalar_t, matrix_t::Index>,         "m4-", idatas, kdata, odata);
 	if (kdata.cols() % 4 == 0)
 	{
-        	test_conv2D(ncv::math::wconv_mod4x<true, matrix_t>,  "m4x", idatas, kdata, odata);
+                test_conv2D_dot(ncv::math::dot_mod4x<scalar_t, matrix_t::Index>,"m4x", idatas, kdata, odata);
         }
-        test_conv2D(ncv::math::wconv_eigen<true, matrix_t>,          "eig", idatas, kdata, odata);
-        test_conv2D(ncv::math::wconv_eigen_block<true, matrix_t>,    "eib", idatas, kdata, odata);
+        test_conv2D_dot(ncv::math::dot_eig<scalar_t, matrix_t::Index>,          "eig", idatas, kdata, odata);
+        test_conv2D(ncv::math::wconv_eib<true, matrix_t>,                       "eib", idatas, kdata, odata);
         std::cout << std::endl;
 }
 

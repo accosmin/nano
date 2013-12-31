@@ -64,7 +64,7 @@ namespace ncv
                 scalar_t& gbias(size_t o) const { return m_gbdata(o, 0, 0); }
 
 		bool kmod4x() const { return (m_kdata.n_cols() & 3) == 0; }
-		bool omod4x() const { return (m_odata.n_cols() & 3) == 0; }
+                bool omod4x() const { return (m_odata.n_cols() & 3) == 0; }
 
                 /////////////////////////////////////////////////////////////////////////////////////////
 

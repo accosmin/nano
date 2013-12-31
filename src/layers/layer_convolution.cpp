@@ -117,7 +117,7 @@ namespace ncv
 
 				if (kmod4x())
 				{
-					math::conv_dot<false>(idata, kdata, xdata, math::dot_mod4x<scalar_t, matrix_t::Index>);
+                                        math::conv_dot<false>(idata, kdata, xdata, math::dot_mod4x<scalar_t, matrix_t::Index>);
 				}
 				else
 				{
@@ -132,7 +132,11 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        static void backward(const matrix_t& ogdata, const matrix_t& kdata, scalar_t weight, matrix_t& igdata)
+        template
+        <
+                typename tmad
+        >
+        static void backward(const matrix_t& ogdata, const matrix_t& kdata, scalar_t weight, matrix_t& igdata, tmad madop)
         {
                 for (auto r = 0; r < ogdata.rows(); r ++)
                 {
@@ -146,7 +150,8 @@ namespace ncv
                                 for (auto c = 0; c < ogdata.cols(); c ++)
                                 {
                                         const scalar_t w = weight * pogdata[c];
-					math::mad_mod4x(pkdata, w, pigdata, kdata.cols());
+
+                                        madop(pkdata, w, pigdata + c, kdata.cols());
                                 }
                         }
                 }
@@ -198,7 +203,14 @@ namespace ncv
                         {
                                 matrix_t& idata = m_idata(i);
 
-                                ncv::backward(gdata, kdata, weight(o, i), idata);
+                                if (kmod4x())
+                                {
+                                        ncv::backward(gdata, kdata, weight(o, i), idata, math::mad_mod4x<scalar_t, matrix_t::Index>);
+                                }
+                                else
+                                {
+                                        ncv::backward(gdata, kdata, weight(o, i), idata, math::mad_mod4<scalar_t, matrix_t::Index>);
+                                }
                         }
                 }
 

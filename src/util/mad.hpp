@@ -71,7 +71,7 @@ namespace ncv
                         typename tscalar,
 			typename tindex
                 >
-                void mad_eigen(const tscalar* pidata, tscalar w, tscalar* podata, tindex size)
+                void mad_eig(const tscalar* pidata, tscalar w, tscalar* podata, tindex size)
                 {
                         typedef typename Eigen::Matrix<tscalar, Eigen::Dynamic, 1, Eigen::ColMajor> tvector;
 
@@ -86,7 +86,7 @@ namespace ncv
 			int tsize,
                         typename tscalar
                 >
-                void mad_eigen(const tscalar* pidata, tscalar w, tscalar* podata)
+                void mad_eig(const tscalar* pidata, tscalar w, tscalar* podata)
                 {
                         typedef typename Eigen::Matrix<tscalar, tsize, 1, Eigen::ColMajor> tvector;
 

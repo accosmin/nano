@@ -16,11 +16,11 @@ namespace ncv
                 template
                 <
                         bool tcumulate,
-                        typename tdotop,
+                        typename tdot,
                         typename tmatrix,
                         typename tscalar = typename tmatrix::Scalar
                 >
-                void conv_dot(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata, tdotop dop)
+                void conv_dot(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata, tdot dotop)
                 {
                         for (auto r = 0; r < odata.rows(); r ++)
                         {
@@ -37,7 +37,7 @@ namespace ncv
 
                                         for (auto c = 0; c < odata.cols(); c ++)
                                         {
-                                                podata[c] += dop(pidata + c, pkdata, kdata.cols());
+                                                podata[c] += dotop(pidata + c, pkdata, kdata.cols());
                                         }
                                 }
                         }
@@ -47,11 +47,11 @@ namespace ncv
                 template
                 <
                         bool tcumulate,
-                        typename tdotop,
+                        typename tdot,
                         typename tmatrix,
                         typename tscalar = typename tmatrix::Scalar
                 >
-                void wconv_dot(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata, tdotop dop)
+                void wconv_dot(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata, tdot dotop)
                 {
                         for (auto r = 0; r < odata.rows(); r ++)
                         {
@@ -68,7 +68,7 @@ namespace ncv
 
                                         for (auto c = 0; c < odata.cols(); c ++)
                                         {
-                                                podata[c] += weight * dop(pidata + c, pkdata, kdata.cols());
+                                                podata[c] += weight * dotop(pidata + c, pkdata, kdata.cols());
                                         }
                                 }
                         }

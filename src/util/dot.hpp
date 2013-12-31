@@ -79,7 +79,7 @@ namespace ncv
                         typename tscalar,
 			typename tindex
                 >
-                tscalar dot_eigen(const tscalar* pidata, const tscalar* pkdata, tindex ksize)
+                tscalar dot_eig(const tscalar* pidata, const tscalar* pkdata, tindex ksize)
                 {
                         typedef typename Eigen::Matrix<tscalar, Eigen::Dynamic, 1, Eigen::ColMajor> tvector;
 
@@ -94,7 +94,7 @@ namespace ncv
                         int tksize,
                         typename tscalar
                 >
-                tscalar dot_eigen(const tscalar* pidata, const tscalar* pkdata, int)
+                tscalar dot_eig(const tscalar* pidata, const tscalar* pkdata, int)
                 {
                         typedef typename Eigen::Matrix<tscalar, tksize, 1, Eigen::ColMajor> tvector;
 
