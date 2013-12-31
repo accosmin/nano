@@ -3,6 +3,8 @@
 #include "vectorizer.h"
 #include "util/logger.h"
 #include "util/math.hpp"
+#include "util/dot.hpp"
+#include "util/mad.hpp"
 #include "util/convolution.hpp"
 
 namespace ncv
@@ -115,11 +117,11 @@ namespace ncv
 
 				if (kmod4x())
 				{
-					math::conv_mod4x<false>(idata, kdata, xdata);
+					math::conv_dot<false>(idata, kdata, xdata, math::dot_mod4x<scalar_t, matrix_t::Index>);
 				}
 				else
 				{
-					math::conv_mod4<false>(idata, kdata, xdata);
+					math::conv_dot<false>(idata, kdata, xdata, math::dot_mod4<scalar_t, matrix_t::Index>);
 				}
                                 odata.noalias() += weight(o, i) * xdata;
                         }
@@ -144,11 +146,7 @@ namespace ncv
                                 for (auto c = 0; c < ogdata.cols(); c ++)
                                 {
                                         const scalar_t w = weight * pogdata[c];
-
-                                        for (auto kc = 0; kc < kdata.cols(); kc ++)
-                                        {
-                                                pigdata[c + kc] += w * pkdata[kc];
-                                        }
+					math::mad_mod4x(pkdata, w, pigdata, kdata.cols());
                                 }
                         }
                 }
@@ -179,11 +177,11 @@ namespace ncv
                                 gweight(o, i) = gdata.cwiseProduct(xdata).sum();
 				if (omod4x())
 				{
-                                	math::wconv_mod4x<true>(idata, gdata, weight(o, i), gkdata);
+                                	math::wconv_dot<true>(idata, gdata, weight(o, i), gkdata, math::dot_mod4x<scalar_t, matrix_t::Index>);
 				}
 				else
 				{
-                                	math::wconv_mod4<true>(idata, gdata, weight(o, i), gkdata);
+                                	math::wconv_dot<true>(idata, gdata, weight(o, i), gkdata, math::dot_mod4<scalar_t, matrix_t::Index>);
 				}
                         }
                 }

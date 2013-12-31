@@ -14,11 +14,12 @@ namespace ncv
         {
                 template
                 <
-                        typename tscalar
+                        typename tscalar,
+			typename tindex
                 >
-                void mad(const tscalar* pidata, tscalar w, tscalar* podata, int size)
+                void mad(const tscalar* pidata, tscalar w, tscalar* podata, tindex size)
                 {
-                        for (int k = 0; k < size; k ++)
+                        for (tindex k = 0; k < size; k ++)
                         {
 				podata[k] += w * pidata[k];
 			}
@@ -26,13 +27,14 @@ namespace ncv
 
                 template
                 <
-                        typename tscalar
+                        typename tscalar,
+			typename tindex
                 >
-                void mad_mod4(const tscalar* pidata, tscalar w, tscalar* podata, int size)
+                void mad_mod4(const tscalar* pidata, tscalar w, tscalar* podata, tindex size)
                 {
-			const int size4 = (size >> 2) << 2;
+			const tindex size4 = (size >> 2) << 2;
 
-                        for (int k = 0; k < size4; k += 4)
+                        for (tindex k = 0; k < size4; k += 4)
                         {
 				podata[k + 0] += w * pidata[k + 0];
 				podata[k + 1] += w * pidata[k + 1];
@@ -40,7 +42,7 @@ namespace ncv
 				podata[k + 3] += w * pidata[k + 3];
 			}
 
-			for (int k = size4; k < size; k ++)
+			for (tindex k = size4; k < size; k ++)
 			{				
 				podata[k] += w * pidata[k];
 			}
@@ -48,13 +50,14 @@ namespace ncv
 
                 template
                 <
-                        typename tscalar
+                        typename tscalar,
+			typename tindex
                 >
-                void mad_mod4x(const tscalar* pidata, tscalar w, tscalar* podata, int size)
+                void mad_mod4x(const tscalar* pidata, tscalar w, tscalar* podata, tindex size)
                 {
-			const int size4 = (size >> 2) << 2;
+			const tindex size4 = (size >> 2) << 2;
 
-                        for (int k = 0; k < size4; k += 4)
+                        for (tindex k = 0; k < size4; k += 4)
                         {
 				podata[k + 0] += w * pidata[k + 0];
 				podata[k + 1] += w * pidata[k + 1];
@@ -65,9 +68,10 @@ namespace ncv
 
                 template
                 <
-                        typename tscalar
+                        typename tscalar,
+			typename tindex
                 >
-                void mad_eigen(const tscalar* pidata, tscalar w, tscalar* podata, int size)
+                void mad_eigen(const tscalar* pidata, tscalar w, tscalar* podata, tindex size)
                 {
                         typedef typename Eigen::Matrix<tscalar, Eigen::Dynamic, 1, Eigen::ColMajor> tvector;
 
@@ -86,8 +90,8 @@ namespace ncv
                 {
                         typedef typename Eigen::Matrix<tscalar, tsize, 1, Eigen::ColMajor> tvector;
 
-                        const Eigen::Map<tvector> vidata(const_cast<tscalar*>(pidata), size);
-                        const Eigen::Map<tvector> vodata(const_cast<tscalar*>(podata), size);
+                        const Eigen::Map<tvector> vidata(const_cast<tscalar*>(pidata));
+                        const Eigen::Map<tvector> vodata(const_cast<tscalar*>(podata));
 
 			vodata.noalias() += w * vidata;
                 }

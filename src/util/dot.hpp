@@ -14,12 +14,13 @@ namespace ncv
         {
                 template
                 <
-                        typename tscalar
+                        typename tscalar,
+			typename tindex
                 >
-                tscalar dot(const tscalar* pidata, const tscalar* pkdata, int ksize)
+                tscalar dot(const tscalar* pidata, const tscalar* pkdata, tindex ksize)
                 {
                         tscalar sum = 0;
-                        for (int k = 0; k < ksize; k ++)
+                        for (tindex k = 0; k < ksize; k ++)
                         {
                                 sum += pidata[k] * pkdata[k];
                         }
@@ -29,14 +30,15 @@ namespace ncv
 
                 template
                 <
-                        typename tscalar
+                        typename tscalar,
+			typename tindex
                 >
-                tscalar dot_mod4(const tscalar* pidata, const tscalar* pkdata, int ksize)
+                tscalar dot_mod4(const tscalar* pidata, const tscalar* pkdata, tindex ksize)
                 {
-                        const int ksize4 = (ksize >> 2) << 2;
+                        const tindex ksize4 = (ksize >> 2) << 2;
 
                         tscalar sum = 0;
-                        for (int k = 0; k < ksize4; k += 4)
+                        for (tindex k = 0; k < ksize4; k += 4)
                         {
                                 sum += pidata[k + 0] * pkdata[k + 0];
                                 sum += pidata[k + 1] * pkdata[k + 1];
@@ -44,7 +46,7 @@ namespace ncv
                                 sum += pidata[k + 3] * pkdata[k + 3];
                         }
 
-                       	for (int k = ksize4; k < ksize; k ++)
+                       	for (tindex k = ksize4; k < ksize; k ++)
 			{
                        		sum += pidata[k + 0] * pkdata[k + 0];
 			}
@@ -54,14 +56,15 @@ namespace ncv
 
                 template
                 <
-                        typename tscalar
+                        typename tscalar,
+			typename tindex
                 >
-                tscalar dot_mod4x(const tscalar* pidata, const tscalar* pkdata, int ksize)
+                tscalar dot_mod4x(const tscalar* pidata, const tscalar* pkdata, tindex ksize)
                 {
-                        const int ksize4 = (ksize >> 2) << 2;
+                        const tindex ksize4 = (ksize >> 2) << 2;
 
                         tscalar sum = 0;
-                        for (int k = 0; k < ksize4; k += 4)
+                        for (tindex k = 0; k < ksize4; k += 4)
                         {
                                 sum += pidata[k + 0] * pkdata[k + 0];
                                 sum += pidata[k + 1] * pkdata[k + 1];
@@ -73,9 +76,10 @@ namespace ncv
                 }
                 template
                 <
-                        typename tscalar
+                        typename tscalar,
+			typename tindex
                 >
-                tscalar dot_eigen(const tscalar* pidata, const tscalar* pkdata, int ksize)
+                tscalar dot_eigen(const tscalar* pidata, const tscalar* pkdata, tindex ksize)
                 {
                         typedef typename Eigen::Matrix<tscalar, Eigen::Dynamic, 1, Eigen::ColMajor> tvector;
 
