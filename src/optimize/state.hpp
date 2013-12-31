@@ -40,9 +40,9 @@ namespace ncv
                                 typename tproblem
                         >
                         state_t(const tproblem& problem, const tvector& x0)
-                                :       state_t(problem.size()),
-                                        x(x0)
+                                :       state_t(problem.size())
                         {
+                                x = x0;
                                 f = problem(x, g);
                         }
 
