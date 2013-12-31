@@ -145,12 +145,13 @@ namespace ncv
                                 const matrix_t& idata = m_idata(i);
                                 matrix_t& gkdata = m_gkdata(o, i);
 
-                                gkdata = gout * idata;
+                                gkdata.noalias() = idata * gout;
                         }
                 }
 
                 // input gradient
                 m_idata.zero();
+
                 for (size_t o = 0; o < n_odims(); o ++)
                 {
                         const matrix_t& odata = gradient(o);
@@ -161,7 +162,7 @@ namespace ncv
                                 const matrix_t& kdata = m_kdata(o, i);
                                 matrix_t& idata = m_idata(i);
 
-                                idata += gout * kdata;
+                                idata.noalias() += kdata * gout;
                         }
                 }
 
