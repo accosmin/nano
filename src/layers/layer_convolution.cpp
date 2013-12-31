@@ -103,58 +103,16 @@ namespace ncv
                 // convolution output: odata = bias + weight * (idata @ kdata)
                 m_idata = input;
 
-                for (size_t o = 0; o < n_odims(); o ++)
+                if (kmod4x())
                 {
-                        matrix_t& odata = m_odata(o);
-
-                        odata.setConstant(bias(o));
-
-                        for (size_t i = 0; i < n_idims(); i ++)
-                        {
-                                const matrix_t& idata = m_idata(i);
-                                const matrix_t& kdata = m_kdata(o);
-                                matrix_t& xdata = m_xdata(o, i);
-
-				if (kmod4x())
-				{
-                                        math::conv_dot<false>(idata, kdata, xdata, math::dot_mod4x<scalar_t, matrix_t::Index>);
-				}
-				else
-				{
-					math::conv_dot<false>(idata, kdata, xdata, math::dot_mod4<scalar_t, matrix_t::Index>);
-				}
-                                odata.noalias() += weight(o, i) * xdata;
-                        }
+                        forward(math::dot_mod4x<scalar_t, matrix_t::Index>);
+                }
+                else
+                {
+                        forward(math::dot_mod4<scalar_t, matrix_t::Index>);
                 }
 
                 return m_odata;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        template
-        <
-                typename tmad
-        >
-        static void backward(const matrix_t& ogdata, const matrix_t& kdata, scalar_t weight, matrix_t& igdata, tmad madop)
-        {
-                for (auto r = 0; r < ogdata.rows(); r ++)
-                {
-                        const scalar_t* pogdata = &ogdata(r, 0);
-
-                        for (auto kr = 0; kr < kdata.rows(); kr ++)
-                        {
-                                const scalar_t* pkdata = &kdata(kr, 0);
-                                scalar_t* pigdata = &igdata(r + kr, 0);
-
-                                for (auto c = 0; c < ogdata.cols(); c ++)
-                                {
-                                        const scalar_t w = weight * pogdata[c];
-
-                                        madop(pkdata, w, pigdata + c, kdata.cols());
-                                }
-                        }
-                }
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -166,52 +124,25 @@ namespace ncv
                 assert(n_ocols() == gradient.n_cols());
 
                 // convolution gradient
-                for (size_t o = 0; o < n_odims(); o ++)
+                if (omod4x())
                 {
-                        const matrix_t& gdata = gradient(o);
-                        matrix_t& gkdata = m_gkdata(o);
-
-                        gkdata.setZero();
-                        gbias(o) = gdata.sum();
-
-                        for (size_t i = 0; i < n_idims(); i ++)
-                        {
-                                const matrix_t& idata = m_idata(i);
-                                const matrix_t& xdata = m_xdata(o, i);
-
-                                gweight(o, i) = gdata.cwiseProduct(xdata).sum();
-				if (omod4x())
-				{
-                                	math::wconv_dot<true>(idata, gdata, weight(o, i), gkdata, math::dot_mod4x<scalar_t, matrix_t::Index>);
-				}
-				else
-				{
-                                	math::wconv_dot<true>(idata, gdata, weight(o, i), gkdata, math::dot_mod4<scalar_t, matrix_t::Index>);
-				}
-                        }
+                        gbackward(gradient, math::dot_mod4x<scalar_t, matrix_t::Index>);
+                }
+                else
+                {
+                        gbackward(gradient, math::dot_mod4<scalar_t, matrix_t::Index>);
                 }
 
                 // input gradient
                 m_idata.zero();
 
-                for (size_t o = 0; o < n_odims(); o ++)
+                if (kmod4x())
                 {
-                        const matrix_t& gdata = gradient(o);
-                        const matrix_t& kdata = m_kdata(o);
-
-                        for (size_t i = 0; i < n_idims(); i ++)
-                        {
-                                matrix_t& idata = m_idata(i);
-
-                                if (kmod4x())
-                                {
-                                        ncv::backward(gdata, kdata, weight(o, i), idata, math::mad_mod4x<scalar_t, matrix_t::Index>);
-                                }
-                                else
-                                {
-                                        ncv::backward(gdata, kdata, weight(o, i), idata, math::mad_mod4<scalar_t, matrix_t::Index>);
-                                }
-                        }
+                        ibackward(gradient, math::mad_mod4x<scalar_t, matrix_t::Index>);
+                }
+                else
+                {
+                        ibackward(gradient, math::mad_mod4<scalar_t, matrix_t::Index>);
                 }
 
                 return m_idata;

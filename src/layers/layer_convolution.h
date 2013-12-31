@@ -2,6 +2,7 @@
 #define NANOCV_CONV_LAYER_H
 
 #include "layer.h"
+#include "util/convolution.hpp"
 
 namespace ncv
 {
@@ -65,6 +66,100 @@ namespace ncv
 
 		bool kmod4x() const { return (m_kdata.n_cols() & 3) == 0; }
                 bool omod4x() const { return (m_odata.n_cols() & 3) == 0; }
+
+                template
+                <
+                        typename tdot
+                >
+                void forward(tdot dotop) const
+                {
+                        for (size_t o = 0; o < n_odims(); o ++)
+                        {
+                                const matrix_t& kdata = m_kdata(o);
+                                matrix_t& odata = m_odata(o);
+
+                                odata.setConstant(bias(o));
+
+                                for (size_t i = 0; i < n_idims(); i ++)
+                                {
+                                        const matrix_t& idata = m_idata(i);
+                                        matrix_t& xdata = m_xdata(o, i);
+
+                                        math::conv_dot<false>(idata, kdata, xdata, dotop);
+                                        odata.noalias() += weight(o, i) * xdata;
+                                }
+                        }
+                }
+
+                template
+                <
+                        typename tmad
+                >
+                static void backward(const matrix_t& ogdata, const matrix_t& kdata, scalar_t weight, matrix_t& igdata, tmad madop)
+                {
+                        for (auto r = 0; r < ogdata.rows(); r ++)
+                        {
+                                const scalar_t* pogdata = &ogdata(r, 0);
+
+                                for (auto kr = 0; kr < kdata.rows(); kr ++)
+                                {
+                                        const scalar_t* pkdata = &kdata(kr, 0);
+                                        scalar_t* pigdata = &igdata(r + kr, 0);
+
+                                        for (auto c = 0; c < ogdata.cols(); c ++)
+                                        {
+                                                const scalar_t w = weight * pogdata[c];
+
+                                                madop(pkdata, w, pigdata + c, kdata.cols());
+                                        }
+                                }
+                        }
+                }
+
+                template
+                <
+                        typename tdot
+                >
+                void gbackward(const tensor3d_t& gradient, tdot dotop) const
+                {
+                        for (size_t o = 0; o < n_odims(); o ++)
+                        {
+                                const matrix_t& gdata = gradient(o);
+                                matrix_t& gkdata = m_gkdata(o);
+
+                                gkdata.setZero();
+                                gbias(o) = gdata.sum();
+
+                                for (size_t i = 0; i < n_idims(); i ++)
+                                {
+                                        const matrix_t& idata = m_idata(i);
+                                        const matrix_t& xdata = m_xdata(o, i);
+
+                                        gweight(o, i) = gdata.cwiseProduct(xdata).sum();
+                                        math::wconv_dot<true>(idata, gdata, weight(o, i), gkdata, dotop);
+                                }
+                        }
+                }
+
+                template
+                <
+                        typename tmad
+                >
+                void ibackward(const tensor3d_t& gradient, tmad madop) const
+                {
+                        for (size_t o = 0; o < n_odims(); o ++)
+                        {
+                                const matrix_t& gdata = gradient(o);
+                                const matrix_t& kdata = m_kdata(o);
+
+                                for (size_t i = 0; i < n_idims(); i ++)
+                                {
+                                        matrix_t& idata = m_idata(i);
+
+                                        backward(gdata, kdata, weight(o, i), idata, madop);
+                                }
+                        }
+                }
 
                 /////////////////////////////////////////////////////////////////////////////////////////
 
