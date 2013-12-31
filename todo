@@ -1,4 +1,9 @@
+- more compact convolution_layer implementation:
+	- duplicated code for mod4x & mod4
+	- do the mod4 test before the inputs/outputs iteration
+
 - faster ::backward() -> almost 4 times slower than ::forward()
+	- loop unrolling for the most inner loop
 
 - test program to print model (ncv_info_model -> model structure + convolutions as images)
         - may move the info_task drawing functions to the lib
