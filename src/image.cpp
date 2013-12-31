@@ -305,8 +305,7 @@ namespace ncv
                 }
                 else
                 {
-                        vector_t target;
-                        return target;
+                        return vector_t();
                 }
         }
 
