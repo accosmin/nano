@@ -98,8 +98,6 @@ namespace ncv
                 assert(n_irows() <= input.n_rows());
                 assert(n_icols() <= input.n_cols());
 
-		const bool k4 = m_kdata.n_cols() % 4 == 0;
-
                 // convolution output: odata = bias + weight * (idata @ kdata)
                 m_idata = input;
 
@@ -115,7 +113,7 @@ namespace ncv
                                 const matrix_t& kdata = m_kdata(o);
                                 matrix_t& xdata = m_xdata(o, i);
 
-				if (k4)
+				if (kmod4x())
 				{
 					math::conv_mod4x<false>(idata, kdata, xdata);
 				}
@@ -123,7 +121,7 @@ namespace ncv
 				{
 					math::conv_mod4<false>(idata, kdata, xdata);
 				}
-                                odata += weight(o, i) * xdata;
+                                odata.noalias() += weight(o, i) * xdata;
                         }
                 }
 
@@ -179,7 +177,14 @@ namespace ncv
                                 const matrix_t& xdata = m_xdata(o, i);
 
                                 gweight(o, i) = gdata.cwiseProduct(xdata).sum();
-                                math::wconv_mod4<true>(idata, gdata, weight(o, i), gkdata);
+				if (omod4x())
+				{
+                                	math::wconv_mod4x<true>(idata, gdata, weight(o, i), gkdata);
+				}
+				else
+				{
+                                	math::wconv_mod4<true>(idata, gdata, weight(o, i), gkdata);
+				}
                         }
                 }
 
