@@ -24,7 +24,7 @@ void init_conv2D(int rows, int cols, tvector& rvector, tvector& cvector, tmatrix
         init_conv1D(cols, cvector);
 
         // !separable convolution!
-	matrix.resize(rows, cols);
+        matrix.resize(rows, cols);
         for (int r = 0; r < rows; r ++)
         {
                 for (int c = 0; c < cols; c ++)
@@ -104,14 +104,18 @@ void test(int isize, int ksize, int n_samples)
         init_conv2D(ksize, ksize, krdata, kcdata, kdata);
 
         std::cout << "mix (isize = " << isize << ", ksize = " << ksize << "): \t";
-        test_conv2D_dot(ncv::math::dot<scalar_t, matrix_t::Index>,              "org", idatas, kdata, odata);
-        test_conv2D_dot(ncv::math::dot_mod4<scalar_t, matrix_t::Index>,         "m4-", idatas, kdata, odata);
+        test_conv2D_dot(ncv::math::dot<scalar_t>,                       "org", idatas, kdata, odata);
+        test_conv2D_dot(ncv::math::dot_mod4<scalar_t>,                  "m4-", idatas, kdata, odata);
 	if (kdata.cols() % 4 == 0)
 	{
-                test_conv2D_dot(ncv::math::dot_mod4x<scalar_t, matrix_t::Index>,"m4x", idatas, kdata, odata);
+                test_conv2D_dot(ncv::math::dot_mod4x<scalar_t>,         "m4x", idatas, kdata, odata);
         }
-        test_conv2D_dot(ncv::math::dot_eig<scalar_t, matrix_t::Index>,          "eig", idatas, kdata, odata);
-        test_conv2D(ncv::math::wconv_eib<true, matrix_t>,                       "eib", idatas, kdata, odata);
+        if (kdata.cols() == 8)
+        {
+                test_conv2D_dot(ncv::math::dot<8, scalar_t>,            "fix", idatas, kdata, odata);
+        }
+        test_conv2D_dot(ncv::math::dot_eig<scalar_t>,                   "eig", idatas, kdata, odata);
+        test_conv2D(ncv::math::wconv_eib<true, matrix_t>,               "eib", idatas, kdata, odata);
         std::cout << std::endl;
 }
 

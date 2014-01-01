@@ -1,9 +1,10 @@
-- more compact convolution_layer implementation:
-	- duplicated code for mod4x & mod4
-	- do the mod4 test before the inputs/outputs iteration
+- make the convolution layer implementation more compact:
+        - the dot<8>/mad<8> is much faster, BUT too many templates -> too many cache misses!!!
 
 - faster ::backward() -> almost 4 times slower than ::forward()
 	- loop unrolling for the most inner loop
+	
+- check if faster using dot<8> or mod<8>
 
 - test program to print model (ncv_info_model -> model structure + convolutions as images)
         - may move the info_task drawing functions to the lib
