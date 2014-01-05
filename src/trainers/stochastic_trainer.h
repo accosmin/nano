@@ -40,7 +40,7 @@ namespace ncv
                 }
 
                 // SGD algorithm
-                void sgd(const task_t&, const samples_t&, const loss_t&,
+                void sgd(const task_t&, const samples_t&, const samples_t&, const loss_t&,
                          size_t iterations, size_t evalsize, stochastic_state_t& state) const;
 
         private:

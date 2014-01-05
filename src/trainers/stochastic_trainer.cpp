@@ -66,10 +66,11 @@ namespace ncv
         /////////////////////////////////////////////////////////////////////////////////////////
 
         void stochastic_trainer_t::sgd(
-                const task_t& task, const samples_t& samples, const loss_t& loss,
+                const task_t& task, const samples_t& tsamples, const samples_t& vsamples, const loss_t& loss,
                 size_t iterations, size_t evalsize, stochastic_state_t& state) const
         {
-                random_t<size_t> rng(0, samples.size());
+                random_t<size_t> trng(0, tsamples.size());
+                random_t<size_t> vrng(0, vsamples.size());
 
                 // optimization problem: size
                 auto fn_size = [&] ()
@@ -77,11 +78,11 @@ namespace ncv
                         return state.m_ldata.n_parameters();
                 };
 
-                // optimization problem: function value
+                // optimization problem: function value (validation data)
                 auto fn_fval = [&] (const vector_t& x)
                 {
-                        const samples_t usamples = evalsize == samples.size() ?
-                                samples : ncv::uniform_sample(samples, evalsize, rng);
+                        const samples_t usamples = evalsize == vsamples.size() ?
+                                vsamples : ncv::uniform_sample(vsamples, evalsize, vrng);
 
                         state.m_ldata.load_params(x);
                         state.m_ldata.update_st(task, usamples, loss);
@@ -92,11 +93,11 @@ namespace ncv
                         return state.m_value;
                 };
 
-                // optimization problem: function value & gradient
+                // optimization problem: function value & gradient (training data)
                 auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
                         state.m_gdata.load_params(x);
-                        state.m_gdata.update(task, samples[rng() % samples.size()], loss);
+                        state.m_gdata.update(task, tsamples[trng() % tsamples.size()], loss);
 
                         gx = state.m_gdata.vgrad();
                         return state.m_gdata.value();
@@ -134,13 +135,16 @@ namespace ncv
                 model.resize(task);
                 model.random_params();
 
-                // prune training data
+                // prune training & validation data
                 const samples_t samples = ncv::prune_annotated(task, task.samples(fold));
                 if (samples.empty())
                 {
                         log_error() << "stochastic trainer: no annotated training samples!";
                         return false;
                 }
+
+                samples_t tsamples, vsamples;
+                ncv::uniform_split(samples, size_t(80), random_t<size_t>(0, samples.size()), tsamples, vsamples);
 
                 vector_t x = model.params();
 
@@ -163,10 +167,10 @@ namespace ncv
                 scalar_t max_log_lambda = +1.0;
                 scalar_t min_delta = +0.02;
 
-                const size_t tune_iters = std::max(size_t(1024), samples.size() / 64);
+                const size_t tune_iters = std::max(size_t(1024), tsamples.size() / 64);
                 const size_t tune_evals = 4 * tune_iters;
-                const size_t opt_iters = m_epoch * samples.size();
-                const size_t opt_evals = samples.size();
+                const size_t opt_iters = m_epoch * tsamples.size();
+                const size_t opt_evals = vsamples.size();
 
                 for (size_t e = 0, tuned = 0; !tuned; e ++)
                 {
@@ -194,7 +198,7 @@ namespace ncv
 
                                                 // stochastic optimization
                                                 timer_t timer;
-                                                sgd(task, samples, loss, iters, evals, state);
+                                                sgd(task, tsamples, vsamples, loss, iters, evals, state);
 
                                                 const thread_pool_t::lock_t lock(mutex);
                                                 log_info() << "stochastic trainer: step [" << (e + 1)
