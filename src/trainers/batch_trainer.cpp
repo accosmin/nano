@@ -48,7 +48,7 @@ namespace ncv
                 }
 
                 samples_t tsamples, vsamples;
-                ncv::uniform_split(samples, size_t(90), random_t<size_t>(0, samples.size()), tsamples, vsamples);
+                ncv::uniform_split(samples, size_t(80), random_t<size_t>(0, samples.size()), tsamples, vsamples);
 
                 // construct the optimization problem
                 timer_t timer;
