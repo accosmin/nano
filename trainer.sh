@@ -8,13 +8,13 @@ model1="--model forward-network --model-params ${network1}"
 model2="--model forward-network --model-params ${network2}"
 model3="--model forward-network --model-params ${network3}"
 
-trainer="--trainer batch --trainer-params opt=lbfgs,iters=16,eps=1e-6"
-#trainer="--trainer stochastic --trainer-params opt=asgd,epoch=1"
+#trainer="--trainer batch --trainer-params opt=lbfgs,iters=16,eps=1e-6"
+trainer="--trainer stochastic --trainer-params opt=asgd,epoch=1"
 
 params=""
 params=${params}" --task mnist --task-dir /home/cosmin/experiments/databases/mnist/"
 params=${params}" --loss classnll --trials 1 --threads 1"
-params=${params}" ${trainer} ${model3}"
+params=${params}" ${trainer} ${model0}"
 
 #valgrind --tool=memcheck --leak-check=yes ./build/ncv_trainer ${params}
 ./build/ncv_trainer ${params}

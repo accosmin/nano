@@ -1,5 +1,5 @@
 - make the convolution layer implementation more compact:
-        - the dot<8>/mad<8> is much faster, BUT too many templates -> too many cache misses!!!
+        - the dot<8>/mad<8> is faster, BUT too many templates -> too many cache misses!!!
 
 - faster ::backward() -> almost 4 times slower than ::forward()
 	- loop unrolling for the most inner loop

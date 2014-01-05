@@ -6,8 +6,10 @@ dir_db=/home/cosmin/experiments/databases
 
 exe_trainer=./build/ncv_trainer
 
-batch_params="opt=lbfgs,eps=1e-6,iters=1024"
 common_params="--loss classnll --threads 4"
+
+batch_params="opt=lbfgs,eps=1e-6,iters=1024"
+stochastic_params="opt=asgd,epoch=4"
 
 network0=""
 network1=${network0}"conv:count=32,rows=8,cols=8;snorm;"
@@ -16,19 +18,24 @@ network3=${network2}"conv:count=8,rows=8,cols=8;snorm;"
 
 # task description = task model [model-params] trainer trainer-params trials output
 tasks=(
-	"mnist forward-network ${network0} batch ${batch_params} 1 mnist-network0"	
-	"mnist forward-network ${network1} batch ${batch_params} 1 mnist-network1"
-	"mnist forward-network ${network2} batch ${batch_params} 1 mnist-network2"
-	"mnist forward-network ${network3} batch ${batch_params} 1 mnist-network3"
+	#"mnist forward-network ${network0} batch ${batch_params} 10 mnist-network0"	
+	#"mnist forward-network ${network1} batch ${batch_params} 10 mnist-network1"
+	#"mnist forward-network ${network2} batch ${batch_params} 10 mnist-network2"
+	#"mnist forward-network ${network3} batch ${batch_params} 10 mnist-network3"
 	
-	"cbcl-faces forward-network ${network0} batch ${batch_params} 1 cbclfaces-network0"
-	"cbcl-faces forward-network ${network1} batch ${batch_params} 1 cbclfaces-network1"
-	"cbcl-faces forward-network ${network2} batch ${batch_params} 1 cbclfaces-network2"
+	"mnist forward-network ${network0} stochastic ${stochastic_params} 10 mnist-network0"      
+        "mnist forward-network ${network1} stochastic ${stochastic_params} 10 mnist-network1"
+        "mnist forward-network ${network2} stochastic ${stochastic_params} 10 mnist-network2"
+        "mnist forward-network ${network3} stochastic ${stochastic_params} 10 mnist-network3"
 	
-	"cifar10 forward-network ${network0} batch ${batch_params} 1 cifar10-network0"
-	"cifar10 forward-network ${network1} batch ${batch_params} 1 cifar10-network1"
-	"cifar10 forward-network ${network2} batch ${batch_params} 1 cifar10-network2"
-	"cifar10 forward-network ${network3} batch ${batch_params} 1 cifar10-network3"
+	#"cbcl-faces forward-network ${network0} batch ${batch_params} 10 cbclfaces-network0"
+	#"cbcl-faces forward-network ${network1} batch ${batch_params} 10 cbclfaces-network1"
+	#"cbcl-faces forward-network ${network2} batch ${batch_params} 10 cbclfaces-network2"
+	
+	#"cifar10 forward-network ${network0} batch ${batch_params} 10 cifar10-network0"
+	#"cifar10 forward-network ${network1} batch ${batch_params} 10 cifar10-network1"
+	#"cifar10 forward-network ${network2} batch ${batch_params} 10 cifar10-network2"
+	#"cifar10 forward-network ${network3} batch ${batch_params} 10 cifar10-network3"
 	
 	# TODO: STL10
 	)
