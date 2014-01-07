@@ -110,6 +110,22 @@ void test(int isize, int ksize, int n_samples)
         {
                 test_conv2D_dot(ncv::math::dot<8, scalar_t>,            "fix", idatas, kdata, odata);
         }
+        if (kdata.cols() == 12)
+        {
+                test_conv2D_dot(ncv::math::dot<12, scalar_t>,           "fix", idatas, kdata, odata);
+        }
+        if (kdata.cols() == 16)
+        {
+                test_conv2D_dot(ncv::math::dot<16, scalar_t>,           "fix", idatas, kdata, odata);
+        }
+        if (kdata.cols() == 20)
+        {
+                test_conv2D_dot(ncv::math::dot<20, scalar_t>,           "fix", idatas, kdata, odata);
+        }
+        if (kdata.cols() == 24)
+        {
+                test_conv2D_dot(ncv::math::dot<24, scalar_t>,           "fix", idatas, kdata, odata);
+        }
         test_conv2D_dot(ncv::math::dot_eig<scalar_t>,                   "eig", idatas, kdata, odata);
         test_conv2D(ncv::math::wconv_eib<true, matrix_t>,               "eib", idatas, kdata, odata);
         std::cout << std::endl;
@@ -117,15 +133,15 @@ void test(int isize, int ksize, int n_samples)
 
 int main(int argc, char* argv[])
 {
-        static const int min_isize = 24;
-        static const int max_isize = 48;
+        static const int min_isize = 32;
+        static const int max_isize = 64;
 	static const int min_ksize = 8;
-        static const int max_ksize = 8;
+        static const int max_ksize = 24;
         static const int n_samples = 10000;
 
         for (int isize = min_isize; isize <= max_isize; isize += 4)
 	{
-		for (int ksize = min_ksize; ksize <= max_ksize; ksize ++)
+		for (int ksize = min_ksize; ksize <= max_ksize; ksize += 4)
 		{
                         test(isize, ksize, n_samples);
                 }
