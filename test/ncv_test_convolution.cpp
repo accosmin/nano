@@ -106,6 +106,12 @@ void test(int isize, int ksize, int n_samples)
         std::cout << "mix (isize = " << isize << ", ksize = " << ksize << "): \t";
         test_conv2D_dot(ncv::math::dot<scalar_t>,                       "org", idatas, kdata, odata);
         test_conv2D_dot(ncv::math::dot_mod4<scalar_t>,                  "m4-", idatas, kdata, odata);
+        test_conv2D_dot(ncv::math::dot_eig<scalar_t>,                   "eig", idatas, kdata, odata);
+        test_conv2D(ncv::math::wconv_eib<true, matrix_t>,               "eib", idatas, kdata, odata);
+        if (kdata.cols() == 4)
+        {
+                test_conv2D_dot(ncv::math::dot<4, scalar_t>,            "fix", idatas, kdata, odata);
+        }
         if (kdata.cols() == 8)
         {
                 test_conv2D_dot(ncv::math::dot<8, scalar_t>,            "fix", idatas, kdata, odata);
@@ -126,25 +132,24 @@ void test(int isize, int ksize, int n_samples)
         {
                 test_conv2D_dot(ncv::math::dot<24, scalar_t>,           "fix", idatas, kdata, odata);
         }
-        test_conv2D_dot(ncv::math::dot_eig<scalar_t>,                   "eig", idatas, kdata, odata);
-        test_conv2D(ncv::math::wconv_eib<true, matrix_t>,               "eib", idatas, kdata, odata);
         std::cout << std::endl;
 }
 
 int main(int argc, char* argv[])
 {
-        static const int min_isize = 32;
-        static const int max_isize = 64;
-	static const int min_ksize = 8;
-        static const int max_ksize = 24;
+        static const int min_isize = 24;
+        static const int max_isize = 48;
+        static const int min_ksize = 5;
+        static const int max_ksize = 13;
         static const int n_samples = 10000;
 
         for (int isize = min_isize; isize <= max_isize; isize += 4)
 	{
-		for (int ksize = min_ksize; ksize <= max_ksize; ksize += 4)
+                for (int ksize = min_ksize; ksize <= max_ksize; ksize ++)
 		{
                         test(isize, ksize, n_samples);
                 }
+                std::cout << std::endl;
 	}
 
 	return EXIT_SUCCESS;
