@@ -63,23 +63,6 @@ namespace ncv
                 <
                         typename tscalar
                 >
-                void mad_mod4x(const tscalar* pidata, tscalar w, tscalar* podata, int size)
-                {
-                        const int size4 = (size >> 2) << 2;
-
-                        for (int k = 0; k < size4; k += 4)
-                        {
-				podata[k + 0] += w * pidata[k + 0];
-				podata[k + 1] += w * pidata[k + 1];
-				podata[k + 2] += w * pidata[k + 2];
-				podata[k + 3] += w * pidata[k + 3];
-			}
-	        }
-
-                template
-                <
-                        typename tscalar
-                >
                 void mad_eig(const tscalar* pidata, tscalar w, tscalar* podata, int size)
                 {
                         typedef typename Eigen::Matrix<tscalar, Eigen::Dynamic, 1, Eigen::ColMajor> tvector;

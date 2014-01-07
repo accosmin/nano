@@ -121,10 +121,7 @@ namespace ncv
                                 case 8:  math::conv_dot<false>(idata, kdata, xdata, math::dot<8, scalar_t>); break;
                                 case 12: math::conv_dot<false>(idata, kdata, xdata, math::dot<12, scalar_t>); break;
                                 case 16: math::conv_dot<false>(idata, kdata, xdata, math::dot<16, scalar_t>); break;
-                                default: (kmod4x() ?
-                                         math::conv_dot<false>(idata, kdata, xdata, math::dot_mod4x<scalar_t>) :
-                                         math::conv_dot<false>(idata, kdata, xdata, math::dot_mod4<scalar_t>));
-                                         break;
+                                default: math::conv_dot<false>(idata, kdata, xdata, math::dot_mod4<scalar_t>); break;
                                 }
                                 odata.noalias() += weight(o, i) * xdata;
                         }
@@ -163,10 +160,7 @@ namespace ncv
                                 case 8:  math::wconv_dot<true>(idata, gdata, w, gkdata, math::dot<8, scalar_t>); break;
                                 case 12: math::wconv_dot<true>(idata, gdata, w, gkdata, math::dot<12, scalar_t>); break;
                                 case 16: math::wconv_dot<true>(idata, gdata, w, gkdata, math::dot<16, scalar_t>); break;
-                                default: (omod4x() ?
-                                         math::wconv_dot<true>(idata, gdata, w, gkdata, math::dot_mod4x<scalar_t>) :
-                                         math::wconv_dot<true>(idata, gdata, w, gkdata, math::dot_mod4<scalar_t>));
-                                         break;
+                                default: math::wconv_dot<true>(idata, gdata, w, gkdata, math::dot_mod4<scalar_t>); break;
                                 }
                         }
                 }
@@ -190,10 +184,7 @@ namespace ncv
                                 case 8:  backward(gdata, kdata, weight(o, i), idata, math::mad<8, scalar_t>); break;
                                 case 12: backward(gdata, kdata, weight(o, i), idata, math::mad<12, scalar_t>); break;
                                 case 16: backward(gdata, kdata, weight(o, i), idata, math::mad<16, scalar_t>); break;
-                                default: (kmod4x() ?
-                                         backward(gdata, kdata, weight(o, i), idata, math::mad_mod4x<scalar_t>) :
-                                         backward(gdata, kdata, weight(o, i), idata, math::mad_mod4<scalar_t>));
-                                         break;
+                                default: backward(gdata, kdata, weight(o, i), idata, math::mad_mod4<scalar_t>); break;
                                 }
                         }
                 }

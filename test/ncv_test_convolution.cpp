@@ -106,10 +106,6 @@ void test(int isize, int ksize, int n_samples)
         std::cout << "mix (isize = " << isize << ", ksize = " << ksize << "): \t";
         test_conv2D_dot(ncv::math::dot<scalar_t>,                       "org", idatas, kdata, odata);
         test_conv2D_dot(ncv::math::dot_mod4<scalar_t>,                  "m4-", idatas, kdata, odata);
-	if (kdata.cols() % 4 == 0)
-	{
-                test_conv2D_dot(ncv::math::dot_mod4x<scalar_t>,         "m4x", idatas, kdata, odata);
-        }
         if (kdata.cols() == 8)
         {
                 test_conv2D_dot(ncv::math::dot<8, scalar_t>,            "fix", idatas, kdata, odata);
