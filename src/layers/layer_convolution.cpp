@@ -112,10 +112,11 @@ namespace ncv
                         for (size_t i = 0; i < n_idims(); i ++)
                         {
                                 const matrix_t& idata = m_idata(i);
+                                const scalar_t w = weight(o, i);
                                 matrix_t& xdata = m_xdata(o, i);
 
 				math::conv_dot<false>(idata, kdata, xdata);
-                                odata.noalias() += weight(o, i) * xdata;
+                                odata.noalias() += w * xdata;
                         }
                 }
 
@@ -161,15 +162,24 @@ namespace ncv
                         for (size_t i = 0; i < n_idims(); i ++)
                         {
                                 matrix_t& idata = m_idata(i);
+                                const scalar_t w = weight(o, i);
 
-                                switch (m_kdata.n_cols())
-                                {
-                                case 4:  backward(gdata, kdata, weight(o, i), idata, math::mad<4, scalar_t>); break;
-                                case 8:  backward(gdata, kdata, weight(o, i), idata, math::mad<8, scalar_t>); break;
-                                case 12: backward(gdata, kdata, weight(o, i), idata, math::mad<12, scalar_t>); break;
-                                case 16: backward(gdata, kdata, weight(o, i), idata, math::mad<16, scalar_t>); break;
-                                default: backward(gdata, kdata, weight(o, i), idata, math::mad_mod4<scalar_t>); break;
-                                }
+                                const auto kcols = m_kdata.n_cols();
+                                if (kcols == 3) backward(gdata, kdata, w, idata, math::mad<3, scalar_t>);
+                                else if (kcols == 4) backward(gdata, kdata, w, idata, math::mad<4, scalar_t>);
+                                else if (kcols == 5) backward(gdata, kdata, w, idata, math::mad<5, scalar_t>);
+                                else if (kcols == 6) backward(gdata, kdata, w, idata, math::mad<6, scalar_t>);
+                                else if (kcols == 7) backward(gdata, kdata, w, idata, math::mad<7, scalar_t>);
+                                else if (kcols == 8) backward(gdata, kdata, w, idata, math::mad<8, scalar_t>);
+                                else if (kcols == 9) backward(gdata, kdata, w, idata, math::mad<9, scalar_t>);
+                                else if (kcols == 10) backward(gdata, kdata, w, idata, math::mad<10, scalar_t>);
+                                else if (kcols == 11) backward(gdata, kdata, w, idata, math::mad<11, scalar_t>);
+                                else if (kcols == 12) backward(gdata, kdata, w, idata, math::mad<12, scalar_t>);
+                                else if (kcols == 13) backward(gdata, kdata, w, idata, math::mad<13, scalar_t>);
+                                else if (kcols == 14) backward(gdata, kdata, w, idata, math::mad<14, scalar_t>);
+                                else if (kcols == 15) backward(gdata, kdata, w, idata, math::mad<15, scalar_t>);
+                                else if ((kcols & 3) == 0) backward(gdata, kdata, w, idata, math::mad_mod4<scalar_t>);
+                                else backward(gdata, kdata, w, idata, math::mad_mod4x<scalar_t>);
                         }
                 }
 
