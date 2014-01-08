@@ -146,7 +146,7 @@ namespace ncv
                 samples_t tsamples, vsamples;
                 ncv::uniform_split(samples, size_t(80), random_t<size_t>(0, samples.size()), tsamples, vsamples);
 
-                vector_t x = model.params();
+                const vector_t x0 = model.params();
 
                 // create worker buffers: optimize given a (gamma, lambda) parametrization
                 ncv::thread_pool_t wpool(nthreads);
@@ -162,9 +162,9 @@ namespace ncv
 
                 // tune the learning parameters
                 scalar_t min_log_gamma = -4.0;
-                scalar_t max_log_gamma = +1.0;
+                scalar_t max_log_gamma = -1.0;
                 scalar_t min_log_lambda = -4.0;
-                scalar_t max_log_lambda = +1.0;
+                scalar_t max_log_lambda = -1.0;
                 scalar_t min_delta = +0.02;
 
                 for (   size_t e = 0;
@@ -183,14 +183,14 @@ namespace ncv
                         {
                                 for (size_t ng = 0; ng < n_workers; ng ++)      // gamma
                                 {
-                                        wpool.enqueue([=, &states, &task, &tsamples, &vsamples, &loss, &model, &x, &mutex]()
+                                        wpool.enqueue([=, &states, &task, &tsamples, &vsamples, &loss, &x0, &mutex]()
                                         {
                                                 const scalar_t log_gamma = min_log_gamma + delta_log_gamma * ng;
                                                 const scalar_t log_lambda = min_log_lambda + delta_log_lambda * nl;
 
                                                 // prepare parameters
                                                 stochastic_state_t& state = states[nl * n_workers + ng];
-                                                state.init(x, log_gamma, log_lambda);
+                                                state.init(x0, log_gamma, log_lambda);
 
                                                 // stochastic optimization
                                                 timer_t timer;
@@ -214,9 +214,6 @@ namespace ncv
                         update_range(min_log_gamma, max_log_gamma, opt_state.m_log_gamma, delta_log_gamma);
                         update_range(min_log_lambda, max_log_lambda, opt_state.m_log_lambda, delta_log_lambda);
 
-                        x = opt_state.m_param;
-                        model.load_params(x);
-
                         // log
                         log_info() << "stochastic trainer: tune step [" << (e + 1)
                                    << ", param = (" << opt_state.gamma() << ", " << opt_state.lambda()
@@ -225,9 +222,6 @@ namespace ncv
                 }
 
                 // optimize the model
-                const scalar_t log_gamma = 0.5 * (min_log_gamma + max_log_gamma);
-                const scalar_t log_lambda = 0.5 * (min_log_lambda + max_log_lambda);
-
                 {
                         const size_t iters = m_epoch * tsamples.size();
                         const size_t evals = vsamples.size();
@@ -237,11 +231,14 @@ namespace ncv
                         // create workers (try different random branches)
                         for (size_t n = 0; n < n_workers; n ++)
                         {
-                                wpool.enqueue([=, &states, &task, &samples, &loss, &model, &x, &mutex]()
+                                wpool.enqueue([=, &states, &task, &samples, &loss, &x0, &mutex]()
                                 {
+                                        const scalar_t log_gamma = 0.5 * (min_log_gamma + max_log_gamma);
+                                        const scalar_t log_lambda = 0.5 * (min_log_lambda + max_log_lambda);
+
                                         // prepare parameters
                                         stochastic_state_t& state = states[n];
-                                        state.init(x, log_gamma, log_lambda);
+                                        state.init(x0, log_gamma, log_lambda);
 
                                         // stochastic optimization
                                         timer_t timer;
@@ -261,8 +258,7 @@ namespace ncv
                         std::sort(states.begin(), states.end());
                         const stochastic_state_t& opt_state = states[0];
 
-                        x = opt_state.m_param;
-                        model.load_params(x);
+                        model.load_params(opt_state.m_param);
 
                         // log
                         log_info() << "stochastic trainer: optim finalized ["
