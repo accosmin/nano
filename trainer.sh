@@ -18,14 +18,14 @@ params=${params}" --loss classnll --trials 1 --threads 1"
 #valgrind --tool=memcheck --leak-check=yes ./build/ncv_trainer ${params}
 
 echo "training ${model0} ..."
-./build/ncv_trainer ${params} ${trainer} ${model0} > model0.log
+time ./build/ncv_trainer ${params} ${trainer} ${model0} > model0.log
 
 echo "training ${model1} ..."
-./build/ncv_trainer ${params} ${trainer} ${model1} > model1.log
+time ./build/ncv_trainer ${params} ${trainer} ${model1} > model1.log
 
 echo "training ${model2} ..."
-./build/ncv_trainer ${params} ${trainer} ${model2} > model2.log
+time ./build/ncv_trainer ${params} ${trainer} ${model2} > model2.log
 
 echo "training ${model3} ..."
-./build/ncv_trainer ${params} ${trainer} ${model3} > model3.log
+time ./build/ncv_trainer ${params} ${trainer} ${model3} > model3.log
 
