@@ -1,4 +1,3 @@
-#include "util/dot.hpp"
 #include "util/convolution.hpp"
 #include <iomanip>
 #include <ctime>
@@ -71,26 +70,6 @@ void test_conv2D(top op, const char* name, const tmatrices& idatas, const tmatri
                   << " (" << std::fixed << odata.sum() << ")\t";
 }
 
-template <typename tmatrices, typename tmatrix, typename top>
-void test_conv2D_dot(top op, const char* name, const tmatrices& idatas, const tmatrix& kdata, tmatrix& odata)
-{
-        odata.setZero();
-
-        const clock_t start = clock();
-
-        const int count = static_cast<int>(idatas.size());
-        for (int i = 0; i < count; i ++)
-        {
-                ncv::math::wconv_dot<true>(idatas[i], kdata, 1.0, odata, op);
-        }
-
-        const clock_t stop = clock();
-
-        std::cout.precision(3);
-        std::cout << name << " - " << ((stop - start + 0.0) / (CLOCKS_PER_SEC + 0.0))
-                  << " (" << std::fixed << odata.sum() << ")\t";
-}
-
 void test(int isize, int ksize, int n_samples)
 {
         matrices_t idatas;
@@ -104,34 +83,8 @@ void test(int isize, int ksize, int n_samples)
         init_conv2D(ksize, ksize, krdata, kcdata, kdata);
 
         std::cout << "mix (isize = " << isize << ", ksize = " << ksize << "): \t";
-        test_conv2D_dot(ncv::math::dot<scalar_t>,                       "org", idatas, kdata, odata);
-        test_conv2D_dot(ncv::math::dot_mod4<scalar_t>,                  "m4-", idatas, kdata, odata);
-        test_conv2D_dot(ncv::math::dot_eig<scalar_t>,                   "eig", idatas, kdata, odata);
-        test_conv2D(ncv::math::wconv_eib<true, matrix_t>,               "eib", idatas, kdata, odata);
-        if (kdata.cols() == 4)
-        {
-                test_conv2D_dot(ncv::math::dot<4, scalar_t>,            "fix", idatas, kdata, odata);
-        }
-        if (kdata.cols() == 8)
-        {
-                test_conv2D_dot(ncv::math::dot<8, scalar_t>,            "fix", idatas, kdata, odata);
-        }
-        if (kdata.cols() == 12)
-        {
-                test_conv2D_dot(ncv::math::dot<12, scalar_t>,           "fix", idatas, kdata, odata);
-        }
-        if (kdata.cols() == 16)
-        {
-                test_conv2D_dot(ncv::math::dot<16, scalar_t>,           "fix", idatas, kdata, odata);
-        }
-        if (kdata.cols() == 20)
-        {
-                test_conv2D_dot(ncv::math::dot<20, scalar_t>,           "fix", idatas, kdata, odata);
-        }
-        if (kdata.cols() == 24)
-        {
-                test_conv2D_dot(ncv::math::dot<24, scalar_t>,           "fix", idatas, kdata, odata);
-        }
+        test_conv2D(ncv::math::wconv_dot<true, matrix_t>, "dot", idatas, kdata, odata);
+        test_conv2D(ncv::math::wconv_eib<true, matrix_t>, "eib", idatas, kdata, odata);
         std::cout << std::endl;
 }
 

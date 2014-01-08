@@ -3,7 +3,6 @@
 #include "vectorizer.h"
 #include "util/logger.h"
 #include "util/math.hpp"
-#include "util/dot.hpp"
 #include "util/mad.hpp"
 #include "util/convolution.hpp"
 
@@ -115,14 +114,7 @@ namespace ncv
                                 const matrix_t& idata = m_idata(i);
                                 matrix_t& xdata = m_xdata(o, i);
 
-                                switch (m_kdata.n_cols())
-                                {
-                                case 4:  math::conv_dot<false>(idata, kdata, xdata, math::dot<4, scalar_t>); break;
-                                case 8:  math::conv_dot<false>(idata, kdata, xdata, math::dot<8, scalar_t>); break;
-                                case 12: math::conv_dot<false>(idata, kdata, xdata, math::dot<12, scalar_t>); break;
-                                case 16: math::conv_dot<false>(idata, kdata, xdata, math::dot<16, scalar_t>); break;
-                                default: math::conv_dot<false>(idata, kdata, xdata, math::dot_mod4<scalar_t>); break;
-                                }
+				math::conv_dot<false>(idata, kdata, xdata);
                                 odata.noalias() += weight(o, i) * xdata;
                         }
                 }
@@ -154,17 +146,9 @@ namespace ncv
                                 const scalar_t w = weight(o, i);
 
                                 gweight(o, i) = gdata.cwiseProduct(xdata).sum();
-                                switch (m_odata.n_cols())
-                                {
-                                case 4:  math::wconv_dot<true>(idata, gdata, w, gkdata, math::dot<4, scalar_t>); break;
-                                case 8:  math::wconv_dot<true>(idata, gdata, w, gkdata, math::dot<8, scalar_t>); break;
-                                case 12: math::wconv_dot<true>(idata, gdata, w, gkdata, math::dot<12, scalar_t>); break;
-                                case 16: math::wconv_dot<true>(idata, gdata, w, gkdata, math::dot<16, scalar_t>); break;
-                                default: math::wconv_dot<true>(idata, gdata, w, gkdata, math::dot_mod4<scalar_t>); break;
-                                }
+                                math::wconv_dot<true>(idata, gdata, w, gkdata);
                         }
                 }
-
 
                 // input gradient
                 m_idata.zero();
