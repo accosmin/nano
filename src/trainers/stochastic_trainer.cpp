@@ -213,7 +213,7 @@ namespace ncv
 
                 // optimize the model (with the tuned parameters)
                 {
-                        const size_t iters = m_epoch * 1024;//tsamples.size();
+                        const size_t iters = m_epoch * tsamples.size();
                         const size_t evals = vsamples.size();
 
                         // create workers (try different random branches)
