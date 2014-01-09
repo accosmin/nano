@@ -56,7 +56,7 @@ namespace ncv
                                         x.noalias() -= d * g;
                                 }
 
-                                sumx = sumx * (i + 0) / (i + 1) + x;
+                                sumx = (sumx * (i + 0) + x) / (i + 1);
                         }
 
                         x = sumx;
