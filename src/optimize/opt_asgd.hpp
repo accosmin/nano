@@ -56,10 +56,10 @@ namespace ncv
                                         x.noalias() -= d * g;
                                 }
 
-                                sumx.noalias() += x;
+                                sumx = sumx * (i + 0) / (i + 1) + x;
                         }
 
-                        x.noalias() = sumx / (1.0 + iterations);
+                        x = sumx;
 
                         // evaluate solution
                         tstate cstate(problem.size());
