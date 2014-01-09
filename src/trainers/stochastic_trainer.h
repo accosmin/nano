@@ -32,13 +32,6 @@ namespace ncv
 
         private:
 
-                // utility functions: update the searching grid for the optimum parameters
-                static void update_range(scalar_t& min, scalar_t& max, scalar_t opt, scalar_t delta)
-                {
-                        max = opt + delta;
-                        min = opt - delta;
-                }
-
                 // SGD algorithm
                 void sgd(const task_t&, const samples_t&, const samples_t&, const loss_t&,
                          size_t iterations, size_t evalsize, stochastic_state_t& state) const;

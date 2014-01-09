@@ -14,10 +14,11 @@ namespace ncv
 
         struct stochastic_state_t
         {
-                stochastic_state_t() :     m_log_lambda(-4.0),
-                                m_log_gamma(-4.0),
-                                m_value(std::numeric_limits<scalar_t>::max()),
-                                m_error(std::numeric_limits<scalar_t>::max())
+                stochastic_state_t() :
+                        m_log_lambda(-4.0),
+                        m_log_gamma(-4.0),
+                        m_value(std::numeric_limits<scalar_t>::max()),
+                        m_error(std::numeric_limits<scalar_t>::max())
                 {
                 }
 
@@ -154,55 +155,44 @@ namespace ncv
 
                 const size_t n_workers = std::max(size_t(4), wpool.n_workers());
 
-                std::vector<stochastic_state_t> states(n_workers * n_workers);
-                for (size_t i = 0; i < states.size(); i ++)
-                {
-                        states[i].init(model);
-                }
+                std::vector<stochastic_state_t> states;
 
                 // tune the learning parameters
-                scalar_t min_log_gamma = -4.0;
-                scalar_t max_log_gamma = -1.0;
-                scalar_t min_log_lambda = -4.0;
-                scalar_t max_log_lambda = -1.0;
-                scalar_t min_delta = +0.02;
+                const scalar_t min_log_gamma = -4.0;
+                const scalar_t max_log_gamma = -1.0;
+                const scalar_t min_log_lambda = -4.0;
+                const scalar_t max_log_lambda = -1.0;
+                const scalar_t log_delta = +0.5;
 
-                for (   size_t e = 0;
-                        max_log_gamma > min_log_gamma + min_delta ||
-                        max_log_lambda > min_log_lambda + min_delta;
-                        e ++)
+                scalar_t opt_log_gamma = min_log_gamma;
+                scalar_t opt_log_lambda = min_log_lambda;
                 {
                         const size_t iters = std::max(size_t(1024), tsamples.size() / 64);
                         const size_t evals = 4 * iters;
 
                         // create workers (one for each learning parameter set)
-                        const scalar_t delta_log_gamma = (max_log_gamma - min_log_gamma) / (n_workers - 1.0);
-                        const scalar_t delta_log_lambda = (max_log_lambda - min_log_lambda) / (n_workers - 1.0);
-
-                        for (size_t nl = 0; nl < n_workers; nl ++)              // lambda
+                        for (scalar_t log_gamma = min_log_gamma; log_gamma < max_log_gamma; log_gamma += log_delta)
+                        for (scalar_t log_lambda = min_log_lambda; log_lambda < max_log_lambda; log_lambda += log_delta)
                         {
-                                for (size_t ng = 0; ng < n_workers; ng ++)      // gamma
+                                wpool.enqueue([=, &states, &task, &tsamples, &vsamples, &loss, &model, &x0, &mutex]()
                                 {
-                                        wpool.enqueue([=, &states, &task, &tsamples, &vsamples, &loss, &x0, &mutex]()
-                                        {
-                                                const scalar_t log_gamma = min_log_gamma + delta_log_gamma * ng;
-                                                const scalar_t log_lambda = min_log_lambda + delta_log_lambda * nl;
+                                        // prepare parameters
+                                        stochastic_state_t state;
+                                        state.init(model);
+                                        state.init(x0, log_gamma, log_lambda);
 
-                                                // prepare parameters
-                                                stochastic_state_t& state = states[nl * n_workers + ng];
-                                                state.init(x0, log_gamma, log_lambda);
+                                        // stochastic optimization
+                                        timer_t timer;
+                                        sgd(task, tsamples, vsamples, loss, iters, evals, state);
 
-                                                // stochastic optimization
-                                                timer_t timer;
-                                                sgd(task, tsamples, vsamples, loss, iters, evals, state);
+                                        const thread_pool_t::lock_t lock(mutex);
+                                        states.push_back(state);
 
-                                                const thread_pool_t::lock_t lock(mutex);
-                                                log_info() << "stochastic trainer: tune step [" << (e + 1)
-                                                           << ", param = (" << state.gamma() << ", " << state.lambda()
-                                                           << "), loss = " << state.m_value << "/" << state.m_error
-                                                           << "] done in " << timer.elapsed() << ".";
-                                        });
-                                }
+                                        log_info() << "stochastic trainer: tune ["
+                                                   << "param = (" << state.gamma() << ", " << state.lambda()
+                                                   << "), loss = " << state.m_value << "/" << state.m_error
+                                                   << "] done in " << timer.elapsed() << ".";
+                                });
                         }
 
                         wpool.wait();
@@ -211,41 +201,39 @@ namespace ncv
                         std::sort(states.begin(), states.end());
                         const stochastic_state_t& opt_state = states[0];
 
-                        update_range(min_log_gamma, max_log_gamma, opt_state.m_log_gamma, delta_log_gamma);
-                        update_range(min_log_lambda, max_log_lambda, opt_state.m_log_lambda, delta_log_lambda);
+                        opt_log_gamma = opt_state.m_log_gamma;
+                        opt_log_lambda = opt_state.m_log_lambda;
 
                         // log
-                        log_info() << "stochastic trainer: tune step [" << (e + 1)
-                                   << ", param = (" << opt_state.gamma() << ", " << opt_state.lambda()
+                        log_info() << "stochastic trainer: tune ["
+                                   << "param = (" << opt_state.gamma() << ", " << opt_state.lambda()
                                    << "), loss* = " << opt_state.m_value << "/" << opt_state.m_error
                                    << ", iters = " << iters << "/" << evals << "].";
                 }
 
-                // optimize the model
+                // optimize the model (with the tuned parameters)
                 {
-                        const size_t iters = m_epoch * tsamples.size();
+                        const size_t iters = m_epoch * 1024;//tsamples.size();
                         const size_t evals = vsamples.size();
-
-                        states.resize(n_workers);
 
                         // create workers (try different random branches)
                         for (size_t n = 0; n < n_workers; n ++)
                         {
-                                wpool.enqueue([=, &states, &task, &samples, &loss, &x0, &mutex]()
+                                wpool.enqueue([=, &states, &task, &tsamples, &vsamples, &loss, &model, &x0, &mutex]()
                                 {
-                                        const scalar_t log_gamma = 0.5 * (min_log_gamma + max_log_gamma);
-                                        const scalar_t log_lambda = 0.5 * (min_log_lambda + max_log_lambda);
-
                                         // prepare parameters
-                                        stochastic_state_t& state = states[n];
-                                        state.init(x0, log_gamma, log_lambda);
+                                        stochastic_state_t state;
+                                        state.init(model);
+                                        state.init(x0, opt_log_gamma, opt_log_lambda);
 
                                         // stochastic optimization
                                         timer_t timer;
                                         sgd(task, tsamples, vsamples, loss, iters, evals, state);
 
                                         const thread_pool_t::lock_t lock(mutex);
-                                        log_info() << "stochastic trainer: optim step ["
+                                        states.push_back(state);
+
+                                        log_info() << "stochastic trainer: optim ["
                                                    << "param = (" << state.gamma() << ", " << state.lambda()
                                                    << "), loss = " << state.m_value << "/" << state.m_error
                                                    << "] done in " << timer.elapsed() << ".";
@@ -261,7 +249,7 @@ namespace ncv
                         model.load_params(opt_state.m_param);
 
                         // log
-                        log_info() << "stochastic trainer: optim finalized ["
+                        log_info() << "stochastic trainer: optim ["
                                    << "param = (" << opt_state.gamma() << ", " << opt_state.lambda()
                                    << "), loss* = " << opt_state.m_value << "/" << opt_state.m_error
                                    << ", iters = " << iters << "/" << evals << "].";
