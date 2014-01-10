@@ -8,12 +8,19 @@ int main(int argc, char *argv[])
 
         using namespace ncv;
 
+        const string_t network0 = "";
+        const string_t network1 = network0 + "conv:count=16,rows=9,cols=9;snorm;";
+        const string_t network2 = network1 + "conv:count=16,rows=7,cols=7;snorm;";
+        const string_t network3 = network2 + "conv:count=16,rows=5,cols=5;snorm;";
+        const string_t network4 = network3 + "conv:count=16,rows=3,cols=3;snorm;";
+
         strings_t cmd_networks =
         {
-                "",
-                "conv:count=16,rows=8,cols=8;snorm;",
-                "conv:count=16,rows=8,cols=8;snorm;conv:count=8,rows=8,cols=8;snorm;",
-                "conv:count=16,rows=8,cols=8;snorm;conv:count=8,rows=8,cols=8;snorm;conv:count=4,rows=8,cols=8;snorm;"
+                network0,
+                network1,
+                network2,
+                network3,
+                network4
         };
 
         const color_mode cmd_color = color_mode::luma;

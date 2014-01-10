@@ -61,7 +61,10 @@ namespace ncv
         thread_pool_t::~thread_pool_t()
         {
                 // stop & join
-                m_data.m_stop = true;
+                {
+                        const lock_t lock(m_data.m_mutex);
+                        m_data.m_stop = true;
+                }
                 m_data.m_condition.notify_all();
 
                 for (size_t i = 0; i < m_workers.size(); i ++)

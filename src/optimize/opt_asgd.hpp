@@ -20,7 +20,7 @@ namespace ncv
                 tscalar asgd_learning_rate(tscalar gamma, tscalar lambda, tsize iteration)
                 {
                         // learning rate recommended by Bottou
-                        return gamma / (1 + gamma * lambda * iteration);
+                        return gamma / std::pow(1 + gamma * lambda * iteration, 0.75);
                 }
 
                 template
@@ -42,10 +42,13 @@ namespace ncv
                 {
                         assert(problem.size() == static_cast<tsize>(x0.size()));
 
-                        tvector x = x0, sumx = x, g = x;
+                        tvector x = x0, avgx(x.size()), g = x;
+                        avgx.setZero();
+
+                        const tsize ia_skip = iterations / 4;
 
                         // (A=average)SGD steps
-                        for (tsize i = 0; i < iterations; i ++)
+                        for (tsize i = 0, ia = 0; i < iterations; i ++)
                         {
                                 const tscalar f = problem(x, g);
                                 const tscalar d = asgd_learning_rate(gamma, lambda, i);
@@ -56,10 +59,14 @@ namespace ncv
                                         x.noalias() -= d * g;
                                 }
 
-                                sumx = (sumx * (i + 0) + x) / (i + 1);
+                                if (i > ia_skip)
+                                {
+                                        avgx = (avgx * (ia + 0) + x) / (ia + 1);
+                                        ia ++;
+                                }
                         }
 
-                        x = sumx;
+                        x = avgx;
 
                         // evaluate solution
                         tstate cstate(problem.size());
