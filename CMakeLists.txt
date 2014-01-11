@@ -89,6 +89,7 @@ set(nanocv_test_programs
         ncv_test_optimize
         ncv_test_image
         ncv_test_color
+        ncv_test_loss
         ncv_test_convolution
         ncv_test_network_gradient
         ncv_test_network_forward
