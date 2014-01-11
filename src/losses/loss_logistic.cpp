@@ -3,6 +3,8 @@
 
 namespace ncv
 {
+        static const scalar_t delta = std::exp(1.0) - 1.0;
+
         /////////////////////////////////////////////////////////////////////////////////////////
 
         scalar_t logistic_loss_t::value(const vector_t& targets, const vector_t& scores) const
@@ -12,8 +14,8 @@ namespace ncv
                 scalar_t value = 0.0;
                 for (auto o = 0; o < targets.rows(); o ++)
                 {
-                        const scalar_t e = exp(- scores[o] * targets[o]);
-                        value += log(1.0 + e);
+                        const scalar_t e = std::exp(- scores[o] * targets[o]);
+                        value += std::log(delta + e);
                 }
                 return value;
         }
@@ -27,8 +29,8 @@ namespace ncv
                 vector_t grads(targets.rows());
                 for (auto o = 0; o < targets.rows(); o ++)
                 {
-                        const scalar_t e = exp(- scores[o] * targets[o]);
-                        grads[o] = - targets[o] * e / (1.0 + e);
+                        const scalar_t e = std::exp(- scores[o] * targets[o]);
+                        grads[o] = - targets[o] * e / (delta + e);
                 }
 
                 return grads;

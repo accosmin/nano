@@ -34,9 +34,6 @@ static void test_grad(
 
                 gx = loss->vgrad(target, output);
 
-                log_info() << header << ": loss = " << loss->value(target, output)
-                           << "/" << loss->error(target, output) << ".";
-
                 return loss->value(target, output);
         };
 
@@ -55,9 +52,15 @@ static void test_grad(
                 problem_gd(x, gx_gd);
                 problem_ax(x, gx_ax);
 
+                const vector_t& output = x;
+                const scalar_t lx = loss->value(target, output);
+                const scalar_t ex = loss->error(target, output);
+
+                const scalar_t dgx = (gx_gd - gx_ax).lpNorm<Eigen::Infinity>();
+
                 log_info() << header << " [" << (t + 1) << "/" << n_tests
-                           << "]: gradient difference (analytic vs. finite difference) = "
-                           << (gx_gd - gx_ax).lpNorm<Eigen::Infinity>() << ".";
+                           << "]: gradient accuracy = " << dgx << " (" << (dgx > 1e-8 ? "ERROR" : "OK")
+                           << "), loss = " << lx << "/" << ex << " (" << (lx < ex ? "ERROR" : "OK") << ").";
         }
 }
 
@@ -67,8 +70,8 @@ int main(int argc, char *argv[])
 
         const strings_t loss_ids = loss_manager_t::instance().ids();
 
-        const size_t cmd_min_dims = 1;
-        const size_t cmd_max_dims = 16;
+        const size_t cmd_min_dims = 2;
+        const size_t cmd_max_dims = 10;
         const size_t cmd_tests = 8;
 
         // evaluate the analytical gradient vs. the finite difference approximation

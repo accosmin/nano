@@ -9,7 +9,7 @@ namespace ncv
         {
                 assert(targets.size() == scores.size());
 
-                return 0.5 * (targets.array() - scores.array()).abs2().sum();
+                return 0.5 * (scores - targets).array().square().sum();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

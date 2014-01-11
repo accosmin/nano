@@ -46,10 +46,12 @@ namespace ncv
                         explicit problem_t(
                                 const top_size& op_size,
                                 const top_fval& op_fval,
-                                const top_grad& op_grad)
+                                const top_grad& op_grad,
+                                tscalar eps = 1e-6)
                                 :       m_op_size(op_size),
                                         m_op_fval(op_fval),
-                                        m_op_grad(op_grad)
+                                        m_op_grad(op_grad),
+                                        m_eps(eps)
                         {
                                 reset();
                         }
@@ -57,8 +59,9 @@ namespace ncv
                         // constructor (no analytic gradient, can be estimated)
                         explicit problem_t(
                                 const top_size& op_size,
-                                const top_fval& op_fval)
-                                :       problem_t(op_size, op_fval, top_grad())
+                                const top_fval& op_fval,
+                                tscalar eps = 1e-6)
+                                :       problem_t(op_size, op_fval, top_grad(), eps)
                         {
                         }
 
@@ -113,7 +116,7 @@ namespace ncv
                         void eval_grad(const tvector& x, tvector& g) const
                         {
                                 const tsize n = size();
-                                const tscalar d = 1e-6;//std::numeric_limits<tscalar>::epsilon();
+                                const tscalar d = m_eps;
 
                                 tvector xp = x, xn = x;
 
@@ -140,6 +143,7 @@ namespace ncv
                         top_size                m_op_size;
                         top_fval                m_op_fval;
                         top_grad                m_op_grad;
+                        tscalar                 m_eps;                  // finite difference approximation
                         mutable tsize           m_n_fvals;              // #function value evaluations
                         mutable tsize           m_n_grads;              // #function gradient evaluations
                 };
