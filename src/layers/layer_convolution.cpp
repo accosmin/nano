@@ -115,7 +115,8 @@ namespace ncv
                                 const scalar_t w = weight(o, i);
                                 matrix_t& xdata = m_xdata(o, i);
 
-				math::conv_dot<false>(idata, kdata, xdata);
+                                xdata.setZero();
+                                math::conv_dot(idata, kdata, xdata);
                                 odata.noalias() += w * xdata;
                         }
                 }
@@ -147,7 +148,7 @@ namespace ncv
                                 const scalar_t w = weight(o, i);
 
                                 gweight(o, i) = gdata.cwiseProduct(xdata).sum();
-                                math::wconv_dot<true>(idata, gdata, w, gkdata);
+                                math::wconv_dot(idata, gdata, w, gkdata);
                         }
                 }
 

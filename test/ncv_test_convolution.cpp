@@ -83,8 +83,8 @@ void test(int isize, int ksize, int n_samples)
         init_conv2D(ksize, ksize, krdata, kcdata, kdata);
 
         std::cout << "mix (isize = " << isize << ", ksize = " << ksize << "): \t";
-        test_conv2D(ncv::math::wconv_dot<true, matrix_t>, "dot", idatas, kdata, odata);
-        test_conv2D(ncv::math::wconv_eib<true, matrix_t>, "eib", idatas, kdata, odata);
+        test_conv2D(ncv::math::wconv_dot<matrix_t>, "dot", idatas, kdata, odata);
+        test_conv2D(ncv::math::wconv_eib<matrix_t>, "eib", idatas, kdata, odata);
         std::cout << std::endl;
 }
 

@@ -60,9 +60,10 @@ static void test_grad(
                 problem_gd(x, gx_gd);
                 problem_ax(x, gx_ax);
 
+                const scalar_t dgx = (gx_gd - gx_ax).lpNorm<Eigen::Infinity>();
+
                 log_info() << header << " [" << (t + 1) << "/" << n_tests
-                           << "]: gradient difference (analytic vs. finite difference) = "
-                           << (gx_gd - gx_ax).lpNorm<Eigen::Infinity>() << ".";
+                           << "]: gradient accuracy = " << dgx << " (" << (dgx > 1e-7 ? "ERROR" : "OK") << ").";
         }
 }
 

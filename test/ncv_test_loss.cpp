@@ -52,15 +52,10 @@ static void test_grad(
                 problem_gd(x, gx_gd);
                 problem_ax(x, gx_ax);
 
-                const vector_t& output = x;
-                const scalar_t lx = loss->value(target, output);
-                const scalar_t ex = loss->error(target, output);
-
                 const scalar_t dgx = (gx_gd - gx_ax).lpNorm<Eigen::Infinity>();
 
                 log_info() << header << " [" << (t + 1) << "/" << n_tests
-                           << "]: gradient accuracy = " << dgx << " (" << (dgx > 1e-8 ? "ERROR" : "OK")
-                           << "), loss = " << lx << "/" << ex << " (" << (lx < ex ? "ERROR" : "OK") << ").";
+                           << "]: gradient accuracy = " << dgx << " (" << (dgx > 1e-8 ? "ERROR" : "OK") << ").";
         }
 }
 
