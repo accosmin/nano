@@ -26,7 +26,7 @@ namespace ncv
                 minibatch_trainer_t(const string_t& params = string_t());
 
                 NCV_MAKE_CLONABLE(minibatch_trainer_t, trainer_t,
-                "explorer trainer, parameters: opt=cgd[,gd,lbfgs],iters=16[4,256],eps=1e-6[1e-8,1e-3],batch=1024[256,16K],epoch=16[1,256]")
+                "minibatch trainer, parameters: opt=cgd[,gd,lbfgs],iters=16[4,256],eps=1e-6[1e-8,1e-3],batch=1024[256,16K],epoch=16[1,256]")
 
                 // train the model
                 virtual bool train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const;

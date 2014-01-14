@@ -31,7 +31,7 @@ namespace ncv
         {
                 if (fold.second != protocol::train)
                 {
-                        log_error() << "explorer trainer: cannot only train models with training samples!";
+                        log_error() << "minibatch trainer: cannot only train models with training samples!";
                         return false;
                 }
 
@@ -43,7 +43,7 @@ namespace ncv
                 const samples_t samples = ncv::prune_annotated(task, task.samples(fold));
                 if (samples.empty())
                 {
-                        log_error() << "explorer trainer: no annotated training samples!";
+                        log_error() << "minibatch trainer: no annotated training samples!";
                         return false;
                 }
 
