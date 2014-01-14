@@ -11,8 +11,8 @@ namespace ncv
         //      then used to optimize the loss on all samples.
         //
         // parameters:
-        //      opt=asgd[,sgd]                  - optimization method
-        //      epoch=4[1,16]                   - optimization iterations (~ #samples)
+        //      opt=asgd[,sgd]          - optimization method
+        //      epoch=4[1,16]           - #epochs (~#samples)
         /////////////////////////////////////////////////////////////////////////////////////////
 
         class stochastic_state_t;
@@ -32,7 +32,7 @@ namespace ncv
 
         private:
 
-                // SGD algorithm
+                // SGD algorithm (from a given state)
                 void sgd(const task_t&, const samples_t&, const samples_t&, const loss_t&,
                          size_t iterations, size_t evalsize, stochastic_state_t& state) const;
 
@@ -40,7 +40,7 @@ namespace ncv
 
                 // attributes
                 string_t                m_optimizer;
-                size_t                  m_epoch;
+                size_t                  m_epochs;
         };
 }
 

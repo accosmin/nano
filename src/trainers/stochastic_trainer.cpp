@@ -59,9 +59,9 @@ namespace ncv
 
         stochastic_trainer_t::stochastic_trainer_t(const string_t& params)
                 :       m_optimizer(text::from_params<string_t>(params, "opt", "asgd")),
-                        m_epoch(text::from_params<size_t>(params, "epoch", 4))
+                        m_epochs(text::from_params<size_t>(params, "epoch", 4))
         {
-                m_epoch = math::clamp(m_epoch, 1, 16);
+                m_epochs = math::clamp(m_epochs, 1, 16);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -213,7 +213,7 @@ namespace ncv
 
                 // optimize the model (with the tuned parameters)
                 {
-                        const size_t iters = m_epoch * tsamples.size();
+                        const size_t iters = m_epochs * tsamples.size();
                         const size_t evals = vsamples.size();
 
                         // create workers (try different random branches)

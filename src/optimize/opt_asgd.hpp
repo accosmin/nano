@@ -45,7 +45,7 @@ namespace ncv
                         tvector x = x0, avgx(x.size()), g = x;
                         avgx.setZero();
 
-                        const tsize ia_skip = iterations / 4;
+                        const tsize ia_skip = iterations / 2;
 
                         // (A=average)SGD steps
                         for (tsize i = 0, ia = 0; i < iterations; i ++)

@@ -1,10 +1,8 @@
 - faster ::backward() -> almost 4 times slower than ::forward()
-        - loop unrolling for the most inner loop
+- check if the convolution layers can use fewer buffers (e.g. do not store xdata and update directly the output buffers)
         
 - (soft) max-pooling layer: parameter = radius in pixels
         - e.g. rad = 2 -> reduces the feature maps by 2
-
-- check if the convolution layers can use fewer buffers (e.g. do not store xdata and update directly the output buffers)
 
 - augment the training dataset with random translations and rotations (only for the stochastic trainer) + test program (given image, save N random translations and rotations of a given pixel radius)
 

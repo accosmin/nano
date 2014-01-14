@@ -35,6 +35,10 @@ namespace ncv
                                 m_verror = verror;
                         }
                 }
+                void update(const trainer_state_t& state)
+                {
+                        update(state.m_params, state.m_tvalue, state.m_terror, state.m_vvalue, state.m_verror);
+                }
 
                 // attributes
                 vector_t        m_params;       // current model parameters
