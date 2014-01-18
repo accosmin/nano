@@ -23,20 +23,25 @@ namespace ncv
         	        >
                         void conv_dot(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata, tdot dotop)
 	                {
-        	                for (auto r = 0; r < odata.rows(); r ++)
-                	        {
+                                const auto icols = idata.cols();
+                                const auto krows = kdata.rows(), kcols = kdata.cols();
+                                const auto orows = odata.rows(), ocols = odata.cols();
+
+                                for (auto r = 0; r < orows; r ++)
+                                {
+                                        const tscalar* pi = &idata(r, 0);
                                         tscalar* po = &odata(r, 0);
 
-                                        for (auto kr = 0; kr < kdata.rows(); kr ++)
-                                	{
-                                                const tscalar *pi = &idata(r + kr, 0), *pk = &kdata(kr, 0);
+                                        for (auto kr = 0; kr < krows; kr ++, pi += icols)
+                                        {
+                                                const tscalar* pk = &kdata(kr, 0);
 
-	                                        for (auto c = 0; c < odata.cols(); c ++)
-        	                                {
-                                                        po[c] += dotop(pi + c, pk, kdata.cols());
-                        	                }
-                                	}
-                        	}
+                                                for (auto c = 0; c < ocols; c ++)
+                                                {
+                                                        po[c] += dotop(pi + c, pk, kcols);
+                                                }
+                                        }
+                                }
                 	}
 
                         // odata += weight * idata @ kdata (using a column-based dot operator)
@@ -48,17 +53,22 @@ namespace ncv
                 	>
                         void wconv_dot(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata, tdot dotop)
         	        {
-                                for (auto r = 0; r < odata.rows(); r ++)
+                                const auto icols = idata.cols();
+                                const auto krows = kdata.rows(), kcols = kdata.cols();
+                                const auto orows = odata.rows(), ocols = odata.cols();
+
+                                for (auto r = 0; r < orows; r ++)
                                 {
+                                        const tscalar* pi = &idata(r, 0);
                                         tscalar* po = &odata(r, 0);
-		
-                                        for (auto kr = 0; kr < kdata.rows(); kr ++)
+
+                                        for (auto kr = 0; kr < krows; kr ++, pi += icols)
                                         {
-                                                const tscalar *pi = &idata(r + kr, 0), *pk = &kdata(kr, 0);
-	
-                                                for (auto c = 0; c < odata.cols(); c ++)
+                                                const tscalar* pk = &kdata(kr, 0);
+
+                                                for (auto c = 0; c < ocols; c ++)
                                                 {
-                                                        po[c] += weight * dotop(pi + c, pk, kdata.cols());
+                                                        po[c] += weight * dotop(pi + c, pk, kcols);
                                                 }
                                         }
                                 }

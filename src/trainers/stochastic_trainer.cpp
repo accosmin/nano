@@ -7,6 +7,7 @@
 #include "optimize/opt_asgd.hpp"
 #include "text.h"
 #include "trainer_data.h"
+#include "trainer_state.h"
 
 namespace ncv
 {
@@ -59,9 +60,9 @@ namespace ncv
 
         stochastic_trainer_t::stochastic_trainer_t(const string_t& params)
                 :       m_optimizer(text::from_params<string_t>(params, "opt", "asgd")),
-                        m_epochs(text::from_params<size_t>(params, "epoch", 4))
+                        m_epochs(text::from_params<size_t>(params, "epoch", 16))
         {
-                m_epochs = math::clamp(m_epochs, 1, 16);
+                m_epochs = math::clamp(m_epochs, 1, 256);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

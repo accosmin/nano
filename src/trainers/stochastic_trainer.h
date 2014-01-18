@@ -12,7 +12,7 @@ namespace ncv
         //
         // parameters:
         //      opt=asgd[,sgd]          - optimization method
-        //      epoch=4[1,16]           - #epochs (~#samples)
+        //      epoch=16[1,256]         - #epochs
         /////////////////////////////////////////////////////////////////////////////////////////
 
         class stochastic_state_t;
@@ -25,7 +25,7 @@ namespace ncv
                 stochastic_trainer_t(const string_t& params = string_t());
 
                 NCV_MAKE_CLONABLE(stochastic_trainer_t, trainer_t,
-                                  "stochastic trainer, parameters: opt=asgd[,sgd],epoch=4[1,16]")
+                                  "stochastic trainer, parameters: opt=asgd[,sgd],epoch=16[1,256]")
 
                 // train the model
                 virtual bool train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const;

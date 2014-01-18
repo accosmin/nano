@@ -1,3 +1,8 @@
+- convolution layer:
+        - no more xdata, re-write ::backward 
+        - inner-most loop for convolution using the output width size
+        - convolution using mod4 and mod4x only!
+
 - faster ::backward() -> almost 4 times slower than ::forward()
 - check if the convolution layers can use fewer buffers (e.g. do not store xdata and update directly the output buffers)
         

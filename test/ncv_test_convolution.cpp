@@ -60,7 +60,7 @@ void test_conv2D(top op, const char* name, const tmatrices& idatas, const tmatri
         const int count = static_cast<int>(idatas.size());
 	for (int i = 0; i < count; i ++)
 	{
-                op(idatas[i], kdata, 1.0, odata);
+                op(idatas[i], kdata, odata);
 	}
 
         const clock_t stop = clock();
@@ -83,8 +83,8 @@ void test(int isize, int ksize, int n_samples)
         init_conv2D(ksize, ksize, krdata, kcdata, kdata);
 
         std::cout << "mix (isize = " << isize << ", ksize = " << ksize << "): \t";
-        test_conv2D(ncv::math::wconv_dot<matrix_t>, "dot", idatas, kdata, odata);
-        test_conv2D(ncv::math::wconv_eib<matrix_t>, "eib", idatas, kdata, odata);
+        test_conv2D(ncv::math::conv_dot<matrix_t>, "dot", idatas, kdata, odata);
+        test_conv2D(ncv::math::conv_eib<matrix_t>, "eib", idatas, kdata, odata);
         std::cout << std::endl;
 }
 
