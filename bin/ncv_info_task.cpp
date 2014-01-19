@@ -101,8 +101,8 @@ int main(int argc, char *argv[])
                         const string_t train_path = cmd_save_dir + "/" + cmd_task + "_train_fold" + text::to_string(f + 1);
                         const string_t test_path = cmd_save_dir + "/" + cmd_task + "_test_fold" + text::to_string(f + 1);
 
-                        rtask->save(train_fold, train_path, cmd_save_group_rows, cmd_save_group_cols);
-                        rtask->save(test_fold, test_path, cmd_save_group_rows, cmd_save_group_cols);
+                        rtask->save_as_images(train_fold, train_path, cmd_save_group_rows, cmd_save_group_cols);
+                        rtask->save_as_images(test_fold, test_path, cmd_save_group_rows, cmd_save_group_cols);
                 }
         }
 		

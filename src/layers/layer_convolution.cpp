@@ -1,6 +1,7 @@
 #include "layer_convolution.h"
 #include "text.h"
 #include "vectorizer.h"
+#include "image.h"
 #include "util/logger.h"
 #include "util/math.hpp"
 #include "util/mad.hpp"
@@ -201,6 +202,57 @@ namespace ncv
         {
                 ia >> m_params >> m_kdata >> m_wdata >> m_bdata;
                 return true;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        bool conv_layer_t::save_as_image(const string_t& basepath) const
+        {
+                const size_t gcols = 8;
+                const size_t grows = (n_kdims() + gcols / 2) / gcols;
+
+                const size_t border = std::max(size_t(4), (n_krows() + n_kcols()) / 4);
+                const size_t radius = 1;
+                const size_t rows = n_krows() * grows + border * (grows + 1);
+                const size_t cols = n_kcols() * gcols + border * (gcols + 1);
+
+                const rgba_t back_color = color::make_rgba(225, 225, 0);
+                const rgba_t border_color = color::make_rgba(225, 0, 0);
+
+                rgba_matrix_t rgba(rows, cols);
+                rgba.setConstant(back_color);
+
+                // compose an image from all convolution kernels ...
+                for (size_t k = 0, r = 0; r < grows; r ++)
+                {
+                        for (size_t c = 0; c < gcols; c ++, k ++)
+                        {
+                                if (k < n_kdims())
+                                {
+                                        const matrix_t& kdata = m_kdata(k);
+                                        const rgba_matrix_t kimage = color::make_rgba(kdata);
+
+                                        const size_t iy = n_krows() * r + border * (r + 1);
+                                        const size_t ix = n_kcols() * c + border * (c + 1);
+                                        const size_t ih = n_krows();
+                                        const size_t iw = n_kcols();
+
+                                        // kernel border
+                                        rgba.block(iy - radius,
+                                                   ix - radius,
+                                                   ih + radius * 2,
+                                                   iw + radius * 2).setConstant(border_color);
+
+                                        // kernel patch
+                                        rgba.block(iy, ix, ih, iw) = kimage;
+                                }
+                        }
+                }
+
+                // ... and save it
+                const string_t path = basepath + "_conv.png";
+                log_info() << "saving images to <" << path << "> ...";
+                return ncv::save_rgba(path, rgba);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

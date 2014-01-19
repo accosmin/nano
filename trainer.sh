@@ -1,8 +1,8 @@
 network0=""
-network1=${network0}"conv:count=16,rows=9,cols=9;snorm;"
-network2=${network1}"conv:count=16,rows=9,cols=9;snorm;"
-network3=${network2}"conv:count=16,rows=7,cols=7;snorm;"
-network4=${network3}"conv:count=16,rows=7,cols=7;snorm;"
+network1=${network0}"conv:count=64,rows=9,cols=9;snorm;"
+network2=${network1}"conv:count=64,rows=9,cols=9;snorm;"
+network3=${network2}"conv:count=64,rows=7,cols=7;snorm;"
+network4=${network3}"conv:count=64,rows=7,cols=7;snorm;"
 
 model0="--model forward-network"
 model1="--model forward-network --model-params ${network1}"
@@ -20,17 +20,17 @@ params=${params}" --loss classnll --trials 1 --threads 4"
 #valgrind --tool=memcheck --leak-check=yes ./build/ncv_trainer ${params}
 
 echo "training ${model0} ..."
-time ./build/ncv_trainer ${params} ${trainer} ${model0} > model0.log
+time ./build/ncv_trainer ${params} ${trainer} ${model0} --output model0 > model0.log
 
 echo "training ${model1} ..."
-time ./build/ncv_trainer ${params} ${trainer} ${model1} > model1.log
+time ./build/ncv_trainer ${params} ${trainer} ${model1} --output model1 > model1.log
 
-echo "training ${model2} ..."
-time ./build/ncv_trainer ${params} ${trainer} ${model2} > model2.log
+#echo "training ${model2} ..."
+#time ./build/ncv_trainer ${params} ${trainer} ${model2} --output model2 > model2.log
 
 #echo "training ${model3} ..."
-#time ./build/ncv_trainer ${params} ${trainer} ${model3} > model3.log
+#time ./build/ncv_trainer ${params} ${trainer} ${model3} --output model3 > model3.log
 
 #echo "training ${model4} ..."
-#time ./build/ncv_trainer ${params} ${trainer} ${model4} > model4.log
+#time ./build/ncv_trainer ${params} ${trainer} ${model4} --output model4 > model4.log
 

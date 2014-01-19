@@ -44,6 +44,9 @@ namespace ncv
                 virtual bool save(boost::archive::binary_oarchive& oa) const;
                 virtual bool load(boost::archive::binary_iarchive& ia);
 
+                // save layer description as image
+                virtual bool save_as_image(const string_t& basepath) const;
+
                 // access functions
                 virtual size_t n_idims() const { return m_idata.n_dim1(); }
                 virtual size_t n_irows() const { return m_idata.n_rows(); }
@@ -62,6 +65,10 @@ namespace ncv
 
                 scalar_t& gweight(size_t o, size_t i) const { return m_gwdata(o, i, 0); }
                 scalar_t& gbias(size_t o) const { return m_gbdata(o, 0, 0); }
+
+                size_t n_kdims() const { return m_kdata.n_dim1(); }
+                size_t n_krows() const { return m_kdata.n_rows(); }
+                size_t n_kcols() const { return m_kdata.n_cols(); }
 
                 template
                 <

@@ -54,7 +54,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void task_t::save(const fold_t& fold, const string_t& base_path, size_t grows, size_t gcols) const
+        void task_t::save_as_images(const fold_t& fold, const string_t& basepath, size_t grows, size_t gcols) const
         {
                 const size_t border = 16, radius = 4;
                 const size_t rows = n_rows() * grows + border * (grows + 1);
@@ -123,7 +123,7 @@ namespace ncv
                         }
 
                         // ... and save it
-                        const string_t path = base_path + "_group" + text::to_string(g) + ".png";
+                        const string_t path = basepath + "_group" + text::to_string(g) + ".png";
                         log_info() << "saving images to <" << path << "> ...";
                         ncv::save_rgba(path, rgba);
                 }

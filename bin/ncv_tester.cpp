@@ -1,5 +1,6 @@
 #include "ncv.h"
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
 
 int main(int argc, char *argv[])
 {
@@ -27,9 +28,12 @@ int main(int argc, char *argv[])
         po_desc.add_options()("model",
                 boost::program_options::value<string_t>(),
                 text::concatenate(model_ids, ", ").c_str());
-        po_desc.add_options()("input",
+        po_desc.add_options()("model-file",
                 boost::program_options::value<string_t>(),
                 "filepath to load the model from");
+        po_desc.add_options()("save-dir",
+                boost::program_options::value<string_t>(),
+                "directory to save model description as images (e.g. learned filters, weights)");
 
         boost::program_options::variables_map po_vm;
         boost::program_options::store(
@@ -43,7 +47,7 @@ int main(int argc, char *argv[])
                 !po_vm.count("task-dir") ||
                 !po_vm.count("loss") ||
                 !po_vm.count("model") ||
-                !po_vm.count("input") ||
+                !po_vm.count("model-file") ||
                 po_vm.count("help"))
         {
                 std::cout << po_desc;
@@ -54,7 +58,8 @@ int main(int argc, char *argv[])
         const string_t cmd_task_dir = po_vm["task-dir"].as<string_t>();
         const string_t cmd_loss = po_vm["loss"].as<string_t>();
         const string_t cmd_model = po_vm["model"].as<string_t>();
-        const string_t cmd_input = po_vm["input"].as<string_t>();
+        const string_t cmd_input = po_vm["model-file"].as<string_t>();
+        const string_t cmd_save_dir = po_vm.count("save-dir") ? po_vm["save-dir"].as<string_t>() : "";
 
         ncv::timer_t timer;
 
@@ -143,6 +148,12 @@ int main(int argc, char *argv[])
                    << " in [" << lstats.min() << ", " << lstats.max() << "].";
         log_info() << ">>> performance: loss error = " << estats.avg() << " +/- " << estats.stdev()
                    << " in [" << estats.min() << ", " << estats.max() << "].";
+
+        // save model parts as images
+        if (!cmd_save_dir.empty())
+        {
+                rmodel->save_as_images(cmd_save_dir + "/" + boost::filesystem::basename(cmd_input));
+        }
 
         // OK
         log_info() << done;

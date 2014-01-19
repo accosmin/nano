@@ -1,6 +1,3 @@
-- test program to print model (ncv_info_model -> model structure + convolutions as images)
-        - may move the info_task drawing functions to the lib
-
 - faster ::backward() -> almost 4 times slower than ::forward()
 - check if the convolution layers can use fewer buffers (e.g. do not store xdata and update directly the output buffers)
 - faster convolution layer - reduce the number of loops - concatenate convolutions?!

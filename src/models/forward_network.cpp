@@ -234,7 +234,7 @@ namespace ncv
                 }
         }
 
-        //------------------------------------------------------------------------------------------------
+        /////////////////////////////////////////////////////////////////////////////////////////
 
         forward_network_t::robject_t forward_network_t::clone() const
         {
@@ -247,11 +247,27 @@ namespace ncv
                 return forward_network_t::robject_t(result);
         }
 
-        //------------------------------------------------------------------------------------------------
+        /////////////////////////////////////////////////////////////////////////////////////////
 
         forward_network_t::robject_t forward_network_t::clone(const std::string& params) const
         {
                 return forward_network_t::robject_t(new forward_network_t(params));
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        bool forward_network_t::save_as_images(const string_t& basepath) const
+        {
+                for (size_t l = 0; l < m_layers.size(); l ++)
+                {
+                        const rlayer_t& layer = m_layers[l];
+                        if (!layer->save_as_image(basepath + "_layer" + text::to_string(l + 1)))
+                        {
+                                return false;
+                        }
+                }
+
+                return true;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

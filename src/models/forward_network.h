@@ -44,6 +44,9 @@ namespace ncv
                 virtual vector_t params() const;
                 virtual vector_t gradient(const vector_t& ograd) const;
 
+                // save model description as image
+                virtual bool save_as_images(const string_t& basepath) const;
+
         protected:
 
                 // save/load from file

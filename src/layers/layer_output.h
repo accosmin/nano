@@ -41,6 +41,9 @@ namespace ncv
                 virtual bool save(boost::archive::binary_oarchive& oa) const;
                 virtual bool load(boost::archive::binary_iarchive& ia);
 
+                // save layer description as image
+                virtual bool save_as_image(const string_t&) const { return true; }
+
                 // access functions
                 virtual size_t n_idims() const { return m_idata.n_dim1(); }
                 virtual size_t n_irows() const { return m_idata.n_rows(); }
