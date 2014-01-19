@@ -149,7 +149,7 @@ namespace ncv
                 }
                 else
                 {
-                        log_error() << "invalid optimization method <" << m_optimizer << ">!";
+                        log_error() << "batch trainer: invalid optimization method <" << m_optimizer << ">!";
                         return false;
                 }
 

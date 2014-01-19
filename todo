@@ -1,11 +1,7 @@
-- convolution layer:
-        - no more xdata, re-write ::backward 
-        - inner-most loop for convolution using the output width size
-        - convolution using mod4 and mod4x only!
-
 - faster ::backward() -> almost 4 times slower than ::forward()
 - check if the convolution layers can use fewer buffers (e.g. do not store xdata and update directly the output buffers)
-        
+- faster convolution layer - reduce the number of loops - concatenate convolutions?!
+       
 - (soft) max-pooling layer: parameter = radius in pixels
         - e.g. rad = 2 -> reduces the feature maps by 2
 
@@ -14,20 +10,15 @@
 - test program to print model (ncv_info_model -> model structure + convolutions as images)
         - may move the info_task drawing functions to the lib
 
-- faster: convolution layer
-	- reduce the number of loops - concatenate convolutions?!
-
 - thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
 	
-idea: variational learning (ebbbost)
-idea: regularized (bound) loss with the same approach as in nips12a.pdf
-
 - svhn decoding:
 	- the sections are not decoded correctly: 
 		- the data type of the last two sections is not valid
 		- the number of bytes in the last section is not valid
 
 - implement other training methods for the convolution network:
+	- regularization: variational learning (like in ebbbost)
         - auto-encoding: using the unlabeled data (could also try with all samples)
         - train a single layer at a time
         - regularization: l2, symmetry
