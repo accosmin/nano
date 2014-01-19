@@ -11,7 +11,7 @@ model3="--model forward-network --model-params ${network3}"
 model4="--model forward-network --model-params ${network4}"
 
 #trainer="--trainer batch --trainer-params opt=lbfgs,iters=4,eps=1e-6"
-trainer="--trainer stochastic --trainer-params gamma=0.01,beta=0.999,batch=1024,epoch=32"
+trainer="--trainer stochastic --trainer-params alpha=0.01,batch=1024,epoch=4"
 
 params=""
 params=${params}" --task mnist --task-dir /home/cosmin/experiments/databases/mnist/"
@@ -25,12 +25,12 @@ time ./build/ncv_trainer ${params} ${trainer} ${model0} --output model0 > model0
 echo "training ${model1} ..."
 time ./build/ncv_trainer ${params} ${trainer} ${model1} --output model1 > model1.log
 
-#echo "training ${model2} ..."
-#time ./build/ncv_trainer ${params} ${trainer} ${model2} --output model2 > model2.log
+echo "training ${model2} ..."
+time ./build/ncv_trainer ${params} ${trainer} ${model2} --output model2 > model2.log
 
-#echo "training ${model3} ..."
-#time ./build/ncv_trainer ${params} ${trainer} ${model3} --output model3 > model3.log
+echo "training ${model3} ..."
+time ./build/ncv_trainer ${params} ${trainer} ${model3} --output model3 > model3.log
 
-#echo "training ${model4} ..."
-#time ./build/ncv_trainer ${params} ${trainer} ${model4} --output model4 > model4.log
+echo "training ${model4} ..."
+time ./build/ncv_trainer ${params} ${trainer} ${model4} --output model4 > model4.log
 

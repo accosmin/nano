@@ -12,13 +12,11 @@ namespace ncv
         /////////////////////////////////////////////////////////////////////////////////////////
 
         stochastic_trainer_t::stochastic_trainer_t(const string_t& params)
-                :       m_gamma(text::from_params<scalar_t>(params, "gamma", 1e-2)),
-                        m_beta(text::from_params<scalar_t>(params, "beta", 0.999)),
+                :       m_alpha(text::from_params<scalar_t>(params, "gamma", 1e-2)),
                         m_batch(text::from_params<size_t>(params, "batch", 1024)),
                         m_epochs(text::from_params<size_t>(params, "epoch", 16))
         {
-                m_gamma = math::clamp(m_gamma, 1e-3, 1e-1);
-                m_beta = math::clamp(m_beta, 0.5, 1.0);
+                m_alpha = math::clamp(m_alpha, 1e-3, 1e-1);
                 m_batch = math::clamp(m_batch, 256, 16 * 1024);
                 m_epochs = math::clamp(m_epochs, 1, 256);
         }
@@ -47,80 +45,77 @@ namespace ncv
                 }
 
                 samples_t tsamples, vsamples;
-                ncv::uniform_split(samples, size_t(80), random_t<size_t>(0, samples.size()), tsamples, vsamples);
-
-                const size_t tsize = m_batch;
-                const size_t vsize = 4 * tsize;
-                const size_t iters = m_batch;
-
-                // optimum model parameters
-                trainer_state_t opt_state(model.n_parameters());
-                opt_state.m_params = model.params();
+                ncv::uniform_split(samples, size_t(90), random_t<size_t>(0, samples.size()), tsamples, vsamples);
 
                 // prepare workers
                 ncv::thread_pool_t wpool(nthreads);
-                const size_t n_workers = wpool.n_workers();
-
                 thread_pool_t::mutex_t mutex;
 
+                const size_t iterations = m_epochs * tsamples.size();   // SGD iterations
+                const scalar_t beta = std::pow(0.01, 1.0 / iterations); // Learning rate range: lamba -> lambda/100
+
+                // optimum model parameters (to update)
+                trainer_state_t opt_state(model.n_parameters());
+                opt_state.m_params = model.params();
+
                 // optimize the model by exploring the parameter space with multiple workers
-                for (size_t e = 0; e < m_epochs * n_workers; e ++)
+                for (size_t n = 0; n < nthreads; n ++)
                 {
                         wpool.enqueue([&]()
                         {
-                                const random_t<size_t> trng(0, tsamples.size());
+                                trainer_data_skipgrad_t ldata(model);
+                                trainer_data_withgrad_t gdata(model);
 
-                                const random_t<size_t> vrng(0, vsamples.size());
-                                const samples_t ntsamples = ncv::uniform_sample(tsamples, tsize, trng);
-                                const samples_t nvsamples = ncv::uniform_sample(vsamples, vsize, vrng);
+                                const size_t ntsize = m_batch;
+                                const size_t nvsize = m_batch;
 
-                                // current optimum solution
-                                vector_t x;
-                                {
-                                        const thread_pool_t::lock_t lock(mutex);
-                                        x = opt_state.m_params;
-                                }
+                                random_t<size_t> trng(0, ntsize);
+                                random_t<size_t> vrng(0, nvsize);
+                                random_t<size_t> xrng(0, tsamples.size());
 
                                 // stochastic gradient descent
                                 timer_t timer;
 
-                                trainer_data_skipgrad_t ldata(model);
-                                trainer_data_withgrad_t gdata(model);
+                                scalar_t alpha = m_alpha;
+                                vector_t x = model.params();
 
-                                random_t<size_t> rng(0, ntsamples.size());
-
-                                scalar_t alpha = m_gamma;
-                                for (size_t i = 0; i < iters; i ++, alpha *= m_beta)
+                                for (size_t i = 0; i < iterations; i ++, alpha *= beta)
                                 {
                                         gdata.load_params(x);
-                                        gdata.update(task, ntsamples[rng() % ntsamples.size()], loss);
+                                        gdata.update(task, tsamples[xrng() % tsamples.size()], loss);
 
                                         x -= alpha * gdata.vgrad();
+
+                                        // check from time to time its performance
+                                        if ((i % m_batch) == 0 || (i + 1) == iterations)
+                                        {
+                                                // training samples: loss value
+                                                ldata.load_params(x);
+                                                ldata.update_st(task, ncv::uniform_sample(tsamples, ntsize, trng), loss);
+                                                const scalar_t tvalue = ldata.value();
+                                                const scalar_t terror = ldata.error();
+
+                                                // validation samples: loss value
+                                                ldata.load_params(x);
+                                                ldata.update_st(task, ncv::uniform_sample(vsamples, nvsize, vrng), loss);
+                                                const scalar_t vvalue = ldata.value();
+                                                const scalar_t verror = ldata.error();
+
+                                                // OK, update the optimum solution
+                                                {
+                                                        const thread_pool_t::lock_t lock(mutex);
+                                                        opt_state.update(x, tvalue, terror, vvalue, verror);
+
+                                                        log_info() << "[train* = "
+                                                                   << opt_state.m_tvalue << "/" << opt_state.m_terror
+                                                                   << ", valid* = " << opt_state.m_vvalue << "/" << opt_state.m_verror
+                                                                   << ", rate = " << alpha
+                                                                   << "] done in " << timer.elapsed() << ".";
+                                                }
+                                        }
                                 }
 
-                                // training samples: loss value
-                                ldata.load_params(x);
-                                ldata.update_st(task, ntsamples, loss);
-                                const scalar_t tvalue = ldata.value();
-                                const scalar_t terror = ldata.error();
 
-                                // validation samples: loss value
-                                ldata.load_params(x);
-                                ldata.update_st(task, nvsamples, loss);
-                                const scalar_t vvalue = ldata.value();
-                                const scalar_t verror = ldata.error();
-
-                                // OK, update the optimum solution
-                                {
-                                        const thread_pool_t::lock_t lock(mutex);
-                                        opt_state.update(x, tvalue, terror, vvalue, verror);
-
-                                        log_info() << "[train* = "
-                                                   << opt_state.m_tvalue << "/" << opt_state.m_terror
-                                                   << ", valid* = " << opt_state.m_vvalue << "/" << opt_state.m_verror
-                                                   << ", rate = " << m_gamma << " -> " << alpha
-                                                   << "] done in " << timer.elapsed() << ".";
-                                }
                         });
                 }
 

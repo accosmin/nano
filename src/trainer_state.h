@@ -22,7 +22,7 @@ namespace ncv
                 }
 
                 // update the current/optimum state with a possible better state
-                void update(const vector_t& params,
+                bool update(const vector_t& params,
                             scalar_t tvalue, scalar_t terror,
                             scalar_t vvalue, scalar_t verror)
                 {
@@ -33,11 +33,18 @@ namespace ncv
                                 m_terror = terror;
                                 m_vvalue = vvalue;
                                 m_verror = verror;
+                                return true;
+                        }
+
+                        else
+                        {
+                                return false;
                         }
                 }
-                void update(const trainer_state_t& state)
+
+                bool update(const trainer_state_t& state)
                 {
-                        update(state.m_params, state.m_tvalue, state.m_terror, state.m_vvalue, state.m_verror);
+                        return update(state.m_params, state.m_tvalue, state.m_terror, state.m_vvalue, state.m_verror);
                 }
 
                 // attributes
