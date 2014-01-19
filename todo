@@ -1,3 +1,6 @@
+- test program to print model (ncv_info_model -> model structure + convolutions as images)
+        - may move the info_task drawing functions to the lib
+
 - faster ::backward() -> almost 4 times slower than ::forward()
 - check if the convolution layers can use fewer buffers (e.g. do not store xdata and update directly the output buffers)
 - faster convolution layer - reduce the number of loops - concatenate convolutions?!
@@ -6,9 +9,6 @@
         - e.g. rad = 2 -> reduces the feature maps by 2
 
 - augment the training dataset with random translations and rotations (only for the stochastic trainer) + test program (given image, save N random translations and rotations of a given pixel radius)
-
-- test program to print model (ncv_info_model -> model structure + convolutions as images)
-        - may move the info_task drawing functions to the lib
 
 - thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
 	

@@ -34,7 +34,10 @@ namespace ncv
                 rect_t sample_size() const;
 
                 // sample region at a particular offset
-                rect_t sample_region(coord_t x, coord_t y) const;
+                rect_t sample_region(coord_t x, coord_t y) const;               
+
+                // save the task images to file (by grouping sample patchs into (grows, gcols) grids)
+                void save(const fold_t& fold, const string_t& base_path, size_t grows, size_t gcols) const;
 
                 // access functions
                 virtual size_t n_rows() const = 0;
