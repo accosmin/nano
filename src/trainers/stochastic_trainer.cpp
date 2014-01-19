@@ -13,6 +13,8 @@ namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
+//        todo: this should be merged into trainer_state_t!!!
+
         struct stochastic_state_t
         {
                 stochastic_state_t() :
@@ -71,6 +73,9 @@ namespace ncv
                 const task_t& task, const samples_t& tsamples, const samples_t& vsamples, const loss_t& loss,
                 size_t iterations, size_t evalsize, stochastic_state_t& state) const
         {
+//                todo: no need for lambdas here, move the (a)sgd code from optimize here,
+//                                periodically check the training and the validation error
+
                 random_t<size_t> trng(0, tsamples.size());
                 random_t<size_t> vrng(0, vsamples.size());
 
