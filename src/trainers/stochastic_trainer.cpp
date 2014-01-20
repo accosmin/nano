@@ -51,7 +51,7 @@ namespace ncv
                 ncv::thread_pool_t wpool(nthreads);
                 thread_pool_t::mutex_t mutex;
 
-                const size_t iterations = m_epochs * tsamples.size();   // SGD iterations
+                const size_t iterations = m_epochs * m_batch;           // SGD iterations
                 const scalar_t beta = std::pow(0.01, 1.0 / iterations); // Learning rate range: lamba -> lambda/100
 
                 // optimum model parameters (to update)
@@ -67,17 +67,20 @@ namespace ncv
                                 trainer_data_withgrad_t gdata(model);
 
                                 const size_t ntsize = m_batch;
-                                const size_t nvsize = m_batch;
+                                const size_t nvsize = m_batch * 4;
 
                                 random_t<size_t> trng(0, ntsize);
                                 random_t<size_t> vrng(0, nvsize);
                                 random_t<size_t> xrng(0, tsamples.size());
 
-                                // stochastic gradient descent
+                                // (weighted-average) stochastic gradient descent
                                 timer_t timer;
 
-                                scalar_t alpha = m_alpha;
                                 vector_t x = model.params();
+
+                                scalar_t alpha = m_alpha;
+                                vector_t avgx = x;
+                                scalar_t sumb = 1.0 / alpha;
 
                                 for (size_t i = 0; i < iterations; i ++, alpha *= beta)
                                 {
@@ -86,17 +89,22 @@ namespace ncv
 
                                         x -= alpha * gdata.vgrad();
 
+                                        // running weighted average update
+                                        const scalar_t beta = 1.0 / alpha;
+                                        avgx = (avgx * sumb + x * beta) / (sumb + beta);
+                                        sumb = sumb + beta;
+
                                         // check from time to time its performance
                                         if ((i % m_batch) == 0 || (i + 1) == iterations)
                                         {
                                                 // training samples: loss value
-                                                ldata.load_params(x);
+                                                ldata.load_params(avgx);
                                                 ldata.update_st(task, ncv::uniform_sample(tsamples, ntsize, trng), loss);
                                                 const scalar_t tvalue = ldata.value();
                                                 const scalar_t terror = ldata.error();
 
                                                 // validation samples: loss value
-                                                ldata.load_params(x);
+                                                ldata.load_params(avgx);
                                                 ldata.update_st(task, ncv::uniform_sample(vsamples, nvsize, vrng), loss);
                                                 const scalar_t vvalue = ldata.value();
                                                 const scalar_t verror = ldata.error();
@@ -108,7 +116,8 @@ namespace ncv
 
                                                         log_info() << "[train* = "
                                                                    << opt_state.m_tvalue << "/" << opt_state.m_terror
-                                                                   << ", valid* = " << opt_state.m_vvalue << "/" << opt_state.m_verror
+                                                                   << ", valid* = "
+                                                                   << opt_state.m_vvalue << "/" << opt_state.m_verror
                                                                    << ", rate = " << alpha
                                                                    << "] done in " << timer.elapsed() << ".";
                                                 }
