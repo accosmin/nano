@@ -100,12 +100,7 @@ int main(int argc, char *argv[])
         ncv::timer_t timer;
 
         // create task
-        rtask_t rtask = task_manager_t::instance().get(cmd_task);
-        if (!rtask)
-        {
-                log_error() << "<<< failed to load task <" << cmd_task << ">!";
-                return EXIT_FAILURE;
-        }
+        const rtask_t rtask = task_manager_t::instance().get(cmd_task);
 
         // load task data
         timer.start();
@@ -138,28 +133,13 @@ int main(int argc, char *argv[])
         }
 
         // create loss
-        rloss_t rloss = loss_manager_t::instance().get(cmd_loss);
-        if (!rloss)
-        {
-                log_error() << "<<< failed to load loss <" << cmd_loss << ">!";
-                return EXIT_FAILURE;
-        }
+        const rloss_t rloss = loss_manager_t::instance().get(cmd_loss);
 
         // create model
-        rmodel_t rmodel = model_manager_t::instance().get(cmd_model, cmd_model_params);
-        if (!rmodel)
-        {
-                log_error() << "<<< failed to load model <" << cmd_model << ">!";
-                return EXIT_FAILURE;
-        }
+        const rmodel_t rmodel = model_manager_t::instance().get(cmd_model, cmd_model_params);
 
         // create trainer
-        rtrainer_t rtrainer = trainer_manager_t::instance().get(cmd_trainer, cmd_trainer_params);
-        if (!rtrainer)
-        {
-                log_error() << "<<< failed to load trainer <" << cmd_trainer << ">!";
-                return EXIT_FAILURE;
-        }
+        const rtrainer_t rtrainer = trainer_manager_t::instance().get(cmd_trainer, cmd_trainer_params);
 
         // train & test models
         std::map<scalar_t, rmodel_t> models;

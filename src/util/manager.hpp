@@ -5,6 +5,7 @@
 #include "singleton.hpp"
 #include <vector>
 #include <map>
+#include <stdexcept>
 
 namespace ncv
 {
@@ -73,7 +74,11 @@ namespace ncv
                 robject_t _get(const std::string& id) const
                 {
                         const protos_const_it it = m_protos.find(id);
-                        return it == m_protos.end() ? robject_t() : it->second->clone();
+                        if (it == m_protos.end())
+                        {
+                                throw std::runtime_error("invalid object id <" + id + ">!");
+                        }
+                        return it->second->clone();
                 }
                 
                 /////////////////////////////////////////////////////////////////////////////////////////
@@ -81,7 +86,11 @@ namespace ncv
                 robject_t _get(const std::string& id, const std::string& params) const
                 {
                         const protos_const_it it = m_protos.find(id);
-                        return it == m_protos.end() ? robject_t() : it->second->clone(params);
+                        if (it == m_protos.end())
+                        {
+                                throw std::runtime_error("invalid object id <" + id + ">!");
+                        }
+                        return it->second->clone(params);
                 }
 
                 /////////////////////////////////////////////////////////////////////////////////////////
