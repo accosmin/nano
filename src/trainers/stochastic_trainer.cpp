@@ -139,6 +139,7 @@ namespace ncv
                                                                            << ", valid* = "
                                                                            << opt_state.m_vvalue << "/" << opt_state.m_verror
                                                                            << ", rate = " << alpha
+                                                                           << ", thread = " << (n + 1) << "/" << nthreads
                                                                            << "] done in " << timer.elapsed() << ".";
                                                         }
 
