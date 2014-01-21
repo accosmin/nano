@@ -12,9 +12,10 @@ namespace ncv
         /////////////////////////////////////////////////////////////////////////////////////////
 
         stochastic_trainer_t::stochastic_trainer_t(const string_t& params)
-                :       m_alpha(text::from_params<scalar_t>(params, "gamma", 1e-2)),
+                :       m_optimizer(text::from_params<string_t>(params, "opt", "asgd")),
+                        m_alpha(text::from_params<scalar_t>(params, "alpha", 1e-2)),
                         m_batch(text::from_params<size_t>(params, "batch", 1024)),
-                        m_epochs(text::from_params<size_t>(params, "epoch", 16))
+                        m_epochs(text::from_params<size_t>(params, "epoch", 4))
         {
                 m_alpha = math::clamp(m_alpha, 1e-3, 1e-1);
                 m_batch = math::clamp(m_batch, 256, 16 * 1024);
@@ -47,12 +48,23 @@ namespace ncv
                 samples_t tsamples, vsamples;
                 ncv::uniform_split(samples, size_t(90), random_t<size_t>(0, samples.size()), tsamples, vsamples);
 
+                //
+                if (    !text::iequals(m_optimizer, "asgd") &&
+                        !text::iequals(m_optimizer, "sgd"))
+                {
+                        log_error() << "stochastic trainer: invalid optimization method <" << m_optimizer << ">!";
+                        return false;
+                }
+
+                const bool asgd = text::iequals(m_optimizer, "asgd");
+
                 // prepare workers
                 ncv::thread_pool_t wpool(nthreads);
                 thread_pool_t::mutex_t mutex;
 
-                const size_t iterations = m_epochs * m_batch;           // SGD iterations
+                const size_t iterations = m_epochs * tsamples.size();   // SGD iterations
                 const scalar_t beta = std::pow(0.01, 1.0 / iterations); // Learning rate range: lamba -> lambda/100
+                const size_t maxage = 8;                                // Stop if no improvement in the last X epochs
 
                 // optimum model parameters (to update)
                 trainer_state_t opt_state(model.n_parameters());
@@ -82,7 +94,7 @@ namespace ncv
                                 vector_t avgx = x;
                                 scalar_t sumb = 1.0 / alpha;
 
-                                for (size_t i = 0; i < iterations; i ++, alpha *= beta)
+                                for (size_t i = 0, ia = 0; i < iterations && ia < maxage; i ++, alpha *= beta)
                                 {
                                         gdata.load_params(x);
                                         gdata.update(task, tsamples[xrng() % tsamples.size()], loss);
@@ -90,21 +102,26 @@ namespace ncv
                                         x -= alpha * gdata.vgrad();
 
                                         // running weighted average update
-                                        const scalar_t beta = 1.0 / alpha;
-                                        avgx = (avgx * sumb + x * beta) / (sumb + beta);
-                                        sumb = sumb + beta;
+                                        if (asgd)
+                                        {
+                                                const scalar_t beta = 1.0 / alpha;
+                                                avgx = (avgx * sumb + x * beta) / (sumb + beta);
+                                                sumb = sumb + beta;
+                                        }
 
                                         // check from time to time its performance
                                         if ((i % m_batch) == 0 || (i + 1) == iterations)
                                         {
+                                                const vector_t xparam = asgd ? avgx : x;
+
                                                 // training samples: loss value
-                                                ldata.load_params(avgx);
+                                                ldata.load_params(xparam);
                                                 ldata.update_st(task, ncv::uniform_sample(tsamples, ntsize, trng), loss);
                                                 const scalar_t tvalue = ldata.value();
                                                 const scalar_t terror = ldata.error();
 
                                                 // validation samples: loss value
-                                                ldata.load_params(avgx);
+                                                ldata.load_params(xparam);
                                                 ldata.update_st(task, ncv::uniform_sample(vsamples, nvsize, vrng), loss);
                                                 const scalar_t vvalue = ldata.value();
                                                 const scalar_t verror = ldata.error();
@@ -112,14 +129,23 @@ namespace ncv
                                                 // OK, update the optimum solution
                                                 {
                                                         const thread_pool_t::lock_t lock(mutex);
-                                                        opt_state.update(x, tvalue, terror, vvalue, verror);
 
-                                                        log_info() << "[train* = "
-                                                                   << opt_state.m_tvalue << "/" << opt_state.m_terror
-                                                                   << ", valid* = "
-                                                                   << opt_state.m_vvalue << "/" << opt_state.m_verror
-                                                                   << ", rate = " << alpha
-                                                                   << "] done in " << timer.elapsed() << ".";
+                                                        if (opt_state.update(xparam, tvalue, terror, vvalue, verror))
+                                                        {
+                                                                ia = 0;
+
+                                                                log_info() << "[train* = "
+                                                                           << opt_state.m_tvalue << "/" << opt_state.m_terror
+                                                                           << ", valid* = "
+                                                                           << opt_state.m_vvalue << "/" << opt_state.m_verror
+                                                                           << ", rate = " << alpha
+                                                                           << "] done in " << timer.elapsed() << ".";
+                                                        }
+
+                                                        else
+                                                        {
+                                                                ia ++;
+                                                        }
                                                 }
                                         }
                                 }
