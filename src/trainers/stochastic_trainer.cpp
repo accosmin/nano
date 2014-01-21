@@ -73,7 +73,7 @@ namespace ncv
                 // optimize the model by exploring the parameter space with multiple workers
                 for (size_t n = 0; n < nthreads; n ++)
                 {
-                        wpool.enqueue([&]()
+                        wpool.enqueue([=, &model, &task, &tsamples, &vsamples, &loss, &opt_state, &mutex]()
                         {
                                 trainer_data_skipgrad_t ldata(model);
                                 trainer_data_withgrad_t gdata(model);
