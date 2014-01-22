@@ -88,7 +88,7 @@ namespace ncv
 
                 // attributes
                 time_t          m_start;
-        };	
+        };
 }
 
 #endif // NANOCV_TIMER_H

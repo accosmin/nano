@@ -50,23 +50,14 @@ int main(int argc, char *argv[])
         const size_t cmd_save_group_rows = math::clamp(po_vm["save-group-rows"].as<size_t>(), 1, 128);
         const size_t cmd_save_group_cols = math::clamp(po_vm["save-group-cols"].as<size_t>(), 1, 128);
 
-        ncv::timer_t timer;
-
         // create task
         const rtask_t rtask = task_manager_t::instance().get(cmd_task);
 
         // load task data
-        timer.start();
-        if (!rtask->load(cmd_task_dir))
-        {
-                log_error() << "<<< failed to load task <" << cmd_task
-                                 << "> from directory <" << cmd_task_dir << ">!";
-                return EXIT_FAILURE;
-        }
-        else
-        {
-                log_info() << "<<< loaded task in " << timer.elapsed() << ".";
-        }
+        ncv::measure_critical_call(
+                [&] () { return rtask->load(cmd_task_dir); },
+                "loaded task",
+                "failed to load task <" + cmd_task + "> from directory <" + cmd_task_dir + ">");
 
         // describe task
         log_info() << "images: " << rtask->n_images() << ".";

@@ -61,23 +61,14 @@ int main(int argc, char *argv[])
         const string_t cmd_input = po_vm["model-file"].as<string_t>();
         const string_t cmd_save_dir = po_vm.count("save-dir") ? po_vm["save-dir"].as<string_t>() : "";
 
-        ncv::timer_t timer;
-
         // create task
         const rtask_t rtask = task_manager_t::instance().get(cmd_task);
 
         // load task data
-        timer.start();
-        if (!rtask->load(cmd_task_dir))
-        {
-                log_error() << "<<< failed to load task <" << cmd_task
-                            << "> from directory <" << cmd_task_dir << ">!";
-                return EXIT_FAILURE;
-        }
-        else
-        {
-                log_info() << "<<< loaded task in " << timer.elapsed() << ".";
-        }
+        ncv::measure_critical_call(
+                [&] () { return rtask->load(cmd_task_dir); },
+                "loaded task",
+                "failed to load task <" + cmd_task + "> from directory <" + cmd_task_dir + ">");
 
         // describe task
         log_info() << "images: " << rtask->n_images() << ".";
@@ -103,13 +94,10 @@ int main(int argc, char *argv[])
         const rmodel_t rmodel = model_manager_t::instance().get(cmd_model);
 
         // load best model
-        timer.start();
-        if (!rmodel->load(cmd_input))
-        {
-                log_error() << "<<< failed to load model from <" << cmd_input << ">!";
-                return EXIT_FAILURE;
-        }
-        log_info() << "<<< model <" << cmd_input << "> loaded in " << timer.elapsed() << ".";
+        ncv::measure_critical_call(
+                [&] () { return rmodel->load(cmd_input); },
+                "loaded model " + cmd_input,
+                "failed to load model from <" + cmd_input + ">");
 
         // test models
         stats_t<scalar_t> lstats, estats;
@@ -118,11 +106,10 @@ int main(int argc, char *argv[])
                 const fold_t test_fold = std::make_pair(f, protocol::test);
 
                 // test
-                timer.start();
+                const ncv::timer_t timer;
                 scalar_t lvalue, lerror;
                 ncv::test(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror);
-                log_info() << "<<< test error: ["
-                           << lvalue << "/" << lerror << "] in " << timer.elapsed() << ".";
+                log_info() << "<<< test error: [" << lvalue << "/" << lerror << "] in " << timer.elapsed() << ".";
 
                 lstats.add(lvalue);
                 estats.add(lerror);

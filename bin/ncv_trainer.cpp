@@ -97,23 +97,14 @@ int main(int argc, char *argv[])
         const size_t cmd_trials = po_vm["trials"].as<size_t>();
         const string_t cmd_output = po_vm["output"].as<string_t>();
 
-        ncv::timer_t timer;
-
         // create task
         const rtask_t rtask = task_manager_t::instance().get(cmd_task);
 
         // load task data
-        timer.start();
-        if (!rtask->load(cmd_task_dir))
-        {
-                log_error() << "<<< failed to load task <" << cmd_task
-                            << "> from directory <" << cmd_task_dir << ">!";
-                return EXIT_FAILURE;
-        }
-        else
-        {
-                log_info() << "<<< loaded task in " << timer.elapsed() << ".";
-        }
+        ncv::measure_critical_call(
+                [&] () { return rtask->load(cmd_task_dir); },
+                "task loaded",
+                "failed to load task <" + cmd_task + "> from directory <" + cmd_task_dir + ">");
 
         // describe task
         log_info() << "images: " << rtask->n_images() << ".";
@@ -153,7 +144,7 @@ int main(int argc, char *argv[])
                         const fold_t test_fold = std::make_pair(f, protocol::test);
 
                         // train
-                        timer.start();
+                        ncv::timer_t timer;
                         if (!rtrainer->train(*rtask, train_fold, *rloss, cmd_threads, *rmodel))
                         {
                                 log_error() << "<<< failed to train model <" << cmd_model << ">!";
@@ -165,8 +156,7 @@ int main(int argc, char *argv[])
                         timer.start();
                         scalar_t lvalue, lerror;
                         ncv::test(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror);
-                        log_info() << "<<< test error: ["
-                                   << lvalue << "/" << lerror << "] in " << timer.elapsed() << ".";
+                        log_info() << "<<< test error: [" << lvalue << "/" << lerror << "] in " << timer.elapsed() << ".";
 
                         lstats.add(lvalue);
                         estats.add(lerror);
@@ -185,13 +175,10 @@ int main(int argc, char *argv[])
         // save the best model (if any trained)
         if (!models.empty() && !cmd_output.empty())
         {
-                timer.start();
-                if (!models.begin()->second->save(cmd_output))
-                {
-                        log_error() << "<<< failed to save model to <" << cmd_output << ">!";
-                        return EXIT_FAILURE;
-                }
-                log_info() << "<<< model <" << cmd_output << "> saved in " << timer.elapsed() << ".";
+                ncv::measure_critical_call(
+                        [&] () { return models.begin()->second->save(cmd_output); },
+                        "saved model <" + cmd_output + ">",
+                        "failed to save model to <" + cmd_output + ">");
         }
 
         // OK
