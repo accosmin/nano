@@ -45,6 +45,7 @@ namespace ncv
                 // RGBA encoding (by normalizing a matrix data)
                 rgba_matrix_t make_rgba(const matrix_t& data);
                 rgba_matrix_t make_rgba(const matrix_t& data, scalar_t min, scalar_t max);
+                rgba_matrix_t make_rgba_sign(const matrix_t& data);
 
                 // color channel range
                 inline scalar_t min(channel ch)

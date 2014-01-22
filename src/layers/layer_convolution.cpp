@@ -217,7 +217,7 @@ namespace ncv
                 const size_t cols = n_kcols() * gcols + border * (gcols + 1);
 
                 const rgba_t back_color = color::make_rgba(225, 225, 0);
-                const rgba_t border_color = color::make_rgba(225, 0, 0);
+                const rgba_t border_color = color::make_rgba(0, 225, 0);
 
                 rgba_matrix_t rgba(rows, cols);
                 rgba.setConstant(back_color);
@@ -230,7 +230,7 @@ namespace ncv
                                 if (k < n_kdims())
                                 {
                                         const matrix_t& kdata = m_kdata(k);
-                                        const rgba_matrix_t kimage = color::make_rgba(kdata);
+                                        const rgba_matrix_t kimage = color::make_rgba_sign(kdata);
 
                                         const size_t iy = n_krows() * r + border * (r + 1);
                                         const size_t ix = n_kcols() * c + border * (c + 1);
