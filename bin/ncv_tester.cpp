@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
         // load best model
         ncv::measure_critical_call(
                 [&] () { return rmodel->load(cmd_input); },
-                "loaded model " + cmd_input,
+                "loaded model",
                 "failed to load model from <" + cmd_input + ">");
 
         // test models

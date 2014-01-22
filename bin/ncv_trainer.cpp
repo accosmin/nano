@@ -144,19 +144,17 @@ int main(int argc, char *argv[])
                         const fold_t test_fold = std::make_pair(f, protocol::test);
 
                         // train
-                        ncv::timer_t timer;
-                        if (!rtrainer->train(*rtask, train_fold, *rloss, cmd_threads, *rmodel))
-                        {
-                                log_error() << "<<< failed to train model <" << cmd_model << ">!";
-                                break;
-                        }
-                        log_info() << "<<< training done in " << timer.elapsed() << ".";
+                        ncv::measure_critical_call(
+                                [&] () { return rtrainer->train(*rtask, train_fold, *rloss, cmd_threads, *rmodel); },
+                                "model trained",
+                                "failed to train model");
 
                         // test
-                        timer.start();
                         scalar_t lvalue, lerror;
-                        ncv::test(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror);
-                        log_info() << "<<< test error: [" << lvalue << "/" << lerror << "] in " << timer.elapsed() << ".";
+                        ncv::measure_call(
+                                [&] () { ncv::test(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror); },
+                                "model tested");
+                        log_info() << "<<< test error: [" << lvalue << "/" << lerror << "].";
 
                         lstats.add(lvalue);
                         estats.add(lerror);
@@ -177,7 +175,7 @@ int main(int argc, char *argv[])
         {
                 ncv::measure_critical_call(
                         [&] () { return models.begin()->second->save(cmd_output); },
-                        "saved model <" + cmd_output + ">",
+                        "saved model",
                         "failed to save model to <" + cmd_output + ">");
         }
 

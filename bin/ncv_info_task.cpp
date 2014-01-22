@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
         ncv::measure_critical_call(
                 [&] () { return rtask->load(cmd_task_dir); },
                 "loaded task",
-                "failed to load task <" + cmd_task + "> from directory <" + cmd_task_dir + ">");
+                "failed to load task from directory <" + cmd_task_dir + ">");
 
         // describe task
         log_info() << "images: " << rtask->n_images() << ".";
