@@ -80,9 +80,9 @@ int main(int argc, char *argv[])
         const size_t cmd_irows = 16;
         const size_t cmd_icols = 16;
         const size_t cmd_outputs = 10;
-        const size_t cmd_max_layers = 3;
+        const size_t cmd_max_layers = 4;
 
-        const size_t cmd_tests = 8;
+        const size_t cmd_tests = 1024;
 
         // evaluate the analytical gradient vs. the finite difference approximation
         //      for each: number of convolution layers, activation layer

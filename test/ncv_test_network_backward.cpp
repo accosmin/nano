@@ -10,9 +10,9 @@ int main(int argc, char *argv[])
 
         const string_t network0 = "";
         const string_t network1 = network0 + "conv:count=16,rows=9,cols=9;snorm;";
-        const string_t network2 = network1 + "conv:count=16,rows=7,cols=7;snorm;";
-        const string_t network3 = network2 + "conv:count=16,rows=5,cols=5;snorm;";
-        const string_t network4 = network3 + "conv:count=16,rows=3,cols=3;snorm;";
+        const string_t network2 = network1 + "conv:count=16,rows=9,cols=9;snorm;";
+        const string_t network3 = network2 + "conv:count=16,rows=7,cols=7;snorm;";
+        const string_t network4 = network3 + "conv:count=16,rows=6,cols=6;snorm;";
 
         strings_t cmd_networks =
         {
@@ -24,8 +24,8 @@ int main(int argc, char *argv[])
         };
 
         const color_mode cmd_color = color_mode::luma;
-        const size_t cmd_rows = 24;
-        const size_t cmd_cols = 24;
+        const size_t cmd_rows = 28;
+        const size_t cmd_cols = 28;
         const size_t cmd_outputs = 10;
         const size_t cmd_samples = 10000;
 
