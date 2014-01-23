@@ -11,7 +11,7 @@ model3="--model forward-network --model-params ${network3}"
 model4="--model forward-network --model-params ${network4}"
 
 #trainer="--trainer batch --trainer-params opt=lbfgs,iters=4,eps=1e-6"
-trainer="--trainer stochastic --trainer-params opt=asgd,alpha=1e-2,batch=1024,epoch=8"
+trainer="--trainer stochastic --trainer-params opt=asgd,alpha=1e-2,epoch=16"
 
 params=""
 params=${params}" --task mnist --task-dir /home/cosmin/experiments/databases/mnist/"

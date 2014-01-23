@@ -14,11 +14,9 @@ namespace ncv
         stochastic_trainer_t::stochastic_trainer_t(const string_t& params)
                 :       m_optimizer(text::from_params<string_t>(params, "opt", "asgd")),
                         m_alpha(text::from_params<scalar_t>(params, "alpha", 1e-2)),
-                        m_batch(text::from_params<size_t>(params, "batch", 1024)),
                         m_epochs(text::from_params<size_t>(params, "epoch", 4))
         {
                 m_alpha = math::clamp(m_alpha, 1e-3, 1e-1);
-                m_batch = math::clamp(m_batch, 256, 16 * 1024);
                 m_epochs = math::clamp(m_epochs, 1, 256);
         }
 
@@ -78,11 +76,6 @@ namespace ncv
                                 trainer_data_skipgrad_t ldata(model);
                                 trainer_data_withgrad_t gdata(model);
 
-                                const size_t ntsize = m_batch;
-                                const size_t nvsize = m_batch * 4;
-
-                                random_t<size_t> trng(0, ntsize);
-                                random_t<size_t> vrng(0, nvsize);
                                 random_t<size_t> xrng(0, tsamples.size());
 
                                 // (weighted-average) stochastic gradient descent
@@ -110,19 +103,19 @@ namespace ncv
                                         }
 
                                         // check from time to time its performance
-                                        if ((i % m_batch) == 0 || (i + 1) == iterations)
+                                        if ((i % tsamples.size()) == 0 || (i + 1) == iterations)
                                         {
                                                 const vector_t xparam = asgd ? avgx : x;
 
                                                 // training samples: loss value
                                                 ldata.load_params(xparam);
-                                                ldata.update_st(task, ncv::uniform_sample(tsamples, ntsize, trng), loss);
+                                                ldata.update_st(task, tsamples, loss);
                                                 const scalar_t tvalue = ldata.value();
                                                 const scalar_t terror = ldata.error();
 
                                                 // validation samples: loss value
                                                 ldata.load_params(xparam);
-                                                ldata.update_st(task, ncv::uniform_sample(vsamples, nvsize, vrng), loss);
+                                                ldata.update_st(task, vsamples, loss);
                                                 const scalar_t vvalue = ldata.value();
                                                 const scalar_t verror = ldata.error();
 
@@ -134,13 +127,12 @@ namespace ncv
                                                         {
                                                                 ia = 0;
 
-                                                                log_info() << "[train* = "
-                                                                           << opt_state.m_tvalue << "/" << opt_state.m_terror
-                                                                           << ", valid* = "
-                                                                           << opt_state.m_vvalue << "/" << opt_state.m_verror
-                                                                           << ", rate = " << alpha
-                                                                           << ", thread = " << (n + 1) << "/" << nthreads
-                                                                           << "] done in " << timer.elapsed() << ".";
+                                                                log_info()
+                                                                << "[train* = " << opt_state.m_tvalue << "/" << opt_state.m_terror
+                                                                << ", valid* = " << opt_state.m_vvalue << "/" << opt_state.m_verror
+                                                                << ", rate = " << alpha
+                                                                << ", thread = " << (n + 1) << "/" << nthreads
+                                                                << "] done in " << timer.elapsed() << ".";
                                                         }
 
                                                         else
