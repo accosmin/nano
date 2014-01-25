@@ -16,7 +16,7 @@ function fn_train
                 lfile=${dir_exp}/$1-$3-$5.log
 
                 mconfig="--model $1 --model-params $2"
-                tconfig="--trainer $2 --trainer-params $4"
+                tconfig="--trainer $3 --trainer-params $4"
                 pconfig=${param}
         fi      
         
