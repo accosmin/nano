@@ -14,6 +14,8 @@ namespace ncv
         //      iters=1024[4,4096]      - maximum number of iterations
         /////////////////////////////////////////////////////////////////////////////////////////
                 
+        class trainer_state_t;
+
         class batch_trainer_t : public trainer_t
         {
         public:
@@ -26,6 +28,12 @@ namespace ncv
 
                 // train the model
                 virtual bool train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const;
+
+        private:
+
+                // train the model with L2-norm regularization
+                bool train(const task_t&, const samples_t&, const samples_t&, const loss_t&,
+                           const model_t&, size_t nthreads, scalar_t l2reg, trainer_state_t& state) const;
 
         private:
 
