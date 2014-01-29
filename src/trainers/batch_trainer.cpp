@@ -58,7 +58,7 @@ namespace ncv
                         // update the optimum state
                         state.update(x, tvalue, terror, vvalue, verror);
 
-                        if (terror < 2.0 * verror)
+                        if (terror < 0.5 * verror)
                         {
                                 throw std::runtime_error("over-fitting detected!");
                         }
@@ -71,7 +71,7 @@ namespace ncv
                         // training samples: loss value & gradient
                         gdata.load_params(x);
                         gdata.update_mt(task, tsamples, loss, nthreads);
-                        const scalar_t tvalue = ldata.value() + l2reg * x.squaredNorm();
+                        const scalar_t tvalue = gdata.value() + l2reg * x.squaredNorm();
                         const scalar_t terror = gdata.error();
                         gx = gdata.vgrad() + 2.0 * l2reg * x;
 
@@ -84,7 +84,7 @@ namespace ncv
                         // update the optimum state
                         state.update(x, tvalue, terror, vvalue, verror);
 
-                        if (terror < 2.0 * verror)
+                        if (terror < 0.5 * verror)
                         {
                                 throw std::runtime_error("over-fitting detected!");
                         }
