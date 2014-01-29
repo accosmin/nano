@@ -12,7 +12,7 @@ mkdir -p ${dir_exp}
 
 # common parameters
 batch="opt=lbfgs,eps=1e-6,iters=1024"
-stoch="opt=sgd,alpha=1e-2,epoch=64"
+stoch="opt=sgd,alpha=1e-3,epoch=64"
 
 param=""
 param=${param}"--task mnist --task-dir ${dir_db}/mnist/ "
