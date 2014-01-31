@@ -1,12 +1,16 @@
+- (soft) max(abs)-pooling layer: update test programs (check gradient) & training scripts
+
+- filter interface that keep the size of the input image:
+	- gaussian, elastic deformations, rotate & translate
+	- should be possible to chain them: image(gaussian_t, 2.0)(translate_t, -1, +1)(elastic, 0.0, 1.0)
+	- update test program to verify them
+
+- augment the training dataset with random translations and rotations (only for the stochastic trainer) + test program (given image, save N random translations and rotations of a given pixel radius)
+
 - faster ::backward() -> almost 4 times slower than ::forward()
 - check if the convolution layers can use fewer buffers (e.g. do not store xdata and update directly the output buffers)
 - faster convolution layer - reduce the number of loops - concatenate convolutions?!
        
-- (soft) max-pooling layer: parameter = radius in pixels
-        - e.g. rad = 2 -> reduces the feature maps by 2
-
-- augment the training dataset with random translations and rotations (only for the stochastic trainer) + test program (given image, save N random translations and rotations of a given pixel radius)
-
 - thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
 	
 - svhn decoding:

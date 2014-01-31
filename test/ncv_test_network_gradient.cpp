@@ -72,7 +72,8 @@ int main(int argc, char *argv[])
         ncv::init();
 
         const strings_t conv_layer_ids { "conv" };
-        const strings_t activation_layer_ids { "", "unit", "tanh", "snorm" };
+        const strings_t actv_layer_ids { "", "unit", "tanh", "snorm" };
+        const strings_t pool_layer_ids { "", "smax-pool" };
         const strings_t loss_ids = loss_manager_t::instance().ids();
 
         const color_mode cmd_color = color_mode::luma;
@@ -80,29 +81,38 @@ int main(int argc, char *argv[])
         const size_t cmd_irows = 16;
         const size_t cmd_icols = 16;
         const size_t cmd_outputs = 10;
-        const size_t cmd_max_layers = 4;
+        const size_t cmd_max_layers = 2;
 
-        const size_t cmd_tests = 1024;
+        const size_t cmd_tests = 16;
 
         // evaluate the analytical gradient vs. the finite difference approximation
-        //      for each: number of convolution layers, activation layer
+        //      for each: number of convolution layers, activation layer, pooling layer
         std::set<string_t> descs;
         for (size_t n_layers = 0; n_layers <= cmd_max_layers; n_layers ++)
         {
-                for (const string_t& activation_layer_id : activation_layer_ids)
+                for (const string_t& actv_layer_id : actv_layer_ids)
                 {
-                        for (const string_t& conv_layer_id : conv_layer_ids)
+                        for (const string_t& pool_layer_id : pool_layer_ids)
                         {
-                                // build the network
-                                string_t desc;
-                                for (size_t l = 0; l < n_layers; l ++)
+                                for (const string_t& conv_layer_id : conv_layer_ids)
                                 {
-                                        random_t<size_t> rgen(2, 6);
-                                        desc += conv_layer_id + ":count=" + text::to_string(rgen()) + ",rows=4,cols=4;";
-                                        desc += activation_layer_id + ";";
-                                }
+                                        // build the network
+                                        string_t desc;
+                                        for (size_t l = 0; l < n_layers; l ++)
+                                        {
+                                                random_t<size_t> rgen(2, 6);
 
-                                descs.insert(desc);
+                                                const string_t conv_params =
+                                                        "count=" + text::to_string(rgen()) +
+                                                        ((rgen() % 2 == 0) ? ",rows=3,cols=3;" : ",rows=5,cols=5;");
+
+                                                desc += conv_layer_id + ":" + conv_params;
+                                                desc += actv_layer_id + ";";
+                                                desc += pool_layer_id + ";";
+                                        }
+
+                                        descs.insert(desc);
+                                }
                         }
                 }
         }

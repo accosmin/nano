@@ -14,6 +14,7 @@
 #include "layers/layer_activation_tanh.h"
 #include "layers/layer_activation_snorm.h"
 #include "layers/layer_convolution.h"
+#include "layers/layer_softmax_pool.h"
 
 #include "models/forward_network.h"
 
@@ -51,6 +52,7 @@ namespace ncv
                 layer_manager_t::instance().add("tanh", tanh_activation_layer_t());
                 layer_manager_t::instance().add("snorm", snorm_activation_layer_t());
                 layer_manager_t::instance().add("conv", conv_layer_t());
+                layer_manager_t::instance().add("smax-pool", softmax_pool_layer_t());
 
                 // register models
                 model_manager_t::instance().add("forward-network", forward_network_t());

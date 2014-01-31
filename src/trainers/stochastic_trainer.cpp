@@ -65,13 +65,13 @@ namespace ncv
                 const size_t maxage = 8;                                // Stop if no improvement in the last X epochs
 
                 // optimum model parameters (to update)
-                trainer_state_t opt_state(model.n_parameters());
-                opt_state.m_params = model.params();
+                trainer_state_t state(model.n_parameters());
+                state.m_params = model.params();
 
                 // optimize the model by exploring the parameter space with multiple workers
                 for (size_t n = 0; n < nthreads; n ++)
                 {
-                        wpool.enqueue([=, &model, &task, &tsamples, &vsamples, &loss, &opt_state, &mutex]()
+                        wpool.enqueue([=, &model, &task, &tsamples, &vsamples, &loss, &state, &mutex]()
                         {
                                 trainer_data_skipgrad_t ldata(model);
                                 trainer_data_withgrad_t gdata(model);
@@ -120,25 +120,23 @@ namespace ncv
                                                 const scalar_t verror = ldata.error();
 
                                                 // OK, update the optimum solution
+                                                const thread_pool_t::lock_t lock(mutex);
+
+                                                if (state.update(xparam, tvalue, terror, vvalue, verror))
                                                 {
-                                                        const thread_pool_t::lock_t lock(mutex);
+                                                        ia = 0;
 
-                                                        if (opt_state.update(xparam, tvalue, terror, vvalue, verror))
-                                                        {
-                                                                ia = 0;
+                                                        log_info()
+                                                        << "[train* = " << state.m_tvalue << "/" << state.m_terror
+                                                        << ", valid* = " << state.m_vvalue << "/" << state.m_verror
+                                                        << ", rate = " << alpha
+                                                        << ", thread = " << (n + 1) << "/" << nthreads
+                                                        << "] done in " << timer.elapsed() << ".";
+                                                }
 
-                                                                log_info()
-                                                                << "[train* = " << opt_state.m_tvalue << "/" << opt_state.m_terror
-                                                                << ", valid* = " << opt_state.m_vvalue << "/" << opt_state.m_verror
-                                                                << ", rate = " << alpha
-                                                                << ", thread = " << (n + 1) << "/" << nthreads
-                                                                << "] done in " << timer.elapsed() << ".";
-                                                        }
-
-                                                        else
-                                                        {
-                                                                ia ++;
-                                                        }
+                                                else
+                                                {
+                                                        ia ++;
                                                 }
                                         }
                                 }
@@ -149,10 +147,10 @@ namespace ncv
 
                 wpool.wait();
 
-                model.load_params(opt_state.m_params);
+                model.load_params(state.m_params);
 
-                log_info() << "[train* = " << opt_state.m_tvalue << "/" << opt_state.m_terror
-                           << ", valid* = " << opt_state.m_vvalue << "/" << opt_state.m_verror << "].";
+                log_info() << "[train* = " << state.m_tvalue << "/" << state.m_terror
+                           << ", valid* = " << state.m_vvalue << "/" << state.m_verror << "].";
 
                 // OK
                 return true;
