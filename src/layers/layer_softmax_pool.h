@@ -59,8 +59,8 @@ namespace ncv
                 mutable tensor3d_t      m_odata;        // output buffer
 
                 mutable tensor3d_t      m_wdata;        // pooling weights
-                mutable tensor3d_t      m_sdata;
-                mutable tensor3d_t      m_tdata;
+                mutable tensor3d_t      m_sdata;        // nominator
+                mutable tensor3d_t      m_tdata;        // denominator
         };
 }
 

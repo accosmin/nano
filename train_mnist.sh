@@ -5,7 +5,7 @@ source train_common.sh
 # paths
 dir_results=/home/cosmin/experiments/results
 dir_db=/home/cosmin/experiments/databases
-trainer=./build/ncv_trainer
+trainer=./build-release/ncv_trainer
 
 dir_exp=${dir_results}/mnist
 mkdir -p ${dir_exp}
@@ -16,7 +16,7 @@ stoch="opt=sgd,alpha=1e-3,epoch=64"
 
 param=""
 param=${param}"--task mnist --task-dir ${dir_db}/mnist/ "
-param=${param}"--loss classnll --trials 10 --threads 4"
+param=${param}"--loss classnll --trials 10 --threads 1"
 
 # models
 network0=""
@@ -29,8 +29,8 @@ network4=${network3}"conv:count=16,rows=6,cols=6;snorm;"
 
 # train models
 fn_train forward-network ${network0} stochastic ${stoch} model0
-fn_train forward-network ${network0} batch ${batch} model0
+#fn_train forward-network ${network0} batch ${batch} model0
 
-#fn_train forward-network ${network4} stochastic ${stoch} model4
+fn_train forward-network ${network4} stochastic ${stoch} model4
 #fn_train forward-network ${network4} batch ${batch} model4
 

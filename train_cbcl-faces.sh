@@ -5,7 +5,7 @@ source train_common.sh
 # paths
 dir_results=/home/cosmin/experiments/results
 dir_db=/home/cosmin/experiments/databases
-trainer=./build/ncv_trainer
+trainer=./build-release/ncv_trainer
 
 dir_exp=${dir_results}/cbcl-faces
 mkdir -p ${dir_exp}
@@ -29,8 +29,8 @@ network4=${network3}"conv:count=16,rows=3,cols=3;snorm;"
 
 # train models
 fn_train forward-network ${network0} stochastic ${stoch} model0
-fn_train forward-network ${network0} batch ${batch} model0
+#fn_train forward-network ${network0} batch ${batch} model0
 
-#fn_train forward-network ${network4} stochastic ${stoch} model4
+fn_train forward-network ${network4} stochastic ${stoch} model4
 #fn_train forward-network ${network4} batch ${batch} model4
 
