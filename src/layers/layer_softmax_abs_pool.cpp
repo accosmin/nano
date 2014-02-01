@@ -1,16 +1,16 @@
-#include "layer_softmax_pool.h"
+#include "layer_softmax_abs_pool.h"
 
 namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        softmax_pool_layer_t::softmax_pool_layer_t(const string_t&)
+        softmax_abs_pool_layer_t::softmax_abs_pool_layer_t(const string_t&)
         {
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        size_t softmax_pool_layer_t::resize(size_t idims, size_t irows, size_t icols)
+        size_t softmax_abs_pool_layer_t::resize(size_t idims, size_t irows, size_t icols)
         {
                 const size_t odims = idims;
                 const size_t orows = (irows + 1) / 2;
@@ -28,7 +28,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        const tensor3d_t& softmax_pool_layer_t::forward(const tensor3d_t& input) const
+        const tensor3d_t& softmax_abs_pool_layer_t::forward(const tensor3d_t& input) const
         {
                 assert(n_idims() == input.n_dim1());
                 assert(n_irows() <= input.n_rows());
@@ -52,7 +52,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        const tensor3d_t& softmax_pool_layer_t::backward(const tensor3d_t& gradient) const
+        const tensor3d_t& softmax_abs_pool_layer_t::backward(const tensor3d_t& gradient) const
         {
                 assert(n_odims() == gradient.n_dim1());
                 assert(n_orows() == gradient.n_rows());

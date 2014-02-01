@@ -1,25 +1,25 @@
-#ifndef NANOCV_SOFTMAX_POOL_LAYER_H
-#define NANOCV_SOFTMAX_POOL_LAYER_H
+#ifndef NANOCV_SOFTMAX_ABS_POOL_LAYER_H
+#define NANOCV_SOFTMAX_ABS_POOL_LAYER_H
 
 #include "layer.h"
 
 namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
-        // softmax pooling layer:
+        // softmax absolute pooling layer:
         //      down-sample by 2 from a 3x3 neighbouring region using a soft-max weighting.
-        //      weight ~ input value.
+        //      weight ~ absolute input value.
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        class softmax_pool_layer_t : public layer_t
+        class softmax_abs_pool_layer_t : public layer_t
         {
         public:
 
                 // constructor
-                softmax_pool_layer_t(const string_t& params = string_t());
+                softmax_abs_pool_layer_t(const string_t& params = string_t());
 
-                NCV_MAKE_CLONABLE(softmax_pool_layer_t, layer_t,
-                                  "soft-max pooling layer")
+                NCV_MAKE_CLONABLE(softmax_abs_pool_layer_t, layer_t,
+                                  "soft-max absolute pooling layer")
 
                 // resize to process new inputs, returns the number of parameters
                 virtual size_t resize(size_t idims, size_t irows, size_t icols);
@@ -75,10 +75,10 @@ namespace ncv
                         {
                                 for (auto c = 0, cc = 0; c < idata.cols(); c ++, cc = c / 2)
                                 {
-                                        const auto w = wdata(r, c);
+                                        const auto w = wdata(r, c), iw = 1.0 / w;
 
-                                        sdata(rr, cc) += w * idata(r, c);
-                                        tdata(rr, cc) += w;
+                                        sdata(rr, cc) += (w + iw) * idata(r, c);
+                                        tdata(rr, cc) += (w + iw);
                                 }
                         }
 
@@ -98,12 +98,12 @@ namespace ncv
                         {
                                 for (auto c = 0, cc = 0; c < idata.cols(); c ++, cc = c / 2)
                                 {
-                                        const auto w = wdata(r, c);
+                                        const auto w = wdata(r, c), iw = 1.0 / w;
                                         const auto s = sdata(rr, cc);
                                         const auto t = tdata(rr, cc);
 
                                         idata(r, c) =   gdata(rr, cc) *
-                                                        (t * (w + w * idata(r, c)) - s * w) / (t * t);
+                                                        (t * ((w + iw) + (w - iw) * idata(r, c)) - s * (w - iw)) / (t * t);
                                 }
                         }
                 }
@@ -122,5 +122,5 @@ namespace ncv
         };
 }
 
-#endif // NANOCV_SOFTMAX_POOL_LAYER_H
+#endif // NANOCV_SOFTMAX_ABS_POOL_LAYER_H
 

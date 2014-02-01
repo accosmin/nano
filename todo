@@ -1,3 +1,5 @@
+- easier way and less verbose of creating networks
+
 - (soft) max(abs)-pooling layer: update test programs (check gradient) & training scripts
 
 - filter interface that keep the size of the input image:

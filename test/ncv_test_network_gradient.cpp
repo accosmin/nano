@@ -54,7 +54,7 @@ static void test_grad(
                 rgen(target.data(), target.data() + target.size());
                 rgen(params.data(), params.data() + params.size());
 
-                input.random(-0.1 / sqrt(n_parameters), +0.1 / sqrt(n_parameters));
+                input.random(-0.2 / sqrt(n_parameters), +0.2 / sqrt(n_parameters));
 
                 vector_t gx_gd, gx_ax;
                 problem_gd(x, gx_gd);
@@ -63,7 +63,7 @@ static void test_grad(
                 const scalar_t dgx = (gx_gd - gx_ax).lpNorm<Eigen::Infinity>();
 
                 log_info() << header << " [" << (t + 1) << "/" << n_tests
-                           << "]: gradient accuracy = " << dgx << " (" << (dgx > 1e-7 ? "ERROR" : "OK") << ").";
+                           << "]: gradient accuracy = " << dgx << " (" << (dgx > 1e-6 ? "ERROR" : "OK") << ").";
         }
 }
 
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 
         const strings_t conv_layer_ids { "conv" };
         const strings_t actv_layer_ids { "", "unit", "tanh", "snorm" };
-        const strings_t pool_layer_ids { "", "smax-pool" };
+        const strings_t pool_layer_ids { "", "smax-abs-pool", "smax-pool" };
         const strings_t loss_ids = loss_manager_t::instance().ids();
 
         const color_mode cmd_color = color_mode::luma;
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
         const size_t cmd_outputs = 10;
         const size_t cmd_max_layers = 2;
 
-        const size_t cmd_tests = 16;
+        const size_t cmd_tests = 64;
 
         // evaluate the analytical gradient vs. the finite difference approximation
         //      for each: number of convolution layers, activation layer, pooling layer

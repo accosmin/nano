@@ -70,6 +70,33 @@ namespace ncv
                 size_t n_krows() const { return m_kdata.n_rows(); }
                 size_t n_kcols() const { return m_kdata.n_cols(); }
 
+                template
+                <
+                        typename tmad
+                >
+                void backward(
+                        const matrix_t& ogdata, const matrix_t& kdata, scalar_t weight,
+                        matrix_t& igdata, tmad madop) const
+                {
+                        for (auto r = 0; r < ogdata.rows(); r ++)
+                        {
+                                const scalar_t* pogdata = &ogdata(r, 0);
+
+                                for (auto kr = 0; kr < kdata.rows(); kr ++)
+                                {
+                                        const scalar_t* pkdata = &kdata(kr, 0);
+                                        scalar_t* pigdata = &igdata(r + kr, 0);
+
+                                        for (auto c = 0; c < ogdata.cols(); c ++)
+                                        {
+                                                const scalar_t w = weight * pogdata[c];
+
+                                                madop(pkdata, w, pigdata + c, kdata.cols());
+                                        }
+                                }
+                        }
+                }
+
                 /////////////////////////////////////////////////////////////////////////////////////////
 
         private:
