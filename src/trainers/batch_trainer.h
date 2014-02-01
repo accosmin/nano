@@ -31,12 +31,6 @@ namespace ncv
 
         private:
 
-                // train the model with L2-norm regularization
-                bool train(const task_t&, const samples_t&, const samples_t&, const loss_t&,
-                           const model_t&, size_t nthreads, scalar_t l2reg, trainer_state_t& state) const;
-
-        private:
-
                 // attributes
                 string_t        m_optimizer;
                 size_t          m_iterations;

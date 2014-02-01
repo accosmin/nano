@@ -27,14 +27,37 @@ namespace ncv
         /////////////////////////////////////////////////////////////////////////////////////////
 
         bool batch_trainer_t::train(
-                const task_t& task, const samples_t& tsamples, const samples_t& vsamples, const loss_t& loss,
-                const model_t& model, size_t nthreads, scalar_t l2reg, trainer_state_t& state) const
+                const task_t& task, const fold_t& fold, const loss_t& loss, size_t nthreads,
+                model_t& model) const
         {
+                if (fold.second != protocol::train)
+                {
+                        log_error() << "batch trainer: cannot only train models with training samples!";
+                        return false;
+                }
+
+                // initialize the model
+                model.resize(task);
+                model.random_params();
+
+                // prune training & validation data
+                const samples_t samples = ncv::prune_annotated(task, task.samples(fold));
+                if (samples.empty())
+                {
+                        log_error() << "batch trainer: no annotated training samples!";
+                        return false;
+                }
+
+                samples_t tsamples, vsamples;
+                ncv::uniform_split(samples, size_t(90), random_t<size_t>(0, samples.size()), tsamples, vsamples);
+
                 // construct the optimization problem
                 timer_t timer;
 
                 trainer_data_skipgrad_t ldata(model);
                 trainer_data_withgrad_t gdata(model);
+
+                trainer_state_t state(model.n_parameters());
 
                 auto fn_size = [&] ()
                 {
@@ -46,22 +69,17 @@ namespace ncv
                         // training samples: loss value
                         ldata.load_params(x);
                         ldata.update_mt(task, tsamples, loss, nthreads);
-                        const scalar_t tvalue = ldata.value() + l2reg * x.squaredNorm();
+                        const scalar_t tvalue = ldata.value();
                         const scalar_t terror = ldata.error();
 
                         // validation samples: loss value
                         ldata.load_params(x);
                         ldata.update_mt(task, vsamples, loss, nthreads);
-                        const scalar_t vvalue = ldata.value() + l2reg * x.squaredNorm();;
+                        const scalar_t vvalue = ldata.value();
                         const scalar_t verror = ldata.error();
 
                         // update the optimum state
                         state.update(x, tvalue, terror, vvalue, verror);
-
-                        if (terror < 0.5 * verror)
-                        {
-                                throw std::runtime_error("over-fitting detected!");
-                        }
 
                         return tvalue;
                 };
@@ -71,23 +89,18 @@ namespace ncv
                         // training samples: loss value & gradient
                         gdata.load_params(x);
                         gdata.update_mt(task, tsamples, loss, nthreads);
-                        const scalar_t tvalue = gdata.value() + l2reg * x.squaredNorm();
+                        const scalar_t tvalue = gdata.value();
                         const scalar_t terror = gdata.error();
-                        gx = gdata.vgrad() + 2.0 * l2reg * x;
+                        gx = gdata.vgrad();
 
                         // validation samples: loss value
                         ldata.load_params(x);
                         ldata.update_mt(task, vsamples, loss, nthreads);
-                        const scalar_t vvalue = ldata.value() + l2reg * x.squaredNorm();;
+                        const scalar_t vvalue = ldata.value();
                         const scalar_t verror = ldata.error();
 
                         // update the optimum state
                         state.update(x, tvalue, terror, vvalue, verror);
-
-                        if (terror < 0.5 * verror)
-                        {
-                                throw std::runtime_error("over-fitting detected!");
-                        }
 
                         return tvalue;
                 };
@@ -112,7 +125,6 @@ namespace ncv
                                    << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
                                    << ", train* = " << tvalue << "/" << terror
                                    << ", valid* = " << vvalue << "/" << verror
-                                   << ", L2-reg = " << l2reg
                                    << "] done in " << timer.elapsed() << ".";
                         timer.start();
                 };
@@ -140,56 +152,6 @@ namespace ncv
                 {
                         log_error() << "batch trainer: invalid optimization method <" << m_optimizer << ">!";
                         return false;
-                }
-
-                // OK
-                return true;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        bool batch_trainer_t::train(
-                const task_t& task, const fold_t& fold, const loss_t& loss, size_t nthreads,
-                model_t& model) const
-        {
-                if (fold.second != protocol::train)
-                {
-                        log_error() << "batch trainer: cannot only train models with training samples!";
-                        return false;
-                }
-
-                // initialize the model
-                model.resize(task);
-                model.random_params();
-
-                // prune training & validation data
-                const samples_t samples = ncv::prune_annotated(task, task.samples(fold));
-                if (samples.empty())
-                {
-                        log_error() << "batch trainer: no annotated training samples!";
-                        return false;
-                }
-
-                samples_t tsamples, vsamples;
-                ncv::uniform_split(samples, size_t(90), random_t<size_t>(0, samples.size()), tsamples, vsamples);
-
-                // tune the L2-norm regularization
-                const scalars_t l2regs = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e+0 };
-
-                trainer_state_t state(model.n_parameters());
-                for (scalar_t l2reg : l2regs)
-                {
-                        try
-                        {
-                                if (!train(task, tsamples, vsamples, loss, model, nthreads, l2reg, state))
-                                {
-                                        return false;
-                                }
-                        }
-                        catch (std::exception&)
-                        {
-                                // over-fitting detected!
-                        }
                 }
 
                 model.load_params(state.m_params);
