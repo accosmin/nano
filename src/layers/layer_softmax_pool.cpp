@@ -14,8 +14,8 @@ namespace ncv
         size_t softmax_pool_layer_t::resize(size_t idims, size_t irows, size_t icols)
         {
                 const size_t odims = idims;
-                const size_t orows = irows / 2;
-                const size_t ocols = icols / 2;
+                const size_t orows = (irows + 1) / 2;
+                const size_t ocols = (icols + 1) / 2;
 
                 m_idata.resize(idims, irows, icols);
                 m_odata.resize(odims, orows, ocols);
