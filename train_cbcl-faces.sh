@@ -16,7 +16,7 @@ stoch="opt=sgd,epoch=128"
 
 param=""
 param=${param}"--task cbcl-faces --task-dir ${dir_db}/cbcl-faces/ "
-param=${param}"--loss classnll --trials 1 --threads 1"
+param=${param}"--loss logistic --trials 1 --threads 1"
 
 # models
 model0=""
