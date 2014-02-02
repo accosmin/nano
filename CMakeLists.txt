@@ -108,7 +108,7 @@ foreach(proj ${nanocv_test_programs})
         target_link_libraries(${proj} ${libs})
 endforeach()
 foreach(proj ${nanocv_programs})
-        add_executable(${proj} bin/${proj}.cpp)
+        add_executable(${proj} apps/${proj}.cpp)
         target_link_libraries(${proj} ${libs})
 endforeach()
 

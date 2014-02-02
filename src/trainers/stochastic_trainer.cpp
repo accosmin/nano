@@ -13,11 +13,9 @@ namespace ncv
 
         stochastic_trainer_t::stochastic_trainer_t(const string_t& params)
                 :       m_optimizer(text::from_params<string_t>(params, "opt", "sgd")),
-                        m_alpha(text::from_params<scalar_t>(params, "alpha", 1e-3)),
                         m_epochs(text::from_params<size_t>(params, "epoch", 16))
         {
-                m_alpha = math::clamp(m_alpha, 1e-6, 1e-1);
-                m_epochs = math::clamp(m_epochs, 1, 256);
+                m_epochs = math::clamp(m_epochs, 1, 1024);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -62,14 +60,18 @@ namespace ncv
 
                 const size_t iterations = m_epochs * tsamples.size();   // SGD iterations
                 const scalar_t beta = std::pow(0.01, 1.0 / iterations); // Learning rate range: lamba -> lambda/100
-                const size_t maxage = 8;                                // Stop if no improvement in the last X epochs
 
                 // optimum model parameters (to update)
                 trainer_state_t state(model.n_parameters());
                 state.m_params = model.params();
 
-                // optimize the model by exploring the parameter space with multiple workers
-                for (size_t n = 0; n < nthreads; n ++)
+                // tune the learning rate
+                const scalar_t max_alpha = 1e-1;
+                const scalar_t min_alpha = 1e-3;
+                const scalar_t var_alpha = std::exp((std::log(max_alpha) - std::log(min_alpha))
+                                           / (4.0 * wpool.n_workers()));
+
+                for (scalar_t alpha0 = min_alpha; alpha0 <= max_alpha; alpha0 *= var_alpha)
                 {
                         wpool.enqueue([=, &model, &task, &tsamples, &vsamples, &loss, &state, &mutex]()
                         {
@@ -83,11 +85,11 @@ namespace ncv
 
                                 vector_t x = model.params();
 
-                                scalar_t alpha = m_alpha;
+                                scalar_t alpha = alpha0;
                                 vector_t avgx = x;
                                 scalar_t sumb = 1.0 / alpha;
 
-                                for (size_t i = 0, ia = 0; i < iterations && ia < maxage; i ++, alpha *= beta)
+                                for (size_t i = 0; i < iterations; i ++, alpha *= beta)
                                 {
                                         gdata.load_params(x);
                                         gdata.update(task, tsamples[xrng() % tsamples.size()], loss);
@@ -122,21 +124,16 @@ namespace ncv
                                                 // OK, update the optimum solution
                                                 const thread_pool_t::lock_t lock(mutex);
 
+                                                const size_t epoch = (i / tsamples.size()) + 1;
+
                                                 if (state.update(xparam, tvalue, terror, vvalue, verror))
                                                 {
-                                                        ia = 0;
-
                                                         log_info()
                                                         << "[train* = " << state.m_tvalue << "/" << state.m_terror
                                                         << ", valid* = " << state.m_vvalue << "/" << state.m_verror
-                                                        << ", rate = " << alpha
-                                                        << ", thread = " << (n + 1) << "/" << nthreads
+                                                        << ", rate = " << alpha << "/" << alpha0
+                                                        << ", epoch = " << epoch << "/" << m_epochs
                                                         << "] done in " << timer.elapsed() << ".";
-                                                }
-
-                                                else
-                                                {
-                                                        ia ++;
                                                 }
                                         }
                                 }

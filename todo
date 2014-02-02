@@ -1,6 +1,4 @@
-- easier way and less verbose of creating networks
-
-- (soft) max(abs)-pooling layer: update test programs (check gradient) & training scripts
+- easier way and less verbose of creating networks: e.g. conv:16x9x9 instead of conv:count=16,rows=9,cols=9
 
 - filter interface that keep the size of the input image:
 	- gaussian, elastic deformations, rotate & translate
