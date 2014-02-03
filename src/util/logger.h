@@ -108,15 +108,15 @@ namespace ncv
         inline logger_t& flush(logger_t& logger_t)        { return logger_t.flush(); }
 
         // specific [information, warning, error] line logger_ts
-        inline logger_t log_info(std::ostream& os = std::cout, bool flush_at_destruction = false)
+        inline logger_t log_info(std::ostream& os = std::cout, bool flush_at_destruction = true)
         {
                 return logger_t(os, "info", flush_at_destruction);
         }
-        inline logger_t log_warning(std::ostream& os = std::cout, bool flush_at_destruction = false)
+        inline logger_t log_warning(std::ostream& os = std::cout, bool flush_at_destruction = true)
         {
                 return logger_t(os, "warning", flush_at_destruction);
         }
-        inline logger_t log_error(std::ostream& os = std::cout, bool flush_at_destruction = false)
+        inline logger_t log_error(std::ostream& os = std::cout, bool flush_at_destruction = true)
         {
                 return logger_t(os, "error", flush_at_destruction);
         }
