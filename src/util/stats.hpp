@@ -1,8 +1,9 @@
 #ifndef NANOCV_STATS_H
 #define NANOCV_STATS_H
 
-#include <boost/accumulators/accumulators.hpp>
-#include <boost/accumulators/statistics.hpp>
+#include <limits>
+#include <cmath>
+#include <type_traits>
 
 namespace ncv
 {
@@ -13,62 +14,73 @@ namespace ncv
         template
         <
                 typename tscalar = double,
-                typename tsize = std::size_t
+                typename tsize = std::size_t,
+
+                // disable for not valid types!
+                typename tvalid_tscalar = typename std::enable_if<std::is_floating_point<tscalar>::value>::type,
+                typename tvalid_tsize = typename std::enable_if<std::is_integral<tsize>::value>::type
         >
         class stats_t
 	{
         public:
 
-                // add new values
-                void add(tscalar value)
+                // constructor
+                stats_t()
+                        :       m_count(0),
+                                m_sum(0),
+                                m_sumsq(0),
+                                m_min(+std::numeric_limits<tscalar>::max()),
+                                m_max(-std::numeric_limits<tscalar>::max())
                 {
-                        m_acc(value);
                 }
 
-                void add(const stats_t& other)
+                // add new values
+                void operator()(tscalar value)
                 {
-                        // FIXME: how to combine these two accumulators?!
-                        // => go back to own implementation!
-//                        m_acc(other.m_acc);
+                        m_count ++;
+                        m_sum += value;
+                        m_sumsq += value * value;
+                        m_min = std::min(m_min, value);
+                        m_max = std::max(m_max, value);
+                }
+
+                void operator()(const stats_t& other)
+                {
+                        m_count += other.m_count;
+                        m_sum += other.m_sum;
+                        m_sumsq += other.m_sumsq;
+                        m_min = std::min(m_min, other.m_min);
+                        m_max = std::max(m_max, other.m_max);
                 }
                 
                 template
                 <
                         class titerator
                 >
-                void add(titerator begin, titerator end)
+                void operator()(titerator begin, titerator end)
 		{
 			for ( ; begin != end; ++ begin)
                         {
-				add(*begin);
+                                operator()(*begin);
                         }
 		}
 		
                 // access functions
                 bool valid() const { return count() != 0; }
-                tsize count() const { return static_cast<tsize>(boost::accumulators::count(m_acc)); }
-                tscalar min() const { return boost::accumulators::min(m_acc); }
-                tscalar max() const { return boost::accumulators::max(m_acc); }
-                tscalar avg() const { return boost::accumulators::mean(m_acc); }
-                tscalar var() const { return boost::accumulators::variance(m_acc); }
+                tsize count() const { return m_count; }
+                tscalar min() const { return m_min; }
+                tscalar max() const { return m_max; }
+                tscalar avg() const { return sum() / count(); }
+                tscalar var() const { return (m_sumsq - m_sum * m_sum / m_count) / m_count; }
                 tscalar stdev() const { return std::sqrt(var()); }
-                tscalar sum() const { return boost::accumulators::sum(m_acc); }
+                tscalar sum() const { return m_sum; }
                 
         private:
 
-                typedef boost::accumulators::accumulator_set
-                <
-                        tscalar,
-                        boost::accumulators::stats
-                        <
-                                boost::accumulators::tag::min,
-                                boost::accumulators::tag::max,
-                                boost::accumulators::tag::variance
-                        >
-                >       accumulator_t;
-		 
                 // attributes
-                accumulator_t   m_acc;
+                tsize           m_count;
+                tscalar         m_sum, m_sumsq;
+                tscalar         m_min, m_max;
 	};
 }
 

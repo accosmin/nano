@@ -111,8 +111,8 @@ int main(int argc, char *argv[])
                 ncv::test(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror);
                 log_info() << "<<< test error: [" << lvalue << "/" << lerror << "] in " << timer.elapsed() << ".";
 
-                lstats.add(lvalue);
-                estats.add(lerror);
+                lstats(lvalue);
+                estats(lerror);
         }
 
         // performance statistics

@@ -156,8 +156,8 @@ int main(int argc, char *argv[])
                                 "model tested");
                         log_info() << "<<< test error: [" << lvalue << "/" << lerror << "].";
 
-                        lstats.add(lvalue);
-                        estats.add(lerror);
+                        lstats(lvalue);
+                        estats(lerror);
 
                         // update the best model
                         models[lerror] = rmodel->clone();
