@@ -6,6 +6,7 @@
 #include "text.h"
 #include "trainer_data.h"
 #include "trainer_state.h"
+#include <algorithm>
 
 namespace ncv
 {
@@ -16,6 +17,104 @@ namespace ncv
                         m_epochs(text::from_params<size_t>(params, "epoch", 16))
         {
                 m_epochs = math::clamp(m_epochs, 1, 1024);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        struct rnd_t
+        {
+                rnd_t(random_t<size_t>& gen)
+                        :       m_gen(gen)
+                {
+                }
+
+                size_t operator()(size_t i)
+                {
+                        return m_gen() % i;
+                }
+
+                random_t<size_t>&  m_gen;
+        };
+
+        static void sgd_train(
+                const task_t& task, samples_t& tsamples, const samples_t& vsamples, const loss_t& loss,
+                size_t epochs, scalar_t alpha0, scalar_t beta, bool asgd,
+                const model_t& model, trainer_state_t& state, thread_pool_t::mutex_t& mutex)
+        {
+                trainer_data_skipgrad_t ldata(model);
+                trainer_data_withgrad_t gdata(model);
+
+                random_t<size_t> xrng(0, tsamples.size());
+                rnd_t xrnd(xrng);
+
+                // (weighted-average) stochastic gradient descent
+                timer_t timer;
+
+                vector_t x = model.params();
+
+                scalar_t alpha = alpha0;
+                vector_t avgx = x;
+                scalar_t sumb = 1.0 / alpha;
+
+                for (size_t e = 0; e < epochs; e ++)
+                {
+                        std::random_shuffle(tsamples.begin(), tsamples.end(), xrnd);
+
+                        // average stochastic gradient descent
+                        if (asgd)
+                        {
+                                for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
+                                {
+                                        gdata.load_params(x);
+                                        gdata.update(task, tsamples[i], loss);
+
+                                        x -= alpha * gdata.vgrad();
+
+                                        const scalar_t b = 1.0 / alpha;
+                                        avgx = (avgx * sumb + x * b) / (sumb + b);
+                                        sumb = sumb + b;
+                                }
+                        }
+
+                        // stochastic gradient descent
+                        else
+                        {
+                                for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
+                                {
+                                        gdata.load_params(x);
+                                        gdata.update(task, tsamples[i], loss);
+
+                                        x -= alpha * gdata.vgrad();
+                                }
+                        }
+
+                        const vector_t xparam = asgd ? avgx : x;
+
+                        // evaluate training samples
+                        ldata.load_params(xparam);
+                        ldata.update_st(task, tsamples, loss);
+                        const scalar_t tvalue = ldata.value();
+                        const scalar_t terror = ldata.error();
+
+                        // evaluate validation samples
+                        ldata.load_params(xparam);
+                        ldata.update_st(task, vsamples, loss);
+                        const scalar_t vvalue = ldata.value();
+                        const scalar_t verror = ldata.error();
+
+                        // OK, update the optimum solution
+                        const thread_pool_t::lock_t lock(mutex);
+
+                        if (state.update(xparam, tvalue, terror, vvalue, verror))
+                        {
+                                log_info()
+                                << "[train* = " << state.m_tvalue << "/" << state.m_terror
+                                << ", valid* = " << state.m_vvalue << "/" << state.m_verror
+                                << ", rate = " << alpha << "/" << alpha0
+                                << ", epoch = " << e << "/" << epochs
+                                << "] done in " << timer.elapsed() << ".";
+                        }
+                }
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -55,11 +154,11 @@ namespace ncv
                 const bool asgd = text::iequals(m_optimizer, "asgd");
 
                 // prepare workers
-                ncv::thread_pool_t wpool(nthreads);
+                thread_pool_t wpool(nthreads);
                 thread_pool_t::mutex_t mutex;
 
                 const size_t iterations = m_epochs * tsamples.size();           // SGD iterations
-                const scalar_t beta = std::pow(0.001, 1.0 / iterations);        // Learning rate decay rate
+                const scalar_t beta = std::pow(0.01, 1.0 / iterations);         // Learning rate decay rate
 
                 // optimum model parameters (to update)
                 trainer_state_t state(model.n_parameters());
@@ -75,69 +174,9 @@ namespace ncv
                 {
                         wpool.enqueue([=, &model, &task, &tsamples, &vsamples, &loss, &state, &mutex]()
                         {
-                                trainer_data_skipgrad_t ldata(model);
-                                trainer_data_withgrad_t gdata(model);
-
-                                random_t<size_t> xrng(0, tsamples.size());
-
-                                // (weighted-average) stochastic gradient descent
-                                timer_t timer;
-
-                                vector_t x = model.params();
-
-                                scalar_t alpha = alpha0;
-                                vector_t avgx = x;
-                                scalar_t sumb = 1.0 / alpha;
-
-                                for (size_t e = 0; e < m_epochs; e ++)
-                                {
-                                        // update parameters
-                                        for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
-                                        {
-                                                gdata.load_params(x);
-                                                gdata.update(task, tsamples[xrng() % tsamples.size()], loss);
-
-                                                x -= alpha * gdata.vgrad();
-
-                                                // running weighted average update
-                                                if (asgd)
-                                                {
-                                                        const scalar_t beta = 1.0 / alpha;
-                                                        avgx = (avgx * sumb + x * beta) / (sumb + beta);
-                                                        sumb = sumb + beta;
-                                                }
-                                        }
-
-                                        // evaluate
-                                        const vector_t xparam = asgd ? avgx : x;
-
-                                        // training samples: loss value
-                                        ldata.load_params(xparam);
-                                        ldata.update_st(task, tsamples, loss);
-                                        const scalar_t tvalue = ldata.value();
-                                        const scalar_t terror = ldata.error();
-
-                                        // validation samples: loss value
-                                        ldata.load_params(xparam);
-                                        ldata.update_st(task, vsamples, loss);
-                                        const scalar_t vvalue = ldata.value();
-                                        const scalar_t verror = ldata.error();
-
-                                        // OK, update the optimum solution
-                                        const thread_pool_t::lock_t lock(mutex);
-
-                                        if (state.update(xparam, tvalue, terror, vvalue, verror))
-                                        {
-                                                log_info()
-                                                << "[train* = " << state.m_tvalue << "/" << state.m_terror
-                                                << ", valid* = " << state.m_vvalue << "/" << state.m_verror
-                                                << ", rate = " << alpha << "/" << alpha0
-                                                << ", epoch = " << e << "/" << m_epochs
-                                                << "] done in " << timer.elapsed() << ".";
-                                        }
-                                }
-
-
+                                sgd_train(task, tsamples, vsamples, loss,
+                                          m_epochs, alpha0, beta, asgd,
+                                          model, state, mutex);
                         });
                 }
 
