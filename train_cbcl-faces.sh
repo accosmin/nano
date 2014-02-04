@@ -16,7 +16,7 @@ stoch="opt=sgd,epoch=128"
 
 param=""
 param=${param}"--task cbcl-faces --task-dir ${dir_db}/cbcl-faces/ "
-param=${param}"--loss logistic --trials 1 --threads 1"
+param=${param}"--loss logistic --trials 1 --threads 4"
 
 # models
 model0=""
@@ -30,10 +30,9 @@ model2=${model2}"conv:count=32,rows=2,cols=2;snorm;"
 
 # train models
 fn_train forward-network ${model0} stochastic ${stoch} model0
-#fn_train forward-network ${model0} batch ${batch} model0
-
 fn_train forward-network ${model1} stochastic ${stoch} model1
-#fn_train forward-network ${model1} batch ${batch} model1
-
 fn_train forward-network ${model2} stochastic ${stoch} model2
+
+#fn_train forward-network ${model0} batch ${batch} model0
+#fn_train forward-network ${model1} batch ${batch} model1
 #fn_train forward-network ${model2} batch ${batch} model2
