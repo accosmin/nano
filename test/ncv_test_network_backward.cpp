@@ -14,15 +14,29 @@ int main(int argc, char *argv[])
         const size_t cmd_outputs = 10;
         const size_t cmd_samples = 10000;
 
-        const string_t network0 = "";
-        const string_t network1 = network0 + "conv:count=16,rows=9,cols=9;snorm;smax-pool;";
-        const string_t network2 = network1 + "conv:count=16,rows=5,cols=5;snorm;smax-pool;";
-        const string_t network3 = network2 + "conv:count=16,rows=3,cols=3;snorm;";
+        string_t model0 = "";
+        string_t model1 = "";
+        string_t model2 = "";
+        string_t model3 = "";
+
+        model1 = model1 + "conv:count=32,rows=7,cols=7;snorm;smax-abs-pool;";
+        model1 = model1 + "conv:count=32,rows=4,cols=4;snorm;smax-abs-pool;";
+        model1 = model1 + "conv:count=32,rows=4,cols=4;snorm;";
+
+        model2 = model2 + "conv:count=32,rows=7,cols=7;snorm;smax-abs-pool;";
+        model2 = model2 + "conv:count=32,rows=6,cols=6;snorm;smax-abs-pool;";
+        model2 = model2 + "conv:count=32,rows=3,cols=3;snorm;";
+
+        model3 = model3 + "conv:count=32,rows=5,cols=5;snorm;smax-abs-pool;";
+        model3 = model3 + "conv:count=32,rows=5,cols=5;snorm;smax-abs-pool;";
+        model3 = model3 + "conv:count=32,rows=4,cols=4;snorm;";
 
         strings_t cmd_networks =
         {
-                network0,
-                network3
+                model0,
+                model1,
+                model2,
+                model3
         };
 
         for (const string_t& cmd_network : cmd_networks)
