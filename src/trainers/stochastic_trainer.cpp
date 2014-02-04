@@ -68,7 +68,7 @@ namespace ncv
                                         gdata.load_params(x);
                                         gdata.update(task, tsamples[i], loss);
 
-                                        x -= alpha * gdata.vgrad();
+                                        x.noalias() -= alpha * gdata.vgrad();
 
                                         const scalar_t b = 1.0 / alpha;
                                         avgx = (avgx * sumb + x * b) / (sumb + b);
@@ -84,7 +84,7 @@ namespace ncv
                                         gdata.load_params(x);
                                         gdata.update(task, tsamples[i], loss);
 
-                                        x -= alpha * gdata.vgrad();
+                                        x.noalias() -= alpha * gdata.vgrad();
                                 }
                         }
 

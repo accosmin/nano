@@ -79,7 +79,7 @@ namespace ncv
                         const vector_t output = m_model->value(image, sample.m_region);
                         if (tgradient)
                         {
-                                m_vgrad += m_model->gradient(loss.vgrad(target, output));
+                                m_vgrad.noalias() += m_model->gradient(loss.vgrad(target, output));
                         }
 
                         m_value += loss.value(target, output);
@@ -130,11 +130,11 @@ namespace ncv
                 }
 
                 // access functions
-                scalar_t value() const { return m_value / ((size() == 0) ? 1.0 : size()); }
-                scalar_t error() const { return m_error / ((size() == 0) ? 1.0 : size()); }
-                vector_t vgrad() const { return m_vgrad / ((size() == 0) ? 1.0 : size()); }
+                scalar_t value() const { return m_value / count(); }
+                scalar_t error() const { return m_error / count(); }
+                vector_t vgrad() const { return m_vgrad / count(); }
                 size_t n_parameters() const { assert(m_model); return m_model->n_parameters(); }
-                size_t size() const { return m_count; }
+                size_t count() const { return m_count; }
 
         private:
 
