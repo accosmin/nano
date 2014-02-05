@@ -98,12 +98,12 @@ namespace ncv
                         {
                                 for (auto c = 0, cc = 0; c < idata.cols(); c ++, cc = c / 2)
                                 {
-                                        const auto w = wdata(r, c);
+                                        const auto w = wdata(r, c), i = idata(r, c);
                                         const auto s = sdata(rr, cc);
                                         const auto t = tdata(rr, cc);
 
-                                        idata(r, c) =   gdata(rr, cc) *
-                                                        (t * (w + w * idata(r, c)) - s * w) / (t * t);
+                                        idata(r, c) =
+                                        gdata(rr, cc) * (t * (w + w * i) - s * w) / (t * t);
                                 }
                         }
                 }
