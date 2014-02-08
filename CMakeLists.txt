@@ -3,8 +3,10 @@ cmake_minimum_required(VERSION 2.8)
 project(nanocv)
 
 ######################################################################
-# External depdendencies
+# External dependencies
 ######################################################################
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 # Boost
 include(FindBoost)
@@ -16,6 +18,10 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 find_package(PNG REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(TIFF REQUIRED)
+
+# OpenCL
+find_package(OpenCL 1.0 REQUIRED)
+include_directories(${OPENCL_INCLUDE_DIRS})
 
 # Set the compiler flags
 set(CMAKE_CXX_FLAGS                     "-Wall -std=c++11")
@@ -81,6 +87,7 @@ set(libs "${libs};${Boost_FILESYSTEM_LIBRARY_RELEASE}")
 set(libs "${libs};${JPEG_LIBRARIES}")
 set(libs "${libs};${TIFF_LIBRARIES}")
 set(libs "${libs};${PNG_LIBRARIES}")
+set(libs "${libs};${OPENCL_LIBRARIES}")
 
 # Set the executables
 set(nanocv_test_programs
@@ -93,7 +100,8 @@ set(nanocv_test_programs
         ncv_test_convolution
         ncv_test_network_gradient
         ncv_test_network_forward
-	ncv_test_network_backward)
+        ncv_test_network_backward
+        ncv_test_opencl)
 
 set(nanocv_programs
         ncv_max_threads

@@ -53,7 +53,7 @@ The training is split in two phases: the tuning phase estimates the optimum lear
 
 ### Compilation
 
-To compile (and install) CMake, a C++11 compiler, Boost, Eigen, libTIFF, libPNG and libJPEG are required. The library is tested so far only on ArchLinux x64, but the 
+To compile (and install) CMake, a C++11 compiler, Boost, Eigen, OpenCL, libTIFF, libPNG and libJPEG are required. The library is tested so far only on ArchLinux x64, but the 
 code is written to be cross-platform.
 
 The easiest way of compiling is to run the `build.sh` bash script. The test programs and utilities will be found in the created `build` directory.
