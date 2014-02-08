@@ -8,8 +8,6 @@
 #include "optimize/opt_cgd.hpp"
 #include "optimize/opt_lbfgs.hpp"
 #include "text.h"
-#include "trainer_data.h"
-#include "trainer_state.h"
 
 namespace ncv
 {
@@ -54,8 +52,8 @@ namespace ncv
                 // construct the optimization problem
                 timer_t timer;
 
-                trainer_data_skipgrad_t ldata(model);
-                trainer_data_withgrad_t gdata(model);
+                trainer_data_t ldata(model, trainer_data_t::type::value);
+                trainer_data_t gdata(model, trainer_data_t::type::vgrad);
 
                 trainer_state_t state(model.n_parameters());
 
@@ -67,13 +65,13 @@ namespace ncv
                 auto fn_fval = [&] (const vector_t& x)
                 {
                         // training samples: loss value
-                        ldata.load_params(x);
+                        ldata.clear(x);
                         ldata.update_mt(task, tsamples, loss, nthreads);
                         const scalar_t tvalue = ldata.value();
                         const scalar_t terror = ldata.error();
 
                         // validation samples: loss value
-                        ldata.load_params(x);
+                        ldata.clear(x);
                         ldata.update_mt(task, vsamples, loss, nthreads);
                         const scalar_t vvalue = ldata.value();
                         const scalar_t verror = ldata.error();
@@ -87,14 +85,14 @@ namespace ncv
                 auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
                         // training samples: loss value & gradient
-                        gdata.load_params(x);
+                        gdata.clear(x);
                         gdata.update_mt(task, tsamples, loss, nthreads);
                         const scalar_t tvalue = gdata.value();
                         const scalar_t terror = gdata.error();
                         gx = gdata.vgrad();
 
                         // validation samples: loss value
-                        ldata.load_params(x);
+                        ldata.clear(x);
                         ldata.update_mt(task, vsamples, loss, nthreads);
                         const scalar_t vvalue = ldata.value();
                         const scalar_t verror = ldata.error();

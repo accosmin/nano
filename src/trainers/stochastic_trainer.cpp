@@ -3,9 +3,8 @@
 #include "util/logger.h"
 #include "util/math.hpp"
 #include "util/usampler.hpp"
+#include "thread/thread_pool.h"
 #include "text.h"
-#include "trainer_data.h"
-#include "trainer_state.h"
 #include <algorithm>
 
 namespace ncv
@@ -41,8 +40,8 @@ namespace ncv
                 size_t epochs, scalar_t alpha0, scalar_t beta, bool asgd,
                 const model_t& model, trainer_state_t& state, thread_pool_t::mutex_t& mutex)
         {
-                trainer_data_skipgrad_t ldata(model);
-                trainer_data_withgrad_t gdata(model);
+                trainer_data_t ldata(model, trainer_data_t::type::value);
+                trainer_data_t gdata(model, trainer_data_t::type::vgrad);
 
                 random_t<size_t> xrng(0, tsamples.size());
                 rnd_t xrnd(xrng);
@@ -65,7 +64,7 @@ namespace ncv
                         {
                                 for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
                                 {
-                                        gdata.load_params(x);
+                                        gdata.clear(x);
                                         gdata.update(task, tsamples[i], loss);
 
                                         x.noalias() -= alpha * gdata.vgrad();
@@ -81,7 +80,7 @@ namespace ncv
                         {
                                 for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
                                 {
-                                        gdata.load_params(x);
+                                        gdata.clear(x);
                                         gdata.update(task, tsamples[i], loss);
 
                                         x.noalias() -= alpha * gdata.vgrad();
@@ -91,13 +90,13 @@ namespace ncv
                         const vector_t xparam = asgd ? avgx : x;
 
                         // evaluate training samples
-                        ldata.load_params(xparam);
+                        ldata.clear(xparam);
                         ldata.update_st(task, tsamples, loss);
                         const scalar_t tvalue = ldata.value();
                         const scalar_t terror = ldata.error();
 
                         // evaluate validation samples
-                        ldata.load_params(xparam);
+                        ldata.clear(xparam);
                         ldata.update_st(task, vsamples, loss);
                         const scalar_t vvalue = ldata.value();
                         const scalar_t verror = ldata.error();
