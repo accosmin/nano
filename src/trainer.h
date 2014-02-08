@@ -7,10 +7,13 @@
 
 namespace ncv
 {
-        // manage trainers (register new ones, query and clone them)
         class trainer_t;
-        typedef manager_t<trainer_t>            trainer_manager_t;
-        typedef trainer_manager_t::robject_t    rtrainer_t;
+
+        ///
+        /// \brief stores registered prototypes
+        ///
+        typedef manager_t<trainer_t>                    trainer_manager_t;
+        typedef trainer_manager_t::robject_t            rtrainer_t;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // generic trainer:

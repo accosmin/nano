@@ -8,11 +8,14 @@
 
 namespace ncv
 {
-        // manage layers (register new ones, query and clone them)
         class layer_t;
-        typedef manager_t<layer_t>              layer_manager_t;
-        typedef layer_manager_t::robject_t      rlayer_t;
-        typedef std::vector<rlayer_t>           rlayers_t;
+
+        ///
+        /// \brief stores registered prototypes
+        ///
+        typedef manager_t<layer_t>                      layer_manager_t;
+        typedef layer_manager_t::robject_t              rlayer_t;
+        typedef std::vector<rlayer_t>                   rlayers_t;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // layer:

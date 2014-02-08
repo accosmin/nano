@@ -6,40 +6,96 @@
 
 namespace ncv
 {
-        // manage losses (register new ones, query and clone them)
         class loss_t;
-        typedef manager_t<loss_t>               loss_manager_t;
-        typedef loss_manager_t::robject_t       rloss_t;
 
-        // classification convention
+        ///
+        /// \brief stores registered prototypes
+        ///
+        typedef manager_t<loss_t>                       loss_manager_t;
+        typedef loss_manager_t::robject_t               rloss_t;
+
+        ///
+        /// \brief target value of the positive class
+        /// \return
+        ///
         inline scalar_t pos_target() { return +1.0; }
+
+        ///
+        /// \brief target value of the negative class
+        /// \return
+        ///
         inline scalar_t neg_target() { return -1.0; }
+
+        ///
+        /// \brief target value for multi-class classification problems
+        /// \param ilabel
+        /// \param n_labels
+        /// \return
+        ///
         vector_t class_target(size_t ilabel, size_t n_labels);
 
-        // (multivariate) regression and classification error
+        ///
+        /// \brief multivariate L1 regression error
+        /// \param targets
+        /// \param scores
+        /// \return
+        ///
         scalar_t l1_error(const vector_t& targets, const vector_t& scores);
+
+        ///
+        /// \brief multivariate classification error: matches the sign of predictions vs target classes
+        /// \param targets
+        /// \param scores
+        /// \return
+        ///
         scalar_t eclass_error(const vector_t& targets, const vector_t& scores);
+
+        ///
+        /// \brief multivariate classification error: highest score corresponds to the target class
+        /// \param targets
+        /// \param scores
+        /// \return
+        ///
         scalar_t mclass_error(const vector_t& targets, const vector_t& scores);
 
-        ////////////////////////////////////////////////////////////////////////////////
-        // generic multivariate loss function of two parameters:
-        //	the target value to predict and the current score estimation.
-        // the loss function upper-bounds/approximates
-        //      the true (usually non-smooth) error function to minimize.
-        ////////////////////////////////////////////////////////////////////////////////
-	
+        ///
+        /// \brief generic multivariate loss function of two parameters:
+        /// the target value to predict and the current score estimation.
+        ///
+        /// the loss function upper-bounds/approximates
+        /// the true (usually non-smooth) error function to minimize.
+        ///
         class loss_t : public clonable_t<loss_t>
         {
         public:
 
-                // destructor
+                ///
+                /// \brief destructur
+                ///
                 virtual ~loss_t() {}
                 
-                // compute the error value
+                ///
+                /// \brief compute the error value
+                /// \param targets
+                /// \param scores
+                /// \return
+                ///
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const = 0;
                 
-                // compute the loss value & derivatives
+                ///
+                /// \brief compute the loss value
+                /// \param targets
+                /// \param scores
+                /// \return
+                ///
                 virtual scalar_t value(const vector_t& targets, const vector_t& scores) const = 0;
+
+                ///
+                /// \brief compute the loss gradient
+                /// \param targets
+                /// \param scores
+                /// \return
+                ///
                 virtual vector_t vgrad(const vector_t& targets, const vector_t& scores) const = 0;
         };
 }

@@ -1,11 +1,10 @@
-- easier way and less verbose of creating networks: e.g. conv:16x9x9 instead of conv:count=16,rows=9,cols=9
-
 - filter interface that keep the size of the input image:
 	- gaussian, elastic deformations, rotate & translate
 	- should be possible to chain them: image(gaussian_t, 2.0)(translate_t, -1, +1)(elastic, 0.0, 1.0)
 	- update test program to verify them
 
-- augment the training dataset with random translations and rotations (only for the stochastic trainer) + test program (given image, save N random translations and rotations of a given pixel radius)
+- augment the training dataset with random translations and rotations (only for the stochastic trainer) + 
+	test program (given image, save N random translations and rotations of a given pixel radius)
 
 - faster ::backward() -> almost 4 times slower than ::forward()
 - check if the convolution layers can use fewer buffers (e.g. do not store xdata and update directly the output buffers)

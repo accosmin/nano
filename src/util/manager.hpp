@@ -128,8 +128,10 @@ namespace ncv
                 // attributes
                 protos_t                        m_protos;
         };
-        
-        // register a type tderived to the tbase manager
+
+        ///
+        /// \brief register a type tderived to the tbase manager
+        ///
         template
         <
                 class tbase,

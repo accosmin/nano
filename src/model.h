@@ -8,8 +8,11 @@
 
 namespace ncv
 {
-        // manage models (register new ones, query and clone them)
         class model_t;
+
+        ///
+        /// \brief stores registered prototypes
+        ///
         typedef manager_t<model_t>              model_manager_t;
         typedef model_manager_t::robject_t      rmodel_t;
 
