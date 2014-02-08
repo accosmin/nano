@@ -120,6 +120,23 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        void trainer_data_t::update(const tensor3d_t& input, const vector_t& target, const loss_t& loss)
+        {
+                assert(m_model);
+
+                const vector_t output = m_model->value(input);
+                if (m_type == type::vgrad)
+                {
+                        m_vgrad.noalias() += m_model->gradient(loss.vgrad(target, output));
+                }
+
+                m_value += loss.value(target, output);
+                m_error += loss.error(target, output);
+                m_count ++;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
         void trainer_data_t::update_st(const task_t& task, const samples_t& samples, const loss_t& loss)
         {
                 for (size_t i = 0; i < samples.size(); i ++)

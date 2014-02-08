@@ -107,6 +107,11 @@ namespace ncv
                 void update(const task_t& task, const sample_t& sample, const loss_t& loss);
 
                 ///
+                /// \brief update statistics with a new sample
+                ///
+                void update(const tensor3d_t& input, const vector_t& target, const loss_t& loss);
+
+                ///
                 /// \brief update statistics for a set of samples - single-threaded version
                 ///
                 void update_st(const task_t& task, const samples_t& samples, const loss_t& loss);

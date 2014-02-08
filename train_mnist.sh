@@ -11,7 +11,7 @@ dir_exp=${dir_results}/mnist
 mkdir -p ${dir_exp}
 
 # common parameters
-batch="opt=lbfgs,eps=1e-6,iters=16"
+batch="opt=lbfgs,eps=1e-6,iters=64"
 stoch="opt=sgd,epoch=1"
 
 param=""

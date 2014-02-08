@@ -1,5 +1,6 @@
 #include "ncv.h"
 #include "models/forward_network.h"
+#include "losses/loss_logistic.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
@@ -39,13 +40,15 @@ int main(int argc, char *argv[])
                 model3
         };
 
+        const logistic_loss_t loss;
+
         for (const string_t& cmd_network : cmd_networks)
         {
                 log_info() << "<<< running network [" << cmd_network << "] ...";
 
                 // create feed-forward network
-                ncv::forward_network_t network(cmd_network);
-                network.resize(cmd_rows, cmd_cols, cmd_outputs, cmd_color);
+                ncv::forward_network_t model(cmd_network);
+                model.resize(cmd_rows, cmd_cols, cmd_outputs, cmd_color);
 
                 // create random samples
                 tensor3ds_t samples(cmd_samples, tensor3d_t(cmd_color == color_mode::luma ? 1 : 3, cmd_rows, cmd_cols));
@@ -54,20 +57,23 @@ int main(int argc, char *argv[])
                         sample.random(-1.0, +1.0);
                 }
 
+                // create random targets
+                vectors_t targets(cmd_samples, vector_t(cmd_outputs));
+                for (vector_t& target : targets)
+                {
+                        target.setRandom();
+                }
+
                 // process the samples
                 ncv::timer_t timer;
 
-                size_t count = 0;
-                for (tensor3d_t& sample : samples)
+                trainer_data_t gdata(model, trainer_data_t::type::vgrad);
+                for (size_t i = 0; i < cmd_samples; i ++)
                 {
-                        const vector_t output = network.value(sample);
-			const vector_t gradient = network.gradient(output);
-                        count += output.size() + gradient.size();
+                        gdata.update(samples[i], targets[i], loss);
                 }
 
-                log_info() << "<<< processed ["
-                           << ((count - network.n_parameters() * samples.size()) / cmd_outputs)
-                           << "] samples in " << timer.elapsed() << ".";
+                log_info() << "<<< processed [" << gdata.count() << "] samples in " << timer.elapsed() << ".";
         }
 
         // OK
