@@ -1,64 +1,11 @@
 #include "instance.h"
 #include "util/logger.h"
-#include <stdexcept>
 #include <cassert>
 #include <fstream>
 #include <sstream>
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        opencl::rqueue_t opencl::make_shared(cl_command_queue queue)
-        {
-                return rqueue_t(queue, [] (cl_command_queue queue)
-                {
-                        if (queue)
-                        {
-                                clReleaseCommandQueue(queue);
-                        }
-                });
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        opencl::rcontext_t opencl::make_shared(cl_context context)
-        {
-                return rcontext_t(context, [] (cl_context context)
-                {
-                        if (context)
-                        {
-                                clReleaseContext(context);
-                        }
-                });
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        opencl::rprogram_t opencl::make_shared(cl_program program)
-        {
-                return rprogram_t(program, [] (cl_program program)
-                {
-                        if (program)
-                        {
-                                clReleaseProgram(program);
-                        }
-                });
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        opencl::rkernel_t opencl::make_shared(cl_kernel kernel)
-        {
-                return rkernel_t(kernel, [] (cl_kernel kernel)
-                {
-                        if (kernel)
-                        {
-                                clReleaseKernel(kernel);
-                        }
-                });
-        }
-
         /////////////////////////////////////////////////////////////////////////////////////////
 
         opencl::rcontext_t opencl::make_context()
@@ -68,8 +15,8 @@ namespace ncv
                 // query for all available platforms and select the most appropriate one.
                 cl_uint numPlatforms;
                 cl_platform_id firstPlatformId;
-                cl_int errNum = clGetPlatformIDs(1, &firstPlatformId, &numPlatforms);
-                if (errNum != CL_SUCCESS || numPlatforms <= 0)
+                cl_int err = clGetPlatformIDs(1, &firstPlatformId, &numPlatforms);
+                if (err != CL_SUCCESS || numPlatforms <= 0)
                 {
                         throw std::runtime_error("Failed to find any OpenCL platforms!");
                 }
@@ -84,12 +31,12 @@ namespace ncv
                         0
                 };
 
-                rcontext_t context = make_shared(clCreateContextFromType(contextProperties, CL_DEVICE_TYPE_GPU, NULL, NULL, &errNum));
-                if (errNum != CL_SUCCESS)
+                rcontext_t context = make_shared(clCreateContextFromType(contextProperties, CL_DEVICE_TYPE_GPU, NULL, NULL, &err));
+                if (err != CL_SUCCESS)
                 {
                         log_warning() << "Could not create GPU context, trying CPU...";
-                        context = make_shared(clCreateContextFromType(contextProperties, CL_DEVICE_TYPE_CPU, NULL, NULL, &errNum));
-                        if (errNum != CL_SUCCESS)
+                        context = make_shared(clCreateContextFromType(contextProperties, CL_DEVICE_TYPE_CPU, NULL, NULL, &err));
+                        if (err != CL_SUCCESS)
                         {
                                 throw std::runtime_error("Failed to create an OpenCL GPU or CPU context!");
                         }
@@ -102,13 +49,13 @@ namespace ncv
 
         opencl::rqueue_t opencl::make_command_queue(const rcontext_t& context, cl_device_id& device)
         {
-                cl_int errNum;
+                cl_int err;
                 cl_device_id *devices;
                 size_t deviceBufferSize = -1;
 
                 // First get the size of the devices buffer
-                errNum = clGetContextInfo(context.get(), CL_CONTEXT_DEVICES, 0, NULL, &deviceBufferSize);
-                if (errNum != CL_SUCCESS)
+                err = clGetContextInfo(context.get(), CL_CONTEXT_DEVICES, 0, NULL, &deviceBufferSize);
+                if (err != CL_SUCCESS)
                 {
                         throw std::runtime_error("Failed to query OpenCL context information!");
                 }
@@ -120,8 +67,8 @@ namespace ncv
 
                 // Allocate memory for the devices buffer
                 devices = new cl_device_id[deviceBufferSize / sizeof(cl_device_id)];
-                errNum = clGetContextInfo(context.get(), CL_CONTEXT_DEVICES, deviceBufferSize, devices, NULL);
-                if (errNum != CL_SUCCESS)
+                err = clGetContextInfo(context.get(), CL_CONTEXT_DEVICES, deviceBufferSize, devices, NULL);
+                if (err != CL_SUCCESS)
                 {
                         delete [] devices;
                         throw std::runtime_error("Failed to get OpenCL device IDs!");
@@ -154,8 +101,8 @@ namespace ncv
                         throw std::runtime_error("Failed to create OpenCL program from source!");
                 }
 
-                cl_int errNum = clBuildProgram(program.get(), 0, NULL, NULL, NULL, NULL);
-                if (errNum != CL_SUCCESS)
+                cl_int err = clBuildProgram(program.get(), 0, NULL, NULL, NULL, NULL);
+                if (err != CL_SUCCESS)
                 {
                         // Determine the reason for the error
                         char buildLog[16384];
@@ -189,13 +136,26 @@ namespace ncv
 
         opencl::rkernel_t opencl::make_kernel(const rprogram_t& program, const std::string& kname)
         {
-                rkernel_t kernel = make_shared(clCreateKernel(program.get(), kname.c_str(), NULL));
-                if (!kernel)
-                {
-                        throw std::runtime_error("Failed to create kernel <" + kname + ">!");
-                }
+                return  make_shared(clCreateKernel(
+                        program.get(), kname.c_str(), NULL));
+        }
 
-                return kernel;
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        opencl::rmem_t opencl::make_read_mem(const rcontext_t& context, float* data, size_t n_elements)
+        {
+                return  make_shared(clCreateBuffer(
+                        context.get(), CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
+                        sizeof(float) * n_elements, data, NULL));
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        opencl::rmem_t opencl::make_write_mem(const rcontext_t& context, size_t n_elements)
+        {
+                return  make_shared(clCreateBuffer(
+                        context.get(), CL_MEM_READ_WRITE,
+                        sizeof(float) * n_elements, NULL, NULL));
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
