@@ -55,12 +55,13 @@ file(GLOB nanocv_sources
         src/thread/*.*
         src/tensor/*.*
         src/optimize/*.*
-        src/losses/*.*
-        src/layers/*.*
-        src/tasks/*.*
-        src/models/*.*
-        src/trainers/*.*
         src/opencl/*.*
+        src/ncv/*.*
+        src/ncv/losses/*.*
+        src/ncv/layers/*.*
+        src/ncv/tasks/*.*
+        src/ncv/models/*.*
+        src/ncv/trainers/*.*
         )
 
 add_library(nanocv
@@ -74,6 +75,7 @@ add_library(nanocv
 # Set the include directories and linking libraries
 set(nanocv_includes
         src/
+        src/ncv
         )
 
 include_directories(
