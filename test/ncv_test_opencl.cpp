@@ -1,13 +1,7 @@
 #include "ncv.h"
 #include "opencl/opencl.h"
-#include <iostream>
 #include <fstream>
 #include <sstream>
-
-///
-//  Constants
-//
-const int ARRAY_SIZE = 1000;
 
 const char* program_source = "\n" \
 "__kernel void add_kernel(                              \n" \
@@ -24,58 +18,58 @@ int main(int argc, char *argv[])
 {
         using namespace ncv;
 
-        std::vector<cl::Platform> platforms;
-        cl_int err = cl::Platform::get(&platforms);
-        log_info() << "OpenCL status (platform query): " << ncv::error_string(err);
-
-        if (platforms.empty())
-        {
-                log_error() << "Cannot find any OpenCL platforms!";
-                exit(EXIT_FAILURE);
-        }
-
-        cl_context_properties properties[] =
-        {
-                CL_CONTEXT_PLATFORM,
-                (cl_context_properties)(platforms[0])(),
-                0
-        };
-        cl::Context context = cl::Context(CL_DEVICE_TYPE_GPU, properties);
-        std::vector<cl::Device> devices = context.getInfo<CL_CONTEXT_DEVICES>();
-
-        if (devices.empty())
-        {
-                log_error() << "Cannot find any OpenCL GPU device!";
-                exit(EXIT_FAILURE);
-        }
-
-        for (size_t i = 0; i < devices.size(); i ++)
-        {
-                const cl::Device& device = devices[i];
-
-                const std::string name = device.getInfo<CL_DEVICE_NAME>();
-                const std::string vendor = device.getInfo<CL_DEVICE_VENDOR>();
-                const std::string driver = device.getInfo<CL_DRIVER_VERSION>();
-                const std::string version = device.getInfo<CL_DEVICE_VERSION>();
-
-                const cl_ulong gmemsize = device.getInfo<CL_DEVICE_GLOBAL_MEM_SIZE>();
-                const cl_ulong lmemsize = device.getInfo<CL_DEVICE_LOCAL_MEM_SIZE>();
-                const cl_uint maxcus = device.getInfo<CL_DEVICE_MAX_COMPUTE_UNITS>();
-                const size_t maxwgsize = device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>();
-
-                const size_t size = devices.size();
-                log_info() << "OpenCL device [" << (i + 1) << "/" << size << "]: vendor = " << vendor << "";
-                log_info() << "OpenCL device [" << (i + 1) << "/" << size << "]: name = " << name << "";
-                log_info() << "OpenCL device [" << (i + 1) << "/" << size << "]: driver = " << driver << "";
-                log_info() << "OpenCL device [" << (i + 1) << "/" << size << "]: version = " << version << "";
-                log_info() << "OpenCL device [" << (i + 1) << "/" << size << "]: global memory size = " << gmemsize << " B";
-                log_info() << "OpenCL device [" << (i + 1) << "/" << size << "]: local memory size = " << lmemsize << " B";
-                log_info() << "OpenCL device [" << (i + 1) << "/" << size << "]: maximum compute units = " << maxcus;
-                log_info() << "OpenCL device [" << (i + 1) << "/" << size << "]: maximum work group size = " << maxwgsize;
-        }
-
         try
         {
+                std::vector<cl::Platform> platforms;
+                cl_int err = cl::Platform::get(&platforms);
+                log_info() << "OpenCL status (platform query): " << ncv::error_string(err);
+
+                if (platforms.empty())
+                {
+                        log_error() << "Cannot find any OpenCL platforms!";
+                        exit(EXIT_FAILURE);
+                }
+
+                cl_context_properties properties[] =
+                {
+                        CL_CONTEXT_PLATFORM,
+                        (cl_context_properties)(platforms[0])(),
+                        0
+                };
+                cl::Context context = cl::Context(CL_DEVICE_TYPE_GPU, properties);
+                std::vector<cl::Device> devices = context.getInfo<CL_CONTEXT_DEVICES>();
+
+                if (devices.empty())
+                {
+                        log_error() << "Cannot find any OpenCL GPU device!";
+                        exit(EXIT_FAILURE);
+                }
+
+                for (size_t i = 0; i < devices.size(); i ++)
+                {
+                        const cl::Device& device = devices[i];
+
+                        const std::string name = device.getInfo<CL_DEVICE_NAME>();
+                        const std::string vendor = device.getInfo<CL_DEVICE_VENDOR>();
+                        const std::string driver = device.getInfo<CL_DRIVER_VERSION>();
+                        const std::string version = device.getInfo<CL_DEVICE_VERSION>();
+
+                        const cl_ulong gmemsize = device.getInfo<CL_DEVICE_GLOBAL_MEM_SIZE>();
+                        const cl_ulong lmemsize = device.getInfo<CL_DEVICE_LOCAL_MEM_SIZE>();
+                        const cl_uint maxcus = device.getInfo<CL_DEVICE_MAX_COMPUTE_UNITS>();
+                        const size_t maxwgsize = device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>();
+
+                        const size_t size = devices.size();
+                        log_info() << "OpenCL device [" << (i + 1) << "/" << size << "]: vendor = " << vendor << "";
+                        log_info() << "OpenCL device [" << (i + 1) << "/" << size << "]: name = " << name << "";
+                        log_info() << "OpenCL device [" << (i + 1) << "/" << size << "]: driver = " << driver << "";
+                        log_info() << "OpenCL device [" << (i + 1) << "/" << size << "]: version = " << version << "";
+                        log_info() << "OpenCL device [" << (i + 1) << "/" << size << "]: global memory size = " << gmemsize << " B";
+                        log_info() << "OpenCL device [" << (i + 1) << "/" << size << "]: local memory size = " << lmemsize << " B";
+                        log_info() << "OpenCL device [" << (i + 1) << "/" << size << "]: maximum compute units = " << maxcus;
+                        log_info() << "OpenCL device [" << (i + 1) << "/" << size << "]: maximum work group size = " << maxwgsize;
+                }
+
                 const cl::Device& device = devices[0];
                 cl::CommandQueue queue = cl::CommandQueue(context, device, 0, &err);
 
@@ -156,7 +150,7 @@ int main(int argc, char *argv[])
         }
         catch (cl::Error e)
         {
-                log_error() << "OpenCL fatal error: <" << e.what() << "> (" << e.err() << ")!";
+                log_error() << "OpenCL fatal error: <" << e.what() << "> (" << ncv::error_string(e.err()) << ")!";
         }
 
         // OK
