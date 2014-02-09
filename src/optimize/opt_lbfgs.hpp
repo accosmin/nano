@@ -9,10 +9,9 @@ namespace ncv
 {
         namespace optimize
         {
-                /////////////////////////////////////////////////////////////////////////////////////////
-                // limited memory bfgs (l-bfgs) starting from the initial value (guess) x0.
-                /////////////////////////////////////////////////////////////////////////////////////////
-
+                ///
+                /// \brief limited memory bfgs (l-bfgs) starting from the initial value (guess) x0
+                ///
                 template
                 <
                         typename tproblem,
@@ -30,8 +29,8 @@ namespace ncv
                 tstate lbfgs(
                         const tproblem& problem,
                         const tvector& x0,
-                        tsize max_iterations,           // maximum number of iterations
-                        tscalar epsilon,                // convergence precision
+                        tsize max_iterations,           ///< maximum number of iterations
+                        tscalar epsilon,                ///< convergence precision
                         const twlog& op_wlog = twlog(),
                         const telog& op_elog = telog(),
                         const tulog& op_ulog = tulog())

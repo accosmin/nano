@@ -7,13 +7,9 @@ namespace ncv
 {
         namespace optimize
         {
-                /////////////////////////////////////////////////////////////////////////////////////////
-                // line-search method to find the scalar that reduces
-                //      the function value (the most) along the direction d: argmin(t) f(x + t * d)
-                //      using the strong Wolfe (sufficient decrease and curvature) conditions.
-                /////////////////////////////////////////////////////////////////////////////////////////
-
-                // helper function
+                ///
+                /// \brief helper function
+                ///
                 template
                 <
                         typename tproblem,
@@ -71,6 +67,11 @@ namespace ncv
                         return 0;
                 }
 
+                ///
+                /// \brief line-search method to find the scalar that reduces
+                /// the function value (the most) along the direction d: argmin(t) f(x + t * d),
+                /// using the strong Wolfe (sufficient decrease and curvature) conditions
+                ///
                 template
                 <
                         typename tproblem,

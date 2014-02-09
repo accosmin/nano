@@ -8,10 +8,9 @@ namespace ncv
 {
         namespace optimize
         {
-                /////////////////////////////////////////////////////////////////////////////////////////
-                // conjugate gradient descent starting from the initial value (guess) x0.
-                /////////////////////////////////////////////////////////////////////////////////////////
-
+                ///
+                /// \brief conjugate gradient descent starting from the initial value (guess) x0
+                ///
                 template
                 <
                         typename tproblem,
@@ -29,8 +28,8 @@ namespace ncv
                 tstate cgd(
                         const tproblem& problem,
                         const tvector& x0,
-                        tsize max_iterations,           // maximum number of iterations
-                        tscalar epsilon,                // convergence precision
+                        tsize max_iterations,           ///< maximum number of iterations
+                        tscalar epsilon,                ///< convergence precision
                         const twlog& op_wlog = twlog(),
                         const telog& op_elog = telog(),
                         const tulog& op_ulog = tulog())

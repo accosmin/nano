@@ -11,8 +11,14 @@
 
 namespace ncv
 {
+        ///
+        /// \brief map the given OpenCL error code to a string
+        ///
         const char* error_string(cl_int error);
 
+        ///
+        /// \brief load text file (e.g. program/kernel source)
+        ///
         std::string load_text_file(const std::string& filepath);
 }
 

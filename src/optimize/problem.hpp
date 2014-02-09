@@ -10,19 +10,18 @@ namespace ncv
 {
         namespace optimize
         {
-                /////////////////////////////////////////////////////////////////////////////////////////
-                // describes a multivariate optimization problem.
-                /////////////////////////////////////////////////////////////////////////////////////////
-
+                ///
+                /// \brief describes a multivariate optimization problem
+                ///
                 template
                 <
                         typename tscalar_,
                         typename tsize_,
-                        typename top_size,              // dimensionality operator: size = op()
-                        typename top_fval,              // function value operator: f = op(x)
-                        typename top_grad,              // function value and gradient operator: f = op(x, g)
+                        typename top_size,              ///< dimensionality operator: size = op()
+                        typename top_fval,              ///< function value operator: f = op(x)
+                        typename top_grad,              ///< function value and gradient operator: f = op(x, g)
 
-                        // disable for not valid types!
+                        /// disable for not valid types!
                         typename tvalid_tscalar = typename std::enable_if<std::is_floating_point<tscalar_>::value>::type,
                         typename tvalid_tsize = typename std::enable_if<std::is_integral<tsize_>::value>::type
                 >
@@ -34,15 +33,17 @@ namespace ncv
 
                         typedef typename tensor::vector_types_t<tscalar>::tvector       tvector;
 
-                        // optimization current/optimum state
+                        /// optimization current/optimum state
                         typedef state_t<tscalar, tsize>                                 tstate;
 
-                        // logging: warning, error, update (with the current state)
+                        /// logging: warning, error, update (with the current state)
                         typedef std::function<void(const std::string&)>                 twlog;
                         typedef std::function<void(const std::string&)>                 telog;
                         typedef std::function<void(const tstate&)>                      tulog;
 
-                        // constructor (analytic gradient)
+                        ///
+                        /// \brief constructor (analytic gradient)
+                        ///
                         explicit problem_t(
                                 const top_size& op_size,
                                 const top_fval& op_fval,
@@ -56,7 +57,9 @@ namespace ncv
                                 reset();
                         }
 
-                        // constructor (no analytic gradient, can be estimated)
+                        ///
+                        /// \brief constructor (no analytic gradient, can be estimated)
+                        ///
                         explicit problem_t(
                                 const top_size& op_size,
                                 const top_fval& op_fval,
@@ -65,19 +68,33 @@ namespace ncv
                         {
                         }
 
-                        // reset statistics
+                        ///
+                        /// \brief reset statistics
+                        ///
                         void reset() const
                         {
                                 m_n_fvals = 0;
                                 m_n_grads = 0;
                         }
 
-                        // compute dimensionality & function value & gradient
+                        ///
+                        /// \brief compute dimensionality
+                        ///
                         tsize size() const { return _size(); }
+
+                        ///
+                        /// \brief compute function value
+                        ///
                         tscalar operator()(const tvector& x) const { return _f(x); }
+
+                        ///
+                        /// \brief compute function gradient
+                        ///
                         tscalar operator()(const tvector& x, tvector& g) const { return _f(x, g); }
 
-                        // access functions
+                        ///
+                        /// \brief access functions
+                        ///
                         tsize n_fval_calls() const { return m_n_fvals; }
                         tsize n_grad_calls() const { return m_n_grads; }
 
@@ -143,9 +160,9 @@ namespace ncv
                         top_size                m_op_size;
                         top_fval                m_op_fval;
                         top_grad                m_op_grad;
-                        tscalar                 m_eps;                  // finite difference approximation
-                        mutable tsize           m_n_fvals;              // #function value evaluations
-                        mutable tsize           m_n_grads;              // #function gradient evaluations
+                        tscalar                 m_eps;                  ///< finite difference approximation
+                        mutable tsize           m_n_fvals;              ///< #function value evaluations
+                        mutable tsize           m_n_grads;              ///< #function gradient evaluations
                 };
         }
 }

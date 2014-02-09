@@ -7,12 +7,11 @@ namespace ncv
 {
         namespace optimize
         {
-                /////////////////////////////////////////////////////////////////////////////////////////
-                // line-search method to find the scalar that reduces
-                //      the function value (the most) along the direction d: argmin(t) f(x + t * d).
-                //      using the Armijo (sufficient decrease) condition
-                /////////////////////////////////////////////////////////////////////////////////////////
-
+                ///
+                /// \brief line-search method to find the scalar that reduces
+                /// the function value (the most) along the direction d: argmin(t) f(x + t * d),
+                /// using the Armijo (sufficient decrease) condition
+                ///
                 template
                 <
                         typename tproblem,

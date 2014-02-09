@@ -7,10 +7,9 @@ namespace ncv
 {
         namespace optimize
         {
-                /////////////////////////////////////////////////////////////////////////////////////////
-                // check and force a descent direction
-                /////////////////////////////////////////////////////////////////////////////////////////
-
+                ///
+                /// \brief check and force a descent direction
+                ///
                 template
                 <
                         typename tstate,

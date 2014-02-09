@@ -8,10 +8,9 @@ namespace ncv
 {
         namespace optimize
         {
-                /////////////////////////////////////////////////////////////////////////////////////////
-                // gradient descent starting from the initial value (guess) x0.
-                /////////////////////////////////////////////////////////////////////////////////////////
-
+                ///
+                /// \brief gradient descent starting from the initial value (guess) x0
+                ///
                 template
                 <
                         typename tproblem,

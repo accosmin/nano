@@ -7,12 +7,14 @@ namespace ncv
 {
         namespace optimize
         {
-                /////////////////////////////////////////////////////////////////////////////////////////
-                // optimization state:
-                //      current point (x), function value (f), gradient (g),
-                //      descent direction (d) & line-search step (t).
-                /////////////////////////////////////////////////////////////////////////////////////////
-
+                ///
+                /// \brief optimization state described as:
+                /// current point (x),
+                /// function value (f),
+                /// gradient (g),
+                /// descent direction (d) &
+                /// line-search step (t)
+                ///
                 template
                 <
                         typename tscalar_,
@@ -23,7 +25,9 @@ namespace ncv
                         typedef tscalar_                                                tscalar;
                         typedef typename tensor::vector_types_t<tscalar>::tvector       tvector;
 
-                        // constructor
+                        ///
+                        /// \brief constructor
+                        ///
                         state_t(tsize size = 0)
                                 :       x(size), g(size), d(size),
                                         f(std::numeric_limits<tscalar>::max()),
@@ -34,7 +38,9 @@ namespace ncv
                         {
                         }
 
-                        // constructor
+                        ///
+                        /// \brief constructor
+                        ///
                         template
                         <
                                 typename tproblem
@@ -46,7 +52,9 @@ namespace ncv
                                 f = problem(x, g);
                         }
 
-                        // update current state
+                        ///
+                        /// \brief update current state
+                        ///
                         template
                         <
                                 typename tproblem
@@ -61,6 +69,9 @@ namespace ncv
                                 m_n_grads += problem.n_grad_calls();
                         }
 
+                        ///
+                        /// \brief update current state
+                        ///
                         template
                         <
                                 typename tproblem
@@ -76,7 +87,9 @@ namespace ncv
                                 m_n_grads = problem.n_grad_calls();
                         }
 
-                        // check convergence: the gradient is relatively small
+                        ///
+                        /// \brief check convergence: the gradient is relatively small
+                        ///
                         bool converged(tscalar epsilon) const
                         {
                                 return (g.template lpNorm<Eigen::Infinity>()) < epsilon * (1.0 + std::fabs(f));
@@ -88,14 +101,16 @@ namespace ncv
                         tsize n_grad_calls() const { return m_n_grads; }
 
                         // attributes
-                        tvector         x, g, d;
-                        tscalar         f, t;
+                        tvector         x, g, d;                ///< parameter, gradient, descent direction
+                        tscalar         f, t;                   ///< function value, step size
                         tsize           m_iterations;
                         tsize           m_n_fvals;
                         tsize           m_n_grads;
                 };
 
-                // compare two optimization states
+                ///
+                /// \brief compare two optimization states
+                ///
                 template
                 <
                         typename tscalar,
