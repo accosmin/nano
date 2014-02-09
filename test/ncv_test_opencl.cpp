@@ -32,9 +32,8 @@ int main(int argc, char *argv[])
         opencl::rprogram_t program = opencl::make_program_from_text(context, device, program_source);
         opencl::rkernel_t kernel = opencl::make_kernel(program, "hello_kernel");
 
-        // Create memory objects that will be used as arguments to
-        // kernel.  First create host memory arrays that will be
-        // used to store the arguments to the kernel
+        // Create memory objects that will be used as arguments to kernel.
+        // First create host memory arrays that will be used to store the arguments to the kernel
         float c[ARRAY_SIZE];
         float a[ARRAY_SIZE];
         float b[ARRAY_SIZE];
@@ -46,12 +45,12 @@ int main(int argc, char *argv[])
 
         opencl::rmem_t mema = opencl::make_read_mem(context, a, ARRAY_SIZE);
         opencl::rmem_t memb = opencl::make_read_mem(context, b, ARRAY_SIZE);
-        opencl::rmem_t memc = opencl::make_write_mem(context, ARRAY_SIZE);
+        opencl::rmem_t memc = opencl::make_write_mem(context, c, ARRAY_SIZE);
 
-        // Set the kernel arguments (result, a, b)
-        if (    clSetKernelArg(kernel.get(), 0, sizeof(cl_mem), &mema) != CL_SUCCESS ||
-                clSetKernelArg(kernel.get(), 1, sizeof(cl_mem), &memb) != CL_SUCCESS ||
-                clSetKernelArg(kernel.get(), 2, sizeof(cl_mem), &memc) != CL_SUCCESS)
+        // Set the kernel arguments (c, a, b)
+        if (    !opencl::set_argument(kernel, 0, mema) ||
+                !opencl::set_argument(kernel, 1, memb) ||
+                !opencl::set_argument(kernel, 2, memc))
         {
                 std::cerr << "Error setting kernel arguments." << std::endl;
                 return 1;

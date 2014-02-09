@@ -10,36 +10,63 @@ namespace ncv
 
         opencl::rcontext_t opencl::make_context()
         {
-                // First, select an OpenCL platform to run on.  For this example, we
-                // simply choose the first available platform.  Normally, you would
-                // query for all available platforms and select the most appropriate one.
-                cl_uint numPlatforms;
-                cl_platform_id firstPlatformId;
-                cl_int err = clGetPlatformIDs(1, &firstPlatformId, &numPlatforms);
-                if (err != CL_SUCCESS || numPlatforms <= 0)
+                cl_platform_id platform;
+                if (clGetPlatformIDs(1, &platform, NULL) != CL_SUCCESS)
                 {
-                        throw std::runtime_error("Failed to find any OpenCL platforms!");
+                        log_error() << "Failed to find any OpenCL platform!";
+                        return rcontext_t();
                 }
 
-                // Next, create an OpenCL context on the platform.  Attempt to
-                // create a GPU-based context, and if that fails, try to create
-                // a CPU-based context.
-                cl_context_properties contextProperties[] =
+                cl_device_id device;
+                if (clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &device, NULL) != CL_SUCCESS)
                 {
-                        CL_CONTEXT_PLATFORM,
-                        (cl_context_properties)firstPlatformId,
-                        0
-                };
+                        log_error() << "Failed to find any OpenCL GPU device!";
+                        return rcontext_t();
+                }
 
-                rcontext_t context = make_shared(clCreateContextFromType(contextProperties, CL_DEVICE_TYPE_GPU, NULL, NULL, &err));
+                {
+                        char vendor[1024];
+                        std::fill(vendor, vendor + 1024, '\0');
+                        clGetDeviceInfo(device, CL_DEVICE_VENDOR, sizeof(vendor), vendor, NULL);
+
+                        char name[1024];
+                        std::fill(name, name + 1024, '\0');
+                        clGetDeviceInfo(device, CL_DEVICE_NAME, sizeof(name), name, NULL);
+
+                        char driver[1024];
+                        std::fill(driver, driver + 1024, '\0');
+                        clGetDeviceInfo(device, CL_DRIVER_VERSION, sizeof(driver), driver, NULL);
+
+                        char version[1024];
+                        std::fill(version, version + 1024, '\0');
+                        clGetDeviceInfo(device, CL_DEVICE_VERSION, sizeof(version), version, NULL);
+
+                        cl_ulong gmemsize, lmemsize;
+                        clGetDeviceInfo(device, CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(gmemsize), &gmemsize, NULL);
+                        clGetDeviceInfo(device, CL_DEVICE_LOCAL_MEM_SIZE, sizeof(lmemsize), &lmemsize, NULL);
+
+                        cl_uint maxcus;
+                        clGetDeviceInfo(device, CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(maxcus), &maxcus, NULL);
+
+                        size_t maxwgsize;
+                        clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(maxwgsize), &maxwgsize, NULL);
+
+                        log_info() << "OpenCL device: vendor = [" << vendor << "]";
+                        log_info() << "OpenCL device: name = [" << name << "]";
+                        log_info() << "OpenCL device: driver = [" << driver << "]";
+                        log_info() << "OpenCL device: version = [" << version << "]";
+                        log_info() << "OpenCL device: global memory size = " << gmemsize << " B";
+                        log_info() << "OpenCL device: local memory size = " << lmemsize << " B";
+                        log_info() << "OpenCL device: maximum compute units = " << maxcus;
+                        log_info() << "OpenCL device: maximum work group size = " << maxwgsize;
+                }
+
+                cl_int err;
+                rcontext_t context = make_shared(clCreateContext(NULL, 1, &device, NULL, NULL, &err));
                 if (err != CL_SUCCESS)
                 {
-                        log_warning() << "Could not create GPU context, trying CPU...";
-                        context = make_shared(clCreateContextFromType(contextProperties, CL_DEVICE_TYPE_CPU, NULL, NULL, &err));
-                        if (err != CL_SUCCESS)
-                        {
-                                throw std::runtime_error("Failed to create an OpenCL GPU or CPU context!");
-                        }
+                        log_error() << "Failed to create an OpenCL GPU device!";
+                        return rcontext_t();
                 }
 
                 return context;
@@ -94,6 +121,9 @@ namespace ncv
 
         opencl::rprogram_t opencl::make_program_from_text(const rcontext_t& context, cl_device_id device, const std::string& text)
         {
+                assert(context);
+                assert(device);
+
                 const char* str = text.c_str();
                 rprogram_t program = make_shared(clCreateProgramWithSource(context.get(), 1, (const char**)&str, NULL, NULL));
                 if (!program)
@@ -136,26 +166,39 @@ namespace ncv
 
         opencl::rkernel_t opencl::make_kernel(const rprogram_t& program, const std::string& kname)
         {
+                assert(program);
+
                 return  make_shared(clCreateKernel(
                         program.get(), kname.c_str(), NULL));
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        opencl::rmem_t opencl::make_read_mem(const rcontext_t& context, float* data, size_t n_elements)
+        opencl::rmem_t opencl::impl::make_read_mem(const rcontext_t& context, void* data, size_t mem_size)
         {
+                assert(context);
+
                 return  make_shared(clCreateBuffer(
-                        context.get(), CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
-                        sizeof(float) * n_elements, data, NULL));
+                        context.get(), CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, mem_size, data, NULL));
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        opencl::rmem_t opencl::make_write_mem(const rcontext_t& context, size_t n_elements)
+        opencl::rmem_t opencl::impl::make_write_mem(const rcontext_t& context, size_t mem_size)
         {
+                assert(context);
+
                 return  make_shared(clCreateBuffer(
-                        context.get(), CL_MEM_READ_WRITE,
-                        sizeof(float) * n_elements, NULL, NULL));
+                        context.get(), CL_MEM_READ_WRITE, mem_size, NULL, NULL));
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        bool opencl::set_argument(const rkernel_t& kernel, size_t index, const rmem_t& mem)
+        {
+                assert(kernel);
+
+                return clSetKernelArg(kernel.get(), index, sizeof(cl_mem), &mem) == CL_SUCCESS;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
