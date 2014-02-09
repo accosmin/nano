@@ -5,17 +5,9 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // utility functions to process a loop using multiple threads.
-        //
-        // assuming a function <op(i)> to process the i-th element out of N total,
-        // then instead of:     for (size_t i = 0; i < N; i ++) { op(i); }
-        // we can use:          thread_loop(N, op)
-        //
-        // to automatically split the loop using as many threads as available on the current platform.
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        // split a loop computation of the given size using multiple threads
+        ///
+        /// \brief split a loop computation of the given size using multiple threads
+        ///
         template
         <
                 typename tsize,
@@ -41,9 +33,9 @@ namespace ncv
                 pool.wait();
         }
 
-        // split a loop computation of the given size using multiple threads
-        //      toperator_init: initialize <tdata> partial results for each thread
-        //      toperator_cumulate: cumulate <tdata> partial results
+        ///
+        /// \brief split a loop computation of the given size using multiple threads and cumulate partial results
+        ///
         template
         <
                 typename tdata,

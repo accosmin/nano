@@ -8,18 +8,18 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // asynchronously runs multiple workers/jobs/threads
-        //      by enqueing and distribute them on all available threads.
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        // return the number of threads available on the system
+        ///
+        /// \brief the number of threads available on the system
+        ///
         inline size_t n_threads()
         {
                 return static_cast<size_t>(std::thread::hardware_concurrency());
         }
 
-        // thread pool
+        ///
+        /// \brief asynchronously runs multiple workers/jobs/threads
+        /// by enqueing and distribute them on all available threads
+        ///
         class thread_pool_t
         {
         public:
@@ -30,24 +30,38 @@ namespace ncv
                 typedef std::unique_lock<mutex_t>       lock_t;
                 typedef std::condition_variable         condition_t;
 
-                // constructor
+                ///
+                /// \brief constructor
+                ///
                 thread_pool_t(size_t threads = 0);
 
-                // destructor
+                ///
+                /// \brief destructor
+                ///
                 ~thread_pool_t();
 
-                // disable copying
+                ///
+                /// \brief disable copying
+                ///
                 thread_pool_t(const thread_pool_t&) = delete;
+
+                ///
+                /// \brief disable copying
+                ///
                 thread_pool_t& operator=(const thread_pool_t&) = delete;
 
-                // add a new worker to execute
+                ///
+                /// \brief enqueue a new task to execute
+                ///
                 template<class F>
                 void enqueue(F f)
                 {
                         _enqueue(f);
                 }
 
-                // wait for all workers to finish
+                ///
+                /// \brief wait for all workers to finish running the tasks
+                ///
                 void wait();
 
                 // access functions
@@ -56,41 +70,53 @@ namespace ncv
 
         private:
 
-                // task collection
+                ///
+                /// \brief collect the tasks to run
+                ///
                 struct data_t
                 {
-                        // constructor
+                        ///
+                        /// \brief constructor
+                        ///
                         data_t() :      m_running(0),
                                         m_stop(false)
                         {
                         }
 
                         // attributes
-                        std::deque<task_t>      m_tasks;                // Tasks (functors) to execute
-                        size_t                  m_running;              // #running taks
-                        mutex_t                 m_mutex;                // Synchronize task access
-                        condition_t             m_condition;            // Signaling
-                        bool                    m_stop;                 // Stop requested
+                        std::deque<task_t>      m_tasks;                ///< Tasks (functors) to execute
+                        size_t                  m_running;              ///< #running taks
+                        mutex_t                 m_mutex;                ///< Synchronize task access
+                        condition_t             m_condition;            ///< Signaling
+                        bool                    m_stop;                 ///< Stop requested
                 };
 
-                // worker
+                ///
+                /// \brief worker unit (to execute tasks)
+                ///
                 class worker_t
                 {
                 public:
 
-                        // constructor
+                        ///
+                        /// \brief constructor
+                        ///
                         worker_t(data_t& data) : m_data(data) {}
 
-                        // execute tasks when available
+                        ///
+                        /// \brief execute tasks when available
+                        ///
                         void operator()();
 
                 private:
 
                         // attributes
-                        data_t&         m_data;                 // Tasks
+                        data_t&                 m_data;                 ///< Tasks
                 };
 
-                // add a new task to execute
+                ///
+                /// \brief add a new task to execute (implementation)
+                ///
                 template<class F>
                 void _enqueue(F f)
                 {
@@ -104,8 +130,8 @@ namespace ncv
         private:
 
                 // attributes
-                std::vector<thread_t>   m_workers;              // worker threads
-                data_t                  m_data;                 // tasks to execute + synchronization
+                std::vector<thread_t>           m_workers;              ///< worker threads
+                data_t                          m_data;                 ///< tasks to execute + synchronization
         };
 }
 
