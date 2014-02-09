@@ -60,6 +60,7 @@ file(GLOB nanocv_sources
         src/tasks/*.*
         src/models/*.*
         src/trainers/*.*
+        src/opencl/*.*
         )
 
 add_library(nanocv
