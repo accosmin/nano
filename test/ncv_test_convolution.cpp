@@ -51,40 +51,50 @@ void init_matrices(int rows, int cols, int count, tmatrices& matrices)
 }
 
 template <typename tmatrices, typename tmatrix, typename top>
-void test_conv2D(top op, const char* name, const tmatrices& idatas, const tmatrix& kdata, tmatrix& odata)
+void test_conv2D(top op, const char* name, const tmatrices& idatas, const tmatrix& kdata, tmatrices& odatas)
 {
-        odata.setZero();
+        for (auto i = 0; i < idatas.size(); i ++)
+        {
+                odatas[i].setZero();
+        }
 
         const clock_t start = clock();
 
-        const int count = static_cast<int>(idatas.size());
-	for (int i = 0; i < count; i ++)
+        for (auto i = 0; i < idatas.size(); i ++)
 	{
-                op(idatas[i], kdata, odata);
+                op(idatas[i], kdata, odatas[i]);
 	}
 
         const clock_t stop = clock();
 
+        typename tmatrix::Scalar sum = 0;
+        for (auto i = 0; i < idatas.size(); i ++)
+        {
+                sum += odatas[i].sum();
+        }
+
 	std::cout.precision(3);
-        std::cout << name << " - " << ((stop - start + 0.0) / (CLOCKS_PER_SEC + 0.0))
-                  << " (" << std::fixed << odata.sum() << ")\t";
+        std::cout << name << " - " << ((stop - start + 0.0) / (CLOCKS_PER_SEC + 0.0)) << " (" << std::fixed << sum << ")\t";
 }
 
 void test(int isize, int ksize, int n_samples)
 {
-        matrices_t idatas;
-        matrix_t kdata, bdata, odata;
+        const int osize = isize - ksize + 1;
+
+        matrices_t idatas, odatas;
+        matrix_t kdata;
         vector_t krdata, kcdata;
 
         init_matrices(isize, isize, n_samples, idatas);
-        init_matrix(isize - ksize + 1, isize - ksize + 1, odata);
-        init_matrix(isize, isize, bdata);
+        init_matrices(osize, osize, n_samples, odatas);
 
         init_conv2D(ksize, ksize, krdata, kcdata, kdata);
 
         std::cout << "mix (isize = " << isize << ", ksize = " << ksize << "): \t";
-        test_conv2D(ncv::math::conv_dot<matrix_t>, "dot", idatas, kdata, odata);
-        test_conv2D(ncv::math::conv_eib<matrix_t>, "eib", idatas, kdata, odata);
+        test_conv2D(ncv::math::conv_eib<matrix_t>, "eib", idatas, kdata, odatas);
+        test_conv2D(ncv::math::conv_dot<matrix_t>, "dot", idatas, kdata, odatas);
+        test_conv2D(ncv::math::conv_eib<matrix_t>, "eib", idatas, kdata, odatas);
+        test_conv2D(ncv::math::conv_dot<matrix_t>, "dot", idatas, kdata, odatas);
         std::cout << std::endl;
 }
 
