@@ -1,7 +1,5 @@
 #include "ncv.h"
 #include "opencl/opencl.h"
-#include <fstream>
-#include <sstream>
 
 const char* program_source = "\n" \
 "__kernel void add_kernel(                              \n" \
@@ -11,6 +9,14 @@ const char* program_source = "\n" \
 "{                                                      \n" \
 "       int gid = get_global_id(0);                     \n" \
 "       result[gid] = a[gid] + b[gid];                  \n" \
+"}                                                      \n" \
+"__kernel void mul_kernel(                              \n" \
+"       __global const float* a,                        \n" \
+"       __global const float* b,                        \n" \
+"       __global float* result)                         \n" \
+"{                                                      \n" \
+"       int gid = get_global_id(0);                     \n" \
+"       result[gid] = a[gid] * b[gid];                  \n" \
 "}                                                      \n" \
 "\n";
 
@@ -30,62 +36,105 @@ int main(int argc, char *argv[])
 
                 const cl::Program program = ocl::manager_t::instance().program_from_text(program_source);
 
-                cl::Kernel kernel = cl::Kernel(program, "add_kernel");
+//                cl::Kernel add_kernel = cl::Kernel(program, "add_kernel");
+                cl::Kernel mul_kernel = cl::Kernel(program, "mul_kernel");
 
-                // initialize our CPU memory arrays, send them to the device and set the kernel arguements
-                const size_t num = 16;
+                const size_t tests = 16;
+                const size_t minsize = 1024;
+                const size_t maxsize = 64 * 1024 * 1024;
 
-                std::vector<float> a(num);
-                std::vector<float> b(num);
-                std::vector<float> c(num);
-
-                for (size_t i = 0; i < num; i ++)
+                // try various data sizes
+                for (size_t size = minsize; size <= maxsize; size *= 4)
                 {
-                        a[i] = 1.0f * i;
-                        b[i] = 1.0f * i;
-                        c[i] = 0.0f;
-                }
+                        ncv::stats_t<double, size_t> send_stats;        // send inputs to gpu
+                        ncv::stats_t<double, size_t> proc_stats;        // gpu processing
+                        ncv::stats_t<double, size_t> read_stats;        // read results from gpu
+                        ncv::stats_t<double, size_t> scpu_stats;        // cpu processing (single core)
+                        ncv::stats_t<double, size_t> mcpu_stats;        // cpu processing (multiple cores)
 
-                const size_t array_size = sizeof(float) * num;
-                //our input arrays
-                cl::Buffer cl_a = cl::Buffer(context, CL_MEM_READ_ONLY, array_size, NULL);
-                cl::Buffer cl_b = cl::Buffer(context, CL_MEM_READ_ONLY, array_size, NULL);
-                //our output array
-                cl::Buffer cl_c = cl::Buffer(context, CL_MEM_WRITE_ONLY, array_size, NULL);
+                        std::vector<float> a(size);
+                        std::vector<float> b(size);
+                        std::vector<float> c(size);
 
-                cl::Event event;
+                        const size_t array_size = size * sizeof(float);
 
-                //push our CPU arrays to the GPU
-                queue.enqueueWriteBuffer(cl_a, CL_TRUE, 0, array_size, a.data(), NULL, &event);
-                ///clReleaseEvent(event); //we need to release events in order to be completely clean (has to do with openclprof)
-                queue.enqueueWriteBuffer(cl_b, CL_TRUE, 0, array_size, b.data(), NULL, &event);
-                ///clReleaseEvent(event);
-                queue.enqueueWriteBuffer(cl_c, CL_TRUE, 0, array_size, c.data(), NULL, &event);
-                ///clReleaseEvent(event);
+                        for (size_t i = 0; i < size; i ++)
+                        {
+                                a[i] = 1.0f * i;
+                                b[i] = 1.0f * i;
+                                c[i] = 0.0f;
+                        }
 
-                //set the arguements of our kernel
-                kernel.setArg(0, cl_a);
-                kernel.setArg(1, cl_b);
-                kernel.setArg(2, cl_c);
-                //Wait for the command queue to finish these commands before proceeding
-                queue.finish();
+                        // run multiple tests
+                        for (size_t test = 0; test < tests; test ++)
+                        {
+                                ncv::timer_t timer;
 
-                //for now we make the workgroup size the same as the number of elements in our arrays
-                //workGroupSize[0] = num;
+                                cl::Buffer cl_a = cl::Buffer(context, CL_MEM_READ_ONLY, array_size, NULL);
+                                cl::Buffer cl_b = cl::Buffer(context, CL_MEM_READ_ONLY, array_size, NULL);
+                                cl::Buffer cl_c = cl::Buffer(context, CL_MEM_WRITE_ONLY, array_size, NULL);
 
-                //execute the kernel
-                queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(num), cl::NullRange, NULL, &event);
-                ///clReleaseEvent(event);
-                ///clFinish(command_queue);
-                queue.finish();
+                                // I - send inputs to gpu
+                                timer.start();
+                                {
+                                        cl::Event event;
+                                        queue.enqueueWriteBuffer(cl_a, CL_TRUE, 0, array_size, a.data(), NULL, &event);
+                                        queue.enqueueWriteBuffer(cl_b, CL_TRUE, 0, array_size, b.data(), NULL, &event);
+                                        queue.enqueueWriteBuffer(cl_c, CL_TRUE, 0, array_size, c.data(), NULL, &event);
 
-                //lets check our calculations by reading from the device memory and printing out the results
-                queue.enqueueReadBuffer(cl_c, CL_TRUE, 0, array_size, c.data(), NULL, &event);
-                //clReleaseEvent(event);
+                                        mul_kernel.setArg(0, cl_a);
+                                        mul_kernel.setArg(1, cl_b);
+                                        mul_kernel.setArg(2, cl_c);
+                                        queue.finish();
+                                }
+                                send_stats(timer.miliseconds());
 
-                for (size_t i = 0; i < num; i ++)
-                {
-                        log_info() << "result [" << (i + 1) << "/" << num << "]: " << c[i];
+                                // II - gpu processing
+                                timer.start();
+                                {
+                                        cl::Event event;
+                                        queue.enqueueNDRangeKernel(mul_kernel, cl::NullRange, cl::NDRange(size), cl::NullRange, NULL, &event);
+                                        queue.finish();
+                                }
+                                proc_stats(timer.miliseconds());
+
+                                // III - read results from gpu
+                                timer.start();
+                                {
+                                        cl::Event event;
+                                        queue.enqueueReadBuffer(cl_c, CL_TRUE, 0, array_size, c.data(), NULL, &event);
+                                }
+                                read_stats(timer.miliseconds());
+
+                                // check results
+                                for (size_t i = 0; i < size; i ++)
+                                {
+                                        if (std::fabs(c[i] - (a[i] * b[i])) > 0.00001f)
+                                        {
+                                                log_error() << "GPU processing failed: incorrect result!";
+                                                break;
+                                        }
+                                }
+
+                                // IV - single-threaded cpu processing
+                                timer.start();
+                                {
+                                        for (size_t i = 0; i < size; i ++)
+                                        {
+                                                c[i] = a[i] * b[i];
+                                        }
+                                }
+                                scpu_stats(timer.miliseconds());
+
+                                // TODO: cpu processing times
+                        }
+
+                        // results
+                        log_info() << "SIZE [" << (size / 1024) << "K]"
+                                   << ": send - " << send_stats.avg() << " +/- " << send_stats.stdev() << " ms"
+                                   << ", proc - " << proc_stats.avg() << " +/- " << proc_stats.stdev() << " ms"
+                                   << ", read - " << read_stats.avg() << " +/- " << read_stats.stdev() << " ms"
+                                   << ", scpu - " << scpu_stats.avg() << " +/- " << scpu_stats.stdev() << " ms";
                 }
         }
 
