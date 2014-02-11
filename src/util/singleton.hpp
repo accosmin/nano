@@ -37,7 +37,7 @@ namespace ncv
 
         protected:
 
-                // donstructor
+                // constructor
                 singleton_t() {}
 
         private:
