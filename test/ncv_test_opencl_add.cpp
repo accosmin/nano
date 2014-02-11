@@ -30,10 +30,7 @@ int main(int argc, char *argv[])
 
                 const cl::Program program = ocl::manager_t::instance().program_from_text(program_source);
 
-                cl_int err;
-                cl::Kernel kernel = cl::Kernel(program, "add_kernel", &err);
-
-                log_info() << "OpenCL status (kernel): " << ocl::error_string(err);
+                cl::Kernel kernel = cl::Kernel(program, "add_kernel");
 
                 // initialize our CPU memory arrays, send them to the device and set the kernel arguements
                 const size_t num = 16;
@@ -51,25 +48,25 @@ int main(int argc, char *argv[])
 
                 const size_t array_size = sizeof(float) * num;
                 //our input arrays
-                cl::Buffer cl_a = cl::Buffer(context, CL_MEM_READ_ONLY, array_size, NULL, &err);
-                cl::Buffer cl_b = cl::Buffer(context, CL_MEM_READ_ONLY, array_size, NULL, &err);
+                cl::Buffer cl_a = cl::Buffer(context, CL_MEM_READ_ONLY, array_size, NULL);
+                cl::Buffer cl_b = cl::Buffer(context, CL_MEM_READ_ONLY, array_size, NULL);
                 //our output array
-                cl::Buffer cl_c = cl::Buffer(context, CL_MEM_WRITE_ONLY, array_size, NULL, &err);
+                cl::Buffer cl_c = cl::Buffer(context, CL_MEM_WRITE_ONLY, array_size, NULL);
 
                 cl::Event event;
 
                 //push our CPU arrays to the GPU
-                err = queue.enqueueWriteBuffer(cl_a, CL_TRUE, 0, array_size, a.data(), NULL, &event);
+                queue.enqueueWriteBuffer(cl_a, CL_TRUE, 0, array_size, a.data(), NULL, &event);
                 ///clReleaseEvent(event); //we need to release events in order to be completely clean (has to do with openclprof)
-                err = queue.enqueueWriteBuffer(cl_b, CL_TRUE, 0, array_size, b.data(), NULL, &event);
+                queue.enqueueWriteBuffer(cl_b, CL_TRUE, 0, array_size, b.data(), NULL, &event);
                 ///clReleaseEvent(event);
-                err = queue.enqueueWriteBuffer(cl_c, CL_TRUE, 0, array_size, c.data(), NULL, &event);
+                queue.enqueueWriteBuffer(cl_c, CL_TRUE, 0, array_size, c.data(), NULL, &event);
                 ///clReleaseEvent(event);
 
                 //set the arguements of our kernel
-                err = kernel.setArg(0, cl_a);
-                err = kernel.setArg(1, cl_b);
-                err = kernel.setArg(2, cl_c);
+                kernel.setArg(0, cl_a);
+                kernel.setArg(1, cl_b);
+                kernel.setArg(2, cl_c);
                 //Wait for the command queue to finish these commands before proceeding
                 queue.finish();
 
@@ -77,16 +74,13 @@ int main(int argc, char *argv[])
                 //workGroupSize[0] = num;
 
                 //execute the kernel
-                err = queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(num), cl::NullRange, NULL, &event);
+                queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(num), cl::NullRange, NULL, &event);
                 ///clReleaseEvent(event);
-                log_info() << "OpenCL status (run kernel): " << ocl::error_string(err);
                 ///clFinish(command_queue);
                 queue.finish();
 
                 //lets check our calculations by reading from the device memory and printing out the results
-                err = queue.enqueueReadBuffer(cl_c, CL_TRUE, 0, array_size, c.data(), NULL, &event);
-                log_info() << "OpenCL status (read buffer): " << ocl::error_string(err);
-
+                queue.enqueueReadBuffer(cl_c, CL_TRUE, 0, array_size, c.data(), NULL, &event);
                 //clReleaseEvent(event);
 
                 for (size_t i = 0; i < num; i ++)
@@ -94,6 +88,7 @@ int main(int argc, char *argv[])
                         log_info() << "result [" << (i + 1) << "/" << num << "]: " << c[i];
                 }
         }
+
         catch (cl::Error e)
         {
                 log_error() << "OpenCL fatal error: <" << e.what() << "> (" << ocl::error_string(e.err()) << ")!";

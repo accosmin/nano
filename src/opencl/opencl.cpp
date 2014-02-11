@@ -109,11 +109,13 @@ namespace ncv
                 }
                 catch (cl::Error e)
                 {
+                        // load compilation errors
                         const cl::Device& device = m_devices[0];
                         log_error() << "OpenCL program build status: " << program.getBuildInfo<CL_PROGRAM_BUILD_STATUS>(device);
                         log_error() << "OpenCL program build options:\t" << program.getBuildInfo<CL_PROGRAM_BUILD_OPTIONS>(device);
                         log_error() << "OpenCL program build log:\t" << program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device);
 
+                        // and re-throw the exception
                         throw e;
                 }
 

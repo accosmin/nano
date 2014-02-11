@@ -104,7 +104,7 @@ set(nanocv_test_programs
         ncv_test_network_gradient
         ncv_test_network_forward
         ncv_test_network_backward
-        ncv_test_opencl)
+        ncv_test_opencl_add)
 
 set(nanocv_programs
         ncv_max_threads
