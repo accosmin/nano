@@ -6,17 +6,15 @@
 namespace ncv
 {
         ///
-        /// \brief split a loop computation of the given size using multiple threads
+        /// \brief split a loop computation of the given size using multiple threads on a given thread pool
         ///
         template
         <
                 typename tsize,
                 class toperator
         >
-        void thread_loop(tsize N, toperator op, tsize threads = tsize(0))
+        void thread_loop(tsize N, toperator op, thread_pool_t& pool)
         {
-                thread_pool_t pool(threads);
-
                 const tsize n_tasks = static_cast<tsize>(pool.n_workers());
 
                 for (tsize t = 0; t < n_tasks; t ++)
@@ -31,6 +29,20 @@ namespace ncv
                 }
 
                 pool.wait();
+        }
+
+        ///
+        /// \brief split a loop computation of the given size using multiple threads
+        ///
+        template
+        <
+                typename tsize,
+                class toperator
+        >
+        void thread_loop(tsize N, toperator op, tsize threads = tsize(0))
+        {
+                thread_pool_t pool(threads);
+                thread_loop(N, op, pool);
         }
 
         ///

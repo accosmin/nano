@@ -39,9 +39,11 @@ int main(int argc, char *argv[])
 //                cl::Kernel add_kernel = cl::Kernel(program, "add_kernel");
                 cl::Kernel mul_kernel = cl::Kernel(program, "mul_kernel");
 
-                const size_t tests = 16;
+                const size_t tests = 64;
                 const size_t minsize = 1024;
-                const size_t maxsize = 64 * 1024 * 1024;
+                const size_t maxsize = 4 * 1024 * 1024;
+
+                ncv::thread_pool_t pool;
 
                 // try various data sizes
                 for (size_t size = minsize; size <= maxsize; size *= 4)
@@ -52,17 +54,17 @@ int main(int argc, char *argv[])
                         ncv::stats_t<double, size_t> scpu_stats;        // cpu processing (single core)
                         ncv::stats_t<double, size_t> mcpu_stats;        // cpu processing (multiple cores)
 
-                        std::vector<float> a(size);
-                        std::vector<float> b(size);
-                        std::vector<float> c(size);
+                        ncv::tensor::vector_types_t<float>::tvector a; a.resize(size);
+                        ncv::tensor::vector_types_t<float>::tvector b; b.resize(size);
+                        ncv::tensor::vector_types_t<float>::tvector c; c.resize(size);
 
                         const size_t array_size = size * sizeof(float);
 
                         for (size_t i = 0; i < size; i ++)
                         {
-                                a[i] = 1.0f * i;
-                                b[i] = 1.0f * i;
-                                c[i] = 0.0f;
+                                a(i) = 1.0f * i;
+                                b(i) = 1.0f * i;
+                                c(i) = 0.0f;
                         }
 
                         // run multiple tests
@@ -78,16 +80,17 @@ int main(int argc, char *argv[])
                                 timer.start();
                                 {
                                         cl::Event event;
-                                        queue.enqueueWriteBuffer(cl_a, CL_TRUE, 0, array_size, a.data(), NULL, &event);
-                                        queue.enqueueWriteBuffer(cl_b, CL_TRUE, 0, array_size, b.data(), NULL, &event);
-                                        queue.enqueueWriteBuffer(cl_c, CL_TRUE, 0, array_size, c.data(), NULL, &event);
+                                        queue.enqueueWriteBuffer(cl_a, CL_FALSE, 0, array_size, a.data(), NULL, &event);
+                                        queue.enqueueWriteBuffer(cl_b, CL_FALSE, 0, array_size, b.data(), NULL, &event);
+//                                        queue.enqueueWriteBuffer(cl_c, CL_FALSE, 0, array_size, c.data(), NULL, &event);
+                                        queue.finish();
 
                                         mul_kernel.setArg(0, cl_a);
                                         mul_kernel.setArg(1, cl_b);
                                         mul_kernel.setArg(2, cl_c);
                                         queue.finish();
                                 }
-                                send_stats(timer.miliseconds());
+                                send_stats(timer.microseconds());
 
                                 // II - gpu processing
                                 timer.start();
@@ -96,7 +99,7 @@ int main(int argc, char *argv[])
                                         queue.enqueueNDRangeKernel(mul_kernel, cl::NullRange, cl::NDRange(size), cl::NullRange, NULL, &event);
                                         queue.finish();
                                 }
-                                proc_stats(timer.miliseconds());
+                                proc_stats(timer.microseconds());
 
                                 // III - read results from gpu
                                 timer.start();
@@ -104,12 +107,12 @@ int main(int argc, char *argv[])
                                         cl::Event event;
                                         queue.enqueueReadBuffer(cl_c, CL_TRUE, 0, array_size, c.data(), NULL, &event);
                                 }
-                                read_stats(timer.miliseconds());
+                                read_stats(timer.microseconds());
 
                                 // check results
                                 for (size_t i = 0; i < size; i ++)
                                 {
-                                        if (std::fabs(c[i] - (a[i] * b[i])) > 0.00001f)
+                                        if (std::fabs(c(i) - (a(i) * b(i))) > 0.00001f)
                                         {
                                                 log_error() << "GPU processing failed: incorrect result!";
                                                 break;
@@ -121,20 +124,29 @@ int main(int argc, char *argv[])
                                 {
                                         for (size_t i = 0; i < size; i ++)
                                         {
-                                                c[i] = a[i] * b[i];
+                                                c(i) = a(i) * b(i);
                                         }
                                 }
-                                scpu_stats(timer.miliseconds());
+                                scpu_stats(timer.microseconds());
 
-                                // TODO: cpu processing times
+                                // V - multi-threaded cpu processing
+                                timer.start();
+                                {
+                                        ncv::thread_loop(size, [&] (size_t i)
+                                        {
+                                                c(i) = a(i) * b(i);
+                                        }, pool);
+                                }
+                                mcpu_stats(timer.microseconds());
                         }
 
                         // results
-                        log_info() << "SIZE [" << (size / 1024) << "K]"
-                                   << ": send - " << send_stats.avg() << " +/- " << send_stats.stdev() << " ms"
-                                   << ", proc - " << proc_stats.avg() << " +/- " << proc_stats.stdev() << " ms"
-                                   << ", read - " << read_stats.avg() << " +/- " << read_stats.stdev() << " ms"
-                                   << ", scpu - " << scpu_stats.avg() << " +/- " << scpu_stats.stdev() << " ms";
+                        log_info() << "SIZE [" << text::resize(text::to_string(size / 1024), 8, align::right) << "K]"
+                                   << ": send - " << text::resize(text::to_string(send_stats.avg()), 16, align::right) << "us"
+                                   << ", proc - " << text::resize(text::to_string(proc_stats.avg()), 16, align::right) << "us"
+                                   << ", read - " << text::resize(text::to_string(read_stats.avg()), 16, align::right) << "us"
+                                   << ", scpu - " << text::resize(text::to_string(scpu_stats.avg()), 16, align::right) << "us"
+                                   << ", mcpu - " << text::resize(text::to_string(mcpu_stats.avg()), 16, align::right) << "us";
                 }
         }
 

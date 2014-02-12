@@ -51,6 +51,11 @@ namespace ncv
                 thread_pool_t& operator=(const thread_pool_t&) = delete;
 
                 ///
+                /// \brief resize the number of workers
+                ///
+                void resize(size_t nthreads);
+
+                ///
                 /// \brief enqueue a new task to execute
                 ///
                 template<class F>
@@ -94,21 +99,19 @@ namespace ncv
                 ///
                 /// \brief worker unit (to execute tasks)
                 ///
-                class worker_t
+                struct worker_t
                 {
-                public:
-
                         ///
                         /// \brief constructor
                         ///
-                        worker_t(data_t& data) : m_data(data) {}
+                        worker_t(data_t& data) :        m_data(data)
+                        {
+                        }
 
                         ///
                         /// \brief execute tasks when available
                         ///
                         void operator()();
-
-                private:
 
                         // attributes
                         data_t&                 m_data;                 ///< Tasks
