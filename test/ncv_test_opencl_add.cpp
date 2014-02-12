@@ -141,12 +141,12 @@ int main(int argc, char *argv[])
                         }
 
                         // results
-                        log_info() << "SIZE [" << text::resize(text::to_string(size / 1024), 8, align::right) << "K]"
-                                   << ": send - " << text::resize(text::to_string(send_stats.avg()), 16, align::right) << "us"
-                                   << ", proc - " << text::resize(text::to_string(proc_stats.avg()), 16, align::right) << "us"
-                                   << ", read - " << text::resize(text::to_string(read_stats.avg()), 16, align::right) << "us"
-                                   << ", scpu - " << text::resize(text::to_string(scpu_stats.avg()), 16, align::right) << "us"
-                                   << ", mcpu - " << text::resize(text::to_string(mcpu_stats.avg()), 16, align::right) << "us";
+                        log_info() << "SIZE [" << text::resize(text::to_string(size / 1024), 4, align::right) << "K]"
+                                   << ": send2GPU - " << text::resize(text::to_string(send_stats.avg()), 12, align::right) << "us"
+                                   << ", proc@GPU - " << text::resize(text::to_string(proc_stats.avg()), 12, align::right) << "us"
+                                   << ", read-GPU - " << text::resize(text::to_string(read_stats.avg()), 12, align::right) << "us"
+                                   << ", scpu-CPU - " << text::resize(text::to_string(scpu_stats.avg()), 12, align::right) << "us"
+                                   << ", mcpu-CPU - " << text::resize(text::to_string(mcpu_stats.avg()), 12, align::right) << "us";
                 }
         }
 
