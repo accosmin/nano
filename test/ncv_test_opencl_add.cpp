@@ -5,16 +5,7 @@ const std::string program_source = R"xxx(
 
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
 
-__kernel void add_kernel(
-       __global const float* a,
-       __global const float* b,
-       __global float* result)
-{
-       int gid = get_global_id(0);
-       result[gid] = a[gid] + b[gid];
-}
-
-__kernel void mul_kernel(
+__kernel void test_kernel(
        __global const float* a,
        __global const float* b,
        __global float* result)
@@ -27,13 +18,24 @@ __kernel void mul_kernel(
 
 template
 <
+        typename tscalar
+>
+tscalar cpu_op(tscalar a, tscalar b)
+{
+        return a * b;
+}
+
+template
+<
         typename tvector
 >
 bool check(const tvector& a, const tvector& b, const tvector& c, const char* error_message)
 {
+        const auto eps = std::numeric_limits<typename tvector::Scalar>::epsilon();
+
         for (auto i = 0; i < a.size(); i ++)
         {
-                if (std::fabs(c(i) - (a(i) * b(i))) > std::numeric_limits<typename tvector::Scalar>::epsilon())
+                if (std::fabs(c(i) - cpu_op(a(i), b(i))) > eps)
                 {
                         ncv::log_error() << error_message;
                         return false;
@@ -59,10 +61,9 @@ int main(int argc, char *argv[])
 
                 const cl::Program program = ocl::manager_t::instance().program_from_text(program_source);
 
-//                cl::Kernel add_kernel = cl::Kernel(program, "add_kernel");
-                cl::Kernel mul_kernel = cl::Kernel(program, "mul_kernel");
+                cl::Kernel kernel = cl::Kernel(program, "test_kernel");
 
-                const size_t tests = 64;
+                const size_t tests = 32;
                 const size_t minsize = 1024;
                 const size_t maxsize = 4 * 1024 * 1024;
 
@@ -89,9 +90,9 @@ int main(int argc, char *argv[])
                         cl::Buffer cl_c = cl::Buffer(context, CL_MEM_WRITE_ONLY, array_size, NULL);
 
                         // setup kernel buffers once
-                        mul_kernel.setArg(0, cl_a);
-                        mul_kernel.setArg(1, cl_b);
-                        mul_kernel.setArg(2, cl_c);
+                        kernel.setArg(0, cl_a);
+                        kernel.setArg(1, cl_b);
+                        kernel.setArg(2, cl_c);
                         queue.finish();
 
                         // run multiple tests
@@ -101,8 +102,8 @@ int main(int argc, char *argv[])
 
                                 for (size_t i = 0; i < size; i ++)
                                 {
-                                        a(i) = 1.0f * i + test;
-                                        b(i) = 2.0f * i - test;
+                                        a(i) = (1.0f + i) / (size + 0.0f) + test;
+                                        b(i) = (2.0f + i) / (size + 0.0f) - test;
                                         c(i) = 0.0f;
                                 }
 
@@ -112,7 +113,6 @@ int main(int argc, char *argv[])
                                         cl::Event event;
                                         queue.enqueueWriteBuffer(cl_a, CL_FALSE, 0, array_size, a.data(), NULL, &event);
                                         queue.enqueueWriteBuffer(cl_b, CL_FALSE, 0, array_size, b.data(), NULL, &event);
-//                                        queue.enqueueWriteBuffer(cl_c, CL_FALSE, 0, array_size, c.data(), NULL, &event);
                                         queue.finish();
                                 }
                                 send_stats(timer.microseconds());
@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
                                 timer.start();
                                 {
                                         cl::Event event;
-                                        queue.enqueueNDRangeKernel(mul_kernel, cl::NullRange, cl::NDRange(size), cl::NullRange, NULL, &event);
+                                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size), cl::NullRange, NULL, &event);
                                         queue.finish();
                                 }
                                 proc_stats(timer.microseconds());
@@ -141,7 +141,7 @@ int main(int argc, char *argv[])
                                 {
                                         for (size_t i = 0; i < size; i ++)
                                         {
-                                                c(i) = a(i) * b(i);
+                                                c(i) = cpu_op(a(i), b(i));
                                         }
                                 }
                                 scpu_stats(timer.microseconds());
@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
                                 {
                                         ncv::thread_loop(size, [&] (size_t i)
                                         {
-                                                c(i) = a(i) * b(i);
+                                                c(i) = cpu_op(a(i), b(i));
                                         }, pool);
                                 }
                                 mcpu_stats(timer.microseconds());
