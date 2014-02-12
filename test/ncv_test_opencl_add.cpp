@@ -10,8 +10,9 @@ __kernel void test_kernel(
        __global const float* b,
        __global float* result)
 {
-       int gid = get_global_id(0);
-       result[gid] = a[gid] * b[gid];
+       const int gid = get_global_id(0);
+       const float bb = b[gid];
+       result[gid] = a[gid] + bb * bb;//* b[gid];
 }
 
 )xxx";
@@ -22,7 +23,7 @@ template
 >
 tscalar cpu_op(tscalar a, tscalar b)
 {
-        return a * b;
+        return a + b * b;
 }
 
 template
@@ -35,9 +36,10 @@ bool check(const tvector& a, const tvector& b, const tvector& c, const char* err
 
         for (auto i = 0; i < a.size(); i ++)
         {
-                if (std::fabs(c(i) - cpu_op(a(i), b(i))) > eps)
+                const auto diff = std::fabs(c(i) - cpu_op(a(i), b(i)));
+                if (diff > eps)
                 {
-                        ncv::log_error() << error_message;
+                        ncv::log_error() << error_message << " (diff = " << diff << ")";
                         return false;
                 }
         }
