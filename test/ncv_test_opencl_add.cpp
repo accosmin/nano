@@ -60,21 +60,28 @@ int main(int argc, char *argv[])
 
                         const size_t array_size = size * sizeof(float);
 
-                        for (size_t i = 0; i < size; i ++)
-                        {
-                                a(i) = 1.0f * i;
-                                b(i) = 1.0f * i;
-                                c(i) = 0.0f;
-                        }
+                        // create buffers once
+                        cl::Buffer cl_a = cl::Buffer(context, CL_MEM_READ_ONLY, array_size, NULL);
+                        cl::Buffer cl_b = cl::Buffer(context, CL_MEM_READ_ONLY, array_size, NULL);
+                        cl::Buffer cl_c = cl::Buffer(context, CL_MEM_WRITE_ONLY, array_size, NULL);
+
+                        // setup kernel buffers once
+                        mul_kernel.setArg(0, cl_a);
+                        mul_kernel.setArg(1, cl_b);
+                        mul_kernel.setArg(2, cl_c);
+                        queue.finish();
 
                         // run multiple tests
                         for (size_t test = 0; test < tests; test ++)
                         {
                                 ncv::timer_t timer;
 
-                                cl::Buffer cl_a = cl::Buffer(context, CL_MEM_READ_ONLY, array_size, NULL);
-                                cl::Buffer cl_b = cl::Buffer(context, CL_MEM_READ_ONLY, array_size, NULL);
-                                cl::Buffer cl_c = cl::Buffer(context, CL_MEM_WRITE_ONLY, array_size, NULL);
+                                for (size_t i = 0; i < size; i ++)
+                                {
+                                        a(i) = 1.0f * i + test;
+                                        b(i) = 2.0f * i - test;
+                                        c(i) = 0.0f;
+                                }
 
                                 // I - send inputs to gpu
                                 timer.start();
@@ -83,11 +90,6 @@ int main(int argc, char *argv[])
                                         queue.enqueueWriteBuffer(cl_a, CL_FALSE, 0, array_size, a.data(), NULL, &event);
                                         queue.enqueueWriteBuffer(cl_b, CL_FALSE, 0, array_size, b.data(), NULL, &event);
 //                                        queue.enqueueWriteBuffer(cl_c, CL_FALSE, 0, array_size, c.data(), NULL, &event);
-                                        queue.finish();
-
-                                        mul_kernel.setArg(0, cl_a);
-                                        mul_kernel.setArg(1, cl_b);
-                                        mul_kernel.setArg(2, cl_c);
                                         queue.finish();
                                 }
                                 send_stats(timer.microseconds());
@@ -145,8 +147,8 @@ int main(int argc, char *argv[])
                                    << ": send2GPU - " << text::resize(text::to_string(send_stats.avg()), 12, align::right) << "us"
                                    << ", proc@GPU - " << text::resize(text::to_string(proc_stats.avg()), 12, align::right) << "us"
                                    << ", read-GPU - " << text::resize(text::to_string(read_stats.avg()), 12, align::right) << "us"
-                                   << ", scpu-CPU - " << text::resize(text::to_string(scpu_stats.avg()), 12, align::right) << "us"
-                                   << ", mcpu-CPU - " << text::resize(text::to_string(mcpu_stats.avg()), 12, align::right) << "us";
+                                   << ", singlCPU - " << text::resize(text::to_string(scpu_stats.avg()), 12, align::right) << "us"
+                                   << ", multiCPU - " << text::resize(text::to_string(mcpu_stats.avg()), 12, align::right) << "us";
                 }
         }
 
