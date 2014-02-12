@@ -1,24 +1,47 @@
 #include "ncv.h"
 #include "opencl/opencl.h"
 
-const char* program_source = "\n" \
-"__kernel void add_kernel(                              \n" \
-"       __global const float* a,                        \n" \
-"       __global const float* b,                        \n" \
-"       __global float* result)                         \n" \
-"{                                                      \n" \
-"       int gid = get_global_id(0);                     \n" \
-"       result[gid] = a[gid] + b[gid];                  \n" \
-"}                                                      \n" \
-"__kernel void mul_kernel(                              \n" \
-"       __global const float* a,                        \n" \
-"       __global const float* b,                        \n" \
-"       __global float* result)                         \n" \
-"{                                                      \n" \
-"       int gid = get_global_id(0);                     \n" \
-"       result[gid] = a[gid] * b[gid];                  \n" \
-"}                                                      \n" \
-"\n";
+const std::string program_source = R"xxx(
+
+#pragma OPENCL EXTENSION cl_khr_fp64 : enable
+
+__kernel void add_kernel(
+       __global const float* a,
+       __global const float* b,
+       __global float* result)
+{
+       int gid = get_global_id(0);
+       result[gid] = a[gid] + b[gid];
+}
+
+__kernel void mul_kernel(
+       __global const float* a,
+       __global const float* b,
+       __global float* result)
+{
+       int gid = get_global_id(0);
+       result[gid] = a[gid] * b[gid];
+}
+
+)xxx";
+
+template
+<
+        typename tvector
+>
+bool check(const tvector& a, const tvector& b, const tvector& c, const char* error_message)
+{
+        for (auto i = 0; i < a.size(); i ++)
+        {
+                if (std::fabs(c(i) - (a(i) * b(i))) > std::numeric_limits<typename tvector::Scalar>::epsilon())
+                {
+                        ncv::log_error() << error_message;
+                        return false;
+                }
+        }
+
+        return true;
+}
 
 int main(int argc, char *argv[])
 {
@@ -111,15 +134,7 @@ int main(int argc, char *argv[])
                                 }
                                 read_stats(timer.microseconds());
 
-                                // check results
-                                for (size_t i = 0; i < size; i ++)
-                                {
-                                        if (std::fabs(c(i) - (a(i) * b(i))) > 0.00001f)
-                                        {
-                                                log_error() << "GPU processing failed: incorrect result!";
-                                                break;
-                                        }
-                                }
+                                check(a, b, c, "GPU processing failed: incorrect result!");
 
                                 // IV - single-threaded cpu processing
                                 timer.start();
@@ -131,6 +146,8 @@ int main(int argc, char *argv[])
                                 }
                                 scpu_stats(timer.microseconds());
 
+                                check(a, b, c, "sCPU processing failed: incorrect result!");
+
                                 // V - multi-threaded cpu processing
                                 timer.start();
                                 {
@@ -140,15 +157,17 @@ int main(int argc, char *argv[])
                                         }, pool);
                                 }
                                 mcpu_stats(timer.microseconds());
+
+                                check(a, b, c, "mCPU processing failed: incorrect result!");
                         }
 
                         // results
                         log_info() << "SIZE [" << text::resize(text::to_string(size / 1024), 4, align::right) << "K]"
-                                   << ": send2GPU - " << text::resize(text::to_string(send_stats.avg()), 12, align::right) << "us"
-                                   << ", proc@GPU - " << text::resize(text::to_string(proc_stats.avg()), 12, align::right) << "us"
-                                   << ", read-GPU - " << text::resize(text::to_string(read_stats.avg()), 12, align::right) << "us"
-                                   << ", singlCPU - " << text::resize(text::to_string(scpu_stats.avg()), 12, align::right) << "us"
-                                   << ", multiCPU - " << text::resize(text::to_string(mcpu_stats.avg()), 12, align::right) << "us";
+                                   << ": send2GPU= " << text::resize(text::to_string(send_stats.avg()), 14, align::right) << "us"
+                                   << ", proc@GPU= " << text::resize(text::to_string(proc_stats.avg()), 14, align::right) << "us"
+                                   << ", read-GPU= " << text::resize(text::to_string(read_stats.avg()), 14, align::right) << "us"
+                                   << ", singlCPU= " << text::resize(text::to_string(scpu_stats.avg()), 14, align::right) << "us"
+                                   << ", multiCPU= " << text::resize(text::to_string(mcpu_stats.avg()), 14, align::right) << "us";
                 }
         }
 

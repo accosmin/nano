@@ -15,15 +15,16 @@ namespace ncv
         >
         void thread_loop(tsize N, toperator op, thread_pool_t& pool)
         {
-                const tsize n_tasks = static_cast<tsize>(pool.n_workers());
+                const tsize n_workers = static_cast<tsize>(pool.n_workers());
+                const tsize task_size = std::max(tsize(1), N / n_workers / 16);
 
-                for (tsize t = 0; t < n_tasks; t ++)
+                for (tsize i = 0; i < N; i += task_size)
                 {
                         pool.enqueue([=,&op]()
                         {
-                                for (tsize i = t; i < N; i += n_tasks)
+                                for (size_t t = 0; t + i < N; t ++)
                                 {
-                                        op(i);
+                                        op(t + i);
                                 }
                         });
                 }
