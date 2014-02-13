@@ -165,11 +165,11 @@ int main(int argc, char *argv[])
 
                         // results
                         log_info() << "SIZE [" << text::resize(text::to_string(size / 1024), 4, align::right) << "K]"
-                                   << ": send2GPU= " << text::resize(text::to_string(send_stats.avg()), 14, align::right) << "us"
-                                   << ", proc@GPU= " << text::resize(text::to_string(proc_stats.avg()), 14, align::right) << "us"
-                                   << ", read-GPU= " << text::resize(text::to_string(read_stats.avg()), 14, align::right) << "us"
-                                   << ", singlCPU= " << text::resize(text::to_string(scpu_stats.avg()), 14, align::right) << "us"
-                                   << ", multiCPU= " << text::resize(text::to_string(mcpu_stats.avg()), 14, align::right) << "us";
+                                   << ": sendGPU= " << text::resize(text::to_string(send_stats.avg()), 14, align::right) << "us"
+                                   << ", procGPU= " << text::resize(text::to_string(proc_stats.avg()), 14, align::right) << "us"
+                                   << ", readGPU= " << text::resize(text::to_string(read_stats.avg()), 14, align::right) << "us"
+                                   << ", 1CPU= " << text::resize(text::to_string(scpu_stats.avg()), 14, align::right) << "us"
+                                   << ", xCPU= " << text::resize(text::to_string(mcpu_stats.avg()), 14, align::right) << "us";
                 }
         }
 

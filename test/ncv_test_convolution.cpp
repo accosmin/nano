@@ -1,7 +1,10 @@
 #include "util/convolution.hpp"
 #include "ncv.h"
-#include <iostream>
-#include <functional>
+
+using namespace ncv;
+
+// the CPU thread pool
+thread_pool_t pool;
 
 typedef double                                                                          scalar_t;
 typedef Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>        matrix_t;
@@ -50,18 +53,29 @@ void init_matrices(int rows, int cols, int count, tmatrices& matrices)
 }
 
 template <typename tmatrices, typename tmatrix, typename top>
-void test_conv2D(top op, const char* name, const tmatrices& idatas, const tmatrix& kdata, tmatrices& odatas)
+void test_conv2D(top op, const char* name, const tmatrices& idatas, const tmatrix& kdata, tmatrices& odatas, bool multi)
 {
         for (auto i = 0; i < idatas.size(); i ++)
         {
                 odatas[i].setZero();
         }
 
-	const ncv::timer_t timer;
-        for (auto i = 0; i < idatas.size(); i ++)
-	{
-                op(idatas[i], kdata, odatas[i]);
-	}
+        const ncv::timer_t timer;
+        if (multi)
+        {
+                ncv::thread_loop(idatas.size(), [&] (size_t i)
+                {
+                        op(idatas[i], kdata, odatas[i]);
+                }, pool);
+        }
+
+        else
+        {
+                for (auto i = 0; i < idatas.size(); i ++)
+                {
+                        op(idatas[i], kdata, odatas[i]);
+                }
+        }
 	const std::size_t elapsed = timer.miliseconds();
 
         typename tmatrix::Scalar sum = 0;
@@ -71,8 +85,8 @@ void test_conv2D(top op, const char* name, const tmatrices& idatas, const tmatri
         }
 
 	using namespace ncv;
-        std::cout << name << "- " << text::resize(text::to_string(elapsed), 6, align::right) 
-		  << "ms (" << text::resize(text::to_string(sum), 8, align::left) << ")\t";
+        std::cout << name << "= " << text::resize(text::to_string(elapsed), 6, align::right)
+                  << "ms (" << text::resize(text::to_string(sum), 12, align::left) << ")\t";
 }
 
 void test(int isize, int ksize, int n_samples)
@@ -89,10 +103,10 @@ void test(int isize, int ksize, int n_samples)
         init_conv2D(ksize, ksize, krdata, kcdata, kdata);
 
         std::cout << "mix (isize = " << isize << ", ksize = " << ksize << "): \t";
-        test_conv2D(ncv::math::conv_eib<matrix_t>, "eib", idatas, kdata, odatas);
-        test_conv2D(ncv::math::conv_dot<matrix_t>, "dot", idatas, kdata, odatas);
-        test_conv2D(ncv::math::conv_eib<matrix_t>, "eib", idatas, kdata, odatas);
-        test_conv2D(ncv::math::conv_dot<matrix_t>, "dot", idatas, kdata, odatas);
+        test_conv2D(ncv::math::conv_eib<matrix_t>, "eib(1CPU)", idatas, kdata, odatas, false);
+        test_conv2D(ncv::math::conv_eib<matrix_t>, "eib(xCPU)", idatas, kdata, odatas, true);
+        test_conv2D(ncv::math::conv_dot<matrix_t>, "dot(1CPU)", idatas, kdata, odatas, false);
+        test_conv2D(ncv::math::conv_dot<matrix_t>, "dot(xCPU)", idatas, kdata, odatas, true);
         std::cout << std::endl;
 }
 
