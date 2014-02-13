@@ -3,16 +3,16 @@
 
 const std::string program_source = R"xxx(
 
+#pragma OPENCL EXTENSION cl_amd_fp64 : enable
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
 
 __kernel void test_kernel(
-       __global const float* a,
-       __global const float* b,
-       __global float* result)
+       __global const double* a,
+       __global const double* b,
+       __global double* result)
 {
        const int gid = get_global_id(0);
-       const float bb = b[gid];
-       result[gid] = a[gid] + bb * bb;//* b[gid];
+       result[gid] = a[gid] + b[gid] * b[gid];
 }
 
 )xxx";
@@ -80,11 +80,11 @@ int main(int argc, char *argv[])
                         ncv::stats_t<double, size_t> scpu_stats;        // cpu processing (single core)
                         ncv::stats_t<double, size_t> mcpu_stats;        // cpu processing (multiple cores)
 
-                        ncv::tensor::vector_types_t<float>::tvector a; a.resize(size);
-                        ncv::tensor::vector_types_t<float>::tvector b; b.resize(size);
-                        ncv::tensor::vector_types_t<float>::tvector c; c.resize(size);
+                        ncv::tensor::vector_types_t<double>::tvector a; a.resize(size);
+                        ncv::tensor::vector_types_t<double>::tvector b; b.resize(size);
+                        ncv::tensor::vector_types_t<double>::tvector c; c.resize(size);
 
-                        const size_t array_size = size * sizeof(float);
+                        const size_t array_size = size * sizeof(double);
 
                         // create buffers once
                         cl::Buffer cl_a = cl::Buffer(context, CL_MEM_READ_ONLY, array_size, NULL);
