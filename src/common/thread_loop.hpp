@@ -13,10 +13,9 @@ namespace ncv
                 typename tsize,
                 class toperator
         >
-        void thread_loop(tsize N, toperator op, tsize threads = tsize(0))
+        void thread_loop(tsize N, toperator op, tsize nthreads = tsize(0))
         {
-                thread_pool_t& pool = thread_pool_t::instance();
-                pool.resize(threads);
+                thread_pool_t pool(nthreads);
 
                 const tsize n_tasks = static_cast<tsize>(pool.n_workers());
                 const tsize task_size = N / n_tasks + 1;
@@ -47,10 +46,9 @@ namespace ncv
                 class toperator_cumulate
         >
         void thread_loop_cumulate(
-                tsize N, toperator_init op_init, toperator op, toperator_cumulate op_cumulate, tsize threads = tsize(0))
+                tsize N, toperator_init op_init, toperator op, toperator_cumulate op_cumulate, tsize nthreads = tsize(0))
         {
-                thread_pool_t& pool = thread_pool_t::instance();
-                pool.resize(threads);
+                thread_pool_t pool(nthreads);
 
                 const tsize n_tasks = static_cast<tsize>(pool.n_workers());
                 const tsize task_size = N / n_tasks + 1;

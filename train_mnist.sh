@@ -34,7 +34,7 @@ model3=${model1}"conv:count=32,rows=5,cols=5;snorm;smax-abs-pool;"
 model3=${model1}"conv:count=32,rows=4,cols=4;snorm;"
 
 # train models
-fn_train forward-network ${model0} stochastic ${stoch} model0
+#fn_train forward-network ${model0} stochastic ${stoch} model0
 #fn_train forward-network ${model1} stochastic ${stoch} model1
 #fn_train forward-network ${model2} stochastic ${stoch} model2
 #fn_train forward-network ${model3} stochastic ${stoch} model3

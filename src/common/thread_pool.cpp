@@ -27,11 +27,6 @@ namespace ncv
                                         break;
                                 }
 
-                                else if (m_data.m_running >= m_data.m_maxrunning)
-                                {
-                                        continue;
-                                }
-
                                 task = m_data.m_tasks.front();
                                 m_data.m_tasks.pop_front();
                                 m_data.m_running ++;
@@ -52,10 +47,10 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        thread_pool_t::thread_pool_t()
-                :       m_data(ncv::n_threads())
+        thread_pool_t::thread_pool_t(size_t nthreads)
         {
-                for (size_t i = 0; i < ncv::n_threads(); i ++)
+                nthreads = (nthreads == 0) ? ncv::n_threads() : std::min(nthreads, ncv::n_threads());
+                for (size_t i = 0; i < nthreads; i ++)
                 {
                         m_workers.push_back(std::thread(thread_pool_t::worker_t(m_data)));
                 }
@@ -89,17 +84,6 @@ namespace ncv
                 {
                         m_data.m_condition.wait(lock);
                 }
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        void thread_pool_t::resize(size_t threads)
-        {
-                {
-                        const lock_t lock(m_data.m_mutex);
-                        m_data.m_maxrunning = (threads == 0) ? ncv::n_threads() : std::min(threads, ncv::n_threads());
-                }
-                m_data.m_condition.notify_one();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
