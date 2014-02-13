@@ -1,6 +1,5 @@
 #include "util/convolution.hpp"
-#include <iomanip>
-#include <ctime>
+#include "ncv.h"
 #include <iostream>
 #include <functional>
 
@@ -58,14 +57,12 @@ void test_conv2D(top op, const char* name, const tmatrices& idatas, const tmatri
                 odatas[i].setZero();
         }
 
-        const clock_t start = clock();
-
+	const ncv::timer_t timer;
         for (auto i = 0; i < idatas.size(); i ++)
 	{
                 op(idatas[i], kdata, odatas[i]);
 	}
-
-        const clock_t stop = clock();
+	const std::size_t elapsed = timer.miliseconds();
 
         typename tmatrix::Scalar sum = 0;
         for (auto i = 0; i < idatas.size(); i ++)
@@ -73,8 +70,9 @@ void test_conv2D(top op, const char* name, const tmatrices& idatas, const tmatri
                 sum += odatas[i].sum();
         }
 
-	std::cout.precision(3);
-        std::cout << name << " - " << ((stop - start + 0.0) / (CLOCKS_PER_SEC + 0.0)) << " (" << std::fixed << sum << ")\t";
+	using namespace ncv;
+        std::cout << name << "- " << text::resize(text::to_string(elapsed), 6, align::right) 
+		  << "ms (" << text::resize(text::to_string(sum), 8, align::left) << ")\t";
 }
 
 void test(int isize, int ksize, int n_samples)
