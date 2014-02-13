@@ -14,8 +14,7 @@ namespace ncv
                                 lock_t lock(m_data.m_mutex);
 
                                 while ( !m_data.m_stop &&
-                                        m_data.m_tasks.empty() &&
-                                        m_data.m_running >= m_data.m_maxrunning)
+                                        m_data.m_tasks.empty())
                                 {
                                         m_data.m_condition.wait(lock);
                                 }
@@ -26,6 +25,11 @@ namespace ncv
                                         m_data.m_tasks.clear();
                                         m_data.m_condition.notify_all();
                                         break;
+                                }
+
+                                else if (m_data.m_running >= m_data.m_maxrunning)
+                                {
+                                        continue;
                                 }
 
                                 task = m_data.m_tasks.front();
@@ -51,7 +55,7 @@ namespace ncv
         thread_pool_t::thread_pool_t()
                 :       m_data(ncv::n_threads())
         {
-                for (size_t i = 0; i < m_data.m_maxrunning; i ++)
+                for (size_t i = 0; i < ncv::n_threads(); i ++)
                 {
                         m_workers.push_back(std::thread(thread_pool_t::worker_t(m_data)));
                 }
