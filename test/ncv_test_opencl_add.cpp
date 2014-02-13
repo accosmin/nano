@@ -69,8 +69,6 @@ int main(int argc, char *argv[])
                 const size_t minsize = 1024;
                 const size_t maxsize = 4 * 1024 * 1024;
 
-                ncv::thread_pool_t pool;
-
                 // try various data sizes
                 for (size_t size = minsize; size <= maxsize; size *= 4)
                 {
@@ -156,7 +154,7 @@ int main(int argc, char *argv[])
                                         ncv::thread_loop(size, [&] (size_t i)
                                         {
                                                 c(i) = cpu_op(a(i), b(i));
-                                        }, pool);
+                                        });
                                 }
                                 mcpu_stats(timer.microseconds());
 

@@ -5,6 +5,7 @@
 #include <vector>
 #include <condition_variable>
 #include <deque>
+#include "singleton.hpp"
 
 namespace ncv
 {
@@ -20,7 +21,7 @@ namespace ncv
         /// \brief asynchronously runs multiple workers/jobs/threads
         /// by enqueing and distribute them on all available threads
         ///
-        class thread_pool_t
+        class thread_pool_t : public singleton_t<thread_pool_t>
         {
         public:
 
@@ -33,7 +34,7 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                thread_pool_t(size_t threads = 0);
+                thread_pool_t();
 
                 ///
                 /// \brief destructor
@@ -41,19 +42,9 @@ namespace ncv
                 ~thread_pool_t();
 
                 ///
-                /// \brief disable copying
+                /// \brief restrict the number of workers, if zero all workers will be active
                 ///
-                thread_pool_t(const thread_pool_t&) = delete;
-
-                ///
-                /// \brief disable copying
-                ///
-                thread_pool_t& operator=(const thread_pool_t&) = delete;
-
-                ///
-                /// \brief resize the number of workers
-                ///
-                void resize(size_t nthreads);
+                void resize(size_t threads = 0);
 
                 ///
                 /// \brief enqueue a new task to execute
@@ -72,6 +63,8 @@ namespace ncv
                 // access functions
                 size_t n_workers() const { return m_workers.size(); }
                 size_t n_jobs() const { return m_data.m_tasks.size(); }
+                size_t n_running() const { return m_data.m_running; }
+                size_t max_running() const { return m_data.m_maxrunning; }
 
         private:
 
@@ -83,14 +76,17 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        data_t() :      m_running(0),
+                        data_t(size_t maxrunning)
+                                :       m_running(0),
+                                        m_maxrunning(maxrunning),
                                         m_stop(false)
                         {
                         }
 
                         // attributes
                         std::deque<task_t>      m_tasks;                ///< Tasks (functors) to execute
-                        size_t                  m_running;              ///< #running taks
+                        size_t                  m_running;              ///< #running threads
+                        size_t                  m_maxrunning;           ///< #maximum number of running threads
                         mutex_t                 m_mutex;                ///< Synchronize task access
                         condition_t             m_condition;            ///< Signaling
                         bool                    m_stop;                 ///< Stop requested

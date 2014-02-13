@@ -153,7 +153,8 @@ namespace ncv
                 const bool asgd = text::iequals(m_optimizer, "asgd");
 
                 // prepare workers
-                thread_pool_t wpool(nthreads);
+                thread_pool_t& wpool = ncv::thread_pool_t::instance();
+                wpool.resize(nthreads);
                 thread_pool_t::mutex_t mutex;
 
                 const size_t iterations = m_epochs * tsamples.size();           // SGD iterations

@@ -6,15 +6,18 @@
 namespace ncv
 {
         ///
-        /// \brief split a loop computation of the given size using multiple threads on a given thread pool
+        /// \brief split a loop computation of the given size using multiple threads
         ///
         template
         <
                 typename tsize,
                 class toperator
         >
-        void thread_loop(tsize N, toperator op, thread_pool_t& pool)
+        void thread_loop(tsize N, toperator op, tsize threads = tsize(0))
         {
+                thread_pool_t& pool = thread_pool_t::instance();
+                pool.resize(threads);
+
                 const tsize n_tasks = static_cast<tsize>(pool.n_workers());
 
                 for (tsize t = 0; t < n_tasks; t ++)
@@ -32,20 +35,6 @@ namespace ncv
         }
 
         ///
-        /// \brief split a loop computation of the given size using multiple threads
-        ///
-        template
-        <
-                typename tsize,
-                class toperator
-        >
-        void thread_loop(tsize N, toperator op, tsize threads = tsize(0))
-        {
-                thread_pool_t pool(threads);
-                thread_loop(N, op, pool);
-        }
-
-        ///
         /// \brief split a loop computation of the given size using multiple threads and cumulate partial results
         ///
         template
@@ -59,7 +48,8 @@ namespace ncv
         void thread_loop_cumulate(
                 tsize N, toperator_init op_init, toperator op, toperator_cumulate op_cumulate, tsize threads = tsize(0))
         {
-                thread_pool_t pool(threads);
+                thread_pool_t& pool = thread_pool_t::instance();
+                pool.resize(threads);
 
                 const tsize n_tasks = static_cast<tsize>(pool.n_workers());
 
