@@ -19,12 +19,13 @@ namespace ncv
                 pool.resize(threads);
 
                 const tsize n_tasks = static_cast<tsize>(pool.n_workers());
+                const tsize task_size = N / n_tasks + 1;
 
                 for (tsize t = 0; t < n_tasks; t ++)
                 {
                         pool.enqueue([=,&op]()
                         {
-                                for (tsize i = t; i < N; i += n_tasks)
+                                for (tsize i = t * task_size, iend = std::min(i + task_size, N); i < iend; i ++)
                                 {
                                         op(i);
                                 }
@@ -52,6 +53,7 @@ namespace ncv
                 pool.resize(threads);
 
                 const tsize n_tasks = static_cast<tsize>(pool.n_workers());
+                const tsize task_size = N / n_tasks + 1;
 
                 std::vector<tdata> data(n_tasks);
                 for (tsize t = 0; t < n_tasks; t ++)
@@ -63,7 +65,7 @@ namespace ncv
                 {
                         pool.enqueue([=,&data,&op]()
                         {
-                                for (tsize i = t; i < N; i += n_tasks)
+                                for (tsize i = t * task_size, iend = std::min(i + task_size, N); i < iend; i ++)
                                 {
                                         op(i, data[t]);
                                 }
