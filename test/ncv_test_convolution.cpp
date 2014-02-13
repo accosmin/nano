@@ -3,6 +3,8 @@
 
 using namespace ncv;
 
+ncv::thread_pool_t pool;
+
 typedef double                                                                          scalar_t;
 typedef Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>        matrix_t;
 typedef Eigen::Matrix<scalar_t, Eigen::Dynamic, 1, Eigen::ColMajor>                     vector_t;
@@ -63,7 +65,7 @@ void test_conv2D(top op, const char* name, const tmatrices& idatas, const tmatri
                 ncv::thread_loop(idatas.size(), [&] (size_t i)
                 {
                         op(idatas[i], kdata, odatas[i]);
-                });
+                }, pool);
         }
 
         else
