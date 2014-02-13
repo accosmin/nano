@@ -1,7 +1,7 @@
 #ifndef NANOCV_TASK_H
 #define NANOCV_TASK_H
 
-#include "util/manager.hpp"
+#include "common/manager.hpp"
 #include "image.h"
 
 namespace ncv

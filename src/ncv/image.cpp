@@ -1,6 +1,6 @@
 #include "image.h"
 #include "text.h"
-#include "util/math.hpp"
+#include "common/math.hpp"
 #include <fstream>
 #include <boost/algorithm/string.hpp>
 

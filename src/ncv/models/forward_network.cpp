@@ -1,7 +1,7 @@
 #include "forward_network.h"
 #include "layers/layer_output.h"
-#include "util/logger.h"
-#include "util/math.hpp"
+#include "common/logger.h"
+#include "common/math.hpp"
 #include "text.h"
 #include "vectorizer.h"
 

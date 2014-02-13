@@ -1,7 +1,7 @@
 #ifndef NANOCV_LAYER_H
 #define NANOCV_LAYER_H
 
-#include "util/manager.hpp"
+#include "common/manager.hpp"
 #include "types.h"
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>

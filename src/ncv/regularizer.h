@@ -1,7 +1,7 @@
 #ifndef NANOCV_REGULARIZER_H
 #define NANOCV_REGULARIZER_H
 
-#include "util/manager.hpp"
+#include "common/manager.hpp"
 #include "types.h"
 
 namespace ncv

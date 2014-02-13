@@ -1,7 +1,7 @@
 #ifndef NANOCV_MODEL_H
 #define NANOCV_MODEL_H
 
-#include "util/manager.hpp"
+#include "common/manager.hpp"
 #include "geom.h"
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
@@ -19,45 +19,80 @@ namespace ncv
         class task_t;
         class image_t;
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // generic model:
-        //      ::value()       - computes the model output for an image patch
-        //      ::vgrad()       - computes the model's parameters gradient
-        /////////////////////////////////////////////////////////////////////////////////////////
-                
+        ///
+        /// \brief generic model used for computing:
+        ///     - the output for an image patch
+        //      - its parameters gradient
+        ///
         class model_t : public clonable_t<model_t>
         {
         public:
 
-                // constructor
+                ///
+                /// \brief constructor
+                ///
                 model_t();
 
-                // destructor
+                ///
+                /// \brief destructor
+                ///
                 virtual ~model_t() {}
 
-                // resize to process new inputs
+                ///
+                /// \brief resize to process new inputs
+                ///
                 bool resize(size_t rows, size_t cols, size_t outputs, color_mode color);
+
+                ///
+                /// \brief resize to process new inputs compatible with the given task
+                ///
                 bool resize(const task_t& task);
 
-                // compute the output
+                ///
+                /// \brief compute the model's output
+                ///
                 vector_t value(const image_t& image, coord_t x, coord_t y) const;
                 vector_t value(const image_t& image, const rect_t& region) const;
                 virtual vector_t value(const tensor3d_t& input) const = 0;
 
-                // save/load from file
+                ///
+                /// \brief save its parameters to file
+                ///
                 bool save(const string_t& path) const;
+
+                ///
+                /// \brief load its parameters from file
+                ///
                 bool load(const string_t& path);
 
-                // save/load/initialize parameters from vector
+                ///
+                /// \brief load its parameters from vector
+                ///
                 virtual bool load_params(const vector_t& x) = 0;
+
+                ///
+                /// \brief set parameters to zero
+                ///
                 virtual void zero_params() = 0;
+
+                ///
+                /// \brief set parameters to random values
+                ///
                 virtual void random_params() = 0;
 
-                // access current parameters/gradient
+                ///
+                /// \brief current parameters
+                ///
                 virtual vector_t params() const = 0;
+
+                ///
+                /// \brief compute the model's gradient
+                ///
                 virtual vector_t gradient(const vector_t& ograd) const = 0;
 
-                // save model description as image
+                ///
+                /// \brief save model description as image
+                ///
                 virtual bool save_as_images(const string_t& basepath) const = 0;
 
                 // access functions
@@ -70,7 +105,9 @@ namespace ncv
 
         protected:
 
-                // compose the input data
+                ///
+                /// \brief compose the input data
+                ///
                 tensor3d_t make_input(const image_t& image, coord_t x, coord_t y) const;
                 tensor3d_t make_input(const image_t& image, const rect_t& region) const;
 
@@ -84,10 +121,10 @@ namespace ncv
         private:
 
                 // attributes
-                size_t          m_rows, m_cols;         // input patch size
-                size_t          m_outputs;              // output size
-                size_t          m_parameters;           // #number of parameters
-                color_mode      m_color;                // input color mode
+                size_t          m_rows, m_cols;         ///< input patch size
+                size_t          m_outputs;              ///< output size
+                size_t          m_parameters;           ///< #number of parameters
+                color_mode      m_color;                ///< input color mode
         };
 }
 

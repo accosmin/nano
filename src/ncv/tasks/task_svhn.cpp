@@ -1,6 +1,6 @@
 #include "task_svhn.h"
-#include "util/math.hpp"
-#include "util/logger.h"
+#include "common/math.hpp"
+#include "common/logger.h"
 #include "loss.h"
 #include <fstream>
 #include <memory>

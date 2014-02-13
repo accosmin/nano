@@ -6,10 +6,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // singleton.
-        /////////////////////////////////////////////////////////////////////////////////////////
-        
         template
         <
                 class tobject
@@ -22,7 +18,9 @@ namespace ncv
                 typedef std::unique_ptr<this_object>            this_instance_t;
                 typedef std::once_flag                          this_mutex_t;
 
-                // access the only instance
+                ///
+                /// \brief acccess the only instance
+                ///
                 static this_object& instance()
                 {
                         std::call_once(m_once_flag, []()
@@ -32,19 +30,33 @@ namespace ncv
                         return *m_instance.get();
                 }
 
-                // destructor
+                ///
+                /// \brief destructor
+                ///
                 virtual ~singleton_t() {}
 
         protected:
 
-                // constructor
+                ///
+                /// \brief constructor
+                ///
                 singleton_t() {}
 
         private:
 
-                // disable copying
+                ///
+                /// \brief disable copying
+                ///
                 singleton_t(const singleton_t& other) = delete;
+
+                ///
+                /// \brief disable copying
+                ///
                 singleton_t(singleton_t&& other) = delete;
+
+                ///
+                /// \brief disable copying
+                ///
                 singleton_t& operator=(const singleton_t& other) = delete;
 		
 	private:

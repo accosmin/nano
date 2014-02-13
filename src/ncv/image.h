@@ -7,17 +7,19 @@
 
 namespace ncv
 {
-        ////////////////////////////////////////////////////////////////////////////////
-        // save/load RGBA image to disk
-        ////////////////////////////////////////////////////////////////////////////////
-
+        ///
+        /// \brief save RGBA image to disk
+        ///
         bool save_rgba(const string_t& path, const rgba_matrix_t& rgba);
+
+        ///
+        /// \brief load RGBA image from disk
+        ///
         bool load_rgba(const string_t& path, rgba_matrix_t& rgba);
 
-        ////////////////////////////////////////////////////////////////////////////////
-        // image annotation
-        ////////////////////////////////////////////////////////////////////////////////
-
+        ///
+        /// \brief image annotation
+        ///
         struct annotation_t
         {
                 // constructor
@@ -36,17 +38,16 @@ namespace ncv
                 }
 
                 // attributes
-                rect_t          m_region;       // 2D annotated region
-                string_t        m_label;        // label (e.g. classification)
-                vector_t        m_target;       // target vector to predict
+                rect_t          m_region;       ///< 2D annotated region
+                string_t        m_label;        ///< label (e.g. classification)
+                vector_t        m_target;       ///< target vector to predict
         };
 
         typedef std::vector<annotation_t>       annotations_t;
 
-        ////////////////////////////////////////////////////////////////////////////////
-        // image-indexed sample
-        ////////////////////////////////////////////////////////////////////////////////
-
+        ///
+        /// \brief image-indexed sample
+        ///
         struct sample_t
         {
                 // constructor
@@ -60,8 +61,8 @@ namespace ncv
                 }
 
                 // attributes
-                size_t          m_index;        // image index
-                rect_t          m_region;       // image coordinates
+                size_t          m_index;        ///< image index
+                rect_t          m_region;       ///< image coordinates
         };
 
         typedef std::vector<sample_t>           samples_t;
@@ -70,10 +71,9 @@ namespace ncv
         typedef std::pair<size_t, protocol>     fold_t;
         typedef std::map<fold_t, samples_t>     folds_t;
 
-        ////////////////////////////////////////////////////////////////////////////////
-        // image with its annotations
-        ////////////////////////////////////////////////////////////////////////////////
-
+        ///
+        /// \brief image with its annotations
+        ///
         struct image_t
         {
                 // load gray/color image from file or buffer

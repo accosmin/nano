@@ -1,5 +1,5 @@
 #include "opencl.h"
-#include "util/logger.h"
+#include "common/logger.h"
 #include <fstream>
 #include <sstream>
 #include <cassert>

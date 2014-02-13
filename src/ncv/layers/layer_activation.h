@@ -2,7 +2,7 @@
 #define NANOCV_ACTIVATION_LAYER_H
 
 #include "layer.h"
-#include "util/math.hpp"
+#include "common/math.hpp"
 
 namespace ncv
 {

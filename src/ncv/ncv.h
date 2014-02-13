@@ -7,16 +7,18 @@
 #include "optimize/opt_gd.hpp"
 #include "optimize/opt_cgd.hpp"
 #include "optimize/opt_lbfgs.hpp"
-#include "util/logger.h"
-#include "util/timer.h"
-#include "util/math.hpp"
-#include "util/stats.hpp"
-#include "thread/thread_loop.hpp"
+#include "common/logger.h"
+#include "common/timer.h"
+#include "common/math.hpp"
+#include "common/stats.hpp"
+#include "common/thread_loop.hpp"
 #include <cstdlib>
 
 namespace ncv
 {
-        // current version
+        ///
+        /// \brief current version
+        ///
         static const size_t MAJOR_VERSION = 0;
         static const size_t MINOR_VERSION = 1;
 
@@ -26,7 +28,9 @@ namespace ncv
                        text::to_string(MINOR_VERSION);
         }
 
-        // measure function call
+        ///
+        /// measure function call
+        ///
         template
         <
                 typename toperator
@@ -38,7 +42,9 @@ namespace ncv
                 log_info() << msg << " [" << timer.elapsed() << "].";
         }
 
-        // measure function call (and exit if any error)
+        ///
+        /// \brief measure function call (and exit if any error)
+        ///
         template
         <
                 typename toperator
@@ -57,10 +63,14 @@ namespace ncv
                 }
         }
 
-        // initialize library (register objects, start worker pool ...)
+        ///
+        /// \brief initialize library (register objects, start worker pool, initialize OpenCL ...)
+        ///
         void init();
 
-        // evaluate a model (compute the average loss value & error)
+        ///
+        /// \brief evaluate a model (compute the average loss value & error)
+        ///
         size_t test(const task_t& task, const fold_t& fold, const loss_t& loss, const model_t& model,
                 scalar_t& lvalue, scalar_t& lerror);
 }

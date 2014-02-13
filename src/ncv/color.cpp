@@ -1,5 +1,5 @@
 #include "color.h"
-#include "util/math.hpp"
+#include "common/math.hpp"
 
 namespace ncv
 {

@@ -1,4 +1,4 @@
-#include "util/convolution.hpp"
+#include "common/convolution.hpp"
 #include "ncv.h"
 
 using namespace ncv;

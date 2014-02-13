@@ -2,10 +2,10 @@
 #include "text.h"
 #include "vectorizer.h"
 #include "image.h"
-#include "util/logger.h"
-#include "util/math.hpp"
-#include "util/mad.hpp"
-#include "util/convolution.hpp"
+#include "common/logger.h"
+#include "common/math.hpp"
+#include "common/mad.hpp"
+#include "common/convolution.hpp"
 
 namespace ncv
 {

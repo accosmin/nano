@@ -4,16 +4,15 @@
 #include <boost/serialization/access.hpp>
 #include <cassert>
 #include "matrix.hpp"
-#include "util/random.hpp"
+#include "common/random.hpp"
 
 namespace ncv
 {
         namespace tensor
         {
-                /////////////////////////////////////////////////////////////////////////////////////////
-                // store tensor data as a 1D array of 2D matrices.
-                /////////////////////////////////////////////////////////////////////////////////////////
-
+                ///
+                /// store (3D/4D) tensor data as a 1D array of 2D matrices
+                ///
                 template
                 <
                         typename tscalar,
@@ -26,18 +25,25 @@ namespace ncv
                         typedef typename matrix_types_t<tscalar>::tmatrix       tmatrix;
                         typedef typename matrix_types_t<tscalar>::tmatrices     tmatrices;
 
-                        // constructor
+                        ///
+                        /// \brief constructor
+                        /// \param size total number of fixed size 2D matrices
+                        ///
                         storage_t(tsize size = 0, tsize rows = 0, tsize cols = 0)
                         {
                                 allocate(size, rows, cols);
                         }
 
-                        // destructor
+                        ///
+                        /// \brief destructor
+                        ///
                         virtual ~storage_t()
                         {
                         }
 
-                        // reset values
+                        ///
+                        /// \brief fill with zero
+                        ///
                         void zero()
                         {
                                 for (tmatrix& mat : m_data)
@@ -46,6 +52,9 @@ namespace ncv
                                 }
                         }
 
+                        ///
+                        /// \brief fill with a constant value
+                        ///
                         void constant(tscalar value)
                         {
                                 for (tmatrix& mat : m_data)
@@ -54,6 +63,9 @@ namespace ncv
                                 }
                         }
 
+                        ///
+                        /// \brief fill with uniformly distributed random values in the [min, max] range
+                        ///
                         void random(tscalar min = -1, tscalar max = 1)
                         {
                                 random_t<tscalar> rgen(min, max);
@@ -63,7 +75,9 @@ namespace ncv
                                 }
                         }
 
-                        // cumulate
+                        ///
+                        /// \brief cumulate with another tensor
+                        ///
                         void operator+=(const storage_t& other)
                         {
                                 assert(size() == other.size());
@@ -76,14 +90,18 @@ namespace ncv
                                 }
                         }
 
-                        // access functions
+                        ///
+                        /// \brief access functions
+                        ///
                         tsize size() const { return m_data.size() * n_rows() * n_cols(); }
                         tsize n_rows() const { return m_rows; }
                         tsize n_cols() const { return m_cols; }
 
                 protected:
 
-                        // resize to new dimensions
+                        ///
+                        /// \brief resize to new dimensions
+                        ///
                         tsize allocate(tsize size, tsize rows, tsize cols)
                         {
                                 m_rows = rows;
@@ -105,7 +123,9 @@ namespace ncv
 
                 private:
 
-                        // serialize
+                        ///
+                        /// serialize
+                        ///
                         friend class boost::serialization::access;
                         template
                         <
@@ -121,9 +141,9 @@ namespace ncv
                 private:
 
                         // attributes
-                        tsize           m_rows; // #rows (for each dimension)
-                        tsize           m_cols; // #cols (for each dimension)
-                        tmatrices       m_data; // values
+                        tsize           m_rows; ///< #rows (for each dimension)
+                        tsize           m_cols; ///< #cols (for each dimension)
+                        tmatrices       m_data; ///< values
                 };
         }
 }

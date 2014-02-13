@@ -9,7 +9,7 @@
 #include <CL/cl.hpp>
 #endif
 
-#include "util/singleton.hpp"
+#include "common/singleton.hpp"
 
 namespace ncv
 {

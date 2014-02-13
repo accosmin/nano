@@ -1,9 +1,9 @@
 #include "stochastic_trainer.h"
-#include "util/timer.h"
-#include "util/logger.h"
-#include "util/math.hpp"
-#include "util/usampler.hpp"
-#include "thread/thread_pool.h"
+#include "common/timer.h"
+#include "common/logger.h"
+#include "common/math.hpp"
+#include "common/usampler.hpp"
+#include "common/thread_pool.h"
 #include "text.h"
 #include <algorithm>
 
