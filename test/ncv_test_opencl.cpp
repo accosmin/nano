@@ -62,7 +62,6 @@ int main(int argc, char *argv[])
                 const cl::CommandQueue& queue = ocl::manager_t::instance().queue();
 
                 const cl::Program program = ocl::manager_t::instance().program_from_text(program_source);
-
                 cl::Kernel kernel = cl::Kernel(program, "test_kernel");
 
                 const size_t tests = 32;

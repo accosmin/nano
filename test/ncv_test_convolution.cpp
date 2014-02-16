@@ -1,24 +1,48 @@
-#include "common/convolution.hpp"
 #include "ncv.h"
+#include "common/convolution.hpp"
+#include "opencl/opencl.h"
 
 using namespace ncv;
 
+const std::string conv_program_source = R"xxx(
+
+#pragma OPENCL EXTENSION cl_amd_fp64 : enable
+#pragma OPENCL EXTENSION cl_khr_fp64 : enable
+
+__kernel void conv_kernel(
+       __global const double* idata, int icols,
+       __constant double* kdata, int krows, int kcols,
+       __global double* odata)
+{
+        const int x = get_global_id(0);
+        const int y = get_global_id(1);
+
+        double sum = 0;
+        for (int r = 0, kidx = 0; r < krows; r ++)
+        {
+                int iidx = (y + r) * icols + x;
+                for (int c = 0; c < kcols; c ++, kidx ++, iidx ++)
+                {
+                        sum += kdata[kidx] * idata[iidx];
+                }
+        }
+
+        odata[y * get_global_size(0) + x] = sum;
+}
+
+)xxx";
+
 ncv::thread_pool_t pool;
+const size_t tests = 4;
 
-typedef double                                                                          scalar_t;
-typedef Eigen::Matrix<scalar_t, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>        matrix_t;
-typedef Eigen::Matrix<scalar_t, Eigen::Dynamic, 1, Eigen::ColMajor>                     vector_t;
-typedef std::vector<matrix_t>                                                           matrices_t;
-
-template <typename tmatrix>
-void init_matrix(int rows, int cols, tmatrix& matrix)
+void init_matrix(int rows, int cols, matrix_t& matrix)
 {
         matrix.resize(rows, cols);
         matrix.setRandom();
+        matrix /= rows;
 }
 
-template <typename tmatrices>
-void init_matrices(int rows, int cols, int count, tmatrices& matrices)
+void init_matrices(int rows, int cols, int count, matrices_t& matrices)
 {
 	matrices.resize(count);
 	for (int i = 0; i < count; i ++)
@@ -27,50 +51,147 @@ void init_matrices(int rows, int cols, int count, tmatrices& matrices)
 	}
 }
 
-template <typename tmatrices, typename tmatrix, typename top>
-void test_conv2D(top op, const char* name, const tmatrices& idatas, const tmatrix& kdata, tmatrices& odatas, bool multi)
+void zero_matrices(matrices_t& matrices)
 {
-        for (auto i = 0; i < idatas.size(); i ++)
+        for (size_t i = 0; i < matrices.size(); i ++)
         {
-                odatas[i].setZero();
+                matrices[i].setZero();
         }
+}
+
+scalar_t sum_matrices(matrices_t& matrices)
+{
+        scalar_t sum = 0;
+        for (size_t i = 0; i < matrices.size(); i ++)
+        {
+                sum += matrices[i].sum();
+        }
+        return sum;
+}
+
+template <typename top>
+void test_conv2D_1cpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
+{
+        zero_matrices(odatas);
 
         ncv::stats_t<double, size_t> proc_stats;
 
-        const size_t tests = 16;
+        // run multiple tests
         for (size_t t = 0; t < tests; t ++)
         {
                 const ncv::timer_t timer;
 
-                if (multi)
+                for (size_t i = 0; i < idatas.size(); i ++)
                 {
-                        ncv::thread_loop(idatas.size(), [&] (size_t i)
-                        {
-                                op(idatas[i], kdata, odatas[i]);
-                        }, pool);
-                }
-
-                else
-                {
-                        for (auto i = 0; i < idatas.size(); i ++)
-                        {
-                                op(idatas[i], kdata, odatas[i]);
-                        }
+                        op(idatas[i], kdata, odatas[i]);
                 }
 
                 proc_stats(timer.miliseconds());
         }
 
-        typename tmatrix::Scalar sum = 0;
-        for (auto i = 0; i < idatas.size(); i ++)
+        const scalar_t sum = sum_matrices(odatas);
+        const size_t milis = static_cast<size_t>(proc_stats.avg());
+
+        std::cout << name << "= " << text::resize(text::to_string(milis), 4, align::right)
+                  << "ms (" << text::resize(text::to_string(sum), 12, align::left) << ")  ";
+}
+
+template <typename top>
+void test_conv2D_xcpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata,  matrices_t& odatas)
+{
+        zero_matrices(odatas);
+
+        ncv::stats_t<double, size_t> proc_stats;
+
+        // run multiple tests
+        for (size_t t = 0; t < tests; t ++)
         {
-                sum += odatas[i].sum();
+                const ncv::timer_t timer;
+
+                ncv::thread_loop(idatas.size(), [&] (size_t i)
+                {
+                        op(idatas[i], kdata, odatas[i]);
+                }, pool);
+
+                proc_stats(timer.miliseconds());
         }
 
-	using namespace ncv;
-        std::cout << name
-                  << "= " << text::resize(text::to_string(static_cast<size_t>(proc_stats.avg())), 6, align::right)
-                  << "ms (" << text::resize(text::to_string(sum), 12, align::left) << ")\t";
+        const scalar_t sum = sum_matrices(odatas);
+        const size_t milis = static_cast<size_t>(proc_stats.avg());
+
+        std::cout << name << "= " << text::resize(text::to_string(milis), 4, align::right)
+                  << "ms (" << text::resize(text::to_string(sum), 12, align::left) << ")  ";
+}
+
+void test_conv2D_gpu(const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
+{
+        const cl::Context& context = ocl::manager_t::instance().context();
+        const cl::CommandQueue& queue = ocl::manager_t::instance().queue();
+
+        const cl::Program program = ocl::manager_t::instance().program_from_text(conv_program_source);
+        cl::Kernel kernel = cl::Kernel(program, "conv_kernel");
+
+        const int icols = static_cast<int>(idatas[0].cols());
+        const int krows = static_cast<int>(kdata.rows());
+        const int kcols = static_cast<int>(kdata.cols());
+        const int orows = static_cast<int>(odatas[0].rows());
+        const int ocols = static_cast<int>(odatas[0].cols());
+
+        const size_t mem_idata = idatas[0].size() * sizeof(scalar_t);
+        const size_t mem_kdata = kdata.size() * sizeof(scalar_t);
+        const size_t mem_odata = odatas[0].size() * sizeof(scalar_t);
+
+        // create buffers once
+        cl::Buffer cl_idata = cl::Buffer(context, CL_MEM_READ_ONLY, mem_idata, NULL);
+        cl::Buffer cl_kdata = cl::Buffer(context, CL_MEM_READ_ONLY, mem_kdata, NULL);
+        cl::Buffer cl_odata = cl::Buffer(context, CL_MEM_WRITE_ONLY, mem_odata, NULL);
+
+        // setup kernel buffers once
+        kernel.setArg(0, cl_idata);
+        kernel.setArg(1, sizeof(int), (void*)&icols);
+        kernel.setArg(2, cl_kdata);
+        kernel.setArg(3, sizeof(int), (void*)&krows);
+        kernel.setArg(4, sizeof(int), (void*)&kcols);
+        kernel.setArg(5, cl_odata);
+        queue.finish();
+
+        // transfer constants
+        cl::Event event;
+        queue.enqueueWriteBuffer(cl_kdata, CL_FALSE, 0, mem_kdata, kdata.data(), NULL, &event);
+        queue.finish();
+
+        zero_matrices(odatas);
+
+        ncv::stats_t<double, size_t> proc_stats;
+
+        // run multiple tests
+        for (size_t t = 0; t < tests; t ++)
+        {
+                ncv::timer_t timer;
+
+                for (size_t i = 0; i < idatas.size(); i ++)
+                {
+                        // I - send inputs to gpu
+                        cl::Event event;
+                        queue.enqueueWriteBuffer(cl_idata, CL_FALSE, 0, mem_idata, idatas[i].data(), NULL, &event);
+                        queue.finish();
+
+                        // II - gpu processing
+                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(ocols, orows), cl::NullRange, NULL, &event);
+                        queue.finish();
+
+                        // III - read results from gpu
+                        queue.enqueueReadBuffer(cl_odata, CL_TRUE, 0, mem_odata, odatas[i].data(), NULL, &event);
+                }
+
+                proc_stats(timer.miliseconds());
+        }
+
+        const scalar_t sum = sum_matrices(odatas);
+        const size_t milis = static_cast<size_t>(proc_stats.avg());
+
+        std::cout << name << "= " << text::resize(text::to_string(milis), 4, align::right)
+                  << "ms (" << text::resize(text::to_string(sum), 12, align::left) << ")  ";
 }
 
 void test(int isize, int ksize, int n_samples)
@@ -85,29 +206,43 @@ void test(int isize, int ksize, int n_samples)
         init_matrix(ksize, ksize, kdata);
 
         std::cout << "mix (isize = " << isize << ", ksize = " << ksize << "): \t";
-        test_conv2D(ncv::math::conv_eib<matrix_t>, "eib(1CPU)", idatas, kdata, odatas, false);
-        test_conv2D(ncv::math::conv_eib<matrix_t>, "eib(xCPU)", idatas, kdata, odatas, true);
-        test_conv2D(ncv::math::conv_dot<matrix_t>, "dot(1CPU)", idatas, kdata, odatas, false);
-        test_conv2D(ncv::math::conv_dot<matrix_t>, "dot(xCPU)", idatas, kdata, odatas, true);
+        test_conv2D_1cpu(ncv::math::conv_eib<matrix_t>, "eib(1CPU)", idatas, kdata, odatas);
+        test_conv2D_xcpu(ncv::math::conv_eib<matrix_t>, "eib(xCPU)", idatas, kdata, odatas);
+        test_conv2D_1cpu(ncv::math::conv_dot<matrix_t>, "dot(1CPU)", idatas, kdata, odatas);
+        test_conv2D_xcpu(ncv::math::conv_dot<matrix_t>, "dot(xCPU)", idatas, kdata, odatas);
+        test_conv2D_gpu("dot(GPU)", idatas, kdata, odatas);
         std::cout << std::endl;
 }
 
 int main(int argc, char* argv[])
 {
+        if (!ocl::manager_t::instance().valid())
+        {
+                exit(EXIT_FAILURE);
+        }
+
         static const int min_isize = 24;
         static const int max_isize = 48;
         static const int min_ksize = 5;
         static const int max_ksize = 13;
         static const int n_samples = 10000;
 
-        for (int isize = min_isize; isize <= max_isize; isize += 4)
-	{
-                for (int ksize = min_ksize; ksize <= max_ksize; ksize ++)
-		{
-                        test(isize, ksize, n_samples);
+        try
+        {
+                for (int isize = min_isize; isize <= max_isize; isize += 4)
+                {
+                        for (int ksize = min_ksize; ksize <= max_ksize; ksize ++)
+                        {
+                                test(isize, ksize, n_samples);
+                        }
+                        std::cout << std::endl;
                 }
-                std::cout << std::endl;
-	}
+        }
+
+        catch (cl::Error e)
+        {
+                log_error() << "OpenCL fatal error: <" << e.what() << "> (" << ocl::error_string(e.err()) << ")!";
+        }
 
 	return EXIT_SUCCESS;
 }
