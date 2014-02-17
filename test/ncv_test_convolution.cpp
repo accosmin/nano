@@ -11,7 +11,7 @@ const std::string conv_program_source = R"xxx(
 
 __kernel void conv_kernel(
        __global const double* idata, int icols,
-       __constant double* kdata, int krows, int kcols,
+       __constant const double* kdata, int krows, int kcols,
        __global double* odata)
 {
         const int x = get_global_id(0);
@@ -72,13 +72,13 @@ scalar_t sum_matrices(matrices_t& matrices)
 template <typename top>
 void test_conv2D_1cpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
 {
-        zero_matrices(odatas);
-
         ncv::stats_t<double, size_t> proc_stats;
 
         // run multiple tests
         for (size_t t = 0; t < tests; t ++)
         {
+                zero_matrices(odatas);
+
                 const ncv::timer_t timer;
 
                 for (size_t i = 0; i < idatas.size(); i ++)
@@ -99,13 +99,13 @@ void test_conv2D_1cpu(top op, const char* name, const matrices_t& idatas, const 
 template <typename top>
 void test_conv2D_xcpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata,  matrices_t& odatas)
 {
-        zero_matrices(odatas);
-
         ncv::stats_t<double, size_t> proc_stats;
 
         // run multiple tests
         for (size_t t = 0; t < tests; t ++)
         {
+                zero_matrices(odatas);
+
                 const ncv::timer_t timer;
 
                 ncv::thread_loop(idatas.size(), [&] (size_t i)
@@ -160,20 +160,23 @@ void test_conv2D_gpu(const char* name, const matrices_t& idatas, const matrix_t&
         queue.enqueueWriteBuffer(cl_kdata, CL_FALSE, 0, mem_kdata, kdata.data(), NULL, &event);
         queue.finish();
 
-        zero_matrices(odatas);
-
         ncv::stats_t<double, size_t> proc_stats;
 
         // run multiple tests
         for (size_t t = 0; t < tests; t ++)
         {
+                zero_matrices(odatas);
+
                 ncv::timer_t timer;
 
                 for (size_t i = 0; i < idatas.size(); i ++)
                 {
+                        const matrix_t& idata = idatas[i];
+                        matrix_t& odata = odatas[i];
+
                         // I - send inputs to gpu
                         cl::Event event;
-                        queue.enqueueWriteBuffer(cl_idata, CL_FALSE, 0, mem_idata, idatas[i].data(), NULL, &event);
+                        queue.enqueueWriteBuffer(cl_idata, CL_FALSE, 0, mem_idata, idata.data(), NULL, &event);
                         queue.finish();
 
                         // II - gpu processing
@@ -181,7 +184,7 @@ void test_conv2D_gpu(const char* name, const matrices_t& idatas, const matrix_t&
                         queue.finish();
 
                         // III - read results from gpu
-                        queue.enqueueReadBuffer(cl_odata, CL_TRUE, 0, mem_odata, odatas[i].data(), NULL, &event);
+                        queue.enqueueReadBuffer(cl_odata, CL_TRUE, 0, mem_odata, odata.data(), NULL, &event);
                 }
 
                 proc_stats(timer.miliseconds());
