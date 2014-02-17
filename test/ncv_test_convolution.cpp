@@ -10,24 +10,34 @@ const std::string conv_program_source = R"xxx(
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
 
 __kernel void conv_kernel(
-       __global const double* idata, int icols,
-       __constant const double* kdata, int krows, int kcols,
-       __global double* odata)
+        __global const double* idata,
+        __constant double* kdata, int krows, int kcols,
+        __global double* odata)
 {
-        const int x = get_global_id(0);
-        const int y = get_global_id(1);
+        const int odims = get_global_size(0);
+        const int ocols = get_global_size(1);
+        const int orows = get_global_size(2);
+        const int osize = orows * ocols;
+
+        const int icols = ocols + kcols - 1;
+        const int irows = orows + krows - 1;
+        const int isize = irows * icols;
+
+        const int o = get_global_id(0);
+        const int x = get_global_id(1);
+        const int y = get_global_id(2);
 
         double sum = 0;
         for (int r = 0, kidx = 0; r < krows; r ++)
         {
-                int iidx = (y + r) * icols + x;
+                int iidx = o * isize + (y + r) * icols + x;
                 for (int c = 0; c < kcols; c ++, kidx ++, iidx ++)
                 {
                         sum += kdata[kidx] * idata[iidx];
                 }
         }
 
-        odata[y * get_global_size(0) + x] = sum;
+        odata[o * osize + y * ocols + x] = sum;
 }
 
 )xxx";
@@ -131,15 +141,22 @@ void test_conv2D_gpu(const char* name, const matrices_t& idatas, const matrix_t&
         const cl::Program program = ocl::manager_t::instance().program_from_text(conv_program_source);
         cl::Kernel kernel = cl::Kernel(program, "conv_kernel");
 
+        const int irows = static_cast<int>(idatas[0].rows());
         const int icols = static_cast<int>(idatas[0].cols());
+        const int isize = irows * icols;
         const int krows = static_cast<int>(kdata.rows());
         const int kcols = static_cast<int>(kdata.cols());
         const int orows = static_cast<int>(odatas[0].rows());
         const int ocols = static_cast<int>(odatas[0].cols());
+        const int osize = orows * ocols;
+        const int tsend = 10;
 
-        const size_t mem_idata = idatas[0].size() * sizeof(scalar_t);
+        scalars_t sidata(tsend * isize);
+        scalars_t sodata(tsend * osize);
+
+        const size_t mem_idata = idatas[0].size() * sizeof(scalar_t) * tsend;
         const size_t mem_kdata = kdata.size() * sizeof(scalar_t);
-        const size_t mem_odata = odatas[0].size() * sizeof(scalar_t);
+        const size_t mem_odata = odatas[0].size() * sizeof(scalar_t) * tsend;
 
         // create buffers once
         cl::Buffer cl_idata = cl::Buffer(context, CL_MEM_READ_ONLY, mem_idata, NULL);
@@ -148,11 +165,10 @@ void test_conv2D_gpu(const char* name, const matrices_t& idatas, const matrix_t&
 
         // setup kernel buffers once
         kernel.setArg(0, cl_idata);
-        kernel.setArg(1, sizeof(int), (void*)&icols);
-        kernel.setArg(2, cl_kdata);
-        kernel.setArg(3, sizeof(int), (void*)&krows);
-        kernel.setArg(4, sizeof(int), (void*)&kcols);
-        kernel.setArg(5, cl_odata);
+        kernel.setArg(1, cl_kdata);
+        kernel.setArg(2, sizeof(int), (void*)&krows);
+        kernel.setArg(3, sizeof(int), (void*)&kcols);
+        kernel.setArg(4, cl_odata);
         queue.finish();
 
         // transfer constants
@@ -169,22 +185,31 @@ void test_conv2D_gpu(const char* name, const matrices_t& idatas, const matrix_t&
 
                 ncv::timer_t timer;
 
-                for (size_t i = 0; i < idatas.size(); i ++)
+                for (size_t i = 0; i < idatas.size(); i += tsend)
                 {
-                        const matrix_t& idata = idatas[i];
-                        matrix_t& odata = odatas[i];
+                        for (size_t it = 0; it < tsend; it ++)
+                        {
+                                const matrix_t& idata = idatas[i + it];
+                                std::copy(idata.data(), idata.data() + idata.size(), sidata.data() + (it * isize));
+                        }
 
                         // I - send inputs to gpu
                         cl::Event event;
-                        queue.enqueueWriteBuffer(cl_idata, CL_FALSE, 0, mem_idata, idata.data(), NULL, &event);
+                        queue.enqueueWriteBuffer(cl_idata, CL_FALSE, 0, mem_idata, sidata.data(), NULL, &event);
                         queue.finish();
 
                         // II - gpu processing
-                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(ocols, orows), cl::NullRange, NULL, &event);
+                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(tsend, ocols, orows), cl::NullRange, NULL, &event);
                         queue.finish();
 
                         // III - read results from gpu
-                        queue.enqueueReadBuffer(cl_odata, CL_TRUE, 0, mem_odata, odata.data(), NULL, &event);
+                        queue.enqueueReadBuffer(cl_odata, CL_TRUE, 0, mem_odata, sodata.data(), NULL, &event);
+
+                        for (size_t it = 0; it < tsend; it ++)
+                        {
+                                matrix_t& odata = odatas[i + it];
+                                std::copy(sodata.data() + (it * osize), sodata.data() + (it * osize + osize), odata.data());
+                        }
                 }
 
                 proc_stats(timer.miliseconds());
