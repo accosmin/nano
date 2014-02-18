@@ -43,7 +43,7 @@ __kernel void conv_kernel(
 )xxx";
 
 ncv::thread_pool_t pool;
-const size_t tests = 4;
+const size_t tests = 16;
 
 void init_matrix(int rows, int cols, matrix_t& matrix)
 {
@@ -131,7 +131,7 @@ scalar_t test_conv2D_xcpu(top op, const char* name, const matrices_t& idatas, co
         return sum_matrices(odatas);
 }
 
-scalar_t test_conv2D_gpu(const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
+scalar_t test_conv2D_gpu(const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas, size_t tsend)
 {
         const cl::Context& context = ocl::manager_t::instance().context();
         const cl::CommandQueue& queue = ocl::manager_t::instance().queue();
@@ -147,7 +147,6 @@ scalar_t test_conv2D_gpu(const char* name, const matrices_t& idatas, const matri
         const int orows = static_cast<int>(odatas[0].rows());
         const int ocols = static_cast<int>(odatas[0].cols());
         const int osize = orows * ocols;
-        const int tsend = 10;
 
         scalars_t sidata(tsend * isize);
         scalars_t sodata(tsend * osize);
@@ -230,12 +229,17 @@ void test(int isize, int ksize, int n_samples)
         init_matrices(osize, osize, n_samples, odatas);
         init_matrix(ksize, ksize, kdata);
 
-        std::cout << "mix (isize = " << isize << ", ksize = " << ksize << "): \t";
+        std::cout << "(" << isize << "x" << isize << " @ " << ksize << "x" << ksize << "): ";
         const scalar_t sum1eib = test_conv2D_1cpu(ncv::math::conv_eib<matrix_t>, "eib(1CPU)", idatas, kdata, odatas);
         const scalar_t sumxeib = test_conv2D_xcpu(ncv::math::conv_eib<matrix_t>, "eib(xCPU)", idatas, kdata, odatas);
         const scalar_t sum1dot = test_conv2D_1cpu(ncv::math::conv_dot<matrix_t>, "dot(1CPU)", idatas, kdata, odatas);
         const scalar_t sumxdot = test_conv2D_xcpu(ncv::math::conv_dot<matrix_t>, "dot(xCPU)", idatas, kdata, odatas);
-        const scalar_t sumgdot = test_conv2D_gpu("dot(GPU)", idatas, kdata, odatas);
+        const scalar_t sumg8dot = test_conv2D_gpu("dot(8GPU)", idatas, kdata, odatas, 8);
+        const scalar_t sumg16dot = test_conv2D_gpu("dot(16GPU)", idatas, kdata, odatas, 16);
+        const scalar_t sumg32dot = test_conv2D_gpu("dot(32GPU)", idatas, kdata, odatas, 32);
+        const scalar_t sumg64dot = test_conv2D_gpu("dot(64GPU)", idatas, kdata, odatas, 64);
+        const scalar_t sumg128dot = test_conv2D_gpu("dot(128GPU)", idatas, kdata, odatas, 128);
+        const scalar_t sumg256dot = test_conv2D_gpu("dot(256GPU)", idatas, kdata, odatas, 256);
         std::cout << std::endl;
 
         const scalar_t eps = 1e-12;//std::numeric_limits<scalar_t>::epsilon();
@@ -244,7 +248,12 @@ void test(int isize, int ksize, int n_samples)
         if ((diff = std::fabs(sumxeib - sum1eib)) > eps) { std::cout << "eib(xCPU) FAILED (diff = " << diff << ")!" << std::endl; }
         if ((diff = std::fabs(sum1dot - sum1eib)) > eps) { std::cout << "dot(1CPU) FAILED (diff = " << diff << ")!" << std::endl; }
         if ((diff = std::fabs(sumxdot - sum1eib)) > eps) { std::cout << "dot(xCPU) FAILED (diff = " << diff << ")!" << std::endl; }
-        if ((diff = std::fabs(sumgdot - sum1eib)) > eps) { std::cout << "dot( GPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sumg8dot - sum1eib)) > eps) { std::cout << "dot(8GPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sumg16dot - sum1eib)) > eps) { std::cout << "dot(16GPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sumg32dot - sum1eib)) > eps) { std::cout << "dot(32GPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sumg64dot - sum1eib)) > eps) { std::cout << "dot(64GPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sumg128dot - sum1eib)) > eps) { std::cout << "dot(128GPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sumg256dot - sum1eib)) > eps) { std::cout << "dot(256GPU) FAILED (diff = " << diff << ")!" << std::endl; }
 }
 
 int main(int argc, char* argv[])
@@ -258,7 +267,7 @@ int main(int argc, char* argv[])
         static const int max_isize = 48;
         static const int min_ksize = 5;
         static const int max_ksize = 13;
-        static const int n_samples = 10000;
+        static const int n_samples = 4 * 1024;
 
         try
         {
