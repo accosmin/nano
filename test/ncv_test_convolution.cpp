@@ -80,7 +80,7 @@ scalar_t sum_matrices(matrices_t& matrices)
 }
 
 template <typename top>
-void test_conv2D_1cpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
+scalar_t test_conv2D_1cpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
 {
         ncv::stats_t<double, size_t> proc_stats;
 
@@ -99,15 +99,14 @@ void test_conv2D_1cpu(top op, const char* name, const matrices_t& idatas, const 
                 proc_stats(timer.miliseconds());
         }
 
-        const scalar_t sum = sum_matrices(odatas);
         const size_t milis = static_cast<size_t>(proc_stats.avg());
+        std::cout << name << "= " << text::resize(text::to_string(milis), 4, align::right) << "ms  ";
 
-        std::cout << name << "= " << text::resize(text::to_string(milis), 4, align::right)
-                  << "ms (" << text::resize(text::to_string(sum), 12, align::left) << ")  ";
+        return sum_matrices(odatas);
 }
 
 template <typename top>
-void test_conv2D_xcpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata,  matrices_t& odatas)
+scalar_t test_conv2D_xcpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata,  matrices_t& odatas)
 {
         ncv::stats_t<double, size_t> proc_stats;
 
@@ -126,14 +125,13 @@ void test_conv2D_xcpu(top op, const char* name, const matrices_t& idatas, const 
                 proc_stats(timer.miliseconds());
         }
 
-        const scalar_t sum = sum_matrices(odatas);
         const size_t milis = static_cast<size_t>(proc_stats.avg());
+        std::cout << name << "= " << text::resize(text::to_string(milis), 4, align::right) << "ms  ";
 
-        std::cout << name << "= " << text::resize(text::to_string(milis), 4, align::right)
-                  << "ms (" << text::resize(text::to_string(sum), 12, align::left) << ")  ";
+        return sum_matrices(odatas);
 }
 
-void test_conv2D_gpu(const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
+scalar_t test_conv2D_gpu(const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
 {
         const cl::Context& context = ocl::manager_t::instance().context();
         const cl::CommandQueue& queue = ocl::manager_t::instance().queue();
@@ -215,11 +213,10 @@ void test_conv2D_gpu(const char* name, const matrices_t& idatas, const matrix_t&
                 proc_stats(timer.miliseconds());
         }
 
-        const scalar_t sum = sum_matrices(odatas);
         const size_t milis = static_cast<size_t>(proc_stats.avg());
+        std::cout << name << "= " << text::resize(text::to_string(milis), 4, align::right) << "ms  ";
 
-        std::cout << name << "= " << text::resize(text::to_string(milis), 4, align::right)
-                  << "ms (" << text::resize(text::to_string(sum), 12, align::left) << ")  ";
+        return sum_matrices(odatas);
 }
 
 void test(int isize, int ksize, int n_samples)
@@ -234,12 +231,20 @@ void test(int isize, int ksize, int n_samples)
         init_matrix(ksize, ksize, kdata);
 
         std::cout << "mix (isize = " << isize << ", ksize = " << ksize << "): \t";
-        test_conv2D_1cpu(ncv::math::conv_eib<matrix_t>, "eib(1CPU)", idatas, kdata, odatas);
-        test_conv2D_xcpu(ncv::math::conv_eib<matrix_t>, "eib(xCPU)", idatas, kdata, odatas);
-        test_conv2D_1cpu(ncv::math::conv_dot<matrix_t>, "dot(1CPU)", idatas, kdata, odatas);
-        test_conv2D_xcpu(ncv::math::conv_dot<matrix_t>, "dot(xCPU)", idatas, kdata, odatas);
-        test_conv2D_gpu("dot(GPU)", idatas, kdata, odatas);
+        const scalar_t sum1eib = test_conv2D_1cpu(ncv::math::conv_eib<matrix_t>, "eib(1CPU)", idatas, kdata, odatas);
+        const scalar_t sumxeib = test_conv2D_xcpu(ncv::math::conv_eib<matrix_t>, "eib(xCPU)", idatas, kdata, odatas);
+        const scalar_t sum1dot = test_conv2D_1cpu(ncv::math::conv_dot<matrix_t>, "dot(1CPU)", idatas, kdata, odatas);
+        const scalar_t sumxdot = test_conv2D_xcpu(ncv::math::conv_dot<matrix_t>, "dot(xCPU)", idatas, kdata, odatas);
+        const scalar_t sumgdot = test_conv2D_gpu("dot(GPU)", idatas, kdata, odatas);
         std::cout << std::endl;
+
+        const scalar_t eps = 1e-12;//std::numeric_limits<scalar_t>::epsilon();
+        scalar_t diff = 0.0;
+        if ((diff = std::fabs(sum1eib - sum1eib)) > eps) { std::cout << "eib(1CPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sumxeib - sum1eib)) > eps) { std::cout << "eib(xCPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sum1dot - sum1eib)) > eps) { std::cout << "dot(1CPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sumxdot - sum1eib)) > eps) { std::cout << "dot(xCPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sumgdot - sum1eib)) > eps) { std::cout << "dot( GPU) FAILED (diff = " << diff << ")!" << std::endl; }
 }
 
 int main(int argc, char* argv[])
