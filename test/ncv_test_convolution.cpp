@@ -182,8 +182,9 @@ scalar_t test_conv2D_gpu(const char* name, const matrices_t& idatas, const matri
         {
                 zero_matrices(odatas);
 
-                ncv::timer_t timer;
+//                const ncv::timer_t timer;
 
+                size_t micros = 0;
                 for (size_t i = 0; i < idatas.size(); i += tsend)
                 {
                         for (size_t it = 0; it < tsend; it ++)
@@ -192,6 +193,8 @@ scalar_t test_conv2D_gpu(const char* name, const matrices_t& idatas, const matri
                                 std::copy(idata.data(), idata.data() + idata.size(), sidata.data() + (it * isize));
                         }
 
+                        const ncv::timer_t timer;
+
                         // I - send inputs to gpu
                         queue.enqueueWriteBuffer(cl_idata, CL_TRUE, 0, mem_idata, sidata.data(), NULL, &event);
 
@@ -199,11 +202,14 @@ scalar_t test_conv2D_gpu(const char* name, const matrices_t& idatas, const matri
                         cl::Event event;
                         queue.enqueueNDRangeKernel(kernel, cl::NullRange,
                                                    cl::NDRange(tsend, ocols, orows),
-                                                   cl::NDRange(1, ocols, orows), NULL, &event);
+                                                   cl::NDRange(1, ocols, orows),
+                                                   NULL, &event);
                         event.wait();
 
                         // III - read results from gpu
                         queue.enqueueReadBuffer(cl_odata, CL_TRUE, 0, mem_odata, sodata.data(), NULL, &event);
+
+                        micros += timer.microseconds();
 
                         for (size_t it = 0; it < tsend; it ++)
                         {
@@ -212,7 +218,9 @@ scalar_t test_conv2D_gpu(const char* name, const matrices_t& idatas, const matri
                         }
                 }
 
-                proc_stats(timer.miliseconds());
+                proc_stats(micros / 1000);
+
+//                proc_stats(timer.miliseconds());
         }
 
         const size_t milis = static_cast<size_t>(proc_stats.avg());
