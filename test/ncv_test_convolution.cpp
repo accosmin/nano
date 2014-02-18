@@ -27,10 +27,12 @@ __kernel void conv_kernel(
         const int x = get_global_id(1);
         const int y = get_global_id(2);
 
+        const int iidx_base = o * isize + y * icols + x;
+
         double sum = 0;
         for (int r = 0, kidx = 0; r < krows; r ++)
         {
-                int iidx = o * isize + (y + r) * icols + x;
+                int iidx = iidx_base + r * icols;
                 for (int c = 0; c < kcols; c ++, kidx ++, iidx ++)
                 {
                         sum += kdata[kidx] * idata[iidx];
@@ -191,13 +193,14 @@ scalar_t test_conv2D_gpu(const char* name, const matrices_t& idatas, const matri
                         }
 
                         // I - send inputs to gpu
-                        cl::Event event;
-                        queue.enqueueWriteBuffer(cl_idata, CL_FALSE, 0, mem_idata, sidata.data(), NULL, &event);
-                        queue.finish();
+                        queue.enqueueWriteBuffer(cl_idata, CL_TRUE, 0, mem_idata, sidata.data(), NULL, &event);
 
                         // II - gpu processing
-                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(tsend, ocols, orows), cl::NullRange, NULL, &event);
-                        queue.finish();
+                        cl::Event event;
+                        queue.enqueueNDRangeKernel(kernel, cl::NullRange,
+                                                   cl::NDRange(tsend, ocols, orows),
+                                                   cl::NDRange(1, ocols, orows), NULL, &event);
+                        event.wait();
 
                         // III - read results from gpu
                         queue.enqueueReadBuffer(cl_odata, CL_TRUE, 0, mem_odata, sodata.data(), NULL, &event);
@@ -240,6 +243,7 @@ void test(int isize, int ksize, int n_samples)
         const scalar_t sumg64dot = test_conv2D_gpu("dot(64GPU)", idatas, kdata, odatas, 64);
         const scalar_t sumg128dot = test_conv2D_gpu("dot(128GPU)", idatas, kdata, odatas, 128);
         const scalar_t sumg256dot = test_conv2D_gpu("dot(256GPU)", idatas, kdata, odatas, 256);
+        const scalar_t sumg1024dot = test_conv2D_gpu("dot(1024GPU)", idatas, kdata, odatas, 1024);
         std::cout << std::endl;
 
         const scalar_t eps = 1e-12;//std::numeric_limits<scalar_t>::epsilon();
@@ -254,6 +258,7 @@ void test(int isize, int ksize, int n_samples)
         if ((diff = std::fabs(sumg64dot - sum1eib)) > eps) { std::cout << "dot(64GPU) FAILED (diff = " << diff << ")!" << std::endl; }
         if ((diff = std::fabs(sumg128dot - sum1eib)) > eps) { std::cout << "dot(128GPU) FAILED (diff = " << diff << ")!" << std::endl; }
         if ((diff = std::fabs(sumg256dot - sum1eib)) > eps) { std::cout << "dot(256GPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sumg1024dot - sum1eib)) > eps) { std::cout << "dot(1024GPU) FAILED (diff = " << diff << ")!" << std::endl; }
 }
 
 int main(int argc, char* argv[])
