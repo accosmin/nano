@@ -29,8 +29,6 @@ namespace ncv
                         typedef std::vector<tvector>                    tvectors;
                         typedef typename tvectors::const_iterator       tvectors_const_it;
                         typedef typename tvectors::iterator             tvectors_it;
-
-                        typedef Eigen::Map<tvector>                     tmap;
                 };
 
                 ///
@@ -55,8 +53,6 @@ namespace ncv
                         typedef std::vector<tvector>                    tvectors;
                         typedef typename tvectors::const_iterator       tvectors_const_it;
                         typedef typename tvectors::iterator             tvectors_it;
-
-                        typedef Eigen::Map<tvector>                     tmap;
                 };
 
                 ///
@@ -80,8 +76,6 @@ namespace ncv
                         typedef typename tmatrices::const_iterator      tmatrices_const_it;
                         typedef typename tmatrices::iterator            tmatrices_it;
                         typedef typename tmatrix::Index                 tindex;
-
-                        typedef Eigen::Map<tmatrix>                     tmap;
                 };
 
                 ///
@@ -107,8 +101,6 @@ namespace ncv
                         typedef typename tmatrices::const_iterator      tmatrices_const_it;
                         typedef typename tmatrices::iterator            tmatrices_it;
                         typedef typename tmatrix::Index                 tindex;
-
-                        typedef Eigen::Map<tmatrix>                     tmap;
                 };
         }
 }

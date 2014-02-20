@@ -13,7 +13,7 @@ namespace ncv
                         typename tscalar,
                         typename tsize
                 >
-                class tensor4d_t : public tensor::base_t<tscalar, tsize>
+                class tensor_4d_t : public tensor::base_t<tscalar, tsize>
                 {
                 public:
 
@@ -22,7 +22,7 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        tensor4d_t(tsize dim1 = 0, tsize dim2 = 0, tsize rows = 0, tsize cols = 0)
+                        tensor_4d_t(tsize dim1 = 0, tsize dim2 = 0, tsize rows = 0, tsize cols = 0)
                         {
                                 resize(dim1, dim2, rows, cols);
                         }
@@ -44,22 +44,20 @@ namespace ncv
                         tsize dim2() const { return m_dim2; }
 
                         ///
-                        /// \brief access a matrix/plane as raw data
+                        /// \brief access a plane as raw data
                         ///
-                        const tscalar* matrix_data(tsize i1, tsize i2) const { return tbase::matrix_data(mindex(i1, i2)); }
-                        tscalar* matrix_data(tsize i1, tsize i2) { return tbase::matrix_data(mindex(i1, i2)); }
-
-                        ///
-                        /// \brief access a matrix/plane as Eigen matrix wrapper
-                        ///
-                        tmatrix_map as_matrix(tsize i1, tsize i2) { return tbase::tmatrix_map(mindex(i1, i2)); }
+                        const tscalar* plane(tsize i1, tsize i2) const { return tbase::plane_data(plane_index(i1, i2)); }
+                        tscalar* plane(tsize i1, tsize i2) { return tbase::plane_data(plane_index(i1, i2)); }
 
                 private:
 
                         ///
                         /// \brief compute the matrix/plane index
                         ///
-                        tsize mindex(tsize i1, tsize i2) const { return i1 * dim2() + i2; }
+                        tsize plane_index(tsize i1, tsize i2) const
+                        {
+                                return i1 * dim2() + i2;
+                        }
 
                         ///
                         /// \brief serialize

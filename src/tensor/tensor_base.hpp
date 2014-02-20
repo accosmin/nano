@@ -9,7 +9,7 @@ namespace ncv
         namespace tensor
         {
                 ///
-                /// store (3D/4D) tensor data using 2D (rows() x cols()) fixed size planes
+                /// store (3D/4D) tensor data using ::dims() 2D planes of size ::rows() x ::cols()
                 ///
                 template
                 <
@@ -24,8 +24,6 @@ namespace ncv
                         typedef tsize_                                          tindex;
                         typedef tsize_                                          tsize;
                         typedef typename vector_types_t<tscalar>::tvector       tvector;
-                        typedef typename vector_types_t<tscalar>::tmap          tvector_map;
-                        typedef typename matrix_types_t<tscalar>::tmap          tmatrix_map;
 
                         ///
                         /// \brief constructor
@@ -51,10 +49,11 @@ namespace ncv
                         tsize rows() const { return m_rows; }
                         tsize cols() const { return m_cols; }
 
+                        ///
+                        /// \brief access as raw data
+                        ///
                         const tscalar* data() const { return m_data.data(); }
                         tscalar* data() { return m_data.data(); }
-
-                        tvector_map as_vector() { return tvector_map(data(), size()); }
 
                 protected:
 
@@ -77,10 +76,8 @@ namespace ncv
                         ///
                         /// \brief access functions
                         ///
-                        const tscalar* matrix_data(tsize i) const { return data() + i * m_msize; }
-                        tscalar* matrix_data(tsize i) { return data() + i * m_msize; }
-
-                        tmatrix_map as_matrix(tsize i) { return tmatrix_map(matrix_data(i), rows(), cols()); }
+                        const tscalar* plane_data(tsize i) const { return data() + i * m_msize; }
+                        tscalar* plane_data(tsize i) { return data() + i * m_msize; }
 
                 private:
 

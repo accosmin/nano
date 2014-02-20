@@ -13,17 +13,16 @@ namespace ncv
                         typename tscalar,
                         typename tsize
                 >
-                class tensor3d_t : public tensor::base_t<tscalar, tsize>
+                class tensor_3d_t : public tensor::base_t<tscalar, tsize>
                 {
                 public:
 
                         typedef tensor::base_t<tscalar, tsize>          tbase;
-                        typedef typename tbase::tmatrix                 tmatrix;
 
                         ///
                         /// \brief constructor
                         ///
-                        tensor3d_t(tsize dim1 = 0, tsize rows = 0, tsize cols = 0)
+                        tensor_3d_t(tsize dim1 = 0, tsize rows = 0, tsize cols = 0)
                         {
                                 resize(dim1, rows, cols);
                         }
@@ -43,15 +42,10 @@ namespace ncv
                         tsize dim1() const { return m_dim1; }
 
                         ///
-                        /// \brief access a matrix/plane as raw data
+                        /// \brief access a plane as raw data
                         ///
-                        const tscalar* matrix_data(tsize i) const { return tbase::matrix_data(i); }
-                        tscalar* matrix_data(tsize i) { return tbase::matrix_data(i); }
-
-                        ///
-                        /// \brief access a matrix/plane as Eigen matrix wrapper
-                        ///
-                        tmatrix_map as_matrix(tsize i) { return tbase::tmatrix_map(i); }
+                        const tscalar* plane(tsize i) const { return tbase::plane_data(i); }
+                        tscalar* plane(tsize i) { return tbase::plane_data(i); }
 
                 private:
 
