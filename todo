@@ -1,3 +1,10 @@
+* 1D stored tensor (3D and 4D), functions to map to vector or matrices
+* all layers should produce 3D tensors
+* keep the pooling and the activation layers the same (can simplify the activation layers, by looping over the whole tensor pointer instead of by matrix)
+* different types of convolution: expanding (8maps x 8convolutions -> 64maps), weighted (8maps x 8convolutions -> 8maps using 8x8 weights - may not use bias if the inputs are correctly)
+* affine layers: output-tensor = bias + weight * input-tensor, then the output layer is an affine layer
+* can play with different model configurations with possible multiple affine layers at the end
+
 - filter interface that keep the size of the input image:
 	- gaussian, elastic deformations, rotate & translate
 	- should be possible to chain them: image(gaussian_t, 2.0)(translate_t, -1, +1)(elastic, 0.0, 1.0)
