@@ -1,8 +1,8 @@
 #ifndef NANOCV_TYPES_H
 #define NANOCV_TYPES_H
 
-#include "tensor/tensor3d.hpp"
-#include "tensor/tensor4d.hpp"
+#include "tensor/tensor.hpp"
+#include "tensor/vectorizer.hpp"
 #include "optimize/problem.hpp"
 #include <string>
 #include <cstdint>
@@ -22,11 +22,11 @@ namespace ncv
         typedef tensor::matrix_types_t<scalar_t>::tmatrix       matrix_t;
         typedef tensor::matrix_types_t<scalar_t>::tmatrices     matrices_t;
 
-        typedef tensor::tensor3d_t<scalar_t, size_t>            tensor3d_t;
-        typedef std::vector<tensor3d_t>                         tensor3ds_t;
+        typedef tensor::tensor_t<scalar_t, size_t>              tensor_t;
+        typedef std::vector<tensor_t>                           tensors_t;
 
-        typedef tensor::tensor4d_t<scalar_t, size_t>            tensor4d_t;
-        typedef std::vector<tensor4d_t>                         tensor4ds_t;
+        typedef tensor::ivectorizer_t<scalar_t, size_t>         ivectorizer_t;
+        typedef tensor::ovectorizer_t<scalar_t, size_t>         ovectorizer_t;
 
         // strings
         typedef std::string                                     string_t;

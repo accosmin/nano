@@ -1,9 +1,8 @@
 #include "forward_network.h"
-#include "layers/layer_output.h"
+#include "layers/layer_linear.h"
 #include "common/logger.h"
 #include "common/math.hpp"
 #include "text.h"
-#include "vectorizer.h"
 
 namespace ncv
 {
@@ -16,19 +15,16 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        vector_t forward_network_t::value(const tensor3d_t& _input) const
+        vector_t forward_network_t::value(const tensor_t& _input) const
         {
-                const tensor3d_t* input = &_input;
+                const tensor_t* input = &_input;
                 for (rlayers_t::const_iterator it = m_layers.begin(); it != m_layers.end(); ++ it)
                 {
                         input = &(*it)->forward(*input);
                 }
 
-                const tensor3d_t& output = *input;
-                vector_t result(output.size());                
-                ovectorizer_t(result) << output;
-
-                return result;
+                const tensor_t& output = *input;
+                return output.vector();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -36,10 +32,11 @@ namespace ncv
         vector_t forward_network_t::gradient(const vector_t& ograd) const
         {
                 assert(static_cast<size_t>(ograd.size()) == n_outputs());
-                tensor3d_t _gradient(n_outputs(), 1, 1);
+
+                tensor_t _gradient(n_outputs(), 1, 1);
                 ivectorizer_t(ograd) >> _gradient;
 
-                const tensor3d_t* gradient = &_gradient;
+                const tensor_t* gradient = &_gradient;
                 for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                 {
                         gradient = &(*it)->backward(*gradient);
@@ -108,8 +105,8 @@ namespace ncv
         {
                 for (const rlayer_t& layer : m_layers)
                 {
-                        const size_t fanin = layer->n_idims();
-                        const size_t fanout = layer->n_odims();
+                        const size_t fanin = layer->input().dim1() * layer->input().dim2();
+                        const size_t fanout = layer->output().dim1() * layer->output().dim2();
                         const scalar_t min = -std::sqrt(6.0 / (1.0 + fanin + fanout));
                         const scalar_t max = +std::sqrt(6.0 / (1.0 + fanin + fanout));
 
@@ -156,9 +153,7 @@ namespace ncv
 
         size_t forward_network_t::resize()
         {
-                size_t irows = n_rows();
-                size_t icols = n_cols();
-                size_t idims = n_inputs();
+                tensor_t input(n_inputs(), 1, n_rows(), n_cols());
                 size_t n_params = 0;
 
                 m_layers.clear();
@@ -197,21 +192,19 @@ namespace ncv
                                 throw std::runtime_error(message);
                         }
 
-                        const size_t n_new_params = layer->resize(idims, irows, icols);
-                        n_params += n_new_params;
+                        n_params += layer->resize(input);
                         m_layers.push_back(layer);
                         layer_ids.push_back(layer_id);
 
-                        idims = layer->n_odims();
-                        irows = layer->n_orows();
-                        icols = layer->n_ocols();
+                        input = layer->input();
                 }
 
-                // create output layer
-                const rlayer_t layer(new output_layer_t("odims=" + text::to_string(n_outputs())));
-                n_params += layer->resize(idims, irows, icols);
+                // Create the output layer
+                const string_t layer_id = "linear";
+                const rlayer_t layer = layer_manager_t::instance().get(layer_id, "dims=" + text::to_string(n_outputs()));
+                n_params += layer->resize(input);
                 m_layers.push_back(layer);
-                layer_ids.push_back("output");
+                layer_ids.push_back(layer_id);
 
                 print(layer_ids);
 
@@ -227,10 +220,12 @@ namespace ncv
                         const rlayer_t& layer = m_layers[l];
 
                         log_info() <<
-                                boost::format("feed-forward network [%1%/%2%]: [%3%] (%4%x%5%x%6%) -> (%7%x%8%x%9%).")
+                                boost::format("feed-forward network [%1%/%2%]: [%3%] (%4%x%5%x%6%x%7%) -> (%8%x%9%x%10%x%11%).")
                                 % (l + 1) % m_layers.size() % layer_ids[l]
-                                % layer->n_idims() % layer->n_irows() % layer->n_icols()
-                                % layer->n_odims() % layer->n_orows() % layer->n_ocols();
+                                % layer->input().dim1() % layer->input().dim2()
+                                % layer->input().rows() % layer->input().cols()
+                                % layer->output().dim1() % layer->output().dim2()
+                                % layer->output().rows() % layer->output().cols();
                 }
         }
 
@@ -252,22 +247,6 @@ namespace ncv
         forward_network_t::robject_t forward_network_t::clone(const std::string& params) const
         {
                 return forward_network_t::robject_t(new forward_network_t(params));
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        bool forward_network_t::save_as_images(const string_t& basepath) const
-        {
-                for (size_t l = 0; l < m_layers.size(); l ++)
-                {
-                        const rlayer_t& layer = m_layers[l];
-                        if (!layer->save_as_image(basepath + "_layer" + text::to_string(l + 1)))
-                        {
-                                return false;
-                        }
-                }
-
-                return true;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

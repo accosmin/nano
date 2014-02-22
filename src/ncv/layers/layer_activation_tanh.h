@@ -4,11 +4,7 @@
 #include "layer_activation.h"
 
 namespace ncv
-{
-        ////////////////////////////////////////////////////////////////////////////////
-        // hyperbolic tangent activation function.
-        ////////////////////////////////////////////////////////////////////////////////
-	
+{        
         namespace impl
         {
                 struct tanh_activation_layer_eval_t
@@ -29,6 +25,9 @@ namespace ncv
                 };
         }
 
+        ///
+        /// hyperbolic tangent activation function
+        ///
         class tanh_activation_layer_t : public activation_layer_t
         <
                 impl::tanh_activation_layer_eval_t,

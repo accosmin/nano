@@ -53,7 +53,7 @@ namespace ncv
                 ///
                 vector_t value(const image_t& image, coord_t x, coord_t y) const;
                 vector_t value(const image_t& image, const rect_t& region) const;
-                virtual vector_t value(const tensor3d_t& input) const = 0;
+                virtual vector_t value(const tensor_t& input) const = 0;
 
                 ///
                 /// \brief save its parameters to file
@@ -90,14 +90,9 @@ namespace ncv
                 ///
                 virtual vector_t gradient(const vector_t& ograd) const = 0;
 
-                ///
-                /// \brief save model description as image
-                ///
-                virtual bool save_as_images(const string_t& basepath) const = 0;
-
                 // access functions
                 size_t n_rows() const { return m_rows; }
-                size_t n_cols() const { return m_cols; }                
+                size_t n_cols() const { return m_cols; }
                 size_t n_inputs() const;
                 size_t n_outputs() const { return m_outputs; }
                 size_t n_parameters() const { return m_parameters; }
@@ -108,8 +103,8 @@ namespace ncv
                 ///
                 /// \brief compose the input data
                 ///
-                tensor3d_t make_input(const image_t& image, coord_t x, coord_t y) const;
-                tensor3d_t make_input(const image_t& image, const rect_t& region) const;
+                tensor_t make_input(const image_t& image, coord_t x, coord_t y) const;
+                tensor_t make_input(const image_t& image, const rect_t& region) const;
 
                 // save/load from file
                 virtual bool save(boost::archive::binary_oarchive& oa) const = 0;

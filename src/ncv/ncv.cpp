@@ -8,7 +8,6 @@
 #include "tasks/task_mnist.h"
 #include "tasks/task_stl10.h"
 #include "tasks/task_cbclfaces.h"
-//#include "tasks/task_svhn.h"
 
 #include "layers/layer_activation_unit.h"
 #include "layers/layer_activation_tanh.h"
@@ -46,15 +45,14 @@ namespace ncv
                 task_manager_t::instance().add("cifar10", cifar10_task_t());
                 task_manager_t::instance().add("stl10", stl10_task_t());
                 task_manager_t::instance().add("cbcl-faces", cbclfaces_task_t());
-//                task_manager_t::instance().add("svhn", svhn_task_t());
 
                 // register layers
                 layer_manager_t::instance().add("unit", unit_activation_layer_t());
                 layer_manager_t::instance().add("tanh", tanh_activation_layer_t());
                 layer_manager_t::instance().add("snorm", snorm_activation_layer_t());
-                layer_manager_t::instance().add("conv", conv_layer_t());
-                layer_manager_t::instance().add("smax-pool", softmax_pool_layer_t());
-                layer_manager_t::instance().add("smax-abs-pool", softmax_abs_pool_layer_t());
+//                layer_manager_t::instance().add("conv", conv_layer_t());
+//                layer_manager_t::instance().add("smax-pool", softmax_pool_layer_t());
+//                layer_manager_t::instance().add("smax-abs-pool", softmax_abs_pool_layer_t());
 
                 // register models
                 model_manager_t::instance().add("forward-network", forward_network_t());

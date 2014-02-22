@@ -17,9 +17,6 @@ namespace ncv
         typedef layer_manager_t::robject_t              rlayer_t;
         typedef std::vector<rlayer_t>                   rlayers_t;
 
-        class ivectorizer_t;
-        class ovectorizer_t;
-
         ///
         /// \brief process a set of inputs of size (irows, icols) and produces a set of outputs of size (orows, ocols)
         ///
@@ -32,12 +29,10 @@ namespace ncv
                 ///
                 virtual ~layer_t() {}
 
-                //
                 ///
-                /// \brief resize to process new inputs
-                /// \return the number of parameters
+                /// \brief resize to process new tensors of the given type
                 ///
-                virtual size_t resize(size_t idims, size_t irows, size_t icols) = 0;
+                virtual size_t resize(const tensor_t& tensor) = 0;
 
                 ///
                 /// \brief reset parameters to zero
@@ -67,12 +62,12 @@ namespace ncv
                 ///
                 /// \brief compute the output tensor
                 ///
-                virtual const tensor3d_t& forward(const tensor3d_t& input) const = 0;
+                virtual const tensor_t& forward(const tensor_t& input) = 0;
 
                 ///
                 /// \brief compute the gradient tensor
                 ///
-                virtual const tensor3d_t& backward(const tensor3d_t& gradient) const = 0;
+                virtual const tensor_t& backward(const tensor_t& gradient) = 0;
 
                 ///
                 /// \brief save to binary file archive
@@ -85,45 +80,14 @@ namespace ncv
                 virtual bool load(boost::archive::binary_iarchive& ia) = 0;
 
                 ///
-                /// \brief save its description as an image (if possible)
+                /// \brief returns the input tensor
                 ///
-                virtual bool save_as_image(const string_t& basepath) const = 0;
+                virtual const tensor_t& input() const = 0;
 
                 ///
-                /// \brief access function
-                /// \return the number of input dimensions
+                /// \brief returns the output tensor
                 ///
-                virtual size_t n_idims() const = 0;
-
-                ///
-                /// \brief access function
-                /// \return the number of input rows
-                ///
-                virtual size_t n_irows() const = 0;
-
-                ///
-                /// \brief access function
-                /// \return the number of input columns
-                ///
-                virtual size_t n_icols() const = 0;
-
-                ///
-                /// \brief access function
-                /// \return the number of output dimensions
-                ///
-                virtual size_t n_odims() const = 0;
-
-                ///
-                /// \brief access function
-                /// \return the number of output rows
-                ///
-                virtual size_t n_orows() const = 0;
-
-                ///
-                /// \brief access function
-                /// \return the number of output columns
-                ///
-                virtual size_t n_ocols() const = 0;
+                virtual const tensor_t& output() const = 0;
         };
 }
 

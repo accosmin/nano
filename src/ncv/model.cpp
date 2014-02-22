@@ -65,24 +65,24 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        tensor3d_t model_t::make_input(const image_t& image, coord_t x, coord_t y) const
+        tensor_t model_t::make_input(const image_t& image, coord_t x, coord_t y) const
         {
-                tensor3d_t data;
+                tensor_t data;
 
                 const rect_t region = geom::make_rect(x, y, n_cols(), n_rows());
 
                 switch (m_color)
                 {
                 case color_mode::luma:
-                        data.resize(1, n_rows(), n_cols());
-                        data(0) = image.make_luma(region);
+                        data.resize(1, 1, n_rows(), n_cols());
+                        data.copy_plane_from(0, image.make_luma(region));
                         break;
 
                 case color_mode::rgba:
-                        data.resize(3, n_rows(), n_cols());
-                        data(0) = image.make_red(region);
-                        data(1) = image.make_green(region);
-                        data(2) = image.make_blue(region);
+                        data.resize(3, 1, n_rows(), n_cols());
+                        data.copy_plane_from(0, image.make_red(region));
+                        data.copy_plane_from(0, image.make_green(region));
+                        data.copy_plane_from(0, image.make_blue(region));
                         break;
                 }
 
@@ -91,7 +91,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        tensor3d_t model_t::make_input(const image_t& image, const rect_t& region) const
+        tensor_t model_t::make_input(const image_t& image, const rect_t& region) const
         {
                 return make_input(image, geom::left(region), geom::top(region));
         }

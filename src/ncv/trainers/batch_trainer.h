@@ -5,17 +5,14 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // batch trainer: each gradient update is computed for all samples.
-        //
-        // parameters:
-        //      opt=lbfgs[,cgd,gd]      - optimization method
-        //      eps=1e-6[1e-8,1e-3]     - convergence
-        //      iters=1024[4,4096]      - maximum number of iterations
-        /////////////////////////////////////////////////////////////////////////////////////////
-                
-        class trainer_state_t;
-
+        ///
+        /// batch trainer: each gradient update is computed for all samples.
+        ///
+        /// parameters:
+        ///      opt=lbfgs[,cgd,gd]      - optimization method
+        ///      eps=1e-6[1e-8,1e-3]     - convergence
+        ///      iters=1024[4,4096]      - maximum number of iterations
+        ///
         class batch_trainer_t : public trainer_t
         {
         public:

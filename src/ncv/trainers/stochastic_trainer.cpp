@@ -3,9 +3,9 @@
 #include "common/logger.h"
 #include "common/math.hpp"
 #include "common/usampler.hpp"
+#include "common/random.hpp"
 #include "common/thread_pool.h"
 #include "text.h"
-#include <algorithm>
 
 namespace ncv
 {

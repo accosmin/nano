@@ -5,6 +5,10 @@
 * affine layers: output-tensor = bias + weight * input-tensor, then the output layer is an affine layer
 * can play with different model configurations with possible multiple affine layers at the end
 
+* implement other CGD variants: it seem they may converge faster than the classic PR (check the paper)
+
+* function to generate a random input that will closely output a given target (class)
+
 - filter interface that keep the size of the input image:
 	- gaussian, elastic deformations, rotate & translate
 	- should be possible to chain them: image(gaussian_t, 2.0)(translate_t, -1, +1)(elastic, 0.0, 1.0)

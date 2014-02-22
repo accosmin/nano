@@ -2,6 +2,7 @@
 #include "common/math.hpp"
 #include "common/logger.h"
 #include "common/usampler.hpp"
+#include "common/random.hpp"
 #include "common/timer.h"
 #include "common/logger.h"
 #include "optimize/opt_gd.hpp"

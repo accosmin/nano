@@ -5,10 +5,6 @@
 
 namespace ncv
 {
-        ////////////////////////////////////////////////////////////////////////////////
-        // identity activation function.
-        ////////////////////////////////////////////////////////////////////////////////
-	
         namespace impl
         {
                 struct unit_activation_layer_eval_t
@@ -28,6 +24,9 @@ namespace ncv
                 };
         }
 
+        ///
+        /// identity activation function
+        ///
         class unit_activation_layer_t : public activation_layer_t
         <
                 impl::unit_activation_layer_eval_t,

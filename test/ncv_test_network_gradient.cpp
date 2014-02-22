@@ -8,7 +8,7 @@ using namespace ncv;
 static void test_grad(
         const string_t& header,
         const string_t& loss_id,
-        model_t& model, vector_t& params, tensor3d_t& input, vector_t& target,
+        model_t& model, vector_t& params, tensor_t& input, vector_t& target,
         size_t n_tests)
 {
         const rloss_t loss = loss_manager_t::instance().get(loss_id);
@@ -54,7 +54,7 @@ static void test_grad(
                 rgen(target.data(), target.data() + target.size());
                 rgen(params.data(), params.data() + params.size());
 
-                input.random(-0.2 / sqrt(n_parameters), +0.2 / sqrt(n_parameters));
+                input.random(random_t<scalar_t>(-0.2 / sqrt(n_parameters), +0.2 / sqrt(n_parameters)));
 
                 vector_t gx_gd, gx_ax;
                 problem_gd(x, gx_gd);
@@ -125,14 +125,13 @@ int main(int argc, char *argv[])
 
                 // build the inputs & outputs
                 vector_t params(network.n_parameters());
-                tensor3d_t sample(cmd_inputs, cmd_irows, cmd_icols);
+                tensor_t sample(cmd_inputs, cmd_irows, cmd_icols);
                 vector_t target(cmd_outputs);
 
                 // test network
                 for (const string_t& loss_id : loss_ids)
                 {
-                        test_grad("[loss = " + loss_id + "]",
-                                  loss_id, network, params, sample, target, cmd_tests);
+                        test_grad("[loss = " + loss_id + "]", loss_id, network, params, sample, target, cmd_tests);
                 }
         }
 

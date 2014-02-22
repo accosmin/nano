@@ -120,7 +120,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void trainer_data_t::update(const tensor3d_t& input, const vector_t& target, const loss_t& loss)
+        void trainer_data_t::update(const tensor_t& input, const vector_t& target, const loss_t& loss)
         {
                 assert(m_model);
 

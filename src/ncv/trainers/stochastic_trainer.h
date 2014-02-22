@@ -5,15 +5,14 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // stochastic trainer: the gradient update is computed on a random sample with
-        //      a geometrically decreasing learning rate.
-        //
-        // parameters:
-        //      opt=sgd[,asgd]          - optimization method: (average) stochastic gradient descent
-        //      epoch=16[1,1024]        - #epochs (~ #samples)
-        /////////////////////////////////////////////////////////////////////////////////////////
-
+        ///
+        /// stochastic trainer: the gradient update is computed on a random sample with
+        ///      a geometrically decreasing learning rate.
+        ///
+        /// parameters:
+        ///      opt=sgd[,asgd]          - optimization method: (average) stochastic gradient descent
+        ///      epoch=16[1,1024]        - #epochs (~ #samples)
+        ///
         class stochastic_trainer_t : public trainer_t
         {
         public:

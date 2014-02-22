@@ -51,10 +51,10 @@ int main(int argc, char *argv[])
                 model.resize(cmd_rows, cmd_cols, cmd_outputs, cmd_color);
 
                 // create random samples
-                tensor3ds_t samples(cmd_samples, tensor3d_t(cmd_color == color_mode::luma ? 1 : 3, cmd_rows, cmd_cols));
-                for (tensor3d_t& sample : samples)
+                tensors_t samples(cmd_samples, tensor_t(cmd_color == color_mode::luma ? 1 : 3, 1, cmd_rows, cmd_cols));
+                for (tensor_t& sample : samples)
                 {
-                        sample.random(-1.0, +1.0);
+                        sample.random(random_t<scalar_t>(-1.0, +1.0));
                 }
 
                 // create random targets

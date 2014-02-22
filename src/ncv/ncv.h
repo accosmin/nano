@@ -12,6 +12,7 @@
 #include "common/math.hpp"
 #include "common/stats.hpp"
 #include "common/thread_loop.hpp"
+#include "common/random.hpp"
 #include <cstdlib>
 
 namespace ncv

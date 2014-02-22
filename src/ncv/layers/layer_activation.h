@@ -6,17 +6,15 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // activation layer:
-        //      applies a non-linear scalar function to the each input.
-        /////////////////////////////////////////////////////////////////////////////////////////
-
+        ///
+        /// activation layer: pplies a non-linear scalar function to the each input
+        ///
         template
         <
-                // activation value o: o = teval_op(x)
+                /// activation value o: o = teval_op(x)
                 typename teval_op,
 
-                // & its gradient wrt to input x, given the output o and propagated gradient g: g = tgrad_op(g, o)
+                /// & its gradient wrt to input x, given the output o and propagated gradient g: g = tgrad_op(g, o)
                 typename tgrad_op
 
         >
@@ -27,10 +25,10 @@ namespace ncv
                 // destructor
                 virtual ~activation_layer_t() {}
 
-                // resize to process new inputs, returns the number of parameters
-                virtual size_t resize(size_t idims, size_t irows, size_t icols)
+                // resize to process new tensors of the given type
+                virtual size_t resize(const tensor_t& tensor)
                 {
-                        return _resize(idims, irows, icols);
+                        return _resize(tensor);
                 }
 
                 // reset parameters
@@ -43,68 +41,43 @@ namespace ncv
                 virtual ivectorizer_t& load_params(ivectorizer_t& s) { return s; }
 
                 // process inputs (compute outputs & gradients)
-                virtual const tensor3d_t& forward(const tensor3d_t& input) const { return _forward(input); }
-                virtual const tensor3d_t& backward(const tensor3d_t& gradient) const { return _backward(gradient); }
+                virtual const tensor_t& forward(const tensor_t& input) { return _forward(input); }
+                virtual const tensor_t& backward(const tensor_t& gradient) { return _backward(gradient); }
 
                 // save/load parameters to/from file
                 virtual bool save(boost::archive::binary_oarchive& oa) const { return true; }
                 virtual bool load(boost::archive::binary_iarchive& ia) { return true; }
 
-                // save layer description as image
-                virtual bool save_as_image(const string_t&) const { return true; }
-
                 // access functions
-                virtual size_t n_idims() const { return m_data.n_dim1(); }
-                virtual size_t n_irows() const { return m_data.n_rows(); }
-                virtual size_t n_icols() const { return m_data.n_cols(); }
-
-                virtual size_t n_odims() const { return m_data.n_dim1(); }
-                virtual size_t n_orows() const { return m_data.n_rows(); }
-                virtual size_t n_ocols() const { return m_data.n_cols(); }
+                virtual const tensor_t& input() const { return m_data; }
+                virtual const tensor_t& output() const { return m_data; }
 
         private:
 
                 // resize to process new inputs, returns the number of parameters
-                size_t _resize(size_t idims, size_t irows, size_t icols)
+                size_t _resize(const tensor_t& tensor)
                 {
-                        m_data.resize(idims, irows, icols);
+                        m_data.resize(tensor.dim1(), tensor.dim2(), tensor.rows(), tensor.cols());
 
                         return 0;
                 }
 
                 // output
-                const tensor3d_t& _forward(const tensor3d_t& input) const
+                const tensor_t& _forward(const tensor_t& input)
                 {
-                        assert(n_idims() == input.n_dim1());
-                        assert(n_irows() <= input.n_rows());
-                        assert(n_icols() <= input.n_cols());
+                        assert(m_data.size() == input.size());
 
-                        for (size_t o = 0; o < n_odims(); o ++)
-                        {
-                                const matrix_t& idata = input(o);
-                                matrix_t& odata = m_data(o);
-
-                                math::transform(idata, odata, std::bind(teval_op(), _1));
-                        }
+                        math::transform(input, m_data, std::bind(teval_op(), _1));
 
                         return m_data;
                 }
 
                 // gradient
-                const tensor3d_t& _backward(const tensor3d_t& gradient) const
+                const tensor_t& _backward(const tensor_t& gradient)
                 {
-                        assert(n_odims() == gradient.n_dim1());
-                        assert(n_orows() == gradient.n_rows());
-                        assert(n_ocols() == gradient.n_cols());
+                        assert(m_data.size() == gradient.size());
 
-                        for (size_t o = 0; o < n_odims(); o ++)
-                        {
-                                const matrix_t& gdata = gradient(o);
-                                const matrix_t& odata = m_data(o);
-                                matrix_t& idata = m_data(o);
-
-                                math::transform(gdata, odata, idata, std::bind(tgrad_op(), _1, _2));
-                        }
+                        math::transform(gradient, m_data, m_data, std::bind(tgrad_op(), _1, _2));
 
                         return m_data;
                 }
@@ -112,7 +85,7 @@ namespace ncv
         private:
 
                 // attributes
-                mutable tensor3d_t      m_data;         // input-output buffer
+                tensor_t                m_data;         ///< input-output buffer
         };
 }
 

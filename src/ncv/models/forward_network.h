@@ -6,13 +6,9 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // multi-layer feed-forward network model.
-        //
-        // parameters:  - default = empty_string -> no hidden layer
-        //              - format = [layer_id:layer_parameters[,]]*
-        /////////////////////////////////////////////////////////////////////////////////////////
-
+        ///
+        /// multi-layer feed-forward network model
+        ///
         class forward_network_t : public model_t
         {
         public:
@@ -32,20 +28,19 @@ namespace ncv
                         return "feed-forward network, parameters: [layer_id[:layer_parameters][;]]*";
                 }
 
-                // compute the model output
-                virtual vector_t value(const tensor3d_t& input) const;
+                // compute the model's output
+                virtual vector_t value(const tensor_t& input) const;
+
+                // compute the model's gradient
+                virtual vector_t gradient(const vector_t& ograd) const;
 
                 // save/load/initialize parameters
                 virtual bool load_params(const vector_t& x);
                 virtual void zero_params();
                 virtual void random_params();
 
-                // access current parameters/gradient
+                // access current parameters
                 virtual vector_t params() const;
-                virtual vector_t gradient(const vector_t& ograd) const;
-
-                // save model description as image
-                virtual bool save_as_images(const string_t& basepath) const;
 
         protected:
 
