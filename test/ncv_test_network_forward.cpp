@@ -19,13 +19,13 @@ int main(int argc, char *argv[])
         {
                 "",
 
-                "linear:dims=10",
-                "linear:dims=100",
-                "linear:dims=1000",
+                "linear:dims=10;snorm",
+                "linear:dims=100;snorm",
+                "linear:dims=1000;snorm",
 
-                "linear:dims=100;linear:dims=100",
-                "linear:dims=100;linear:dims=100;linear:dims=100",
-                "linear:dims=100;linear:dims=100;linear:dims=100;linear:dims=100"
+                "linear:dims=100;snorm;linear:dims=100;snorm",
+                "linear:dims=100;snorm;linear:dims=100;snorm;linear:dims=100",
+                "linear:dims=100;snorm;linear:dims=100;snorm;linear:dims=100;snorm;linear:dims=100"
         };
 
         const logistic_loss_t loss;

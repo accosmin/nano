@@ -32,7 +32,7 @@ namespace ncv
         {
                 assert(static_cast<size_t>(ograd.size()) == n_outputs());
 
-                tensor_t _gradient(n_outputs(), 1, 1);
+                tensor_t _gradient(n_outputs(), 1, 1, 1);
                 ivectorizer_t(ograd) >> _gradient;
 
                 const tensor_t* gradient = &_gradient;
