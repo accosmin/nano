@@ -15,29 +15,17 @@ int main(int argc, char *argv[])
         const size_t cmd_outputs = 10;
         const size_t cmd_samples = 10000;
 
-        string_t model0 = "";
-        string_t model1 = "";
-        string_t model2 = "";
-        string_t model3 = "";
-
-        model1 = model1 + "conv:count=32,rows=7,cols=7;snorm;smax-abs-pool;";
-        model1 = model1 + "conv:count=32,rows=4,cols=4;snorm;smax-abs-pool;";
-        model1 = model1 + "conv:count=32,rows=4,cols=4;snorm;";
-
-        model2 = model2 + "conv:count=32,rows=7,cols=7;snorm;smax-abs-pool;";
-        model2 = model2 + "conv:count=32,rows=6,cols=6;snorm;smax-abs-pool;";
-        model2 = model2 + "conv:count=32,rows=3,cols=3;snorm;";
-
-        model3 = model3 + "conv:count=32,rows=5,cols=5;snorm;smax-abs-pool;";
-        model3 = model3 + "conv:count=32,rows=5,cols=5;snorm;smax-abs-pool;";
-        model3 = model3 + "conv:count=32,rows=4,cols=4;snorm;";
-
         strings_t cmd_networks =
         {
-                model0,
-                model1,
-                model2,
-                model3
+                "",
+
+                "linear:dims=10",
+                "linear:dims=100",
+                "linear:dims=1000",
+
+                "linear:dims=100;linear:dims=100",
+                "linear:dims=100;linear:dims=100;linear:dims=100",
+                "linear:dims=100;linear:dims=100;linear:dims=100;linear:dims=100"
         };
 
         const logistic_loss_t loss;
