@@ -98,6 +98,7 @@ namespace ncv
                         /// \brief access the tensor as a vector (size() x 1)
                         ///
                         const tvector& vector() const { return m_data; }
+                        Eigen::Map<tvector> vector() { return Eigen::Map<tvector>(data(), size()); }
 
                         ///
                         /// \brief access the tensor as a matrix (dim1() x dim2())

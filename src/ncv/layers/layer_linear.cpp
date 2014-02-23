@@ -97,7 +97,7 @@ namespace ncv
                 assert(isize() == m_idata.size());
 
                 m_idata.copy_from(input);
-                m_odata.copy_from(vector_t(m_bdata.vector() + m_wdata.matrix() * m_idata.vector()));
+                m_odata.vector() = m_bdata.vector() + m_wdata.matrix() * m_idata.vector();
 
                 return m_odata;
         }
@@ -109,11 +109,11 @@ namespace ncv
                 assert(osize() == gradient.size());
 
                 // parameters gradient
-                m_gwdata.copy_from(matrix_t(gradient.vector() * m_idata.vector().transpose()));
+                m_gwdata.matrix() = gradient.vector() * m_idata.vector().transpose();
                 m_gbdata.copy_from(gradient);
 
                 // input gradient
-                m_idata.copy_from(vector_t(m_wdata.matrix().transpose() * gradient.vector()));
+                m_idata.vector() = m_wdata.matrix().transpose() * gradient.vector();
 
                 return m_idata;
         }
