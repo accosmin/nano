@@ -5,6 +5,9 @@
 
 namespace ncv
 {
+        ///
+        /// \brief fully-connected linear layer (as in MLP models)
+        ///
         class linear_layer_t : public layer_t
         {
         public:

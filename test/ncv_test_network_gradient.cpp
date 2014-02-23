@@ -71,9 +71,10 @@ int main(int argc, char *argv[])
 {
         ncv::init();
 
-        const strings_t conv_layer_ids { "conv" };
-        const strings_t actv_layer_ids { "", "unit", "tanh", "snorm" };
-        const strings_t pool_layer_ids { "", "smax-abs-pool", "smax-pool" };
+        const strings_t conv_layer_ids { "" }; //, "conv" };
+        const strings_t pool_layer_ids { "" }; //, "smax-abs-pool", "smax-pool" };
+        const strings_t full_layer_ids { "", "linear" };
+        const strings_t actv_layer_ids { "", "unit", "tanh", "snorm" };        
         const strings_t loss_ids = loss_manager_t::instance().ids();
 
         const color_mode cmd_color = color_mode::luma;
@@ -85,8 +86,11 @@ int main(int argc, char *argv[])
 
         const size_t cmd_tests = 64;
 
-        // evaluate the analytical gradient vs. the finite difference approximation
-        //      for each: number of convolution layers, activation layer, pooling layer
+        // evaluate the analytical gradient vs. the finite difference approximation for various:
+        //      * convolution layers
+        //      * pooling layers
+        //      * fully connected layers
+        //      * activation layers
         std::set<string_t> descs;
         for (size_t n_layers = 0; n_layers <= cmd_max_layers; n_layers ++)
         {
@@ -96,22 +100,38 @@ int main(int argc, char *argv[])
                         {
                                 for (const string_t& conv_layer_id : conv_layer_ids)
                                 {
-                                        // build the network
-                                        string_t desc;
-                                        for (size_t l = 0; l < n_layers; l ++)
+                                        for (const string_t& full_layer_id : full_layer_ids)
                                         {
-                                                random_t<size_t> rgen(2, 6);
+                                                string_t desc;
 
-                                                const string_t conv_params =
-                                                        "count=" + text::to_string(rgen()) +
-                                                        ((rgen() % 2 == 0) ? ",rows=3,cols=3;" : ",rows=5,cols=5;");
+                                                // convolution part
+                                                for (size_t l = 0; l < n_layers && !conv_layer_id.empty(); l ++)
+                                                {
+                                                        random_t<size_t> rgen(2, 6);
 
-                                                desc += conv_layer_id + ":" + conv_params;
-                                                desc += actv_layer_id + ";";
-                                                desc += pool_layer_id + ";";
+                                                        string_t params;
+                                                        params += "count=" + text::to_string(rgen());
+                                                        params += (rgen() % 2 == 0) ? ",rows=3,cols=3" : ",rows=5,cols=5";
+
+                                                        desc += conv_layer_id + ":" + params + ";";
+                                                        desc += actv_layer_id + ";";
+                                                        desc += pool_layer_id + ";";
+                                                }
+
+                                                // fully-connected part
+                                                for (size_t l = 0; l < n_layers && !full_layer_id.empty(); l ++)
+                                                {
+                                                        random_t<size_t> rgen(1, 10);
+
+                                                        string_t params;
+                                                        params += "dims=" + text::to_string(rgen());
+
+                                                        desc += full_layer_id + ":" + params + ";";
+                                                        desc += actv_layer_id + ";";
+                                                }
+
+                                                descs.insert(desc);
                                         }
-
-                                        descs.insert(desc);
                                 }
                         }
                 }
@@ -125,7 +145,7 @@ int main(int argc, char *argv[])
 
                 // build the inputs & outputs
                 vector_t params(network.n_parameters());
-                tensor_t sample(cmd_inputs, cmd_irows, cmd_icols);
+                tensor_t sample(cmd_inputs, 1, cmd_irows, cmd_icols);
                 vector_t target(cmd_outputs);
 
                 // test network
