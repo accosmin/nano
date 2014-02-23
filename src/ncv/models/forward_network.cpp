@@ -32,7 +32,7 @@ namespace ncv
         {
                 assert(static_cast<size_t>(ograd.size()) == n_outputs());
 
-                tensor_t _gradient(n_outputs(), 1, 1, 1);
+                tensor_t _gradient(n_outputs(), 1, 1);
                 ivectorizer_t(ograd) >> _gradient;
 
                 const tensor_t* gradient = &_gradient;
@@ -104,8 +104,8 @@ namespace ncv
         {
                 for (const rlayer_t& layer : m_layers)
                 {
-                        const size_t fanin = layer->input().dim1() * layer->input().dim2();
-                        const size_t fanout = layer->output().dim1() * layer->output().dim2();
+                        const size_t fanin = layer->input().dims();
+                        const size_t fanout = layer->output().dims();
                         const scalar_t min = -std::sqrt(6.0 / (1.0 + fanin + fanout));
                         const scalar_t max = +std::sqrt(6.0 / (1.0 + fanin + fanout));
 
@@ -152,7 +152,7 @@ namespace ncv
 
         size_t forward_network_t::resize()
         {
-                tensor_t input(n_inputs(), 1, n_rows(), n_cols());
+                tensor_t input(n_inputs(), n_rows(), n_cols());
                 size_t n_params = 0;
 
                 m_layers.clear();
@@ -219,12 +219,10 @@ namespace ncv
                         const rlayer_t& layer = m_layers[l];
 
                         log_info() <<
-                                boost::format("feed-forward network [%1%/%2%]: [%3%] (%4%x%5%x%6%x%7%) -> (%8%x%9%x%10%x%11%).")
+                                boost::format("feed-forward network [%1%/%2%]: [%3%] (%4%x%5%x%6%) -> (%7%x%8%x%9%).")
                                 % (l + 1) % m_layers.size() % layer_ids[l]
-                                % layer->input().dim1() % layer->input().dim2()
-                                % layer->input().rows() % layer->input().cols()
-                                % layer->output().dim1() % layer->output().dim2()
-                                % layer->output().rows() % layer->output().cols();
+                                % layer->input().dims() % layer->input().rows() % layer->input().cols()
+                                % layer->output().dims() % layer->output().rows() % layer->output().cols();
                 }
         }
 

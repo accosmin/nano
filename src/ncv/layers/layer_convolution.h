@@ -5,15 +5,9 @@
 
 namespace ncv
 {
-//        /////////////////////////////////////////////////////////////////////////////////////////
-//        // fixed-size convolution layer:
-//        //
-//        // parameters:
-//        //      count=16[1,256]                 - number of convolutions
-//        //      rows=8[1,32]                    - size of convolutions (rows)
-//        //      cols=8[1,32]                    - size of convolutions (columns)
-//        /////////////////////////////////////////////////////////////////////////////////////////
-
+//        ///
+//        /// \brief convolution layer
+//        ///
 //        class conv_layer_t : public layer_t
 //        {
 //        public:
@@ -22,10 +16,10 @@ namespace ncv
 //                conv_layer_t(const string_t& params = string_t());
 
 //                NCV_MAKE_CLONABLE(conv_layer_t, layer_t,
-//                                  "convolution layer, parameters: count=16[1,256],rows=8[1,32],cols=8[1,32]")
+//                                  "convolution layer, parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
 
-//                // resize to process new inputs, returns the number of parameters
-//                virtual size_t resize(size_t idims, size_t irows, size_t icols);
+//                // resize to process new tensors of the given type
+//                virtual size_t resize(const tensor_t& tensor);
 
 //                // reset parameters
 //                virtual void zero_params();
@@ -37,28 +31,23 @@ namespace ncv
 //                virtual ivectorizer_t& load_params(ivectorizer_t& s);
 
 //                // process inputs (compute outputs & gradients)
-//                virtual const tensor3d_t& forward(const tensor3d_t& input) const;
-//                virtual const tensor3d_t& backward(const tensor3d_t& gradient) const;
+//                virtual const tensor_t& forward(const tensor_t& input);
+//                virtual const tensor_t& backward(const tensor_t& gradient);
 
 //                // save/load parameters to/from file
 //                virtual bool save(boost::archive::binary_oarchive& oa) const;
 //                virtual bool load(boost::archive::binary_iarchive& ia);
 
-//                // save layer description as image
-//                virtual bool save_as_image(const string_t& basepath) const;
-
 //                // access functions
-//                virtual size_t n_idims() const { return m_idata.n_dim1(); }
-//                virtual size_t n_irows() const { return m_idata.n_rows(); }
-//                virtual size_t n_icols() const { return m_idata.n_cols(); }
-
-//                virtual size_t n_odims() const { return m_odata.n_dim1(); }
-//                virtual size_t n_orows() const { return m_odata.n_rows(); }
-//                virtual size_t n_ocols() const { return m_odata.n_cols(); }
+//                virtual const tensor_t& input() const { return m_idata; }
+//                virtual const tensor_t& output() const { return m_odata; }
 
 //        private:
 
 //                /////////////////////////////////////////////////////////////////////////////////////////
+
+//                size_t idims() const { return m_idata.dim1(); }
+//                size_t odims() const { return m_odata.dim1(); }
 
 //                scalar_t bias(size_t o) const { return m_bdata(o, 0, 0); }
 //                scalar_t weight(size_t o, size_t i) const { return m_wdata(o, i, 0); }
@@ -70,33 +59,6 @@ namespace ncv
 //                size_t n_krows() const { return m_kdata.n_rows(); }
 //                size_t n_kcols() const { return m_kdata.n_cols(); }
 
-//                template
-//                <
-//                        typename tmad
-//                >
-//                void backward(
-//                        const matrix_t& ogdata, const matrix_t& kdata, scalar_t weight,
-//                        matrix_t& igdata, tmad madop) const
-//                {
-//                        for (auto r = 0; r < ogdata.rows(); r ++)
-//                        {
-//                                const scalar_t* pogdata = &ogdata(r, 0);
-
-//                                for (auto kr = 0; kr < kdata.rows(); kr ++)
-//                                {
-//                                        const scalar_t* pkdata = &kdata(kr, 0);
-//                                        scalar_t* pigdata = &igdata(r + kr, 0);
-
-//                                        for (auto c = 0; c < ogdata.cols(); c ++)
-//                                        {
-//                                                const scalar_t w = weight * pogdata[c];
-
-//                                                madop(pkdata, w, pigdata + c, kdata.cols());
-//                                        }
-//                                }
-//                        }
-//                }
-
 //                /////////////////////////////////////////////////////////////////////////////////////////
 
 //        private:
@@ -104,9 +66,9 @@ namespace ncv
 //                // attributes
 //                string_t                m_params;
 
-//                mutable tensor3d_t      m_idata;        // input buffer
-//                mutable tensor3d_t      m_odata;        // output buffer
-//                mutable tensor4d_t      m_xdata;        // output convolution buffer
+//                tensor_t                m_idata;        ///< input buffer
+//                tensor_t                m_odata;        // output buffer
+//                tensor_t                m_xdata;        // output convolution buffer
 
 //                tensor3d_t              m_kdata;        // convolution/kernel matrices (output)
 //                tensor3d_t              m_wdata;        // weights (output, input)

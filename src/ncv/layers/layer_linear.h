@@ -45,19 +45,19 @@ namespace ncv
 
         private:
 
-                size_t isize() const { return m_idata.dim1(); }
-                size_t osize() const { return m_bdata.dim1(); }
+                size_t isize() const { return m_idata.dims(); }
+                size_t osize() const { return m_bdata.dims(); }
 
         private:
 
                 // attributes
                 string_t                m_params;
 
-                tensor_t                m_idata;        ///< input buffer:      isize x 1 x 1 x 1
-                tensor_t                m_odata;        ///< output buffer:     osize x 1 x 1 x 1
+                tensor_t                m_idata;        ///< input buffer:      isize x 1 x 1
+                tensor_t                m_odata;        ///< output buffer:     osize x 1 x 1
 
-                tensor_t                m_wdata;        ///< weights:           osize x isize x 1 x 1
-                tensor_t                m_bdata;        ///< bias:              osize x 1 x 1 x 1
+                tensor_t                m_wdata;        ///< weights:           1 x osize x isize
+                tensor_t                m_bdata;        ///< bias:              osize x 1 x 1
 
                 tensor_t                m_gwdata;       ///< cumulated weight gradients
                 tensor_t                m_gbdata;       ///< cumulate bias gradients

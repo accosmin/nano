@@ -57,7 +57,7 @@ namespace ncv
                 // resize to process new inputs, returns the number of parameters
                 size_t _resize(const tensor_t& tensor)
                 {
-                        m_data.resize(tensor.dim1(), tensor.dim2(), tensor.rows(), tensor.cols());
+                        m_data.resize(tensor.dims(), tensor.rows(), tensor.cols());
 
                         return 0;
                 }

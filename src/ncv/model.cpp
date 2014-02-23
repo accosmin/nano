@@ -74,15 +74,15 @@ namespace ncv
                 switch (m_color)
                 {
                 case color_mode::luma:
-                        data.resize(1, 1, n_rows(), n_cols());
+                        data.resize(1, n_rows(), n_cols());
                         data.copy_plane_from(0, image.make_luma(region));
                         break;
 
                 case color_mode::rgba:
-                        data.resize(3, 1, n_rows(), n_cols());
+                        data.resize(3, n_rows(), n_cols());
                         data.copy_plane_from(0, image.make_red(region));
-                        data.copy_plane_from(0, image.make_green(region));
-                        data.copy_plane_from(0, image.make_blue(region));
+                        data.copy_plane_from(1, image.make_green(region));
+                        data.copy_plane_from(2, image.make_blue(region));
                         break;
                 }
 

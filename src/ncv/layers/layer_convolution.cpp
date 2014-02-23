@@ -1,14 +1,12 @@
 #include "layer_convolution.h"
-//#include "text.h"
-//#include "vectorizer.h"
-//#include "image.h"
-//#include "common/logger.h"
-//#include "common/math.hpp"
-//#include "common/mad.hpp"
-//#include "common/convolution.hpp"
+#include "text.h"
+#include "common/logger.h"
+#include "common/math.hpp"
+#include "common/mad.hpp"
+#include "common/convolution.hpp"
 
-//namespace ncv
-//{
+namespace ncv
+{
 //        /////////////////////////////////////////////////////////////////////////////////////////
 
 //        conv_layer_t::conv_layer_t(const string_t& params)
@@ -123,6 +121,35 @@
 //                }
 
 //                return m_odata;
+//        }
+
+//        /////////////////////////////////////////////////////////////////////////////////////////
+
+//        template
+//        <
+//                typename tmad
+//        >
+//        static void backward(
+//                const matrix_t& ogdata, const matrix_t& kdata, scalar_t weight,
+//                matrix_t& igdata, tmad madop) const
+//        {
+//                for (auto r = 0; r < ogdata.rows(); r ++)
+//                {
+//                        const scalar_t* pogdata = &ogdata(r, 0);
+
+//                        for (auto kr = 0; kr < kdata.rows(); kr ++)
+//                        {
+//                                const scalar_t* pkdata = &kdata(kr, 0);
+//                                scalar_t* pigdata = &igdata(r + kr, 0);
+
+//                                for (auto c = 0; c < ogdata.cols(); c ++)
+//                                {
+//                                        const scalar_t w = weight * pogdata[c];
+
+//                                        madop(pkdata, w, pigdata + c, kdata.cols());
+//                                }
+//                        }
+//                }
 //        }
 
 //        /////////////////////////////////////////////////////////////////////////////////////////
@@ -256,6 +283,6 @@
 //        }
 
 //        /////////////////////////////////////////////////////////////////////////////////////////
-//}
+}
 
 

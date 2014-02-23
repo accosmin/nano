@@ -114,8 +114,8 @@ int main(int argc, char *argv[])
                                                         params += (rgen() % 2 == 0) ? ",rows=3,cols=3" : ",rows=5,cols=5";
 
                                                         desc += conv_layer_id + ":" + params + ";";
-                                                        desc += actv_layer_id + ";";
                                                         desc += pool_layer_id + ";";
+                                                        desc += actv_layer_id + ";";
                                                 }
 
                                                 // fully-connected part
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
 
                 // build the inputs & outputs
                 vector_t params(network.n_parameters());
-                tensor_t sample(cmd_inputs, 1, cmd_irows, cmd_icols);
+                tensor_t sample(cmd_inputs, cmd_irows, cmd_icols);
                 vector_t target(cmd_outputs);
 
                 // test network

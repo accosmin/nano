@@ -10,7 +10,7 @@ namespace ncv
         namespace tensor
         {
                 ///
-                /// 4D tensor stored as ::dim1() x ::dim2() 2D planes of size ::rows() x ::cols()
+                /// 3D tensor stored as ::dims() 2D planes of size ::rows() x ::cols()
                 ///
                 template
                 <
@@ -30,22 +30,21 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        tensor_t(tsize dim1 = 0, tsize dim2 = 0, tsize rows = 0, tsize cols = 0)
+                        tensor_t(tsize dims = 0, tsize rows = 0, tsize cols = 0)
                         {
-                                resize(dim1, dim2, rows, cols);
+                                resize(dims, rows, cols);
                         }
 
                         ///
                         /// \brief resize to new dimensions
                         ///
-                        tsize resize(tsize dim1, tsize dim2, tsize rows, tsize cols)
+                        tsize resize(tsize dims, tsize rows, tsize cols)
                         {
-                                m_dim1 = dim1;
-                                m_dim2 = dim2;
+                                m_dims = dims;
                                 m_rows = rows;
                                 m_cols = cols;
 
-                                m_data.resize(m_dim1 * m_dim2 * m_rows * m_cols);
+                                m_data.resize(m_dims * m_rows * m_cols);
                                 m_data.setZero();
 
                                 return size();
@@ -83,27 +82,19 @@ namespace ncv
                         /// \brief dimensions
                         ///
                         tsize size() const { return m_data.size(); }
-                        tsize dim1() const { return m_dim1; }
-                        tsize dim2() const { return m_dim2; }
+                        tsize dims() const { return m_dims; }
                         tsize rows() const { return m_rows; }
-                        tsize cols() const { return m_cols; }
-
-                        ///
-                        /// \brief 2D plane dimensions
-                        ///
-                        tsize planes() const { return dim1() * dim2(); }
+                        tsize cols() const { return m_cols; }                        
                         tsize plane_size() const { return rows() * cols(); }
 
                         ///
                         /// \brief access the tensor as a vector (size() x 1)
                         ///
                         const tvector& vector() const { return m_data; }
-                        Eigen::Map<tvector> vector() { return Eigen::Map<tvector>(data(), size()); }
-
-                        ///
-                        /// \brief access the tensor as a matrix (dim1() x dim2())
-                        ///
-                        Eigen::Map<tmatrix> matrix() { return Eigen::Map<tmatrix>(data(), dim1(), dim2()); }
+                        Eigen::Map<tvector> vector()
+                        {
+                                return Eigen::Map<tvector>(data(), size());
+                        }
 
                         ///
                         /// \brief access the whole tensor data
@@ -114,13 +105,17 @@ namespace ncv
                         ///
                         /// \brief access the 2D planes
                         ///
-                        const tscalar* plane_data(tsize i1) const
+                        const tscalar* plane_data(tsize i) const
                         {
-                                return data() + plane_index(i1) * plane_size();
+                                return data() + i * plane_size();
                         }
-                        tscalar* plane_data(tsize i1)
+                        tscalar* plane_data(tsize i)
                         {
-                                return data() + plane_index(i1) * plane_size();
+                                return data() + i * plane_size();
+                        }
+                        Eigen::Map<tmatrix> plane_matrix(tsize i = 0)
+                        {
+                                return Eigen::Map<tmatrix>(plane_data(i), rows(), cols());
                         }
 
                         const tscalar* plane_data(tsize i1, tsize i2) const
@@ -175,41 +170,8 @@ namespace ncv
                                 assert(plane_size() == t.size());
                                 std::copy(plane_data(i), plane_data(i) + plane_size(), t.data());
                         }
-                        template
-                        <
-                                typename ttensor
-                        >
-                        void copy_plane_from(tsize i1, tsize i2, const ttensor& t)
-                        {
-                                assert(plane_size() == t.size());
-                                std::copy(t.data(), t.data() + t.size(), plane_data(i1, i2));
-                        }
-                        template
-                        <
-                                typename ttensor
-                        >
-                        void copy_plane_to(tsize i1, tsize i2, ttensor& t) const
-                        {
-                                assert(plane_size() == t.size());
-                                std::copy(plane_data(i1, i2), plane_data(i1, i2) + plane_size(), t.data());
-                        }
 
                 private:
-
-                        ///
-                        /// \brief compute the plane index
-                        ///
-                        tsize plane_index(tsize i1) const
-                        {
-                                assert(i1 < planes());
-                                return i1;
-                        }
-                        tsize plane_index(tsize i1, tsize i2) const
-                        {
-                                assert(i1 < dim1());
-                                assert(i2 < dim2());
-                                return i1 * dim2() + i2;
-                        }
 
                         ///
                         /// serialize
@@ -221,8 +183,7 @@ namespace ncv
                         >
                         void serialize(tarchive & ar, const unsigned int version)
                         {
-                                ar & m_dim1;
-                                ar & m_dim2;
+                                ar & m_dims;
                                 ar & m_rows;
                                 ar & m_cols;
                                 ar & m_data;
@@ -231,8 +192,7 @@ namespace ncv
                 private:
 
                         // attributes
-                        tsize                   m_dim1;         ///< #dimensions 1
-                        tsize                   m_dim2;         ///< #dimensions 2
+                        tsize                   m_dims;         ///< #dimensions
                         tsize                   m_rows;         ///< #rows (for each dimension)
                         tsize                   m_cols;         ///< #cols (for each dimension)
                         tvector                 m_data;         ///< storage (1D vector)
