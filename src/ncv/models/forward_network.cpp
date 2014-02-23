@@ -195,7 +195,7 @@ namespace ncv
                         m_layers.push_back(layer);
                         layer_ids.push_back(layer_id);
 
-                        input = layer->input();
+                        input = layer->output();
                 }
 
                 // Create the output layer

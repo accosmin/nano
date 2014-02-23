@@ -9,6 +9,7 @@
 #include "tasks/task_stl10.h"
 #include "tasks/task_cbclfaces.h"
 
+#include "layers/layer_linear.h"
 #include "layers/layer_activation_unit.h"
 #include "layers/layer_activation_tanh.h"
 #include "layers/layer_activation_snorm.h"
@@ -47,6 +48,7 @@ namespace ncv
                 task_manager_t::instance().add("cbcl-faces", cbclfaces_task_t());
 
                 // register layers
+                layer_manager_t::instance().add("linear", linear_layer_t());
                 layer_manager_t::instance().add("unit", unit_activation_layer_t());
                 layer_manager_t::instance().add("tanh", tanh_activation_layer_t());
                 layer_manager_t::instance().add("snorm", snorm_activation_layer_t());
