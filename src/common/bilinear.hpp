@@ -6,13 +6,11 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // 2D bilinear interpolation.
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         namespace math
         {
-                // resize the input matrix by the given factor (using bilinear interpolation)
+                ///
+                /// \brief resize the input matrix by the given factor (using bilinear interpolation)
+                ///
                 template
                 <       typename tmatrix,
                         typename tscalar = double
@@ -60,7 +58,9 @@ namespace ncv
                         }
                 }
 
-                // resize the input matrix to the given maximum matrix size
+                ///
+                /// \brief resize the input matrix to the given maximum matrix size (using bilinear interpolation)
+                ///
                 template
                 <
                         typename tmatrix,

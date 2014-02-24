@@ -2,287 +2,226 @@
 #include "text.h"
 #include "common/logger.h"
 #include "common/math.hpp"
-#include "common/mad.hpp"
+#include "common/sum.hpp"
 #include "common/convolution.hpp"
+#include "common/random.hpp"
 
 namespace ncv
 {
-//        /////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-//        conv_layer_t::conv_layer_t(const string_t& params)
-//                :       m_params(params)
-//        {
-//        }
+        conv_layer_t::conv_layer_t(const string_t& params)
+                :       m_params(params)
+        {
+        }
 
-//        /////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-//        size_t conv_layer_t::resize(size_t idims, size_t irows, size_t icols)
-//        {
-//                const size_t odims = math::clamp(text::from_params<size_t>(m_params, "count", 16), 1, 256);
-//                const size_t crows = math::clamp(text::from_params<size_t>(m_params, "rows", 8), 1, 32);
-//                const size_t ccols = math::clamp(text::from_params<size_t>(m_params, "cols", 8), 1, 32);
+        size_t conv_layer_t::resize(const tensor_t& tensor)
+        {
+                const size_t idims = tensor.dims();
+                const size_t irows = tensor.rows();
+                const size_t icols = tensor.cols();
 
-//                if (irows < crows || icols < ccols)
-//                {
-//                        const string_t message =
-//                                "invalid size (" + text::to_string(idims) + "x" + text::to_string(irows) +
-//                                 "x" + text::to_string(icols) + ") -> (" + text::to_string(odims) + "x" +
-//                                 text::to_string(crows) + "x" + text::to_string(ccols) + ")";
+                const size_t odims = math::clamp(text::from_params<size_t>(m_params, "dims", 16), 1, 256);
+                const size_t crows = math::clamp(text::from_params<size_t>(m_params, "rows", 8), 1, 32);
+                const size_t ccols = math::clamp(text::from_params<size_t>(m_params, "cols", 8), 1, 32);
 
-//                        log_error() << "convolution layer: " << message;
-//                        throw std::runtime_error("convolution layer: " + message);
-//                }
+                if (irows < crows || icols < ccols)
+                {
+                        const string_t message =
+                                "invalid size (" + text::to_string(idims) + "x" + text::to_string(irows) +
+                                 "x" + text::to_string(icols) + ") -> (" + text::to_string(odims) + "x" +
+                                 text::to_string(crows) + "x" + text::to_string(ccols) + ")";
 
-//                const size_t orows = irows - crows + 1;
-//                const size_t ocols = icols - ccols + 1;
+                        log_error() << "convolution layer: " << message;
+                        throw std::runtime_error("convolution layer: " + message);
+                }
 
-//                m_idata.resize(idims, irows, icols);
-//                m_odata.resize(odims, orows, ocols);
-//                m_xdata.resize(odims, idims, orows, ocols);
+                const size_t orows = irows - crows + 1;
+                const size_t ocols = icols - ccols + 1;
 
-//                m_kdata.resize(odims, crows, ccols);
-//                m_wdata.resize(odims, idims, 1);
-//                m_bdata.resize(odims, 1, 1);
+                m_idata.resize(idims, irows, icols);
+                m_odata.resize(odims, orows, ocols);
 
-//                m_gkdata.resize(odims, crows, ccols);
-//                m_gwdata.resize(odims, idims, 1);
-//                m_gbdata.resize(odims, 1, 1);
+                m_kdata.resize(odims, crows, ccols);
+                m_wdata.resize(1, odims, idims);
+                m_bdata.resize(odims, 1, 1);
 
-//                return m_kdata.size() + m_wdata.size() + m_bdata.size();
-//        }
+                m_gkdata.resize(odims, crows, ccols);
+                m_gwdata.resize(1, odims, idims);
+                m_gbdata.resize(odims, 1, 1);
+                m_gidata.resize(idims, irows, icols);
 
-//        /////////////////////////////////////////////////////////////////////////////////////////
+                return m_kdata.size() + m_wdata.size() + m_bdata.size();
+        }
 
-//        void conv_layer_t::zero_params()
-//        {
-//                m_kdata.zero();
-//                m_wdata.zero();
-//                m_bdata.zero();
-//        }
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-//        /////////////////////////////////////////////////////////////////////////////////////////
+        void conv_layer_t::zero_params()
+        {
+                m_kdata.zero();
+                m_wdata.zero();
+                m_bdata.zero();
+        }
 
-//        void conv_layer_t::random_params(scalar_t min, scalar_t max)
-//        {
-//                m_kdata.random(min, max);
-//                m_wdata.random(min, max);
-//                m_bdata.random(min, max);
-//        }
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-//        /////////////////////////////////////////////////////////////////////////////////////////
+        void conv_layer_t::random_params(scalar_t min, scalar_t max)
+        {
+                m_kdata.random(random_t<scalar_t>(min, max));
+                m_wdata.random(random_t<scalar_t>(min, max));
+                m_bdata.random(random_t<scalar_t>(min, max));
+        }
 
-//        ovectorizer_t& conv_layer_t::save_params(ovectorizer_t& s) const
-//        {
-//                return s << m_kdata << m_bdata << m_wdata;
-//        }
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-//        /////////////////////////////////////////////////////////////////////////////////////////
+        ovectorizer_t& conv_layer_t::save_params(ovectorizer_t& s) const
+        {
+                return s << m_kdata << m_bdata << m_wdata;
+        }
 
-//        ovectorizer_t& conv_layer_t::save_grad(ovectorizer_t& s) const
-//        {
-//                return s << m_gkdata << m_gbdata << m_gwdata;
-//        }
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-//        /////////////////////////////////////////////////////////////////////////////////////////
+        ovectorizer_t& conv_layer_t::save_grad(ovectorizer_t& s) const
+        {
+                return s << m_gkdata << m_gbdata << m_gwdata;
+        }
 
-//        ivectorizer_t& conv_layer_t::load_params(ivectorizer_t& s)
-//        {
-//                return s >> m_kdata >> m_bdata >> m_wdata;
-//        }
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-//        /////////////////////////////////////////////////////////////////////////////////////////
+        ivectorizer_t& conv_layer_t::load_params(ivectorizer_t& s)
+        {
+                return s >> m_kdata >> m_bdata >> m_wdata;
+        }
 
-//        const tensor3d_t& conv_layer_t::forward(const tensor3d_t& input) const
-//        {
-//                assert(n_idims() == input.n_dim1());
-//                assert(n_irows() <= input.n_rows());
-//                assert(n_icols() <= input.n_cols());
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-//                // convolution output: odata = bias + weight * (idata @ kdata)
-//                m_idata = input;
+        const tensor_t& conv_layer_t::forward(const tensor_t& input)
+        {
+                assert(idims() == input.dims());
+                assert(irows() == input.rows());
+                assert(icols() == input.cols());
 
-//                for (size_t o = 0; o < n_odims(); o ++)
-//                {
-//                        const matrix_t& kdata = m_kdata(o);
-//                        matrix_t& odata = m_odata(o);
+                m_idata.copy_from(input);
 
-//                        odata.setConstant(bias(o));
+                // convolution output: odata = bias + weight * (idata @ kdata)
+                auto wdata = m_wdata.plane_matrix(0);
+                auto bdata = m_bdata.vector();
 
-//                        for (size_t i = 0; i < n_idims(); i ++)
-//                        {
-//                                const matrix_t& idata = m_idata(i);
-//                                const scalar_t w = weight(o, i);
-//                                matrix_t& xdata = m_xdata(o, i);
+                for (size_t o = 0; o < odims(); o ++)
+                {
+                        auto odata = m_odata.plane_matrix(o);
+                        auto kdata = m_kdata.plane_matrix(o);
 
-//                                xdata.setZero();
-//                                math::conv_dot(idata, kdata, xdata);
-//                                odata.noalias() += w * xdata;
-//                        }
-//                }
+                        odata.setConstant(bdata(o));
 
-//                return m_odata;
-//        }
+                        for (size_t i = 0; i < idims(); i ++)
+                        {
+                                auto idata = m_idata.plane_matrix(i);
+                                const scalar_t w = wdata(o, i);
 
-//        /////////////////////////////////////////////////////////////////////////////////////////
+                                math::wconv_dot(idata, kdata, w, odata);
+                        }
+                }
 
-//        template
-//        <
-//                typename tmad
-//        >
-//        static void backward(
-//                const matrix_t& ogdata, const matrix_t& kdata, scalar_t weight,
-//                matrix_t& igdata, tmad madop) const
-//        {
-//                for (auto r = 0; r < ogdata.rows(); r ++)
-//                {
-//                        const scalar_t* pogdata = &ogdata(r, 0);
+                return m_odata;
+        }
 
-//                        for (auto kr = 0; kr < kdata.rows(); kr ++)
-//                        {
-//                                const scalar_t* pkdata = &kdata(kr, 0);
-//                                scalar_t* pigdata = &igdata(r + kr, 0);
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-//                                for (auto c = 0; c < ogdata.cols(); c ++)
-//                                {
-//                                        const scalar_t w = weight * pogdata[c];
+        template
+        <
+                typename tscalar,
+                typename tsize
+        >                        
+        static void _backward(
+                const tscalar* odata, tsize orows, tsize ocols, 
+                const tscalar* kdata, tsize krows, tsize kcols,
+                tscalar w, const tscalar* idata,
+                tscalar* gkdata, tscalar& gw, tscalar* gidata)
+        {
+//                const tsize irows = orows + krows - 1;
+                const tsize icols = ocols + kcols - 1;                
+                                
+                for (tsize r = 0; r < orows; r ++)
+                {
+                        for (tsize c = 0; c < ocols; c ++)
+                        {
+                                for (tsize kr = 0; kr < krows; kr ++)
+                                {
+                                        for (tsize kc = 0; kc < kcols; kc ++)
+                                        {
+                                                const tscalar iv = idata[(r + kr) * icols + (c + kc)];
+                                                const tscalar ov = odata[r * ocols + c];
+                                                const tscalar kv = kdata[kr * kcols + kc];
 
-//                                        madop(pkdata, w, pigdata + c, kdata.cols());
-//                                }
-//                        }
-//                }
-//        }
+                                                gidata[(r + kr) * icols + (c + kc)] += ov * kv * w;
+                                                gkdata[kr * kcols + kc] += ov * iv * w;
+                                                gw += ov * iv * kv;
+                                        }
+                                }
+                        }               
+                }
+        }
 
-//        /////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-//        const tensor3d_t& conv_layer_t::backward(const tensor3d_t& gradient) const
-//        {
-//                assert(n_odims() == gradient.n_dim1());
-//                assert(n_orows() == gradient.n_rows());
-//                assert(n_ocols() == gradient.n_cols());
+        const tensor_t& conv_layer_t::backward(const tensor_t& gradient)
+        {
+                assert(odims() == gradient.dims());
+                assert(orows() == gradient.rows());
+                assert(ocols() == gradient.cols());
 
-//                // convolution gradient
-//                for (size_t o = 0; o < n_odims(); o ++)
-//                {
-//                        const matrix_t& gdata = gradient(o);
-//                        matrix_t& gkdata = m_gkdata(o);
+                m_gkdata.zero();
+                m_gwdata.zero();
+                m_gbdata.zero();
+                m_gidata.zero();
 
-//                        gkdata.setZero();
-//                        gbias(o) = gdata.sum();
+                for (size_t o = 0; o < odims(); o ++)
+                {                        
+                        auto odata = gradient.plane_data(o);
+                        auto kdata = m_kdata.plane_data(o);
+                        auto wdata = m_wdata.plane_data(0);
 
-//                        for (size_t i = 0; i < n_idims(); i ++)
-//                        {
-//                                const matrix_t& idata = m_idata(i);
-//                                const matrix_t& xdata = m_xdata(o, i);
-//                                const scalar_t w = weight(o, i);
+                        auto gkdata = m_gkdata.plane_data(o);
+                        auto gwdata = m_gwdata.plane_data(0);
+                        auto gbdata = m_gbdata.plane_data(o);
 
-//                                gweight(o, i) = gdata.cwiseProduct(xdata).sum();
-//                                math::wconv_dot(idata, gdata, w, gkdata);
-//                        }
-//                }
+                        gbdata[0] = math::sum_mod4x(odata, gradient.plane_size());
 
-//                // input gradient
-//                m_idata.zero();
+                        for (size_t i = 0; i < idims(); i ++)
+                        {
+                                auto idata = m_idata.plane_data(i);
+                                auto gidata = m_gidata.plane_data(i);
 
-//                for (size_t o = 0; o < n_odims(); o ++)
-//                {
-//                        const matrix_t& gdata = gradient(o);
-//                        const matrix_t& kdata = m_kdata(o);
+                                _backward(odata, gradient.rows(), gradient.cols(),
+                                          kdata, m_kdata.rows(), m_kdata.cols(),
+                                          wdata[o * idims() + i], idata,
+                                          gkdata, gwdata[o * idims() + i], gidata);
+                        }
+                }
 
-//                        for (size_t i = 0; i < n_idims(); i ++)
-//                        {
-//                                matrix_t& idata = m_idata(i);
-//                                const scalar_t w = weight(o, i);
+                return m_gidata;
+        }
 
-//                                const auto kcols = m_kdata.n_cols();
-//                                if (kcols == 3) backward(gdata, kdata, w, idata, math::mad<3, scalar_t>);
-//                                else if (kcols == 4) backward(gdata, kdata, w, idata, math::mad<4, scalar_t>);
-//                                else if (kcols == 5) backward(gdata, kdata, w, idata, math::mad<5, scalar_t>);
-//                                else if (kcols == 6) backward(gdata, kdata, w, idata, math::mad<6, scalar_t>);
-//                                else if (kcols == 7) backward(gdata, kdata, w, idata, math::mad<7, scalar_t>);
-//                                else if (kcols == 8) backward(gdata, kdata, w, idata, math::mad<8, scalar_t>);
-//                                else if (kcols == 9) backward(gdata, kdata, w, idata, math::mad<9, scalar_t>);
-//                                else if (kcols == 10) backward(gdata, kdata, w, idata, math::mad<10, scalar_t>);
-//                                else if (kcols == 11) backward(gdata, kdata, w, idata, math::mad<11, scalar_t>);
-//                                else if (kcols == 12) backward(gdata, kdata, w, idata, math::mad<12, scalar_t>);
-//                                else if (kcols == 13) backward(gdata, kdata, w, idata, math::mad<13, scalar_t>);
-//                                else if (kcols == 14) backward(gdata, kdata, w, idata, math::mad<14, scalar_t>);
-//                                else if (kcols == 15) backward(gdata, kdata, w, idata, math::mad<15, scalar_t>);
-//                                else if ((kcols & 3) == 0) backward(gdata, kdata, w, idata, math::mad_mod4<scalar_t>);
-//                                else backward(gdata, kdata, w, idata, math::mad_mod4x<scalar_t>);
-//                        }
-//                }
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-//                return m_idata;
-//        }
+        bool conv_layer_t::save(boost::archive::binary_oarchive& oa) const
+        {
+                oa << m_params << m_kdata << m_wdata << m_bdata;
+                return true;
+        }
 
-//        /////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-//        bool conv_layer_t::save(boost::archive::binary_oarchive& oa) const
-//        {
-//                oa << m_params << m_kdata << m_wdata << m_bdata;
-//                return true;
-//        }
+        bool conv_layer_t::load(boost::archive::binary_iarchive& ia)
+        {
+                ia >> m_params >> m_kdata >> m_wdata >> m_bdata;
+                return true;
+        }
 
-//        /////////////////////////////////////////////////////////////////////////////////////////
-
-//        bool conv_layer_t::load(boost::archive::binary_iarchive& ia)
-//        {
-//                ia >> m_params >> m_kdata >> m_wdata >> m_bdata;
-//                return true;
-//        }
-
-//        /////////////////////////////////////////////////////////////////////////////////////////
-
-//        bool conv_layer_t::save_as_image(const string_t& basepath) const
-//        {
-//                const size_t gcols = 8;
-//                const size_t grows = (n_kdims() + gcols / 2) / gcols;
-
-//                const size_t border = std::max(size_t(4), (n_krows() + n_kcols()) / 4);
-//                const size_t radius = 1;
-//                const size_t rows = n_krows() * grows + border * (grows + 1);
-//                const size_t cols = n_kcols() * gcols + border * (gcols + 1);
-
-//                const rgba_t back_color = color::make_rgba(225, 225, 0);
-//                const rgba_t border_color = color::make_rgba(0, 225, 0);
-
-//                rgba_matrix_t rgba(rows, cols);
-//                rgba.setConstant(back_color);
-
-//                // compose an image from all convolution kernels ...
-//                for (size_t k = 0, r = 0; r < grows; r ++)
-//                {
-//                        for (size_t c = 0; c < gcols; c ++, k ++)
-//                        {
-//                                if (k < n_kdims())
-//                                {
-//                                        const matrix_t& kdata = m_kdata(k);
-//                                        const rgba_matrix_t kimage = color::make_rgba_sign(kdata);
-
-//                                        const size_t iy = n_krows() * r + border * (r + 1);
-//                                        const size_t ix = n_kcols() * c + border * (c + 1);
-//                                        const size_t ih = n_krows();
-//                                        const size_t iw = n_kcols();
-
-//                                        // kernel border
-//                                        rgba.block(iy - radius,
-//                                                   ix - radius,
-//                                                   ih + radius * 2,
-//                                                   iw + radius * 2).setConstant(border_color);
-
-//                                        // kernel patch
-//                                        rgba.block(iy, ix, ih, iw) = kimage;
-//                                }
-//                        }
-//                }
-
-//                // ... and save it
-//                const string_t path = basepath + "_conv.png";
-//                log_info() << "saving images to <" << path << "> ...";
-//                return ncv::save_rgba(path, rgba);
-//        }
-
-//        /////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 }
 
 

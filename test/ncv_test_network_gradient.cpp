@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 {
         ncv::init();
 
-        const strings_t conv_layer_ids { "" }; //, "conv" };
+        const strings_t conv_layer_ids { "", "conv" };
         const strings_t pool_layer_ids { "" }; //, "smax-abs-pool", "smax-pool" };
         const strings_t full_layer_ids { "", "linear" };
         const strings_t actv_layer_ids { "", "unit", "tanh", "snorm" };        
@@ -79,8 +79,8 @@ int main(int argc, char *argv[])
 
         const color_mode cmd_color = color_mode::luma;
         const size_t cmd_inputs = 1;
-        const size_t cmd_irows = 16;
-        const size_t cmd_icols = 16;
+        const size_t cmd_irows = 12;
+        const size_t cmd_icols = 12;
         const size_t cmd_outputs = 10;
         const size_t cmd_max_layers = 2;
 
@@ -110,11 +110,11 @@ int main(int argc, char *argv[])
                                                         random_t<size_t> rgen(2, 6);
 
                                                         string_t params;
-                                                        params += "count=" + text::to_string(rgen());
+                                                        params += "dims=" + text::to_string(rgen());
                                                         params += (rgen() % 2 == 0) ? ",rows=3,cols=3" : ",rows=5,cols=5";
 
                                                         desc += conv_layer_id + ":" + params + ";";
-                                                        desc += pool_layer_id + ";";
+//                                                        desc += pool_layer_id + ";";
                                                         desc += actv_layer_id + ";";
                                                 }
 

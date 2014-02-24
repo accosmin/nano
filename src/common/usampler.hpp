@@ -6,12 +6,9 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // uniform sampling:
-        //      the selection probability of a sample is constant.
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        // create a random subset of given size
+        ///
+        /// create a random subset of given size by uniformly sampling the set
+        ///
         template
         <
                 typename tsample,
@@ -34,7 +31,9 @@ namespace ncv
                 return usamples;
         }
 
-        // run a functor for a random subset of given size
+        ///
+        /// run a functor for a random subset of given size by uniformly sampling the set
+        ///
         template
         <
                 typename tsample,
@@ -54,7 +53,9 @@ namespace ncv
                 }
         }
 
-        // split the given samples in two subsets of (percentage1)% and (100 - percentage1)% proportion
+        ///
+        /// split the given samples in two subsets of (percentage1)% and (100 - percentage1)% proportion
+        ///
         template
         <
                 typename tsample,

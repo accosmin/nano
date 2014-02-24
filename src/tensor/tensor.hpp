@@ -91,16 +91,18 @@ namespace ncv
                         /// \brief access the tensor as a vector (size() x 1)
                         ///
                         const tvector& vector() const { return m_data; }
-                        Eigen::Map<tvector> vector()
-                        {
-                                return Eigen::Map<tvector>(data(), size());
-                        }
 
                         ///
                         /// \brief access the whole tensor data
                         ///
                         const tscalar* data() const { return m_data.data(); }
                         tscalar* data() { return m_data.data(); }
+
+                        ///
+                        /// \brief access an element of the tensor in the range [0, size())
+                        ///
+                        tscalar data(size_t i) const { return m_data(i); }
+                        tscalar& data(size_t i) { return m_data(i); }
 
                         ///
                         /// \brief access the 2D planes
@@ -113,18 +115,14 @@ namespace ncv
                         {
                                 return data() + i * plane_size();
                         }
+
                         Eigen::Map<tmatrix> plane_matrix(tsize i = 0)
                         {
                                 return Eigen::Map<tmatrix>(plane_data(i), rows(), cols());
                         }
-
-                        const tscalar* plane_data(tsize i1, tsize i2) const
+                        Eigen::Map<const tmatrix> plane_matrix(tsize i = 0) const
                         {
-                                return data() + plane_index(i1, i2) * plane_size();
-                        }
-                        tscalar* plane_data(tsize i1, tsize i2)
-                        {
-                                return data() + plane_index(i1, i2) * plane_size();
+                                return Eigen::Map<const tmatrix>(plane_data(i), rows(), cols());
                         }
 
                         ///

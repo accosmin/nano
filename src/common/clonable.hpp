@@ -6,13 +6,12 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // the clonable interface to be used with a manager:
-        //      ::clone(const std::string&)     - create a new object (with the given parameters)
-        //      ::description()                 - short description (parameters included)
-        // hint: use register_object<base, derived> to register objects to the manager.
-        /////////////////////////////////////////////////////////////////////////////////////////
-        
+        ///
+        /// the clonable interface to be used with a manager:
+        ///      ::clone(const std::string&)     - create a new object (with the given parameters)
+        ///      ::description()                 - short description (parameters included)
+        /// hint: use register_object<base, derived> to register objects to the manager.
+        ///
         template
         <
                 typename tobject

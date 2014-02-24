@@ -60,7 +60,7 @@ namespace ncv
                 tensor_t                m_bdata;        ///< bias:              osize x 1 x 1
 
                 tensor_t                m_gwdata;       ///< cumulated weight gradients
-                tensor_t                m_gbdata;       ///< cumulate bias gradients
+                tensor_t                m_gbdata;       ///< cumulated bias gradients
         };
 }
 

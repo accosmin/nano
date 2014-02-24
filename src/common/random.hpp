@@ -6,10 +6,9 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // uniform random number generator in the [min, max] range.
-        /////////////////////////////////////////////////////////////////////////////////////////
-
+        ///
+        /// uniform random number generator in the [min, max] range.
+        ///
         template
         <
                 typename trange

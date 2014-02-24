@@ -7,10 +7,9 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // computes statistics: average, standard deviation etc.
-        /////////////////////////////////////////////////////////////////////////////////////////
-
+        ///
+        /// computes statistics: average, standard deviation etc.
+        ///
         template
         <
                 typename tscalar = double,

@@ -6,22 +6,20 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // 2D convolution.
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         namespace math
         {
 		namespace impl
 		{
-                        // odata += idata @ kdata (using a column-based dot operator)
+                        ///
+                        /// 2D convolution: odata += idata @ kdata (using a column-based dot operator)
+                        ///
 	                template
         	        <
                                 typename tdot,
 	                        typename tmatrix,
 	                        typename tscalar = typename tmatrix::Scalar
         	        >
-                        void conv_dot(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata, tdot dotop)
+                        void conv_dot(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata, tdot dot)
 	                {
                                 const auto icols = idata.cols();
                                 const auto krows = kdata.rows(), kcols = kdata.cols();
@@ -38,20 +36,22 @@ namespace ncv
 
                                                 for (auto c = 0; c < ocols; c ++)
                                                 {
-                                                        po[c] += dotop(pi + c, pk, kcols);
+                                                        po[c] += dot(pi + c, pk, kcols);
                                                 }
                                         }
                                 }
                 	}
 
-                        // odata += weight * idata @ kdata (using a column-based dot operator)
+                        ///
+                        /// weighted 2D convolution:  += weight * idata @ kdata (using a column-based dot operator)
+                        ///
 	                template
         	        <
                                 typename tdot,
 	                        typename tmatrix,
         	                typename tscalar = typename tmatrix::Scalar
                 	>
-                        void wconv_dot(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata, tdot dotop)
+                        void wconv_dot(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata, tdot dot)
         	        {
                                 const auto icols = idata.cols();
                                 const auto krows = kdata.rows(), kcols = kdata.cols();
@@ -68,68 +68,44 @@ namespace ncv
 
                                                 for (auto c = 0; c < ocols; c ++)
                                                 {
-                                                        po[c] += weight * dotop(pi + c, pk, kcols);
+                                                        po[c] += weight * dot(pi + c, pk, kcols);
                                                 }
                                         }
                                 }
                 	}
 		}
 
-                // odata += idata @ kdata
+                ///
+                /// 2D convolution: odata += idata @ kdata
+                ///
                 template
                 <
                         typename tmatrix,
-                        typename tscalar = typename tmatrix::Scalar
+                        typename tscalar = typename tmatrix::Scalar,
+                        typename tindex = typename tmatrix::Index
                 >
                 void conv_dot(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
-                        const auto kcols = kdata.cols();
-
-                        if (kcols == 3) { impl::conv_dot(idata, kdata, odata, dot<3, tscalar>); }
-                        else if (kcols == 4) { impl::conv_dot(idata, kdata, odata, dot<4, tscalar>); }
-                        else if (kcols == 5) { impl::conv_dot(idata, kdata, odata, dot<5, tscalar>); }
-                        else if (kcols == 6) { impl::conv_dot(idata, kdata, odata, dot<6, tscalar>); }
-                        else if (kcols == 7) { impl::conv_dot(idata, kdata, odata, dot<7, tscalar>); }
-                        else if (kcols == 8) { impl::conv_dot(idata, kdata, odata, dot<8, tscalar>); }
-                        else if (kcols == 9) { impl::conv_dot(idata, kdata, odata, dot<9, tscalar>); }
-                        else if (kcols == 10) { impl::conv_dot(idata, kdata, odata, dot<10, tscalar>); }
-                        else if (kcols == 11) { impl::conv_dot(idata, kdata, odata, dot<11, tscalar>); }
-                        else if (kcols == 12) { impl::conv_dot(idata, kdata, odata, dot<12, tscalar>); }
-                        else if (kcols == 13) { impl::conv_dot(idata, kdata, odata, dot<13, tscalar>); }
-                        else if (kcols == 14) { impl::conv_dot(idata, kdata, odata, dot<14, tscalar>); }
-                        else if (kcols == 15) { impl::conv_dot(idata, kdata, odata, dot<15, tscalar>); }
-                        else if ((kcols & 0x3) == 0) { impl::conv_dot(idata, kdata, odata, dot_mod4<tscalar>); }
-                        else { impl::conv_dot(idata, kdata, odata, dot_mod4x<tscalar>); }
+                        impl::conv_dot(idata, kdata, odata, dot_mod4x<tscalar, tindex>);
                 }
 
-                // odata += weight * idata @ kdata
+                ///
+                /// 2D convolution: odata += weight * idata @ kdata
+                ///
                 template
                 <
                         typename tmatrix,
-                        typename tscalar = typename tmatrix::Scalar
+                        typename tscalar = typename tmatrix::Scalar,
+                        typename tindex = typename tmatrix::Index
                 >
                 void wconv_dot(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata)
                 {
-                        const auto kcols = kdata.cols();
-
-                        if (kcols == 3) { impl::wconv_dot(idata, kdata, weight, odata, dot<3, tscalar>); }
-                        else if (kcols == 4) { impl::wconv_dot(idata, kdata, weight, odata, dot<4, tscalar>); }
-                        else if (kcols == 5) { impl::wconv_dot(idata, kdata, weight, odata, dot<5, tscalar>); }
-                        else if (kcols == 6) { impl::wconv_dot(idata, kdata, weight, odata, dot<6, tscalar>); }
-                        else if (kcols == 7) { impl::wconv_dot(idata, kdata, weight, odata, dot<7, tscalar>); }
-                        else if (kcols == 8) { impl::wconv_dot(idata, kdata, weight, odata, dot<8, tscalar>); }
-                        else if (kcols == 9) { impl::wconv_dot(idata, kdata, weight, odata, dot<9, tscalar>); }
-                        else if (kcols == 10) { impl::wconv_dot(idata, kdata, weight, odata, dot<10, tscalar>); }
-                        else if (kcols == 11) { impl::wconv_dot(idata, kdata, weight, odata, dot<11, tscalar>); }
-                        else if (kcols == 12) { impl::wconv_dot(idata, kdata, weight, odata, dot<12, tscalar>); }
-                        else if (kcols == 13) { impl::wconv_dot(idata, kdata, weight, odata, dot<13, tscalar>); }
-                        else if (kcols == 14) { impl::wconv_dot(idata, kdata, weight, odata, dot<14, tscalar>); }
-                        else if (kcols == 15) { impl::wconv_dot(idata, kdata, weight, odata, dot<15, tscalar>); }
-                        else if ((kcols & 0x3) == 0) { impl::wconv_dot(idata, kdata, weight, odata, dot_mod4<tscalar>); }
-                        else { impl::wconv_dot(idata, kdata, weight, odata, dot_mod4x<tscalar>); }
+                        impl::wconv_dot(idata, kdata, weight, odata, dot_mod4x<tscalar, tindex>);
                 }
                 
-                // odata += idata @ kdata (using Eigen 2D blocks)
+                ///
+                /// 2D convolution: odata += idata @ kdata (using Eigen 2D blocks)
+                ///
                 template
                 <
                         typename tmatrix,
@@ -147,7 +123,9 @@ namespace ncv
                         }
                 }
 
-                // odata += weight * idata @ kdata (using Eigen 2D blocks)
+                ///
+                /// 2D convolution: odata += weight * idata @ kdata (using Eigen 2D blocks)
+                ///
                 template
                 <
                         typename tmatrix,

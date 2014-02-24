@@ -9,9 +9,6 @@
 
 namespace ncv
 {
-        ///
-        /// \brief timer
-        ///
         class timer_t
         {
         public:

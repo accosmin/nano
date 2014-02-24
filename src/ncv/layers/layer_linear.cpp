@@ -19,7 +19,7 @@ namespace ncv
                 const size_t idims = tensor.size();
                 const size_t odims = math::clamp(text::from_params<size_t>(m_params, "dims", 10), 1, 1024);
 
-                m_idata.resize(idims, 1, 1);
+                m_idata.resize(tensor.dims(), tensor.rows(), tensor.cols());
                 m_odata.resize(odims, 1, 1);
 
                 m_wdata.resize(1, odims, idims);
@@ -97,7 +97,7 @@ namespace ncv
                 assert(isize() == m_idata.size());
 
                 m_idata.copy_from(input);
-                m_odata.vector() = m_bdata.vector() + m_wdata.plane_matrix(0) * m_idata.vector();
+                m_odata.copy_from(vector_t(m_bdata.vector() + m_wdata.plane_matrix(0) * m_idata.vector()));
 
                 return m_odata;
         }
@@ -109,11 +109,11 @@ namespace ncv
                 assert(osize() == gradient.size());
 
                 // parameters gradient
-                m_gwdata.plane_matrix(0) = gradient.vector() * m_idata.vector().transpose();
+                m_gwdata.copy_from(matrix_t(gradient.vector() * m_idata.vector().transpose()));
                 m_gbdata.copy_from(gradient);
 
                 // input gradient
-                m_idata.vector() = m_wdata.plane_matrix(0).transpose() * gradient.vector();
+                m_idata.copy_from(vector_t(m_wdata.plane_matrix(0).transpose() * gradient.vector()));
 
                 return m_idata;
         }

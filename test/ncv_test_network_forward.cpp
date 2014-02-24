@@ -25,7 +25,11 @@ int main(int argc, char *argv[])
 
                 "linear:dims=100;snorm;linear:dims=100;snorm",
                 "linear:dims=100;snorm;linear:dims=100;snorm;linear:dims=100",
-                "linear:dims=100;snorm;linear:dims=100;snorm;linear:dims=100;snorm;linear:dims=100"
+                "linear:dims=100;snorm;linear:dims=100;snorm;linear:dims=100;snorm;linear:dims=100",
+
+                "conv:dims=8,rows=7,cols=7;snorm;",
+                "conv:dims=8,rows=7,cols=7;snorm;conv:dims=8,rows=7,cols=7;snorm",
+                "conv:dims=8,rows=7,cols=7;snorm;conv:dims=8,rows=7,cols=7;snorm;conv:dims=8,rows=7,cols=7;snorm"
         };
 
         const logistic_loss_t loss;
