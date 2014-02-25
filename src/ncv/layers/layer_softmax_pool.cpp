@@ -62,10 +62,13 @@ namespace ncv
                 {
                         for (tsize c = 0, cc = 0; c < icols; c ++, cc = c / 2)
                         {
-                                const tscalar w = wdata[r * icols + c];
+                                const tsize iindex = r * icols + c;
+                                const tsize oindex = rr * ocols + cc;
 
-                                sdata[rr * ocols + cc] += w * idata[r * icols + c];
-                                tdata[rr * ocols + cc] += w;
+                                const tscalar w = wdata[iindex];
+
+                                sdata[oindex] += w * idata[iindex];
+                                tdata[oindex] += w;
                         }
                 }
 
@@ -114,13 +117,16 @@ namespace ncv
                 {
                         for (tsize c = 0, cc = 0; c < icols; c ++, cc = c / 2)
                         {
-                                const tscalar w = wdata[r * icols + c];
-                                const tscalar i = idata[r * icols + c];
-                                const tscalar s = sdata[rr * ocols + cc];
-                                const tscalar t = tdata[rr * ocols + cc];
+                                const tsize iindex = r * icols + c;
+                                const tsize oindex = rr * ocols + cc;
 
-                                idata[r * icols + c] =
-                                gdata[rr * ocols + cc] * (t * (w + w * i) - s * w) / (t * t);
+                                const tscalar w = wdata[iindex];
+                                const tscalar i = idata[iindex];
+                                const tscalar s = sdata[oindex];
+                                const tscalar t = tdata[oindex];
+
+                                idata[iindex] =
+                                gdata[oindex] * (t * (w + w * i) - s * w) / (t * t);
                         }
                 }
         }

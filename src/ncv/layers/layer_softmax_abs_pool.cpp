@@ -62,10 +62,13 @@ namespace ncv
                 {
                         for (tsize c = 0, cc = 0; c < icols; c ++, cc = c / 2)
                         {
-                                const tscalar w = wdata[r * icols + c], iw = 1 / w;
+                                const tsize iindex = r * icols + c;
+                                const tsize oindex = rr * ocols + cc;
 
-                                sdata[rr * ocols + cc] += (w + iw) * idata[r * icols + c];
-                                tdata[rr * ocols + cc] += (w + iw);
+                                const tscalar w = wdata[iindex], iw = 1 / w;
+
+                                sdata[oindex] += (w + iw) * idata[r * icols + c];
+                                tdata[oindex] += (w + iw);
                         }
                 }
 
@@ -114,13 +117,16 @@ namespace ncv
                 {
                         for (tsize c = 0, cc = 0; c < icols; c ++, cc = c / 2)
                         {
-                                const tscalar w = wdata[r * icols + c], iw = 1 / w;
-                                const tscalar i = idata[r * icols + c];
-                                const tscalar s = sdata[rr * ocols + cc];
-                                const tscalar t = tdata[rr * ocols + cc];
+                                const tsize iindex = r * icols + c;
+                                const tsize oindex = rr * ocols + cc;
 
-                                idata[r * icols + c] =
-                                gdata[rr * ocols + cc] * (t * ((w + iw) + (w - iw) * i) - s * (w - iw)) / (t * t);
+                                const tscalar w = wdata[iindex], iw = 1 / w;
+                                const tscalar i = idata[iindex];
+                                const tscalar s = sdata[oindex];
+                                const tscalar t = tdata[oindex];
+
+                                idata[iindex] =
+                                gdata[oindex] * (t * ((w + iw) + (w - iw) * i) - s * (w - iw)) / (t * t);
                         }
                 }
         }
