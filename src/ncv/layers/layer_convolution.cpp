@@ -97,6 +97,41 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        template
+        <
+                typename tscalar,
+                typename tsize
+        >
+        static void _forward(
+                tscalar* odata, tsize orows, tsize ocols,
+                const tscalar* kdata, tsize krows, tsize kcols,
+                tscalar w, const tscalar* idata)
+        {
+                const tsize icols = ocols + kcols - 1;
+
+                for (tsize r = 0; r < orows; r ++)
+                {
+                        for (tsize c = 0; c < ocols; c ++)
+                        {
+                                tscalar sum = 0;
+                                for (tsize kr = 0; kr < krows; kr ++)
+                                {
+                                        for (tsize kc = 0; kc < kcols; kc ++)
+                                        {
+                                                const tscalar iv = idata[(r + kr) * icols + (c + kc)];
+                                                const tscalar kv = kdata[kr * kcols + kc];
+
+                                                sum += iv * kv;
+                                        }
+                                }
+
+                                odata[r * ocols + c] += w * sum;
+                        }
+                }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
         const tensor_t& conv_layer_t::forward(const tensor_t& input)
         {
                 assert(idims() == input.dims());
@@ -106,22 +141,22 @@ namespace ncv
                 m_idata.copy_from(input);
 
                 // convolution output: odata = bias + weight * (idata @ kdata)
-                auto wdata = m_wdata.plane_matrix(0);
-                auto bdata = m_bdata.vector();
-
                 for (size_t o = 0; o < odims(); o ++)
                 {
-                        auto odata = m_odata.plane_matrix(o);
-                        auto kdata = m_kdata.plane_matrix(o);
+                        auto odata = m_odata.plane_data(o);
+                        auto kdata = m_kdata.plane_data(o);
+                        auto wdata = m_wdata.plane_data(0);
+                        auto bdata = m_bdata.plane_data(o);
 
-                        odata.setConstant(bdata(o));
+                        m_odata.plane_matrix(o).setConstant(bdata[0]);
 
                         for (size_t i = 0; i < idims(); i ++)
                         {
-                                auto idata = m_idata.plane_matrix(i);
-                                const scalar_t w = wdata(o, i);
+                                auto idata = m_idata.plane_data(i);
 
-                                math::wconv_dot(idata, kdata, w, odata);
+                                _forward(odata, orows(), ocols(),
+                                         kdata, krows(), kcols(),
+                                         wdata[o * idims() + i], idata);
                         }
                 }
 
@@ -141,7 +176,6 @@ namespace ncv
                 tscalar w, const tscalar* idata,
                 tscalar* gkdata, tscalar& gw, tscalar* gidata)
         {
-//                const tsize irows = orows + krows - 1;
                 const tsize icols = ocols + kcols - 1;                
                                 
                 for (tsize r = 0; r < orows; r ++)
@@ -195,8 +229,8 @@ namespace ncv
                                 auto idata = m_idata.plane_data(i);
                                 auto gidata = m_gidata.plane_data(i);
 
-                                _backward(odata, gradient.rows(), gradient.cols(),
-                                          kdata, m_kdata.rows(), m_kdata.cols(),
+                                _backward(odata, orows(), ocols(),
+                                          kdata, krows(), kcols(),
                                           wdata[o * idims() + i], idata,
                                           gkdata, gwdata[o * idims() + i], gidata);
                         }

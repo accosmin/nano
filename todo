@@ -7,6 +7,8 @@
 
 * implement other CGD variants: it seem they may converge faster than the classic PR (check the paper)
 
+* python scripts to run experiments (instead of bash)
+
 * function to generate a random input that will closely output a given target (class)
 
 - filter interface that keep the size of the input image:

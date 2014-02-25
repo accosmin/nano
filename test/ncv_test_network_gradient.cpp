@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
         ncv::init();
 
         const strings_t conv_layer_ids { "", "conv" };
-        const strings_t pool_layer_ids { "" }; //, "smax-abs-pool", "smax-pool" };
+        const strings_t pool_layer_ids { "", "smax-pool", "smax-abs-pool" };
         const strings_t full_layer_ids { "", "linear" };
         const strings_t actv_layer_ids { "", "unit", "tanh", "snorm" };        
         const strings_t loss_ids = loss_manager_t::instance().ids();
@@ -111,10 +111,10 @@ int main(int argc, char *argv[])
 
                                                         string_t params;
                                                         params += "dims=" + text::to_string(rgen());
-                                                        params += (rgen() % 2 == 0) ? ",rows=3,cols=3" : ",rows=5,cols=5";
+                                                        params += (rgen() % 2 == 0) ? ",rows=3,cols=3" : ",rows=4,cols=4";
 
                                                         desc += conv_layer_id + ":" + params + ";";
-//                                                        desc += pool_layer_id + ";";
+                                                        desc += pool_layer_id + ";";
                                                         desc += actv_layer_id + ";";
                                                 }
 
