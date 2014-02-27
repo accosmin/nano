@@ -69,11 +69,9 @@ namespace ncv
 
                 tensor_t                m_kdata;        ///< convolution kernels:       odims x krows x kcols
                 tensor_t                m_wdata;        ///< weights:                   1 x odims x idims
-                tensor_t                m_bdata;        ///< bias:                      odims x 1 x 1
 
                 tensor_t                m_gkdata;       ///< cumulated kernel gradients
                 tensor_t                m_gwdata;       ///< cumulated weight gradients
-                tensor_t                m_gbdata;       ///< cumulated bias gradients
                 tensor_t                m_gidata;       ///< cumulated input gradients
         };
 }

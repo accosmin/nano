@@ -46,14 +46,12 @@ namespace ncv
 
                 m_kdata.resize(odims, crows, ccols);
                 m_wdata.resize(1, odims, idims);
-                m_bdata.resize(odims, 1, 1);
 
                 m_gkdata.resize(odims, crows, ccols);
                 m_gwdata.resize(1, odims, idims);
-                m_gbdata.resize(odims, 1, 1);
                 m_gidata.resize(idims, irows, icols);
 
-                return m_kdata.size() + m_wdata.size() + m_bdata.size();
+                return m_kdata.size() + m_wdata.size();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -62,7 +60,6 @@ namespace ncv
         {
                 m_kdata.zero();
                 m_wdata.zero();
-                m_bdata.zero();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -71,28 +68,27 @@ namespace ncv
         {
                 m_kdata.random(random_t<scalar_t>(min, max));
                 m_wdata.random(random_t<scalar_t>(min, max));
-                m_bdata.random(random_t<scalar_t>(min, max));
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
         ovectorizer_t& conv_layer_t::save_params(ovectorizer_t& s) const
         {
-                return s << m_kdata << m_bdata << m_wdata;
+                return s << m_kdata << m_wdata;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
         ovectorizer_t& conv_layer_t::save_grad(ovectorizer_t& s) const
         {
-                return s << m_gkdata << m_gbdata << m_gwdata;
+                return s << m_gkdata << m_gwdata;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
         ivectorizer_t& conv_layer_t::load_params(ivectorizer_t& s)
         {
-                return s >> m_kdata >> m_bdata >> m_wdata;
+                return s >> m_kdata >> m_wdata;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -139,6 +135,7 @@ namespace ncv
                 assert(icols() == input.cols());
 
                 m_idata.copy_from(input);
+                m_odata.zero();
 
                 // convolution output: odata = bias + weight * (idata @ kdata)
                 for (size_t o = 0; o < odims(); o ++)
@@ -146,9 +143,6 @@ namespace ncv
                         auto odata = m_odata.plane_data(o);
                         auto kdata = m_kdata.plane_data(o);
                         auto wdata = m_wdata.plane_data(0);
-                        auto bdata = m_bdata.plane_data(o);
-
-                        m_odata.plane_matrix(o).setConstant(bdata[0]);
 
                         for (size_t i = 0; i < idims(); i ++)
                         {
@@ -209,7 +203,6 @@ namespace ncv
 
                 m_gkdata.zero();
                 m_gwdata.zero();
-                m_gbdata.zero();
                 m_gidata.zero();
 
                 for (size_t o = 0; o < odims(); o ++)
@@ -220,9 +213,6 @@ namespace ncv
 
                         auto gkdata = m_gkdata.plane_data(o);
                         auto gwdata = m_gwdata.plane_data(0);
-                        auto gbdata = m_gbdata.plane_data(o);
-
-                        gbdata[0] = math::sum_mod4x(odata, gradient.plane_size());
 
                         for (size_t i = 0; i < idims(); i ++)
                         {
@@ -243,7 +233,7 @@ namespace ncv
 
         bool conv_layer_t::save(boost::archive::binary_oarchive& oa) const
         {
-                oa << m_params << m_kdata << m_wdata << m_bdata;
+                oa << m_params << m_kdata << m_wdata;
                 return true;
         }
 
@@ -251,7 +241,7 @@ namespace ncv
 
         bool conv_layer_t::load(boost::archive::binary_iarchive& ia)
         {
-                ia >> m_params >> m_kdata >> m_wdata >> m_bdata;
+                ia >> m_params >> m_kdata >> m_wdata;
                 return true;
         }
 
