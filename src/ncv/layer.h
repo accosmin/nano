@@ -3,8 +3,6 @@
 
 #include "common/manager.hpp"
 #include "types.h"
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
 
 namespace ncv
 {
@@ -68,16 +66,6 @@ namespace ncv
                 /// \brief compute the gradient tensor
                 ///
                 virtual const tensor_t& backward(const tensor_t& gradient) = 0;
-
-                ///
-                /// \brief save to binary file archive
-                ///
-                virtual bool save(boost::archive::binary_oarchive& oa) const = 0;
-
-                ///
-                /// \brief load from binary file archive
-                ///
-                virtual bool load(boost::archive::binary_iarchive& ia) = 0;
 
                 ///
                 /// \brief returns the input tensor

@@ -230,22 +230,6 @@ namespace ncv
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
-
-        bool conv_layer_t::save(boost::archive::binary_oarchive& oa) const
-        {
-                oa << m_params << m_kdata << m_wdata;
-                return true;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        bool conv_layer_t::load(boost::archive::binary_iarchive& ia)
-        {
-                ia >> m_params >> m_kdata >> m_wdata;
-                return true;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }
 
 

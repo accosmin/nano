@@ -70,28 +70,6 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        bool linear_layer_t::save(boost::archive::binary_oarchive& oa) const
-        {
-                oa << m_params;
-                oa << m_wdata;
-                oa << m_bdata;
-
-                return true;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        bool linear_layer_t::load(boost::archive::binary_iarchive& ia)
-        {
-                ia >> m_params;
-                ia >> m_wdata;
-                ia >> m_bdata;
-
-                return true;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         const tensor_t& linear_layer_t::forward(const tensor_t& input)
         {
                 assert(isize() == m_idata.size());

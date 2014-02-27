@@ -44,10 +44,6 @@ namespace ncv
                 virtual const tensor_t& forward(const tensor_t& input) { return _forward(input); }
                 virtual const tensor_t& backward(const tensor_t& gradient) { return _backward(gradient); }
 
-                // save/load parameters to/from file
-                virtual bool save(boost::archive::binary_oarchive& oa) const { return true; }
-                virtual bool load(boost::archive::binary_iarchive& ia) { return true; }
-
                 // access functions
                 virtual const tensor_t& input() const { return m_data; }
                 virtual const tensor_t& output() const { return m_data; }

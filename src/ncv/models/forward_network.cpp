@@ -117,15 +117,10 @@ namespace ncv
 
         bool forward_network_t::save(boost::archive::binary_oarchive& oa) const
         {
-                oa << m_params;
+                const vector_t p = this->params();
 
-                for (const rlayer_t& layer : m_layers)
-                {
-                        if (!layer->save(oa))
-                        {
-                                return false;
-                        }
-                }
+                oa << m_params;
+                oa << p;
 
                 return true;
         }
@@ -134,16 +129,13 @@ namespace ncv
 
         bool forward_network_t::load(boost::archive::binary_iarchive& ia)
         {
-                ia >> m_params;
-                resize();
+                vector_t p;
 
-                for (const rlayer_t& layer : m_layers)
-                {
-                        if (!layer->load(ia))
-                        {
-                                return false;
-                        }
-                }
+                ia >> m_params;
+                ia >> p;
+
+                resize();
+                load_params(p);
 
                 return true;
         }
