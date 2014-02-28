@@ -135,7 +135,7 @@ namespace ncv
                         void copy_from(const ttensor& t)
                         {
                                 assert(size() == t.size());
-                                std::copy(t.data(), t.data() + t.size(), data());
+                                copy_from(t.data());
                         }
                         template
                         <
@@ -144,7 +144,24 @@ namespace ncv
                         void copy_to(ttensor& t) const
                         {
                                 assert(size() == t.size());
-                                std::copy(data(), data() + size(), t.data());
+                                copy_to(t.data());
+                        }
+
+                        template
+                        <
+                                typename tscalar
+                        >
+                        void copy_from(const tscalar* d)
+                        {
+                                std::copy(d, d + size(), data());
+                        }
+                        template
+                        <
+                                typename tscalar
+                        >
+                        void copy_to(tscalar* d) const
+                        {
+                                std::copy(data(), data() + size(), d);
                         }
 
                         ///
@@ -157,7 +174,8 @@ namespace ncv
                         void copy_plane_from(tsize i, const ttensor& t)
                         {
                                 assert(plane_size() == t.size());
-                                std::copy(t.data(), t.data() + t.size(), plane_data(i));
+                                assert(i < dims());
+                                copy_plane_from(i, t.data());
                         }
                         template
                         <
@@ -166,7 +184,25 @@ namespace ncv
                         void copy_plane_to(tsize i, ttensor& t) const
                         {
                                 assert(plane_size() == t.size());
-                                std::copy(plane_data(i), plane_data(i) + plane_size(), t.data());
+                                assert(i < dims());
+                                copy_plane_to(i, t.data());
+                        }
+
+                        template
+                        <
+                                typename tscalar
+                        >
+                        void copy_plane_from(tsize i, const tscalar* d)
+                        {
+                                std::copy(d, d + plane_size(), plane_data(i));
+                        }
+                        template
+                        <
+                                typename tscalar
+                        >
+                        void copy_plane_to(tsize i, tscalar* d) const
+                        {
+                                std::copy(plane_data(i), plane_data(i) + plane_size(), d);
                         }
 
                 private:
