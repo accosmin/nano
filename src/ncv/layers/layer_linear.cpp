@@ -72,7 +72,9 @@ namespace ncv
 
         const tensor_t& linear_layer_t::forward(const tensor_t& input)
         {
-                assert(isize() == m_idata.size());
+                assert(input.dims() == m_idata.dims());
+                assert(input.rows() == m_idata.rows());
+                assert(input.cols() == m_idata.cols());
 
                 m_idata.copy_from(input);
                 m_odata.copy_from(vector_t(m_bdata.vector() + m_wdata.plane_matrix(0) * m_idata.vector()));
@@ -84,7 +86,9 @@ namespace ncv
 
         const tensor_t& linear_layer_t::backward(const tensor_t& gradient)
         {
-                assert(osize() == gradient.size());
+                assert(gradient.dims() == m_odata.dims());
+                assert(gradient.rows() == m_odata.rows());
+                assert(gradient.cols() == m_odata.cols());
 
                 // parameters gradient
                 m_gwdata.copy_from(matrix_t(gradient.vector() * m_idata.vector().transpose()));

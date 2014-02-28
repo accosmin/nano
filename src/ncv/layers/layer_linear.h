@@ -41,11 +41,6 @@ namespace ncv
 
         private:
 
-                size_t isize() const { return m_idata.dims(); }
-                size_t osize() const { return m_bdata.dims(); }
-
-        private:
-
                 // attributes
                 string_t                m_params;
 
