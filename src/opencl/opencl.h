@@ -10,6 +10,7 @@
 #endif
 
 #include "common/singleton.hpp"
+#include <map>
 
 namespace ncv
 {
@@ -62,13 +63,37 @@ namespace ncv
                         ///
                         cl::Program program_from_text(const std::string& source) const;
 
+			cl::Program program(size_t id) const;
+			bool make_program_from_file(const std::string& filepath, size_t& program_id);
+			bool make_program_from_text(const std::string& source, size_t& program_id);
+
+			cl::Kernel kernel(size_t id) const;
+			bool make_kernel(size_t program_id, const std::string& name, size_t& kernel_id);
+			bool make_kernel_arg(size_t kernel_id, size_t arg_index, size_t bytesize, bool readonly, size_t& buffer_id);
+			
+			cl::Event read_buffer(size_t id, void* data) const;
+			cl::Event write_buffer(size_t id, void* data) const;
+
+			cl::Event run_kernel(size_t id);
+
+			void finish();
+			
                 private:
+
+			typedef std::map<size_t, cl::Program>	programs_t;
+			typedef std::map<size_t, cl::Kernel>	kernels_t;
+			typedef std::map<size_t, cl::Buffer>	buffers_t;
 
                         // attributes
                         std::vector<cl::Platform>       m_platforms;
                         std::vector<cl::Device>         m_devices;
                         cl::Context                     m_context;
                         cl::CommandQueue                m_queue;
+
+			size_t				m_maxid;	///< ID generator
+			programs_t			m_programs;	///< stored programs 
+			kernels_t			m_kernels;	///< stored kernels
+			buffers_t			m_buffers;	///< stored buffers
                 };
         }
 }
