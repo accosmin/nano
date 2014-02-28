@@ -99,30 +99,57 @@ namespace ncv
                 typename tsize
         >
         static void _forward(
-                tscalar* odata, tsize orows, tsize ocols,
+		const tscalar* idata, tsize idims,
                 const tscalar* kdata, tsize krows, tsize kcols,
-                tscalar w, const tscalar* idata)
+                const tscalar* wdata,
+                tscalar* odata, tsize odims, tsize orows, tsize ocols)
         {
+		const tsize irows = orows + krows - 1;
                 const tsize icols = ocols + kcols - 1;
+		const tsize isize = irows * icols;
 
-                for (tsize r = 0; r < orows; r ++)
-                {
-                        for (tsize c = 0; c < ocols; c ++)
-                        {
-                                tscalar sum = 0;
-                                for (tsize kr = 0; kr < krows; kr ++)
-                                {
-                                        for (tsize kc = 0; kc < kcols; kc ++)
-                                        {
-                                                const tscalar iv = idata[(r + kr) * icols + (c + kc)];
-                                                const tscalar kv = kdata[kr * kcols + kc];
+		const tsize osize = orows * ocols;
+		const tsize ksize = krows * kcols;
 
-                                                sum += iv * kv;
-                                        }
-                                }
+		for (tsize o = 0; o < odims; o ++)
+		{
+			tscalar* podata = odata + o * osize;
 
-                                odata[r * ocols + c] += w * sum;
-                        }
+                	for (tsize r = 0; r < orows; r ++)
+	                {	
+        	               	for (tsize c = 0; c < ocols; c ++)
+				{
+					podata[r * ocols + c] = 0;
+				}
+			}
+
+			for (tsize i = 0; i < idims; i ++)
+			{
+				const tscalar* pidata = idata + i * isize;
+				const tscalar w = wdata[o * idims + i];
+
+	                	for (tsize r = 0; r < orows; r ++)
+		                {	
+        		               	for (tsize c = 0; c < ocols; c ++)
+                		        {
+						const tscalar* pkdata = kdata + o * ksize;
+
+                        		        tscalar sum = 0;
+                                		for (tsize kr = 0; kr < krows; kr ++)
+		                                {
+        		                                for (tsize kc = 0; kc < kcols; kc ++)
+                		                        {
+                        		                        const tscalar iv = pidata[(r + kr) * icols + (c + kc)];
+                                		                const tscalar kv = pkdata[kr * kcols + kc];
+	
+                	                        	        sum += iv * kv;
+        	        	                       	}
+                                		}					
+
+	                                	podata[r * ocols + c] += w * sum;
+					}
+        	                }
+			}
                 }
         }
 
@@ -135,24 +162,11 @@ namespace ncv
                 assert(icols() == input.cols());
 
                 m_idata.copy_from(input);
-                m_odata.zero();
-
-                // convolution output: odata = bias + weight * (idata @ kdata)
-                for (size_t o = 0; o < odims(); o ++)
-                {
-                        auto odata = m_odata.plane_data(o);
-                        auto kdata = m_kdata.plane_data(o);
-                        auto wdata = m_wdata.plane_data(0);
-
-                        for (size_t i = 0; i < idims(); i ++)
-                        {
-                                auto idata = m_idata.plane_data(i);
-
-                                _forward(odata, orows(), ocols(),
-                                         kdata, krows(), kcols(),
-                                         wdata[o * idims() + i], idata);
-                        }
-                }
+		
+		_forward(m_idata.data(), idims(),
+			 m_kdata.data(), krows(), kcols(),
+			 m_wdata.data(), 
+			 m_odata.data(), odims(), orows(), ocols());
 
                 return m_odata;
         }
@@ -193,7 +207,8 @@ namespace ncv
                 }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
+        
+	/////////////////////////////////////////////////////////////////////////////////////////
 
         const tensor_t& conv_layer_t::backward(const tensor_t& gradient)
         {
@@ -222,7 +237,8 @@ namespace ncv
                                 _backward(odata, orows(), ocols(),
                                           kdata, krows(), kcols(),
                                           wdata[o * idims() + i], idata,
-                                          gkdata, gwdata[o * idims() + i], gidata);
+                                          gkdata, gwdata[o * idims() + i], 
+					  gidata);
                         }
                 }
 
