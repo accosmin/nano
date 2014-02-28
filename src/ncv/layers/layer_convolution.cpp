@@ -162,7 +162,7 @@ namespace ncv
                 assert(icols() == input.cols());
 
                 m_idata.copy_from(input);
-		
+
 		_forward(m_idata.data(), idims(),
 			 m_kdata.data(), krows(), kcols(),
 			 m_wdata.data(), 
@@ -177,30 +177,81 @@ namespace ncv
         <
                 typename tscalar,
                 typename tsize
-        >                        
+        >
         static void _backward(
-                const tscalar* odata, tsize orows, tsize ocols, 
-                const tscalar* kdata, tsize krows, tsize kcols,
-                tscalar w, const tscalar* idata,
-                tscalar* gkdata, tscalar& gw, tscalar* gidata)
+		const tscalar* idata, tscalar* gidata, tsize idims,
+                const tscalar* kdata, tscalar* gkdata, tsize krows, tsize kcols,
+                const tscalar* wdata, tscalar* gwdata,
+                const tscalar* odata, tsize odims, tsize orows, tsize ocols)
         {
-                const tsize icols = ocols + kcols - 1;                
-                                
-                for (tsize r = 0; r < orows; r ++)
-                {
-                        for (tsize c = 0; c < ocols; c ++)
-                        {
-                                for (tsize kr = 0; kr < krows; kr ++)
-                                {
-                                        for (tsize kc = 0; kc < kcols; kc ++)
-                                        {
-                                                const tscalar iv = idata[(r + kr) * icols + (c + kc)];
-                                                const tscalar ov = odata[r * ocols + c];
-                                                const tscalar kv = kdata[kr * kcols + kc];
+		const tsize irows = orows + krows - 1;
+                const tsize icols = ocols + kcols - 1;
+		const tsize isize = irows * icols;
 
-                                                gidata[(r + kr) * icols + (c + kc)] += ov * kv * w;
-                                                gkdata[kr * kcols + kc] += ov * iv * w;
-                                                gw += ov * iv * kv;
+		const tsize osize = orows * ocols;
+		const tsize ksize = krows * kcols;
+
+		for (tsize o = 0; o < odims; o ++)
+		{
+			for (tsize i = 0; i < idims; i ++)
+			{
+				gwdata[o * idims + i] = 0;
+			}	
+
+			tscalar* pgkdata = gkdata + o * ksize;
+			for (tsize kr = 0; kr < krows; kr ++)	
+			{
+				for (tsize kc = 0; kc < kcols; kc ++)	
+				{					
+					pgkdata[kr * kcols + kc] = 0;
+				}
+			}
+		}
+
+		for (tsize i = 0; i < idims; i ++)
+		{
+			tscalar* pgidata = gidata + i * isize;
+			for (tsize ir = 0; ir < irows; ir ++)
+			{
+				for (tsize ic = 0; ic < icols; ic ++)
+				{
+					pgidata[ir * icols + ic] = 0;
+				}
+			}			
+		}	
+
+		for (tsize o = 0; o < odims; o ++)	
+		{
+			const tscalar* podata = odata + o * osize;
+			const tscalar* pkdata = kdata + o * ksize;
+
+			tscalar* pgkdata = gkdata + o * ksize;
+
+			for (tsize i = 0; i < idims; i ++)
+			{                                
+				const tscalar* pidata = idata + i * isize;
+				const tscalar w = wdata[o * idims + i];				
+
+				tscalar* pgidata = gidata + i * isize;
+				tscalar& gw = gwdata[o * idims + i];				
+				
+	                	for (tsize r = 0; r < orows; r ++)
+		                {
+        		                for (tsize c = 0; c < ocols; c ++)
+                		        {
+                        		        for (tsize kr = 0; kr < krows; kr ++)
+                                		{
+                                        		for (tsize kc = 0; kc < kcols; kc ++)
+		                                        {
+        	                        	                const tscalar iv = pidata[(r + kr) * icols + (c + kc)];
+        		        	                        const tscalar ov = podata[r * ocols + c];
+                		                                const tscalar kv = pkdata[kr * kcols + kc];
+
+                                	        	        pgidata[(r + kr) * icols + (c + kc)] += ov * kv * w;
+                                        	        	pgkdata[kr * kcols + kc] += ov * iv * w;
+	                                        	        gw += ov * iv * kv;
+							}
+						}	
                                         }
                                 }
                         }               
@@ -216,31 +267,12 @@ namespace ncv
                 assert(orows() == gradient.rows());
                 assert(ocols() == gradient.cols());
 
-                m_gkdata.zero();
-                m_gwdata.zero();
-                m_gidata.zero();
+		m_odata.copy_from(gradient);
 
-                for (size_t o = 0; o < odims(); o ++)
-                {                        
-                        auto odata = gradient.plane_data(o);
-                        auto kdata = m_kdata.plane_data(o);
-                        auto wdata = m_wdata.plane_data(0);
-
-                        auto gkdata = m_gkdata.plane_data(o);
-                        auto gwdata = m_gwdata.plane_data(0);
-
-                        for (size_t i = 0; i < idims(); i ++)
-                        {
-                                auto idata = m_idata.plane_data(i);
-                                auto gidata = m_gidata.plane_data(i);
-
-                                _backward(odata, orows(), ocols(),
-                                          kdata, krows(), kcols(),
-                                          wdata[o * idims() + i], idata,
-                                          gkdata, gwdata[o * idims() + i], 
-					  gidata);
-                        }
-                }
+		_backward(m_idata.data(), m_gidata.data(), idims(),
+			  m_kdata.data(), m_gkdata.data(), krows(), kcols(),
+			  m_wdata.data(), m_gwdata.data(),
+			  m_odata.data(), odims(), orows(), ocols());
 
                 return m_gidata;
         }
