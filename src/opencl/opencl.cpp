@@ -93,41 +93,6 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        cl::Program ocl::manager_t::program_from_file(const std::string& filepath) const
-        {
-                return program_from_text(ocl::load_text_file(filepath));
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        cl::Program ocl::manager_t::program_from_text(const std::string& source) const
-        {
-                assert(valid());
-
-                cl::Program::Sources sources(1, std::make_pair(source.c_str(), source.size()));
-                cl::Program program = cl::Program(m_context, sources);
-
-                try
-                {
-                        program.build(m_devices);
-                }
-                catch (cl::Error e)
-                {
-                        // load compilation errors
-                        const cl::Device& device = m_devices[0];
-                        log_error() << "OpenCL program build status: " << program.getBuildInfo<CL_PROGRAM_BUILD_STATUS>(device);
-                        log_error() << "OpenCL program build options:\t" << program.getBuildInfo<CL_PROGRAM_BUILD_OPTIONS>(device);
-                        log_error() << "OpenCL program build log:\t" << program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device);
-
-                        // and re-throw the exception
-                        throw e;
-                }
-
-                return program;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         size_t ocl::manager_t::make_program_from_file(const std::string& filepath)
         {
                 return make_program_from_text(ocl::load_text_file(filepath));

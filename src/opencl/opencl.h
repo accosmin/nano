@@ -44,36 +44,33 @@ namespace ncv
                         bool valid() const { return !m_platforms.empty() && !m_devices.empty(); }
 
                         ///
-                        /// \brief access the context
+                        /// \brief create objects and return ids for each one
                         ///
-                        const cl::Context& context() const { return m_context; }
-
-                        ///
-                        /// \brief access the command queue
-                        ///
-                        const cl::CommandQueue& queue() const { return m_queue; }
-
-                        ///
-                        /// \brief build program from file
-                        ///
-                        cl::Program program_from_file(const std::string& filepath) const;
-
-                        ///
-                        /// \brief build program from source text
-                        ///
-                        cl::Program program_from_text(const std::string& source) const;
-
                         size_t make_program_from_file(const std::string& filepath);
                         size_t make_program_from_text(const std::string& source);
                         size_t make_kernel(size_t program_id, const std::string& name);
                         size_t make_buffer(size_t bytesize, int flags);
 
+                        ///
+                        /// \brief setup kernel arguments
+                        ///
                         cl_int set_kernel_buffer(size_t kernel_id, size_t arg_index, size_t buffer_id);
                         cl_int set_kernel_integer(size_t kernel_id, size_t arg_index, int arg_value);
+
+                        ///
+                        /// \brief read/write buffers
+                        ///
                         cl_int read_buffer(size_t buffer_id, size_t data_size, void* data, cl::Event* event = 0) const;
                         cl_int write_buffer(size_t buffer_id, size_t data_size, const void* data, cl::Event* event = 0) const;
+
+                        ///
+                        /// \brief run a kernel
+                        ///
                         cl_int run_kernel(size_t kernel_id, const cl::NDRange& global, const cl::NDRange& local, cl::Event* event = 0) const;
 
+                        ///
+                        /// \brief wait for all tasks to finish
+                        ///
                         void finish() const;
 			
                 private:
