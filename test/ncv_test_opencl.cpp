@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
                                 // II - gpu processing
                                 timer.start();
                                 {
-                                        theocl.run_kernel(kid, cl::NullRange, cl::NDRange(size));
+                                        theocl.run_kernel(kid, cl::NDRange(size), cl::NullRange);
                                         theocl.finish();
                                 }
                                 proc_stats(timer.microseconds());
