@@ -9,6 +9,7 @@ namespace ncv
         /////////////////////////////////////////////////////////////////////////////////////////
 
         ocl::manager_t::manager_t()
+                :       m_maxid(0)
         {
                 try
                 {
@@ -123,6 +124,147 @@ namespace ncv
                 }
 
                 return program;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        size_t ocl::manager_t::make_program_from_file(const std::string& filepath)
+        {
+                return make_program_from_text(ocl::load_text_file(filepath));
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        size_t ocl::manager_t::make_program_from_text(const std::string& source)
+        {
+                assert(valid());
+
+                cl::Program::Sources sources(1, std::make_pair(source.c_str(), source.size()));
+                cl::Program program = cl::Program(m_context, sources);
+
+                try
+                {
+                        program.build(m_devices);
+                        m_programs[++ m_maxid] = program;
+                }
+                catch (cl::Error e)
+                {
+                        // load compilation errors
+                        const cl::Device& device = m_devices[0];
+                        log_error() << "OpenCL program build status: " << program.getBuildInfo<CL_PROGRAM_BUILD_STATUS>(device);
+                        log_error() << "OpenCL program build options:\t" << program.getBuildInfo<CL_PROGRAM_BUILD_OPTIONS>(device);
+                        log_error() << "OpenCL program build log:\t" << program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device);
+
+                        // and re-throw the exception
+                        throw e;
+                }
+
+                return m_maxid;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        size_t ocl::manager_t::make_kernel(size_t program_id, const std::string& name)
+        {
+                const programs_t::const_iterator it = m_programs.find(program_id);
+                if (it == m_programs.end())
+                {
+                        throw cl::Error(CL_INVALID_ARG_INDEX, "invalid program id");
+                }
+
+                const cl::Kernel kernel = cl::Kernel(it->second, name.c_str());
+                m_kernels[++ m_maxid] = kernel;
+
+                return m_maxid;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        size_t ocl::manager_t::make_buffer(size_t bytesize, int flags)
+        {
+                const cl::Buffer buffer(m_context, flags, bytesize, NULL);
+                m_buffers[++ m_maxid] = buffer;
+
+                return m_maxid;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        cl_int ocl::manager_t::set_kernel_buffer(size_t kernel_id, size_t arg_index, size_t buffer_id)
+        {
+                const kernels_t::iterator itk = m_kernels.find(kernel_id);
+                if (itk == m_kernels.end())
+                {
+                        throw cl::Error(CL_INVALID_ARG_INDEX, "invalid kernel id");
+                }
+
+                const buffers_t::const_iterator itb = m_buffers.find(buffer_id);
+                if (itb == m_buffers.end())
+                {
+                        throw cl::Error(CL_INVALID_ARG_INDEX, "invalid buffer id");
+                }
+
+                return itk->second.setArg(arg_index, itb->second);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        cl_int ocl::manager_t::set_kernel_integer(size_t kernel_id, size_t arg_index, int arg_value)
+        {
+                const kernels_t::iterator itk = m_kernels.find(kernel_id);
+                if (itk == m_kernels.end())
+                {
+                        throw cl::Error(CL_INVALID_ARG_INDEX, "invalid kernel id");
+                }
+
+                return itk->second.setArg(arg_index, sizeof(int), (void*)&arg_value);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        cl_int ocl::manager_t::read_buffer(size_t id, size_t data_size, void* data, cl::Event* event) const
+        {
+                const buffers_t::const_iterator it = m_buffers.find(id);
+                if (it == m_buffers.end())
+                {
+                        throw cl::Error(CL_INVALID_ARG_INDEX, "invalid buffer id");
+                }
+
+                return m_queue.enqueueReadBuffer(it->second, CL_FALSE, 0, data_size, data, NULL, event);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        cl_int ocl::manager_t::write_buffer(size_t id, size_t data_size, const void* data, cl::Event* event) const
+        {
+                const buffers_t::const_iterator it = m_buffers.find(id);
+                if (it == m_buffers.end())
+                {
+                        throw cl::Error(CL_INVALID_ARG_INDEX, "invalid buffer id");
+                }
+
+                return m_queue.enqueueWriteBuffer(it->second, CL_FALSE, 0, data_size, data, NULL, event);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        cl_int ocl::manager_t::run_kernel(
+                size_t id, const cl::NDRange& global, const cl::NDRange& local, cl::Event* event) const
+        {
+                const kernels_t::const_iterator it = m_kernels.find(id);
+                if (it == m_kernels.end())
+                {
+                        throw cl::Error(CL_INVALID_ARG_INDEX, "invalid kernel id");
+                }
+
+                return m_queue.enqueueNDRangeKernel(it->second, cl::NullRange, global, local, NULL, event);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        void ocl::manager_t::finish() const
+        {
+                m_queue.finish();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

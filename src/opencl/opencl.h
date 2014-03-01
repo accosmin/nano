@@ -63,20 +63,18 @@ namespace ncv
                         ///
                         cl::Program program_from_text(const std::string& source) const;
 
-			cl::Program program(size_t id) const;
-			bool make_program_from_file(const std::string& filepath, size_t& program_id);
-			bool make_program_from_text(const std::string& source, size_t& program_id);
+                        size_t make_program_from_file(const std::string& filepath);
+                        size_t make_program_from_text(const std::string& source);
+                        size_t make_kernel(size_t program_id, const std::string& name);
+                        size_t make_buffer(size_t bytesize, int flags);
 
-			cl::Kernel kernel(size_t id) const;
-			bool make_kernel(size_t program_id, const std::string& name, size_t& kernel_id);
-			bool make_kernel_arg(size_t kernel_id, size_t arg_index, size_t bytesize, bool readonly, size_t& buffer_id);
-			
-			cl::Event read_buffer(size_t id, void* data) const;
-			cl::Event write_buffer(size_t id, void* data) const;
+                        cl_int set_kernel_buffer(size_t kernel_id, size_t arg_index, size_t buffer_id);
+                        cl_int set_kernel_integer(size_t kernel_id, size_t arg_index, int arg_value);
+                        cl_int read_buffer(size_t buffer_id, size_t data_size, void* data, cl::Event* event = 0) const;
+                        cl_int write_buffer(size_t buffer_id, size_t data_size, const void* data, cl::Event* event = 0) const;
+                        cl_int run_kernel(size_t kernel_id, const cl::NDRange& global, const cl::NDRange& local, cl::Event* event = 0) const;
 
-			cl::Event run_kernel(size_t id);
-
-			void finish();
+                        void finish() const;
 			
                 private:
 

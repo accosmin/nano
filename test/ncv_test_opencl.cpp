@@ -53,16 +53,15 @@ int main(int argc, char *argv[])
 
         try
         {
-                if (!ocl::manager_t::instance().valid())
+                ocl::manager_t& theocl = ocl::manager_t::instance();
+
+                if (!theocl.valid())
                 {
                         exit(EXIT_FAILURE);
                 }
 
-                const cl::Context& context = ocl::manager_t::instance().context();
-                const cl::CommandQueue& queue = ocl::manager_t::instance().queue();
-
-                const cl::Program program = ocl::manager_t::instance().program_from_text(program_source);
-                cl::Kernel kernel = cl::Kernel(program, "test_kernel");
+                const size_t pid = theocl.make_program_from_text(program_source);
+                const size_t kid = theocl.make_kernel(pid, "test_kernel");
 
                 const size_t tests = 32;
                 const size_t minsize = 1024;
@@ -86,15 +85,15 @@ int main(int argc, char *argv[])
                         const size_t array_size = size * sizeof(double);
 
                         // create buffers once
-                        cl::Buffer cl_a = cl::Buffer(context, CL_MEM_READ_ONLY, array_size, NULL);
-                        cl::Buffer cl_b = cl::Buffer(context, CL_MEM_READ_ONLY, array_size, NULL);
-                        cl::Buffer cl_c = cl::Buffer(context, CL_MEM_WRITE_ONLY, array_size, NULL);
+                        const size_t baid = theocl.make_buffer(array_size, CL_MEM_READ_ONLY);
+                        const size_t bbid = theocl.make_buffer(array_size, CL_MEM_READ_ONLY);
+                        const size_t bcid = theocl.make_buffer(array_size, CL_MEM_WRITE_ONLY);
 
                         // setup kernel buffers once
-                        kernel.setArg(0, cl_a);
-                        kernel.setArg(1, cl_b);
-                        kernel.setArg(2, cl_c);
-                        queue.finish();
+                        theocl.set_kernel_buffer(kid, 0, baid);
+                        theocl.set_kernel_buffer(kid, 1, bbid);
+                        theocl.set_kernel_buffer(kid, 2, bcid);
+                        theocl.finish();
 
                         // run multiple tests
                         for (size_t test = 0; test < tests; test ++)
@@ -111,27 +110,25 @@ int main(int argc, char *argv[])
                                 // I - send inputs to gpu
                                 timer.start();
                                 {
-                                        cl::Event event;
-                                        queue.enqueueWriteBuffer(cl_a, CL_FALSE, 0, array_size, a.data(), NULL, &event);
-                                        queue.enqueueWriteBuffer(cl_b, CL_FALSE, 0, array_size, b.data(), NULL, &event);
-                                        queue.finish();
+                                        theocl.write_buffer(baid, array_size, a.data());
+                                        theocl.write_buffer(bbid, array_size, b.data());
+                                        theocl.finish();
                                 }
                                 send_stats(timer.microseconds());
 
                                 // II - gpu processing
                                 timer.start();
                                 {
-                                        cl::Event event;
-                                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size), cl::NullRange, NULL, &event);
-                                        queue.finish();
+                                        theocl.run_kernel(kid, cl::NullRange, cl::NDRange(size));
+                                        theocl.finish();
                                 }
                                 proc_stats(timer.microseconds());
 
                                 // III - read results from gpu
                                 timer.start();
                                 {
-                                        cl::Event event;
-                                        queue.enqueueReadBuffer(cl_c, CL_TRUE, 0, array_size, c.data(), NULL, &event);
+                                        theocl.read_buffer(bcid, array_size, c.data());
+                                        theocl.finish();
                                 }
                                 read_stats(timer.microseconds());
 
