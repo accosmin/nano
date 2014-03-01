@@ -78,8 +78,8 @@ namespace ncv
 
         __kernel void conv_forward(
                 __global const double* idata, int idims,
-                __global const double* kdata, int krows, int kcols,
-                __global const double* wdata,
+                __constant const double* kdata, int krows, int kcols,
+                __constant const double* wdata,
                 __global double* odata)
         {
                 const int odims = get_global_size(0);
@@ -98,14 +98,13 @@ namespace ncv
                 const int c = get_global_id(2);
 
                 __global double* podata = odata + o * osize;
-                podata[r * ocols + c] = 0;
+                __constant const double* pkdata = kdata + o * ksize;
 
+                double sum_conv = 0;
                 for (int i = 0; i < idims; i ++)
                 {
                         __global const double* pidata = idata + i * isize;
                         const double w = wdata[o * idims + i];
-
-                        __global const double* pkdata = kdata + o * ksize;
 
                         double sum = 0;
                         for (int kr = 0; kr < krows; kr ++)
@@ -119,8 +118,10 @@ namespace ncv
                                 }
                         }
 
-                        podata[r * ocols + c] += w * sum;
+                        sum_conv += w * sum;
                 }
+
+                podata[r * ocols + c] = sum_conv;
         }
 
         )xxx";
@@ -298,6 +299,8 @@ namespace ncv
         {
                 m_kdata.zero();
                 m_wdata.zero();
+
+                params_changed();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -306,6 +309,8 @@ namespace ncv
         {
                 m_kdata.random(random_t<scalar_t>(min, max));
                 m_wdata.random(random_t<scalar_t>(min, max));
+
+                params_changed();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -326,8 +331,28 @@ namespace ncv
 
         ivectorizer_t& conv_layer_t::load_params(ivectorizer_t& s)
         {
-                return s >> m_kdata >> m_wdata;
+                s >> m_kdata >> m_wdata;
+
+                params_changed();
+
+                return s;
         }        
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        void conv_layer_t::params_changed() const
+        {
+                // send parameters to OpenCL device (if available)
+                ocl::manager_t& theocl = ocl::manager_t::instance();
+                if (theocl.valid())
+                {
+                        cl::Event evk, evw;
+                        theocl.write_buffer(m_ocl_kdata_id, m_kdata.size() * sizeof(scalar_t), m_kdata.data(), &evk);
+                        theocl.write_buffer(m_ocl_wdata_id, m_wdata.size() * sizeof(scalar_t), m_wdata.data(), &evw);
+                        evk.wait();
+                        evw.wait();
+                }
+        }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -343,13 +368,9 @@ namespace ncv
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
                 {
-                        cl::Event evi, evk, evw;
+                        cl::Event evi;
                         theocl.write_buffer(m_ocl_idata_id, m_idata.size() * sizeof(scalar_t), m_idata.data(), &evi);
-                        theocl.write_buffer(m_ocl_kdata_id, m_kdata.size() * sizeof(scalar_t), m_kdata.data(), &evk);
-                        theocl.write_buffer(m_ocl_wdata_id, m_wdata.size() * sizeof(scalar_t), m_wdata.data(), &evw);
                         evi.wait();
-                        evk.wait();
-                        evw.wait();
 
                         cl::Event evrun;
                         theocl.run_kernel(m_ocl_fkernel_id,
