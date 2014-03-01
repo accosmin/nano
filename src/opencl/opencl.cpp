@@ -53,6 +53,7 @@ namespace ncv
                                 const size_t maxwgsize = device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>();
                                 const size_t maxwidims = device.getInfo<CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS>();
                                 const std::vector<size_t> maxwisizes = device.getInfo<CL_DEVICE_MAX_WORK_ITEM_SIZES>();
+                                const size_t maxkparams = device.getInfo<CL_DEVICE_MAX_PARAMETER_SIZE>();
 
                                 std::stringstream ss;
                                 ss << "OpenCL device [" << (i + 1) << "/" << m_devices.size() << "]: ";
@@ -76,6 +77,7 @@ namespace ncv
                                            << (maxwisizes.size() > 0 ? maxwisizes[0] : 0) << " / "
                                            << (maxwisizes.size() > 1 ? maxwisizes[1] : 0) << " / "
                                            << (maxwisizes.size() > 2 ? maxwisizes[2] : 0);
+                                log_info() << base << "CL_DEVICE_MAX_PARAMETER_SIZE: " << maxkparams;
                         }
 
                         const cl::Device& device = m_devices[0];
