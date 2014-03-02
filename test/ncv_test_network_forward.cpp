@@ -59,9 +59,11 @@ int main(int argc, char *argv[])
 
                 // create random samples
                 tensors_t samples(cmd_samples, tensor_t(cmd_color == color_mode::luma ? 1 : 3, cmd_rows, cmd_cols));
+
+                random_t<scalar_t> rgen(-1.0, +1.0);
                 for (tensor_t& sample : samples)
                 {
-                        sample.random(random_t<scalar_t>(-1.0, +1.0));
+                        sample.random(rgen);
                 }
 
                 // create random targets
