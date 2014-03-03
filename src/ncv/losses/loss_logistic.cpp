@@ -7,6 +7,13 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        logistic_loss_t::logistic_loss_t()
+                :       loss_t(string_t(), "logistic loss")
+        {
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
         scalar_t logistic_loss_t::value(const vector_t& targets, const vector_t& scores) const
         {
                 assert(targets.size() == scores.size());

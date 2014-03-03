@@ -7,8 +7,8 @@ namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        forward_network_t::forward_network_t(const string_t& params)
-                :       m_params(params)
+        forward_network_t::forward_network_t(const string_t& parameters)
+                :       model_t(parameters, "feed-forward network, parameters: [layer_id[:layer_parameters][;]]*")
         {                
         }
 
@@ -119,7 +119,7 @@ namespace ncv
         {
                 const vector_t p = this->params();
 
-                oa << m_params;
+                oa << m_parameters;
                 oa << p;
 
                 return true;
@@ -131,7 +131,7 @@ namespace ncv
         {
                 vector_t p;
 
-                ia >> m_params;
+                ia >> m_parameters;
                 ia >> p;
 
                 resize();
@@ -152,7 +152,7 @@ namespace ncv
 
                 // create hidden layers
                 strings_t net_params;
-                text::split(net_params, m_params, text::is_any_of(";"));
+                text::split(net_params, parameters(), text::is_any_of(";"));
                 for (size_t l = 0; l < net_params.size(); l ++)
                 {
                         if (net_params[l].empty())
@@ -220,24 +220,13 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        forward_network_t::robject_t forward_network_t::clone() const
+        rmodel_t forward_network_t::clone(const string_t& parameters) const
         {
-                return forward_network_t::robject_t(new forward_network_t(*this));
-        }
+                const rmodel_t model(new forward_network_t(parameters));
 
-        /////////////////////////////////////////////////////////////////////////////////////////
+                model->resize(n_rows(), n_cols(), n_outputs(), color());
 
-        forward_network_t::robject_t forward_network_t::clone(const std::string& params) const
-        {
-                forward_network_t* result = new forward_network_t(params);
-
-                result->m_layers.resize(m_layers.size());
-                for (size_t l = 0; l < m_layers.size(); l ++)
-                {
-                        result->m_layers[l] = m_layers[l]->clone();
-                }
-
-                return forward_network_t::robject_t(result);
+                return model;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

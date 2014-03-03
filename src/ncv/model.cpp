@@ -7,12 +7,12 @@ namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        model_t::model_t()
-                :       clonable_t<model_t>(),
+        model_t::model_t(const string_t& parameters, const string_t& description)
+                :       clonable_t<model_t>(parameters, description),
                         m_rows(0),
                         m_cols(0),
                         m_outputs(0),
-                        m_parameters(0),
+                        m_nparams(0),
                         m_color(color_mode::luma)
         {
         }
@@ -27,7 +27,7 @@ namespace ncv
                 oa << m_rows;
                 oa << m_cols;
                 oa << m_outputs;
-                oa << m_parameters;
+                oa << m_nparams;
                 oa << m_color;
 
                 return save(oa) && os.good();
@@ -43,7 +43,7 @@ namespace ncv
                 ia >> m_rows;
                 ia >> m_cols;
                 ia >> m_outputs;
-                ia >> m_parameters;
+                ia >> m_nparams;
                 ia >> m_color;
 
                 return load(ia) && is.good();
@@ -126,7 +126,7 @@ namespace ncv
                 m_cols = cols;
                 m_outputs = outputs;
                 m_color = color;
-                m_parameters = resize();
+                m_nparams = resize();
 
                 log_info() << "model: parameters = " << n_parameters() << ".";
 

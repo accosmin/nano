@@ -5,22 +5,28 @@
 
 namespace ncv
 {
-        ////////////////////////////////////////////////////////////////////////////////
-        // MNIST task:
-        //      - digit classification
-        //      - 28x28 grayscale images as inputs
-        //      - 10 outputs (10 labels)
-        //
-        // http://yann.lecun.com/exdb/mnist/
-        ////////////////////////////////////////////////////////////////////////////////
-	
+        ///
+        /// MNIST task:
+        ///      - digit classification
+        ///      - 28x28 grayscale images as inputs
+        ///      - 10 outputs (10 labels)
+        ///
+        /// http://yann.lecun.com/exdb/mnist/
+        ///
         class mnist_task_t : public task_t
         {
         public:
                 // constructor
-                mnist_task_t(const string_t& /*params*/ = string_t()) {}
+                mnist_task_t()
+                        :       task_t("MNIST (digit classification)")
+                {
+                }
 
-                NCV_MAKE_CLONABLE(mnist_task_t, task_t, "MNIST (digit classification)")
+                // create an object clone
+                virtual rtask_t clone(const string_t&) const
+                {
+                        return rtask_t(new mnist_task_t);
+                }
 
                 // load images from the given directory
                 virtual bool load(const string_t& dir);

@@ -5,18 +5,18 @@
 
 namespace ncv
 {
-	////////////////////////////////////////////////////////////////////////////////
-        // square loss.
-	////////////////////////////////////////////////////////////////////////////////
-	
+        ///
+        /// \brief square loss
+        ///
         class square_loss_t : public loss_t
 	{
 	public:
 
                 // constructor
-                square_loss_t(const string_t& /*params*/ = string_t()) {}
+                square_loss_t();
 
-                NCV_MAKE_CLONABLE(square_loss_t, loss_t, "square loss")
+                // create an object clone
+                virtual rloss_t clone(const string_t&) const { return rloss_t(new square_loss_t); }
 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const

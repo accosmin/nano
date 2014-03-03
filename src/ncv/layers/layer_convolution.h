@@ -8,21 +8,23 @@ namespace ncv
         ///
         /// \brief convolution layer
         ///
+        /// parameters:
+        ///     dims=16[1,256]          - number of convolutions (output dimension)
+        ///     rows=8[1,32]            - convolution size
+        ///     cols=8[1,32]            - convolution size
+        ///
         class conv_layer_t : public layer_t
         {
         public:
 
                 // constructor
-                conv_layer_t(const string_t& params = string_t());
+                conv_layer_t(const string_t& parameters = string_t());
 
-                NCV_MAKE_CLONABLE(conv_layer_t, layer_t,
-                                  "convolution layer, parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
-
-                // copy constructor
-                conv_layer_t(const conv_layer_t& other);
-
-                // assignment operator
-                conv_layer_t& operator=(const conv_layer_t& other);
+                // create an object clone
+                virtual rlayer_t clone(const string_t& parameters) const
+                {
+                        return rlayer_t(new conv_layer_t(parameters));
+                }
 
                 // resize to process new tensors of the given type
                 virtual size_t resize(const tensor_t& tensor);
@@ -66,8 +68,6 @@ namespace ncv
         private:
 
                 // attributes
-                string_t        m_params;
-
                 tensor_t        m_idata;                ///< input buffer:              idims x irows x icols
                 tensor_t        m_odata;                ///< output buffer:             odims x orows x ocols
                 tensor_t        m_kdata;                ///< convolution kernels:       odims x krows x kcols

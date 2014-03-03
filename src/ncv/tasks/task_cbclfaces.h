@@ -5,23 +5,29 @@
 
 namespace ncv
 {
-        ////////////////////////////////////////////////////////////////////////////////
-        // CBCL face task:
-        //      - face/non-face classification
-        //      - 19x19 grayscale images as inputs
-        //      - 2 outputs (binary classification)
-        //
-        // http://cbcl.mit.edu/software-datasets/FaceData2.html
-        ////////////////////////////////////////////////////////////////////////////////
-	
+        ///
+        /// CBCL face task:
+        ///      - face/non-face classification
+        ///      - 19x19 grayscale images as inputs
+        ///      - 2 outputs (binary classification)
+        ///
+        /// http://cbcl.mit.edu/software-datasets/FaceData2.html
+        ///
         class cbclfaces_task_t : public task_t
         {
         public:
 
                 // constructor
-                cbclfaces_task_t(const string_t& /*params*/ = string_t()) {}
+                cbclfaces_task_t()
+                        :       task_t("CBCL faces (face/non-face classification)")
+                {
+                }
 
-                NCV_MAKE_CLONABLE(cbclfaces_task_t, task_t, "CBCL faces (face/non-face classification)")
+                // create an object clone
+                virtual rtask_t clone(const string_t&) const
+                {
+                        return rtask_t(new cbclfaces_task_t());
+                }
 
                 // load images from the given directory
                 virtual bool load(const string_t& dir);

@@ -23,6 +23,14 @@ namespace ncv
         public:
 
                 ///
+                /// \brief constructor
+                ///
+                layer_t(const string_t& parameters, const string_t& description)
+                        :       clonable_t<layer_t>(parameters, description)
+                {
+                }
+
+                ///
                 /// \brief destructor
                 ///
                 virtual ~layer_t() {}
@@ -43,19 +51,11 @@ namespace ncv
                 virtual void random_params(scalar_t min, scalar_t max) = 0;
 
                 ///
-                /// \brief serialize parameters
+                /// \brief serialize parameters & gradients
                 ///
                 virtual ovectorizer_t& save_params(ovectorizer_t& s) const = 0;
-
-                ///
-                /// \brief serialize gradients
-                ///
-                virtual ovectorizer_t& save_grad(ovectorizer_t& s) const = 0;
-
-                ///
-                /// \brief unserialize parameters
-                ///
                 virtual ivectorizer_t& load_params(ivectorizer_t& s) = 0;
+                virtual ovectorizer_t& save_grad(ovectorizer_t& s) const = 0;
 
                 ///
                 /// \brief compute the output tensor
@@ -68,13 +68,9 @@ namespace ncv
                 virtual const tensor_t& backward(const tensor_t& gradient) = 0;
 
                 ///
-                /// \brief returns the input tensor
+                /// \brief returns the input/output tensor
                 ///
                 virtual const tensor_t& input() const = 0;
-
-                ///
-                /// \brief returns the output tensor
-                ///
                 virtual const tensor_t& output() const = 0;
         };
 }

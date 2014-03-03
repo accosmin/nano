@@ -6,23 +6,31 @@
 
 namespace ncv
 {
-        // manage tasks (register new ones, query and clone them)
+        ///
+        /// \brief manage tasks (register new ones, query and clone them)
+        ///
         class task_t;
         typedef manager_t<task_t>                       task_manager_t;
         typedef task_manager_t::robject_t               rtask_t;
 
-        // prune samples
+        ///
+        /// \brief prune samples
+        ///
         samples_t prune_annotated(const task_t&, const samples_t&);
 
-        ////////////////////////////////////////////////////////////////////////////////
-        // generic computer vision task consisting of a set of (annotated) images
-        //      and a protocol (training + testing).
-        // samples for training & testing models can be drawn from these image.
-	////////////////////////////////////////////////////////////////////////////////
-	
+        ///
+        /// \brief generic computer vision task consisting of a set of (annotated) images
+        /// and a protocol (training + testing).
+        /// samples for training & testing models can be drawn from these image.
+        ///
         class task_t : public clonable_t<task_t>
 	{
         public:
+
+                task_t(const string_t& description)
+                        :       clonable_t<task_t>(string_t(), description)
+                {
+                }
                 
                 // destructor
                 virtual ~task_t() {}

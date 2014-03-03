@@ -14,10 +14,12 @@ namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        batch_trainer_t::batch_trainer_t(const string_t& params)
-                :       m_optimizer(text::from_params<string_t>(params, "opt", "lbfgs")),
-                        m_iterations(text::from_params<size_t>(params, "iters", 1024)),
-                        m_epsilon(text::from_params<scalar_t>(params, "eps", 1e-6))
+        batch_trainer_t::batch_trainer_t(const string_t& parameters)
+                :       trainer_t(parameters,
+                                  "batch trainer, parameters: opt=lbfgs[,cgd,gd],iters=1024[4,4096],eps=1e-6[1e-8,1e-3]"),
+                        m_optimizer(text::from_params<string_t>(parameters, "opt", "lbfgs")),
+                        m_iterations(text::from_params<size_t>(parameters, "iters", 1024)),
+                        m_epsilon(text::from_params<scalar_t>(parameters, "eps", 1e-6))
         {
                 m_iterations = math::clamp(m_iterations, 4, 4096);
                 m_epsilon = math::clamp(m_epsilon, 1e-8, 1e-3);

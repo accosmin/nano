@@ -18,10 +18,13 @@ namespace ncv
         public:
 
                 // constructor
-                stochastic_trainer_t(const string_t& params = string_t());
+                stochastic_trainer_t(const string_t& parameters = string_t());
 
-                NCV_MAKE_CLONABLE(stochastic_trainer_t, trainer_t,
-                "stochastic trainer, parameters: opt=sgd[,asgd],epoch=16[1,1024]")
+                // create an object clone
+                virtual rtrainer_t clone(const string_t& parameters) const
+                {
+                        return rtrainer_t(new stochastic_trainer_t(parameters));
+                }
 
                 // train the model
                 virtual bool train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const;

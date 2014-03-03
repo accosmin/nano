@@ -7,13 +7,6 @@ namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        linear_layer_t::linear_layer_t(const string_t& params)
-                :       m_params(params)
-        {
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         size_t linear_layer_t::resize(const tensor_t& tensor)
         {
                 const size_t idims = tensor.size();

@@ -5,6 +5,13 @@ namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        classnll_loss_t::classnll_loss_t()
+                :       loss_t(string_t(), "class negative log-likelihood loss")
+        {
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
         scalar_t classnll_loss_t::value(const vector_t& targets, const vector_t& scores) const
         {
                 assert(targets.size() == scores.size());

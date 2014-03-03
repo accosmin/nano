@@ -5,18 +5,17 @@
 
 namespace ncv
 {
-        ////////////////////////////////////////////////////////////////////////////////
-        // logistic loss.
-        ////////////////////////////////////////////////////////////////////////////////
-        
+        ///
+        /// \brief logistic loss
         class logistic_loss_t : public loss_t
         {
         public:
 
                 // constructor
-                logistic_loss_t(const string_t& /*params*/ = string_t()) {}
+                logistic_loss_t();
 
-                NCV_MAKE_CLONABLE(logistic_loss_t, loss_t, "logistic loss")
+                // create an object clone
+                virtual rloss_t clone(const string_t&) const { return rloss_t(new logistic_loss_t); }
 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const

@@ -15,10 +15,16 @@ namespace ncv
         public:
 
                 // constructor
-                softmax_pool_layer_t(const string_t& params = string_t());
+                softmax_pool_layer_t(const string_t& parameters = string_t())
+                        :       layer_t(parameters, "soft-max pooling layer")
+                {
+                }
 
-                NCV_MAKE_CLONABLE(softmax_pool_layer_t, layer_t,
-                                  "soft-max pooling layer")
+                // create an object clone
+                virtual rlayer_t clone(const string_t& parameters) const
+                {
+                        return rlayer_t(new softmax_pool_layer_t(parameters));
+                }
 
                 // resize to process new tensors of the given type
                 virtual size_t resize(const tensor_t& tensor);

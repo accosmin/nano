@@ -5,6 +5,13 @@ namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        square_loss_t::square_loss_t()
+                :       loss_t(string_t(), "square loss")
+        {
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
         scalar_t square_loss_t::value(const vector_t& targets, const vector_t& scores) const
         {
                 assert(targets.size() == scores.size());

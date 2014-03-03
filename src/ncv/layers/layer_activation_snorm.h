@@ -37,9 +37,16 @@ namespace ncv
         public:
 
                 // constructor
-                snorm_activation_layer_t(const string_t& = string_t()) {}
+                snorm_activation_layer_t(const string_t& parameters = string_t())
+                        :       activation_layer_t(parameters, "x/sqrt(1+x^2) activation layer")
+                {
+                }
 
-                NCV_MAKE_CLONABLE(snorm_activation_layer_t, layer_t, "x/sqrt(1+x^2) activation layer")
+                // create an object clone
+                virtual rlayer_t clone(const string_t& parameters) const
+                {
+                        return rlayer_t(new snorm_activation_layer_t(parameters));
+                }
         };
 }
 

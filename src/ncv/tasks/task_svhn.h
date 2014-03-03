@@ -5,22 +5,28 @@
 
 namespace ncv
 {
-        ////////////////////////////////////////////////////////////////////////////////
-        // SVHN task:
-        //      - digit classification
-        //      - 32x32 color images as inputs
-        //      - 10 outputs (10 labels)
-        //
-        // http://ufldl.stanford.edu/housenumbers/
-        ////////////////////////////////////////////////////////////////////////////////
-	
+        ///
+        /// SVHN task:
+        ///      - digit classification
+        ///      - 32x32 color images as inputs
+        ///      - 10 outputs (10 labels)
+        ///
+        /// http://ufldl.stanford.edu/housenumbers/
+        ///
         class svhn_task_t : public task_t
         {
         public:
                 // constructor
-                svhn_task_t(const string_t& /*params*/ = string_t()) {}
+                svhn_task_t()
+                        :       task_t("SVHN (object classification)")
+                {
+                }
 
-                NCV_MAKE_CLONABLE(svhn_task_t, task_t, "SVHN (object classification)")
+                // create an object clone
+                virtual rtask_t clone(const string_t&) const
+                {
+                        return rtask_t(new svhn_task_t());
+                }
 
                 // load images from the given directory
                 virtual bool load(const string_t& dir);

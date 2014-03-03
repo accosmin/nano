@@ -11,9 +11,10 @@ namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        stochastic_trainer_t::stochastic_trainer_t(const string_t& params)
-                :       m_optimizer(text::from_params<string_t>(params, "opt", "sgd")),
-                        m_epochs(text::from_params<size_t>(params, "epoch", 16))
+        stochastic_trainer_t::stochastic_trainer_t(const string_t& parameters)
+                :       trainer_t(parameters, "stochastic trainer, parameters: opt=sgd[,asgd],epoch=16[1,1024]"),
+                        m_optimizer(text::from_params<string_t>(parameters, "opt", "sgd")),
+                        m_epochs(text::from_params<size_t>(parameters, "epoch", 16))
         {
                 m_epochs = math::clamp(m_epochs, 1, 1024);
         }

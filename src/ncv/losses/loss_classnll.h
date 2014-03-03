@@ -5,18 +5,18 @@
 
 namespace ncv
 {
-        ////////////////////////////////////////////////////////////////////////////////
-        // multi-class negative log-likelihood loss.
-        ////////////////////////////////////////////////////////////////////////////////
-        
+        ///
+        /// \brief multi-class negative log-likelihood loss
+        ///
         class classnll_loss_t : public loss_t
         {
         public:
 
                 // constructor
-                classnll_loss_t(const string_t& /*params*/ = string_t()) {}
+                classnll_loss_t();
 
-                NCV_MAKE_CLONABLE(classnll_loss_t, loss_t, "class negative log-likelihood loss")
+                // create an object clone
+                virtual rloss_t clone(const string_t&) const { return rloss_t(new classnll_loss_t); }
 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const

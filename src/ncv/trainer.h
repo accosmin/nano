@@ -171,6 +171,11 @@ namespace ncv
         {
         public:
 
+                trainer_t(const string_t& parameters, const string_t& description)
+                        :       clonable_t<trainer_t>(parameters, description)
+                {
+                }
+
                 ///
                 /// \brief destructor
                 ///

@@ -16,17 +16,10 @@ namespace ncv
                 using model_t::resize;
                 
                 // constructor
-                forward_network_t(const string_t& params = string_t());
+                forward_network_t(const string_t& parameters = string_t());
 
                 // create an object clone
-                virtual robject_t clone() const;
-                virtual robject_t clone(const std::string& params) const;
-
-                // describe the object
-                virtual std::string description() const
-                {
-                        return "feed-forward network, parameters: [layer_id[:layer_parameters][;]]*";
-                }
+                virtual rmodel_t clone(const string_t& parameters) const;
 
                 // compute the model's output
                 virtual vector_t value(const tensor_t& input) const;
@@ -59,7 +52,6 @@ namespace ncv
         private:
 
                 // attributes
-                string_t                m_params;       // network parameters (hidden layers)
                 rlayers_t               m_layers;       // feed-forward layers
         };
 }

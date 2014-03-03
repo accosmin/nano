@@ -13,11 +13,16 @@ namespace ncv
         public:
 
                 // constructor
-                explicit linear_layer_t(const string_t& params = string_t());
+                linear_layer_t(const string_t& parameters = string_t())
+                        :       layer_t(parameters, "fully-connected linear layer, parameters: dims=10[1,1024]")
+                {
+                }
 
-                // dims - number of output dimensions
-                NCV_MAKE_CLONABLE(linear_layer_t, layer_t,
-                                  "fully-connected linear layer, parameters: dims=10[1,1024]")
+                // create an object clone
+                virtual rlayer_t clone(const string_t& parameters) const
+                {
+                        return rlayer_t(new linear_layer_t(parameters));
+                }
 
                 // resize to process new tensors of the given type
                 virtual size_t resize(const tensor_t& tensor);

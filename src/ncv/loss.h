@@ -56,6 +56,12 @@ namespace ncv
         {
         public:
 
+                loss_t(const string_t& parameters = string_t(),
+                       const string_t& description = string_t())
+                        :       clonable_t<loss_t>(parameters, description)
+                {
+                }
+
                 ///
                 /// \brief destructor
                 ///

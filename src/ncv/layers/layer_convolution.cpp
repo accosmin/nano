@@ -211,12 +211,12 @@ namespace ncv
                 podata[r * ocols + c] = sum_conv;
         }
 
-        )xxx";        
+        )xxx";
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        conv_layer_t::conv_layer_t(const string_t& params)
-                :       m_params(params),
+        conv_layer_t::conv_layer_t(const string_t& parameters)
+                :       layer_t(parameters, "convolution layer, parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32]"),
                         m_ocl_idata_id(0),
                         m_ocl_odata_id(0),
                         m_ocl_kdata_id(0),
@@ -232,42 +232,15 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        conv_layer_t::conv_layer_t(const conv_layer_t& other)
-                :       conv_layer_t(other.m_params)
-        {
-                if (other.m_idata.size() > 0)
-                {
-                        resize(other.m_idata);
-                }
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        conv_layer_t& conv_layer_t::operator=(const conv_layer_t& other)
-        {
-                if (this != &other)
-                {
-                        m_params = other.m_params;
-                        if (other.m_idata.size() > 0)
-                        {
-                                resize(other.m_idata);
-                        }
-                }
-
-                return *this;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         size_t conv_layer_t::resize(const tensor_t& tensor)
         {
                 const size_t idims = tensor.dims();
                 const size_t irows = tensor.rows();
                 const size_t icols = tensor.cols();
 
-                const size_t odims = math::clamp(text::from_params<size_t>(m_params, "dims", 16), 1, 256);
-                const size_t krows = math::clamp(text::from_params<size_t>(m_params, "rows", 8), 1, 32);
-                const size_t kcols = math::clamp(text::from_params<size_t>(m_params, "cols", 8), 1, 32);
+                const size_t odims = math::clamp(text::from_params<size_t>(parameters(), "dims", 16), 1, 256);
+                const size_t krows = math::clamp(text::from_params<size_t>(parameters(), "rows", 8), 1, 32);
+                const size_t kcols = math::clamp(text::from_params<size_t>(parameters(), "cols", 8), 1, 32);
 
                 if (irows < krows || icols < kcols)
                 {

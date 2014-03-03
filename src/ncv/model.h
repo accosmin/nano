@@ -28,6 +28,8 @@ namespace ncv
         {
         public:
 
+                model_t(const string_t& parameters, const string_t& description);
+
                 ///
                 /// \brief constructor
                 ///
@@ -95,7 +97,7 @@ namespace ncv
                 size_t n_cols() const { return m_cols; }
                 size_t n_inputs() const;
                 size_t n_outputs() const { return m_outputs; }
-                size_t n_parameters() const { return m_parameters; }
+                size_t n_parameters() const { return m_nparams; }
                 color_mode color() const { return m_color; }
 
         protected:
@@ -118,7 +120,7 @@ namespace ncv
                 // attributes
                 size_t          m_rows, m_cols;         ///< input patch size
                 size_t          m_outputs;              ///< output size
-                size_t          m_parameters;           ///< #number of parameters
+                size_t          m_nparams;              ///< #number of parameters
                 color_mode      m_color;                ///< input color mode
         };
 }

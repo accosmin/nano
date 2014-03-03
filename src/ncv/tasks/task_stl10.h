@@ -5,22 +5,28 @@
 
 namespace ncv
 {
-        ////////////////////////////////////////////////////////////////////////////////
-        // STL10 task:
-        //      - object classification
-        //      - 96x96 color images as inputs
-        //      - 10 outputs (10 labels)
-        //
-        // http://www.stanford.edu/~acoates/stl10/
-        ////////////////////////////////////////////////////////////////////////////////
-	
+        ///
+        /// STL10 task:
+        ///      - object classification
+        ///      - 96x96 color images as inputs
+        ///     - 10 outputs (10 labels)
+        ///
+        /// http://www.stanford.edu/~acoates/stl10/
+        ///
         class stl10_task_t : public task_t
         {
         public:
                 // constructor
-                stl10_task_t(const string_t& /*params*/ = string_t()) {}
+                stl10_task_t()
+                        :       task_t("STL-10 (object classification)")
+                {
+                }
 
-                NCV_MAKE_CLONABLE(stl10_task_t, task_t, "STL-10 (object classification)")
+                // create an object clone
+                virtual rtask_t clone(const string_t&) const
+                {
+                        return rtask_t(new stl10_task_t);
+                }
 
                 // load images from the given directory
                 virtual bool load(const string_t& dir);

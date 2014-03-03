@@ -37,9 +37,16 @@ namespace ncv
         public:
 
                 // constructor
-                tanh_activation_layer_t(const string_t& = string_t()) {}
+                tanh_activation_layer_t(const string_t& parameters = string_t())
+                        :       activation_layer_t(parameters, "hyperbolic tangent activation layer")
+                {
+                }
 
-                NCV_MAKE_CLONABLE(tanh_activation_layer_t, layer_t, "hyperbolic tangent activation layer")
+                // create an object clone
+                virtual rlayer_t clone(const string_t& parameters) const
+                {
+                        return rlayer_t(new tanh_activation_layer_t(parameters));
+                }
         };
 }
 

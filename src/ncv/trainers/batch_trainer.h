@@ -18,10 +18,13 @@ namespace ncv
         public:
 
                 // constructor
-                batch_trainer_t(const string_t& params = string_t());
+                batch_trainer_t(const string_t& parameters = string_t());
 
-                NCV_MAKE_CLONABLE(batch_trainer_t, trainer_t,
-                                  "batch trainer, parameters: opt=lbfgs[,cgd,gd],iters=1024[4,4096],eps=1e-6[1e-8,1e-3]")
+                // create an object clone
+                virtual rtrainer_t clone(const string_t& parameters) const
+                {
+                        return rtrainer_t(new batch_trainer_t(parameters));
+                }
 
                 // train the model
                 virtual bool train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const;

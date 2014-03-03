@@ -4,12 +4,6 @@ namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        softmax_abs_pool_layer_t::softmax_abs_pool_layer_t(const string_t&)
-        {
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         size_t softmax_abs_pool_layer_t::resize(const tensor_t& tensor)
         {
                 const size_t idims = tensor.dims();
