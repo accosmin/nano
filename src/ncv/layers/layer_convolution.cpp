@@ -71,63 +71,6 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        static const string_t conv_forward_source = R"xxx(
-
-        #pragma OPENCL EXTENSION cl_amd_fp64 : enable
-        #pragma OPENCL EXTENSION cl_khr_fp64 : enable
-
-        __kernel void conv_forward(
-                __global const double* idata, int idims,
-                __constant const double* kdata, int krows, int kcols,
-                __constant const double* wdata,
-                __global double* odata)
-        {
-                const int odims = get_global_size(0);
-                const int orows = get_global_size(1);
-                const int ocols = get_global_size(2);
-                const int osize = orows * ocols;
-
-                const int icols = ocols + kcols - 1;
-                const int irows = orows + krows - 1;
-                const int isize = irows * icols;
-
-                const int ksize = krows * kcols;
-
-                const int o = get_global_id(0);
-                const int r = get_global_id(1);
-                const int c = get_global_id(2);
-
-                __global double* podata = odata + o * osize;
-                __constant const double* pkdata = kdata + o * ksize;
-
-                double sum_conv = 0;
-                for (int i = 0; i < idims; i ++)
-                {
-                        __global const double* pidata = idata + i * isize;
-                        const double w = wdata[o * idims + i];
-
-                        double sum = 0;
-                        for (int kr = 0; kr < krows; kr ++)
-                        {
-                                for (int kc = 0; kc < kcols; kc ++)
-                                {
-                                        const double iv = pidata[(r + kr) * icols + (c + kc)];
-                                        const double kv = pkdata[kr * kcols + kc];
-
-                                        sum += iv * kv;
-                                }
-                        }
-
-                        sum_conv += w * sum;
-                }
-
-                podata[r * ocols + c] = sum_conv;
-        }
-
-        )xxx";
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         template
         <
                 typename tscalar,
@@ -215,6 +158,63 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        static const string_t ocl_conv_source = R"xxx(
+
+        #pragma OPENCL EXTENSION cl_amd_fp64 : enable
+        #pragma OPENCL EXTENSION cl_khr_fp64 : enable
+
+        __kernel void conv_forward(
+                __global const double* idata, int idims,
+                __constant const double* kdata, int krows, int kcols,
+                __constant const double* wdata,
+                __global double* odata)
+        {
+                const int odims = get_global_size(0);
+                const int orows = get_global_size(1);
+                const int ocols = get_global_size(2);
+                const int osize = orows * ocols;
+
+                const int icols = ocols + kcols - 1;
+                const int irows = orows + krows - 1;
+                const int isize = irows * icols;
+
+                const int ksize = krows * kcols;
+
+                const int o = get_global_id(0);
+                const int r = get_global_id(1);
+                const int c = get_global_id(2);
+
+                __global double* podata = odata + o * osize;
+                __constant const double* pkdata = kdata + o * ksize;
+
+                double sum_conv = 0;
+                for (int i = 0; i < idims; i ++)
+                {
+                        __global const double* pidata = idata + i * isize;
+                        const double w = wdata[o * idims + i];
+
+                        double sum = 0;
+                        for (int kr = 0; kr < krows; kr ++)
+                        {
+                                for (int kc = 0; kc < kcols; kc ++)
+                                {
+                                        const double iv = pidata[(r + kr) * icols + (c + kc)];
+                                        const double kv = pkdata[kr * kcols + kc];
+
+                                        sum += iv * kv;
+                                }
+                        }
+
+                        sum_conv += w * sum;
+                }
+
+                podata[r * ocols + c] = sum_conv;
+        }
+
+        )xxx";        
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
         conv_layer_t::conv_layer_t(const string_t& params)
                 :       m_params(params),
                         m_ocl_idata_id(0),
@@ -224,9 +224,37 @@ namespace ncv
                         m_ocl_gkdata_id(0),
                         m_ocl_gwdata_id(0),
                         m_ocl_gidata_id(0),
+                        m_ocl_program_id(0),
                         m_ocl_fkernel_id(0),
                         m_ocl_bkernel_id(0)
         {
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        conv_layer_t::conv_layer_t(const conv_layer_t& other)
+                :       conv_layer_t(other.m_params)
+        {
+                if (other.m_idata.size() > 0)
+                {
+                        resize(other.m_idata);
+                }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        conv_layer_t& conv_layer_t::operator=(const conv_layer_t& other)
+        {
+                if (this != &other)
+                {
+                        m_params = other.m_params;
+                        if (other.m_idata.size() > 0)
+                        {
+                                resize(other.m_idata);
+                        }
+                }
+
+                return *this;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -270,8 +298,23 @@ namespace ncv
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
                 {
-                        const size_t ocl_program_forward_id = theocl.make_program_from_text(conv_forward_source);
-                        m_ocl_fkernel_id = theocl.make_kernel(ocl_program_forward_id, "conv_forward");
+                        // remove old ids
+                        theocl.remove_buffer(m_ocl_idata_id);
+                        theocl.remove_buffer(m_ocl_kdata_id);
+                        theocl.remove_buffer(m_ocl_wdata_id);
+                        theocl.remove_buffer(m_ocl_odata_id);
+
+                        theocl.remove_buffer(m_ocl_gidata_id);
+                        theocl.remove_buffer(m_ocl_gkdata_id);
+                        theocl.remove_buffer(m_ocl_gwdata_id);
+
+                        theocl.remove_program(m_ocl_program_id);
+                        theocl.remove_kernel(m_ocl_fkernel_id);
+                        theocl.remove_kernel(m_ocl_bkernel_id);
+
+                        // kernels
+                        m_ocl_program_id = theocl.make_program_from_text(ocl_conv_source);
+                        m_ocl_fkernel_id = theocl.make_kernel(m_ocl_program_id, "conv_forward");
 
                         // forward buffers
                         m_ocl_idata_id = theocl.make_buffer(m_idata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);

@@ -52,6 +52,13 @@ namespace ncv
                         size_t make_buffer(size_t bytesize, int flags);
 
                         ///
+                        /// \brief remove objects
+                        ///
+                        void remove_program(size_t id);
+                        void remove_kernel(size_t id);
+                        void remove_buffer(size_t id);
+
+                        ///
                         /// \brief setup kernel arguments
                         ///
                         cl_int set_kernel_buffer(size_t kernel_id, size_t arg_index, size_t buffer_id);
@@ -89,6 +96,8 @@ namespace ncv
 			programs_t			m_programs;	///< stored programs 
 			kernels_t			m_kernels;	///< stored kernels
 			buffers_t			m_buffers;	///< stored buffers
+
+                        mutable std::mutex              m_mutex;        ///< protect stored objects
                 };
         }
 }

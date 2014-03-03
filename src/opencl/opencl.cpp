@@ -104,6 +104,8 @@ namespace ncv
 
         size_t ocl::manager_t::make_program_from_text(const std::string& source)
         {
+                const std::unique_lock<std::mutex> lock(m_mutex);
+
                 assert(valid());
 
                 cl::Program::Sources sources(1, std::make_pair(source.c_str(), source.size()));
@@ -133,6 +135,8 @@ namespace ncv
 
         size_t ocl::manager_t::make_kernel(size_t program_id, const std::string& name)
         {
+                const std::unique_lock<std::mutex> lock(m_mutex);
+
                 const programs_t::const_iterator it = m_programs.find(program_id);
                 if (it == m_programs.end())
                 {
@@ -149,6 +153,8 @@ namespace ncv
 
         size_t ocl::manager_t::make_buffer(size_t bytesize, int flags)
         {
+                const std::unique_lock<std::mutex> lock(m_mutex);
+
                 const cl::Buffer buffer(m_context, flags, bytesize, NULL);
                 m_buffers[++ m_maxid] = buffer;
 
@@ -157,8 +163,37 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        void ocl::manager_t::remove_program(size_t id)
+        {
+                const std::unique_lock<std::mutex> lock(m_mutex);
+
+                m_programs.erase(id);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        void ocl::manager_t::remove_kernel(size_t id)
+        {
+                const std::unique_lock<std::mutex> lock(m_mutex);
+
+                m_kernels.erase(id);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        void ocl::manager_t::remove_buffer(size_t id)
+        {
+                const std::unique_lock<std::mutex> lock(m_mutex);
+
+                m_buffers.erase(id);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
         cl_int ocl::manager_t::set_kernel_buffer(size_t kernel_id, size_t arg_index, size_t buffer_id)
         {
+                const std::unique_lock<std::mutex> lock(m_mutex);
+
                 const kernels_t::iterator itk = m_kernels.find(kernel_id);
                 if (itk == m_kernels.end())
                 {
@@ -178,6 +213,8 @@ namespace ncv
 
         cl_int ocl::manager_t::set_kernel_integer(size_t kernel_id, size_t arg_index, int arg_value)
         {
+                const std::unique_lock<std::mutex> lock(m_mutex);
+
                 const kernels_t::iterator itk = m_kernels.find(kernel_id);
                 if (itk == m_kernels.end())
                 {
@@ -191,6 +228,8 @@ namespace ncv
 
         cl_int ocl::manager_t::read_buffer(size_t id, size_t data_size, void* data, cl::Event* event) const
         {
+                const std::unique_lock<std::mutex> lock(m_mutex);
+
                 const buffers_t::const_iterator it = m_buffers.find(id);
                 if (it == m_buffers.end())
                 {
@@ -204,6 +243,8 @@ namespace ncv
 
         cl_int ocl::manager_t::write_buffer(size_t id, size_t data_size, const void* data, cl::Event* event) const
         {
+                const std::unique_lock<std::mutex> lock(m_mutex);
+
                 const buffers_t::const_iterator it = m_buffers.find(id);
                 if (it == m_buffers.end())
                 {
@@ -218,6 +259,8 @@ namespace ncv
         cl_int ocl::manager_t::run_kernel(
                 size_t id, const cl::NDRange& global, const cl::NDRange& local, cl::Event* event) const
         {
+                const std::unique_lock<std::mutex> lock(m_mutex);
+
                 const kernels_t::const_iterator it = m_kernels.find(id);
                 if (it == m_kernels.end())
                 {

@@ -18,6 +18,12 @@ namespace ncv
                 NCV_MAKE_CLONABLE(conv_layer_t, layer_t,
                                   "convolution layer, parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
 
+                // copy constructor
+                conv_layer_t(const conv_layer_t& other);
+
+                // assignment operator
+                conv_layer_t& operator=(const conv_layer_t& other);
+
                 // resize to process new tensors of the given type
                 virtual size_t resize(const tensor_t& tensor);
 
@@ -79,6 +85,7 @@ namespace ncv
                 size_t          m_ocl_gwdata_id;
                 size_t          m_ocl_gidata_id;
 
+                size_t          m_ocl_program_id;
                 size_t          m_ocl_fkernel_id;       ///< opencl forward/backward kernel IDs
                 size_t          m_ocl_bkernel_id;
         };

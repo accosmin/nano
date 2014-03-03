@@ -147,6 +147,16 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        void trainer_data_t::update_st(const tensors_t& inputs, const vectors_t& targets, const loss_t& loss)
+        {
+                for (size_t i = 0; i < inputs.size(); i ++)
+                {
+                        update(inputs[i], targets[i], loss);
+                }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
         void trainer_data_t::update_mt(const task_t& task, const samples_t& samples, const loss_t& loss, size_t nthreads)
         {
                 thread_loop_cumulate<trainer_data_t>
@@ -161,6 +171,31 @@ namespace ncv
                         [&] (size_t i, trainer_data_t& data)
                         {
                                 data.update(task, samples[i], loss);
+                        },
+                        [&] (trainer_data_t& data)
+                        {
+                                this->operator +=(data);
+                        },
+                        nthreads
+                );
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        void trainer_data_t::update_mt(const tensors_t& inputs, const vectors_t& targets, const loss_t& loss, size_t nthreads)
+        {
+                thread_loop_cumulate<trainer_data_t>
+                (
+                        inputs.size(),
+                        [&] (trainer_data_t& data)
+                        {
+                                assert(m_model);
+                                data.clear(m_type);
+                                data.clear(*m_model);
+                        },
+                        [&] (size_t i, trainer_data_t& data)
+                        {
+                                data.update(inputs[i], targets[i], loss);
                         },
                         [&] (trainer_data_t& data)
                         {

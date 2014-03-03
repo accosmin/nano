@@ -79,7 +79,7 @@ namespace ncv
                         }
                         return it->second->clone();
                 }
-                
+
                 /////////////////////////////////////////////////////////////////////////////////////////
 
                 robject_t _get(const std::string& id, const std::string& params) const

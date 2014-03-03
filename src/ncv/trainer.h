@@ -115,11 +115,13 @@ namespace ncv
                 /// \brief update statistics for a set of samples - single-threaded version
                 ///
                 void update_st(const task_t& task, const samples_t& samples, const loss_t& loss);
+                void update_st(const tensors_t& inputs, const vectors_t& targets, const loss_t& loss);
 
                 ///
                 /// \brief update statistics for a set of samples - multi-threaded version
                 ///
                 void update_mt(const task_t& task, const samples_t& samples, const loss_t& loss, size_t nthreads = 0);
+                void update_mt(const tensors_t& inputs, const vectors_t& targets, const loss_t &loss, size_t nthreads = 0);
 
                 ///
                 /// \brief update statistics with another instance
