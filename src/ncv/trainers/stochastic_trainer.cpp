@@ -129,7 +129,7 @@ namespace ncv
                 }
 
                 // initialize the model
-                model.resize(task);
+                model.resize(task, true);
                 model.random_params();
 
                 // prune training & validation data

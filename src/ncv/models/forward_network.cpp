@@ -134,7 +134,7 @@ namespace ncv
                 ia >> m_parameters;
                 ia >> p;
 
-                resize();
+                resize(true);
                 load_params(p);
 
                 return true;
@@ -142,7 +142,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        size_t forward_network_t::resize()
+        size_t forward_network_t::resize(bool verbose)
         {
                 tensor_t input(n_inputs(), n_rows(), n_cols());
                 size_t n_params = 0;
@@ -197,7 +197,10 @@ namespace ncv
                 m_layers.push_back(layer);
                 layer_ids.push_back(layer_id);
 
-                print(layer_ids);
+                if (verbose)
+                {
+                        print(layer_ids);
+                }
 
                 return n_params;
         }
@@ -224,7 +227,7 @@ namespace ncv
         {
                 const rmodel_t model(new forward_network_t(parameters));
 
-                model->resize(n_rows(), n_cols(), n_outputs(), color());
+                model->resize(n_rows(), n_cols(), n_outputs(), color(), false);
 
                 return model;
         }

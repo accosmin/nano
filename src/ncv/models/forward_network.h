@@ -42,7 +42,7 @@ namespace ncv
                 virtual bool load(boost::archive::binary_iarchive& ia);
 
                 // resize to new inputs/outputs, returns the number of parameters
-                virtual size_t resize();
+                virtual size_t resize(bool verbose);
 
         private:
 

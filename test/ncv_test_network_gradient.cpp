@@ -141,7 +141,7 @@ int main(int argc, char *argv[])
         {                
                 // create network
                 forward_network_t network(desc);
-                network.resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color);
+                network.resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color, true);
 
                 // build the inputs & outputs
                 vector_t params(network.n_parameters());

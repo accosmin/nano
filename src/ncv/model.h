@@ -43,12 +43,12 @@ namespace ncv
                 ///
                 /// \brief resize to process new inputs
                 ///
-                bool resize(size_t rows, size_t cols, size_t outputs, color_mode color);
+                bool resize(size_t rows, size_t cols, size_t outputs, color_mode color, bool verbose);
 
                 ///
                 /// \brief resize to process new inputs compatible with the given task
                 ///
-                bool resize(const task_t& task);
+                bool resize(const task_t& task, bool verbose);
 
                 ///
                 /// \brief compute the model's output
@@ -113,7 +113,7 @@ namespace ncv
                 virtual bool load(boost::archive::binary_iarchive& ia) = 0;
 
                 // resize to new inputs/outputs, returns the number of parameters
-                virtual size_t resize() = 0;
+                virtual size_t resize(bool verbose) = 0;
 
         private:
 

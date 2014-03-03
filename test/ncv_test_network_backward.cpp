@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 
                 // create feed-forward network
                 ncv::forward_network_t model(cmd_network);
-                model.resize(cmd_rows, cmd_cols, cmd_outputs, cmd_color);
+                model.resize(cmd_rows, cmd_cols, cmd_outputs, cmd_color, true);
 
                 // create random samples
                 tensors_t samples(cmd_samples, tensor_t(cmd_color == color_mode::luma ? 1 : 3, cmd_rows, cmd_cols));

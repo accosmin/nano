@@ -113,22 +113,25 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        bool model_t::resize(const task_t& task)
+        bool model_t::resize(const task_t& task, bool verbose)
         {
-                return resize(task.n_rows(), task.n_cols(), task.n_outputs(), task.color());
+                return resize(task.n_rows(), task.n_cols(), task.n_outputs(), task.color(), verbose);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        bool model_t::resize(size_t rows, size_t cols, size_t outputs, color_mode color)
+        bool model_t::resize(size_t rows, size_t cols, size_t outputs, color_mode color, bool verbose)
         {
                 m_rows = rows;
                 m_cols = cols;
                 m_outputs = outputs;
                 m_color = color;
-                m_nparams = resize();
+                m_nparams = resize(verbose);
 
-                log_info() << "model: parameters = " << n_parameters() << ".";
+                if (verbose)
+                {
+                        log_info() << "model: parameters = " << n_parameters() << ".";
+                }
 
                 return true;
         }
