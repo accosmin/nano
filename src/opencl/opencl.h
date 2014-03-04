@@ -10,7 +10,6 @@
 #endif
 
 #include "common/singleton.hpp"
-#include <map>
 
 namespace ncv
 {
@@ -44,60 +43,20 @@ namespace ncv
                         bool valid() const { return !m_platforms.empty() && !m_devices.empty(); }
 
                         ///
-                        /// \brief create objects and return ids for each one
+                        /// \brief create OpenCL objects
                         ///
-                        size_t make_program_from_file(const std::string& filepath);
-                        size_t make_program_from_text(const std::string& source);
-                        size_t make_kernel(size_t program_id, const std::string& name);
-                        size_t make_buffer(size_t bytesize, int flags);
+                        cl::CommandQueue make_command_queue() const;
+                        cl::Program make_program_from_file(const std::string& filepath) const;
+                        cl::Program make_program_from_text(const std::string& source) const;
+                        cl::Kernel make_kernel(const cl::Program& program, const std::string& name) const;
+                        cl::Buffer make_buffer(size_t bytesize, int flags) const;
 
-                        ///
-                        /// \brief remove objects
-                        ///
-                        void remove_program(size_t id);
-                        void remove_kernel(size_t id);
-                        void remove_buffer(size_t id);
-
-                        ///
-                        /// \brief setup kernel arguments
-                        ///
-                        cl_int set_kernel_buffer(size_t kernel_id, size_t arg_index, size_t buffer_id);
-                        cl_int set_kernel_integer(size_t kernel_id, size_t arg_index, int arg_value);
-
-                        ///
-                        /// \brief read/write buffers
-                        ///
-                        cl_int read_buffer(size_t buffer_id, size_t data_size, void* data, cl::Event* event = 0) const;
-                        cl_int write_buffer(size_t buffer_id, size_t data_size, const void* data, cl::Event* event = 0) const;
-
-                        ///
-                        /// \brief run a kernel
-                        ///
-                        cl_int run_kernel(size_t kernel_id, const cl::NDRange& global, const cl::NDRange& local, cl::Event* event = 0) const;
-
-                        ///
-                        /// \brief wait for all tasks to finish
-                        ///
-                        void finish() const;
-			
                 private:
-
-			typedef std::map<size_t, cl::Program>	programs_t;
-			typedef std::map<size_t, cl::Kernel>	kernels_t;
-			typedef std::map<size_t, cl::Buffer>	buffers_t;
 
                         // attributes
                         std::vector<cl::Platform>       m_platforms;
                         std::vector<cl::Device>         m_devices;
                         cl::Context                     m_context;
-                        cl::CommandQueue                m_queue;
-
-			size_t				m_maxid;	///< ID generator
-			programs_t			m_programs;	///< stored programs 
-			kernels_t			m_kernels;	///< stored kernels
-			buffers_t			m_buffers;	///< stored buffers
-
-                        mutable std::mutex              m_mutex;        ///< protect stored objects
                 };
         }
 }

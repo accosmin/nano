@@ -2,6 +2,7 @@
 #define NANOCV_CONV_LAYER_H
 
 #include "layer.h"
+#include "opencl/opencl.h"
 
 namespace ncv
 {
@@ -68,26 +69,23 @@ namespace ncv
         private:
 
                 // attributes
-                tensor_t        m_idata;                ///< input buffer:              idims x irows x icols
-                tensor_t        m_odata;                ///< output buffer:             odims x orows x ocols
-                tensor_t        m_kdata;                ///< convolution kernels:       odims x krows x kcols
-                tensor_t        m_wdata;                ///< weights:                   1 x odims x idims
+                tensor_t                m_idata;                ///< input buffer:              idims x irows x icols
+                tensor_t                m_odata;                ///< output buffer:             odims x orows x ocols
+                tensor_t                m_kdata;                ///< convolution kernels:       odims x krows x kcols
+                tensor_t                m_wdata;                ///< weights:                   1 x odims x idims
 
-                tensor_t        m_gkdata;               ///< cumulated kernel gradients
-                tensor_t        m_gwdata;               ///< cumulated weight gradients
-                tensor_t        m_gidata;               ///< cumulated input gradients
+                tensor_t                m_gkdata;               ///< cumulated kernel gradients
+                tensor_t                m_gwdata;               ///< cumulated weight gradients
+                tensor_t                m_gidata;               ///< cumulated input gradients
 
-                size_t          m_ocl_idata_id;         ///< opencl buffer IDs for various tensors
-                size_t          m_ocl_odata_id;
-                size_t          m_ocl_kdata_id;
-                size_t          m_ocl_wdata_id;
-                size_t          m_ocl_gkdata_id;
-                size_t          m_ocl_gwdata_id;
-                size_t          m_ocl_gidata_id;
+                cl::CommandQueue        m_ocl_queue;            ///< opencl command queue
+                cl::Program             m_ocl_program;          ///< opencl program
+                cl::Kernel              m_ocl_fkernel;          ///< opencl forward kernel
 
-                size_t          m_ocl_program_id;
-                size_t          m_ocl_fkernel_id;       ///< opencl forward/backward kernel IDs
-                size_t          m_ocl_bkernel_id;
+                cl::Buffer              m_ocl_idata;            ///< opencl buffers for various tensors
+                cl::Buffer              m_ocl_odata;
+                cl::Buffer              m_ocl_kdata;
+                cl::Buffer              m_ocl_wdata;
         };
 }
 

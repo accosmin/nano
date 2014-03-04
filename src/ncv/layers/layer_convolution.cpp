@@ -165,7 +165,7 @@ namespace ncv
 
         __kernel void conv_forward(
                 __global const double* idata, int idims,
-                __constant const double* kdata, int krows, int kcols,
+                __global const double* kdata, int krows, int kcols,
                 __constant const double* wdata,
                 __global double* odata)
         {
@@ -185,7 +185,7 @@ namespace ncv
                 const int c = get_global_id(2);
 
                 __global double* podata = odata + o * osize;
-                __constant const double* pkdata = kdata + o * ksize;
+                __global const double* pkdata = kdata + o * ksize;
 
                 double sum_conv = 0;
                 for (int i = 0; i < idims; i ++)
@@ -216,17 +216,7 @@ namespace ncv
         /////////////////////////////////////////////////////////////////////////////////////////
 
         conv_layer_t::conv_layer_t(const string_t& parameters)
-                :       layer_t(parameters, "convolution layer, parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32]"),
-                        m_ocl_idata_id(0),
-                        m_ocl_odata_id(0),
-                        m_ocl_kdata_id(0),
-                        m_ocl_wdata_id(0),
-                        m_ocl_gkdata_id(0),
-                        m_ocl_gwdata_id(0),
-                        m_ocl_gidata_id(0),
-                        m_ocl_program_id(0),
-                        m_ocl_fkernel_id(0),
-                        m_ocl_bkernel_id(0)
+                :       layer_t(parameters, "convolution layer, parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
         {
         }
 
@@ -271,39 +261,29 @@ namespace ncv
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
                 {
-                        // remove old ids
-                        theocl.remove_buffer(m_ocl_idata_id);
-                        theocl.remove_buffer(m_ocl_kdata_id);
-                        theocl.remove_buffer(m_ocl_wdata_id);
-                        theocl.remove_buffer(m_ocl_odata_id);
-
-                        theocl.remove_buffer(m_ocl_gidata_id);
-                        theocl.remove_buffer(m_ocl_gkdata_id);
-                        theocl.remove_buffer(m_ocl_gwdata_id);
-
-                        theocl.remove_program(m_ocl_program_id);
-                        theocl.remove_kernel(m_ocl_fkernel_id);
-                        theocl.remove_kernel(m_ocl_bkernel_id);
-
                         // kernels
-                        m_ocl_program_id = theocl.make_program_from_text(ocl_conv_source);
-                        m_ocl_fkernel_id = theocl.make_kernel(m_ocl_program_id, "conv_forward");
+                        m_ocl_queue = theocl.make_command_queue();
+                        m_ocl_program = theocl.make_program_from_text(ocl_conv_source);
+                        m_ocl_fkernel = theocl.make_kernel(m_ocl_program, "conv_forward");
 
                         // forward buffers
-                        m_ocl_idata_id = theocl.make_buffer(m_idata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
-                        m_ocl_kdata_id = theocl.make_buffer(m_kdata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
-                        m_ocl_wdata_id = theocl.make_buffer(m_wdata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
-                        m_ocl_odata_id = theocl.make_buffer(m_odata.size() * sizeof(scalar_t), CL_MEM_WRITE_ONLY);
+                        m_ocl_idata = theocl.make_buffer(m_idata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
+                        m_ocl_kdata = theocl.make_buffer(m_kdata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
+                        m_ocl_wdata = theocl.make_buffer(m_wdata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
+                        m_ocl_odata = theocl.make_buffer(m_odata.size() * sizeof(scalar_t), CL_MEM_WRITE_ONLY);
+
+                        const int idims_ = static_cast<int>(idims);
+                        const int krows_ = static_cast<int>(krows);
+                        const int kcols_ = static_cast<int>(kcols);
 
                         // setup forward kernel
-                        theocl.set_kernel_buffer(m_ocl_fkernel_id, 0, m_ocl_idata_id);
-                        theocl.set_kernel_integer(m_ocl_fkernel_id, 1, idims);
-                        theocl.set_kernel_buffer(m_ocl_fkernel_id, 2, m_ocl_kdata_id);
-                        theocl.set_kernel_integer(m_ocl_fkernel_id, 3, krows);
-                        theocl.set_kernel_integer(m_ocl_fkernel_id, 4, kcols);
-                        theocl.set_kernel_buffer(m_ocl_fkernel_id, 5, m_ocl_wdata_id);
-                        theocl.set_kernel_buffer(m_ocl_fkernel_id, 6, m_ocl_odata_id);
-                        theocl.finish();
+                        m_ocl_fkernel.setArg(0, m_ocl_idata);
+                        m_ocl_fkernel.setArg(1, sizeof(int), (void*)&idims_);
+                        m_ocl_fkernel.setArg(2, m_ocl_kdata);
+                        m_ocl_fkernel.setArg(3, sizeof(int), (void*)&krows_);
+                        m_ocl_fkernel.setArg(4, sizeof(int), (void*)&kcols_);
+                        m_ocl_fkernel.setArg(5, m_ocl_wdata);
+                        m_ocl_fkernel.setArg(6, m_ocl_odata);
                 }
 
                 return m_kdata.size() + m_wdata.size();
@@ -362,11 +342,8 @@ namespace ncv
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
                 {
-                        cl::Event evk, evw;
-                        theocl.write_buffer(m_ocl_kdata_id, m_kdata.size() * sizeof(scalar_t), m_kdata.data(), &evk);
-                        theocl.write_buffer(m_ocl_wdata_id, m_wdata.size() * sizeof(scalar_t), m_wdata.data(), &evw);
-                        evk.wait();
-                        evw.wait();
+                        m_ocl_queue.enqueueWriteBuffer(m_ocl_kdata, CL_TRUE, 0, m_kdata.size() * sizeof(scalar_t), m_kdata.data());
+                        m_ocl_queue.enqueueWriteBuffer(m_ocl_wdata, CL_TRUE, 0, m_wdata.size() * sizeof(scalar_t), m_wdata.data());
                 }
         }
 
@@ -384,19 +361,15 @@ namespace ncv
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
                 {
-                        cl::Event evi;
-                        theocl.write_buffer(m_ocl_idata_id, m_idata.size() * sizeof(scalar_t), m_idata.data(), &evi);
-                        evi.wait();
+                        m_ocl_queue.enqueueWriteBuffer(m_ocl_idata, CL_TRUE, 0, m_idata.size() * sizeof(scalar_t), m_idata.data());
 
-                        cl::Event evrun;
-                        theocl.run_kernel(m_ocl_fkernel_id,
-                                          cl::NDRange(odims(), orows(), ocols()),
-                                          cl::NDRange(1, orows(), ocols()), &evrun);
-                        evrun.wait();
+                        m_ocl_queue.enqueueNDRangeKernel(m_ocl_fkernel,
+                                cl::NullRange,
+                                cl::NDRange(odims(), orows(), ocols()),
+                                cl::NDRange(1, orows(), ocols()));
+                        m_ocl_queue.finish();
 
-                        cl::Event evo;
-                        theocl.read_buffer(m_ocl_odata_id, m_odata.size() * sizeof(scalar_t), m_odata.data(), &evo);
-                        evo.wait();
+                        m_ocl_queue.enqueueReadBuffer(m_ocl_odata, CL_TRUE, 0, m_odata.size() * sizeof(scalar_t), m_odata.data());
                 }
 
                 // CPU version

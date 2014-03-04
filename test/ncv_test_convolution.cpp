@@ -137,8 +137,9 @@ scalar_t test_conv2D_gpu(const char* name, const matrices_t& idatas, const matri
 {
         ocl::manager_t& theocl = ocl::manager_t::instance();
 
-        const size_t ocl_pid = theocl.make_program_from_text(conv_program_source);
-        const size_t ocl_kid = theocl.make_kernel(ocl_pid, "conv_kernel");
+        const cl::CommandQueue queue = theocl.make_command_queue();
+        const cl::Program program = theocl.make_program_from_text(conv_program_source);
+        cl::Kernel kernel = theocl.make_kernel(program, "conv_kernel");
 
         const int irows = static_cast<int>(idatas[0].rows());
         const int icols = static_cast<int>(idatas[0].cols());
@@ -157,21 +158,19 @@ scalar_t test_conv2D_gpu(const char* name, const matrices_t& idatas, const matri
         const size_t mem_odata = odatas[0].size() * sizeof(scalar_t) * tsend;
 
         // create buffers once
-        const size_t ocl_biid = theocl.make_buffer(mem_idata, CL_MEM_READ_ONLY);
-        const size_t ocl_bkid = theocl.make_buffer(mem_kdata, CL_MEM_READ_ONLY);
-        const size_t ocl_boid = theocl.make_buffer(mem_odata, CL_MEM_WRITE_ONLY);
+        const cl::Buffer ibuffer = theocl.make_buffer(mem_idata, CL_MEM_READ_ONLY);
+        const cl::Buffer kbuffer = theocl.make_buffer(mem_kdata, CL_MEM_READ_ONLY);
+        const cl::Buffer obuffer = theocl.make_buffer(mem_odata, CL_MEM_WRITE_ONLY);
 
         // setup kernel buffers once
-        theocl.set_kernel_buffer(ocl_kid, 0, ocl_biid);
-        theocl.set_kernel_buffer(ocl_kid, 1, ocl_bkid);
-        theocl.set_kernel_integer(ocl_kid, 2, krows);
-        theocl.set_kernel_integer(ocl_kid, 3, kcols);
-        theocl.set_kernel_buffer(ocl_kid, 4, ocl_boid);
-        theocl.finish();
+        kernel.setArg(0, ibuffer);
+        kernel.setArg(1, kbuffer);
+        kernel.setArg(2, sizeof(int), (void*)&krows);
+        kernel.setArg(3, sizeof(int), (void*)&kcols);
+        kernel.setArg(4, obuffer);
 
         // transfer constants
-        theocl.write_buffer(ocl_bkid, mem_kdata, kdata.data());
-        theocl.finish();
+        queue.enqueueWriteBuffer(kbuffer, CL_TRUE, 0, mem_kdata, kdata.data());
 
         ncv::stats_t<double, size_t> proc_stats;
 
@@ -194,16 +193,16 @@ scalar_t test_conv2D_gpu(const char* name, const matrices_t& idatas, const matri
                         const ncv::timer_t timer;
 
                         // I - send inputs to gpu
-                        theocl.write_buffer(ocl_biid, mem_idata, sidata.data());
-                        theocl.finish();
+                        queue.enqueueWriteBuffer(ibuffer, CL_TRUE, 0, mem_idata, sidata.data());
 
                         // II - gpu processing
-                        theocl.run_kernel(ocl_kid, cl::NDRange(tsend, ocols, orows), cl::NDRange(1, ocols, orows));
-                        theocl.finish();
+                        queue.enqueueNDRangeKernel(kernel, cl::NullRange,
+                                                   cl::NDRange(tsend, ocols, orows),
+                                                   cl::NDRange(1, ocols, orows));
+                        queue.finish();
 
                         // III - read results from gpu
-                        theocl.read_buffer(ocl_boid, mem_odata, sodata.data());
-                        theocl.finish();
+                        queue.enqueueReadBuffer(obuffer, CL_TRUE, 0, mem_odata, sodata.data());
 
                         micros += timer.microseconds();
 

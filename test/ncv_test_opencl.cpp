@@ -60,8 +60,9 @@ int main(int argc, char *argv[])
                         exit(EXIT_FAILURE);
                 }
 
-                const size_t pid = theocl.make_program_from_text(program_source);
-                const size_t kid = theocl.make_kernel(pid, "test_kernel");
+                const cl::CommandQueue queue = theocl.make_command_queue();
+                const cl::Program program = theocl.make_program_from_text(program_source);
+                cl::Kernel kernel = theocl.make_kernel(program, "test_kernel");
 
                 const size_t tests = 32;
                 const size_t minsize = 1024;
@@ -85,15 +86,14 @@ int main(int argc, char *argv[])
                         const size_t array_size = size * sizeof(double);
 
                         // create buffers once
-                        const size_t baid = theocl.make_buffer(array_size, CL_MEM_READ_ONLY);
-                        const size_t bbid = theocl.make_buffer(array_size, CL_MEM_READ_ONLY);
-                        const size_t bcid = theocl.make_buffer(array_size, CL_MEM_WRITE_ONLY);
+                        const cl::Buffer abuffer = theocl.make_buffer(array_size, CL_MEM_READ_ONLY);
+                        const cl::Buffer bbuffer = theocl.make_buffer(array_size, CL_MEM_READ_ONLY);
+                        const cl::Buffer cbuffer = theocl.make_buffer(array_size, CL_MEM_WRITE_ONLY);
 
                         // setup kernel buffers once
-                        theocl.set_kernel_buffer(kid, 0, baid);
-                        theocl.set_kernel_buffer(kid, 1, bbid);
-                        theocl.set_kernel_buffer(kid, 2, bcid);
-                        theocl.finish();
+                        kernel.setArg(0, abuffer);
+                        kernel.setArg(1, bbuffer);
+                        kernel.setArg(2, cbuffer);
 
                         // run multiple tests
                         for (size_t test = 0; test < tests; test ++)
@@ -110,25 +110,23 @@ int main(int argc, char *argv[])
                                 // I - send inputs to gpu
                                 timer.start();
                                 {
-                                        theocl.write_buffer(baid, array_size, a.data());
-                                        theocl.write_buffer(bbid, array_size, b.data());
-                                        theocl.finish();
+                                        queue.enqueueWriteBuffer(abuffer, CL_TRUE, 0, array_size, a.data());
+                                        queue.enqueueWriteBuffer(bbuffer, CL_TRUE, 0, array_size, b.data());
                                 }
                                 send_stats(timer.microseconds());
 
                                 // II - gpu processing
                                 timer.start();
                                 {
-                                        theocl.run_kernel(kid, cl::NDRange(size), cl::NullRange);
-                                        theocl.finish();
+                                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size), cl::NullRange);
+                                        queue.finish();
                                 }
                                 proc_stats(timer.microseconds());
 
                                 // III - read results from gpu
                                 timer.start();
                                 {
-                                        theocl.read_buffer(bcid, array_size, c.data());
-                                        theocl.finish();
+                                        queue.enqueueReadBuffer(cbuffer, CL_TRUE, 0, array_size, c.data());
                                 }
                                 read_stats(timer.microseconds());
 
