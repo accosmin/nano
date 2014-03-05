@@ -14,7 +14,7 @@ namespace ncv
 
                 // constructor
                 linear_layer_t(const string_t& parameters = string_t())
-                        :       layer_t(parameters, "fully-connected linear layer, parameters: dims=10[1,1024]")
+                        :       layer_t(parameters, "fully-connected linear layer, parameters: dims=10[1,4096]")
                 {
                 }
 
@@ -47,8 +47,6 @@ namespace ncv
         private:
 
                 // attributes
-                string_t                m_params;
-
                 tensor_t                m_idata;        ///< input buffer:      isize x 1 x 1
                 tensor_t                m_odata;        ///< output buffer:     osize x 1 x 1
 
