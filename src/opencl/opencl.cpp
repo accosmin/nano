@@ -48,6 +48,7 @@ namespace ncv
                                 const size_t gmemsize = device.getInfo<CL_DEVICE_GLOBAL_MEM_SIZE>();
                                 const size_t lmemsize = device.getInfo<CL_DEVICE_LOCAL_MEM_SIZE>();
                                 const size_t amemsize = device.getInfo<CL_DEVICE_MAX_MEM_ALLOC_SIZE>();
+                                const size_t cmemsize = device.getInfo<CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE>();
                                 const size_t maxcus = device.getInfo<CL_DEVICE_MAX_COMPUTE_UNITS>();
                                 const size_t maxwgsize = device.getInfo<CL_DEVICE_MAX_WORK_GROUP_SIZE>();
                                 const size_t maxwidims = device.getInfo<CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS>();
@@ -67,6 +68,8 @@ namespace ncv
                                            << (gmemsize / 1024) << "KB = " << (gmemsize / 1024 / 1024) << "MB";
                                 log_info() << base << "CL_DEVICE_LOCAL_MEM_SIZE: " << lmemsize << "B = "
                                            << (lmemsize / 1024) << "KB = " << (lmemsize / 1024 / 1024) << "MB";
+                                log_info() << base << "CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE: " << cmemsize << "B = "
+                                           << (cmemsize / 1024) << "KB = " << (cmemsize / 1024 / 1024) << "MB";
                                 log_info() << base << "CL_DEVICE_MAX_MEM_ALLOC_SIZE: " << amemsize << "B = "
                                            << (amemsize / 1024) << "KB = " << (amemsize / 1024 / 1024) << "MB";
                                 log_info() << base << "CL_DEVICE_MAX_COMPUTE_UNITS: " << maxcus;

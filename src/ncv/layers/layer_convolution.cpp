@@ -3,7 +3,6 @@
 #include "common/logger.h"
 #include "common/math.hpp"
 #include "common/random.hpp"
-#include "opencl/opencl.h"
 
 namespace ncv
 {
@@ -164,10 +163,10 @@ namespace ncv
         #pragma OPENCL EXTENSION cl_khr_fp64 : enable
 
         __kernel void conv_forward(
-                __global const double* idata, int idims,
-                __global const double* kdata, int krows, int kcols,
+                __global const double* restrict idata, int idims,
+                __global const double* restrict kdata, int krows, int kcols,
                 __constant const double* wdata,
-                __global double* odata)
+                __global double* restrict odata)
         {
                 const int odims = get_global_size(0);
                 const int orows = get_global_size(1);
@@ -190,7 +189,6 @@ namespace ncv
                 double sum_conv = 0;
                 for (int i = 0; i < idims; i ++)
                 {
-                        __global const double* pidata = idata + i * isize;
                         const double w = wdata[o * idims + i];
 
                         double sum = 0;
@@ -198,8 +196,8 @@ namespace ncv
                         {
                                 for (int kc = 0; kc < kcols; kc ++)
                                 {
-                                        const double iv = pidata[(r + kr) * icols + (c + kc)];
-                                        const double kv = pkdata[kr * kcols + kc];
+                                        const double iv = idata[i * isize + (r + kr) * icols + (c + kc)];
+                                        const double kv = kdata[o * ksize + kr * kcols + kc];
 
                                         sum += iv * kv;
                                 }

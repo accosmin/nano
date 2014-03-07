@@ -70,21 +70,21 @@ namespace ncv
                 {
                         const tsize ksize4 = (ksize >> 2) << 2;
 
-                        tscalar sum = 0;
+                        tscalar sum0 = 0, sum1 = 0, sum2 = 0, sum3 = 0;
                         for (tsize k = 0; k < ksize4; k += 4)
                         {
-                                sum += pidata[k + 0] * pkdata[k + 0];
-                                sum += pidata[k + 1] * pkdata[k + 1];
-                                sum += pidata[k + 2] * pkdata[k + 2];
-                                sum += pidata[k + 3] * pkdata[k + 3];
+                                sum0 += pidata[k + 0] * pkdata[k + 0];
+                                sum1 += pidata[k + 1] * pkdata[k + 1];
+                                sum2 += pidata[k + 2] * pkdata[k + 2];
+                                sum3 += pidata[k + 3] * pkdata[k + 3];
                         }
 
                         for (tsize k = ksize4; k < ksize; k ++)
 			{
-                     		sum += pidata[k + 0] * pkdata[k + 0];
+                                sum0 += pidata[k + 0] * pkdata[k + 0];
 			}
 
-                        return sum;
+                        return sum0 + sum1 + sum2 + sum3;
                 }
         }
 }

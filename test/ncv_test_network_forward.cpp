@@ -44,11 +44,12 @@ int main(int argc, char *argv[])
                 lmodel2,
                 lmodel3,
                 lmodel4,
-                lmodel5,
+                lmodel5
+//                ,
 
-                cmodel1,
-                cmodel2,
-                cmodel3
+//                cmodel1,
+//                cmodel2,
+//                cmodel3
         };
 
         const logistic_loss_t loss;

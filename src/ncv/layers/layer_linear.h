@@ -2,6 +2,7 @@
 #define NANOCV_LAYER_LINEAR_H
 
 #include "layer.h"
+#include "opencl/opencl.h"
 
 namespace ncv
 {
@@ -13,10 +14,7 @@ namespace ncv
         public:
 
                 // constructor
-                linear_layer_t(const string_t& parameters = string_t())
-                        :       layer_t(parameters, "fully-connected linear layer, parameters: dims=10[1,4096]")
-                {
-                }
+                linear_layer_t(const string_t& parameters = string_t());
 
                 // create an object clone
                 virtual rlayer_t clone(const string_t& parameters) const
@@ -46,6 +44,17 @@ namespace ncv
 
         private:
 
+                /////////////////////////////////////////////////////////////////////////////////////////
+
+                size_t isize() const { return m_idata.size(); }
+                size_t osize() const { return m_odata.size(); }
+
+                void params_changed() const;
+
+                /////////////////////////////////////////////////////////////////////////////////////////
+
+        private:
+
                 // attributes
                 tensor_t                m_idata;        ///< input buffer:      isize x 1 x 1
                 tensor_t                m_odata;        ///< output buffer:     osize x 1 x 1
@@ -55,6 +64,15 @@ namespace ncv
 
                 tensor_t                m_gwdata;       ///< cumulated weight gradients
                 tensor_t                m_gbdata;       ///< cumulated bias gradients
+
+                cl::CommandQueue        m_ocl_queue;            ///< opencl command queue
+                cl::Program             m_ocl_program;          ///< opencl program
+                cl::Kernel              m_ocl_fkernel;          ///< opencl forward kernel
+
+                cl::Buffer              m_ocl_idata;            ///< opencl buffers for various tensors
+                cl::Buffer              m_ocl_odata;
+                cl::Buffer              m_ocl_bdata;
+                cl::Buffer              m_ocl_wdata;
         };
 }
 
