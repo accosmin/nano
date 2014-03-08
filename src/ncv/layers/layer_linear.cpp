@@ -2,8 +2,6 @@
 #include "text.h"
 #include "common/math.hpp"
 #include "common/random.hpp"
-#include "common/dot.hpp"
-#include "common/thread_loop.hpp"
 
 namespace ncv
 {
@@ -20,18 +18,51 @@ namespace ncv
                 const tscalar* bdata,
                 tscalar* odata, tsize osize)
         {
-//                #pragma omp parallel for schedule(static)
-//                for (tsize o = 0; o < osize; o ++)
-//                {
-//                        odata[o] = bdata[o] + math::dot_mod4x(wdata + o * isize, idata, isize);
-//                }
-
-                static ncv::thread_pool_t pool(ncv::n_threads() / 2);
-
-                ncv::thread_loop(osize, [&] (size_t o)
+                for (tsize o = 0; o < osize; o ++)
                 {
-                        odata[o] = bdata[o] + math::dot_mod4x(wdata + o * isize, idata, isize);
-                }, pool);
+                        tscalar sum = bdata[o];
+                        for (tsize i = 0; i < isize; i ++)
+                        {
+                                sum += wdata[o * isize + i] * idata[i];
+                        }
+
+                        odata[o] = sum;
+                }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        template
+        <
+                typename tscalar,
+                typename tsize
+        >
+        static void _backward(
+                tscalar* idata, tsize isize,
+                const tscalar* wdata, tscalar* gwdata,
+                tscalar* gbdata,
+                const tscalar* odata, tsize osize)
+        {
+                for (tsize o = 0; o < osize; o ++)
+                {
+                        gbdata[o] = odata[o];
+
+                        for (tsize i = 0; i < isize; i ++)
+                        {
+                                gwdata[o * isize + i] = odata[o] * idata[i];
+                        }
+                }
+
+                for (tsize i = 0; i < isize; i ++)
+                {
+                        tscalar sum = 0;
+                        for (tsize o = 0; o < osize; o ++)
+                        {
+                                sum += wdata[o * isize + i] * odata[o];
+                        }
+
+                        idata[i] = sum;
+                }
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -123,12 +154,12 @@ namespace ncv
                 assert(gradient.rows() == m_odata.rows());
                 assert(gradient.cols() == m_odata.cols());
 
-                // parameters gradient
-                m_gwdata.copy_from(matrix_t(gradient.vector() * m_idata.vector().transpose()));
-                m_gbdata.copy_from(gradient);
+                m_odata.copy_from(gradient);
 
-                // input gradient
-                m_idata.copy_from(vector_t(m_wdata.plane_matrix(0).transpose() * gradient.vector()));
+                _backward(m_idata.data(), isize(),
+                          m_wdata.data(), m_gwdata.data(),
+                          m_gbdata.data(),
+                          m_odata.data(), osize());
 
                 return m_idata;
         }

@@ -54,7 +54,7 @@ static void test_grad(
                 rgen(target.data(), target.data() + target.size());
                 rgen(params.data(), params.data() + params.size());
 
-                input.random(random_t<scalar_t>(-0.2 / sqrt(n_parameters), +0.2 / sqrt(n_parameters)));
+                input.random(random_t<scalar_t>(-0.1, +0.1));
 
                 vector_t gx_gd, gx_ax;
                 problem_gd(x, gx_gd);
