@@ -14,7 +14,7 @@ namespace ncv
                 using boost::algorithm::clamp_range;
 
                 // implementation detail
-                namespace impl
+                namespace detail
                 {
                         template
                         <
@@ -53,7 +53,7 @@ namespace ncv
                 >
                 tround cast(tvalue value)
                 {
-                        return  impl::cast<
+                        return  detail::cast<
                                 tround, std::is_integral<tround>::value,
                                 tvalue, std::is_integral<tvalue>::value>::dispatch(value);
                 }

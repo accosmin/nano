@@ -3,7 +3,7 @@
 
 namespace ncv
 {
-        namespace impl
+        namespace detail
         {
                 // note: the RGB - XYZ - CIELab color transformations are taken from:
                 //      --- http://www.easyrgb.com/ ---                
@@ -206,8 +206,8 @@ namespace ncv
                 cielab_t cielab;
                 scalar_t x, y, z;
 
-                impl::rgb2xyz(make_red(rgba), make_green(rgba), make_blue(rgba), x, y, z);
-                impl::xyz2lab(x, y, z, cielab(0), cielab(1), cielab(2));
+                detail::rgb2xyz(make_red(rgba), make_green(rgba), make_blue(rgba), x, y, z);
+                detail::xyz2lab(x, y, z, cielab(0), cielab(1), cielab(2));
 
                 return cielab;
         }
@@ -219,8 +219,8 @@ namespace ncv
                 rgba_t r, g, b;
                 scalar_t x, y, z;
 
-                impl::lab2xyz(cielab(0), cielab(1), cielab(2), x, y, z);
-                impl::xyz2rgb(x, y, z, r, g, b);
+                detail::lab2xyz(cielab(0), cielab(1), cielab(2), x, y, z);
+                detail::xyz2rgb(x, y, z, r, g, b);
 
                 return make_rgba(r, g, b);
         }

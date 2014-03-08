@@ -5,7 +5,7 @@
 
 namespace ncv
 {        
-        namespace impl
+        namespace detail
         {
                 struct tanh_activation_layer_eval_t
                 {
@@ -30,8 +30,8 @@ namespace ncv
         ///
         class tanh_activation_layer_t : public activation_layer_t
         <
-                impl::tanh_activation_layer_eval_t,
-                impl::tanh_activation_layer_grad_t
+                detail::tanh_activation_layer_eval_t,
+                detail::tanh_activation_layer_grad_t
         >
         {
         public:

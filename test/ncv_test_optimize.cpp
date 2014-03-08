@@ -32,25 +32,25 @@ void test(const opt_problem_t& problem, size_t max_iters, scalar_t eps, const st
                 vector_t x0(size);
                 rgen(x0.data(), x0.data() + x0.size());
 
-                const string_t name_trial =
-                        " [" + text::to_string(trial + 1) + "/" + text::to_string(trials) + "]";
+                const string_t name_trial = " [" + text::to_string(trial + 1) + "/" + text::to_string(trials) + "]";
 
-                ncv::timer_t timer;
+                #define NCV_TEST_OPTIMIZER(FUN, NAME) \
+                { \
+                        ncv::timer_t timer; \
+                        problem.reset(); \
+                        const opt_state_t res = optimize::FUN(problem, x0, max_iters, eps); \
+                        print(res, max_iters, name + " " + #NAME + name_trial, timer.elapsed()); \
+                }
 
-                timer.start();
-                problem.reset();
-                const opt_state_t res_gd = optimize::gd(problem, x0, max_iters, eps);
-                print(res_gd, max_iters, name + " (GD)" + name_trial, timer.elapsed());
-
-                timer.start();
-                problem.reset();
-                const opt_state_t res_cgd = optimize::cgd(problem, x0, max_iters, eps);
-                print(res_cgd, max_iters, name + " (CGD)" + name_trial, timer.elapsed());
-
-                timer.start();
-                problem.reset();
-                const opt_state_t res_lbfgs = optimize::lbfgs(problem, x0, max_iters, eps);
-                print(res_lbfgs, max_iters, name + " (LBFGS)" + name_trial, timer.elapsed());
+                NCV_TEST_OPTIMIZER(gd,          GD)
+                NCV_TEST_OPTIMIZER(cgd_hs,      CGD-HS)
+                NCV_TEST_OPTIMIZER(cgd_fr,      CGD-FR)
+                NCV_TEST_OPTIMIZER(cgd_pr,      CGD-PR)
+                NCV_TEST_OPTIMIZER(cgd_cd,      CGD-CD)
+                NCV_TEST_OPTIMIZER(cgd_ls,      CGD-LS)
+                NCV_TEST_OPTIMIZER(cgd_dy,      CGD-DY)
+                NCV_TEST_OPTIMIZER(cgd_n,       CGD-N)
+                NCV_TEST_OPTIMIZER(lbfgs,       LBFGS)
         }
 }
 

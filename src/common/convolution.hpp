@@ -8,7 +8,7 @@ namespace ncv
 {
         namespace math
         {
-		namespace impl
+                namespace detail
 		{
                         ///
                         /// 2D convolution: odata += idata @ kdata (using a column-based dot operator)
@@ -86,7 +86,7 @@ namespace ncv
                 >
                 void conv_dot(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
-                        impl::conv_dot(idata, kdata, odata, dot_mod4x<tscalar, tindex>);
+                        detail::conv_dot(idata, kdata, odata, dot_mod4x<tscalar, tindex>);
                 }
 
                 ///
@@ -100,7 +100,7 @@ namespace ncv
                 >
                 void wconv_dot(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata)
                 {
-                        impl::wconv_dot(idata, kdata, weight, odata, dot_mod4x<tscalar, tindex>);
+                        detail::wconv_dot(idata, kdata, weight, odata, dot_mod4x<tscalar, tindex>);
                 }
                 
                 ///

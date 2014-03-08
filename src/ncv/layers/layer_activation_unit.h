@@ -5,7 +5,7 @@
 
 namespace ncv
 {
-        namespace impl
+        namespace detail
         {
                 struct unit_activation_layer_eval_t
                 {
@@ -29,8 +29,8 @@ namespace ncv
         ///
         class unit_activation_layer_t : public activation_layer_t
         <
-                impl::unit_activation_layer_eval_t,
-                impl::unit_activation_layer_grad_t
+                detail::unit_activation_layer_eval_t,
+                detail::unit_activation_layer_grad_t
         >
         {
         public:

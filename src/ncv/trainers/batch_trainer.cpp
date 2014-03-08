@@ -143,7 +143,7 @@ namespace ncv
                 }
                 else if (text::iequals(m_optimizer, "cgd"))
                 {
-                        optimize::cgd(problem, x, m_iterations, m_epsilon, fn_wlog, fn_elog, fn_ulog_ref);
+                        optimize::cgd_hs(problem, x, m_iterations, m_epsilon, fn_wlog, fn_elog, fn_ulog_ref);
                 }
                 else if (text::iequals(m_optimizer, "gd"))
                 {
