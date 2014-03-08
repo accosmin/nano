@@ -62,12 +62,12 @@ int main(int argc, char *argv[])
 
         strings_t cmd_networks =
         {
-                lmodel0,
-                lmodel1,
-                lmodel2,
-                lmodel3,
-                lmodel4,
-                lmodel5,
+//                lmodel0,
+//                lmodel1,
+//                lmodel2,
+//                lmodel3,
+//                lmodel4,
+//                lmodel5,
 
                 cmodel1,
                 cmodel2,

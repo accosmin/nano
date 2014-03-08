@@ -1,48 +1,31 @@
-* 1D stored tensor (3D and 4D), functions to map to vector or matrices
-* all layers should produce 3D tensors
-* keep the pooling and the activation layers the same (can simplify the activation layers, by looping over the whole tensor pointer instead of by matrix)
-* different types of convolution: expanding (8maps x 8convolutions -> 64maps), weighted (8maps x 8convolutions -> 8maps using 8x8 weights - may not use bias if the inputs are correctly)
-* affine layers: output-tensor = bias + weight * input-tensor, then the output layer is an affine layer
-* can play with different model configurations with possible multiple affine layers at the end
-
-* implement other CGD variants: it seem they may converge faster than the classic PR (check the paper)
+- faster ::backward() -> almost 4 times slower than ::forward()
+- faster convolution layer - reduce the number of loops - concatenate convolutions?!
 
 * python scripts to run experiments (instead of bash)
+	 - can play with different model configurations with possible multiple affine layers at the end
 
-* function to generate a random input that will closely output a given target (class)
+* function to generate a random input that will closely output a given target (class):
+	- can be used to check the learning
 
-- filter interface that keep the size of the input image:
-	- gaussian, elastic deformations, rotate & translate
-	- should be possible to chain them: image(gaussian_t, 2.0)(translate_t, -1, +1)(elastic, 0.0, 1.0)
-	- update test program to verify them
-
-- augment the training dataset with random translations and rotations (only for the stochastic trainer) + 
-	test program (given image, save N random translations and rotations of a given pixel radius)
-
-- faster ::backward() -> almost 4 times slower than ::forward()
-- check if the convolution layers can use fewer buffers (e.g. do not store xdata and update directly the output buffers)
-- faster convolution layer - reduce the number of loops - concatenate convolutions?!
-       
 - thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
 	
-- svhn decoding:
-	- the sections are not decoded correctly: 
-		- the data type of the last two sections is not valid
-		- the number of bytes in the last section is not valid
-
 - implement other training methods for the convolution network:
-	- regularization: variational learning (like in ebbbost)
-        - auto-encoding: using the unlabeled data (could also try with all samples)
-        - train a single layer at a time
-        - regularization: l2, symmetry
-        - could use genetic algorithms and encode a convolution matrix using e.g. 16 possible values, can impose symmetry-like constrains 
-        - could add options to filter the input: e.g. smoothing, normalization, contrast equalization
+	- unsupervised training:
+		- new loss (without the output layer): a single output should have a much larger value magnitude than the others 
+			(e.g. learn to disintangle the variation modes)
+		- than train the output layer with the annotated samples
 
-        - autoencoders: how to generate samples ?!
+	- regularization: variational learning (like in ebbbost)
+        - regularization: l2, symmetry
 
 - add other datasets:
         - INRIA car and person datasets
         - NORB, inria pedestrian detection, inria human detection, dymlerchrysler human detection, face detection, PASCALVoc2011, CALTECH101...
+
+- svhn decoding:
+	- the sections are not decoded correctly: 
+		- the data type of the last two sections is not valid
+		- the number of bytes in the last section is not valid
 
 - make install:
 	- also copy the headers 

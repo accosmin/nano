@@ -26,17 +26,11 @@ namespace ncv
                 const tsize osize = orows * ocols;
                 const tsize ksize = krows * kcols;
 
+                std::fill(odata, odata + odims * osize, tscalar(0));
+
                 for (tsize o = 0; o < odims; o ++)
                 {
                         tscalar* podata = odata + o * osize;
-
-                        for (tsize r = 0; r < orows; r ++)
-                        {
-                                for (tsize c = 0; c < ocols; c ++)
-                                {
-                                        podata[r * ocols + c] = 0;
-                                }
-                        }
 
                         for (tsize i = 0; i < idims; i ++)
                         {
@@ -88,34 +82,9 @@ namespace ncv
                 const tsize osize = orows * ocols;
                 const tsize ksize = krows * kcols;
 
-                for (tsize o = 0; o < odims; o ++)
-                {
-                        for (tsize i = 0; i < idims; i ++)
-                        {
-                                gwdata[o * idims + i] = 0;
-                        }
-
-                        tscalar* pgkdata = gkdata + o * ksize;
-                        for (tsize kr = 0; kr < krows; kr ++)
-                        {
-                                for (tsize kc = 0; kc < kcols; kc ++)
-                                {
-                                        pgkdata[kr * kcols + kc] = 0;
-                                }
-                        }
-                }
-
-                for (tsize i = 0; i < idims; i ++)
-                {
-                        tscalar* pgidata = gidata + i * isize;
-                        for (tsize ir = 0; ir < irows; ir ++)
-                        {
-                                for (tsize ic = 0; ic < icols; ic ++)
-                                {
-                                        pgidata[ir * icols + ic] = 0;
-                                }
-                        }
-                }
+                std::fill(gidata, gidata + idims * isize, tscalar(0));
+                std::fill(gkdata, gkdata + odims * ksize, tscalar(0));
+                std::fill(gwdata, gwdata + odims * idims, tscalar(0));
 
                 for (tsize o = 0; o < odims; o ++)
                 {
