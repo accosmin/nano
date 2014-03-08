@@ -19,10 +19,6 @@ find_package(PNG REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(TIFF REQUIRED)
 
-# OpenCL
-find_package(OpenCL 1.0 REQUIRED)
-include_directories(${OPENCL_INCLUDE_DIRS})
-
 # Set the compiler flags
 set(CMAKE_CXX_FLAGS                     "-Wall -std=c++11 -fopenmp")
 set(CMAKE_CXX_FLAGS_DEBUG               "-g")                   # -fsanitize=address")
@@ -54,7 +50,6 @@ file(GLOB nanocv_sources
         src/common/*.*
         src/tensor/*.*
         src/optimize/*.*
-        src/opencl/*.*
         src/ncv/*.*
         src/ncv/losses/*.*
         src/ncv/layers/*.*
@@ -102,8 +97,7 @@ set(nanocv_test_programs
         ncv_test_convolution
         ncv_test_network_gradient
         ncv_test_network_forward
-        ncv_test_network_backward
-        ncv_test_opencl)
+        ncv_test_network_backward)
 
 set(nanocv_programs
         ncv_max_threads

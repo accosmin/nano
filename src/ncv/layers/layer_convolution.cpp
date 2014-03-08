@@ -157,62 +157,6 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        static const string_t ocl_conv_source = R"xxx(
-
-        #pragma OPENCL EXTENSION cl_amd_fp64 : enable
-        #pragma OPENCL EXTENSION cl_khr_fp64 : enable
-
-        __kernel void conv_forward(
-                __global const double* restrict idata, int idims,
-                __global const double* restrict kdata, int krows, int kcols,
-                __constant const double* wdata,
-                __global double* restrict odata)
-        {
-                const int odims = get_global_size(0);
-                const int orows = get_global_size(1);
-                const int ocols = get_global_size(2);
-                const int osize = orows * ocols;
-
-                const int icols = ocols + kcols - 1;
-                const int irows = orows + krows - 1;
-                const int isize = irows * icols;
-
-                const int ksize = krows * kcols;
-
-                const int o = get_global_id(0);
-                const int r = get_global_id(1);
-                const int c = get_global_id(2);
-
-                __global double* podata = odata + o * osize;
-                __global const double* pkdata = kdata + o * ksize;
-
-                double sum_conv = 0;
-                for (int i = 0; i < idims; i ++)
-                {
-                        const double w = wdata[o * idims + i];
-
-                        double sum = 0;
-                        for (int kr = 0; kr < krows; kr ++)
-                        {
-                                for (int kc = 0; kc < kcols; kc ++)
-                                {
-                                        const double iv = idata[i * isize + (r + kr) * icols + (c + kc)];
-                                        const double kv = kdata[o * ksize + kr * kcols + kc];
-
-                                        sum += iv * kv;
-                                }
-                        }
-
-                        sum_conv += w * sum;
-                }
-
-                podata[r * ocols + c] = sum_conv;
-        }
-
-        )xxx";
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         conv_layer_t::conv_layer_t(const string_t& parameters)
                 :       layer_t(parameters, "convolution layer, parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
         {
@@ -255,35 +199,6 @@ namespace ncv
                 m_gwdata.resize(1, odims, idims);
                 m_gidata.resize(idims, irows, icols);
 
-                // create opencl objects (if available)
-                ocl::manager_t& theocl = ocl::manager_t::instance();
-                if (theocl.valid())
-                {
-                        // kernels
-                        m_ocl_queue = theocl.make_command_queue();
-                        m_ocl_program = theocl.make_program_from_text(ocl_conv_source);
-                        m_ocl_fkernel = theocl.make_kernel(m_ocl_program, "conv_forward");
-
-                        // forward buffers
-                        m_ocl_idata = theocl.make_buffer(m_idata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
-                        m_ocl_kdata = theocl.make_buffer(m_kdata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
-                        m_ocl_wdata = theocl.make_buffer(m_wdata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
-                        m_ocl_odata = theocl.make_buffer(m_odata.size() * sizeof(scalar_t), CL_MEM_WRITE_ONLY);
-
-                        const int idims_ = static_cast<int>(idims);
-                        const int krows_ = static_cast<int>(krows);
-                        const int kcols_ = static_cast<int>(kcols);
-
-                        // setup forward kernel
-                        m_ocl_fkernel.setArg(0, m_ocl_idata);
-                        m_ocl_fkernel.setArg(1, sizeof(int), (void*)&idims_);
-                        m_ocl_fkernel.setArg(2, m_ocl_kdata);
-                        m_ocl_fkernel.setArg(3, sizeof(int), (void*)&krows_);
-                        m_ocl_fkernel.setArg(4, sizeof(int), (void*)&kcols_);
-                        m_ocl_fkernel.setArg(5, m_ocl_wdata);
-                        m_ocl_fkernel.setArg(6, m_ocl_odata);
-                }
-
                 return m_kdata.size() + m_wdata.size();
         }
 
@@ -293,8 +208,6 @@ namespace ncv
         {
                 m_kdata.zero();
                 m_wdata.zero();
-
-                params_changed();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -303,8 +216,6 @@ namespace ncv
         {
                 m_kdata.random(random_t<scalar_t>(min, max));
                 m_wdata.random(random_t<scalar_t>(min, max));
-
-                params_changed();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -325,24 +236,7 @@ namespace ncv
 
         ivectorizer_t& conv_layer_t::load_params(ivectorizer_t& s)
         {
-                s >> m_kdata >> m_wdata;
-
-                params_changed();
-
-                return s;
-        }        
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        void conv_layer_t::params_changed() const
-        {
-                // send parameters to OpenCL device (if available)
-                ocl::manager_t& theocl = ocl::manager_t::instance();
-                if (theocl.valid())
-                {
-                        m_ocl_queue.enqueueWriteBuffer(m_ocl_kdata, CL_TRUE, 0, m_kdata.size() * sizeof(scalar_t), m_kdata.data());
-                        m_ocl_queue.enqueueWriteBuffer(m_ocl_wdata, CL_TRUE, 0, m_wdata.size() * sizeof(scalar_t), m_wdata.data());
-                }
+                return s >> m_kdata >> m_wdata;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -355,29 +249,10 @@ namespace ncv
 
                 m_idata.copy_from(input);
 
-                // OpenCL version
-                ocl::manager_t& theocl = ocl::manager_t::instance();
-                if (theocl.valid())
-                {
-                        m_ocl_queue.enqueueWriteBuffer(m_ocl_idata, CL_TRUE, 0, m_idata.size() * sizeof(scalar_t), m_idata.data());
-
-                        m_ocl_queue.enqueueNDRangeKernel(m_ocl_fkernel,
-                                cl::NullRange,
-                                cl::NDRange(odims(), orows(), ocols()),
-                                cl::NDRange(1, orows(), ocols()));
-                        m_ocl_queue.finish();
-
-                        m_ocl_queue.enqueueReadBuffer(m_ocl_odata, CL_TRUE, 0, m_odata.size() * sizeof(scalar_t), m_odata.data());
-                }
-
-                // CPU version
-                else
-                {
-                        _forward(m_idata.data(), idims(),
-                                 m_kdata.data(), krows(), kcols(),
-                                 m_wdata.data(),
-                                 m_odata.data(), odims(), orows(), ocols());
-                }
+                _forward(m_idata.data(), idims(),
+                         m_kdata.data(), krows(), kcols(),
+                         m_wdata.data(),
+                         m_odata.data(), odims(), orows(), ocols());
 
                 return m_odata;
         }        

@@ -2,7 +2,6 @@
 #define NANOCV_LAYER_LINEAR_H
 
 #include "layer.h"
-#include "opencl/opencl.h"
 
 namespace ncv
 {
@@ -49,8 +48,6 @@ namespace ncv
                 size_t isize() const { return m_idata.size(); }
                 size_t osize() const { return m_odata.size(); }
 
-                void params_changed() const;
-
                 /////////////////////////////////////////////////////////////////////////////////////////
 
         private:
@@ -64,15 +61,6 @@ namespace ncv
 
                 tensor_t                m_gwdata;       ///< cumulated weight gradients
                 tensor_t                m_gbdata;       ///< cumulated bias gradients
-
-                cl::CommandQueue        m_ocl_queue;            ///< opencl command queue
-                cl::Program             m_ocl_program;          ///< opencl program
-                cl::Kernel              m_ocl_fkernel;          ///< opencl forward kernel
-
-                cl::Buffer              m_ocl_idata;            ///< opencl buffers for various tensors
-                cl::Buffer              m_ocl_odata;
-                cl::Buffer              m_ocl_bdata;
-                cl::Buffer              m_ocl_wdata;
         };
 }
 
