@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
         
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
-        po_desc.add_options()("help,h", "help message");
+        po_desc.add_options()("help,h", "test program");
         po_desc.add_options()("input,i",
                 boost::program_options::value<ncv::string_t>(),
                 "input image path");
