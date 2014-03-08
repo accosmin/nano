@@ -1,9 +1,6 @@
 - faster ::backward() -> almost 4 times slower than ::forward()
 - faster convolution layer - reduce the number of loops - concatenate convolutions?!
 
-* python scripts to run experiments (instead of bash)
-	 - can play with different model configurations with possible multiple affine layers at the end
-
 * function to generate a random input that will closely output a given target (class):
 	- can be used to check the learning
 

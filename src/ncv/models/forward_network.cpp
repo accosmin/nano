@@ -227,7 +227,10 @@ namespace ncv
         {
                 const rmodel_t model(new forward_network_t(parameters));
 
-                model->resize(n_rows(), n_cols(), n_outputs(), color(), false);
+                if (n_outputs() > 0)
+                {
+                        model->resize(n_rows(), n_cols(), n_outputs(), color(), false);
+                }
 
                 return model;
         }

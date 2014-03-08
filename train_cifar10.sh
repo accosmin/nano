@@ -7,7 +7,7 @@ dir_results=/home/cosmin/experiments/results
 dir_db=/home/cosmin/experiments/databases
 trainer=./build-release/ncv_trainer
 
-dir_exp=${dir_results}/mnist
+dir_exp=${dir_results}/cifar10
 mkdir -p ${dir_exp}
 
 # common parameters
@@ -15,21 +15,21 @@ batch="opt=lbfgs,eps=1e-6,iters=4"
 stoch="opt=sgd,epoch=1"
 
 param=""
-param=${param}"--task mnist --task-dir ${dir_db}/mnist/ "
+param=${param}"--task cifar10 --task-dir ${dir_db}/cifar10/ "
 param=${param}"--loss logistic --trials 1 --threads 4"
 
 # models
 model0=""
 
 model1=${model0}"conv:dims=32,rows=7,cols=7;snorm;smax-abs-pool;"
-model1=${model1}"conv:dims=32,rows=4,cols=4;snorm;smax-abs-pool;"
+model1=${model1}"conv:dims=32,rows=6,cols=6;snorm;smax-abs-pool;"
 model1=${model1}"conv:dims=32,rows=4,cols=4;snorm;"
 
-model2=${model0}"conv:dims=32,rows=7,cols=7;snorm;smax-abs-pool;"
-model2=${model2}"conv:dims=32,rows=6,cols=6;snorm;smax-abs-pool;"
+model2=${model0}"conv:dims=32,rows=9,cols=9;snorm;smax-abs-pool;"
+model2=${model2}"conv:dims=32,rows=7,cols=7;snorm;smax-abs-pool;"
 model2=${model2}"conv:dims=32,rows=3,cols=3;snorm;"
 
-model3=${model0}"conv:dims=32,rows=5,cols=5;snorm;smax-abs-pool;"
+model3=${model0}"conv:dims=32,rows=9,cols=9;snorm;smax-abs-pool;"
 model3=${model3}"conv:dims=32,rows=5,cols=5;snorm;smax-abs-pool;"
 model3=${model3}"conv:dims=32,rows=4,cols=4;snorm;"
 
