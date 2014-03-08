@@ -2,6 +2,8 @@
 #include "text.h"
 #include "common/math.hpp"
 #include "common/random.hpp"
+#include "common/dot.hpp"
+#include "common/thread_loop.hpp"
 
 namespace ncv
 {
@@ -18,16 +20,18 @@ namespace ncv
                 const tscalar* bdata,
                 tscalar* odata, tsize osize)
         {
-                for (tsize o = 0; o < osize; o ++)
-                {
-                        tscalar sum = bdata[o];
-                        for (tsize i = 0; i < isize; i ++)
-                        {
-                                sum += wdata[o * isize + i] * idata[i];
-                        }
+//                #pragma omp parallel for schedule(static)
+//                for (tsize o = 0; o < osize; o ++)
+//                {
+//                        odata[o] = bdata[o] + math::dot_mod4x(wdata + o * isize, idata, isize);
+//                }
 
-                        odata[o] = sum;
-                }
+                static ncv::thread_pool_t pool(ncv::n_threads() / 2);
+
+                ncv::thread_loop(osize, [&] (size_t o)
+                {
+                        odata[o] = bdata[o] + math::dot_mod4x(wdata + o * isize, idata, isize);
+                }, pool);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -82,30 +86,30 @@ namespace ncv
                 m_gwdata.resize(1, odims, idims);
                 m_gbdata.resize(odims, 1, 1);
 
-                // create opencl objects (if available)
-                ocl::manager_t& theocl = ocl::manager_t::instance();
-                if (theocl.valid() && tensor.size() > 0)
-                {
-                        // kernels
-                        m_ocl_queue = theocl.make_command_queue();
-                        m_ocl_program = theocl.make_program_from_text(ocl_linear_source);
-                        m_ocl_fkernel = theocl.make_kernel(m_ocl_program, "linear_forward");
+//                // create opencl objects (if available)
+//                ocl::manager_t& theocl = ocl::manager_t::instance();
+//                if (theocl.valid() && tensor.size() > 0)
+//                {
+//                        // kernels
+//                        m_ocl_queue = theocl.make_command_queue();
+//                        m_ocl_program = theocl.make_program_from_text(ocl_linear_source);
+//                        m_ocl_fkernel = theocl.make_kernel(m_ocl_program, "linear_forward");
 
-                        // forward buffers
-                        m_ocl_idata = theocl.make_buffer(m_idata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
-                        m_ocl_bdata = theocl.make_buffer(m_bdata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
-                        m_ocl_wdata = theocl.make_buffer(m_wdata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
-                        m_ocl_odata = theocl.make_buffer(m_odata.size() * sizeof(scalar_t), CL_MEM_WRITE_ONLY);
+//                        // forward buffers
+//                        m_ocl_idata = theocl.make_buffer(m_idata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
+//                        m_ocl_bdata = theocl.make_buffer(m_bdata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
+//                        m_ocl_wdata = theocl.make_buffer(m_wdata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
+//                        m_ocl_odata = theocl.make_buffer(m_odata.size() * sizeof(scalar_t), CL_MEM_WRITE_ONLY);
 
-                        const int isize_ = static_cast<int>(isize());
+//                        const int isize_ = static_cast<int>(isize());
 
-                        // setup forward kernel
-                        m_ocl_fkernel.setArg(0, m_ocl_idata);
-                        m_ocl_fkernel.setArg(1, sizeof(int), (void*)&isize_);
-                        m_ocl_fkernel.setArg(2, m_ocl_wdata);
-                        m_ocl_fkernel.setArg(3, m_ocl_bdata);
-                        m_ocl_fkernel.setArg(4, m_ocl_odata);
-                }
+//                        // setup forward kernel
+//                        m_ocl_fkernel.setArg(0, m_ocl_idata);
+//                        m_ocl_fkernel.setArg(1, sizeof(int), (void*)&isize_);
+//                        m_ocl_fkernel.setArg(2, m_ocl_wdata);
+//                        m_ocl_fkernel.setArg(3, m_ocl_bdata);
+//                        m_ocl_fkernel.setArg(4, m_ocl_odata);
+//                }
 
                 return m_wdata.size() + m_bdata.size();
         }
@@ -159,13 +163,13 @@ namespace ncv
 
         void linear_layer_t::params_changed() const
         {
-                // send parameters to OpenCL device (if available)
-                ocl::manager_t& theocl = ocl::manager_t::instance();
-                if (theocl.valid())
-                {
-                        m_ocl_queue.enqueueWriteBuffer(m_ocl_bdata, CL_TRUE, 0, m_bdata.size() * sizeof(scalar_t), m_bdata.data());
-                        m_ocl_queue.enqueueWriteBuffer(m_ocl_wdata, CL_TRUE, 0, m_wdata.size() * sizeof(scalar_t), m_wdata.data());
-                }
+//                // send parameters to OpenCL device (if available)
+//                ocl::manager_t& theocl = ocl::manager_t::instance();
+//                if (theocl.valid())
+//                {
+//                        m_ocl_queue.enqueueWriteBuffer(m_ocl_bdata, CL_TRUE, 0, m_bdata.size() * sizeof(scalar_t), m_bdata.data());
+//                        m_ocl_queue.enqueueWriteBuffer(m_ocl_wdata, CL_TRUE, 0, m_wdata.size() * sizeof(scalar_t), m_wdata.data());
+//                }
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -178,23 +182,23 @@ namespace ncv
 
                 m_idata.copy_from(input);
 
-                // OpenCL version
-                ocl::manager_t& theocl = ocl::manager_t::instance();
-                if (theocl.valid())
-                {
-                        m_ocl_queue.enqueueWriteBuffer(m_ocl_idata, CL_TRUE, 0, m_idata.size() * sizeof(scalar_t), m_idata.data());
+//                // OpenCL version
+//                ocl::manager_t& theocl = ocl::manager_t::instance();
+//                if (theocl.valid())
+//                {
+//                        m_ocl_queue.enqueueWriteBuffer(m_ocl_idata, CL_TRUE, 0, m_idata.size() * sizeof(scalar_t), m_idata.data());
 
-                        m_ocl_queue.enqueueNDRangeKernel(m_ocl_fkernel,
-                                cl::NullRange,
-                                cl::NDRange(osize()),
-                                cl::NDRange(osize()));
-                        m_ocl_queue.finish();
+//                        m_ocl_queue.enqueueNDRangeKernel(m_ocl_fkernel,
+//                                cl::NullRange,
+//                                cl::NDRange(osize()),
+//                                cl::NDRange(osize()));
+//                        m_ocl_queue.finish();
 
-                        m_ocl_queue.enqueueReadBuffer(m_ocl_odata, CL_TRUE, 0, m_odata.size() * sizeof(scalar_t), m_odata.data());
-                }
+//                        m_ocl_queue.enqueueReadBuffer(m_ocl_odata, CL_TRUE, 0, m_odata.size() * sizeof(scalar_t), m_odata.data());
+//                }
 
-                // CPU version
-                else
+//                // CPU version
+//                else
                 {
                         _forward(m_idata.data(), isize(),
                                  m_wdata.data(), m_bdata.data(),

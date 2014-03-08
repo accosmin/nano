@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
                 ncv::timer_t timer;
 
                 trainer_data_t ldata(model, trainer_data_t::type::value);
-                ldata.update_mt(samples, targets, loss);
+                ldata.update_st(samples, targets, loss);
 
                 log_info() << "<<< processed [" << ldata.count() << "] samples in " << timer.elapsed() << ".";
         }

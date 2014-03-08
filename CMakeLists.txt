@@ -24,7 +24,7 @@ find_package(OpenCL 1.0 REQUIRED)
 include_directories(${OPENCL_INCLUDE_DIRS})
 
 # Set the compiler flags
-set(CMAKE_CXX_FLAGS                     "-Wall -std=c++11")
+set(CMAKE_CXX_FLAGS                     "-Wall -std=c++11 -fopenmp")
 set(CMAKE_CXX_FLAGS_DEBUG               "-g")                   # -fsanitize=address")
 set(CMAKE_CXX_FLAGS_RELEASE             "-O4 -DNDEBUG")         # -DEIGEN_NO_DEBUG")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O2 -g")               # -DEIGEN_NO_DEBUG")
