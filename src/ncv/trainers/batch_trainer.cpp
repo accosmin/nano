@@ -52,6 +52,9 @@ namespace ncv
                 samples_t tsamples, vsamples;
                 ncv::uniform_split(samples, size_t(90), random_t<size_t>(0, samples.size()), tsamples, vsamples);
 
+//                tsamples.erase(tsamples.begin() + 1024, tsamples.end());
+//                vsamples.erase(vsamples.begin() + 1024, vsamples.end());
+
                 // construct the optimization problem
                 timer_t timer;
 
@@ -82,6 +85,9 @@ namespace ncv
                         // update the optimum state
                         state.update(x, tvalue, terror, vvalue, verror);
 
+//                        std::cout << "train: x = [" << x.minCoeff() << ", " << x.maxCoeff()
+//                                  << "], loss = " << tvalue << "/" << terror << std::endl;
+
                         return tvalue;
                 };
 
@@ -102,6 +108,10 @@ namespace ncv
 
                         // update the optimum state
                         state.update(x, tvalue, terror, vvalue, verror);
+
+//                        std::cout << "train: x = [" << x.minCoeff() << ", " << x.maxCoeff()
+//                                  << "], loss = " << tvalue << "/" << terror
+//                                  << ", g = [" << gx.minCoeff() << ", " << gx.maxCoeff() << "]" << std::endl;
 
                         return tvalue;
                 };

@@ -231,6 +231,7 @@ namespace ncv
                 {
                         model->resize(n_rows(), n_cols(), n_outputs(), color(), false);
                 }
+                model->load_params(this->params());
 
                 return model;
         }
