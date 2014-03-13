@@ -4,28 +4,6 @@ namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        size_t softmax_abs_pool_layer_t::resize(const tensor_t& tensor)
-        {
-                const size_t idims = tensor.dims();
-                const size_t irows = tensor.rows();
-                const size_t icols = tensor.cols();
-
-                const size_t odims = idims;
-                const size_t orows = (irows + 1) / 2;
-                const size_t ocols = (icols + 1) / 2;
-
-                m_idata.resize(idims, irows, icols);
-                m_odata.resize(odims, orows, ocols);
-
-                m_wdata.resize(idims, irows, icols);
-                m_sdata.resize(odims, orows, ocols);
-                m_tdata.resize(odims, orows, ocols);
-
-                return 0;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         template
         <
                 typename tscalar,
@@ -74,28 +52,6 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        const tensor_t& softmax_abs_pool_layer_t::forward(const tensor_t& input)
-        {
-                assert(idims() == input.dims());
-                assert(irows() <= input.rows());
-                assert(icols() <= input.cols());
-
-                m_idata.copy_from(input);
-
-                for (size_t o = 0; o < odims(); o ++)
-                {
-                        _forward(m_idata.plane_data(o), irows(), icols(),
-                                 m_wdata.plane_data(o),
-                                 m_sdata.plane_data(o),
-                                 m_tdata.plane_data(o),
-                                 m_odata.plane_data(o));
-                }
-
-                return m_odata;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         template
         <
                 typename tscalar,
@@ -123,6 +79,50 @@ namespace ncv
                                 gdata[oindex] * (t * ((w + iw) + (w - iw) * i) - s * (w - iw)) / (t * t);
                         }
                 }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        size_t softmax_abs_pool_layer_t::resize(const tensor_t& tensor)
+        {
+                const size_t idims = tensor.dims();
+                const size_t irows = tensor.rows();
+                const size_t icols = tensor.cols();
+
+                const size_t odims = idims;
+                const size_t orows = (irows + 1) / 2;
+                const size_t ocols = (icols + 1) / 2;
+
+                m_idata.resize(idims, irows, icols);
+                m_odata.resize(odims, orows, ocols);
+
+                m_wdata.resize(idims, irows, icols);
+                m_sdata.resize(odims, orows, ocols);
+                m_tdata.resize(odims, orows, ocols);
+
+                return 0;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        const tensor_t& softmax_abs_pool_layer_t::forward(const tensor_t& input)
+        {
+                assert(idims() == input.dims());
+                assert(irows() <= input.rows());
+                assert(icols() <= input.cols());
+
+                m_idata.copy_from(input);
+
+                for (size_t o = 0; o < odims(); o ++)
+                {
+                        _forward(m_idata.plane_data(o), irows(), icols(),
+                                 m_wdata.plane_data(o),
+                                 m_sdata.plane_data(o),
+                                 m_tdata.plane_data(o),
+                                 m_odata.plane_data(o));
+                }
+
+                return m_odata;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

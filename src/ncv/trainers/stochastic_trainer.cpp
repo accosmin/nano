@@ -168,7 +168,7 @@ namespace ncv
                 const scalar_t max_alpha = 1e-1;
                 const scalar_t min_alpha = 1e-3;
                 const scalar_t var_alpha = std::exp((std::log(max_alpha) - std::log(min_alpha))
-                                           / (4.0 * wpool.n_workers()));
+                                           / std::min(size_t(8), wpool.n_workers()));
 
                 for (scalar_t alpha0 = min_alpha; alpha0 <= max_alpha; alpha0 *= var_alpha)
                 {
