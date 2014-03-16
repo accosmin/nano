@@ -19,8 +19,12 @@ find_package(PNG REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(TIFF REQUIRED)
 
+# OpenCL
+find_package(OpenCL 1.1 REQUIRED)
+include_directories(${OPENCL_INCLUDE_DIRS})
+
 # Set the compiler flags
-set(CMAKE_CXX_FLAGS                     "-Wall -std=c++11 -fopenmp")
+set(CMAKE_CXX_FLAGS                     "-Wall -std=c++11")
 set(CMAKE_CXX_FLAGS_DEBUG               "-g")                   # -fsanitize=address")
 set(CMAKE_CXX_FLAGS_RELEASE             "-O4 -DNDEBUG")         # -DEIGEN_NO_DEBUG")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O2 -g")               # -DEIGEN_NO_DEBUG")
@@ -50,12 +54,13 @@ file(GLOB nanocv_sources
         src/common/*.*
         src/tensor/*.*
         src/optimize/*.*
-        src/ncv/*.*
-        src/ncv/losses/*.*
-        src/ncv/layers/*.*
-        src/ncv/tasks/*.*
-        src/ncv/models/*.*
-        src/ncv/trainers/*.*
+        src/opencl/*.*
+        src/nanocv/*.*
+        src/nanocv/losses/*.*
+        src/nanocv/layers/*.*
+        src/nanocv/tasks/*.*
+        src/nanocv/models/*.*
+        src/nanocv/trainers/*.*
         )
 
 add_library(nanocv
@@ -69,7 +74,7 @@ add_library(nanocv
 # Set the include directories and linking libraries
 set(nanocv_includes
         src/
-        src/ncv
+        src/nanocv
         )
 
 include_directories(
@@ -94,6 +99,7 @@ set(nanocv_test_programs
         ncv_test_image
         ncv_test_color
         ncv_test_loss
+        ncv_test_opencl
         ncv_test_convolution
         ncv_test_network_gradient
         ncv_test_network_forward

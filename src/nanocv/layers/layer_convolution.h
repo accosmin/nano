@@ -2,6 +2,7 @@
 #define NANOCV_CONV_LAYER_H
 
 #include "layer.h"
+#include "opencl/opencl.h"
 
 namespace ncv
 {
@@ -61,6 +62,8 @@ namespace ncv
                 size_t krows() const { return m_kdata.rows(); }
                 size_t kcols() const { return m_kdata.cols(); }
 
+                void params_changed() const;
+
                 /////////////////////////////////////////////////////////////////////////////////////////
 
         private:
@@ -74,6 +77,23 @@ namespace ncv
                 tensor_t                m_gkdata;               ///< cumulated kernel gradients
                 tensor_t                m_gwdata;               ///< cumulated weight gradients
                 tensor_t                m_gidata;               ///< cumulated input gradients
+
+                cl::CommandQueue        m_ocl_queue;            ///< opencl command queue
+                cl::Program             m_ocl_program;          ///< opencl program
+                cl::Kernel              m_ocl_fkernel;          ///< opencl forward kernel
+                cl::Kernel              m_ocl_bikernel;         ///< opencl backward (inputs gradient) kernel
+                cl::Kernel              m_ocl_bkkernel;         ///< opencl backward (convolution gradient) kernel
+                cl::Kernel              m_ocl_bwkernel;         ///< opencl backward (weights gradient) kernel
+
+                cl::Buffer              m_ocl_idata;            ///< opencl buffers for various tensors
+                cl::Buffer              m_ocl_kdata;
+                cl::Buffer              m_ocl_wdata;
+
+                cl::Buffer              m_ocl_gidata;
+                cl::Buffer              m_ocl_gkdata;
+                cl::Buffer              m_ocl_gwdata;
+
+                cl::Buffer              m_ocl_odata;
         };
 }
 

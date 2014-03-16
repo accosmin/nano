@@ -11,12 +11,12 @@ dir_exp=${dir_results}/mnist
 mkdir -p ${dir_exp}
 
 # common parameters
-batch="opt=lbfgs,eps=1e-6,iters=64"
+batch="opt=lbfgs,eps=1e-6,iters=256"
 stoch="opt=sgd,epoch=64"
 
 param=""
 param=${param}"--task mnist --task-dir ${dir_db}/mnist/ "
-param=${param}"--loss logistic --trials 1 --threads 8"
+param=${param}"--loss logistic --trials 1 --threads 4"
 
 # models
 model0=""
@@ -34,13 +34,13 @@ model3=${model3}"conv:dims=32,rows=5,cols=5;snorm;smax-abs-pool;"
 model3=${model3}"conv:dims=32,rows=4,cols=4;snorm;"
 
 # train models
-fn_train forward-network ${model0} stochastic ${stoch} model0
-fn_train forward-network ${model1} stochastic ${stoch} model1
-fn_train forward-network ${model2} stochastic ${stoch} model2
-fn_train forward-network ${model3} stochastic ${stoch} model3
+#fn_train forward-network ${model0} stochastic ${stoch} model0
+#fn_train forward-network ${model1} stochastic ${stoch} model1
+#fn_train forward-network ${model2} stochastic ${stoch} model2
+#fn_train forward-network ${model3} stochastic ${stoch} model3
 
-#fn_train forward-network ${model0} batch ${batch} model0
-#fn_train forward-network ${model1} batch ${batch} model1
-#fn_train forward-network ${model2} batch ${batch} model2
-#fn_train forward-network ${model3} batch ${batch} model3
+fn_train forward-network ${model0} batch ${batch} model0
+fn_train forward-network ${model1} batch ${batch} model1
+fn_train forward-network ${model2} batch ${batch} model2
+fn_train forward-network ${model3} batch ${batch} model3
 

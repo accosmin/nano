@@ -1,7 +1,7 @@
 #!/bin/bash
 
 dirs=""
-dirs=${dirs}" ./src/ ./src/common/ ./src/tensor/ ./src/optimize/"
+dirs=${dirs}" ./src/ ./src/common/ ./src/tensor/ ./src/optimize/ ./src/opencl/"
 dirs=${dirs}" ./src/ncv/ ./src/ncv/layers/ ./src/ncv/losses/ ./src/ncv/models/ ./src/ncv/tasks/ ./src/ncv/trainers/"
 
 log="cppcheck.log"
