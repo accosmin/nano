@@ -196,8 +196,11 @@ namespace ncv
                 const int r = get_global_id(1);
                 const int c = get_global_id(2);
 
-                const int krmax = max(krows, irows);
-                const int kcmax = max(kcols, icols);
+                const int krmin = max(0,     r - orows + 1);
+                const int krmax = min(krows, r + 1);
+
+                const int kcmin = max(0,     c - ocols + 1);
+                const int kcmax = min(kcols, c + 1);
 
                 double sum_conv = 0;
                 for (int o = 0; o < odims; o ++)
@@ -207,9 +210,9 @@ namespace ncv
                         __global const double* pkdata = kdata + o * ksize;
 
                         double sum = 0;
-                        for (int kr = 0; kr < krmax; kr ++)
+                        for (int kr = krmin; kr < krmax; kr ++)
                         {
-                                for (int kc = 0; kc < kcmax; kc ++)
+                                for (int kc = kcmin; kc < kcmax; kc ++)
                                 {
                                         const double ov = podata[(r - kr) * ocols + (c - kc)];
                                         const double kv = pkdata[kr * kcols + kc];
@@ -381,7 +384,7 @@ namespace ncv
                         m_ocl_idata = theocl.make_buffer(m_idata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
                         m_ocl_kdata = theocl.make_buffer(m_kdata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
                         m_ocl_wdata = theocl.make_buffer(m_wdata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
-                        m_ocl_odata = theocl.make_buffer(m_odata.size() * sizeof(scalar_t), CL_MEM_WRITE_ONLY);
+                        m_ocl_odata = theocl.make_buffer(m_odata.size() * sizeof(scalar_t), CL_MEM_READ_WRITE);
 
                         // backward buffers
                         m_ocl_gidata = theocl.make_buffer(m_gidata.size() * sizeof(scalar_t), CL_MEM_WRITE_ONLY);

@@ -64,6 +64,11 @@ static void test_grad(
 
                 log_info() << header << " [" << (t + 1) << "/" << n_tests
                            << "]: gradient accuracy = " << dgx << " (" << (dgx > 1e-6 ? "ERROR" : "OK") << ").";
+
+                if (dgx > 1e-6)
+                {
+                        std::cout << (gx_gd - gx_ax).transpose() << std::endl << std::endl;
+                }
         }
 }
 
@@ -79,9 +84,9 @@ int main(int argc, char *argv[])
 
         const color_mode cmd_color = color_mode::luma;
         const size_t cmd_inputs = 1;
-        const size_t cmd_irows = 12;
-        const size_t cmd_icols = 12;
-        const size_t cmd_outputs = 10;
+        const size_t cmd_irows = 9;
+        const size_t cmd_icols = 9;
+        const size_t cmd_outputs = 4;
         const size_t cmd_max_layers = 2;
 
         const size_t cmd_tests = 64;
@@ -107,7 +112,7 @@ int main(int argc, char *argv[])
                                                 // convolution part
                                                 for (size_t l = 0; l < n_layers && !conv_layer_id.empty(); l ++)
                                                 {
-                                                        random_t<size_t> rgen(2, 6);
+                                                        random_t<size_t> rgen(2, 4);
 
                                                         string_t params;
                                                         params += "dims=" + text::to_string(rgen());
