@@ -1,8 +1,12 @@
 #include "ncv.h"
 #include "common/convolution.hpp"
-#include "opencl/opencl.h"
+#ifdef NANOCV_HAVE_OPENCL
+        #include "opencl/opencl.h"
+#endif
 
 using namespace ncv;
+
+#ifdef NANOCV_HAVE_OPENCL
 
 const std::string conv_program_source = R"xxx(
 
@@ -43,6 +47,8 @@ __kernel void conv_kernel(
 }
 
 )xxx";
+
+#endif
 
 ncv::thread_pool_t pool;
 const size_t tests = 16;
@@ -132,6 +138,8 @@ scalar_t test_conv2D_xcpu(top op, const char* name, const matrices_t& idatas, co
 
         return sum_matrices(odatas);
 }
+
+#ifdef NANOCV_HAVE_OPENCL
 
 scalar_t test_conv2D_gpu(const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas, size_t tsend)
 {
@@ -224,6 +232,8 @@ scalar_t test_conv2D_gpu(const char* name, const matrices_t& idatas, const matri
         return sum_matrices(odatas);
 }
 
+#endif
+
 void test(int isize, int ksize, int n_samples)
 {
         const int osize = isize - ksize + 1;
@@ -240,6 +250,7 @@ void test(int isize, int ksize, int n_samples)
         const scalar_t sumxeib = test_conv2D_xcpu(ncv::math::conv_eib<matrix_t>, "eib(xCPU)", idatas, kdata, odatas);
         const scalar_t sum1dot = test_conv2D_1cpu(ncv::math::conv_dot<matrix_t>, "dot(1CPU)", idatas, kdata, odatas);
         const scalar_t sumxdot = test_conv2D_xcpu(ncv::math::conv_dot<matrix_t>, "dot(xCPU)", idatas, kdata, odatas);
+#ifdef NANOCV_HAVE_OPENCL
         const scalar_t sumg8dot = test_conv2D_gpu("dot(8GPU)", idatas, kdata, odatas, 8);
         const scalar_t sumg16dot = test_conv2D_gpu("dot(16GPU)", idatas, kdata, odatas, 16);
         const scalar_t sumg32dot = test_conv2D_gpu("dot(32GPU)", idatas, kdata, odatas, 32);
@@ -247,6 +258,7 @@ void test(int isize, int ksize, int n_samples)
         const scalar_t sumg128dot = test_conv2D_gpu("dot(128GPU)", idatas, kdata, odatas, 128);
         const scalar_t sumg256dot = test_conv2D_gpu("dot(256GPU)", idatas, kdata, odatas, 256);
         const scalar_t sumg1024dot = test_conv2D_gpu("dot(1024GPU)", idatas, kdata, odatas, 1024);
+#endif
         std::cout << std::endl;
 
         const scalar_t eps = 1e-12;//std::numeric_limits<scalar_t>::epsilon();
@@ -255,6 +267,7 @@ void test(int isize, int ksize, int n_samples)
         if ((diff = std::fabs(sumxeib - sum1eib)) > eps) { std::cout << "eib(xCPU) FAILED (diff = " << diff << ")!" << std::endl; }
         if ((diff = std::fabs(sum1dot - sum1eib)) > eps) { std::cout << "dot(1CPU) FAILED (diff = " << diff << ")!" << std::endl; }
         if ((diff = std::fabs(sumxdot - sum1eib)) > eps) { std::cout << "dot(xCPU) FAILED (diff = " << diff << ")!" << std::endl; }
+#ifdef NANOCV_HAVE_OPENCL
         if ((diff = std::fabs(sumg8dot - sum1eib)) > eps) { std::cout << "dot(8GPU) FAILED (diff = " << diff << ")!" << std::endl; }
         if ((diff = std::fabs(sumg16dot - sum1eib)) > eps) { std::cout << "dot(16GPU) FAILED (diff = " << diff << ")!" << std::endl; }
         if ((diff = std::fabs(sumg32dot - sum1eib)) > eps) { std::cout << "dot(32GPU) FAILED (diff = " << diff << ")!" << std::endl; }
@@ -262,14 +275,17 @@ void test(int isize, int ksize, int n_samples)
         if ((diff = std::fabs(sumg128dot - sum1eib)) > eps) { std::cout << "dot(128GPU) FAILED (diff = " << diff << ")!" << std::endl; }
         if ((diff = std::fabs(sumg256dot - sum1eib)) > eps) { std::cout << "dot(256GPU) FAILED (diff = " << diff << ")!" << std::endl; }
         if ((diff = std::fabs(sumg1024dot - sum1eib)) > eps) { std::cout << "dot(1024GPU) FAILED (diff = " << diff << ")!" << std::endl; }
+#endif
 }
 
 int main(int argc, char* argv[])
 {
+#ifdef NANOCV_HAVE_OPENCL
         if (!ocl::manager_t::instance().valid())
         {
                 exit(EXIT_FAILURE);
         }
+#endif
 
         static const int min_isize = 24;
         static const int max_isize = 48;
@@ -277,7 +293,9 @@ int main(int argc, char* argv[])
         static const int max_ksize = 13;
         static const int n_samples = 4 * 1024;
 
+#ifdef NANOCV_HAVE_OPENCL
         try
+#endif
         {
                 for (int isize = min_isize; isize <= max_isize; isize += 4)
                 {
@@ -289,10 +307,12 @@ int main(int argc, char* argv[])
                 }
         }
 
+#ifdef NANOCV_HAVE_OPENCL
         catch (cl::Error e)
         {
                 log_error() << "OpenCL fatal error: <" << e.what() << "> (" << ocl::error_string(e.err()) << ")!";
         }
+#endif
 
 	return EXIT_SUCCESS;
 }

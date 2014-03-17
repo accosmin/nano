@@ -126,6 +126,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
+#if NANOCV_HAVE_OPENCL
         static const string_t ocl_conv_source = R"xxx(
 
         #pragma OPENCL EXTENSION cl_amd_fp64 : enable
@@ -323,6 +324,7 @@ namespace ncv
         }
 
         )xxx";
+#endif
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -368,6 +370,7 @@ namespace ncv
                 m_gwdata.resize(1, odims, idims);
                 m_gidata.resize(idims, irows, icols);
 
+#if NANOCV_HAVE_OPENCL
                 // create opencl objects (if available)
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
@@ -435,6 +438,7 @@ namespace ncv
                         m_ocl_bwkernel.setArg(6, sizeof(int), (void*)&kcols_);
                         m_ocl_bwkernel.setArg(7, m_ocl_gwdata);
                 }
+#endif
 
                 return m_kdata.size() + m_wdata.size();
         }
@@ -488,6 +492,7 @@ namespace ncv
 
         void conv_layer_t::params_changed() const
         {
+#if NANOCV_HAVE_OPENCL
                 // send parameters to OpenCL device (if available)
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
@@ -495,6 +500,7 @@ namespace ncv
                         m_ocl_queue.enqueueWriteBuffer(m_ocl_kdata, CL_TRUE, 0, m_kdata.size() * sizeof(scalar_t), m_kdata.data());
                         m_ocl_queue.enqueueWriteBuffer(m_ocl_wdata, CL_TRUE, 0, m_wdata.size() * sizeof(scalar_t), m_wdata.data());
                 }
+#endif
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -507,6 +513,7 @@ namespace ncv
 
                 m_idata.copy_from(input);
 
+#if NANOCV_HAVE_OPENCL
                 // OpenCL version
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
@@ -523,6 +530,7 @@ namespace ncv
 
                 // CPU version
                 else
+#endif
                 {
                         _forward(m_idata.data(), idims(),
                                  m_kdata.data(), krows(), kcols(),
@@ -543,6 +551,7 @@ namespace ncv
 
 		m_odata.copy_from(gradient);
 
+#if NANOCV_HAVE_OPENCL
                 // OpenCL version
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
@@ -570,6 +579,7 @@ namespace ncv
 
                 // CPU version
                 else
+#endif
                 {
                         _backward(m_idata.data(), m_gidata.data(), idims(),
                                   m_kdata.data(), m_gkdata.data(), krows(), kcols(),

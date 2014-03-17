@@ -20,8 +20,10 @@ find_package(JPEG REQUIRED)
 find_package(TIFF REQUIRED)
 
 # OpenCL
-find_package(OpenCL 1.1 REQUIRED)
-include_directories(${OPENCL_INCLUDE_DIRS})
+if(NANOCV_HAVE_OPENCL)
+        find_package(OpenCL 1.1 REQUIRED)
+        include_directories(${OPENCL_INCLUDE_DIRS})
+endif()
 
 # Set the compiler flags
 set(CMAKE_CXX_FLAGS                     "-Wall -std=c++11")
@@ -54,7 +56,6 @@ file(GLOB nanocv_sources
         src/common/*.*
         src/tensor/*.*
         src/optimize/*.*
-        src/opencl/*.*
         src/nanocv/*.*
         src/nanocv/losses/*.*
         src/nanocv/layers/*.*
@@ -62,6 +63,10 @@ file(GLOB nanocv_sources
         src/nanocv/models/*.*
         src/nanocv/trainers/*.*
         )
+
+if(NANOCV_HAVE_OPENCL)
+        set(nanocv_sources "${nanocv_sources};src/opencl/*.*")
+endif()
 
 add_library(nanocv
         SHARED
@@ -89,7 +94,9 @@ set(libs "${libs};${Boost_FILESYSTEM_LIBRARY_RELEASE}")
 set(libs "${libs};${JPEG_LIBRARIES}")
 set(libs "${libs};${TIFF_LIBRARIES}")
 set(libs "${libs};${PNG_LIBRARIES}")
-set(libs "${libs};${OPENCL_LIBRARIES}")
+if(NANOCV_HAVE_OPENCL)
+        set(libs "${libs};${OPENCL_LIBRARIES}")
+endif()
 
 # Set the executables
 set(nanocv_test_programs
@@ -99,11 +106,14 @@ set(nanocv_test_programs
         ncv_test_image
         ncv_test_color
         ncv_test_loss
-        ncv_test_opencl
         ncv_test_convolution
         ncv_test_network_gradient
         ncv_test_network_forward
         ncv_test_network_backward)
+
+if(NANOCV_HAVE_OPENCL)
+        set(nanocv_test_programs "${nanocv_test_programs};ncv_test_opencl")
+endif()
 
 set(nanocv_programs
         ncv_max_threads

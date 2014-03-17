@@ -84,8 +84,8 @@ int main(int argc, char *argv[])
 
         const color_mode cmd_color = color_mode::luma;
         const size_t cmd_inputs = 1;
-        const size_t cmd_irows = 9;
-        const size_t cmd_icols = 9;
+        const size_t cmd_irows = 12;
+        const size_t cmd_icols = 12;
         const size_t cmd_outputs = 4;
         const size_t cmd_max_layers = 2;
 
