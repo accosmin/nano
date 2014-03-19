@@ -440,7 +440,7 @@ namespace ncv
                 }
 #endif
 
-                return m_kdata.size() + m_wdata.size();
+                return n_parameters();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

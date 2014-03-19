@@ -48,6 +48,7 @@ namespace ncv
                 // access functions
                 virtual const tensor_t& input() const { return m_idata; }
                 virtual const tensor_t& output() const { return m_odata; }
+                virtual size_t n_parameters() const { return m_kdata.size() + m_wdata.size(); }
 
         private:
 

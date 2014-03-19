@@ -89,7 +89,7 @@ namespace ncv
                 m_gwdata.resize(1, odims, idims);
                 m_gbdata.resize(odims, 1, 1);
 
-                return m_wdata.size() + m_bdata.size();
+                return n_parameters();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
