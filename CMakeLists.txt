@@ -32,6 +32,9 @@ set(CMAKE_CXX_FLAGS_RELEASE             "-O4 -DNDEBUG")         # -DEIGEN_NO_DEB
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O2 -g")               # -DEIGEN_NO_DEBUG")
 set(CMAKE_CXX_FLAGS_MINSIZEREL          "-Os -DNDEBUG")         # -DEIGEN_NO_DEBUG")
 
+# Do not use Eigen's MT
+add_definitions(-DEIGEN_DONT_PARALLELIZE)
+
 #set (CMAKE_BUILD_TYPE RELEASE)
 #set (CMAKE_BUILD_TYPE DEBUG)
 
