@@ -28,13 +28,6 @@ namespace ncv
 
                 // train the model
                 virtual bool train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const;
-
-        private:
-
-                // attributes
-                string_t        m_optimizer;
-                size_t          m_iterations;
-                scalar_t        m_epsilon;
         };
 }
 

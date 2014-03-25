@@ -16,13 +16,8 @@ namespace ncv
 
         batch_trainer_t::batch_trainer_t(const string_t& parameters)
                 :       trainer_t(parameters,
-                                  "batch trainer, parameters: opt=lbfgs[,cgd,gd],iters=1024[4,4096],eps=1e-6[1e-8,1e-3]"),
-                        m_optimizer(text::from_params<string_t>(parameters, "opt", "lbfgs")),
-                        m_iterations(text::from_params<size_t>(parameters, "iters", 1024)),
-                        m_epsilon(text::from_params<scalar_t>(parameters, "eps", 1e-6))
+                                  "batch trainer, parameters: opt=lbfgs[,cgd,gd],iters=1024[4,4096],eps=1e-6[1e-8,1e-3]")
         {
-                m_iterations = math::clamp(m_iterations, 4, 4096);
-                m_epsilon = math::clamp(m_epsilon, 1e-8, 1e-3);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -52,8 +47,10 @@ namespace ncv
                 samples_t tsamples, vsamples;
                 ncv::uniform_split(samples, size_t(90), random_t<size_t>(0, samples.size()), tsamples, vsamples);
 
-//                tsamples.erase(tsamples.begin() + 1024, tsamples.end());
-//                vsamples.erase(vsamples.begin() + 1024, vsamples.end());
+                // parameters
+                const string_t optimizer = text::from_params<string_t>(parameters(), "opt", "lbfgs");
+                const size_t iterations = math::clamp(text::from_params<size_t>(parameters(), "iters", 1024), 4, 4096);
+                const scalar_t epsilon = math::clamp(text::from_params<scalar_t>(parameters(), "eps", 1e-6), 1e-8, 1e-3);
 
                 // construct the optimization problem
                 timer_t timer;
@@ -85,9 +82,6 @@ namespace ncv
                         // update the optimum state
                         state.update(x, tvalue, terror, vvalue, verror);
 
-//                        std::cout << "train: x = [" << x.minCoeff() << ", " << x.maxCoeff()
-//                                  << "], loss = " << tvalue << "/" << terror << std::endl;
-
                         return tvalue;
                 };
 
@@ -108,10 +102,6 @@ namespace ncv
 
                         // update the optimum state
                         state.update(x, tvalue, terror, vvalue, verror);
-
-//                        std::cout << "train: x = [" << x.minCoeff() << ", " << x.maxCoeff()
-//                                  << "], loss = " << tvalue << "/" << terror
-//                                  << ", g = [" << gx.minCoeff() << ", " << gx.maxCoeff() << "]" << std::endl;
 
                         return tvalue;
                 };
@@ -147,21 +137,21 @@ namespace ncv
 
                 const opt_opulog_t fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer));
 
-                if (text::iequals(m_optimizer, "lbfgs"))
+                if (text::iequals(optimizer, "lbfgs"))
                 {
-                        optimize::lbfgs(problem, x, m_iterations, m_epsilon, fn_wlog, fn_elog, fn_ulog_ref);
+                        optimize::lbfgs(problem, x, iterations, epsilon, fn_wlog, fn_elog, fn_ulog_ref);
                 }
-                else if (text::iequals(m_optimizer, "cgd"))
+                else if (text::iequals(optimizer, "cgd"))
                 {
-                        optimize::cgd_hs(problem, x, m_iterations, m_epsilon, fn_wlog, fn_elog, fn_ulog_ref);
+                        optimize::cgd_hs(problem, x, iterations, epsilon, fn_wlog, fn_elog, fn_ulog_ref);
                 }
-                else if (text::iequals(m_optimizer, "gd"))
+                else if (text::iequals(optimizer, "gd"))
                 {
-                        optimize::gd(problem, x, m_iterations, m_epsilon, fn_wlog, fn_elog, fn_ulog_ref);
+                        optimize::gd(problem, x, iterations, epsilon, fn_wlog, fn_elog, fn_ulog_ref);
                 }
                 else
                 {
-                        log_error() << "batch trainer: invalid optimization method <" << m_optimizer << ">!";
+                        log_error() << "batch trainer: invalid optimization method <" << optimizer << ">!";
                         return false;
                 }
 
