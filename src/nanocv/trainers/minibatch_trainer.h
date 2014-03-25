@@ -1,29 +1,29 @@
-#ifndef BATCH_TRAINER_H
-#define BATCH_TRAINER_H
+#ifndef MINIBATCH_TRAINER_H
+#define MINIBATCH_TRAINER_H
 
 #include "trainer.h"
 
 namespace ncv
 {
         ///
-        /// batch trainer: each gradient update is computed for all samples.
+        /// mini-batch trainer: each gradient update is computed for all samples.
         ///
         /// parameters:
-        ///      opt=lbfgs[,cgd,gd]      - optimization method
+        ///      batch=1024[256,8192]    - mini-batch size (#samples)
         ///      iters=1024[4,4096]      - maximum number of iterations
         ///      eps=1e-6[1e-8,1e-3]     - convergence
         ///
-        class batch_trainer_t : public trainer_t
+        class minibatch_trainer_t : public trainer_t
         {
         public:
 
                 // constructor
-                batch_trainer_t(const string_t& parameters = string_t());
+                minibatch_trainer_t(const string_t& parameters = string_t());
 
                 // create an object clone
                 virtual rtrainer_t clone(const string_t& parameters) const
                 {
-                        return rtrainer_t(new batch_trainer_t(parameters));
+                        return rtrainer_t(new minibatch_trainer_t(parameters));
                 }
 
                 // train the model
@@ -31,4 +31,4 @@ namespace ncv
         };
 }
 
-#endif // BATCH_TRAINER_H
+#endif // MINIBATCH_TRAINER_H
