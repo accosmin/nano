@@ -47,8 +47,7 @@ namespace ncv
                 samples_t tsamples, vsamples;
                 ncv::uniform_split(samples, size_t(90), random_t<size_t>(0, samples.size()), tsamples, vsamples);
 
-                random_t<size_t> trgen(0, tsamples.size());
-                random_t<size_t> vrgen(0, vsamples.size());
+                samples_t utsamples, uvsamples;
 
                 // parameters
                 const size_t batchsize = math::clamp(text::from_params<size_t>(parameters(), "batch", 1024), 256, 8192);
@@ -72,13 +71,13 @@ namespace ncv
                 {
                         // training samples: loss value
                         ldata.clear(x);
-                        ldata.update_mt(task, ncv::uniform_sample(tsamples, batchsize, trgen), loss, nthreads);
+                        ldata.update_mt(task, utsamples, loss, nthreads);
                         const scalar_t tvalue = ldata.value();
                         const scalar_t terror = ldata.error();
 
                         // validation samples: loss value
                         ldata.clear(x);
-                        ldata.update_mt(task, ncv::uniform_sample(vsamples, batchsize, vrgen), loss, nthreads);
+                        ldata.update_mt(task, uvsamples, loss, nthreads);
                         const scalar_t vvalue = ldata.value();
                         const scalar_t verror = ldata.error();
 
@@ -90,16 +89,19 @@ namespace ncv
 
                 auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
+                        utsamples = ncv::uniform_sample(tsamples, batchsize, random_t<size_t>(0, tsamples.size()));
+                        uvsamples = ncv::uniform_sample(vsamples, batchsize, random_t<size_t>(0, vsamples.size()));
+
                         // training samples: loss value & gradient
                         gdata.clear(x);
-                        gdata.update_mt(task, ncv::uniform_sample(tsamples, batchsize, trgen), loss, nthreads);
+                        gdata.update_mt(task, utsamples, loss, nthreads);
                         const scalar_t tvalue = gdata.value();
                         const scalar_t terror = gdata.error();
                         gx = gdata.vgrad();
 
                         // validation samples: loss value
                         ldata.clear(x);
-                        ldata.update_mt(task, ncv::uniform_sample(vsamples, batchsize, vrgen), loss, nthreads);
+                        ldata.update_mt(task, uvsamples, loss, nthreads);
                         const scalar_t vvalue = ldata.value();
                         const scalar_t verror = ldata.error();
 
