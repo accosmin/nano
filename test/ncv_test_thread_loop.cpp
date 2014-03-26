@@ -1,4 +1,4 @@
-#include "ncv.h"
+#include "nanocv.h"
 
 // run loop for the given number of trials using no threads
 template

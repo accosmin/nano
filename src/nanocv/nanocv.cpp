@@ -1,4 +1,4 @@
-#include "ncv.h"
+#include "nanocv.h"
 
 #include "losses/loss_classnll.h"
 #include "losses/loss_logistic.h"

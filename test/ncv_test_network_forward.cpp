@@ -1,4 +1,4 @@
-#include "ncv.h"
+#include "nanocv.h"
 #include "models/forward_network.h"
 #include "losses/loss_logistic.h"
 #include <boost/program_options.hpp>

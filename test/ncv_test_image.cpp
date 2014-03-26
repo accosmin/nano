@@ -1,4 +1,4 @@
-#include "ncv.h"
+#include "nanocv.h"
 #include "common/bilinear.hpp"
 #include <boost/program_options.hpp>
 

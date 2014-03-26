@@ -1,4 +1,4 @@
-#include "ncv.h"
+#include "nanocv.h"
 #include "opencl/opencl.h"
 
 const std::string program_source = R"xxx(

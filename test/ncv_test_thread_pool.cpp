@@ -1,4 +1,4 @@
-#include "ncv.h"
+#include "nanocv.h"
 
 int main(int argc, char *argv[])
 {

@@ -1,4 +1,4 @@
-#include "ncv.h"
+#include "nanocv.h"
 #include <boost/program_options.hpp>
 
 using namespace ncv;

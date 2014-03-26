@@ -1,4 +1,4 @@
-#include "ncv.h"
+#include "nanocv.h"
 #include "common/convolution.hpp"
 #ifdef NANOCV_HAVE_OPENCL
         #include "opencl/opencl.h"

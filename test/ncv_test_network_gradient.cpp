@@ -1,4 +1,4 @@
-#include "ncv.h"
+#include "nanocv.h"
 #include "models/forward_network.h"
 #include <boost/program_options.hpp>
 #include <set>
