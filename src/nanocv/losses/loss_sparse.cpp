@@ -35,7 +35,7 @@ namespace ncv
                 for (auto o = 0; o < scores.rows(); o ++)
                 {
 			const scalar_t x = scores[o];			
-			grads[o] = x * (1.0 - x * x + m_weight);
+			grads[o] = x * (-2.0 + 2.0 * x * x + m_weight);
                 }
 
                 return grads;
