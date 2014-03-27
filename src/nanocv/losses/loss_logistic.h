@@ -7,6 +7,7 @@ namespace ncv
 {
         ///
         /// \brief logistic loss
+	///
         class logistic_loss_t : public loss_t
         {
         public:

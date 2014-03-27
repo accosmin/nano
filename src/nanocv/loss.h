@@ -73,7 +73,7 @@ namespace ncv
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const = 0;
                 
                 ///
-                /// \brief compute the loss value
+                /// \brief compute the loss value (an upper bound of the usually non-continuous error function)
                 ///
                 virtual scalar_t value(const vector_t& targets, const vector_t& scores) const = 0;
 
