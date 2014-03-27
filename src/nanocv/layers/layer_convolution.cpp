@@ -28,6 +28,7 @@ namespace ncv
 
                 std::fill(odata, odata + odims * osize, tscalar(0));
 
+                // output
                 for (tsize o = 0; o < odims; o ++)
                 {
                         tscalar* podata = odata + o * osize;

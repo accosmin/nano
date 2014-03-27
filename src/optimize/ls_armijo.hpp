@@ -31,7 +31,7 @@ namespace ncv
                 {
                         const tscalar dg = descent(st, wlog);
 
-                        tscalar t = 1;
+                        tscalar t = 1.0;
                         for (tsize i = 0; i < max_iters; i ++, t = beta * t)
                         {
                                 if (problem(st.x + t * st.d) < st.f + t * alpha * dg)

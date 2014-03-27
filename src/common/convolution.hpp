@@ -86,7 +86,7 @@ namespace ncv
                 >
                 void conv_dot(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
                 {
-                        detail::conv_dot(idata, kdata, odata, dot_mod4x<tscalar, tindex>);
+                        detail::conv_dot(idata, kdata, odata, dot_mod4<tscalar, tindex>);
                 }
 
                 ///
@@ -100,7 +100,7 @@ namespace ncv
                 >
                 void wconv_dot(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata)
                 {
-                        detail::wconv_dot(idata, kdata, weight, odata, dot_mod4x<tscalar, tindex>);
+                        detail::wconv_dot(idata, kdata, weight, odata, dot_mod4<tscalar, tindex>);
                 }
                 
                 ///

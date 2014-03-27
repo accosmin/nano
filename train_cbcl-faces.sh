@@ -34,10 +34,10 @@ model2=${model2}"conv:dims=32,rows=2,cols=2;snorm;"
 #fn_train forward-network ${model1} stochastic ${stoch} model1
 #fn_train forward-network ${model2} stochastic ${stoch} model2
 
-#fn_train forward-network ${model0} batch ${batch} model0
-#fn_train forward-network ${model1} batch ${batch} model1
+fn_train forward-network ${model0} batch ${batch} model0
+fn_train forward-network ${model1} batch ${batch} model1
 #fn_train forward-network ${model2} batch ${batch} model2
 
-fn_train forward-network ${model0} minibatch ${minibatch} model0
-fn_train forward-network ${model1} minibatch ${minibatch} model1
-fn_train forward-network ${model2} minibatch ${minibatch} model2
+#fn_train forward-network ${model0} minibatch ${minibatch} model0
+#fn_train forward-network ${model1} minibatch ${minibatch} model1
+#fn_train forward-network ${model2} minibatch ${minibatch} model2

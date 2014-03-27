@@ -187,6 +187,17 @@ namespace ncv
                 /// \return
                 ///
                 virtual bool train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const = 0;
+
+        protected:
+
+                ///
+                /// \brief train the given model stochastically (if batchsize > 0) or with all samples
+                /// using the L2-regularized loss
+                ///
+                static bool train(
+                        const task_t&, const samples_t& tsamples, const samples_t& vsamples, size_t batchsize, size_t nthreads,
+                        const loss_t&, scalar_t l2_weight, const string_t& optimizer, size_t iterations, scalar_t epsilon,
+                        const model_t& model, trainer_state_t& state);
         };
 }
 

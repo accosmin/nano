@@ -45,24 +45,6 @@ namespace ncv
 
                         for (tsize k = 0; k < size4; k += 4)
                         {
-				podata[k + 0] += w * pidata[k + 0];
-				podata[k + 1] += w * pidata[k + 1];
-				podata[k + 2] += w * pidata[k + 2];
-				podata[k + 3] += w * pidata[k + 3];
-                        }
-	        }
-
-                template
-                <
-                        typename tscalar,
-                        typename tsize
-                >
-                void mad_mod4x(const tscalar* pidata, tscalar w, tscalar* podata, tsize size)
-                {
-                        const tsize size4 = (size >> 2) << 2;
-
-                        for (tsize k = 0; k < size4; k += 4)
-                        {
                                 podata[k + 0] += w * pidata[k + 0];
                                 podata[k + 1] += w * pidata[k + 1];
                                 podata[k + 2] += w * pidata[k + 2];

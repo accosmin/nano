@@ -2,6 +2,7 @@
 #include "text.h"
 #include "common/math.hpp"
 #include "common/random.hpp"
+#include "common/dot.hpp"
 
 namespace ncv
 {
@@ -18,6 +19,7 @@ namespace ncv
                 const tscalar* bdata,
                 tscalar* odata, tsize osize)
         {
+                // output
                 for (tsize o = 0; o < osize; o ++)
                 {
                         tscalar sum = bdata[o];
@@ -43,6 +45,7 @@ namespace ncv
                 tscalar* gbdata,
                 const tscalar* odata, tsize osize)
         {
+                // bias & weights gradient
                 for (tsize o = 0; o < osize; o ++)
                 {
                         gbdata[o] = odata[o];
@@ -53,6 +56,7 @@ namespace ncv
                         }
                 }
 
+                // input gradient
                 for (tsize i = 0; i < isize; i ++)
                 {
                         tscalar sum = 0;

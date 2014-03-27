@@ -31,7 +31,6 @@ namespace ncv
                         state_t(tsize size = 0)
                                 :       x(size), g(size), d(size),
                                         f(std::numeric_limits<tscalar>::max()),
-                                        t(1.0),
                                         m_iterations(0),
                                         m_n_fvals(0),
                                         m_n_grads(0)
@@ -102,7 +101,7 @@ namespace ncv
 
                         // attributes
                         tvector         x, g, d;                ///< parameter, gradient, descent direction
-                        tscalar         f, t;                   ///< function value, step size
+                        tscalar         f;                      ///< function value, step size
                         tsize           m_iterations;
                         tsize           m_n_fvals;
                         tsize           m_n_grads;

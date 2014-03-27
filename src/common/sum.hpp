@@ -58,27 +58,6 @@ namespace ncv
                                 ret += pdata[k + 3];
                         }
 
-                        return ret;
-                }
-
-                template
-                <
-                        typename tscalar,
-                        typename tsize
-                >
-                tscalar sum_mod4x(const tscalar* pdata, tsize ksize)
-                {
-                        const tsize ksize4 = (ksize >> 2) << 2;
-
-                        tscalar ret = 0;
-                        for (tsize k = 0; k < ksize4; k += 4)
-                        {
-                                ret += pdata[k + 0];
-                                ret += pdata[k + 1];
-                                ret += pdata[k + 2];
-                                ret += pdata[k + 3];
-                        }
-
                         for (tsize k = ksize4; k < ksize; k ++)
 			{
                                 ret += pdata[k + 0];
