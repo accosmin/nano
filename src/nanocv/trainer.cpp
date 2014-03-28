@@ -251,7 +251,7 @@ namespace ncv
                 {
                         // training samples: loss value
                         ldata.clear(x);
-                        ldata.update_mt(task, tsamples, loss, nthreads);
+                        ldata.update_mt(task, utsamples, loss, nthreads);
                         const scalar_t tvalue = ldata.value() + 0.5 * l2w * x.squaredNorm();
 
                         return tvalue;
