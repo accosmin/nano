@@ -234,7 +234,7 @@ namespace ncv
                 samples_t utsamples = tsamples;
                 samples_t uvsamples = vsamples;
 
-                const scalar_t l2w = l2_weight / model.n_parameters() * (batchsize == 0 ? tsamples.size() : batchsize);
+                const scalar_t l2w = l2_weight / model.n_parameters();
 
                 // construct the optimization problem
                 const timer_t timer;
