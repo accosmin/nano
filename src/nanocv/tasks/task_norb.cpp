@@ -2,6 +2,7 @@
 #include "text.h"
 #include "common/logger.h"
 #include "common/math.hpp"
+#include "common/bilinear.hpp"
 #include "loss.h"
 #include <fstream>
 
@@ -23,36 +24,8 @@ namespace ncv
 
         bool norb_task_t::load(const string_t& dir)
         {
-//                const strings_t train_basefiles =
-//                {
-//                        "norb-5x46789x9x18x6x2x108x108-training-01",
-//                        "norb-5x46789x9x18x6x2x108x108-training-02",
-//                        "norb-5x46789x9x18x6x2x108x108-training-03",
-//                        "norb-5x46789x9x18x6x2x108x108-training-04",
-//                        "norb-5x46789x9x18x6x2x108x108-training-05",
-//                        "norb-5x46789x9x18x6x2x108x108-training-06",
-//                        "norb-5x46789x9x18x6x2x108x108-training-07",
-//                        "norb-5x46789x9x18x6x2x108x108-training-08",
-//                        "norb-5x46789x9x18x6x2x108x108-training-09",
-//                        "norb-5x46789x9x18x6x2x108x108-training-10"
-//                };
-
-//                const strings_t test_basefiles =
-//                {
-//                        "norb-5x01235x9x18x6x2x108x108-testing-01",
-//                        "norb-5x01235x9x18x6x2x108x108-testing-02",
-//                        "norb-5x01235x9x18x6x2x108x108-testing-03",
-//                        "norb-5x01235x9x18x6x2x108x108-testing-04",
-//                        "norb-5x01235x9x18x6x2x108x108-testing-05",
-//                        "norb-5x01235x9x18x6x2x108x108-testing-06",
-//                        "norb-5x01235x9x18x6x2x108x108-testing-07",
-//                        "norb-5x01235x9x18x6x2x108x108-testing-08",
-//                        "norb-5x01235x9x18x6x2x108x108-testing-09",
-//                        "norb-5x01235x9x18x6x2x108x108-testing-10"
-//                };
-
-                const size_t n_test_samples = 29160 * 10;
                 const size_t n_train_samples = 29160 * 10;
+                const size_t n_test_samples = 29160 * 2;
 
                 m_images.clear();
                 m_folds.clear();
@@ -66,19 +39,12 @@ namespace ncv
                         load(dir + "/norb-5x46789x9x18x6x2x108x108-training-07", protocol::train) +
                         load(dir + "/norb-5x46789x9x18x6x2x108x108-training-08", protocol::train) +
                         load(dir + "/norb-5x46789x9x18x6x2x108x108-training-09", protocol::train) +
-                        load(dir + "/norb-5x46789x9x18x6x2x108x108-training-10", protocol::train) == n_train_samples;
+                        load(dir + "/norb-5x46789x9x18x6x2x108x108-training-10", protocol::train) == n_train_samples &&
 
-//                const string_t test_ifile = dir + "/t10k-images-idx3-ubyte";
-//                const string_t test_gfile = dir + "/t10k-labels-idx1-ubyte";
-//                const size_t n_test_samples = 10000;
+                        load(dir + "/norb-5x01235x9x18x6x2x108x108-testing-01", protocol::test) +
+                        load(dir + "/norb-5x01235x9x18x6x2x108x108-testing-02", protocol::test) == n_test_samples &&
 
-//                const string_t train_ifile = dir + "/train-images-idx3-ubyte";
-//                const string_t train_gfile = dir + "/train-labels-idx1-ubyte";
-//                const size_t n_train_samples = 60000;
-
-//                return  load(train_ifile, train_gfile, protocol::train) == n_train_samples &&
-//                        load(test_ifile, test_gfile, protocol::test) == n_test_samples &&
-//                        build_folds(n_train_samples, n_test_samples);
+                        build_folds(n_train_samples, n_test_samples);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -155,6 +121,9 @@ namespace ncv
                         return 0;
                 }
 
+                const size_t n_rows = 108;              // original #rows
+                const size_t n_cols = 108;              // original #cols
+
                 if (    magic_image != magic_i08 ||
                         magic_label != magic_i32 ||
 
@@ -163,8 +132,8 @@ namespace ncv
 
                         dims_image[0] != dims_label[0] ||
                         dims_image[1] != 2 ||
-                        dims_image[2] != static_cast<int>(n_rows()) ||
-                        dims_image[3] != static_cast<int>(n_cols()) ||
+                        dims_image[2] != static_cast<int>(n_rows) ||
+                        dims_image[3] != static_cast<int>(n_cols) ||
 
                         dims_label[1] != 1)
                 {
@@ -173,8 +142,8 @@ namespace ncv
                 }
 
                 // load annotations and images (as binary data)
-                const size_t n_cameras = 2;               // !cameras!
-                const size_t n_pixels = n_rows() * n_cols();
+                const size_t n_cameras = 2;             // original #cameras
+                const size_t n_pixels = n_rows * n_cols;
                 const size_t cnt = dims_image[0];
 
                 std::vector<char> dimage(cnt * n_pixels * n_cameras);
@@ -200,12 +169,16 @@ namespace ncv
                                 labels[ilabel],
                                 ncv::class_target(ilabel, n_outputs()));
 
-                        for (size_t camera = 0; camera < n_cameras; camera ++)
+                        for (size_t camera = 0; camera < 1/*n_cameras*/; camera ++)     // ignore the second camera!
                         {
                                 image_t image;
                                 image.m_protocol = p;
                                 image.m_annotations.push_back(anno);
-                                image.load_gray(&dimage[i * n_pixels * n_cameras + camera], n_rows(), n_cols());
+                                image.load_gray(&dimage[i * n_pixels * n_cameras + camera], n_rows, n_cols);
+
+                                rgba_matrix_t rgba;                                     // downscale
+                                math::bilinear(image.m_rgba, rgba, this->n_rows(), this->n_cols());
+                                image.m_rgba = rgba;
 
                                 m_images.push_back(image);
                         }

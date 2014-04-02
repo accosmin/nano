@@ -8,7 +8,7 @@ namespace ncv
         ///
         /// NORB task:
         ///      - 3D object recognition from shape
-        ///      - 28x28 grayscale images as inputs
+        ///      - 108x108 grayscale images as inputs (downscaled to 54x54 for memory reasons)
         ///      - 5 outputs (5 labels)
         ///
         /// http://www.cs.nyu.edu/~ylclab/data/norb-v1.0/
@@ -32,8 +32,8 @@ namespace ncv
                 virtual bool load(const string_t& dir);
 
                 // access functions
-                virtual size_t n_rows() const { return 108; }
-                virtual size_t n_cols() const { return 108; }
+                virtual size_t n_rows() const { return 54; }    // downscaled
+                virtual size_t n_cols() const { return 54; }    // downscaled
                 virtual size_t n_outputs() const { return 5; }
                 virtual color_mode color() const { return color_mode::luma; }
 
