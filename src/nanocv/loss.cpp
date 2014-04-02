@@ -8,7 +8,10 @@ namespace ncv
         {
                 vector_t target(n_labels);
                 target.setConstant(neg_target());
-                target[ilabel] = pos_target();
+                if (ilabel < n_labels)
+                {
+                        target[ilabel] = pos_target();
+                }
                 return target;
         }
 

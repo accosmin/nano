@@ -9,6 +9,7 @@
 #include "tasks/task_mnist.h"
 #include "tasks/task_stl10.h"
 #include "tasks/task_cbclfaces.h"
+#include "tasks/task_norb.h"
 
 #include "layers/layer_linear.h"
 #include "layers/layer_activation_unit.h"
@@ -49,6 +50,7 @@ namespace ncv
                 task_manager_t::instance().add("cifar10", cifar10_task_t());
                 task_manager_t::instance().add("stl10", stl10_task_t());
                 task_manager_t::instance().add("cbcl-faces", cbclfaces_task_t());
+                task_manager_t::instance().add("norb", norb_task_t());
 
                 // register layers
                 layer_manager_t::instance().add("linear", linear_layer_t());
