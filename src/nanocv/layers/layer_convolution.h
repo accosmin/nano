@@ -2,7 +2,7 @@
 #define NANOCV_CONV_LAYER_H
 
 #include "layer.h"
-#if 0
+#ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
 #endif
 
@@ -81,7 +81,7 @@ namespace ncv
                 tensor_t                m_gwdata;               ///< cumulated weight gradients
                 tensor_t                m_gidata;               ///< cumulated input gradients
 
-#if 0
+#if NANOCV_HAVE_OPENCL
                 cl::CommandQueue        m_ocl_queue;            ///< opencl command queue
                 cl::Program             m_ocl_program;          ///< opencl program
                 cl::Kernel              m_ocl_fkernel;          ///< opencl forward kernel

@@ -23,6 +23,7 @@ find_package(TIFF REQUIRED)
 if(NANOCV_HAVE_OPENCL)
         find_package(OpenCL 1.1 REQUIRED)
         include_directories(${OPENCL_INCLUDE_DIRS})
+	add_definitions(-DNANOCV_HAVE_OPENCL)
 endif()
 
 # Set the compiler flags
@@ -68,7 +69,10 @@ file(GLOB nanocv_sources
         )
 
 if(NANOCV_HAVE_OPENCL)
-        set(nanocv_sources "${nanocv_sources};src/opencl/*.*")
+	file(GLOB nanocv_opencl_sources
+	        src/opencl/*.*
+        )
+        set(nanocv_sources "${nanocv_sources};${nanocv_opencl_sources}")
 endif()
 
 add_library(nanocv
