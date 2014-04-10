@@ -21,10 +21,10 @@ namespace ncv
                 {
 			const scalar_t x = scores[o];
 			value += math::square(1.0 - x * x) + 	// close to -1/+1
-				 m_weight * x * x;		// close to 0
+                                 2.0 * m_weight * x * x;	// close to 0
                 }
 
-                return 0.5 * value;
+                return 0.25 * value;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ namespace ncv
                 for (auto o = 0; o < scores.rows(); o ++)
                 {
 			const scalar_t x = scores[o];			
-			grads[o] = x * (-2.0 + 2.0 * x * x + m_weight);
+                        grads[o] = x * (-1.0 + x * x + m_weight);
                 }
 
                 return grads;
