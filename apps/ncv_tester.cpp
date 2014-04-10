@@ -1,6 +1,5 @@
 #include "nanocv.h"
 #include <boost/program_options.hpp>
-#include <boost/filesystem.hpp>
 
 int main(int argc, char *argv[])
 {

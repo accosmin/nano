@@ -11,7 +11,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 # Boost
 include(FindBoost)
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost COMPONENTS thread serialization program_options filesystem system)
+find_package(Boost COMPONENTS serialization program_options filesystem system)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 # Image formats
