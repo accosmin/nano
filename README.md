@@ -20,6 +20,8 @@ This concept maps known machine learning and computer vision benchmarks to a com
 
 * **STL-10** - 10-class object classification, 96x96 RGB inputs.
 
+* **NORB** - 5-class object classification from stereo image pairs, 108x108 grayscale inputs.
+
 ### Model
 
 A model predicts the correct output for a given image patch. The output can be a label (if a classification task) or a score (if a regression task). Implemented instances:
