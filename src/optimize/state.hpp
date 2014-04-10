@@ -64,8 +64,8 @@ namespace ncv
                                 f = problem(x, g);
 
                                 m_iterations ++;
-                                m_n_fvals += problem.n_fval_calls();
-                                m_n_grads += problem.n_grad_calls();
+                                m_n_fvals = problem.n_fval_calls();
+                                m_n_grads = problem.n_grad_calls();
                         }
 
                         ///
