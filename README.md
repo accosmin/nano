@@ -48,6 +48,9 @@ the training samples as a numerical optimization criteria. Implemented instances
 * **batch** - a single iteration typically consists of a pass through all training samples. There are several options available: *L-BFGS*, conjugate gradient 
 descent (*CGD*) and gradient descent (*GD*).
 
+* **minibatch** - a single iteration typically consists of computing the gradient over a small subset (minibatch) of the training samples and then performing a line-search over the same minibatch
+as in the gradient descent algorithm.
+
 * **stochastic** - an iteration consists of picking a random sample to update the descent direction. There are several options available: *SGD* (stochastic gradient descent) and *ASGD* (average stochastic gradient descent).
 The training is split in two phases: the tuning phase estimates the optimum learning rate parameters on a small subset of samples, while the optimization phase uses the optimum parameters to train the model.
 
