@@ -1,25 +1,25 @@
-#ifndef NANOCV_LOSS_SPARSE_H
-#define NANOCV_LOSS_SPARSE_H
+#ifndef NANOCV_LOSS_SATURATE_H
+#define NANOCV_LOSS_SATURATE_H
 
 #include "loss.h"
 
 namespace ncv
 {
         ///
-        /// \brief output sparsity-enforcing loss (few outputs are close to -1/+1, the rest to 0)
+        /// \brief output saturation-enforcing loss (some outputs are close to -1/+1, the rest to 0)
 	///
 	/// parameters:
         ///     w=1[0,1000]		- weight closeness to -1/+1 (low) vs closeness to 0 (high)
 	///
-        class sparse_loss_t : public loss_t
+        class saturate_loss_t : public loss_t
         {
         public:
 
                 // constructor
-                sparse_loss_t(const string_t& params = string_t());
+                saturate_loss_t(const string_t& params = string_t());
 
                 // create an object clone
-                virtual rloss_t clone(const string_t& params) const { return rloss_t(new sparse_loss_t(params)); }
+                virtual rloss_t clone(const string_t& params) const { return rloss_t(new saturate_loss_t(params)); }
 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const
@@ -40,4 +40,4 @@ namespace ncv
         };
 }
 
-#endif // NANOCV_LOSS_SPARSE_H
+#endif // NANOCV_LOSS_SATURATE_H

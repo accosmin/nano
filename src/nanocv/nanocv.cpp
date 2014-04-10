@@ -3,7 +3,7 @@
 #include "losses/loss_classnll.h"
 #include "losses/loss_logistic.h"
 #include "losses/loss_square.h"
-#include "losses/loss_sparse.h"
+#include "losses/loss_saturate.h"
 
 #include "tasks/task_cifar10.h"
 #include "tasks/task_mnist.h"
@@ -43,7 +43,7 @@ namespace ncv
                 loss_manager_t::instance().add("classnll", classnll_loss_t());
                 loss_manager_t::instance().add("logistic", logistic_loss_t());
                 loss_manager_t::instance().add("square", square_loss_t());
-                loss_manager_t::instance().add("sparse", sparse_loss_t());
+                loss_manager_t::instance().add("saturate", saturate_loss_t());
 
                 // register tasks
                 task_manager_t::instance().add("mnist", mnist_task_t());
