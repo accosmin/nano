@@ -18,7 +18,8 @@ namespace ncv
                         m_tvalue(std::numeric_limits<scalar_t>::max()),
                         m_terror(std::numeric_limits<scalar_t>::max()),
                         m_vvalue(std::numeric_limits<scalar_t>::max()),
-                        m_verror(std::numeric_limits<scalar_t>::max())
+                        m_verror(std::numeric_limits<scalar_t>::max()),
+                        m_l2norm(std::numeric_limits<scalar_t>::max())
         {
         }
 
@@ -26,7 +27,8 @@ namespace ncv
 
         bool trainer_state_t::update(const vector_t& params,
                     scalar_t tvalue, scalar_t terror,
-                    scalar_t vvalue, scalar_t verror)
+                    scalar_t vvalue, scalar_t verror,
+                    scalar_t l2norm)
         {
                 if (verror < m_verror)
                 {
@@ -35,6 +37,7 @@ namespace ncv
                         m_terror = terror;
                         m_vvalue = vvalue;
                         m_verror = verror;
+                        m_l2norm = l2norm;
                         return true;
                 }
 
@@ -48,7 +51,9 @@ namespace ncv
 
         bool trainer_state_t::update(const trainer_state_t& state)
         {
-                return update(state.m_params, state.m_tvalue, state.m_terror, state.m_vvalue, state.m_verror);
+                return update(state.m_params,
+                              state.m_tvalue, state.m_terror, state.m_vvalue, state.m_verror,
+                              state.m_l2norm);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -280,7 +285,7 @@ namespace ncv
                         const scalar_t verror = ldata.error();
 
                         // update the optimum state
-                        state.update(x, tvalue, terror, vvalue, verror);
+                        state.update(x, tvalue, terror, vvalue, verror, l2_weight);
 
                         return tvalue;
                 };
@@ -295,17 +300,12 @@ namespace ncv
                 };
                 auto fn_ulog = [&] (const opt_state_t& result, const timer_t& timer)
                 {
-                        const scalar_t tvalue = state.m_tvalue;
-                        const scalar_t terror = state.m_terror;
-                        const scalar_t vvalue = state.m_vvalue;
-                        const scalar_t verror = state.m_verror;
-
                         log_info() << "[loss = " << result.f
                                    << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
                                    << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
-                                   << ", L2 = " << l2_weight
-                                   << ", train* = " << tvalue << "/" << terror
-                                   << ", valid* = " << vvalue << "/" << verror
+                                   << ", train* = " << state.m_tvalue << "/" << state.m_terror
+                                   << ", valid* = " << state.m_vvalue << "/" << state.m_verror
+                                   << ", l2/l2* = " << l2_weight << "/" << state.m_l2norm
                                    << "] done in " << timer.elapsed() << ".";
                 };
 

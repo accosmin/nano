@@ -105,7 +105,7 @@ namespace ncv
                         // OK, update the optimum solution
                         const thread_pool_t::lock_t lock(mutex);
 
-                        if (state.update(xparam, tvalue, terror, vvalue, verror))
+                        if (state.update(xparam, tvalue, terror, vvalue, verror, 0.0))
                         {
                                 log_info()
                                 << "[train* = " << state.m_tvalue << "/" << state.m_terror

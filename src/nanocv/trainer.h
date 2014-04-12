@@ -34,11 +34,13 @@ namespace ncv
                 /// \param terror
                 /// \param vvalue
                 /// \param verror
+                /// \param l2norm
                 /// \return
                 ///
                 bool update(const vector_t& params,
                             scalar_t tvalue, scalar_t terror,
-                            scalar_t vvalue, scalar_t verror);
+                            scalar_t vvalue, scalar_t verror,
+                            scalar_t l2norm);
 
                 ///
                 /// \brief update the current/optimum state with a possible better state
@@ -49,10 +51,11 @@ namespace ncv
 
                 // attributes
                 vector_t        m_params;       ///< current model parameters
-                scalar_t        m_tvalue;       ///< train loss value
-                scalar_t        m_terror;       ///< train error
-                scalar_t        m_vvalue;       ///< validation loss value
-                scalar_t        m_verror;       ///< validation error
+                scalar_t        m_tvalue;       ///< train loss value (at the optimum)
+                scalar_t        m_terror;       ///< train error (at the optimum)
+                scalar_t        m_vvalue;       ///< optimum validation loss value
+                scalar_t        m_verror;       ///< optimum validation error
+                scalar_t        m_l2norm;       ///< optimum L2-weight
         };
 
         ///
