@@ -8,6 +8,8 @@ project(nanocv)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
+option(NANOCV_HAVE_OPENCL       "Build nanocv with OpenCL as dependency"        OFF)
+
 # Boost
 include(FindBoost)
 set(Boost_USE_MULTITHREADED ON)
