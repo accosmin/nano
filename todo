@@ -1,7 +1,12 @@
-- faster ::backward() -> almost 4 times slower than ::forward()
-- faster convolution layer - reduce the number of loops - concatenate convolutions?!
+- update OpenCL version of the new convolution layer:
+	- check if faster
 
-* function to generate a random input that will closely output a given target (class):
+- new datasets: INRIA car and person datasets, dymlerchrysler human detection
+
+- more efficient way to store & select samples for large datasets:
+	- allocate xGB of RAM to store some samples in memory and load the others from the disk
+
+- function to generate a random input that will closely output a given target (class):
 	- can be used to check the learning
 
 - thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
@@ -14,15 +19,6 @@
 
 	- regularization: variational learning (like in ebbbost)
         - regularization: l2, symmetry
-
-- add other datasets:
-        - INRIA car and person datasets
-        - NORB, inria pedestrian detection, inria human detection, dymlerchrysler human detection, face detection, PASCALVoc2011, CALTECH101...
-
-- svhn decoding:
-	- the sections are not decoded correctly: 
-		- the data type of the last two sections is not valid
-		- the number of bytes in the last section is not valid
 
 - make install:
 	- also copy the headers 
