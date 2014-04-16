@@ -127,7 +127,6 @@ namespace ncv
         __kernel void conv_forward(
                 __global const double* idata, int idims,
                 __global const double* kdata, int krows, int kcols,
-                __constant const double* wdata,
                 __global double* odata)
         {
                 const int odims = get_global_size(0);
@@ -148,21 +147,19 @@ namespace ncv
                 double sum_conv = 0;
                 for (int i = 0; i < idims; i ++)
                 {
-                        const double w = wdata[o * idims + i];
-
                         double sum = 0;
                         for (int kr = 0; kr < krows; kr ++)
                         {
                                 for (int kc = 0; kc < kcols; kc ++)
                                 {
                                         const double iv = idata[i * isize + (r + kr) * icols + (c + kc)];
-                                        const double kv = kdata[o * ksize + kr * kcols + kc];
+                                        const double kv = kdata[(o * idims + i) * ksize + kr * kcols + kc];
 
                                         sum += iv * kv;
                                 }
                         }
 
-                        sum_conv += w * sum;
+                        sum_conv += sum;
                 }
 
                 odata[o * osize + r * ocols + c] = sum_conv;
@@ -171,7 +168,6 @@ namespace ncv
         __kernel void conv_ibackward(
                 __global const double* odata, int odims,
                 __global const double* kdata, int krows, int kcols,
-                __constant const double* wdata,
                 __global double* gidata)
         {
                 const int idims = get_global_size(0);
@@ -198,9 +194,8 @@ namespace ncv
                 double sum_conv = 0;
                 for (int o = 0; o < odims; o ++)
                 {
-                        const double w = wdata[o * idims + i];
                         __global const double* podata = odata + o * osize;
-                        __global const double* pkdata = kdata + o * ksize;
+                        __global const double* pkdata = kdata + (o * idims + i) * ksize;
 
                         double sum = 0;
                         for (int kr = krmin; kr < krmax; kr ++)
@@ -214,7 +209,7 @@ namespace ncv
                                 }
                         }
 
-                        sum_conv += w * sum;
+                        sum_conv += sum;
                 }
 
                 gidata[i * isize + r * icols + c] = sum_conv;
@@ -223,7 +218,6 @@ namespace ncv
         __kernel void conv_kbackward(
                 __global const double* odata, int orows, int ocols,
                 __global const double* idata, int idims,
-                __constant const double* wdata,
                 __global double* gkdata)
         {
                 const int odims = get_global_size(0);
@@ -241,10 +235,8 @@ namespace ncv
                 const int kr = get_global_id(1);
                 const int kc = get_global_id(2);
 
-                double sum_conv = 0;
                 for (int i = 0; i < idims; i ++)
                 {
-                        const double w = wdata[o * idims + i];
                         __global const double* podata = odata + o * osize;
                         __global const double* pidata = idata + i * isize;
 
@@ -260,59 +252,8 @@ namespace ncv
                                 }
                         }
 
-                        sum_conv += w * sum;
+                        gkdata[(o * idims + i) * ksize + kr * kcols + kc] = sum;
                 }
-
-                gkdata[o * ksize + kr * kcols + kc] = sum_conv;
-        }
-
-        __kernel void conv_wbackward(
-                __global const double* odata, int orows, int ocols,
-                __global const double* idata,
-                __global const double* kdata, int krows, int kcols,
-                __global double* gwdata)
-        {
-                const int odims = get_global_size(0);
-                const int idims = get_global_size(1);
-
-                const int irows = orows + krows - 1;
-                const int icols = ocols + kcols - 1;
-                const int isize = irows * icols;
-
-                const int osize = orows * ocols;
-                const int ksize = krows * kcols;
-
-                const int o = get_global_id(0);
-                const int i = get_global_id(1);
-
-                __global const double* podata = odata + o * osize;
-                __global const double* pidata = idata + i * isize;
-                __global const double* pkdata = kdata + o * ksize;
-
-                double sum_conv = 0;
-                for (int r = 0; r < orows; r ++)
-                {
-                        for (int c = 0; c < ocols; c ++)
-                        {
-                                const double ov = podata[r * ocols + c];
-
-                                double sum = 0;
-                                for (int kr = 0; kr < krows; kr ++)
-                                {
-                                        for (int kc = 0; kc < kcols; kc ++)
-                                        {
-                                                const double iv = pidata[(r + kr) * icols + (c + kc)];
-                                                const double kv = pkdata[kr * kcols + kc];
-
-                                                sum += iv * kv;
-                                        }
-                                }
-
-                                sum_conv += ov * sum;
-                        }
-                }
-
-                gwdata[o * idims + i] = sum_conv;
         }
 
         )xxx";
@@ -371,18 +312,15 @@ namespace ncv
                         m_ocl_fkernel = theocl.make_kernel(m_ocl_program, "conv_forward");
                         m_ocl_bikernel = theocl.make_kernel(m_ocl_program, "conv_ibackward");
                         m_ocl_bkkernel = theocl.make_kernel(m_ocl_program, "conv_kbackward");
-                        m_ocl_bwkernel = theocl.make_kernel(m_ocl_program, "conv_wbackward");
 
                         // forward buffers
-                        m_ocl_idata = theocl.make_buffer(m_idata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
-                        m_ocl_kdata = theocl.make_buffer(m_kdata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
-                        m_ocl_wdata = theocl.make_buffer(m_wdata.size() * sizeof(scalar_t), CL_MEM_READ_ONLY);
-                        m_ocl_odata = theocl.make_buffer(m_odata.size() * sizeof(scalar_t), CL_MEM_READ_WRITE);
+                        m_ocl_idata = theocl.make_buffer(oclsize(m_idata), CL_MEM_READ_ONLY);
+                        m_ocl_kdata = theocl.make_buffer(oclsize(m_kdata), CL_MEM_READ_ONLY);
+                        m_ocl_odata = theocl.make_buffer(oclsize(m_odata), CL_MEM_READ_WRITE);
 
                         // backward buffers
-                        m_ocl_gidata = theocl.make_buffer(m_gidata.size() * sizeof(scalar_t), CL_MEM_WRITE_ONLY);
-                        m_ocl_gkdata = theocl.make_buffer(m_gkdata.size() * sizeof(scalar_t), CL_MEM_WRITE_ONLY);
-                        m_ocl_gwdata = theocl.make_buffer(m_gwdata.size() * sizeof(scalar_t), CL_MEM_WRITE_ONLY);
+                        m_ocl_gidata = theocl.make_buffer(oclsize(m_gidata), CL_MEM_WRITE_ONLY);
+                        m_ocl_gkdata = theocl.make_buffer(oclsize(m_gkdata), CL_MEM_WRITE_ONLY);
 
                         const int idims_ = static_cast<int>(idims);
 
@@ -399,8 +337,7 @@ namespace ncv
                         m_ocl_fkernel.setArg(2, m_ocl_kdata);
                         m_ocl_fkernel.setArg(3, sizeof(int), (void*)&krows_);
                         m_ocl_fkernel.setArg(4, sizeof(int), (void*)&kcols_);
-                        m_ocl_fkernel.setArg(5, m_ocl_wdata);
-                        m_ocl_fkernel.setArg(6, m_ocl_odata);
+                        m_ocl_fkernel.setArg(5, m_ocl_odata);
 
                         // setup backward kernels
                         m_ocl_bikernel.setArg(0, m_ocl_odata);
@@ -408,25 +345,14 @@ namespace ncv
                         m_ocl_bikernel.setArg(2, m_ocl_kdata);
                         m_ocl_bikernel.setArg(3, sizeof(int), (void*)&krows_);
                         m_ocl_bikernel.setArg(4, sizeof(int), (void*)&kcols_);
-                        m_ocl_bikernel.setArg(5, m_ocl_wdata);
-                        m_ocl_bikernel.setArg(6, m_ocl_gidata);
+                        m_ocl_bikernel.setArg(5, m_ocl_gidata);
 
                         m_ocl_bkkernel.setArg(0, m_ocl_odata);
                         m_ocl_bkkernel.setArg(1, sizeof(int), (void*)&orows_);
                         m_ocl_bkkernel.setArg(2, sizeof(int), (void*)&ocols_);
                         m_ocl_bkkernel.setArg(3, m_ocl_idata);
                         m_ocl_bkkernel.setArg(4, sizeof(int), (void*)&idims_);
-                        m_ocl_bkkernel.setArg(5, m_ocl_wdata);
-                        m_ocl_bkkernel.setArg(6, m_ocl_gkdata);
-
-                        m_ocl_bwkernel.setArg(0, m_ocl_odata);
-                        m_ocl_bwkernel.setArg(1, sizeof(int), (void*)&orows_);
-                        m_ocl_bwkernel.setArg(2, sizeof(int), (void*)&ocols_);
-                        m_ocl_bwkernel.setArg(3, m_ocl_idata);
-                        m_ocl_bwkernel.setArg(4, m_ocl_kdata);
-                        m_ocl_bwkernel.setArg(5, sizeof(int), (void*)&krows_);
-                        m_ocl_bwkernel.setArg(6, sizeof(int), (void*)&kcols_);
-                        m_ocl_bwkernel.setArg(7, m_ocl_gwdata);
+                        m_ocl_bkkernel.setArg(5, m_ocl_gkdata);
                 }
 #endif
 
@@ -485,8 +411,7 @@ namespace ncv
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
                 {
-                        m_ocl_queue.enqueueWriteBuffer(m_ocl_kdata, CL_TRUE, 0, m_kdata.size() * sizeof(scalar_t), m_kdata.data());
-                        m_ocl_queue.enqueueWriteBuffer(m_ocl_wdata, CL_TRUE, 0, m_wdata.size() * sizeof(scalar_t), m_wdata.data());
+                        m_ocl_queue.enqueueWriteBuffer(m_ocl_kdata, CL_TRUE, 0, oclsize(m_kdata), m_kdata.data());
                 }
 #endif
         }
@@ -506,14 +431,14 @@ namespace ncv
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
                 {
-                        m_ocl_queue.enqueueWriteBuffer(m_ocl_idata, CL_TRUE, 0, m_idata.size() * sizeof(scalar_t), m_idata.data());
+                        m_ocl_queue.enqueueWriteBuffer(m_ocl_idata, CL_TRUE, 0, oclsize(m_idata), m_idata.data());
 
                         m_ocl_queue.enqueueNDRangeKernel(m_ocl_fkernel, cl::NullRange,
                                 cl::NDRange(odims(), orows(), ocols()),
                                 cl::NDRange(1, orows(), ocols()));
                         m_ocl_queue.finish();
 
-                        m_ocl_queue.enqueueReadBuffer(m_ocl_odata, CL_TRUE, 0, m_odata.size() * sizeof(scalar_t), m_odata.data());
+                        m_ocl_queue.enqueueReadBuffer(m_ocl_odata, CL_TRUE, 0, oclsize(m_odata), m_odata.data());
                 }
 
                 // CPU version
@@ -543,8 +468,8 @@ namespace ncv
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
                 {
-                        m_ocl_queue.enqueueWriteBuffer(m_ocl_odata, CL_TRUE, 0, m_odata.size() * sizeof(scalar_t), m_odata.data());
-                        m_ocl_queue.enqueueWriteBuffer(m_ocl_idata, CL_TRUE, 0, m_idata.size() * sizeof(scalar_t), m_idata.data());
+                        m_ocl_queue.enqueueWriteBuffer(m_ocl_odata, CL_TRUE, 0, oclsize(m_odata), m_odata.data());
+                        m_ocl_queue.enqueueWriteBuffer(m_ocl_idata, CL_TRUE, 0, oclsize(m_idata), m_idata.data());
 
                         m_ocl_queue.enqueueNDRangeKernel(m_ocl_bikernel, cl::NullRange,
                                 cl::NDRange(idims(), irows(), icols()),
@@ -554,14 +479,8 @@ namespace ncv
                                 cl::NDRange(odims(), krows(), kcols()),
                                 cl::NDRange(1, krows(), kcols()));
 
-                        m_ocl_queue.enqueueNDRangeKernel(m_ocl_bwkernel, cl::NullRange,
-                                cl::NDRange(odims(), idims()),
-                                cl::NDRange(odims(), idims()));
-                        m_ocl_queue.finish();
-
-                        m_ocl_queue.enqueueReadBuffer(m_ocl_gidata, CL_TRUE, 0, m_gidata.size() * sizeof(scalar_t), m_gidata.data());
-                        m_ocl_queue.enqueueReadBuffer(m_ocl_gkdata, CL_TRUE, 0, m_gkdata.size() * sizeof(scalar_t), m_gkdata.data());
-                        m_ocl_queue.enqueueReadBuffer(m_ocl_gwdata, CL_TRUE, 0, m_gwdata.size() * sizeof(scalar_t), m_gwdata.data());
+                        m_ocl_queue.enqueueReadBuffer(m_ocl_gidata, CL_TRUE, 0, oclsize(m_gidata), m_gidata.data());
+                        m_ocl_queue.enqueueReadBuffer(m_ocl_gkdata, CL_TRUE, 0, oclsize(m_gkdata), m_gkdata.data());
                 }
 
                 // CPU version
