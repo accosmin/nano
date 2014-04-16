@@ -48,7 +48,7 @@ namespace ncv
                 // access functions
                 virtual const tensor_t& input() const { return m_idata; }
                 virtual const tensor_t& output() const { return m_odata; }
-                virtual size_t n_parameters() const { return m_kdata.size() + m_wdata.size(); }
+                virtual size_t n_parameters() const { return m_kdata.size(); }
 
         private:
 
@@ -74,11 +74,9 @@ namespace ncv
                 // attributes
                 tensor_t                m_idata;                ///< input buffer:              idims x irows x icols
                 tensor_t                m_odata;                ///< output buffer:             odims x orows x ocols
-                tensor_t                m_kdata;                ///< convolution kernels:       odims x krows x kcols
-                tensor_t                m_wdata;                ///< weights:                   1 x odims x idims
+                tensor_t                m_kdata;                ///< convolution kernels:       odims x idims x krows x kcols
 
                 tensor_t                m_gkdata;               ///< cumulated kernel gradients
-                tensor_t                m_gwdata;               ///< cumulated weight gradients
                 tensor_t                m_gidata;               ///< cumulated input gradients
 
 #if NANOCV_HAVE_OPENCL

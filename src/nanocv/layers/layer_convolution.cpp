@@ -16,7 +16,6 @@ namespace ncv
         static void _forward(
                 const tscalar* idata, tsize idims,
                 const tscalar* kdata, tsize krows, tsize kcols,
-                const tscalar* wdata,
                 tscalar* odata, tsize odims, tsize orows, tsize ocols)
         {
                 const tsize irows = orows + krows - 1;
@@ -36,14 +35,12 @@ namespace ncv
                         for (tsize i = 0; i < idims; i ++)
                         {
                                 const tscalar* pidata = idata + i * isize;
-                                const tscalar w = wdata[o * idims + i];
+                                const tscalar* pkdata = kdata + (o * idims + i) * ksize;
 
                                 for (tsize r = 0; r < orows; r ++)
                                 {
                                         for (tsize c = 0; c < ocols; c ++)
                                         {
-                                                const tscalar* pkdata = kdata + o * ksize;
-
                                                 tscalar sum = 0;
                                                 for (tsize kr = 0; kr < krows; kr ++)
                                                 {
@@ -56,7 +53,7 @@ namespace ncv
                                                         }
                                                 }
 
-                                                podata[r * ocols + c] += w * sum;
+                                                podata[r * ocols + c] += sum;
                                         }
                                 }
                         }
@@ -73,7 +70,6 @@ namespace ncv
         static void _backward(
                 const tscalar* idata, tscalar* gidata, tsize idims,
                 const tscalar* kdata, tscalar* gkdata, tsize krows, tsize kcols,
-                const tscalar* wdata, tscalar* gwdata,
                 const tscalar* odata, tsize odims, tsize orows, tsize ocols)
         {
                 const tsize irows = orows + krows - 1;
@@ -84,23 +80,19 @@ namespace ncv
                 const tsize ksize = krows * kcols;
 
                 std::fill(gidata, gidata + idims * isize, tscalar(0));
-                std::fill(gkdata, gkdata + odims * ksize, tscalar(0));
-                std::fill(gwdata, gwdata + odims * idims, tscalar(0));
+                std::fill(gkdata, gkdata + odims * idims * ksize, tscalar(0));
 
                 for (tsize o = 0; o < odims; o ++)
                 {
                         const tscalar* podata = odata + o * osize;
-                        const tscalar* pkdata = kdata + o * ksize;
-
-                        tscalar* pgkdata = gkdata + o * ksize;
 
                         for (tsize i = 0; i < idims; i ++)
                         {
-                                const tscalar* pidata = idata + i * isize;
-                                const tscalar w = wdata[o * idims + i];
+                                const tscalar* pidata = idata + i * isize;                                
+                                const tscalar* pkdata = kdata + (o * idims + i) * ksize;
 
                                 tscalar* pgidata = gidata + i * isize;
-                                tscalar& gw = gwdata[o * idims + i];
+                                tscalar* pgkdata = gkdata + (o * idims + i) * ksize;
 
                                 for (tsize r = 0; r < orows; r ++)
                                 {
@@ -114,9 +106,8 @@ namespace ncv
                                                                 const tscalar ov = podata[r * ocols + c];
                                                                 const tscalar kv = pkdata[kr * kcols + kc];
 
-                                                                pgidata[(r + kr) * icols + (c + kc)] += ov * kv * w;
-                                                                pgkdata[kr * kcols + kc] += ov * iv * w;
-                                                                gw += ov * iv * kv;
+                                                                pgidata[(r + kr) * icols + (c + kc)] += ov * kv;
+                                                                pgkdata[kr * kcols + kc] += ov * iv;
                                                         }
                                                 }
                                         }
@@ -364,11 +355,9 @@ namespace ncv
                 m_idata.resize(idims, irows, icols);
                 m_odata.resize(odims, orows, ocols);
 
-                m_kdata.resize(odims, krows, kcols);
-                m_wdata.resize(1, odims, idims);
+                m_kdata.resize(odims * idims, krows, kcols);
 
-                m_gkdata.resize(odims, krows, kcols);
-                m_gwdata.resize(1, odims, idims);
+                m_gkdata.resize(odims * idims, krows, kcols);
                 m_gidata.resize(idims, irows, icols);
 
 #if NANOCV_HAVE_OPENCL
@@ -449,7 +438,6 @@ namespace ncv
         void conv_layer_t::zero_params()
         {
                 m_kdata.zero();
-                m_wdata.zero();
 
                 params_changed();
         }
@@ -459,7 +447,6 @@ namespace ncv
         void conv_layer_t::random_params(scalar_t min, scalar_t max)
         {
                 m_kdata.random(random_t<scalar_t>(min, max));
-                m_wdata.random(random_t<scalar_t>(min, max));
 
                 params_changed();
         }
@@ -468,21 +455,21 @@ namespace ncv
 
         ovectorizer_t& conv_layer_t::save_params(ovectorizer_t& s) const
         {
-                return s << m_kdata << m_wdata;
+                return s << m_kdata;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
         ovectorizer_t& conv_layer_t::save_grad(ovectorizer_t& s) const
         {
-                return s << m_gkdata << m_gwdata;
+                return s << m_gkdata;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
         ivectorizer_t& conv_layer_t::load_params(ivectorizer_t& s)
         {
-                s >> m_kdata >> m_wdata;
+                s >> m_kdata;
 
                 params_changed();
 
@@ -535,7 +522,6 @@ namespace ncv
                 {
                         _forward(m_idata.data(), idims(),
                                  m_kdata.data(), krows(), kcols(),
-                                 m_wdata.data(),
                                  m_odata.data(), odims(), orows(), ocols());
                 }
 
@@ -584,7 +570,6 @@ namespace ncv
                 {
                         _backward(m_idata.data(), m_gidata.data(), idims(),
                                   m_kdata.data(), m_gkdata.data(), krows(), kcols(),
-                                  m_wdata.data(), m_gwdata.data(),
                                   m_odata.data(), odims(), orows(), ocols());
                 }
 

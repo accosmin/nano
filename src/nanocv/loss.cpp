@@ -27,7 +27,7 @@ namespace ncv
         scalar_t eclass_error(const vector_t& targets, const vector_t& scores)
         {
                 const scalar_t eps = std::numeric_limits<scalar_t>::epsilon();
-                return ((targets.array() * scores.array()) < eps).count() > 0 ? 1.0 : 0.0;
+                return ((targets.array() * scores.array()) < eps).count();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
