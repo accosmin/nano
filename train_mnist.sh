@@ -11,10 +11,6 @@ dir_exp=${dir_results}/mnist
 mkdir -p ${dir_exp}
 
 # common parameters
-batch="opt=lbfgs,iters=64,eps=1e-6"
-minibatch="batch=1024,iters=8000,eps=1e-6"
-stoch="opt=sgd,epoch=64"
-
 param=""
 param=${param}"--task mnist --task-dir ${dir_db}/mnist/ "
 param=${param}"--loss logistic --trials 1 --threads 4"

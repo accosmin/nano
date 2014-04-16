@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# common parameters
+batch="opt=lbfgs,iters=1024,eps=1e-6"
+minibatch="batch=1024,iters=256,eps=1e-6"
+stoch="opt=sgd,epoch=64"
+
 # train a model (model-type-name, model-parameters, trainer-type-name, trainer-parameters, configuration-name)
 function fn_train
 {
