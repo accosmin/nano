@@ -281,7 +281,7 @@ namespace ncv
                         // validation samples: loss value
                         ldata.clear(x);
                         ldata.update_mt(task, uvsamples, loss, nthreads);
-                        const scalar_t vvalue = ldata.value();
+                        const scalar_t vvalue = ldata.value() + 0.5 * l2w * x.squaredNorm();
                         const scalar_t verror = ldata.error();
 
                         // update the optimum state

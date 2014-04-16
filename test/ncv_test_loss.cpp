@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 
         const size_t cmd_min_dims = 2;
         const size_t cmd_max_dims = 10;
-        const size_t cmd_tests = 8;
+        const size_t cmd_tests = 128;
 
         // evaluate the analytical gradient vs. the finite difference approximation
         //      for each: loss
