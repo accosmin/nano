@@ -5,18 +5,18 @@ namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        // to upper bound the {0, 1} loss
-        static const scalar_t delta = std::exp(1.0) - 1.0;
+        static const scalar_t delta = 1.0;
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
         static void _buffer(const vector_t& targets, const vector_t& scores,
-                vector_t& zs, vector_t& ys, scalar_t& sumw, scalar_t& sumwy)
+                vector_t& zs, vector_t& ys, scalar_t& sumw, scalar_t& sumy, scalar_t& sumwy)
         {
                 zs.resize(targets.rows());
                 ys.resize(targets.rows());
 
                 sumw = 0.0;
+                sumy = 0.0;
                 sumwy = 0.0;
 
                 // soft-max multi-class logistic loss
@@ -30,39 +30,79 @@ namespace ncv
                         ys[o] = y;
 
                         sumw += w;
+                        sumy += y;
                         sumwy += w * y;
                 }
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        logistic_loss_t::logistic_loss_t()
-                :       loss_t(string_t(), "logistic loss")
+        sum_logistic_loss_t::sum_logistic_loss_t()
+                :       loss_t(string_t(), "(sum) logistic loss")
         {
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        scalar_t logistic_loss_t::value(const vector_t& targets, const vector_t& scores) const
+        scalar_t sum_logistic_loss_t::value(const vector_t& targets, const vector_t& scores) const
         {
                 assert(targets.size() == scores.size());
 
                 vector_t zs, ys;
-                scalar_t sumw, sumwy;
-                _buffer(targets, scores, zs, ys, sumw, sumwy);
+                scalar_t sumw, sumy, sumwy;
+                _buffer(targets, scores, zs, ys, sumw, sumy, sumwy);
+
+                return sumy;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        vector_t sum_logistic_loss_t::vgrad(const vector_t& targets, const vector_t& scores) const
+        {
+                assert(targets.size() == scores.size());
+
+                vector_t zs, ys;
+                scalar_t sumw, sumy, sumwy;
+                _buffer(targets, scores, zs, ys, sumw, sumy, sumwy);
+
+                vector_t grads(targets.rows());
+                for (auto o = 0; o < targets.rows(); o ++)
+                {
+                        grads[o] = -targets[o] * zs[o] / (delta + zs[o]);
+                }
+
+                return grads;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        max_logistic_loss_t::max_logistic_loss_t()
+                :       loss_t(string_t(), "(max) logistic loss")
+        {
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        scalar_t max_logistic_loss_t::value(const vector_t& targets, const vector_t& scores) const
+        {
+                assert(targets.size() == scores.size());
+
+                vector_t zs, ys;
+                scalar_t sumw, sumy, sumwy;
+                _buffer(targets, scores, zs, ys, sumw, sumy, sumwy);
 
                 return sumwy / sumw;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
         
-        vector_t logistic_loss_t::vgrad(const vector_t& targets, const vector_t& scores) const
+        vector_t max_logistic_loss_t::vgrad(const vector_t& targets, const vector_t& scores) const
         {
                 assert(targets.size() == scores.size());
 
                 vector_t zs, ys;
-                scalar_t sumw, sumwy;
-                _buffer(targets, scores, zs, ys, sumw, sumwy);
+                scalar_t sumw, sumy, sumwy;
+                _buffer(targets, scores, zs, ys, sumw, sumy, sumwy);
 
                 const scalar_t isumw2 = 1.0 / (sumw * sumw);
 

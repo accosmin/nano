@@ -41,7 +41,8 @@ namespace ncv
 
                 // register losses
                 loss_manager_t::instance().add("classnll", classnll_loss_t());
-                loss_manager_t::instance().add("logistic", logistic_loss_t());
+                loss_manager_t::instance().add("logistic-sum", sum_logistic_loss_t());
+                loss_manager_t::instance().add("logistic-max", max_logistic_loss_t());
                 loss_manager_t::instance().add("square", square_loss_t());
                 loss_manager_t::instance().add("saturate", saturate_loss_t());
 

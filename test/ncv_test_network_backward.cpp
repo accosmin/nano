@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
                 cmodel3
         };
 
-        const logistic_loss_t loss;
+        const max_logistic_loss_t loss;
 
         for (const string_t& cmd_network : cmd_networks)
         {
