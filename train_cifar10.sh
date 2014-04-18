@@ -9,7 +9,7 @@ mkdir -p ${dir_exp}
 # common parameters
 param=""
 param=${param}"--task cifar10 --task-dir ${dir_db}/cifar10/ "
-param=${param}"--loss logistic-sum --trials 1 --threads 4"
+param=${param}"--loss classnll --trials 1 --threads 4"
 
 # models
 conv0=""

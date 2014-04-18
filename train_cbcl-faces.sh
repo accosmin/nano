@@ -9,7 +9,7 @@ mkdir -p ${dir_exp}
 # common parameters
 param=""
 param=${param}"--task cbcl-faces --task-dir ${dir_db}/cbcl-faces/ "
-param=${param}"--loss logistic-sum --trials 1 --threads 4"
+param=${param}"--loss classnll --trials 1 --threads 4"
 
 # models
 conv0=""
