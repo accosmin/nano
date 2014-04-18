@@ -2,7 +2,6 @@
 #include "text.h"
 #include "common/math.hpp"
 #include "common/random.hpp"
-#include "common/dot.hpp"
 
 namespace ncv
 {
@@ -20,16 +19,10 @@ namespace ncv
                 tscalar* odata, tsize osize)
         {
                 // output
-                for (tsize o = 0; o < osize; o ++)
-                {
-                        tscalar sum = bdata[o];
-                        for (tsize i = 0; i < isize; i ++)
-                        {
-                                sum += wdata[o * isize + i] * idata[i];
-                        }
-
-                        odata[o] = sum;
-                }
+                make_vector(odata, osize) =
+                        make_vector(bdata, osize) +
+                        make_matrix(wdata, osize, isize) *
+                        make_vector(idata, isize);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -46,27 +39,17 @@ namespace ncv
                 const tscalar* odata, tsize osize)
         {
                 // bias & weights gradient
-                for (tsize o = 0; o < osize; o ++)
-                {
-                        gbdata[o] = odata[o];
+                make_vector(gbdata, osize) =
+                        make_vector(odata, osize);
 
-                        for (tsize i = 0; i < isize; i ++)
-                        {
-                                gwdata[o * isize + i] = odata[o] * idata[i];
-                        }
-                }
+                make_matrix(gwdata, osize, isize) =
+                        make_vector(odata, osize) *
+                        make_vector(idata, isize).transpose();
 
                 // input gradient
-                for (tsize i = 0; i < isize; i ++)
-                {
-                        tscalar sum = 0;
-                        for (tsize o = 0; o < osize; o ++)
-                        {
-                                sum += wdata[o * isize + i] * odata[o];
-                        }
-
-                        idata[i] = sum;
-                }
+                make_vector(idata, isize) =
+                        make_matrix(wdata, osize, isize).transpose() *
+                        make_vector(odata, osize);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
