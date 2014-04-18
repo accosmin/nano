@@ -13,41 +13,32 @@ namespace ncv
                 const tscalar* idata, tsize irows, tsize icols,
                 tscalar* wdata, tscalar* sdata, tscalar* tdata, tscalar* odata)
         {
-                const tsize isize = irows * icols;
-
                 const tsize orows = (irows + 1) / 2;
                 const tsize ocols = (icols + 1) / 2;
-                const tsize osize = orows * ocols;
 
-                for (tsize i = 0; i < isize; i ++)
-                {
-                        wdata[i] = std::exp(idata[i]);
-                }
+                matrix_map_t wmap = make_matrix(wdata, irows, icols);
+                matrix_map_t smap = make_matrix(sdata, orows, ocols);
+                matrix_map_t tmap = make_matrix(tdata, orows, ocols);
+                matrix_map_t omap = make_matrix(odata, orows, ocols);
+                matrix_map_t imap = make_matrix(idata, irows, icols);
 
-                for (tsize o = 0; o < osize; o ++)
-                {
-                        sdata[o] = 0;
-                        tdata[o] = 0;
-                }
+                wmap = imap.array().exp();
+
+                smap.setZero();
+                tmap.setZero();
 
                 for (tsize r = 0, rr = 0; r < irows; r ++, rr = r / 2)
                 {
                         for (tsize c = 0, cc = 0; c < icols; c ++, cc = c / 2)
                         {
-                                const tsize iindex = r * icols + c;
-                                const tsize oindex = rr * ocols + cc;
+                                const tscalar w = wmap(r, c);
 
-                                const tscalar w = wdata[iindex];
-
-                                sdata[oindex] += w * idata[iindex];
-                                tdata[oindex] += w;
+                                smap(rr, cc) += w * imap(r, c);
+                                tmap(rr, cc) += w;
                         }
                 }
 
-                for (tsize o = 0; o < osize; o ++)
-                {
-                        odata[o] = sdata[o] / tdata[o];
-                }
+                omap = smap.array() / tmap.array();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -61,22 +52,26 @@ namespace ncv
                 tscalar* idata, tsize irows, tsize icols,
                 const tscalar* wdata, const tscalar* sdata, const tscalar* tdata, const tscalar* gdata)
         {
+                const tsize orows = (irows + 1) / 2;
                 const tsize ocols = (icols + 1) / 2;
+
+                matrix_map_t wmap = make_matrix(wdata, irows, icols);
+                matrix_map_t smap = make_matrix(sdata, orows, ocols);
+                matrix_map_t tmap = make_matrix(tdata, orows, ocols);
+                matrix_map_t gmap = make_matrix(gdata, orows, ocols);
+                matrix_map_t imap = make_matrix(idata, irows, icols);
 
                 for (tsize r = 0, rr = 0; r < irows; r ++, rr = r / 2)
                 {
                         for (tsize c = 0, cc = 0; c < icols; c ++, cc = c / 2)
                         {
-                                const tsize iindex = r * icols + c;
-                                const tsize oindex = rr * ocols + cc;
+                                const tscalar w = wmap(r, c);
+                                const tscalar i = imap(r, c);
+                                const tscalar s = smap(rr, cc);
+                                const tscalar t = tmap(rr, cc);
 
-                                const tscalar w = wdata[iindex];
-                                const tscalar i = idata[iindex];
-                                const tscalar s = sdata[oindex];
-                                const tscalar t = tdata[oindex];
-
-                                idata[iindex] =
-                                gdata[oindex] * (t * (w + w * i) - s * w) / (t * t);
+                                imap(r, c) =
+                                gmap(rr, cc) * (t * (w + w * i) - s * w) / (t * t);
                         }
                 }
         }

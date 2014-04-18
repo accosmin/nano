@@ -11,7 +11,7 @@ namespace ncv
                 {
                         scalar_t operator()(scalar_t x) const
                         {
-                                return x / sqrt(1.0 + x * x);
+                                return x / std::sqrt(1.0 + x * x);
                         }
                 };
 
@@ -20,7 +20,7 @@ namespace ncv
                         scalar_t operator()(scalar_t g, scalar_t o) const
                         {
                                 const scalar_t d = 1.0 - o * o;
-                                return g * d * sqrt(d);
+                                return g * d * std::sqrt(d);
                         }
                 };
         }
