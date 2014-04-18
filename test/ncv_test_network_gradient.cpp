@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
         const strings_t pool_layer_ids { "", "smax-pool", "smax-abs-pool" };
         const strings_t full_layer_ids { "", "linear" };
         const strings_t actv_layer_ids { "", "unit", "tanh", "snorm" };        
-        const strings_t loss_ids = loss_manager_t::instance().ids();
+        const strings_t loss_ids = { "classnll" };//loss_manager_t::instance().ids();
 
         const color_mode cmd_color = color_mode::luma;
         const size_t cmd_inputs = 1;
