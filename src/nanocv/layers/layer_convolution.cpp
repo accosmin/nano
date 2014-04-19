@@ -469,7 +469,7 @@ namespace ncv
                 if (theocl.valid())
                 {
                         m_ocl_queue.enqueueWriteBuffer(m_ocl_odata, CL_TRUE, 0, oclsize(m_odata), m_odata.data());
-                        m_ocl_queue.enqueueWriteBuffer(m_ocl_idata, CL_TRUE, 0, oclsize(m_idata), m_idata.data());
+//                        m_ocl_queue.enqueueWriteBuffer(m_ocl_idata, CL_TRUE, 0, oclsize(m_idata), m_idata.data());
 
                         m_ocl_queue.enqueueNDRangeKernel(m_ocl_bikernel, cl::NullRange,
                                 cl::NDRange(idims(), irows(), icols()),
