@@ -26,6 +26,18 @@ namespace ncv
                 std::string load_text_file(const std::string& filepath);
 
                 ///
+                /// \brief byte size
+                ///
+                template
+                <
+                        typename ttensor
+                >
+                size_t bytesize(const ttensor& tensor)
+                {
+                        return tensor.size() * sizeof(typename ttensor::Scalar);
+                }
+
+                ///
                 /// \brief OpenCL instance: manages devices, command queue, kernels and buffers
                 ///
                 class manager_t : public singleton_t<manager_t>

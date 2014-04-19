@@ -32,7 +32,7 @@ namespace ncv
         typedef tensor::ivectorizer_t<scalar_t, size_t>         ivectorizer_t;
         typedef tensor::ovectorizer_t<scalar_t, size_t>         ovectorizer_t;
 
-        // map vectors & matrices
+        // map to vectors & matrices
         inline vector_map_t make_vector(scalar_t* data, size_t rows)
         {
                 return vector_map_t(data, rows);

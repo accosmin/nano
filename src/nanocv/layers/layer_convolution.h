@@ -65,8 +65,6 @@ namespace ncv
                 size_t krows() const { return m_kdata.rows(); }
                 size_t kcols() const { return m_kdata.cols(); }
 
-                static size_t oclsize(const tensor_t& tensor) { return tensor.size() * sizeof(scalar_t); }
-
                 void params_changed() const;
 
                 /////////////////////////////////////////////////////////////////////////////////////////

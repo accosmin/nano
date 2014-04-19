@@ -314,13 +314,13 @@ namespace ncv
                         m_ocl_bkkernel = theocl.make_kernel(m_ocl_program, "conv_kbackward");
 
                         // forward buffers
-                        m_ocl_idata = theocl.make_buffer(oclsize(m_idata), CL_MEM_READ_ONLY);
-                        m_ocl_kdata = theocl.make_buffer(oclsize(m_kdata), CL_MEM_READ_ONLY);
-                        m_ocl_odata = theocl.make_buffer(oclsize(m_odata), CL_MEM_READ_WRITE);
+                        m_ocl_idata = theocl.make_buffer(ocl::bytesize(m_idata), CL_MEM_READ_ONLY);
+                        m_ocl_kdata = theocl.make_buffer(ocl::bytesize(m_kdata), CL_MEM_READ_ONLY);
+                        m_ocl_odata = theocl.make_buffer(ocl::bytesize(m_odata), CL_MEM_READ_WRITE);
 
                         // backward buffers
-                        m_ocl_gidata = theocl.make_buffer(oclsize(m_gidata), CL_MEM_WRITE_ONLY);
-                        m_ocl_gkdata = theocl.make_buffer(oclsize(m_gkdata), CL_MEM_WRITE_ONLY);
+                        m_ocl_gidata = theocl.make_buffer(ocl::bytesize(m_gidata), CL_MEM_WRITE_ONLY);
+                        m_ocl_gkdata = theocl.make_buffer(ocl::bytesize(m_gkdata), CL_MEM_WRITE_ONLY);
 
                         const int idims_ = static_cast<int>(idims);
 
@@ -411,7 +411,7 @@ namespace ncv
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
                 {
-                        m_ocl_queue.enqueueWriteBuffer(m_ocl_kdata, CL_TRUE, 0, oclsize(m_kdata), m_kdata.data());
+                        m_ocl_queue.enqueueWriteBuffer(m_ocl_kdata, CL_TRUE, 0, ocl::bytesize(m_kdata), m_kdata.data());
                 }
 #endif
         }
@@ -431,14 +431,14 @@ namespace ncv
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
                 {
-                        m_ocl_queue.enqueueWriteBuffer(m_ocl_idata, CL_TRUE, 0, oclsize(m_idata), m_idata.data());
+                        m_ocl_queue.enqueueWriteBuffer(m_ocl_idata, CL_TRUE, 0, ocl::bytesize(m_idata), m_idata.data());
 
                         m_ocl_queue.enqueueNDRangeKernel(m_ocl_fkernel, cl::NullRange,
                                 cl::NDRange(odims(), orows(), ocols()),
                                 cl::NDRange(1, orows(), ocols()));
                         m_ocl_queue.finish();
 
-                        m_ocl_queue.enqueueReadBuffer(m_ocl_odata, CL_TRUE, 0, oclsize(m_odata), m_odata.data());
+                        m_ocl_queue.enqueueReadBuffer(m_ocl_odata, CL_TRUE, 0, ocl::bytesize(m_odata), m_odata.data());
                 }
 
                 // CPU version
@@ -468,8 +468,8 @@ namespace ncv
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
                 {
-                        m_ocl_queue.enqueueWriteBuffer(m_ocl_odata, CL_TRUE, 0, oclsize(m_odata), m_odata.data());
-//                        m_ocl_queue.enqueueWriteBuffer(m_ocl_idata, CL_TRUE, 0, oclsize(m_idata), m_idata.data());
+                        m_ocl_queue.enqueueWriteBuffer(m_ocl_odata, CL_TRUE, 0, ocl::bytesize(m_odata), m_odata.data());
+//                        m_ocl_queue.enqueueWriteBuffer(m_ocl_idata, CL_TRUE, 0, ocl::bytesize(m_idata), m_idata.data());
 
                         m_ocl_queue.enqueueNDRangeKernel(m_ocl_bikernel, cl::NullRange,
                                 cl::NDRange(idims(), irows(), icols()),
@@ -479,8 +479,8 @@ namespace ncv
                                 cl::NDRange(odims(), krows(), kcols()),
                                 cl::NDRange(1, krows(), kcols()));
 
-                        m_ocl_queue.enqueueReadBuffer(m_ocl_gidata, CL_TRUE, 0, oclsize(m_gidata), m_gidata.data());
-                        m_ocl_queue.enqueueReadBuffer(m_ocl_gkdata, CL_TRUE, 0, oclsize(m_gkdata), m_gkdata.data());
+                        m_ocl_queue.enqueueReadBuffer(m_ocl_gidata, CL_TRUE, 0, ocl::bytesize(m_gidata), m_gidata.data());
+                        m_ocl_queue.enqueueReadBuffer(m_ocl_gkdata, CL_TRUE, 0, ocl::bytesize(m_gkdata), m_gkdata.data());
                 }
 
                 // CPU version

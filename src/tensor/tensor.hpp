@@ -21,6 +21,7 @@ namespace ncv
                 {
                 public:
 
+                        typedef tscalar_                                        Scalar; // Eigen compatible
                         typedef tscalar_                                        tscalar;
                         typedef tsize_                                          tindex;
                         typedef tsize_                                          tsize;
