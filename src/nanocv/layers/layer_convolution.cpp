@@ -25,35 +25,22 @@ namespace ncv
                 const tsize osize = orows * ocols;
                 const tsize ksize = krows * kcols;
 
-                std::fill(odata, odata + odims * osize, tscalar(0));
-
                 // output
                 for (tsize o = 0; o < odims; o ++)
                 {
-                        tscalar* podata = odata + o * osize;
+                        auto omap = tensor::make_matrix(odata + o * osize, orows, ocols);
 
+                        omap.setZero();
                         for (tsize i = 0; i < idims; i ++)
                         {
-                                const tscalar* pidata = idata + i * isize;
-                                const tscalar* pkdata = kdata + (o * idims + i) * ksize;
+                                auto imap = tensor::make_matrix(idata + i * isize, irows, icols);
+                                auto kmap = tensor::make_matrix(kdata + (o * idims + i) * ksize, krows, kcols);
 
                                 for (tsize r = 0; r < orows; r ++)
                                 {
                                         for (tsize c = 0; c < ocols; c ++)
                                         {
-                                                tscalar sum = 0;
-                                                for (tsize kr = 0; kr < krows; kr ++)
-                                                {
-                                                        for (tsize kc = 0; kc < kcols; kc ++)
-                                                        {
-                                                                const tscalar iv = pidata[(r + kr) * icols + (c + kc)];
-                                                                const tscalar kv = pkdata[kr * kcols + kc];
-
-                                                                sum += iv * kv;
-                                                        }
-                                                }
-
-                                                podata[r * ocols + c] += sum;
+                                                omap(r, c) += kmap.cwiseProduct(imap.block(r, c, krows, kcols)).sum();
                                         }
                                 }
                         }
@@ -84,15 +71,15 @@ namespace ncv
 
                 for (tsize o = 0; o < odims; o ++)
                 {
-                        const tscalar* podata = odata + o * osize;
+                        auto omap = tensor::make_matrix(odata + o * osize, orows, ocols);
 
                         for (tsize i = 0; i < idims; i ++)
                         {
-                                const tscalar* pidata = idata + i * isize;                                
-                                const tscalar* pkdata = kdata + (o * idims + i) * ksize;
+                                auto imap = tensor::make_matrix(idata + i * isize, irows, icols);
+                                auto kmap = tensor::make_matrix(kdata + (o * idims + i) * ksize, krows, kcols);
 
-                                tscalar* pgidata = gidata + i * isize;
-                                tscalar* pgkdata = gkdata + (o * idims + i) * ksize;
+                                auto gimap = tensor::make_matrix(gidata + i * isize, irows, icols);
+                                auto gkmap = tensor::make_matrix(gkdata + (o * idims + i) * ksize, krows, kcols);
 
                                 for (tsize r = 0; r < orows; r ++)
                                 {
@@ -102,12 +89,12 @@ namespace ncv
                                                 {
                                                         for (tsize kc = 0; kc < kcols; kc ++)
                                                         {
-                                                                const tscalar iv = pidata[(r + kr) * icols + (c + kc)];
-                                                                const tscalar ov = podata[r * ocols + c];
-                                                                const tscalar kv = pkdata[kr * kcols + kc];
+                                                                const tscalar iv = imap(r + kr, c + kc);
+                                                                const tscalar ov = omap(r, c);
+                                                                const tscalar kv = kmap(kr, kc);
 
-                                                                pgidata[(r + kr) * icols + (c + kc)] += ov * kv;
-                                                                pgkdata[kr * kcols + kc] += ov * iv;
+                                                                gimap(r + kr, c + kc) += ov * kv;
+                                                                gkmap(kr, kc) += ov * iv;
                                                         }
                                                 }
                                         }
@@ -295,7 +282,6 @@ namespace ncv
                 // resize buffers
                 m_idata.resize(idims, irows, icols);
                 m_odata.resize(odims, orows, ocols);
-
                 m_kdata.resize(odims * idims, krows, kcols);
 
                 m_gkdata.resize(odims * idims, krows, kcols);
@@ -469,7 +455,6 @@ namespace ncv
                 if (theocl.valid())
                 {
                         m_ocl_queue.enqueueWriteBuffer(m_ocl_odata, CL_TRUE, 0, ocl::bytesize(m_odata), m_odata.data());
-//                        m_ocl_queue.enqueueWriteBuffer(m_ocl_idata, CL_TRUE, 0, ocl::bytesize(m_idata), m_idata.data());
 
                         m_ocl_queue.enqueueNDRangeKernel(m_ocl_bikernel, cl::NullRange,
                                 cl::NDRange(idims(), irows(), icols()),
