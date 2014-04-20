@@ -150,17 +150,17 @@ namespace ncv
 
                         template
                         <
-                                typename tscalar
+                                typename ttscalar
                         >
-                        void copy_from(const tscalar* d)
+                        void copy_from(const ttscalar* d)
                         {
                                 std::copy(d, d + size(), data());
                         }
                         template
                         <
-                                typename tscalar
+                                typename ttscalar
                         >
-                        void copy_to(tscalar* d) const
+                        void copy_to(ttscalar* d) const
                         {
                                 std::copy(data(), data() + size(), d);
                         }
@@ -191,17 +191,17 @@ namespace ncv
 
                         template
                         <
-                                typename tscalar
+                                typename ttscalar
                         >
-                        void copy_plane_from(tsize i, const tscalar* d)
+                        void copy_plane_from(tsize i, const ttscalar* d)
                         {
                                 std::copy(d, d + plane_size(), plane_data(i));
                         }
                         template
                         <
-                                typename tscalar
+                                typename ttscalar
                         >
-                        void copy_plane_to(tsize i, tscalar* d) const
+                        void copy_plane_to(tsize i, ttscalar* d) const
                         {
                                 std::copy(plane_data(i), plane_data(i) + plane_size(), d);
                         }

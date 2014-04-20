@@ -19,10 +19,10 @@ namespace ncv
                 tscalar* odata, tsize osize)
         {
                 // output
-                make_vector(odata, osize) =
-                        make_vector(bdata, osize) +
-                        make_matrix(wdata, osize, isize) *
-                        make_vector(idata, isize);
+                tensor::make_vector(odata, osize) =
+                        tensor::make_vector(bdata, osize) +
+                        tensor::make_matrix(wdata, osize, isize) *
+                        tensor::make_vector(idata, isize);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -39,17 +39,17 @@ namespace ncv
                 const tscalar* odata, tsize osize)
         {
                 // bias & weights gradient
-                make_vector(gbdata, osize) =
-                        make_vector(odata, osize);
+                tensor::make_vector(gbdata, osize) =
+                        tensor::make_vector(odata, osize);
 
-                make_matrix(gwdata, osize, isize) =
-                        make_vector(odata, osize) *
-                        make_vector(idata, isize).transpose();
+                tensor::make_matrix(gwdata, osize, isize) =
+                        tensor::make_vector(odata, osize) *
+                        tensor::make_vector(idata, isize).transpose();
 
                 // input gradient
-                make_vector(idata, isize) =
-                        make_matrix(wdata, osize, isize).transpose() *
-                        make_vector(odata, osize);
+                tensor::make_vector(idata, isize) =
+                        tensor::make_matrix(wdata, osize, isize).transpose() *
+                        tensor::make_vector(odata, osize);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

@@ -19,39 +19,14 @@ namespace ncv
         typedef tensor::vector_types_t<scalar_t>::tvector       vector_t;
         typedef tensor::vector_types_t<scalar_t>::tvectors      vectors_t;
 
-        typedef Eigen::Map<vector_t>                            vector_map_t;
-
         typedef tensor::matrix_types_t<scalar_t>::tmatrix       matrix_t;
         typedef tensor::matrix_types_t<scalar_t>::tmatrices     matrices_t;
-
-        typedef Eigen::Map<matrix_t>                            matrix_map_t;
 
         typedef tensor::tensor_t<scalar_t, size_t>              tensor_t;
         typedef std::vector<tensor_t>                           tensors_t;
 
         typedef tensor::ivectorizer_t<scalar_t, size_t>         ivectorizer_t;
         typedef tensor::ovectorizer_t<scalar_t, size_t>         ovectorizer_t;
-
-        // map to vectors & matrices
-        inline vector_map_t make_vector(scalar_t* data, size_t rows)
-        {
-                return vector_map_t(data, rows);
-        }
-
-        inline vector_map_t make_vector(const scalar_t* data, size_t rows)
-        {
-                return make_vector((scalar_t*)data, rows);
-        }
-
-        inline matrix_map_t make_matrix(scalar_t* data, size_t rows, size_t cols)
-        {
-                return matrix_map_t(data, rows, cols);
-        }
-
-        inline matrix_map_t make_matrix(const scalar_t* data, size_t rows, size_t cols)
-        {
-                return matrix_map_t((scalar_t*)data, rows, cols);
-        }
 
         // strings
         typedef std::string                                     string_t;
