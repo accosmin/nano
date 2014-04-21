@@ -1,5 +1,4 @@
-- update OpenCL version of the new convolution layer:
-	- check if faster
+- finish the svhn task
 
 - new datasets: INRIA car and person datasets, dymlerchrysler human detection
 

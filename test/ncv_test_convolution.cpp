@@ -246,10 +246,8 @@ void test(int isize, int ksize, int n_samples)
         init_matrix(ksize, ksize, kdata);
 
         std::cout << "(" << isize << "x" << isize << " @ " << ksize << "x" << ksize << "): ";
-        const scalar_t sum1eib = test_conv2D_1cpu(ncv::math::conv_eib<matrix_t>, "eib(1CPU)", idatas, kdata, odatas);
-        const scalar_t sumxeib = test_conv2D_xcpu(ncv::math::conv_eib<matrix_t>, "eib(xCPU)", idatas, kdata, odatas);
-        const scalar_t sum1dot = test_conv2D_1cpu(ncv::math::conv_dot<matrix_t>, "dot(1CPU)", idatas, kdata, odatas);
-        const scalar_t sumxdot = test_conv2D_xcpu(ncv::math::conv_dot<matrix_t>, "dot(xCPU)", idatas, kdata, odatas);
+        const scalar_t sum1cpu = test_conv2D_1cpu(ncv::math::conv<matrix_t>, "conv(1CPU)", idatas, kdata, odatas);
+        const scalar_t sumxcpu = test_conv2D_xcpu(ncv::math::conv<matrix_t>, "conv(xCPU)", idatas, kdata, odatas);
 #ifdef NANOCV_HAVE_OPENCL
         const scalar_t sumg8dot = test_conv2D_gpu("dot(8GPU)", idatas, kdata, odatas, 8);
         const scalar_t sumg16dot = test_conv2D_gpu("dot(16GPU)", idatas, kdata, odatas, 16);
@@ -263,10 +261,8 @@ void test(int isize, int ksize, int n_samples)
 
         const scalar_t eps = 1e-12;//std::numeric_limits<scalar_t>::epsilon();
         scalar_t diff = 0.0;
-        if ((diff = std::fabs(sum1eib - sum1eib)) > eps) { std::cout << "eib(1CPU) FAILED (diff = " << diff << ")!" << std::endl; }
-        if ((diff = std::fabs(sumxeib - sum1eib)) > eps) { std::cout << "eib(xCPU) FAILED (diff = " << diff << ")!" << std::endl; }
-        if ((diff = std::fabs(sum1dot - sum1eib)) > eps) { std::cout << "dot(1CPU) FAILED (diff = " << diff << ")!" << std::endl; }
-        if ((diff = std::fabs(sumxdot - sum1eib)) > eps) { std::cout << "dot(xCPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sum1cpu - sum1cpu)) > eps) { std::cout << "conv(1CPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sumxcpu - sum1cpu)) > eps) { std::cout << "conv(xCPU) FAILED (diff = " << diff << ")!" << std::endl; }
 #ifdef NANOCV_HAVE_OPENCL
         if ((diff = std::fabs(sumg8dot - sum1eib)) > eps) { std::cout << "dot(8GPU) FAILED (diff = " << diff << ")!" << std::endl; }
         if ((diff = std::fabs(sumg16dot - sum1eib)) > eps) { std::cout << "dot(16GPU) FAILED (diff = " << diff << ")!" << std::endl; }

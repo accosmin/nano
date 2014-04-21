@@ -74,11 +74,11 @@ namespace ncv
 
                         for (tsize i = 0; i < idims; i ++)
                         {
-                                auto imap = tensor::make_matrix(idata + i * isize, irows, icols);
                                 auto kmap = tensor::make_matrix(kdata + (o * idims + i) * ksize, krows, kcols);
-
-                                auto gimap = tensor::make_matrix(gidata + i * isize, irows, icols);
                                 auto gkmap = tensor::make_matrix(gkdata + (o * idims + i) * ksize, krows, kcols);
+
+                                auto imap = tensor::make_matrix(idata + i * isize, irows, icols);
+                                auto gimap = tensor::make_matrix(gidata + i * isize, irows, icols);
 
                                 for (tsize r = 0; r < orows; r ++)
                                 {
