@@ -67,7 +67,6 @@ namespace ncv
                 const tsize ksize = krows * kcols;
 
                 std::fill(gidata, gidata + idims * isize, tscalar(0));
-                std::fill(gkdata, gkdata + odims * idims * ksize, tscalar(0));
 
                 for (tsize o = 0; o < odims; o ++)
                 {
@@ -93,7 +92,7 @@ namespace ncv
                                 {
                                         for (tsize kc = 0; kc < kcols; kc ++)
                                         {
-                                                gkmap(kr, kc) += omap.cwiseProduct(imap.block(kr, kc, orows, ocols)).sum();
+                                                gkmap(kr, kc) = omap.cwiseProduct(imap.block(kr, kc, orows, ocols)).sum();
                                         }
                                 }
                         }
