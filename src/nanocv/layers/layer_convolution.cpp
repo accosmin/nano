@@ -85,18 +85,15 @@ namespace ncv
                                 {
                                         for (tsize c = 0; c < ocols; c ++)
                                         {
-                                                for (tsize kr = 0; kr < krows; kr ++)
-                                                {
-                                                        for (tsize kc = 0; kc < kcols; kc ++)
-                                                        {
-                                                                const tscalar iv = imap(r + kr, c + kc);
-                                                                const tscalar ov = omap(r, c);
-                                                                const tscalar kv = kmap(kr, kc);
+                                                gimap.block(r, c, krows, kcols) += kmap * omap(r, c);
+                                        }
+                                }
 
-                                                                gimap(r + kr, c + kc) += ov * kv;
-                                                                gkmap(kr, kc) += ov * iv;
-                                                        }
-                                                }
+                                for (tsize kr = 0; kr < krows; kr ++)
+                                {
+                                        for (tsize kc = 0; kc < kcols; kc ++)
+                                        {
+                                                gkmap(kr, kc) += omap.cwiseProduct(imap.block(kr, kc, orows, ocols)).sum();
                                         }
                                 }
                         }
