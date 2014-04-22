@@ -1,5 +1,4 @@
 #include "layer_linear.h"
-#include "text.h"
 #include "common/math.hpp"
 #include "common/random.hpp"
 

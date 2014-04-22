@@ -1,7 +1,6 @@
 #include "forward_network.h"
 #include "common/logger.h"
 #include "common/math.hpp"
-#include "text.h"
 
 namespace ncv
 {

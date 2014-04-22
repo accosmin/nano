@@ -1,5 +1,4 @@
 #include "task_stl10.h"
-#include "text.h"
 #include "common/logger.h"
 #include "common/math.hpp"
 #include "loss.h"

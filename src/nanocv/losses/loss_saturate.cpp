@@ -1,5 +1,4 @@
 #include "loss_saturate.h"
-#include "text.h"
 #include "common/math.hpp"
 
 namespace ncv

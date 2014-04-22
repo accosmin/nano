@@ -1,5 +1,4 @@
 #include "layer_convolution.h"
-#include "text.h"
 #include "common/logger.h"
 #include "common/math.hpp"
 #include "common/random.hpp"

@@ -1,7 +1,6 @@
 #ifndef NANOCV_H
 #define NANOCV_H
 
-#include "text.h"
 #include "layer.h"
 #include "trainer.h"
 #include "optimize/opt_gd.hpp"

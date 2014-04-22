@@ -7,7 +7,6 @@
 #include "optimize/opt_gd.hpp"
 #include "optimize/opt_cgd.hpp"
 #include "optimize/opt_lbfgs.hpp"
-#include "text.h"
 
 namespace ncv
 {

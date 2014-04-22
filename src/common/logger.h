@@ -8,10 +8,9 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-        // logging object that can use any std::ostream (standard streaming & text files).
-        /////////////////////////////////////////////////////////////////////////////////////////
-
+        ///
+        /// \brief logging object that can use any std::ostream (standard streaming & text files)
+        ///
         class logger_t
         {
         public:

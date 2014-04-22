@@ -3,7 +3,6 @@
 #include "common/logger.h"
 #include "common/usampler.hpp"
 #include "common/random.hpp"
-#include "text.h"
 
 namespace ncv
 {

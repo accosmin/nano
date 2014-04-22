@@ -1,5 +1,4 @@
 #include "task.h"
-#include "text.h"
 #include "common/logger.h"
 #include "common/random.hpp"
 
