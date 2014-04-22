@@ -1,10 +1,10 @@
 #include "task_svhn.h"
 #include "common/math.hpp"
 #include "common/logger.h"
+#include "common/zcompress.h"
 #include "loss.h"
 #include <fstream>
 #include <memory>
-#include <zlib.h>
 
 namespace ncv
 {
@@ -324,62 +324,12 @@ namespace ncv
 
                         log_info() << "SVHN: uncompressing " << section.m_bytes << " bytes ...";
 
-                        // zlib decompression buffers
-                        static const u_int32_t CHUNK = 64 * 1024;
-
-                        z_stream strm;
-                        unsigned char in[CHUNK];
-                        unsigned char out[CHUNK];
-
-                        strm.zalloc = Z_NULL;
-                        strm.zfree = Z_NULL;
-                        strm.opaque = Z_NULL;
-                        strm.avail_in = 0;
-                        strm.next_in = Z_NULL;
-                        if (inflateInit(&strm) != Z_OK)
+                        std::vector<u_int8_t>& data = (isection == 0) ? image_data : label_data;
+                        if (!ncv::zuncompress(istream, section.m_bytes, data))
                         {
-                                log_error() << "SVHN: cannot initialize zlib!";
+                                log_error() << "SVHN: failed to read compressed data!";
                                 return 0;
                         }
-
-                        // decompress the data chunk
-                        u_int32_t num_bytes = math::cast<u_int32_t>(section.m_bytes);
-                        std::vector<u_int8_t>& data = (isection == 0) ? image_data : label_data;
-                        for ( ; num_bytes > 0; )
-                        {
-                                const u_int32_t to_read = num_bytes >= CHUNK ? CHUNK : num_bytes;
-                                num_bytes -= to_read;
-
-                                if (!istream.read(reinterpret_cast<char*>(in), to_read))
-                                {
-                                        inflateEnd(&strm);
-                                        log_error() << "SVHN: failed to read compressed data!";
-                                        return 0;
-                                }
-
-                                strm.avail_in = to_read;
-                                strm.next_in = in;
-
-                                do
-                                {
-                                        strm.avail_out = CHUNK;
-                                        strm.next_out = out;
-
-                                        const int ret = inflate(&strm, Z_NO_FLUSH);
-                                        if (ret != Z_OK && ret != Z_STREAM_END)
-                                        {
-                                                inflateEnd(&strm);
-                                                log_error() << "SVHN: decompression failed!";
-                                                return 0;
-                                        }
-
-                                        const u_int32_t have = CHUNK - strm.avail_out;
-                                        data.insert(data.end(), out, out + have);
-                                }
-                                while (strm.avail_out == 0);
-                        }
-
-                        inflateEnd(&strm);
 
                         log_info() << "SVHN: uncompressed " << data.size() << " bytes.";
                 }
