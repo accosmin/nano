@@ -87,9 +87,12 @@ namespace ncv
                 matrix_t make_blue(const rect_t& region) const { return get(region, color::make_blue); }
                 matrix_t make_luma(const rect_t& region) const { return get(region, color::make_luma); }
 
-                // retrieve the associated target (if any)
+                // retrieve the associated target/label/annotation (if any)
                 vector_t make_target(const rect_t& region) const;
+                string_t make_label(const rect_t& region) const;
+                size_t find_annotation(const rect_t& region) const;
 
+                // retrieve the [0,1] normalized color channel
                 template
                 <
                         typename toperator

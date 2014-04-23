@@ -280,6 +280,26 @@ namespace ncv
 
         vector_t image_t::make_target(const rect_t& region) const
         {
+                const size_t index = find_annotation(region);
+                return  index == string_t::npos ?
+                        vector_t() :
+                        m_annotations[index].m_target;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        string_t image_t::make_label(const rect_t& region) const
+        {
+                const size_t index = find_annotation(region);
+                return  index == string_t::npos ?
+                        string_t() :
+                        m_annotations[index].m_label;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        size_t image_t::find_annotation(const rect_t& region) const
+        {
                 // load the target of the most overlapping annotation
                 scalar_t best_overlap = 0.0;
                 size_t best_index = 0;
@@ -300,11 +320,11 @@ namespace ncv
                 if (    best_overlap > thres_overlap &&
                         best_index < m_annotations.size())
                 {
-                        return m_annotations[best_index].m_target;
+                        return best_index;
                 }
                 else
                 {
-                        return vector_t();
+                        return string_t::npos;
                 }
         }
 

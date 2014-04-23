@@ -9,7 +9,7 @@ namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        static const strings_t labels =
+        static const strings_t tlabels =
         {
                 "animal",
                 "human",
@@ -159,13 +159,13 @@ namespace ncv
                 for (size_t i = 0; i < cnt; i ++)
                 {
                         const size_t ilabel = dlabel[i];
-                        if (ilabel >= labels.size())
+                        if (ilabel >= tlabels.size())
                         {
                                 continue;
                         }
 
                         const annotation_t anno(sample_region(0, 0),
-                                labels[ilabel],
+                                tlabels[ilabel],
                                 ncv::class_target(ilabel, n_outputs()));
 
                         for (size_t camera = 0; camera < 1/*n_cameras*/; camera ++)     // ignore the second camera!

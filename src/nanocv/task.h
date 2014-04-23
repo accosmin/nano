@@ -47,6 +47,9 @@ namespace ncv
                 // save the task images to file (by grouping sample patchs into (grows, gcols) grids)
                 void save_as_images(const fold_t& fold, const string_t& basepath, size_t grows, size_t gcols) const;
 
+                // distinct labels
+                strings_t labels() const;
+
                 // access functions
                 virtual size_t n_rows() const = 0;
                 virtual size_t n_cols() const = 0;

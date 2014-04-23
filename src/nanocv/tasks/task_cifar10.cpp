@@ -8,7 +8,7 @@ namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        static const string_t labels[] =
+        static const string_t tlabels[] =
         {
                 "airplane",
                 "automobile",
@@ -77,7 +77,7 @@ namespace ncv
                         }
 
                         const annotation_t anno(sample_region(0, 0),
-                                labels[ilabel],
+                                tlabels[ilabel],
                                 ncv::class_target(ilabel, n_outputs()));
 
                         image_t image;

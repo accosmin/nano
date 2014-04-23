@@ -1,6 +1,6 @@
 #include "task.h"
 #include "common/logger.h"
-#include "common/random.hpp"
+#include <set>
 
 namespace ncv
 {
@@ -54,78 +54,94 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        strings_t task_t::labels() const
+        {
+                // distinct labels
+                std::set<string_t> slabels;
+                for (const image_t& image : m_images)
+                {
+                        for (const annotation_t& annotation : image.m_annotations)
+                        {
+                                slabels.insert(annotation.m_label);
+                        }
+                }
+
+                strings_t result;
+                std::copy(slabels.begin(), slabels.end(), std::back_inserter(result));
+                return result;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
         void task_t::save_as_images(const fold_t& fold, const string_t& basepath, size_t grows, size_t gcols) const
         {
-                const size_t border = 16, radius = 4;
+                const size_t border = 8;
                 const size_t rows = n_rows() * grows + border * (grows + 1);
                 const size_t cols = n_cols() * gcols + border * (gcols + 1);
 
                 const rgba_t back_color = color::make_rgba(225, 225, 0);
 
-                random_t<rgba_t> rng(0, 255);
-
-                rgbas_t label_colors(n_outputs());
-                for (size_t o = 0; o < n_outputs(); o ++)
-                {
-                        label_colors[o] = color::make_rgba(rng(), rng(), rng());
-                }
-
                 rgba_matrix_t rgba(rows, cols);
 
-                // process all samples ...
-                const samples_t& samples = this->samples(fold);
-                for (size_t i = 0, g = 1; i < samples.size(); i += grows * gcols, g ++)
+                // process each label ...
+                const strings_t labels = this->labels();
+                for (size_t l = 0; l <= labels.size(); l ++)    // labels + non-annotated
                 {
-                        rgba.setConstant(back_color);
+                        const string_t label = l < labels.size() ? labels[l] : string_t();
 
-                        // ... compose the image block
-                        for (size_t k = i, r = 0; r < grows; r ++)
+                        // process all samples with this label ...
+                        const samples_t& samples = this->samples(fold);
+                        for (size_t i = 0, g = 1; i < samples.size(); g ++)
                         {
-                                for (size_t c = 0; c < gcols; c ++, k ++)
+                                rgba.setConstant(back_color);
+
+                                // select samples
+                                samples_t gsamples;
+                                for ( ; i < samples.size() && gsamples.size() < grows * gcols; i ++)
                                 {
-                                        if (k < samples.size())
+                                        const sample_t& sample = samples[i];
+                                        const image_t& image = this->image(sample.m_index);
+                                        const rect_t& region = sample.m_region;
+
+                                        const string_t slabel = image.make_label(region);
+                                        if (slabel != label)
                                         {
-                                                const ncv::sample_t& sample = samples[k];
-                                                const ncv::image_t& image = this->image(sample.m_index);
-                                                const ncv::rect_t& region = sample.m_region;
-                                                const ncv::vector_t target = image.make_target(sample.m_region);
+                                                continue;
+                                        }
+
+                                        gsamples.push_back(sample);
+                                }
+
+                                // ... compose the image block
+                                for (size_t k = 0, r = 0; r < grows; r ++)
+                                {
+                                        for (size_t c = 0; c < gcols && k < gsamples.size(); c ++, k ++)
+                                        {
+                                                const sample_t& sample = gsamples[k];
+                                                const image_t& image = this->image(sample.m_index);
+                                                const rect_t& region = sample.m_region;
 
                                                 const size_t iy = n_rows() * r + border * (r + 1);
                                                 const size_t ix = n_cols() * c + border * (c + 1);
                                                 const size_t ih = n_rows();
                                                 const size_t iw = n_cols();
 
-                                                 // border ~ label/target
-                                                if (image.has_target(target))
-                                                {
-                                                        for (size_t o = 0; o < n_outputs(); o ++)
-                                                        {
-                                                                if (target[o] > 0.0)
-                                                                {
-                                                                        const rgba_t color = label_colors[o];
-                                                                        rgba.block(iy - radius,
-                                                                                   ix - radius,
-                                                                                   ih + radius * 2,
-                                                                                   iw + radius * 2).setConstant(color);
-                                                                        break;
-                                                                }
-                                                        }
-                                                }
-
                                                 // image patch
                                                 rgba.block(iy, ix, ih, iw) = image.m_rgba.block(
-                                                                        geom::top(region),
-                                                                        geom::left(region),
-                                                                        geom::height(region),
-                                                                        geom::width(region));
+                                                        geom::top(region),
+                                                        geom::left(region),
+                                                        geom::height(region),
+                                                        geom::width(region));
                                         }
                                 }
-                        }
 
-                        // ... and save it
-                        const string_t path = basepath + "_group" + text::to_string(g) + ".png";
-                        log_info() << "saving images to <" << path << "> ...";
-                        ncv::save_rgba(path, rgba);
+                                // ... and save it
+                                const string_t path = basepath
+                                                + (label.empty() ? "" : ("_" + label))
+                                                + "_group" + text::to_string(g) + ".png";
+                                log_info() << "saving images to <" << path << "> ...";
+                                ncv::save_rgba(path, rgba);
+                        }
                 }
         }
 
