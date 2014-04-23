@@ -10,7 +10,7 @@ from command line arguments.
 ### Task
 
 A task describes a classification or regression problem consisting of separate training and test image patches with associated target outputs if any. 
-This concept maps known machine learning and computer vision benchmarks to a common interface. Well-known datasets that are supported: MNIST, CIFAR-10, CIFAR-100, CMU-FACES, STL-10, NORB.
+This concept maps known machine learning and computer vision benchmarks to a common interface. Well-known datasets that are supported: *MNIST*, *CIFAR-10*, *CIFAR-100*, *CMU-FACES*, *STL-10*, *NORB*.
 
 ### Model
 
@@ -22,21 +22,11 @@ A model predicts the correct output for a given image patch. The output can be a
 ### Loss 
 
 A loss function assigns a scalar score to the prediction of a model by comparing it with the ground truth target (if provided). 
-The lower the score, the better the prediction. Implemented instances: class-NLL, logistic and square.
+The lower the score, the better the prediction. Implemented instances: *class-NLL*, *logistic* and *square*.
 
 ### Trainer
 
-A trainer otimizes the parameters of a *given model* to produce the correct outputs for a *given task* using the cumulated values of a *given loss* over 
-the training samples as a numerical optimization criteria. Implemented instances:
-
-* **batch** - a single iteration typically consists of a pass through all training samples. There are several options available: *L-BFGS*, conjugate gradient 
-descent (*CGD*) and gradient descent (*GD*).
-
-* **minibatch** - a single iteration typically consists of computing the gradient over a small subset (minibatch) of the training samples and then performing a line-search over the same minibatch
-as in the gradient descent algorithm.
-
-* **stochastic** - an iteration consists of picking a random sample to update the descent direction. There are several options available: *SGD* (stochastic gradient descent) and *ASGD* (average stochastic gradient descent).
-The training is split in two phases: the tuning phase estimates the optimum learning rate parameters on a small subset of samples, while the optimization phase uses the optimum parameters to train the model.
+A trainer otimizes the parameters of a *given model* to produce the correct outputs for a *given task* using the cumulated values of a *given loss* over the training samples as a numerical optimization criteria. Implemented instances: *batch* (using *L-BFGS*, conjugate gradient descent (*CGD*) or gradient descent (*GD*)), *minibatch* and *stochastic*.
 
 ## Usage
 
