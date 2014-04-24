@@ -86,44 +86,57 @@ namespace ncv
 
                 static u_int32_t make_uint32(const u_int8_t* data)
                 {
-                        return  ((u_int32_t)(data[0]) << 0) |
-                                ((u_int32_t)(data[1]) << 8) |
-                                ((u_int32_t)(data[2]) << 16) |
-                                ((u_int32_t)(data[3]) << 24);
+                        return *reinterpret_cast<const u_int32_t*>(data);
                 }
 
                 /////////////////////////////////////////////////////////////////////////////////////////
 
                 struct section_t
                 {
-                        section_t(size_t offset = 0)
-                                :       m_offset(offset), m_bytes(0),
-                                        m_type(0),
+                        section_t(size_t begin = 0)
+                                :       m_begin(begin), m_end(begin),
+                                        m_dbegin(begin), m_dend(begin),
                                         m_dtype(data_type::miUNKNOWN)
                         {
                         }
 
-                        bool load(size_t offset, u_int32_t type, u_int32_t bytes)
+                        bool load(size_t offset, u_int32_t dtype, u_int32_t bytes)
                         {
-                                m_offset = offset;
-                                m_bytes = bytes;
-                                m_type = type;
-                                m_dtype = make_data_type(type);
+                                // small data format
+                                if ((dtype >> 16) != 0)
+                                {
+                                        m_begin = offset;
+                                        m_end = offset + 8;
+
+                                        m_dbegin = offset + 4;
+                                        m_dend = offset + 8;
+
+                                        m_dtype = make_data_type((dtype << 16) >> 16);
+                                }
+
+                                // regular format
+                                else
+                                {
+                                        m_begin = offset;
+                                        m_end = offset + ((make_data_type(dtype) == data_type::miCOMPRESSED) ?
+                                                (8 + bytes) :
+                                                (8 + bytes + ((8 - bytes) % 8)));
+
+                                        m_dbegin = offset + 8;
+                                        m_dend = offset + 8 + bytes;
+
+                                        m_dtype = make_data_type(dtype);
+                                }
+
                                 return true;
                         }
 
                         bool load(std::ifstream& istream)
                         {
-                                u_int32_t data_type, num_bytes;
-                                if (    !istream.read(reinterpret_cast<char*>(&data_type), sizeof(u_int32_t)) ||
-                                        !istream.read(reinterpret_cast<char*>(&num_bytes), sizeof(u_int32_t)))
-                                {
-                                        return false;
-                                }
-                                else
-                                {
-                                        return load(0, data_type, num_bytes);
-                                }
+                                u_int32_t dtype, bytes;
+                                return  istream.read(reinterpret_cast<char*>(&dtype), sizeof(u_int32_t)) &&
+                                        istream.read(reinterpret_cast<char*>(&bytes), sizeof(u_int32_t)) &&
+                                        load(0, dtype, bytes);
                         }
 
                         bool load(const std::vector<u_int8_t>& data, size_t offset = 0)
@@ -134,16 +147,19 @@ namespace ncv
 
                         bool load(const std::vector<u_int8_t>& data, const section_t& prv)
                         {
-                                return load(data, prv.m_offset + prv.m_bytes + 8);
+                                return load(data, prv.m_end);
                         }
 
-                        size_t begin() const { return m_offset + 8; }
-                        size_t end() const { return begin() + size(); }
-                        size_t size() const { return m_bytes; }
+                        size_t begin() const { return m_begin; }
+                        size_t end() const { return m_end; }
+                        size_t size() const { return end() - begin(); }
 
-                        size_t          m_offset;
-                        size_t          m_bytes;
-                        u_int32_t       m_type;
+                        size_t dbegin() const { return m_dbegin; }
+                        size_t dend() const { return m_dend; }
+                        size_t dsize() const { return dend() - dbegin(); }
+
+                        size_t          m_begin, m_end;         ///< byte range of the whole section
+                        size_t          m_dbegin, m_dend;       ///< byte range of the data section
                         data_type       m_dtype;
                 };
 
@@ -159,6 +175,24 @@ namespace ncv
 
                         bool load(const std::vector<u_int8_t>& data)
                         {
+                                for (size_t i = 8; i < data.size(); )
+                                {
+                                        section_t section;
+                                        if (!section.load(data, i))
+                                        {
+                                                break;
+                                        }
+
+                                        log_info() << "section: dtype = " << mat::to_string(section.m_dtype)
+                                                   << ", range = [" << section.begin() << ", " << section.end()
+                                                   << ", drange = [" << section.dbegin() << ", " << section.dend()
+                                                   << "]";
+
+                                        i = section.end();;
+                                }
+
+                                throw std::runtime_error("ex");
+
                                 // read & check header
                                 section_t header;
                                 if (!header.load(data))
@@ -169,34 +203,32 @@ namespace ncv
 
                                 if (header.m_dtype != data_type::miMATRIX)
                                 {
-                                        log_info() << "invalid array type <" << header.m_type
-                                                   << ">! expecting " << mat::to_string(data_type::miMATRIX) << "!";
+                                        log_info() << "invalid array type: expecting "
+                                                   << mat::to_string(data_type::miMATRIX) << "!";
                                         return false;
                                 }
 
-                                if (header.m_bytes + 8 != data.size())
+                                if (header.end() != data.size())
                                 {
                                         log_info() << "invalid array size in bytes!";
                                         return false;
                                 }
 
-                                log_info() << "array header: type = " << header.m_type
-                                           << "/" << mat::to_string(header.m_dtype)
-                                           << ", bytes = " << header.m_bytes;
+                                log_info() << "array header: dtype = " << mat::to_string(header.m_dtype)
+                                           << ", size = " << header.size() << "/" << data.size();
 
                                 // read & check sections
                                 m_sections.clear();
 
-                                mat::section_t prv_section, crt_section;
-                                while (crt_section.load(data, prv_section))
+                                mat::section_t psection, csection;
+                                while (csection.load(data, psection))
                                 {
-                                        log_info() << "array section: type = " << crt_section.m_type
-                                                  << "/" << mat::to_string(crt_section.m_dtype)
-                                                  << ", size = " << crt_section.size()
-                                                  << ", range = [" << crt_section.begin()
-                                                  << ", " << crt_section.end() << "]";
-                                        m_sections.push_back(crt_section);
-                                        prv_section = crt_section;
+                                        log_info() << "array section: dtype = " << mat::to_string(csection.m_dtype)
+                                                   << ", range = [" << csection.begin() << ", " << csection.end()
+                                                   << ", drange = [" << csection.dbegin() << ", " << csection.dend()
+                                                   << "]";;
+                                        m_sections.push_back(csection);
+                                        psection = csection;
                                 }
 
                                 if (m_sections.size() < 4)
@@ -205,7 +237,7 @@ namespace ncv
                                         return false;
                                 }
 
-                                if (m_sections[0].m_bytes != 8)
+                                if (m_sections[0].dsize() != 8)
                                 {
                                         log_info() << "invalid array's first section! expecting 8 bytes structure!";
                                         return false;
@@ -322,10 +354,10 @@ namespace ncv
                                 return 0;
                         }
 
-                        log_info() << "SVHN: uncompressing " << section.m_bytes << " bytes ...";
+                        log_info() << "SVHN: uncompressing " << section.dsize() << " bytes ...";
 
                         std::vector<u_int8_t>& data = (isection == 0) ? image_data : label_data;
-                        if (!ncv::zuncompress(istream, section.m_bytes, data))
+                        if (!ncv::zuncompress(istream, section.dsize(), data))
                         {
                                 log_error() << "SVHN: failed to read compressed data!";
                                 return 0;

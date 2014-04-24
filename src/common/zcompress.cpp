@@ -62,7 +62,7 @@ namespace ncv
                 inflateEnd(&strm);
 
                 // OK
-                return true;
+                return num_bytes == 0;
         }
 
 	/////////////////////////////////////////////////////////////////////////////////////////
