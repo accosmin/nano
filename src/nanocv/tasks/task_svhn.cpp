@@ -3,6 +3,7 @@
 #include "common/logger.h"
 #include "common/zcompress.h"
 #include "loss.h"
+#include "color.h"
 #include <fstream>
 #include <memory>
 
@@ -58,6 +59,28 @@ namespace ncv
 
                 /////////////////////////////////////////////////////////////////////////////////////////
 
+                size_t to_bytes(const data_type& type)
+                {
+                        if (type == data_type::miINT8) return 1;
+                        else if (type == data_type::miUINT8) return 1;
+                        else if (type == data_type::miINT16) return 2;
+                        else if (type == data_type::miUINT16) return 2;
+                        else if (type == data_type::miINT32) return 4;
+                        else if (type == data_type::miUINT32) return 4;
+                        else if (type == data_type::miSINGLE) return 4;
+                        else if (type == data_type::miDOUBLE) return 8;
+                        else if (type == data_type::miINT64) return 8;
+                        else if (type == data_type::miUINT64) return 8;
+                        else if (type == data_type::miMATRIX) return 0;
+                        else if (type == data_type::miCOMPRESSED) return 0;
+                        else if (type == data_type::miUTF8) return 0;
+                        else if (type == data_type::miUTF16) return 0;
+                        else if (type == data_type::miUTF32) return 0;
+                        else return 0;
+                }
+
+                /////////////////////////////////////////////////////////////////////////////////////////
+
                 template
                 <
                         typename tint
@@ -100,7 +123,7 @@ namespace ncv
                         {
                         }
 
-                        bool load(size_t offset, u_int32_t dtype, u_int32_t bytes)
+                        bool load(size_t offset, size_t end, u_int32_t dtype, u_int32_t bytes)
                         {
                                 // small data format
                                 if ((dtype >> 16) != 0)
@@ -128,7 +151,7 @@ namespace ncv
                                         m_dtype = make_data_type(dtype);
                                 }
 
-                                return true;
+                                return m_end <= end;
                         }
 
                         bool load(std::ifstream& istream)
@@ -136,13 +159,14 @@ namespace ncv
                                 u_int32_t dtype, bytes;
                                 return  istream.read(reinterpret_cast<char*>(&dtype), sizeof(u_int32_t)) &&
                                         istream.read(reinterpret_cast<char*>(&bytes), sizeof(u_int32_t)) &&
-                                        load(0, dtype, bytes);
+                                        load(0, std::numeric_limits<size_t>::max(), dtype, bytes);
                         }
 
                         bool load(const std::vector<u_int8_t>& data, size_t offset = 0)
                         {
                                 return  offset + 8 <= data.size() &&
-                                        load(offset, make_uint32(&data[offset + 0]), make_uint32(&data[offset + 4]));
+                                        load(offset, data.size(),
+                                             make_uint32(&data[offset + 0]), make_uint32(&data[offset + 4]));
                         }
 
                         bool load(const std::vector<u_int8_t>& data, const section_t& prv)
@@ -169,12 +193,39 @@ namespace ncv
 
                 struct array_t
                 {
-                        array_t() : m_flags(0), m_class(0)
+                        array_t()
                         {
                         }
 
                         bool load(const std::vector<u_int8_t>& data)
                         {
+                                // read & check header
+                                section_t header;
+                                if (!header.load(data))
+                                {
+                                        log_error() << "failed to load array!";
+                                        return false;
+                                }
+
+                                if (header.m_dtype != data_type::miMATRIX)
+                                {
+                                        log_error() << "invalid array type: expecting "
+                                                    << mat::to_string(data_type::miMATRIX) << "!";
+                                        return false;
+                                }
+
+                                if (header.end() != data.size())
+                                {
+                                        log_error() << "invalid array size in bytes!";
+                                        return false;
+                                }
+
+                                log_info() << "array header: dtype = " << mat::to_string(header.m_dtype)
+                                           << ", bytes = " << header.size() << "/" << data.size() << ".";
+
+                                // read & check sections
+                                m_sections.clear();
+
                                 for (size_t i = 8; i < data.size(); )
                                 {
                                         section_t section;
@@ -183,63 +234,18 @@ namespace ncv
                                                 break;
                                         }
 
-                                        log_info() << "section: dtype = " << mat::to_string(section.m_dtype)
+                                        log_info() << "array section: dtype = " << mat::to_string(section.m_dtype)
                                                    << ", range = [" << section.begin() << ", " << section.end()
-                                                   << ", drange = [" << section.dbegin() << ", " << section.dend()
-                                                   << "]";
+                                                   << "], drange = [" << section.dbegin() << ", " << section.dend()
+                                                   << "], bytes = " << section.dsize() << "/" << section.size() << ".";
 
-                                        i = section.end();;
+                                        m_sections.push_back(section);
+                                        i = section.end();
                                 }
 
-                                throw std::runtime_error("ex");
-
-                                // read & check header
-                                section_t header;
-                                if (!header.load(data))
+                                if (m_sections.size() != 4)
                                 {
-                                        log_info() << "failed to load array!";
-                                        return false;
-                                }
-
-                                if (header.m_dtype != data_type::miMATRIX)
-                                {
-                                        log_info() << "invalid array type: expecting "
-                                                   << mat::to_string(data_type::miMATRIX) << "!";
-                                        return false;
-                                }
-
-                                if (header.end() != data.size())
-                                {
-                                        log_info() << "invalid array size in bytes!";
-                                        return false;
-                                }
-
-                                log_info() << "array header: dtype = " << mat::to_string(header.m_dtype)
-                                           << ", size = " << header.size() << "/" << data.size();
-
-                                // read & check sections
-                                m_sections.clear();
-
-                                mat::section_t psection, csection;
-                                while (csection.load(data, psection))
-                                {
-                                        log_info() << "array section: dtype = " << mat::to_string(csection.m_dtype)
-                                                   << ", range = [" << csection.begin() << ", " << csection.end()
-                                                   << ", drange = [" << csection.dbegin() << ", " << csection.dend()
-                                                   << "]";;
-                                        m_sections.push_back(csection);
-                                        psection = csection;
-                                }
-
-                                if (m_sections.size() < 4)
-                                {
-                                        log_info() << "invalid array sections! expecting at least 4 sections!";
-                                        return false;
-                                }
-
-                                if (m_sections[0].dsize() != 8)
-                                {
-                                        log_info() << "invalid array's first section! expecting 8 bytes structure!";
+                                        log_error() << "invalid array sections! expecting 4 sections!";
                                         return false;
                                 }
 
@@ -247,37 +253,46 @@ namespace ncv
                                 //      first:  flags + class
                                 //      second: dimensions
                                 //      third:  name
-                                const mat::section_t& sect1 = m_sections[0];
+//                                const mat::section_t& sect1 = m_sections[0];
                                 const mat::section_t& sect2 = m_sections[1];
-//                                const mat::section_t& sect3 = m_sections[2];
+                                const mat::section_t& sect3 = m_sections[2];
+                                const mat::section_t& sect4 = m_sections[3];
 
-                                // TODO: read correctly the name!
-
-                                m_flags = data[sect1.begin() + 2];
-                                m_class = data[sect1.begin() + 3];
+                                m_name = string_t(data.begin() + sect3.dbegin(),
+                                                  data.begin() + sect3.dend());
 
                                 m_dims.clear();
-                                for (size_t i = 0; i < sect2.size(); i += 4)
+                                size_t values = 1;
+
+                                for (size_t i = sect2.dbegin(); i < sect2.dend(); i += 4)
                                 {
-                                        m_dims.push_back(make_uint32(&data[sect2.begin() + i]));
+                                        const size_t dim = make_uint32(&data[i]);
+                                        m_dims.push_back(dim);
+                                        values *= dim;
                                 }
 
+                                // check bytes
+                                if (values * to_bytes(sect4.m_dtype) != sect4.dsize())
+                                {
+                                        log_error() << "invalid array sections! mismatching number of bytes!";
+                                        return false;
+                                }
+
+                                // OK
                                 return true;
                         }
 
                         void log(logger_t& logger) const
                         {
                                 logger << "sections = " << m_sections.size()
-                                       << ", class = " << m_class
-                                       << ", flags = " << m_flags
-                                       << ", size = ";
+                                       << ", name = " << m_name
+                                       << ", dims = ";
                                 for (size_t i = 0; i < m_dims.size(); i ++)
                                 {
                                         logger << m_dims[i] << ((i + 1 == m_dims.size()) ? "" : "x");
                                 }
                         }
 
-                        u_int32_t       m_flags, m_class;
                         indices_t       m_dims;
                         string_t        m_name;
                         sections_t      m_sections;
@@ -386,114 +401,103 @@ namespace ncv
         /////////////////////////////////////////////////////////////////////////////////////////
 
         size_t svhn_task_t::decode(
-                const std::vector<u_int8_t>& image_data,
-                const std::vector<u_int8_t>& label_data,
+                const std::vector<u_int8_t>& idata,
+                const std::vector<u_int8_t>& ldata,
                 protocol p)
         {
-                // decode image array
-                mat::array_t image_array;
-                if (!image_array.load(image_data))
+                // decode image & label arrays
+                mat::array_t iarray, larray;
+                if (!iarray.load(idata))
                 {
                         log_error() << "SVHN: invalid image array!";
-                        return false;
+                        return 0;
                 }
-
-                image_array.log(log_info() << "SVHN: image array: ");
-
-                // decode label array
-                mat::array_t label_array;
-                if (!label_array.load(label_data))
+                if (!larray.load(ldata))
                 {
                         log_error() << "SVHN: invalid label array!";
-                        return false;
+                        return 0;
                 }
 
-                label_array.log(log_info() << "SVHN: label array: ");
+                iarray.log(log_info() << "SVHN: image array: ");
+                larray.log(log_info() << "SVHN: label array: ");
+
+                const mat::section_t& isection = iarray.m_sections[3];
+                const mat::section_t& lsection = larray.m_sections[3];
+
+                const indices_t& idims = iarray.m_dims;
+                const indices_t& ldims = larray.m_dims;
 
                 // check array size
-                if (    image_array.m_dims.size() != 4 ||
-                        image_array.m_dims[0] != n_rows() ||
-                        image_array.m_dims[1] != n_cols() ||
-                        image_array.m_dims[2] != 3 ||
+                if (    idims.size() != 4 ||
+                        idims[0] != n_rows() ||
+                        idims[1] != n_cols() ||
+                        idims[2] != 3 ||
 
-                        label_array.m_dims.size() != 2 ||
-                        label_array.m_dims[1] != 1 ||
+                        ldims.size() != 2 ||
+                        ldims[1] != 1 ||
 
-                        image_array.m_dims[3] != label_array.m_dims[0])
+                        idims[3] != ldims[0])
                 {
                         log_error() << "SVHN: invalid or mis-matching image & label array size!";
-                        return false;
+                        return 0;
+                }
+
+                // check data type
+                if (    isection.m_dtype != mat::data_type::miUINT8 ||
+                        lsection.m_dtype != mat::data_type::miUINT8)
+                {
+                        log_error() << "SVHN: expecting UINT8 image & label arrays!";
+                        return 0;
                 }
 
                 // load images & labels
-                const size_t n_samples = image_array.m_dims[3];
-                const size_t image_size = n_rows() * n_cols() * 3;
-
-                size_t loaded_images = 0;
-                for (mat::sections_t::const_iterator it = image_array.m_sections.begin() + 3;
-                        it != image_array.m_sections.end(); ++ it)
-                {
-                        const mat::section_t& section = *it;
-
-                        std::cout << "section = [" << section.begin() << ", " << section.end()
-                                  << "], data = " << image_data.size() << std::endl;
-
-                        for (size_t i = section.begin(); i + image_size < section.end(); i += image_size)
-                        {
-                                if (i + image_size >= image_data.size())
-                                {
-                                        std::cout << "!!!! delta = " << (i + image_size - image_data.size()) << std::endl;
-                                        break;
-                                }
-
-//                                image_t image;
-//                                image.m_protocol = p;
-//                                image.load_rgba((char*)&image_data[i], n_rows(), n_cols(), 1);
-
-//                                TODO: it crashes here!
-
-//                                m_images.push_back(image);
-                                loaded_images ++;
-                        }
-                }
-
-                std::cout << "loaded " << loaded_images << "/" << n_samples << std::endl;
-
-                for (size_t i = 0; i < n_samples; i ++)
-                {
-
-                }
-
-                // load images & labels
+                const size_t n_samples = idims[3];
 
                 size_t cnt = 0;
+                for (size_t i = 0; i < n_samples; i ++)
+                {
+                        const size_t lbeg = lsection.dbegin() + i;
 
+                        // label ...
+                        size_t ilabel = ldata[lbeg + 0];
+                        if (ilabel == 10)
+                        {
+                                ilabel = 0;
+                        }
+                        else if (ilabel < 1 || ilabel > 9)
+                        {
+                                continue;
+                        }
 
-//                char label[1];
+                        const annotation_t anno(sample_region(0, 0),
+                                "digit" + text::to_string(ilabel),
+                                ncv::class_target(ilabel, n_outputs()));
 
-//                // load images and annotations
-//                size_t cnt = 0;
-//                while ( istream.read(label, 1) &&
-//                        istream.read(buffer, sizeof(buffer)))
-//                {
-//                        const size_t ilabel = math::cast<size_t>(label[0]);
-//                        if (ilabel >= n_outputs())
-//                        {
-//                                continue;
-//                        }
+                        // image ...
+                        image_t image;
+                        image.m_protocol = p;
+                        image.m_annotations.push_back(anno);
+                        image.m_rgba.resize(n_rows(), n_cols());
 
-//                        const annotation_t anno(sample_region(0, 0),
-//                                "digit" + text::to_string(ilabel),
-//                                ncv::class_target(ilabel, n_outputs()));
+                        const size_t px = n_rows() * n_cols();
+                        const size_t ix = n_rows() * n_cols() * 3;
+                        const size_t ibeg = isection.dbegin() + i * ix;
 
-//                        image_t image;
-//                        image.m_protocol = p;
-//                        image.m_annotations.push_back(anno);
-//                        image.load_rgba(buffer, n_rows(), n_cols());
+                        for (size_t r = 0, p = 0; r < n_rows(); r ++)
+                        {
+                                for (size_t c = 0; c < n_cols(); c ++, p ++)
+                                {
+                                        const size_t ir = ibeg + (px * 0 + p);
+                                        const size_t ig = ibeg + (px * 1 + p);
+                                        const size_t ib = ibeg + (px * 2 + p);
 
-//                        m_images.push_back(image);
-//                        ++ cnt;
-//                }
+                                        image.m_rgba(c, r) = color::make_rgba(idata[ir], idata[ig], idata[ib]);
+                                }
+                        }
+
+                        m_images.push_back(image);
+                        ++ cnt;
+                }
 
                 return cnt;
         }
