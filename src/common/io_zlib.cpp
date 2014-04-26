@@ -1,4 +1,4 @@
-#include "zcompress.h"
+#include "io_zlib.h"
 #include <zlib.h>
 #include <fstream>
 
@@ -6,7 +6,7 @@ namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        bool zuncompress(std::istream& istream, std::size_t bytes, std::vector<unsigned char>& data)
+        bool io::zuncompress(std::istream& istream, std::size_t bytes, std::vector<unsigned char>& data)
         {
                 // zlib decompression buffers
                 static const std::size_t CHUNK = 64 * 1024;
