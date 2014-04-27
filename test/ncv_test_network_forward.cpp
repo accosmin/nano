@@ -39,11 +39,11 @@ int main(int argc, char *argv[])
         const size_t cmd_samples = 10000;
 
         string_t lmodel0;
-        string_t lmodel1 = lmodel0 + "linear:dims=1000;snorm;";
-        string_t lmodel2 = lmodel1 + "linear:dims=100;snorm;";
-        string_t lmodel3 = lmodel2 + "linear:dims=1000;snorm;";
-        string_t lmodel4 = lmodel3 + "linear:dims=100;snorm;";
-        string_t lmodel5 = lmodel4 + "linear:dims=1000;snorm;";
+        string_t lmodel1 = lmodel0 + "linear:dims=100;snorm;";
+        string_t lmodel2 = lmodel1 + "linear:dims=1000;snorm;";
+        string_t lmodel3 = lmodel2 + "linear:dims=100;snorm;";
+        string_t lmodel4 = lmodel3 + "linear:dims=1000;snorm;";
+        string_t lmodel5 = lmodel4 + "linear:dims=100;snorm;";
 
         string_t cmodel1;
         cmodel1 = cmodel1 + "conv:dims=32,rows=7,cols=7;snorm;smax-abs-pool;";
