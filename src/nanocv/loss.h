@@ -37,12 +37,12 @@ namespace ncv
         ///
         /// \brief multivariate classification error: matches the sign of predictions vs target classes
         ///
-        scalar_t eclass_error(const vector_t& targets, const vector_t& scores);
+        scalar_t sign_class_error(const vector_t& targets, const vector_t& scores);
 
         ///
         /// \brief multivariate classification error: highest score corresponds to the target class
         ///
-        scalar_t mclass_error(const vector_t& targets, const vector_t& scores);
+        scalar_t multi_class_error(const vector_t& targets, const vector_t& scores);
 
         ///
         /// \brief generic multivariate loss function of two parameters:

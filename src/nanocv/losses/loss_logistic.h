@@ -21,7 +21,7 @@ namespace ncv
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const
                 {
-                        return eclass_error(targets, scores);
+                        return multi_class_error(targets, scores);
                 }
 
                 // compute the loss value & derivatives
@@ -45,7 +45,7 @@ namespace ncv
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const
                 {
-                        return eclass_error(targets, scores);
+                        return multi_class_error(targets, scores);
                 }
 
                 // compute the loss value & derivatives

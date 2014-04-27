@@ -5,6 +5,9 @@
 
 namespace ncv
 {
+        // fixme: all these samples do not fit in 16GB of RAM on full resolution!
+        // solutions: samples a random subset at full resolution, load from the disk as needed or remove this dataset
+
         ///
         /// NORB task:
         ///      - 3D object recognition from shape
