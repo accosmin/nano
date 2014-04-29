@@ -9,6 +9,7 @@
 namespace ncv
 {
         class trainer_t;
+        class sampler_t;
 
         ///
         /// \brief stores registered prototypes

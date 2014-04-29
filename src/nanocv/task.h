@@ -14,11 +14,6 @@ namespace ncv
         typedef task_manager_t::robject_t               rtask_t;
 
         ///
-        /// \brief prune samples
-        ///
-        samples_t prune_annotated(const task_t&, const samples_t&);
-
-        ///
         /// \brief generic computer vision task consisting of a set of (annotated) images
         /// and a protocol (training + testing).
         /// samples for training & testing models can be drawn from these image.

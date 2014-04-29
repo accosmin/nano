@@ -10,7 +10,7 @@ from command line arguments.
 ### Task
 
 A task describes a classification or regression problem consisting of separate training and test image patches with associated target outputs if any. 
-This concept maps known machine learning and computer vision benchmarks to a common interface. Well-known datasets that are supported: *MNIST*, *CIFAR-10*, *CIFAR-100*, *CMU-FACES*, *STL-10*, *NORB*, *SVHN*.
+This concept maps known machine learning and computer vision benchmarks to a common interface. Well-known datasets that are supported: *MNIST*, *CIFAR-10*, *CIFAR-100*, *CMU-FACES*, *STL-10*, *SVHN*.
 
 ### Model
 

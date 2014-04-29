@@ -20,13 +20,12 @@ namespace ncv
                 const size_t n_test_samples = 472 + 23573;
 
                 m_images.clear();
-                m_folds.clear();
+                m_samples.clear();
 
                 return  load(train_face_dir, true, protocol::train) +
                         load(train_nonface_dir, false, protocol::train) == n_train_samples &&
                         load(test_face_dir, true, protocol::test) +
-                        load(test_nonface_dir, false, protocol::test) == n_test_samples &&
-                        build_folds(n_train_samples, n_test_samples);
+                        load(test_nonface_dir, false, protocol::test) == n_test_samples;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -46,16 +45,17 @@ namespace ncv
                                 {
                                         const boost::filesystem::path path(*it_dir);
 
-                                        const annotation_t anno(sample_region(0, 0),
-                                                is_face ? "face" : "nonface",
-                                                ncv::class_target(is_face ? 0 : 1, n_outputs()));
-
                                         image_t image;
-                                        image.m_protocol = p;
-                                        image.m_annotations.push_back(anno);
                                         if (image.load(path.string()))
                                         {
+                                                sample_t sample(m_images.size(), sample_region(0, 0));
+                                                sample.m_label = is_face ? "face" : "nonface";
+                                                sample.m_target = ncv::class_target(is_face ? 0 : 1, n_outputs());
+                                                sample.m_fold = { 0, p };
+                                                m_samples.push_back(sample);
+
                                                 m_images.push_back(image);
+
                                                 ++ cnt;
                                         }
                                 }

@@ -5,6 +5,7 @@
 #include "common/usampler.hpp"
 #include "common/random.hpp"
 #include "common/thread_pool.h"
+#include "sampler.h"
 
 namespace ncv
 {
@@ -132,7 +133,10 @@ namespace ncv
                 model.random_params();
 
                 // prune training & validation data
-                const samples_t samples = ncv::prune_annotated(task, task.samples(fold));
+                sampler_t sampler(task);
+                sampler.setup(fold).setup(sampler_t::atype::annotated);
+
+                const samples_t samples = sampler.get();
                 if (samples.empty())
                 {
                         log_error() << "stochastic trainer: no annotated training samples!";

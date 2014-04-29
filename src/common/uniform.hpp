@@ -1,5 +1,5 @@
-#ifndef NANOCV_USAMPLER_H
-#define NANOCV_USAMPLER_H
+#ifndef NANOCV_UNIFORM_H
+#define NANOCV_UNIFORM_H
 
 #include <vector>
 #include "math.hpp"
@@ -76,5 +76,5 @@ namespace ncv
         }
 }
 
-#endif // NANOCV_USAMPLER_H
+#endif // NANOCV_UNIFORM_H
 

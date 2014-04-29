@@ -37,15 +37,14 @@ namespace ncv
                 const size_t n_test_images = 10000;
 
                 m_images.clear();
-                m_folds.clear();
+                m_samples.clear();
 
                 return  load(train_bfile1, protocol::train) +
                         load(train_bfile2, protocol::train) +
                         load(train_bfile3, protocol::train) +
                         load(train_bfile4, protocol::train) +
                         load(train_bfile5, protocol::train) == n_train_images &&
-                        load(test_bfile, protocol::test) == n_test_images &&
-                        build_folds(n_train_images, n_test_images);
+                        load(test_bfile, protocol::test) == n_test_images;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -76,16 +75,16 @@ namespace ncv
                                 continue;
                         }
 
-                        const annotation_t anno(sample_region(0, 0),
-                                tlabels[ilabel],
-                                ncv::class_target(ilabel, n_outputs()));
+                        sample_t sample(m_images.size(), sample_region(0, 0));
+                        sample.m_label = tlabels[ilabel];
+                        sample.m_target = ncv::class_target(ilabel, n_outputs());
+                        sample.m_fold = { 0, p };
+                        m_samples.push_back(sample);
 
                         image_t image;
-                        image.m_protocol = p;
-                        image.m_annotations.push_back(anno);
                         image.load_rgba(buffer, n_rows(), n_cols(), n_rows() * n_cols());
-
                         m_images.push_back(image);
+
                         ++ cnt;
                 }
 

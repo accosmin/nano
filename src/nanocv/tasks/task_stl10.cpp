@@ -26,19 +26,19 @@ namespace ncv
 
         bool stl10_task_t::load(const string_t& dir)
         {
-                const string_t test_ifile = dir + "/test_X.bin";
-                const string_t test_gfile = dir + "/test_y.bin";
-                const size_t n_test_samples = 10 * 800;
-
                 const string_t train_ifile = dir + "/train_X.bin";
                 const string_t train_gfile = dir + "/train_y.bin";
                 const string_t train_uifile = dir + "/unlabeled_X.bin";
                 const size_t n_train_samples = 10 * 500 + 100000;
 
+                const string_t test_ifile = dir + "/test_X.bin";
+                const string_t test_gfile = dir + "/test_y.bin";
+                const size_t n_test_samples = 10 * 800;
+
                 const string_t fold_indices_file = dir + "/fold_indices.txt";
 
                 m_images.clear();
-                m_folds.clear();
+                m_samples.clear();
 
                 return  load_binary(train_ifile, train_gfile) +
                         load_binary(train_uifile) == n_train_samples &&
@@ -75,13 +75,13 @@ namespace ncv
                                 continue;
                         }
 
-                        const annotation_t anno(sample_region(0, 0),
-                                tlabels[ilabel],
-                                ncv::class_target(ilabel, n_outputs()));
+                        sample_t sample(m_images.size(), sample_region(0, 0));
+                        sample.m_label = tlabels[ilabel];
+                        sample.m_target = ncv::class_target(ilabel, n_outputs());
+
+                        m_samples.push_back(sample);
 
                         image_t image;
-                        image.m_protocol = p;
-                        image.m_annotations.push_back(anno);
                         image.load_rgba(buffer, n_rows(), n_cols(), n_rows() * n_cols());
 
                         m_images.push_back(image);
@@ -113,12 +113,14 @@ namespace ncv
                 size_t cnt = 0;
                 while (fimage.read(buffer, vbuffer.size()))
                 {
-                        image_t image;
-                        image.m_protocol = p;
-                        image.m_annotations.clear();
-                        image.load_rgba(buffer, n_rows(), n_cols(), n_rows() * n_cols());
+                        sample_t sample(m_images.size(), sample_region(0, 0));
+                        // no annotation
+                        m_samples.push_back(sample);
 
+                        image_t image;
+                        image.load_rgba(buffer, n_rows(), n_cols(), n_rows() * n_cols());
                         m_images.push_back(image);
+
                         ++ cnt;
                 }
 
@@ -137,13 +139,14 @@ namespace ncv
                         return false;
                 }
 
+                const samples_t orig_samples = m_samples;
+                m_samples.clear();
+
                 const size_t n_folds = 10;
 
+                // training samples [0, n_train) ...
                 for (size_t f = 0; f < n_folds; f ++)
                 {
-                        const fold_t train_fold = std::make_pair(f, protocol::train);
-                        m_folds[train_fold] = make_samples(n_train, n_unlabeled, sample_region(0, 0));
-
                         string_t line;
                         if (!std::getline(findices, line))
                         {
@@ -165,7 +168,9 @@ namespace ncv
                                         const size_t i = text::from_string<size_t>(tokens[t]);
                                         if (i < n_train)
                                         {
-                                                m_folds[train_fold].push_back(sample_t(i, sample_region(0, 0)));
+                                                sample_t sample = orig_samples[i];
+                                                sample.m_fold = { f, protocol::train };
+                                                m_samples.push_back(sample);
                                         }
                                         else
                                         {
@@ -179,10 +184,26 @@ namespace ncv
                         }
                 }
 
+                // unlabeled samples [n_train, n_train + n_unlabeled)
                 for (size_t f = 0; f < n_folds; f ++)
                 {
-                        const fold_t test_fold = std::make_pair(f, protocol::test);
-                        m_folds[test_fold] = make_samples(n_train + n_unlabeled, n_test, sample_region(0, 0));
+                        for (size_t i = 0; i < n_unlabeled; i ++)
+                        {
+                                sample_t sample = orig_samples[n_train + i];
+                                sample.m_fold = { f, protocol::train };
+                                m_samples.push_back(sample);
+                        }
+                }
+
+                // testing samples [n_train + n_unlabeled, n_train + n_unlabeled + n_test)
+                for (size_t f = 0; f < n_folds; f ++)
+                {
+                        for (size_t i = 0; i < n_test; i ++)
+                        {
+                                sample_t sample = orig_samples[n_train + n_unlabeled + i];
+                                sample.m_fold = { f, protocol::test };
+                                m_samples.push_back(sample);
+                        }
                 }
 
                 return true;

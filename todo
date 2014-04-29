@@ -1,5 +1,3 @@
-- finish the svhn task
-
 - new datasets: INRIA car and person datasets, dymlerchrysler human detection
 
 - more efficient way to store & select samples for large datasets:

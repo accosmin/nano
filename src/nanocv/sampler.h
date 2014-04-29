@@ -19,7 +19,7 @@ namespace ncv
                 enum class stype : int
                 {
                         batch,          ///< use all samples
-                        usampler        ///< use a fixed number of uniform samples
+                        random          ///< use a fixed number of random samples
                 };
 
                 enum class atype : int
@@ -59,14 +59,9 @@ namespace ncv
                 sampler_t& setup(const string_t& label);
 
                 ///
-                /// \brief restrict to the given samples
-                ///
-                sampler_t& setup(const samples_t& samples);
-
-                ///
                 /// \brief use the given percentage of samples (others are the rest of the samples)
                 ///
-                sampler_t& split(scalar_t percentage, samples_t& others);
+                sampler_t& split(size_t percentage, sampler_t& other);
 
                 ///
                 /// \brief reset restrictions (use all samples of the source task)
@@ -78,18 +73,26 @@ namespace ncv
                 ///
                 samples_t get() const;
 
+                ///
+                /// \brief check if any samples available
+                ///
+                bool empty() const { return m_samples.empty(); }
+
         private:
 
                 ///
                 /// \brief order samples for fast caching
                 ///
-                static void order(samples_t& samples);
+                sampler_t& order();
 
         private:
 
                 // attributes
                 const task_t&           m_task;                 ///< source task
                 samples_t               m_samples;              ///< current pool of samples
+
+                stype                   m_stype;
+                size_t                  m_ssize;
         };
 }
 

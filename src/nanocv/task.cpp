@@ -7,24 +7,6 @@ namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        samples_t prune_annotated(const task_t& task, const samples_t& samples)
-        {
-                samples_t pruned_samples;
-
-                // keep only the samples having targets associated
-                for (const sample_t& sample : samples)
-                {
-                        if (sample.annotated())
-                        {
-                                pruned_samples.push_back(sample);
-                        }
-                }
-
-                return pruned_samples;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         rect_t task_t::sample_size() const
         {
                 return geom::make_size(n_cols(), n_rows());
