@@ -114,12 +114,15 @@ namespace ncv
         void trainer_data_t::update(const task_t& task, const sample_t& sample, const loss_t& loss)
         {
                 assert(m_model);
+                assert(sample.m_index < task.n_images());
 
                 const image_t& image = task.image(sample.m_index);
-                const vector_t target = image.make_target(sample.m_region);
-                assert(image.has_target(target));
+                const vector_t& target = sample.m_target;
+                assert(target.size() == m_model->n_outputs());
 
                 const vector_t output = m_model->value(image, sample.m_region);
+                assert(output.size() == m_model->n_outputs());
+
                 if (m_type == type::vgrad)
                 {
                         m_vgrad.noalias() += m_model->gradient(loss.vgrad(target, output));
@@ -137,6 +140,8 @@ namespace ncv
                 assert(m_model);
 
                 const vector_t output = m_model->value(input);
+                assert(output.size() == m_model->n_outputs());
+
                 if (m_type == type::vgrad)
                 {
                         m_vgrad.noalias() += m_model->gradient(loss.vgrad(target, output));

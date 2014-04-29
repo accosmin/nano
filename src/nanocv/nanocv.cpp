@@ -83,21 +83,21 @@ namespace ncv
                 lvalue = lerror = 0.0;
                 size_t count = 0;
 
-                const samples_t& samples = task.samples(fold);
+                sampler_t sampler(task);
+                sampler.setup(fold).setup(sampler_t::atype::annotated);
+
+                const samples_t samples = sampler.get();
                 for (size_t i = 0; i < samples.size(); i ++)
                 {
                         const sample_t& sample = samples[i];
                         const image_t& image = task.image(sample.m_index);
 
-                        const vector_t target = image.make_target(sample.m_region);
-                        if (image.has_target(target))
-                        {
-                                const vector_t output = model.value(image, sample.m_region);
+                        const vector_t& target = sample.m_target;
+                        const vector_t output = model.value(image, sample.m_region);
 
-                                lvalue += loss.value(target, output);
-                                lerror += loss.error(target, output);
-                                ++ count;
-                        }
+                        lvalue += loss.value(target, output);
+                        lerror += loss.error(target, output);
+                        ++ count;
                 }
 
                 if (count > 0)

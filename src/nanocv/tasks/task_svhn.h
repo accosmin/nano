@@ -34,7 +34,8 @@ namespace ncv
                 // access functions
                 virtual size_t n_rows() const { return 32; }
                 virtual size_t n_cols() const { return 32; }
-                virtual size_t n_outputs() const { return 10; }                
+                virtual size_t n_outputs() const { return 10; }
+                virtual size_t n_folds() const { return 1; }
                 virtual color_mode color() const { return color_mode::rgba; }
 
         private:
@@ -46,9 +47,6 @@ namespace ncv
                 size_t decode(const std::vector<u_int8_t>& image_data,
                               const std::vector<u_int8_t>& label_data,
                               protocol p);
-
-                // build folds
-                bool build_folds(size_t n_train, size_t n_test);
         };
 }
 

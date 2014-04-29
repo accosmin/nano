@@ -54,6 +54,11 @@ namespace ncv
                 sampler_t& setup(atype a);
 
                 ///
+                /// \brief restrict to the given label
+                ///
+                sampler_t& setup(const string_t& label);
+
+                ///
                 /// \brief restrict to the given samples
                 ///
                 sampler_t& setup(const samples_t& samples);
@@ -66,12 +71,12 @@ namespace ncv
                 ///
                 /// \brief reset restrictions (use all samples of the source task)
                 ///
-                void clear();
+                void reset();
 
                 ///
                 /// \brief return a set of samples
                 ///
-                samples_t operator()() const;
+                samples_t get() const;
 
         private:
 

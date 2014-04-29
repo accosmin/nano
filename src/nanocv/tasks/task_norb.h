@@ -38,6 +38,7 @@ namespace ncv
                 virtual size_t n_rows() const { return 54; }    // downscaled
                 virtual size_t n_cols() const { return 54; }    // downscaled
                 virtual size_t n_outputs() const { return 5; }
+                virtual size_t n_folds() const { return 1; }
                 virtual color_mode color() const { return color_mode::luma; }
 
         private:
@@ -45,9 +46,6 @@ namespace ncv
                 // load binary file
                 size_t load(const string_t& bfile, protocol p);
                 size_t load(const string_t& cfile, const string_t& dfile, protocol p);
-
-                // build folds
-                bool build_folds(size_t n_train, size_t n_test);
         };
 }
 

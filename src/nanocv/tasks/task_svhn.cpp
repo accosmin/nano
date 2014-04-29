@@ -98,19 +98,6 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        bool svhn_task_t::build_folds(size_t n_train, size_t n_test)
-        {
-                const fold_t train_fold = std::make_pair(0, protocol::train);
-                m_folds[train_fold] = make_samples(0, n_train, sample_region(0, 0));
-
-                const fold_t test_fold = std::make_pair(0, protocol::test);
-                m_folds[test_fold] = make_samples(n_train, n_test, sample_region(0, 0));
-
-                return true;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         size_t svhn_task_t::decode(
                 const std::vector<u_int8_t>& idata,
                 const std::vector<u_int8_t>& ldata,

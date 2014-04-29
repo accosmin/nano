@@ -1,5 +1,6 @@
 #include "task.h"
 #include "common/logger.h"
+#include "sampler.h"
 #include <set>
 
 namespace ncv
@@ -13,9 +14,7 @@ namespace ncv
                 // keep only the samples having targets associated
                 for (const sample_t& sample : samples)
                 {
-                        const image_t& image = task.image(sample.m_index);
-                        const vector_t target = image.make_target(sample.m_region);
-                        if (image.has_target(target))
+                        if (sample.annotated())
                         {
                                 pruned_samples.push_back(sample);
                         }
@@ -40,29 +39,15 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        samples_t task_t::make_samples(size_t istart, size_t icount, const rect_t& region)
-        {
-                samples_t samples(icount);
-                for (size_t i = 0; i < icount; i ++)
-                {
-                        samples[i].m_index = istart + i;
-                        samples[i].m_region = region;
-                }
-
-                return samples;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         strings_t task_t::labels() const
         {
                 // distinct labels
                 std::set<string_t> slabels;
-                for (const image_t& image : m_images)
+                for (const sample_t& sample : m_samples)
                 {
-                        for (const annotation_t& annotation : image.m_annotations)
+                        if (sample.annotated())
                         {
-                                slabels.insert(annotation.m_label);
+                                slabels.insert(sample.m_label);
                         }
                 }
 
@@ -89,8 +74,11 @@ namespace ncv
                 {
                         const string_t label = l < labels.size() ? labels[l] : string_t();
 
+                        sampler_t sampler(*this);
+                        sampler.setup(fold).setup(label);
+                        const samples_t samples = sampler.get();
+
                         // process all samples with this label ...
-                        const samples_t& samples = this->samples(fold);
                         for (size_t i = 0, g = 1; i < samples.size(); g ++)
                         {
                                 rgba.setConstant(back_color);
@@ -99,17 +87,7 @@ namespace ncv
                                 samples_t gsamples;
                                 for ( ; i < samples.size() && gsamples.size() < grows * gcols; i ++)
                                 {
-                                        const sample_t& sample = samples[i];
-                                        const image_t& image = this->image(sample.m_index);
-                                        const rect_t& region = sample.m_region;
-
-                                        const string_t slabel = image.make_label(region);
-                                        if (slabel != label)
-                                        {
-                                                continue;
-                                        }
-
-                                        gsamples.push_back(sample);
+                                        gsamples.push_back(samples[i]);
                                 }
 
                                 // ... compose the image block

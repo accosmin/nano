@@ -35,16 +35,17 @@ namespace ncv
                 virtual size_t n_rows() const { return 96; }
                 virtual size_t n_cols() const { return 96; }
                 virtual size_t n_outputs() const { return 10; }
+                virtual size_t n_folds() const { return 10; }
                 virtual color_mode color() const { return color_mode::rgba; }
                                                    
         private:
                                                    
-                // load binary file
-                size_t load(const string_t& ifile, const string_t& gfile, protocol p);
-                size_t load(const string_t& ifile, protocol p);
+                // load binary files
+                size_t load_binary(const string_t& ifile, const string_t& gfile);
+                size_t load_binary(const string_t& ifile);
 
                 // build folds
-                bool build_folds(const string_t& ifile, size_t n_train, size_t n_unlabeled, size_t n_test);
+                bool load_folds(const string_t& ifile, size_t n_train, size_t n_unlabeled, size_t n_test);
         };
 }
 

@@ -54,26 +54,19 @@ namespace ncv
                 virtual size_t n_rows() const = 0;
                 virtual size_t n_cols() const = 0;
                 virtual size_t n_outputs() const = 0;
+                virtual size_t n_folds() const = 0;
+                virtual color_mode color() const = 0;
 
                 size_t n_images() const { return m_images.size(); }
                 const image_t& image(size_t i) const { return m_images[i]; }
 
-                size_t n_folds() const { return m_folds.size() / 2; } // train + test
-                const samples_t& samples(const fold_t& fold) const { return m_folds.find(fold)->second; }
-
-                virtual color_mode color() const = 0;
-
-        protected:
-
-                // construct image-indexed samples for the [istart, istart + icount) images
-                //      having the (region) image coordinates
-                samples_t make_samples(size_t istart, size_t icount, const rect_t& region);
+                const samples_t& samples() const { return m_samples; }
 
         protected:
 
                 // attributes
                 images_t                m_images;
-                folds_t                 m_folds;
+                samples_t               m_samples;
         };
 }
 

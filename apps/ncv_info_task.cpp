@@ -72,8 +72,8 @@ int main(int argc, char *argv[])
                 const fold_t test_fold = std::make_pair(f, protocol::test);
 
                 log_info() << "fold [" << (f + 1) << "/" << rtask->n_folds()
-                                << "]: #train samples = " << rtask->samples(train_fold).size()
-                                << ", #test samples = " << rtask->samples(test_fold).size() << ".";
+                           << "]: #train samples = " << rtask->samples(train_fold).size()
+                           << ", #test samples = " << rtask->samples(test_fold).size() << ".";
         }
 
         // save samples as images

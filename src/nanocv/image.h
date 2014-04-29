@@ -3,7 +3,6 @@
 
 #include "color.h"
 #include "geom.h"
-#include <map>
 
 namespace ncv
 {
@@ -18,32 +17,10 @@ namespace ncv
         bool load_rgba(const string_t& path, rgba_matrix_t& rgba);
 
         ///
-        /// \brief image annotation
+        /// \brief fold: <fold index, protocol: train|test>
         ///
-        struct annotation_t
-        {
-                // constructor
-                annotation_t(coord_t x = 0, coord_t y = 0, coord_t w = 0, coord_t h = 0,
-                           const string_t& label = string_t(),
-                           const vector_t& target = vector_t())
-                        :       annotation_t(geom::make_rect(x, y, w, h), label, target)
-                {
-                }
-
-                annotation_t(const rect_t& region, const string_t& label, const vector_t& target)
-                        :       m_region(region),
-                                m_label(label),
-                                m_target(target)
-                {
-                }
-
-                // attributes
-                rect_t          m_region;       ///< 2D annotated region
-                string_t        m_label;        ///< label (e.g. classification)
-                vector_t        m_target;       ///< target vector to predict
-        };
-
-        typedef std::vector<annotation_t>       annotations_t;
+        typedef std::pair<size_t, protocol>     fold_t;
+        typedef std::vector<fold_t>             folds_t;
 
         ///
         /// \brief image-indexed sample
@@ -56,20 +33,31 @@ namespace ncv
                 {
                 }
                 sample_t(size_t index, const rect_t& region)
-                        :       m_index(index), m_region(region)
+                        :       m_index(index), m_region(region),
+                                m_fold{0, protocol::test}
                 {
                 }
+
+                // check if this sample is annotated
+                bool annotated() const { return m_target.size() > 0; }
 
                 // attributes
                 size_t          m_index;        ///< image index
                 rect_t          m_region;       ///< image coordinates
+                string_t        m_label;        ///< label (e.g. classification)
+                vector_t        m_target;       ///< target vector to predict
+                fold_t          m_fold;
         };
 
         typedef std::vector<sample_t>           samples_t;
 
-        // fold image-indexed samples
-        typedef std::pair<size_t, protocol>     fold_t;
-        typedef std::map<fold_t, samples_t>     folds_t;
+        ///
+        /// \brief compare two samples (to order them for fast caching)
+        ///
+        inline bool operator<(const sample_t& one, const sample_t& another)
+        {
+                return one.m_index < another.m_index;
+        }
 
         ///
         /// \brief image with its annotations
@@ -86,11 +74,6 @@ namespace ncv
                 matrix_t make_green(const rect_t& region) const { return get(region, color::make_green); }
                 matrix_t make_blue(const rect_t& region) const { return get(region, color::make_blue); }
                 matrix_t make_luma(const rect_t& region) const { return get(region, color::make_luma); }
-
-                // retrieve the associated target/label/annotation (if any)
-                vector_t make_target(const rect_t& region) const;
-                string_t make_label(const rect_t& region) const;
-                size_t find_annotation(const rect_t& region) const;
 
                 // retrieve the [0,1] normalized color channel
                 template
@@ -116,13 +99,8 @@ namespace ncv
                         return data;
                 }
 
-                // check if a target is valid
-                static bool has_target(const vector_t& target) { return target.size() > 0; }
-
                 // attributes
                 rgba_matrix_t   m_rgba;
-                annotations_t   m_annotations;
-                protocol        m_protocol;
         };
 
         typedef std::vector<image_t>            images_t;

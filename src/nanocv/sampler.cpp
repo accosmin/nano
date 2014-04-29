@@ -2,7 +2,98 @@
 
 namespace ncv
 {
-//        /////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        sampler_t::sampler_t(const task_t& task)
+                :       m_task(task)
+        {
+                reset();
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        void sampler_t::reset()
+        {
+                // collect all available samples (no restriction)
+
+                // TODO
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        sampler_t& sampler_t::setup(fold_t fold)
+        {
+                // TODO
+                return *this;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        sampler_t& sampler_t::setup(protocol p)
+        {
+                // TODO
+                return *this;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        sampler_t& sampler_t::setup(stype s, size_t size)
+        {
+                // TODO
+                return *this;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        sampler_t& sampler_t::setup(atype a)
+        {
+                // TODO
+                return *this;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        sampler_t& sampler_t::setup(const string_t& label)
+        {
+                // TODO
+                return *this;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        sampler_t& sampler_t::setup(const samples_t& samples)
+        {
+                // TODO
+                return *this;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        sampler_t& sampler_t::split(scalar_t percentage, samples_t& others)
+        {
+                // TODO
+                return *this;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        samples_t sampler_t::get() const
+        {
+                samples_t samples;
+
+                // TOOD
+                return samples;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        void sampler_t::order(samples_t& samples)
+        {
+                // TODO
+//                std::sort(samples.begin(), samples.end());
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
 
 //        samples_t prune_annotated(const task_t& task, const samples_t& samples)
 //        {

@@ -40,15 +40,15 @@ namespace ncv
                 m_images.clear();
                 m_folds.clear();
 
-                return  load(train_ifile, train_gfile, protocol::train) +
-                        load(train_uifile, protocol::train) == n_train_samples &&
-                        load(test_ifile, test_gfile, protocol::test) == n_test_samples &&
-                        build_folds(fold_indices_file, 5000, 100000, n_test_samples);
+                return  load_binary(train_ifile, train_gfile) +
+                        load_binary(train_uifile) == n_train_samples &&
+                        load_binary(test_ifile, test_gfile) == n_test_samples &&
+                        load_folds(fold_indices_file, 5000, 100000, n_test_samples);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
         
-        size_t stl10_task_t::load(const string_t& ifile, const string_t& gfile, protocol p)
+        size_t stl10_task_t::load_binary(const string_t& ifile, const string_t& gfile)
         {
                 log_info() << "STL-10: loading files <" << ifile << " & " << gfile << "> ...";
 
@@ -95,7 +95,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        size_t stl10_task_t::load(const string_t& ifile, protocol p)
+        size_t stl10_task_t::load_binary(const string_t& ifile)
         {
                 log_info() << "STL-10: loading file <" << ifile << "> ...";
 
@@ -129,7 +129,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        bool stl10_task_t::build_folds(const string_t& ifile, size_t n_train, size_t n_unlabeled, size_t n_test)
+        bool stl10_task_t::load_folds(const string_t& ifile, size_t n_train, size_t n_unlabeled, size_t n_test)
         {
                 std::ifstream findices(ifile.c_str());
                 if (!findices.is_open())
