@@ -124,7 +124,10 @@ namespace ncv
 
                 if (m_type == type::vgrad)
                 {
-                        m_vgrad.noalias() += m_model->gradient(loss.vgrad(target, output));
+                        vector_t grad_params;
+                        vector_t grad_inputs;
+                        m_model->gradient(loss.vgrad(target, output), grad_params, grad_inputs);
+                        m_vgrad.noalias() += grad_params;
                 }
 
                 m_value += loss.value(target, output);
@@ -143,7 +146,10 @@ namespace ncv
 
                 if (m_type == type::vgrad)
                 {
-                        m_vgrad.noalias() += m_model->gradient(loss.vgrad(target, output));
+                        vector_t grad_params;
+                        vector_t grad_inputs;
+                        m_model->gradient(loss.vgrad(target, output), grad_params, grad_inputs);
+                        m_vgrad.noalias() += grad_params;
                 }
 
                 m_value += loss.value(target, output);

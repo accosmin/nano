@@ -27,7 +27,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        vector_t forward_network_t::gradient(const vector_t& ograd) const
+        void forward_network_t::gradient(const vector_t& ograd, vector_t& grad_params, vector_t& grad_inputs) const
         {
                 assert(static_cast<size_t>(ograd.size()) == n_outputs());
 
@@ -40,15 +40,17 @@ namespace ncv
                         gradient = &(*it)->backward(*gradient);
                 }
 
-                vector_t mgradient(n_parameters());
+                // wrt parameters
+                grad_params.resize(n_parameters());
 
-                ovectorizer_t s(mgradient);
+                ovectorizer_t s(grad_params);
                 for (const rlayer_t& layer : m_layers)
                 {
                         layer->save_grad(s);
                 }
 
-                return mgradient;
+                // wrt inputs
+                grad_inputs = gradient->vector();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

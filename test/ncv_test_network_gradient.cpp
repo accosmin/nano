@@ -36,7 +36,9 @@ static void test_grad(
                 model.load_params(x);
 
                 const vector_t output = model.value(input);
-                gx = model.gradient(loss->vgrad(target, output));
+                vector_t grad_params, grad_inputs;
+                model.gradient(loss->vgrad(target, output), grad_params, grad_inputs);
+                gx = grad_params;
 
                 return loss->value(target, output);
         };
