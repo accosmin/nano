@@ -199,7 +199,7 @@ namespace ncv
                 /// using the L2-regularized loss
                 ///
                 static bool train(
-                        const task_t&, const samples_t& tsamples, const samples_t& vsamples, size_t batchsize, size_t nthreads,
+                        const task_t&, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                         const loss_t&, scalar_t l2_weight, const string_t& optimizer, size_t iterations, scalar_t epsilon,
                         const model_t& model, trainer_state_t& state);
         };

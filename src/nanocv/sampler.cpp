@@ -1,6 +1,6 @@
 #include "sampler.h"
 #include "task.h"
-#include "common/usampler.hpp"
+#include "common/uniform.hpp"
 #include "common/random.hpp"
 #include <algorithm>
 
@@ -108,7 +108,7 @@ namespace ncv
                         samples = m_samples;
                         break;
 
-                case stype::random:
+                case stype::uniform:
                         samples = ncv::uniform_sample(m_samples, m_ssize, random_t<size_t>(0, m_samples.size()));
                         std::sort(samples.begin(), samples.end());
                         break;

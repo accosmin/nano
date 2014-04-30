@@ -19,7 +19,7 @@ namespace ncv
                 enum class stype : int
                 {
                         batch,          ///< use all samples
-                        random          ///< use a fixed number of random samples
+                        uniform         ///< use a fixed number of uniformly-sampled samples
                 };
 
                 enum class atype : int

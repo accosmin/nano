@@ -1,12 +1,11 @@
 #include "trainer.h"
 #include "common/thread_loop.hpp"
 #include "common/timer.h"
-#include "common/random.hpp"
-#include "common/usampler.hpp"
 #include "common/logger.h"
 #include "optimize/opt_gd.hpp"
 #include "optimize/opt_cgd.hpp"
 #include "optimize/opt_lbfgs.hpp"
+#include "sampler.h"
 
 namespace ncv
 {
@@ -236,12 +235,12 @@ namespace ncv
         /////////////////////////////////////////////////////////////////////////////////////////
 
         bool trainer_t::train(
-                const task_t& task, const samples_t& tsamples, const samples_t& vsamples, size_t batchsize, size_t nthreads,
+                const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, scalar_t l2_weight, const string_t& optimizer, size_t iterations, scalar_t epsilon,
                 const model_t& model, trainer_state_t& state)
         {
-                samples_t utsamples = tsamples;
-                samples_t uvsamples = vsamples;
+                samples_t utsamples = tsampler.get();
+                samples_t uvsamples = vsampler.get();
 
                 const scalar_t l2w = l2_weight / model.n_parameters();
 
@@ -268,12 +267,13 @@ namespace ncv
 
                 auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
-                        if (batchsize > 0)
-                        {
-                                // stochastic mode: resample training & validation samples
-                                utsamples = ncv::uniform_sample(tsamples, batchsize, random_t<size_t>(0, tsamples.size()));
-                                uvsamples = ncv::uniform_sample(vsamples, batchsize, random_t<size_t>(0, vsamples.size()));
-                        }
+                        // fixme: what is the resampling condition?!
+//                        if (tsampler.is_random() > 0)
+//                        {
+//                                // stochastic mode: resample training & validation samples
+//                                utsamples = tsampler.get();
+//                                uvsamples = vsampler.get();
+//                        }
 
                         // training samples: loss value & gradient
                         gdata.clear(x);

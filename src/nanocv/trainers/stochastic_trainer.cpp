@@ -2,7 +2,7 @@
 #include "common/timer.h"
 #include "common/logger.h"
 #include "common/math.hpp"
-#include "common/usampler.hpp"
+#include "common/uniform.hpp"
 #include "common/random.hpp"
 #include "common/thread_pool.h"
 #include "sampler.h"
