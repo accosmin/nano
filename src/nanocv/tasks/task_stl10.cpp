@@ -78,13 +78,13 @@ namespace ncv
                         sample_t sample(m_images.size(), sample_region(0, 0));
                         sample.m_label = tlabels[ilabel];
                         sample.m_target = ncv::class_target(ilabel, n_outputs());
-
                         m_samples.push_back(sample);
 
                         image_t image;
                         image.load_rgba(buffer, n_rows(), n_cols(), n_rows() * n_cols());
-
+                        image.m_rgba.transposeInPlace();
                         m_images.push_back(image);
+
                         ++ cnt;
                 }
 
@@ -119,6 +119,7 @@ namespace ncv
 
                         image_t image;
                         image.load_rgba(buffer, n_rows(), n_cols(), n_rows() * n_cols());
+                        image.m_rgba.transposeInPlace();
                         m_images.push_back(image);
 
                         ++ cnt;
