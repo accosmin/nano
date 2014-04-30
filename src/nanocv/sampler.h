@@ -78,6 +78,11 @@ namespace ncv
                 ///
                 bool empty() const { return m_samples.empty(); }
 
+                ///
+                /// \brief return the number of available samples
+                ///
+                size_t size() const { return m_samples.size(); }
+
         private:
 
                 ///
