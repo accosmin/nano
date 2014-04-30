@@ -117,10 +117,10 @@ namespace ncv
 
                 const image_t& image = task.image(sample.m_index);
                 const vector_t& target = sample.m_target;
-                assert(target.size() == m_model->n_outputs());
+                assert(static_cast<size_t>(target.size()) == m_model->n_outputs());
 
                 const vector_t output = m_model->value(image, sample.m_region);
-                assert(output.size() == m_model->n_outputs());
+                assert(static_cast<size_t>(output.size()) == m_model->n_outputs());
 
                 if (m_type == type::vgrad)
                 {
@@ -139,7 +139,7 @@ namespace ncv
                 assert(m_model);
 
                 const vector_t output = m_model->value(input);
-                assert(output.size() == m_model->n_outputs());
+                assert(static_cast<size_t>(output.size()) == m_model->n_outputs());
 
                 if (m_type == type::vgrad)
                 {

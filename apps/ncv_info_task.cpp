@@ -68,12 +68,13 @@ int main(int argc, char *argv[])
 
         for (size_t f = 0; f < rtask->n_folds(); f ++)
         {
-                const fold_t train_fold = std::make_pair(f, protocol::train);
-                const fold_t test_fold = std::make_pair(f, protocol::test);
+                sampler_t trsampler(*rtask), tesampler(*rtask);
+                trsampler.setup(fold_t(f, protocol::train));
+                tesampler.setup(fold_t(f, protocol::test));
 
                 log_info() << "fold [" << (f + 1) << "/" << rtask->n_folds()
-                           << "]: #train samples = " << rtask->samples(train_fold).size()
-                           << ", #test samples = " << rtask->samples(test_fold).size() << ".";
+                           << "]: #train samples = " << trsampler.size()
+                           << ", #test samples = " << tesampler.size() << ".";
         }
 
         // save samples as images
