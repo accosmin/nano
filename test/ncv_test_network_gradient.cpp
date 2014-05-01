@@ -5,72 +5,113 @@
 
 using namespace ncv;
 
-static void test_grad(
-        const string_t& header,
-        const string_t& loss_id,
-        model_t& model, vector_t& params, tensor_t& input, vector_t& target,
-        size_t n_tests)
+static void test_grad(const string_t& header, const string_t& loss_id, model_t& model, size_t n_tests)
 {
         const rloss_t loss = loss_manager_t::instance().get(loss_id);
-        const size_t n_parameters = params.size();
 
-        // optimization problem: size
-        auto opt_fn_size = [&] ()
+        const size_t n_params = model.n_parameters();
+        const size_t n_inputs = model.n_inputs() * model.n_rows() * model.n_cols();
+        const size_t n_outputs = model.n_outputs();
+
+        vector_t params(n_params);
+        vector_t target(n_outputs);
+        tensor_t inputs(model.n_inputs(), model.n_rows(), model.n_cols());
+
+        // optimization problem (wrt parameters): size
+        auto opt_fn_params_size = [&] ()
         {
-                return n_parameters;
+                return n_params;
         };
 
-        // optimization problem: function value
-        auto opt_fn_fval = [&] (const vector_t& x)
+        // optimization problem (wrt parameters): function value
+        auto opt_fn_params_fval = [&] (const vector_t& x)
         {
                 model.load_params(x);
 
-                const vector_t output = model.value(input);
+                const vector_t outputs = model.value(inputs);
 
-                return loss->value(target, output);
+                return loss->value(target, outputs);
         };
 
-        // optimization problem: function value & gradient
-        auto opt_fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
+        // optimization problem (wrt parameters): function value & gradient
+        auto opt_fn_params_grad = [&] (const vector_t& x, vector_t& gx)
         {
                 model.load_params(x);
 
-                const vector_t output = model.value(input);
+                const vector_t outputs = model.value(inputs);
+
                 vector_t grad_params, grad_inputs;
-                model.gradient(loss->vgrad(target, output), grad_params, grad_inputs);
+                model.gradient(loss->vgrad(target, outputs), grad_params, grad_inputs);
                 gx = grad_params;
 
-                return loss->value(target, output);
+                return loss->value(target, outputs);
+        };
+
+        // optimization problem (wrt inputs): size
+        auto opt_fn_inputs_size = [&] ()
+        {
+                return n_inputs;
+        };
+
+        // optimization problem (wrt inputs): function value
+        auto opt_fn_inputs_fval = [&] (const vector_t& x)
+        {
+                model.load_params(params);
+
+                tensor_t xinputs = inputs;
+                xinputs.copy_from(x.data());
+                const vector_t outputs = model.value(xinputs);
+
+                return loss->value(target, outputs);
+        };
+
+        // optimization problem (wrt inputs): function value & gradient
+        auto opt_fn_inputs_grad = [&] (const vector_t& x, vector_t& gx)
+        {
+                model.load_params(params);
+
+                tensor_t xinputs = inputs;
+                xinputs.copy_from(x.data());
+                const vector_t outputs = model.value(xinputs);
+
+                vector_t grad_params, grad_inputs;
+                model.gradient(loss->vgrad(target, outputs), grad_params, grad_inputs);
+                gx = grad_inputs;
+
+                return loss->value(target, outputs);
         };
 
         // construct optimization problem: analytic gradient and finite difference approximation
-        const opt_problem_t problem_gd(opt_fn_size, opt_fn_fval, opt_fn_fval_grad);
-        const opt_problem_t problem_ax(opt_fn_size, opt_fn_fval);
+        const opt_problem_t problem_params_analytic(opt_fn_params_size, opt_fn_params_fval, opt_fn_params_grad);
+        const opt_problem_t problem_params_aproxdif(opt_fn_params_size, opt_fn_params_fval);
+
+        const opt_problem_t problem_inputs_analytic(opt_fn_inputs_size, opt_fn_inputs_fval, opt_fn_inputs_grad);
+        const opt_problem_t problem_inputs_aproxdif(opt_fn_inputs_size, opt_fn_inputs_fval);
 
         for (size_t t = 0; t < n_tests; t ++)
         {
-                random_t<scalar_t> rgen(-1.0, +1.0);
+                random_t<scalar_t> prgen(-1.0, +1.0);
+                random_t<scalar_t> trgen(-1.0, +1.0);
+                random_t<scalar_t> irgen(-0.1, +0.1);
 
-                vector_t x(n_parameters);
-                rgen(x.data(), x.data() + params.size());
-                rgen(target.data(), target.data() + target.size());
-                rgen(params.data(), params.data() + params.size());
+                prgen(params.data(), params.data() + n_params);
+                trgen(target.data(), target.data() + n_outputs);
+                irgen(inputs.data(), inputs.data() + n_inputs);
 
-                input.random(random_t<scalar_t>(-0.1, +0.1));
+                vector_t params_analytic_grad, params_aproxdif_grad;
+                problem_params_analytic(params, params_analytic_grad);
+                problem_params_aproxdif(params, params_aproxdif_grad);
 
-                vector_t gx_gd, gx_ax;
-                problem_gd(x, gx_gd);
-                problem_ax(x, gx_ax);
+                vector_t inputs_analytic_grad, inputs_aproxdif_grad;
+                problem_inputs_analytic(inputs.vector(), inputs_analytic_grad);
+                problem_inputs_aproxdif(inputs.vector(), inputs_aproxdif_grad);
 
-                const scalar_t dgx = (gx_gd - gx_ax).lpNorm<Eigen::Infinity>();
+                const scalar_t params_dgrad = (params_analytic_grad - params_aproxdif_grad).lpNorm<Eigen::Infinity>();
+                const scalar_t inputs_dgrad = (inputs_analytic_grad - inputs_aproxdif_grad).lpNorm<Eigen::Infinity>();
 
                 log_info() << header << " [" << (t + 1) << "/" << n_tests
-                           << "]: gradient accuracy = " << dgx << " (" << (dgx > 1e-6 ? "ERROR" : "OK") << ").";
-
-                if (dgx > 1e-6)
-                {
-                        std::cout << (gx_gd - gx_ax).transpose() << std::endl << std::endl;
-                }
+                           << "]: gradient accuracy = " << params_dgrad << "/" << inputs_dgrad
+                           << " (" << (std::max(params_dgrad, inputs_dgrad) > 1e-6 ? "ERROR" : "OK") << ").";
         }
 }
 
@@ -85,7 +126,6 @@ int main(int argc, char *argv[])
         const strings_t loss_ids = { "classnll" };//loss_manager_t::instance().ids();
 
         const color_mode cmd_color = color_mode::luma;
-        const size_t cmd_inputs = 1;
         const size_t cmd_irows = 12;
         const size_t cmd_icols = 12;
         const size_t cmd_outputs = 4;
@@ -150,15 +190,10 @@ int main(int argc, char *argv[])
                 forward_network_t network(desc);
                 network.resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color, true);
 
-                // build the inputs & outputs
-                vector_t params(network.n_parameters());
-                tensor_t sample(cmd_inputs, cmd_irows, cmd_icols);
-                vector_t target(cmd_outputs);
-
                 // test network
                 for (const string_t& loss_id : loss_ids)
                 {
-                        test_grad("[loss = " + loss_id + "]", loss_id, network, params, sample, target, cmd_tests);
+                        test_grad("[loss = " + loss_id + "]", loss_id, network, cmd_tests);
                 }
         }
 
