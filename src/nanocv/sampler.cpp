@@ -29,7 +29,7 @@ namespace ncv
         sampler_t& sampler_t::setup(fold_t fold)
         {
                 m_samples.erase(std::remove_if(m_samples.begin(), m_samples.end(),
-                                [&] (const sample_t& sample) { return sample.m_fold == fold; }),
+                                [&] (const sample_t& sample) { return sample.m_fold != fold; }),
                                 m_samples.end());
 
                 return order();
@@ -40,7 +40,7 @@ namespace ncv
         sampler_t& sampler_t::setup(protocol p)
         {
                 m_samples.erase(std::remove_if(m_samples.begin(), m_samples.end(),
-                                [&] (const sample_t& sample) { return sample.m_fold.second == p; }),
+                                [&] (const sample_t& sample) { return sample.m_fold.second != p; }),
                                 m_samples.end());
 
                 return order();
@@ -63,7 +63,7 @@ namespace ncv
                 const bool annotated = a == atype::annotated;
 
                 m_samples.erase(std::remove_if(m_samples.begin(), m_samples.end(),
-                                [&] (const sample_t& sample) { return sample.annotated() == annotated; }),
+                                [&] (const sample_t& sample) { return sample.annotated() != annotated; }),
                                 m_samples.end());
 
                 return order();
@@ -74,7 +74,7 @@ namespace ncv
         sampler_t& sampler_t::setup(const string_t& label)
         {
                 m_samples.erase(std::remove_if(m_samples.begin(), m_samples.end(),
-                                [&] (const sample_t& sample) { return sample.m_label == label; }),
+                                [&] (const sample_t& sample) { return sample.m_label != label; }),
                                 m_samples.end());
 
                 return order();

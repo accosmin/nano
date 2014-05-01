@@ -116,8 +116,8 @@ int main(int argc, char *argv[])
         for (size_t f = 0; f < rtask->n_folds(); f ++)
         {
                 sampler_t trsampler(*rtask), tesampler(*rtask);
-                trsampler.setup(fold_t(f, protocol::train));
-                tesampler.setup(fold_t(f, protocol::test));
+                trsampler.setup(fold_t{f, protocol::train});
+                tesampler.setup(fold_t{f, protocol::test});
 
                 log_info() << "fold [" << (f + 1) << "/" << rtask->n_folds()
                            << "]: #train samples = " << trsampler.size()

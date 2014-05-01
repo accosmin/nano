@@ -88,9 +88,9 @@ namespace ncv
                 virtual vector_t params() const = 0;
 
                 ///
-                /// \brief compute the model's gradient
+                /// \brief compute the model's gradient (wrt parameters & inputs)
                 ///
-                virtual vector_t gradient(const vector_t& ograd) const = 0;
+                virtual void gradient(const vector_t& ograd, vector_t& grad_params, vector_t& grad_inputs) const = 0;
 
                 // access functions
                 size_t n_rows() const { return m_rows; }
