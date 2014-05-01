@@ -58,13 +58,9 @@ namespace ncv
                 virtual ovectorizer_t& save_grad(ovectorizer_t& s) const = 0;
 
                 ///
-                /// \brief compute the output tensor
+                /// \brief compute the output/gradient tensor
                 ///
                 virtual const tensor_t& forward(const tensor_t& input) = 0;
-
-                ///
-                /// \brief compute the gradient tensor
-                ///
                 virtual const tensor_t& backward(const tensor_t& gradient) = 0;
 
                 ///
@@ -77,6 +73,12 @@ namespace ncv
                 /// \brief returns the number of optimization parameters
                 ///
                 virtual size_t n_parameters() const = 0;
+
+                ///
+                /// \brief compute number of MFLOPs for the forward/backward pass
+                ///
+                virtual scalar_t forward_mflops() const = 0;
+                virtual scalar_t backward_mflops() const = 0;
         };
 }
 
