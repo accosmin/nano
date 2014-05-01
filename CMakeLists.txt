@@ -117,8 +117,7 @@ set(nanocv_test_programs
         ncv_test_loss
         ncv_test_convolution
         ncv_test_network_gradient
-        ncv_test_network_forward
-        ncv_test_network_backward)
+        ncv_test_network_timing)
 
 if(NANOCV_HAVE_OPENCL)
         set(nanocv_test_programs "${nanocv_test_programs};ncv_test_opencl")

@@ -15,6 +15,13 @@ int main(int argc, char *argv[])
         po_desc.add_options()("threads,t",
                 boost::program_options::value<size_t>()->default_value(1),
                 "number of threads to use [1, 16], 0 - use all available threads");
+        po_desc.add_options()("samples,s",
+                boost::program_options::value<size_t>()->default_value(10000),
+                "number of samples to use [1000, 100.000]");
+        po_desc.add_options()("forward",
+                "evaluate the \'forward\' pass (output)");
+        po_desc.add_options()("backward",
+                "evaluate the \'backward' pass (gradient)");
 
         boost::program_options::variables_map po_vm;
         boost::program_options::store(
@@ -31,18 +38,20 @@ int main(int argc, char *argv[])
         }
 
         const size_t cmd_threads = math::clamp(po_vm["threads"].as<size_t>(), 0, 16);
+        const size_t cmd_samples = math::clamp(po_vm["samples"].as<size_t>(), 1000, 100 * 1000);
+        const bool cmd_forward = po_vm.count("forward");
+        const bool cmd_backward = po_vm.count("backward");
 
         const color_mode cmd_color = color_mode::luma;
         const size_t cmd_rows = 28;
         const size_t cmd_cols = 28;
         const size_t cmd_outputs = 10;
-        const size_t cmd_samples = 10000;
 
         string_t lmodel0;
         string_t lmodel1 = lmodel0 + "linear:dims=100;snorm;";
-        string_t lmodel2 = lmodel1 + "linear:dims=1000;snorm;";
+        string_t lmodel2 = lmodel1 + "linear:dims=100;snorm;";
         string_t lmodel3 = lmodel2 + "linear:dims=100;snorm;";
-        string_t lmodel4 = lmodel3 + "linear:dims=1000;snorm;";
+        string_t lmodel4 = lmodel3 + "linear:dims=100;snorm;";
         string_t lmodel5 = lmodel4 + "linear:dims=100;snorm;";
 
         string_t cmodel1;
@@ -62,12 +71,12 @@ int main(int argc, char *argv[])
 
         strings_t cmd_networks =
         {
-//                lmodel0,
-//                lmodel1,
-//                lmodel2,
-//                lmodel3,
-//                lmodel4,
-//                lmodel5,
+                lmodel0,
+                lmodel1,
+                lmodel2,
+                lmodel3,
+                lmodel4,
+                lmodel5,
 
                 cmodel1,
                 cmodel2,
@@ -81,7 +90,7 @@ int main(int argc, char *argv[])
                 log_info() << "<<< running network [" << cmd_network << "] ...";
 
                 // create feed-forward network
-                ncv::forward_network_t model(cmd_network);
+                forward_network_t model(cmd_network);
                 model.resize(cmd_rows, cmd_cols, cmd_outputs, cmd_color, true);
 
                 // create random samples
@@ -103,10 +112,21 @@ int main(int argc, char *argv[])
                 // process the samples
                 ncv::timer_t timer;
 
-                trainer_data_t gdata(model, trainer_data_t::type::vgrad);
-                gdata.update_mt(samples, targets, loss, cmd_threads);
+                if (cmd_forward)
+                {
+                        trainer_data_t ldata(model, trainer_data_t::type::value);
+                        ldata.update_mt(samples, targets, loss, cmd_threads);
 
-                log_info() << "<<< processed [" << gdata.count() << "] samples in " << timer.elapsed() << ".";
+                        log_info() << "<<< processed [" << ldata.count() << "] forward samples in " << timer.elapsed() << ".";
+                }
+
+                if (cmd_backward)
+                {
+                        trainer_data_t gdata(model, trainer_data_t::type::vgrad);
+                        gdata.update_mt(samples, targets, loss, cmd_threads);
+
+                        log_info() << "<<< processed [" << gdata.count() << "] backward samples in " << timer.elapsed() << ".";
+                }
         }
 
         // OK
