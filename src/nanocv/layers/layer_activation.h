@@ -50,10 +50,6 @@ namespace ncv
                 virtual const tensor_t& forward(const tensor_t& input) { return _forward(input); }
                 virtual const tensor_t& backward(const tensor_t& gradient) { return _backward(gradient); }
 
-                // compute the number of MFLOPs for the forward/backward pass
-                virtual scalar_t forward_mflops() const { return layer_t::exp_mflops() * m_data.size(); }       // upper-bound
-                virtual scalar_t backward_mflops() const { return layer_t::exp_mflops() * m_data.size(); }      // upper-bound
-
                 // access functions
                 virtual const tensor_t& input() const { return m_data; }
                 virtual const tensor_t& output() const { return m_data; }

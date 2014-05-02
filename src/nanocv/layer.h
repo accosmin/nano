@@ -73,20 +73,6 @@ namespace ncv
                 /// \brief returns the number of optimization parameters
                 ///
                 virtual size_t n_parameters() const = 0;
-
-                ///
-                /// \brief compute number of MFLOPs for the forward/backward pass
-                ///
-                virtual scalar_t forward_mflops() const = 0;
-                virtual scalar_t backward_mflops() const = 0;
-
-        protected:
-
-                ///
-                /// \brief MFLOPs for an expensive operation
-                ///
-                static scalar_t log_mflops() { return 20 * 1e-6; }
-                static scalar_t exp_mflops() { return 20 * 1e-6; }
         };
 }
 
