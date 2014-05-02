@@ -141,6 +141,21 @@ namespace ncv
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
+
+        scalar_t softmax_abs_pool_layer_t::forward_mflops() const
+        {
+                return odims() * (irows() * icols() * exp_mflops() +
+                                  irows() * icols() * 8);       // approximate!
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        scalar_t softmax_abs_pool_layer_t::backward_mflops() const
+        {
+                return odims() * (irows() * icols() * 8);       // approximate!
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
 }
 
 

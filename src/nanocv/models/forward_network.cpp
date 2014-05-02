@@ -215,10 +215,11 @@ namespace ncv
                         const rlayer_t& layer = m_layers[l];
 
                         log_info() <<
-                                boost::format("feed-forward network [%1%/%2%]: [%3%] (%4%x%5%x%6%) -> (%7%x%8%x%9%).")
+                                boost::format("feed-forward network [%1%/%2%]: [%3%] (%4%x%5%x%6%) -> (%7%x%8%x%9%)\tMFLOPs: %10%/%11%.")
                                 % (l + 1) % m_layers.size() % layer_ids[l]
                                 % layer->input().dims() % layer->input().rows() % layer->input().cols()
-                                % layer->output().dims() % layer->output().rows() % layer->output().cols();
+                                % layer->output().dims() % layer->output().rows() % layer->output().cols()
+                                % layer->forward_mflops() % layer->backward_mflops();
                 }
         }
 
