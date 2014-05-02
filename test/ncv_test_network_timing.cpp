@@ -110,11 +110,11 @@ int main(int argc, char *argv[])
                 }
 
                 // process the samples
-                ncv::timer_t timer;
-
                 if (cmd_forward)
                 {
                         trainer_data_t ldata(model, trainer_data_t::type::value);
+
+                        ncv::timer_t timer;
                         ldata.update_mt(samples, targets, loss, cmd_threads);
 
                         log_info() << "<<< processed [" << ldata.count() << "] forward samples in " << timer.elapsed() << ".";
@@ -123,6 +123,8 @@ int main(int argc, char *argv[])
                 if (cmd_backward)
                 {
                         trainer_data_t gdata(model, trainer_data_t::type::vgrad);
+
+                        ncv::timer_t timer;
                         gdata.update_mt(samples, targets, loss, cmd_threads);
 
                         log_info() << "<<< processed [" << gdata.count() << "] backward samples in " << timer.elapsed() << ".";
