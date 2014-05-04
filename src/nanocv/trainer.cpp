@@ -1,13 +1,11 @@
 #include "trainer.h"
-#include "common/thread_loop.hpp"
 #include "common/timer.h"
 #include "common/logger.h"
 #include "optimize/opt_gd.hpp"
 #include "optimize/opt_cgd.hpp"
 #include "optimize/opt_lbfgs.hpp"
 #include "sampler.h"
-#include "task.h"
-#include "loss.h"
+#include "accumulator.h"
 
 namespace ncv
 {
@@ -58,190 +56,6 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        trainer_data_t::trainer_data_t(type t)
-                :       m_type(t)
-        {
-                clear();
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        trainer_data_t::trainer_data_t(const model_t& model, type t)
-                :       m_type(t)
-        {
-                clear(model);
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        void trainer_data_t::clear(const model_t& model)
-        {
-                m_model = model.clone();
-                m_vgrad.resize(m_model->n_parameters());
-
-                clear();
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        void trainer_data_t::clear()
-        {
-                m_value = 0.0;
-                m_error = 0.0;
-                m_count = 0;
-                m_vgrad.setZero();
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        void trainer_data_t::clear(const vector_t& x)
-        {
-                assert(m_model);
-
-                m_model->load_params(x);
-                clear();
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        void trainer_data_t::clear(type t)
-        {
-                m_type = t;
-                clear();
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        void trainer_data_t::update(const task_t& task, const sample_t& sample, const loss_t& loss)
-        {
-                assert(m_model);
-                assert(sample.m_index < task.n_images());
-
-                const image_t& image = task.image(sample.m_index);
-                const vector_t& target = sample.m_target;
-                assert(static_cast<size_t>(target.size()) == m_model->n_outputs());
-
-                const vector_t output = m_model->value(image, sample.m_region);
-                assert(static_cast<size_t>(output.size()) == m_model->n_outputs());
-
-                if (m_type == type::vgrad)
-                {
-                        vector_t grad_params;
-                        vector_t grad_inputs;
-                        m_model->gradient(loss.vgrad(target, output), grad_params, grad_inputs);
-                        m_vgrad.noalias() += grad_params;                        
-                }
-
-                m_value += loss.value(target, output);
-                m_error += loss.error(target, output);
-                m_count ++;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        void trainer_data_t::update(const tensor_t& input, const vector_t& target, const loss_t& loss)
-        {
-                assert(m_model);
-
-                const vector_t output = m_model->value(input);
-                assert(static_cast<size_t>(output.size()) == m_model->n_outputs());
-
-                if (m_type == type::vgrad)
-                {
-                        vector_t grad_params;
-                        vector_t grad_inputs;
-                        m_model->gradient(loss.vgrad(target, output), grad_params, grad_inputs);
-                        m_vgrad.noalias() += grad_params;
-                }
-
-                m_value += loss.value(target, output);
-                m_error += loss.error(target, output);
-                m_count ++;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        void trainer_data_t::update_st(const task_t& task, const samples_t& samples, const loss_t& loss)
-        {
-                for (size_t i = 0; i < samples.size(); i ++)
-                {
-                        update(task, samples[i], loss);
-                }
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        void trainer_data_t::update_st(const tensors_t& inputs, const vectors_t& targets, const loss_t& loss)
-        {
-                for (size_t i = 0; i < inputs.size(); i ++)
-                {
-                        update(inputs[i], targets[i], loss);
-                }
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        void trainer_data_t::update_mt(const task_t& task, const samples_t& samples, const loss_t& loss, size_t nthreads)
-        {
-                thread_loop_cumulate<trainer_data_t>
-                (
-                        samples.size(),
-                        [&] (trainer_data_t& data)
-                        {
-                                assert(m_model);
-                                data.clear(m_type);
-                                data.clear(*m_model);
-                        },
-                        [&] (size_t i, trainer_data_t& data)
-                        {
-                                data.update(task, samples[i], loss);
-                        },
-                        [&] (trainer_data_t& data)
-                        {
-                                this->operator +=(data);
-                        },
-                        nthreads
-                );
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        void trainer_data_t::update_mt(const tensors_t& inputs, const vectors_t& targets, const loss_t& loss, size_t nthreads)
-        {
-                thread_loop_cumulate<trainer_data_t>
-                (
-                        inputs.size(),
-                        [&] (trainer_data_t& data)
-                        {
-                                assert(m_model);
-                                data.clear(m_type);
-                                data.clear(*m_model);
-                        },
-                        [&] (size_t i, trainer_data_t& data)
-                        {
-                                data.update(inputs[i], targets[i], loss);
-                        },
-                        [&] (trainer_data_t& data)
-                        {
-                                this->operator +=(data);
-                        },
-                        nthreads
-                );
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        trainer_data_t& trainer_data_t::operator+=(const trainer_data_t& other)
-        {
-                m_value += other.m_value;
-                m_error += other.m_error;
-                m_vgrad += other.m_vgrad;
-                m_count += other.m_count;
-                return *this;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         bool trainer_t::train(
                 const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, scalar_t l2_weight, const string_t& optimizer, size_t iterations, scalar_t epsilon,
@@ -255,18 +69,18 @@ namespace ncv
                 // construct the optimization problem
                 const timer_t timer;
 
-                trainer_data_t ldata(model, trainer_data_t::type::value);
-                trainer_data_t gdata(model, trainer_data_t::type::vgrad);
+                accumulator_t ldata(model, accumulator_t::type::value, accumulator_t::source::params);
+                accumulator_t gdata(model, accumulator_t::type::vgrad, accumulator_t::source::params);
 
                 auto fn_size = [&] ()
                 {
-                        return ldata.n_parameters();
+                        return ldata.dimensions();
                 };
 
                 auto fn_fval = [&] (const vector_t& x)
                 {
                         // training samples: loss value
-                        ldata.clear(x);
+                        ldata.reset(x);
                         ldata.update_mt(task, utsamples, loss, nthreads);
                         const scalar_t tvalue = ldata.value() + 0.5 * l2w * x.squaredNorm();
 
@@ -284,14 +98,14 @@ namespace ncv
 //                        }
 
                         // training samples: loss value & gradient
-                        gdata.clear(x);
+                        gdata.reset(x);
                         gdata.update_mt(task, utsamples, loss, nthreads);
                         const scalar_t tvalue = gdata.value() + 0.5 * l2w * x.squaredNorm();
                         const scalar_t terror = gdata.error();
                         gx = gdata.vgrad() + l2w * x;
 
                         // validation samples: loss value
-                        ldata.clear(x);
+                        ldata.reset(x);
                         ldata.update_mt(task, uvsamples, loss, nthreads);
                         const scalar_t vvalue = ldata.value() + 0.5 * l2w * x.squaredNorm();
                         const scalar_t verror = ldata.error();

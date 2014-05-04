@@ -83,6 +83,11 @@ namespace ncv
                 ///
                 size_t size() const { return m_samples.size(); }
 
+                ///
+                /// \brief return the associate task
+                ///
+                const task_t& task() const { return m_task; }
+
         private:
 
                 ///

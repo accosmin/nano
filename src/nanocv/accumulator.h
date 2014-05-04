@@ -63,22 +63,22 @@ namespace ncv
                 ///
                 /// \brief reset statistics and setup the given model
                 ///
-                void clear(const model_t& model);
+                void reset(const model_t& model);
 
                 ///
                 /// \brief reset statistics and keep all settings
                 ///
-                void clear();
+                void reset();
 
                 ///
                 /// \brief reset statistics and change the processing method
                 ///
-                void clear(type, source, regularizer, scalar_t lambda);
+                void reset(type, source, regularizer, scalar_t lambda);
 
                 ///
                 /// \brief reset statistics and load the model parameters
                 ///
-                void clear(const vector_t& param);
+                void reset(const vector_t& param);
 
                 ///
                 /// \brief update statistics with a new sample
@@ -90,14 +90,16 @@ namespace ncv
                 ///
                 /// \brief update statistics for a set of samples - single-threaded version
                 ///
-                void update_st(const task_t& task, const samples_t& samples, const loss_t& loss);
-                void update_st(const tensors_t& inputs, const vectors_t& targets, const loss_t& loss);
+                void update(const task_t& task, const samples_t& samples, const loss_t& loss);
+                void update(const tensors_t& inputs, const vectors_t& targets, const loss_t& loss);
+                void update(const vectors_t& inputs, const vectors_t& targets, const loss_t& loss);
 
                 ///
                 /// \brief update statistics for a set of samples - multi-threaded version
                 ///
                 void update_mt(const task_t& task, const samples_t& samples, const loss_t& loss, size_t nthreads = 0);
-                void update_mt(const tensors_t& inputs, const vectors_t& targets, const loss_t &loss, size_t nthreads = 0);
+                void update_mt(const tensors_t& inputs, const vectors_t& targets, const loss_t& loss, size_t nthreads = 0);
+                void update_mt(const vectors_t& inputs, const vectors_t& targets, const loss_t& loss, size_t nthreads = 0);
 
                 ///
                 /// \brief update statistics with another instance

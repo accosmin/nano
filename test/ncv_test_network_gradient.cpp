@@ -36,7 +36,7 @@ static void test_grad(const string_t& header, const string_t& loss_id, model_t& 
         // optimization problem (wrt parameters): function value
         auto opt_fn_params_fval = [&] (const vector_t& x)
         {
-                acc_params.clear(x);
+                acc_params.reset(x);
                 acc_params.update(inputs, target, loss);
 
                 return acc_params.value();
@@ -45,7 +45,7 @@ static void test_grad(const string_t& header, const string_t& loss_id, model_t& 
         // optimization problem (wrt parameters): function value & gradient
         auto opt_fn_params_grad = [&] (const vector_t& x, vector_t& gx)
         {                
-                acc_params.clear(x);
+                acc_params.reset(x);
                 acc_params.update(inputs, target, loss);
 
                 gx = acc_params.vgrad();
@@ -61,7 +61,7 @@ static void test_grad(const string_t& header, const string_t& loss_id, model_t& 
         // optimization problem (wrt inputs): function value
         auto opt_fn_inputs_fval = [&] (const vector_t& x)
         {
-                acc_inputs.clear(params);
+                acc_inputs.reset(params);
                 acc_inputs.update(x, target, loss);
 
                 return acc_inputs.value();
@@ -70,7 +70,7 @@ static void test_grad(const string_t& header, const string_t& loss_id, model_t& 
         // optimization problem (wrt inputs): function value & gradient
         auto opt_fn_inputs_grad = [&] (const vector_t& x, vector_t& gx)
         {
-                acc_inputs.clear(params);
+                acc_inputs.reset(params);
                 acc_inputs.update(x, target, loss);
 
                 gx = acc_inputs.vgrad();

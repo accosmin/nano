@@ -13,7 +13,7 @@ namespace ncv
                         m_regularizer(r),
                         m_lambda(lambda)
         {
-                clear();
+                reset();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -24,23 +24,23 @@ namespace ncv
                         m_regularizer(r),
                         m_lambda(lambda)
         {
-                clear(model);
+                reset(model);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void accumulator_t::clear(const model_t& model)
+        void accumulator_t::reset(const model_t& model)
         {
                 m_model = model.clone();
                 m_vgrad.resize(dimensions());
                 m_param = model.params();
 
-                clear();
+                reset();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void accumulator_t::clear()
+        void accumulator_t::reset()
         {
                 m_value = 0.0;
                 m_error = 0.0;
@@ -50,25 +50,25 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void accumulator_t::clear(const vector_t& param)
+        void accumulator_t::reset(const vector_t& param)
         {
                 assert(m_model);
                 m_model->load_params(param);
                 m_param = param;
 
-                clear();
+                reset();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void accumulator_t::clear(type t, source s, regularizer r, scalar_t lambda)
+        void accumulator_t::reset(type t, source s, regularizer r, scalar_t lambda)
         {
                 m_type = t;
                 m_source = s;
                 m_regularizer = r;
                 m_lambda = lambda;
 
-                clear();
+                reset();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -147,7 +147,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void accumulator_t::update_st(const task_t& task, const samples_t& samples, const loss_t& loss)
+        void accumulator_t::update(const task_t& task, const samples_t& samples, const loss_t& loss)
         {
                 for (size_t i = 0; i < samples.size(); i ++)
                 {
@@ -157,7 +157,17 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void accumulator_t::update_st(const tensors_t& inputs, const vectors_t& targets, const loss_t& loss)
+        void accumulator_t::update(const tensors_t& inputs, const vectors_t& targets, const loss_t& loss)
+        {
+                for (size_t i = 0; i < inputs.size(); i ++)
+                {
+                        update(inputs[i], targets[i], loss);
+                }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        void accumulator_t::update(const vectors_t& inputs, const vectors_t& targets, const loss_t& loss)
         {
                 for (size_t i = 0; i < inputs.size(); i ++)
                 {
@@ -175,8 +185,8 @@ namespace ncv
                         [&] (accumulator_t& data)
                         {
                                 assert(m_model);
-                                data.clear(m_type, m_source, m_regularizer, m_lambda);
-                                data.clear(*m_model);
+                                data.reset(m_type, m_source, m_regularizer, m_lambda);
+                                data.reset(*m_model);
                         },
                         [&] (size_t i, accumulator_t& data)
                         {
@@ -200,8 +210,33 @@ namespace ncv
                         [&] (accumulator_t& data)
                         {
                                 assert(m_model);
-                                data.clear(m_type, m_source, m_regularizer, m_lambda);
-                                data.clear(*m_model);
+                                data.reset(m_type, m_source, m_regularizer, m_lambda);
+                                data.reset(*m_model);
+                        },
+                        [&] (size_t i, accumulator_t& data)
+                        {
+                                data.update(inputs[i], targets[i], loss);
+                        },
+                        [&] (accumulator_t& data)
+                        {
+                                this->operator +=(data);
+                        },
+                        nthreads
+                );
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        void accumulator_t::update_mt(const vectors_t& inputs, const vectors_t& targets, const loss_t& loss, size_t nthreads)
+        {
+                thread_loop_cumulate<accumulator_t>
+                (
+                        inputs.size(),
+                        [&] (accumulator_t& data)
+                        {
+                                assert(m_model);
+                                data.reset(m_type, m_source, m_regularizer, m_lambda);
+                                data.reset(*m_model);
                         },
                         [&] (size_t i, accumulator_t& data)
                         {
