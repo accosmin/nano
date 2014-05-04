@@ -2,7 +2,6 @@
 #define NANOCV_TRAINER_H
 
 #include "task.h"
-#include "loss.h"
 #include "model.h"
 #include <cassert>
 
@@ -10,6 +9,7 @@ namespace ncv
 {
         class trainer_t;
         class sampler_t;
+        class loss_t;
 
         ///
         /// \brief stores registered prototypes
@@ -35,13 +35,13 @@ namespace ncv
                 /// \param terror
                 /// \param vvalue
                 /// \param verror
-                /// \param l2norm
+                /// \param lambda
                 /// \return
                 ///
                 bool update(const vector_t& params,
                             scalar_t tvalue, scalar_t terror,
                             scalar_t vvalue, scalar_t verror,
-                            scalar_t l2norm);
+                            scalar_t lambda);
 
                 ///
                 /// \brief update the current/optimum state with a possible better state
@@ -56,7 +56,7 @@ namespace ncv
                 scalar_t        m_terror;       ///< train error (at the optimum)
                 scalar_t        m_vvalue;       ///< optimum validation loss value
                 scalar_t        m_verror;       ///< optimum validation error
-                scalar_t        m_l2norm;       ///< optimum L2-weight
+                scalar_t        m_lambda;       ///< optimum regularization weight
         };
 
         ///

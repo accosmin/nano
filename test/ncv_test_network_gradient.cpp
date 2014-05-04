@@ -7,78 +7,74 @@ using namespace ncv;
 
 static void test_grad(const string_t& header, const string_t& loss_id, model_t& model, size_t n_tests)
 {
-        const rloss_t loss = loss_manager_t::instance().get(loss_id);
+        const rloss_t rloss = loss_manager_t::instance().get(loss_id);
+        const loss_t& loss = *rloss;
 
         const size_t n_params = model.n_parameters();
-        const size_t n_inputs = model.n_inputs() * model.n_rows() * model.n_cols();
+        const size_t n_inputs = model.n_inputs();
         const size_t n_outputs = model.n_outputs();
 
         vector_t params(n_params);
         vector_t target(n_outputs);
         tensor_t inputs(model.n_inputs(), model.n_rows(), model.n_cols());
 
+        accumulator_t acc_params(model,
+                                 accumulator_t::type::vgrad,
+                                 accumulator_t::source::params,
+                                 accumulator_t::regularizer::none, 0.0);
+        accumulator_t acc_inputs(model,
+                                 accumulator_t::type::vgrad,
+                                 accumulator_t::source::inputs,
+                                 accumulator_t::regularizer::none, 0.0);
+
         // optimization problem (wrt parameters): size
         auto opt_fn_params_size = [&] ()
         {
-                return n_params;
+                return acc_params.dimensions();
         };
 
         // optimization problem (wrt parameters): function value
         auto opt_fn_params_fval = [&] (const vector_t& x)
         {
-                model.load_params(x);
+                acc_params.clear(x);
+                acc_params.update(inputs, target, loss);
 
-                const vector_t outputs = model.value(inputs);
-
-                return loss->value(target, outputs);
+                return acc_params.value();
         };
 
         // optimization problem (wrt parameters): function value & gradient
         auto opt_fn_params_grad = [&] (const vector_t& x, vector_t& gx)
-        {
-                model.load_params(x);
+        {                
+                acc_params.clear(x);
+                acc_params.update(inputs, target, loss);
 
-                const vector_t outputs = model.value(inputs);
-
-                vector_t grad_params, grad_inputs;
-                model.gradient(loss->vgrad(target, outputs), grad_params, grad_inputs);
-                gx = grad_params;
-
-                return loss->value(target, outputs);
+                gx = acc_params.vgrad();
+                return acc_params.value();
         };
 
         // optimization problem (wrt inputs): size
         auto opt_fn_inputs_size = [&] ()
         {
-                return n_inputs;
+                return acc_inputs.dimensions();
         };
 
         // optimization problem (wrt inputs): function value
         auto opt_fn_inputs_fval = [&] (const vector_t& x)
         {
-                model.load_params(params);
+                acc_inputs.clear(params);
+                acc_inputs.update(x, target, loss);
 
-                tensor_t xinputs = inputs;
-                xinputs.copy_from(x.data());
-                const vector_t outputs = model.value(xinputs);
-
-                return loss->value(target, outputs);
+                return acc_inputs.value();
         };
 
         // optimization problem (wrt inputs): function value & gradient
         auto opt_fn_inputs_grad = [&] (const vector_t& x, vector_t& gx)
         {
-                model.load_params(params);
+                acc_inputs.clear(params);
+                acc_inputs.update(x, target, loss);
 
-                tensor_t xinputs = inputs;
-                xinputs.copy_from(x.data());
-                const vector_t outputs = model.value(xinputs);
-
-                vector_t grad_params, grad_inputs;
-                model.gradient(loss->vgrad(target, outputs), grad_params, grad_inputs);
-                gx = grad_inputs;
-
-                return loss->value(target, outputs);
+                gx = acc_inputs.vgrad();
+                return acc_inputs.value();
         };
 
         // construct optimization problem: analytic gradient and finite difference approximation

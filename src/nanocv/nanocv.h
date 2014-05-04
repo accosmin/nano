@@ -1,9 +1,11 @@
 #ifndef NANOCV_H
 #define NANOCV_H
 
+#include "loss.h"
 #include "layer.h"
 #include "trainer.h"
 #include "sampler.h"
+#include "accumulator.h"
 #include "optimize/opt_gd.hpp"
 #include "optimize/opt_cgd.hpp"
 #include "optimize/opt_lbfgs.hpp"

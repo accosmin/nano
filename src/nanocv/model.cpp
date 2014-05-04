@@ -65,6 +65,18 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        vector_t model_t::value(const vector_t& input) const
+        {
+                assert(static_cast<size_t>(input.size()) == n_inputs());
+
+                tensor_t xinput(n_planes(), n_rows(), n_cols());
+                xinput.copy_from(input.data());
+
+                return value(xinput);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
         tensor_t model_t::make_input(const image_t& image, coord_t x, coord_t y) const
         {
                 tensor_t data;
@@ -98,7 +110,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        size_t model_t::n_inputs() const
+        size_t model_t::n_planes() const
         {
                 switch (m_color)
                 {

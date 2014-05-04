@@ -145,7 +145,7 @@ namespace ncv
 
         size_t forward_network_t::resize(bool verbose)
         {
-                tensor_t input(n_inputs(), n_rows(), n_cols());
+                tensor_t input(n_planes(), n_rows(), n_cols());
                 size_t n_params = 0;
 
                 m_layers.clear();

@@ -55,6 +55,7 @@ namespace ncv
                 ///
                 vector_t value(const image_t& image, coord_t x, coord_t y) const;
                 vector_t value(const image_t& image, const rect_t& region) const;
+                vector_t value(const vector_t& input) const;
                 virtual vector_t value(const tensor_t& input) const = 0;
 
                 ///
@@ -95,7 +96,8 @@ namespace ncv
                 // access functions
                 size_t n_rows() const { return m_rows; }
                 size_t n_cols() const { return m_cols; }
-                size_t n_inputs() const;
+                size_t n_planes() const;
+                size_t n_inputs() const { return n_planes() * n_rows() * n_cols(); }
                 size_t n_outputs() const { return m_outputs; }
                 size_t n_parameters() const { return m_nparams; }
                 color_mode color() const { return m_color; }

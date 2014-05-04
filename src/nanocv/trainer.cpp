@@ -6,6 +6,8 @@
 #include "optimize/opt_cgd.hpp"
 #include "optimize/opt_lbfgs.hpp"
 #include "sampler.h"
+#include "task.h"
+#include "loss.h"
 
 namespace ncv
 {
@@ -17,7 +19,7 @@ namespace ncv
                         m_terror(std::numeric_limits<scalar_t>::max()),
                         m_vvalue(std::numeric_limits<scalar_t>::max()),
                         m_verror(std::numeric_limits<scalar_t>::max()),
-                        m_l2norm(std::numeric_limits<scalar_t>::max())
+                        m_lambda(std::numeric_limits<scalar_t>::max())
         {
         }
 
@@ -26,7 +28,7 @@ namespace ncv
         bool trainer_state_t::update(const vector_t& params,
                     scalar_t tvalue, scalar_t terror,
                     scalar_t vvalue, scalar_t verror,
-                    scalar_t l2norm)
+                    scalar_t lambda)
         {
                 if (verror < m_verror)
                 {
@@ -35,7 +37,7 @@ namespace ncv
                         m_terror = terror;
                         m_vvalue = vvalue;
                         m_verror = verror;
-                        m_l2norm = l2norm;
+                        m_lambda = lambda;
                         return true;
                 }
 
@@ -51,7 +53,7 @@ namespace ncv
         {
                 return update(state.m_params,
                               state.m_tvalue, state.m_terror, state.m_vvalue, state.m_verror,
-                              state.m_l2norm);
+                              state.m_lambda);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -127,7 +129,7 @@ namespace ncv
                         vector_t grad_params;
                         vector_t grad_inputs;
                         m_model->gradient(loss.vgrad(target, output), grad_params, grad_inputs);
-                        m_vgrad.noalias() += grad_params;
+                        m_vgrad.noalias() += grad_params;                        
                 }
 
                 m_value += loss.value(target, output);
@@ -315,7 +317,7 @@ namespace ncv
                                    << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
                                    << ", train* = " << state.m_tvalue << "/" << state.m_terror
                                    << ", valid* = " << state.m_vvalue << "/" << state.m_verror
-                                   << ", l2/l2* = " << l2_weight << "/" << state.m_l2norm
+                                   << ", l2/l2* = " << l2_weight << "/" << state.m_lambda
                                    << "] done in " << timer.elapsed() << ".";
                 };
 
