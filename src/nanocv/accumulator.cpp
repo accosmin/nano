@@ -7,45 +7,52 @@ namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        accumulator_t::accumulator_t(type t, source s, regularizer r, scalar_t lambda)
-                :       m_type(t),
-                        m_source(s),
-                        m_regularizer(r),
-                        m_lambda(lambda)
+        accumulator_t::accumulator_t(const model_t& model, type t, source s, regularizer r, scalar_t lambda)
+                :       accumulator_t(model.clone(), t, s, r, lambda)
         {
-                reset();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        accumulator_t::accumulator_t(const model_t& model, type t, source s, regularizer r, scalar_t lambda)
-                :       m_type(t),
-                        m_source(s),
-                        m_regularizer(r),
-                        m_lambda(lambda)
+        accumulator_t::accumulator_t(const rmodel_t& model, type t, source s, regularizer r, scalar_t lambda)
+                :       m_settings(t, s, r, lambda),
+                        m_model(model),
+                        m_data(dimensions())
         {
-                reset(model);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        accumulator_t::accumulator_t(const accumulator_t& other)
+                :       m_settings(other.m_settings),
+                        m_model(other.m_model->clone()),
+                        m_data(other.m_data)
+        {
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        accumulator_t& accumulator_t::operator=(const accumulator_t& other)
+        {
+                if (this != &other)
+                {
+                        assert(other.m_model);
+                        m_settings = other.m_settings;
+                        m_model = other.m_model->clone();
+                        m_data = other.m_data;
+                }
+
+                return *this;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
         void accumulator_t::reset(const model_t& model)
         {
+                assert(m_model);
                 m_model = model.clone();
-                m_vgrad.resize(dimensions());
-                m_param = model.params();
 
                 reset();
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        void accumulator_t::reset()
-        {
-                m_value = 0.0;
-                m_error = 0.0;
-                m_count = 0;
-                m_vgrad.setZero();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -54,7 +61,6 @@ namespace ncv
         {
                 assert(m_model);
                 m_model->load_params(param);
-                m_param = param;
 
                 reset();
         }
@@ -63,12 +69,16 @@ namespace ncv
 
         void accumulator_t::reset(type t, source s, regularizer r, scalar_t lambda)
         {
-                m_type = t;
-                m_source = s;
-                m_regularizer = r;
-                m_lambda = lambda;
+                m_settings = settings_t(t, s, r, lambda);
 
                 reset();
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        void accumulator_t::reset()
+        {
+                m_data = data_t(dimensions());
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -90,7 +100,6 @@ namespace ncv
         void accumulator_t::update(const tensor_t& input, const vector_t& target, const loss_t& loss)
         {
                 assert(m_model);
-
                 const vector_t output = m_model->value(input);
 
                 cumulate(output, target, loss);
@@ -101,48 +110,9 @@ namespace ncv
         void accumulator_t::update(const vector_t& input, const vector_t& target, const loss_t& loss)
         {
                 assert(m_model);
-
                 const vector_t output = m_model->value(input);
 
                 cumulate(output, target, loss);
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        void accumulator_t::cumulate(const vector_t& output, const vector_t& target, const loss_t& loss)
-        {
-                assert(m_model);
-                assert(static_cast<size_t>(output.size()) == m_model->n_outputs());
-                assert(static_cast<size_t>(target.size()) == m_model->n_outputs());
-
-                switch (m_type)
-                {
-                case type::value:
-                        break;
-
-                case type::vgrad:
-                        {
-                                vector_t grad_params;
-                                vector_t grad_inputs;
-                                m_model->gradient(loss.vgrad(target, output), grad_params, grad_inputs);
-
-                                switch (m_source)
-                                {
-                                case source::params:
-                                        m_vgrad += grad_params;
-                                        break;
-
-                                case source::inputs:
-                                        m_vgrad += grad_inputs;
-                                        break;
-                                }
-                        }
-                        break;
-                }
-
-                m_value += loss.value(target, output);
-                m_error += loss.error(target, output);
-                m_count ++;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -184,9 +154,7 @@ namespace ncv
                         samples.size(),
                         [&] (accumulator_t& data)
                         {
-                                assert(m_model);
-                                data.reset(m_type, m_source, m_regularizer, m_lambda);
-                                data.reset(*m_model);
+                                data = *this;
                         },
                         [&] (size_t i, accumulator_t& data)
                         {
@@ -209,9 +177,7 @@ namespace ncv
                         inputs.size(),
                         [&] (accumulator_t& data)
                         {
-                                assert(m_model);
-                                data.reset(m_type, m_source, m_regularizer, m_lambda);
-                                data.reset(*m_model);
+                                data = *this;
                         },
                         [&] (size_t i, accumulator_t& data)
                         {
@@ -234,9 +200,7 @@ namespace ncv
                         inputs.size(),
                         [&] (accumulator_t& data)
                         {
-                                assert(m_model);
-                                data.reset(m_type, m_source, m_regularizer, m_lambda);
-                                data.reset(*m_model);
+                                data = *this;
                         },
                         [&] (size_t i, accumulator_t& data)
                         {
@@ -252,12 +216,50 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        void accumulator_t::cumulate(const vector_t& output, const vector_t& target, const loss_t& loss)
+        {
+                assert(m_model);
+                assert(static_cast<size_t>(output.size()) == m_model->n_outputs());
+                assert(static_cast<size_t>(target.size()) == m_model->n_outputs());
+
+                switch (m_settings.m_type)
+                {
+                case type::value:
+                        break;
+
+                case type::vgrad:
+                        {
+                                vector_t grad_params;
+                                vector_t grad_inputs;
+                                m_model->gradient(loss.vgrad(target, output), grad_params, grad_inputs);
+
+                                switch (m_settings.m_source)
+                                {
+                                case source::params:
+                                        m_data.m_vgrad += grad_params;
+                                        break;
+
+                                case source::inputs:
+                                        m_data.m_vgrad += grad_inputs;
+                                        break;
+                                }
+                        }
+                        break;
+                }
+
+                m_data.m_value += loss.value(target, output);
+                m_data.m_error += loss.error(target, output);
+                m_data.m_count ++;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
         accumulator_t& accumulator_t::operator+=(const accumulator_t& other)
         {
-                m_value += other.m_value;
-                m_error += other.m_error;
-                m_vgrad += other.m_vgrad;
-                m_count += other.m_count;
+                m_data.m_value += other.m_data.m_value;
+                m_data.m_error += other.m_data.m_error;
+                m_data.m_vgrad += other.m_data.m_vgrad;
+                m_data.m_count += other.m_data.m_count;
                 return *this;
         }
 
@@ -265,21 +267,58 @@ namespace ncv
 
         scalar_t accumulator_t::value() const
         {
-                return m_value / count();
+                assert(count() > 0);
+                assert(m_model);
+
+                switch (m_settings.m_regularizer)
+                {
+                case regularizer::none:
+                        return m_data.m_value / count();
+
+                case regularizer::l2norm:
+                        {
+                                const scalar_t w = m_settings.m_lambda / m_model->n_parameters();
+                                return m_data.m_value / count() + 0.5 * w * m_model->params().squaredNorm();
+                        }
+
+                case regularizer::variational:
+                default:
+                        // todo
+                        return m_data.m_value / count();
+                }
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
         scalar_t accumulator_t::error() const
         {
-                return m_error / count();
+                assert(count() > 0);
+
+                return m_data.m_error / count();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
         vector_t accumulator_t::vgrad() const
         {
-                return m_vgrad / count();
+                assert(count() > 0);
+
+                switch (m_settings.m_regularizer)
+                {
+                case regularizer::none:
+                        return m_data.m_vgrad / count();
+
+                case regularizer::l2norm:
+                        {
+                                const scalar_t w = m_settings.m_lambda / m_model->n_parameters();
+                                return m_data.m_vgrad / count() + w * m_model->params();
+                        }
+
+                case regularizer::variational:
+                default:
+                        // todo
+                        return m_data.m_vgrad / count();
+                }
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -288,7 +327,7 @@ namespace ncv
         {
                 assert(m_model);
 
-                switch (m_source)
+                switch (m_settings.m_source)
                 {
                 case source::params:
                         return m_model->n_parameters();
@@ -297,6 +336,13 @@ namespace ncv
                 default:
                         return m_model->n_inputs();
                 }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        size_t accumulator_t::count() const
+        {
+                return m_data.m_count;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

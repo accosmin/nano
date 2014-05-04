@@ -44,15 +44,7 @@ namespace ncv
                 };
 
                 ///
-                /// \brief constructor
-                ///
-                accumulator_t(type = type::value,
-                              source = source::params,
-                              regularizer = regularizer::none,
-                              scalar_t lambda = 0.0);
-
-                ///
-                /// \brief constructor
+                /// \brief constructors
                 ///
                 accumulator_t(const model_t&,
                               type = type::value,
@@ -60,25 +52,29 @@ namespace ncv
                               regularizer = regularizer::none,
                               scalar_t lambda = 0.0);
 
-                ///
-                /// \brief reset statistics and setup the given model
-                ///
-                void reset(const model_t& model);
+                accumulator_t(const rmodel_t& = rmodel_t(),
+                              type = type::value,
+                              source = source::params,
+                              regularizer = regularizer::none,
+                              scalar_t lambda = 0.0);
 
                 ///
-                /// \brief reset statistics and keep all settings
+                /// \brief copy constructor
+                ///
+                accumulator_t(const accumulator_t& other);
+
+                ///
+                /// \brief assignment operator
+                ///
+                accumulator_t& operator=(const accumulator_t& other);
+
+                ///
+                /// \brief reset statistics and settings
                 ///
                 void reset();
-
-                ///
-                /// \brief reset statistics and change the processing method
-                ///
-                void reset(type, source, regularizer, scalar_t lambda);
-
-                ///
-                /// \brief reset statistics and load the model parameters
-                ///
+                void reset(const model_t& model);
                 void reset(const vector_t& param);
+                void reset(type, source, regularizer, scalar_t lambda);
 
                 ///
                 /// \brief update statistics with a new sample
@@ -129,7 +125,7 @@ namespace ncv
                 ///
                 /// \brief total number of processed samples
                 ///
-                size_t count() const { return m_count; }
+                size_t count() const;
 
         private:
 
@@ -140,19 +136,47 @@ namespace ncv
 
         private:
 
+                struct settings_t
+                {
+                        // constructor
+                        settings_t(type t, source s, regularizer r, scalar_t lambda)
+                                :       m_type(t),
+                                        m_source(s),
+                                        m_regularizer(r),
+                                        m_lambda(lambda)
+                        {
+                        }
+
+                        // attributes
+                        type            m_type;
+                        source          m_source;
+                        regularizer     m_regularizer;
+                        scalar_t        m_lambda;       ///< regularization factor (if any)
+                };
+
+                struct data_t
+                {
+                        // constructor
+                        data_t(size_t size = 0)
+                                :       m_value(0.0),
+                                        m_error(0.0),
+                                        m_vgrad(size),
+                                        m_count(0)
+                        {
+                                m_vgrad.setZero();
+                        }
+
+                        // attributes
+                        scalar_t        m_value;        ///< cumulated loss value
+                        scalar_t        m_error;        ///< cumulated loss error
+                        vector_t        m_vgrad;        ///< cumulated gradient
+                        size_t          m_count;        ///< #processed samples
+                };
+
                 // attributes
-                type                    m_type;
-                source                  m_source;
-                regularizer             m_regularizer;
-                scalar_t                m_lambda;       ///< regularization factor (if any)
-
-                scalar_t                m_value;        ///< cumulated loss value
-                scalar_t                m_error;        ///< cumulated loss error
-                vector_t                m_vgrad;        ///< cumulated gradient
-                size_t                  m_count;        ///< #processed samples
-
+                settings_t              m_settings;
                 rmodel_t                m_model;        ///< current model
-                vector_t                m_param;        ///< current model's parameters
+                data_t                  m_data;
         };
 }
 
