@@ -1,3 +1,7 @@
+- softmax layer: update clasnll loss, may remove the logistic losses
+
+- reduce the number of input/output buffers for consecutive layers: use the output of a layer as the input for the next
+
 - new datasets: INRIA car and person datasets, dymlerchrysler human detection
 
 - more efficient way to store & select samples for large datasets:
