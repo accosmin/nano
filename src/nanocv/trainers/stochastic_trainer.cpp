@@ -165,7 +165,7 @@ namespace ncv
                 const scalar_t beta = std::pow(0.01, 1.0 / iterations);         // Learning rate decay rate
 
                 // optimum model parameters (to update)
-                trainer_state_t state(model.n_parameters());
+                trainer_state_t state(model.psize());
                 state.m_params = model.params();
 
                 // tune the learning rate

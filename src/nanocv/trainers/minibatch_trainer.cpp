@@ -44,9 +44,9 @@ namespace ncv
 
                 // parameters
                 const string_t optimizer = "gd";
-                const size_t iterations = math::clamp(text::from_params<size_t>(parameters(), "iters", 1024), 4, 4096);
-                const scalar_t epsilon = math::clamp(text::from_params<scalar_t>(parameters(), "eps", 1e-6), 1e-8, 1e-3);
-                const size_t batchsize = math::clamp(text::from_params<size_t>(parameters(), "batch", 1024), 256, 8192);
+                const size_t iterations = math::clamp(text::from_params<size_t>(configuration(), "iters", 1024), 4, 4096);
+                const scalar_t epsilon = math::clamp(text::from_params<scalar_t>(configuration(), "eps", 1e-6), 1e-8, 1e-3);
+                const size_t batchsize = math::clamp(text::from_params<size_t>(configuration(), "batch", 1024), 256, 8192);
 
                 tsampler.setup(sampler_t::stype::uniform, batchsize);
                 vsampler.setup(sampler_t::stype::uniform, batchsize);
@@ -54,7 +54,7 @@ namespace ncv
                 const scalars_t l2_weights = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
 
                 // L2-regularize the loss
-                trainer_state_t state(model.n_parameters());
+                trainer_state_t state(model.psize());
                 for (scalar_t l2_weight : l2_weights)
                 {
                         trainer_t::train(task, tsampler, vsampler, nthreads,

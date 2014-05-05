@@ -256,9 +256,9 @@ namespace ncv
                 const size_t irows = tensor.rows();
                 const size_t icols = tensor.cols();
 
-                const size_t odims = math::clamp(text::from_params<size_t>(parameters(), "dims", 16), 1, 256);
-                const size_t krows = math::clamp(text::from_params<size_t>(parameters(), "rows", 8), 1, 32);
-                const size_t kcols = math::clamp(text::from_params<size_t>(parameters(), "cols", 8), 1, 32);
+                const size_t odims = math::clamp(text::from_params<size_t>(configuration(), "dims", 16), 1, 256);
+                const size_t krows = math::clamp(text::from_params<size_t>(configuration(), "rows", 8), 1, 32);
+                const size_t kcols = math::clamp(text::from_params<size_t>(configuration(), "cols", 8), 1, 32);
 
                 if (irows < krows || icols < kcols)
                 {
@@ -337,7 +337,7 @@ namespace ncv
                 }
 #endif
 
-                return n_parameters();
+                return psize();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

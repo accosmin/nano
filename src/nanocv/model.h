@@ -94,12 +94,12 @@ namespace ncv
                 virtual void gradient(const vector_t& ograd, vector_t& grad_params, vector_t& grad_inputs) const = 0;
 
                 // access functions
-                size_t n_rows() const { return m_rows; }
-                size_t n_cols() const { return m_cols; }
-                size_t n_planes() const;
-                size_t n_inputs() const { return n_planes() * n_rows() * n_cols(); }
-                size_t n_outputs() const { return m_outputs; }
-                size_t n_parameters() const { return m_nparams; }
+                size_t irows() const { return m_rows; }
+                size_t icols() const { return m_cols; }
+                size_t idims() const;
+                size_t isize() const { return idims() * irows() * icols(); }
+                size_t osize() const { return m_outputs; }
+                size_t psize() const { return m_nparams; }
                 color_mode color() const { return m_color; }
 
         protected:

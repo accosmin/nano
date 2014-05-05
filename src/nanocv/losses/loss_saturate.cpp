@@ -7,7 +7,7 @@ namespace ncv
 
         saturate_loss_t::saturate_loss_t(const string_t& params)
                 :       loss_t(params, "sparse-output loss, parameters: w = 1[0,1000]"),
-			m_weight(math::clamp(text::from_params<scalar_t>(parameters(), "w", 1.0), 0.0, 1000.0))
+                        m_weight(math::clamp(text::from_params<scalar_t>(configuration(), "w", 1.0), 0.0, 1000.0))
         {
         }
 

@@ -223,8 +223,8 @@ namespace ncv
         void accumulator_t::cumulate(const vector_t& output, const vector_t& target, const loss_t& loss)
         {
                 assert(m_model);
-                assert(static_cast<size_t>(output.size()) == m_model->n_outputs());
-                assert(static_cast<size_t>(target.size()) == m_model->n_outputs());
+                assert(static_cast<size_t>(output.size()) == m_model->osize());
+                assert(static_cast<size_t>(target.size()) == m_model->osize());
 
                 const scalar_t value = loss.value(target, output);
                 const scalar_t error = loss.error(target, output);
@@ -347,7 +347,7 @@ namespace ncv
         size_t accumulator_t::dimensions() const
         {
                 assert(m_model);
-                return m_model->n_parameters();
+                return m_model->psize();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

@@ -70,9 +70,9 @@ namespace ncv
                 virtual const tensor_t& output() const = 0;
 
                 ///
-                /// \brief returns the number of optimization parameters
+                /// \brief returns the number of (optimization) parameters
                 ///
-                virtual size_t n_parameters() const = 0;
+                virtual size_t psize() const = 0;
         };
 }
 

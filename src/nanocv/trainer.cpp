@@ -64,7 +64,7 @@ namespace ncv
                 samples_t utsamples = tsampler.get();
                 samples_t uvsamples = vsampler.get();
 
-                const scalar_t l2w = l2_weight / model.n_parameters();
+                const scalar_t l2w = l2_weight / model.psize();
 
                 // construct the optimization problem
                 const timer_t timer;

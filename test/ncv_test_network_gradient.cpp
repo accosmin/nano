@@ -14,13 +14,13 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
         const rloss_t rloss = loss_manager_t::instance().get(loss_id);
         const loss_t& loss = *rloss;
 
-        const size_t n_params = model.n_parameters();
-        const size_t n_inputs = model.n_inputs();
-        const size_t n_outputs = model.n_outputs();
+        const size_t n_params = model.psize();
+        const size_t n_inputs = model.isize();
+        const size_t n_outputs = model.osize();
 
         vector_t params(n_params);
         vectors_t targets(n_samples, vector_t(n_outputs));
-        tensors_t inputs(n_samples, tensor_t(model.n_planes(), model.n_rows(), model.n_cols()));
+        tensors_t inputs(n_samples, tensor_t(model.idims(), model.irows(), model.icols()));
 
         // optimization problem (wrt parameters): size
         auto opt_fn_params_size = [&] ()

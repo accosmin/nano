@@ -67,9 +67,9 @@ namespace ncv
 
         vector_t model_t::value(const vector_t& input) const
         {
-                assert(static_cast<size_t>(input.size()) == n_inputs());
+                assert(static_cast<size_t>(input.size()) == isize());
 
-                tensor_t xinput(n_planes(), n_rows(), n_cols());
+                tensor_t xinput(idims(), irows(), icols());
                 xinput.copy_from(input.data());
 
                 return value(xinput);
@@ -81,17 +81,17 @@ namespace ncv
         {
                 tensor_t data;
 
-                const rect_t region = geom::make_rect(x, y, n_cols(), n_rows());
+                const rect_t region = geom::make_rect(x, y, icols(), irows());
 
                 switch (m_color)
                 {
                 case color_mode::luma:
-                        data.resize(1, n_rows(), n_cols());
+                        data.resize(1, irows(), icols());
                         data.copy_plane_from(0, image.make_luma(region));
                         break;
 
                 case color_mode::rgba:
-                        data.resize(3, n_rows(), n_cols());
+                        data.resize(3, irows(), icols());
                         data.copy_plane_from(0, image.make_red(region));
                         data.copy_plane_from(1, image.make_green(region));
                         data.copy_plane_from(2, image.make_blue(region));
@@ -110,7 +110,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        size_t model_t::n_planes() const
+        size_t model_t::idims() const
         {
                 switch (m_color)
                 {
@@ -142,7 +142,7 @@ namespace ncv
 
                 if (verbose)
                 {
-                        log_info() << "model: parameters = " << n_parameters() << ".";
+                        log_info() << "model: parameters = " << psize() << ".";
                 }
 
                 return true;

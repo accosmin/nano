@@ -29,9 +29,9 @@ namespace ncv
 
         void forward_network_t::gradient(const vector_t& ograd, vector_t& grad_params, vector_t& grad_inputs) const
         {
-                assert(static_cast<size_t>(ograd.size()) == n_outputs());
+                assert(static_cast<size_t>(ograd.size()) == osize());
 
-                tensor_t _gradient(n_outputs(), 1, 1);
+                tensor_t _gradient(osize(), 1, 1);
                 ivectorizer_t(ograd) >> _gradient;
 
                 const tensor_t* gradient = &_gradient;
@@ -41,7 +41,7 @@ namespace ncv
                 }
 
                 // wrt parameters
-                grad_params.resize(n_parameters());
+                grad_params.resize(psize());
 
                 ovectorizer_t s(grad_params);
                 for (const rlayer_t& layer : m_layers)
@@ -57,7 +57,7 @@ namespace ncv
 
         vector_t forward_network_t::params() const
         {
-                vector_t x(n_parameters());
+                vector_t x(psize());
 
                 ovectorizer_t s(x);
                 for (const rlayer_t& layer : m_layers)
@@ -72,7 +72,7 @@ namespace ncv
 
         bool forward_network_t::load_params(const vector_t& x)
         {
-                if (math::cast<size_t>(x.size()) == n_parameters())
+                if (math::cast<size_t>(x.size()) == psize())
                 {
                         ivectorizer_t s(x);
                         for (const rlayer_t& layer : m_layers)
@@ -120,7 +120,7 @@ namespace ncv
         {
                 const vector_t p = this->params();
 
-                oa << m_parameters;
+                oa << m_configuration;
                 oa << p;
 
                 return true;
@@ -132,7 +132,7 @@ namespace ncv
         {
                 vector_t p;
 
-                ia >> m_parameters;
+                ia >> m_configuration;
                 ia >> p;
 
                 resize(true);
@@ -145,7 +145,7 @@ namespace ncv
 
         size_t forward_network_t::resize(bool verbose)
         {
-                tensor_t input(n_planes(), n_rows(), n_cols());
+                tensor_t input(idims(), irows(), icols());
                 size_t n_params = 0;
 
                 m_layers.clear();
@@ -153,7 +153,7 @@ namespace ncv
 
                 // create hidden layers
                 strings_t net_params;
-                text::split(net_params, parameters(), text::is_any_of(";"));
+                text::split(net_params, configuration(), text::is_any_of(";"));
                 for (size_t l = 0; l < net_params.size(); l ++)
                 {
                         if (net_params[l].empty())
@@ -193,7 +193,7 @@ namespace ncv
 
                 // Create the output layer
                 const string_t layer_id = "linear";
-                const rlayer_t layer = layer_manager_t::instance().get(layer_id, "dims=" + text::to_string(n_outputs()));
+                const rlayer_t layer = layer_manager_t::instance().get(layer_id, "dims=" + text::to_string(osize()));
                 n_params += layer->resize(input);
                 m_layers.push_back(layer);
                 layer_ids.push_back(layer_id);
@@ -228,9 +228,9 @@ namespace ncv
         {
                 const rmodel_t model(new forward_network_t(parameters));
 
-                if (n_outputs() > 0)
+                if (osize() > 0)
                 {
-                        model->resize(n_rows(), n_cols(), n_outputs(), color(), false);
+                        model->resize(irows(), icols(), osize(), color(), false);
                 }
                 model->load_params(this->params());
 

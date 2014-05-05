@@ -43,14 +43,14 @@ namespace ncv
                 }
 
                 // parameters
-                const string_t optimizer = text::from_params<string_t>(parameters(), "opt", "lbfgs");
-                const size_t iterations = math::clamp(text::from_params<size_t>(parameters(), "iters", 1024), 4, 4096);
-                const scalar_t epsilon = math::clamp(text::from_params<scalar_t>(parameters(), "eps", 1e-6), 1e-8, 1e-3);
+                const string_t optimizer = text::from_params<string_t>(configuration(), "opt", "lbfgs");
+                const size_t iterations = math::clamp(text::from_params<size_t>(configuration(), "iters", 1024), 4, 4096);
+                const scalar_t epsilon = math::clamp(text::from_params<scalar_t>(configuration(), "eps", 1e-6), 1e-8, 1e-3);
 
                 const scalars_t l2_weights = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
 
                 // L2-regularize the loss
-                trainer_state_t state(model.n_parameters());
+                trainer_state_t state(model.psize());
                 for (scalar_t l2_weight : l2_weights)
                 {
                         trainer_t::train(task, tsampler, vsampler, nthreads,

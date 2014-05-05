@@ -63,7 +63,7 @@ namespace ncv
         size_t linear_layer_t::resize(const tensor_t& tensor)
         {
                 const size_t idims = tensor.size();
-                const size_t odims = math::clamp(text::from_params<size_t>(parameters(), "dims", 10), 1, 4096);
+                const size_t odims = math::clamp(text::from_params<size_t>(configuration(), "dims", 10), 1, 4096);
 
                 // resize buffers
                 m_idata.resize(tensor.dims(), tensor.rows(), tensor.cols());
@@ -75,7 +75,7 @@ namespace ncv
                 m_gwdata.resize(1, odims, idims);
                 m_gbdata.resize(odims, 1, 1);
 
-                return n_parameters();
+                return psize();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

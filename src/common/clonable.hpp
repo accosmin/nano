@@ -8,8 +8,9 @@ namespace ncv
 {
         ///
         /// the clonable interface to be used with a manager:
-        ///      ::clone(const std::string&)     - create a new object (with the given parameters)
-        ///      ::description()                 - short description (parameters included)
+        ///      ::clone(const std::string&)    - create a new object (with the given configuration)
+        ///      ::configuration()              - parametrization
+        ///      ::description()                - short description (configuration included)
         ///
         template
         <
@@ -24,9 +25,9 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                clonable_t(const std::string& parameters,
+                clonable_t(const std::string& configuration,
                            const std::string& description)
-                        :       m_parameters(parameters),
+                        :       m_configuration(configuration),
                                 m_description(description)
                 {
                 }
@@ -38,19 +39,19 @@ namespace ncv
                 ///
                 /// \brief create an object clone
                 ///
-                robject_t clone() const { return clone(parameters()); }
+                robject_t clone() const { return clone(configuration()); }
                 virtual robject_t clone(const std::string& params) const = 0;
                 
                 ///
                 /// \brief describe the object
                 ///
-                const std::string& parameters() const { return m_parameters; }
+                const std::string& configuration() const { return m_configuration; }
                 const std::string& description() const { return m_description; }
 
         protected:
 
                 // attributes
-                std::string     m_parameters;
+                std::string     m_configuration;
                 std::string     m_description;
         };
 }
