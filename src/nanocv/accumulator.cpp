@@ -57,10 +57,20 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void accumulator_t::reset(const vector_t& param)
+        void accumulator_t::reset(const vector_t& data)
         {
-                assert(m_model);
-                m_model->load_params(param);
+                m_data.m_source = data;
+
+                switch (m_settings.m_source)
+                {
+                case source::params:
+                        assert(m_model);
+                        m_model->load_params(data);
+                        break;
+
+                case source::inputs:
+                        break;
+                }
 
                 reset();
         }
@@ -276,10 +286,8 @@ namespace ncv
                         return m_data.m_value / count();
 
                 case regularizer::l2norm:
-                        {
-                                const scalar_t w = m_settings.m_lambda / m_model->n_parameters();
-                                return m_data.m_value / count() + 0.5 * w * m_model->params().squaredNorm();
-                        }
+                        return m_data.m_value / count()
+                               + 0.5 * m_settings.m_lambda / dimensions() * m_data.m_source.squaredNorm();
 
                 case regularizer::variational:
                 default:
@@ -309,10 +317,8 @@ namespace ncv
                         return m_data.m_vgrad / count();
 
                 case regularizer::l2norm:
-                        {
-                                const scalar_t w = m_settings.m_lambda / m_model->n_parameters();
-                                return m_data.m_vgrad / count() + w * m_model->params();
-                        }
+                        return m_data.m_vgrad / count()
+                               + m_settings.m_lambda / dimensions() * m_data.m_source;
 
                 case regularizer::variational:
                 default:

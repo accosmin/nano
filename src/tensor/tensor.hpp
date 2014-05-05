@@ -196,7 +196,7 @@ namespace ncv
                         >
                         void copy_plane_from(tsize i, const ttensor& t)
                         {
-                                assert(plane_size() == t.size());
+                                assert(plane_size() == static_cast<tsize>(t.size()));
                                 assert(i < dims());
                                 copy_plane_from(i, t.data());
                         }

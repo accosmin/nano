@@ -73,7 +73,7 @@ namespace ncv
                 ///
                 void reset();
                 void reset(const model_t& model);
-                void reset(const vector_t& param);
+                void reset(const vector_t& source);
                 void reset(type, source, regularizer, scalar_t lambda);
 
                 ///
@@ -171,6 +171,7 @@ namespace ncv
                         scalar_t        m_error;        ///< cumulated loss error
                         vector_t        m_vgrad;        ///< cumulated gradient
                         size_t          m_count;        ///< #processed samples
+                        vector_t        m_source;       ///< data source (model parameters or inputs)
                 };
 
                 // attributes

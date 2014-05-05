@@ -5,7 +5,8 @@
 
 using namespace ncv;
 
-static void test_grad(const string_t& header, const string_t& loss_id, model_t& model, size_t n_tests)
+static void test_grad(const string_t& header, const string_t& loss_id, const model_t& model, size_t n_tests,
+                      accumulator_t acc_params, accumulator_t acc_inputs)
 {
         const rloss_t rloss = loss_manager_t::instance().get(loss_id);
         const loss_t& loss = *rloss;
@@ -17,15 +18,6 @@ static void test_grad(const string_t& header, const string_t& loss_id, model_t& 
         vector_t params(n_params);
         vector_t target(n_outputs);
         tensor_t inputs(model.n_inputs(), model.n_rows(), model.n_cols());
-
-        accumulator_t acc_params(model,
-                                 accumulator_t::type::vgrad,
-                                 accumulator_t::source::params,
-                                 accumulator_t::regularizer::none, 0.0);
-        accumulator_t acc_inputs(model,
-                                 accumulator_t::type::vgrad,
-                                 accumulator_t::source::inputs,
-                                 accumulator_t::regularizer::none, 0.0);
 
         // optimization problem (wrt parameters): size
         auto opt_fn_params_size = [&] ()
@@ -44,7 +36,7 @@ static void test_grad(const string_t& header, const string_t& loss_id, model_t& 
 
         // optimization problem (wrt parameters): function value & gradient
         auto opt_fn_params_grad = [&] (const vector_t& x, vector_t& gx)
-        {                
+        {
                 acc_params.reset(x);
                 acc_params.update(inputs, target, loss);
 
@@ -108,6 +100,42 @@ static void test_grad(const string_t& header, const string_t& loss_id, model_t& 
                 log_info() << header << " [" << (t + 1) << "/" << n_tests
                            << "]: gradient accuracy = " << params_dgrad << "/" << inputs_dgrad
                            << " (" << (std::max(params_dgrad, inputs_dgrad) > 1e-6 ? "ERROR" : "OK") << ").";
+        }
+}
+
+static void test_grad(const string_t& header, const string_t& loss_id, const model_t& model, size_t n_tests)
+{
+        std::vector<accumulator_t::regularizer> regularizers =
+        {
+                accumulator_t::regularizer::none,
+                accumulator_t::regularizer::l2norm
+        };
+
+        scalars_t lambdas =
+        {
+                0.0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0
+        };
+
+        // check reguaralizers
+        for (auto regularizer : regularizers)
+        {
+                if (regularizer == accumulator_t::regularizer::none)
+                {
+                        test_grad(header, loss_id, model, n_tests,
+                                { model, accumulator_t::type::vgrad, accumulator_t::source::params, regularizer, 0.0 },
+                                { model, accumulator_t::type::vgrad, accumulator_t::source::inputs, regularizer, 0.0 });
+                }
+
+                else
+                {
+                        // check regularization weights
+                        for (auto lambda : lambdas)
+                        {
+                                test_grad(header, loss_id, model, n_tests,
+                                        { model, accumulator_t::type::vgrad, accumulator_t::source::params, regularizer, lambda },
+                                        { model, accumulator_t::type::vgrad, accumulator_t::source::inputs, regularizer, lambda });
+                        }
+                }
         }
 }
 
