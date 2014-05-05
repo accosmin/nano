@@ -32,7 +32,7 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
         auto opt_fn_params_fval = [&] (const vector_t& x)
         {
                 acc_params.reset(x);
-                acc_params.update(inputs, targets, loss);
+                acc_params.update_mt(inputs, targets, loss);
 
                 return acc_params.value();
         };

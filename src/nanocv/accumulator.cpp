@@ -18,9 +18,12 @@ namespace ncv
         accumulator_t::accumulator_t(const rmodel_t& model, type t, regularizer r, scalar_t lambda)
                 :       m_settings(t, r, lambda),
                         m_model(model),
-                        m_data(dimensions())
+                        m_data(model ? dimensions() : 0)
         {
-                m_data.m_params = model->params();
+                if (model)
+                {
+                        m_data.m_params = model->params();
+                }
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
