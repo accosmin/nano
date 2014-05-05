@@ -25,15 +25,6 @@ namespace ncv
                 };
 
                 ///
-                /// \brief source (wrt to which to compute the gradients)
-                ///
-                enum class source : int
-                {
-                        params = 0,             ///< gradient wrt the model's parameters
-                        inputs                  ///< gradient wrt the inputs
-                };
-
-                ///
                 /// \brief regularization method
                 ///
                 enum class regularizer : int
@@ -48,13 +39,11 @@ namespace ncv
                 ///
                 accumulator_t(const model_t&,
                               type = type::value,
-                              source = source::params,
                               regularizer = regularizer::none,
                               scalar_t lambda = 0.0);
 
                 accumulator_t(const rmodel_t& = rmodel_t(),
                               type = type::value,
-                              source = source::params,
                               regularizer = regularizer::none,
                               scalar_t lambda = 0.0);
 
@@ -74,7 +63,7 @@ namespace ncv
                 void reset();
                 void reset(const model_t& model);
                 void reset(const vector_t& params);
-                void reset(type, source, regularizer, scalar_t lambda);
+                void reset(type, regularizer, scalar_t lambda);
 
                 ///
                 /// \brief update statistics with a new sample
@@ -139,9 +128,8 @@ namespace ncv
                 struct settings_t
                 {
                         // constructor
-                        settings_t(type t, source s, regularizer r, scalar_t lambda)
+                        settings_t(type t, regularizer r, scalar_t lambda)
                                 :       m_type(t),
-                                        m_source(s),
                                         m_regularizer(r),
                                         m_lambda(lambda)
                         {
@@ -149,7 +137,6 @@ namespace ncv
 
                         // attributes
                         type            m_type;
-                        source          m_source;
                         regularizer     m_regularizer;
                         scalar_t        m_lambda;       ///< regularization factor (if any)
                 };
@@ -158,26 +145,33 @@ namespace ncv
                 {
                         // constructor
                         data_t(size_t size = 0)
-                                :       m_value(0.0),
+                                :       m_value1(0.0),
+                                        m_value2(0.0),
+                                        m_grad1(size),
+                                        m_grad2(size),
                                         m_error(0.0),
-                                        m_vgrad(size),
                                         m_count(0)
                         {
-                                m_vgrad.setZero();
+                                reset();
                         }
 
+                        // clear statistics
                         void reset()
                         {
-                                m_value = 0.0;
+                                m_value1 = 0.0;
+                                m_value2 = 0.0;
+                                m_grad1.setZero();
+                                m_grad2.setZero();
                                 m_error = 0.0;
-                                m_vgrad.setZero();
                                 m_count = 0;
                         }
 
                         // attributes
-                        scalar_t        m_value;        ///< cumulated loss value
+                        scalar_t        m_value1;       ///< cumulated loss value
+                        scalar_t        m_value2;       ///< cumulated squared loss value
+                        vector_t        m_grad1;        ///< cumulated gradient
+                        vector_t        m_grad2;        ///< cumulated loss value * gradient
                         scalar_t        m_error;        ///< cumulated loss error
-                        vector_t        m_vgrad;        ///< cumulated gradient
                         size_t          m_count;        ///< #processed samples
                         vector_t        m_params;       ///< model's parameters
                 };

@@ -5,9 +5,12 @@
 
 using namespace ncv;
 
-static void test_grad(const string_t& header, const string_t& loss_id, const model_t& model, size_t n_tests,
-                      accumulator_t acc_params, accumulator_t acc_inputs)
+static void test_grad(const string_t& header, const string_t& loss_id, const model_t& model, accumulator_t acc_params)
 {
+        random_t<size_t> rand(4, 32);
+        const size_t n_tests = 64;
+        const size_t n_samples = rand();
+
         const rloss_t rloss = loss_manager_t::instance().get(loss_id);
         const loss_t& loss = *rloss;
 
@@ -16,8 +19,8 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
         const size_t n_outputs = model.n_outputs();
 
         vector_t params(n_params);
-        vector_t target(n_outputs);
-        tensor_t inputs(model.n_planes(), model.n_rows(), model.n_cols());
+        vectors_t targets(n_samples, vector_t(n_outputs));
+        tensors_t inputs(n_samples, tensor_t(model.n_planes(), model.n_rows(), model.n_cols()));
 
         // optimization problem (wrt parameters): size
         auto opt_fn_params_size = [&] ()
@@ -29,7 +32,7 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
         auto opt_fn_params_fval = [&] (const vector_t& x)
         {
                 acc_params.reset(x);
-                acc_params.update(inputs, target, loss);
+                acc_params.update(inputs, targets, loss);
 
                 return acc_params.value();
         };
@@ -38,43 +41,15 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
         auto opt_fn_params_grad = [&] (const vector_t& x, vector_t& gx)
         {
                 acc_params.reset(x);
-                acc_params.update(inputs, target, loss);
+                acc_params.update(inputs, targets, loss);
 
                 gx = acc_params.vgrad();
                 return acc_params.value();
         };
 
-        // optimization problem (wrt inputs): size
-        auto opt_fn_inputs_size = [&] ()
-        {
-                return acc_inputs.dimensions();
-        };
-
-        // optimization problem (wrt inputs): function value
-        auto opt_fn_inputs_fval = [&] (const vector_t& x)
-        {
-                acc_inputs.reset(params);
-                acc_inputs.update(x, target, loss);
-
-                return acc_inputs.value();
-        };
-
-        // optimization problem (wrt inputs): function value & gradient
-        auto opt_fn_inputs_grad = [&] (const vector_t& x, vector_t& gx)
-        {
-                acc_inputs.reset(params);
-                acc_inputs.update(x, target, loss);
-
-                gx = acc_inputs.vgrad();
-                return acc_inputs.value();
-        };
-
         // construct optimization problem: analytic gradient and finite difference approximation
         const opt_problem_t problem_params_analytic(opt_fn_params_size, opt_fn_params_fval, opt_fn_params_grad);
         const opt_problem_t problem_params_aproxdif(opt_fn_params_size, opt_fn_params_fval);
-
-        const opt_problem_t problem_inputs_analytic(opt_fn_inputs_size, opt_fn_inputs_fval, opt_fn_inputs_grad);
-        const opt_problem_t problem_inputs_aproxdif(opt_fn_inputs_size, opt_fn_inputs_fval);
 
         for (size_t t = 0; t < n_tests; t ++)
         {
@@ -83,35 +58,37 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
                 random_t<scalar_t> irgen(-0.1, +0.1);
 
                 prgen(params.data(), params.data() + n_params);
-                trgen(target.data(), target.data() + n_outputs);
-                irgen(inputs.data(), inputs.data() + n_inputs);
-
-                acc_params.reset(params);
-                acc_inputs.reset(params);
+                for (vector_t& target : targets)
+                {
+                        trgen(target.data(), target.data() + n_outputs);
+                }
+                for (tensor_t& input : inputs)
+                {
+                        irgen(input.data(), input.data() + n_inputs);
+                }
 
                 vector_t params_analytic_grad, params_aproxdif_grad;
                 problem_params_analytic(params, params_analytic_grad);
                 problem_params_aproxdif(params, params_aproxdif_grad);
 
-                vector_t inputs_analytic_grad, inputs_aproxdif_grad;
-                problem_inputs_analytic(inputs.vector(), inputs_analytic_grad);
-                problem_inputs_aproxdif(inputs.vector(), inputs_aproxdif_grad);
-
                 const scalar_t params_dgrad = (params_analytic_grad - params_aproxdif_grad).lpNorm<Eigen::Infinity>();
-                const scalar_t inputs_dgrad = (inputs_analytic_grad - inputs_aproxdif_grad).lpNorm<Eigen::Infinity>();
+
+                const scalar_t eps = 1e-6;
 
                 log_info() << header << " [" << (t + 1) << "/" << n_tests
-                           << "]: gradient accuracy = " << params_dgrad << "/" << inputs_dgrad
-                           << " (" << (std::max(params_dgrad, inputs_dgrad) > 1e-6 ? "ERROR" : "OK") << ").";
+                           << "]: samples = " << n_samples
+                           << ", dgrad = " << params_dgrad
+                           << " (" << (params_dgrad > eps ? "ERROR" : "OK") << ").";
         }
 }
 
-static void test_grad(const string_t& header, const string_t& loss_id, const model_t& model, size_t n_tests)
+static void test_grad(const string_t& header, const string_t& loss_id, const model_t& model)
 {
         std::vector<accumulator_t::regularizer> regularizers =
         {
                 accumulator_t::regularizer::none,
-                accumulator_t::regularizer::l2norm
+                accumulator_t::regularizer::l2norm,
+                accumulator_t::regularizer::variational
         };
 
         scalars_t lambdas =
@@ -119,14 +96,13 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
                 0.0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0
         };
 
-        // check reguaralizers
+        // check regularizers
         for (auto regularizer : regularizers)
         {
                 if (regularizer == accumulator_t::regularizer::none)
                 {
-                        test_grad(header, loss_id, model, n_tests,
-                                { model, accumulator_t::type::vgrad, accumulator_t::source::params, regularizer, 0.0 },
-                                { model, accumulator_t::type::vgrad, accumulator_t::source::inputs, accumulator_t::regularizer::none, 0.0 });
+                        test_grad(header, loss_id, model,
+                        { model, accumulator_t::type::vgrad, regularizer, 0.0 });
                 }
 
                 else
@@ -134,9 +110,8 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
                         // check regularization weights
                         for (auto lambda : lambdas)
                         {
-                                test_grad(header, loss_id, model, n_tests,
-                                        { model, accumulator_t::type::vgrad, accumulator_t::source::params, regularizer, lambda },
-                                        { model, accumulator_t::type::vgrad, accumulator_t::source::inputs, accumulator_t::regularizer::none, lambda });
+                                test_grad(header, loss_id, model,
+                                { model, accumulator_t::type::vgrad, regularizer, lambda });
                         }
                 }
         }
@@ -153,12 +128,10 @@ int main(int argc, char *argv[])
         const strings_t loss_ids = { "classnll" };//loss_manager_t::instance().ids();
 
         const color_mode cmd_color = color_mode::luma;
-        const size_t cmd_irows = 12;
-        const size_t cmd_icols = 12;
-        const size_t cmd_outputs = 4;
+        const size_t cmd_irows = 10;
+        const size_t cmd_icols = 10;
+        const size_t cmd_outputs = 3;
         const size_t cmd_max_layers = 2;
-
-        const size_t cmd_tests = 64;
 
         // evaluate the analytical gradient vs. the finite difference approximation for various:
         //      * convolution layers
@@ -181,7 +154,7 @@ int main(int argc, char *argv[])
                                                 // convolution part
                                                 for (size_t l = 0; l < n_layers && !conv_layer_id.empty(); l ++)
                                                 {
-                                                        random_t<size_t> rgen(2, 4);
+                                                        random_t<size_t> rgen(2, 3);
 
                                                         string_t params;
                                                         params += "dims=" + text::to_string(rgen());
@@ -220,7 +193,7 @@ int main(int argc, char *argv[])
                 // test network
                 for (const string_t& loss_id : loss_ids)
                 {
-                        test_grad("[loss = " + loss_id + "]", loss_id, network, cmd_tests);
+                        test_grad("[loss = " + loss_id + "]", loss_id, network);
                 }
         }
 

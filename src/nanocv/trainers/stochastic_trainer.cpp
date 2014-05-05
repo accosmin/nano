@@ -42,8 +42,8 @@ namespace ncv
                 size_t epochs, scalar_t alpha0, scalar_t beta, bool asgd,
                 const model_t& model, trainer_state_t& state, thread_pool_t::mutex_t& mutex)
         {
-                accumulator_t ldata(model, accumulator_t::type::value, accumulator_t::source::params);
-                accumulator_t gdata(model, accumulator_t::type::vgrad, accumulator_t::source::params);
+                accumulator_t ldata(model, accumulator_t::type::value, accumulator_t::regularizer::none);
+                accumulator_t gdata(model, accumulator_t::type::vgrad, accumulator_t::regularizer::none);
 
                 random_t<size_t> xrng(0, tsamples.size());
                 rnd_t xrnd(xrng);

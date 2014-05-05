@@ -1,3 +1,5 @@
+- layer_t/model_t: idims(), odims(), irows(), icols(), isize(), osize() !!!
+
 - softmax layer: update clasnll loss, may remove the logistic losses
 
 - reduce the number of input/output buffers for consecutive layers: use the output of a layer as the input for the next
