@@ -11,15 +11,15 @@ namespace ncv
         ///
         template
         <
-                typename trange
+                typename tscalar
         >
         class random_t
         {
         public:
                 
                 // constructor
-                random_t(trange min, trange max)
-                        :       m_gen(0),//std::random_device()),
+                random_t(tscalar min, tscalar max)
+                        :       m_gen(),//std::random_device()),
                                 m_die(std::min(min, max),
                                       std::max(min, max))
                 {
@@ -28,7 +28,7 @@ namespace ncv
                 }
                 
                 // generate a random value
-                trange operator()()
+                tscalar operator()()
                 {
                         return m_die(m_gen);
                 }
@@ -47,8 +47,8 @@ namespace ncv
                 }
 
                 // access functions
-                trange min() const { return m_die.min(); }
-                trange max() const { return m_die.max(); }
+                tscalar min() const { return m_die.min(); }
+                tscalar max() const { return m_die.max(); }
                 
         private:
 
@@ -56,10 +56,10 @@ namespace ncv
 
                 typedef typename std::conditional
                 <
-                        std::is_arithmetic<trange>::value &&
-                        std::is_integral<trange>::value,
-                        std::uniform_int_distribution<trange>,
-                        std::uniform_real_distribution<trange>
+                        std::is_arithmetic<tscalar>::value &&
+                        std::is_integral<tscalar>::value,
+                        std::uniform_int_distribution<tscalar>,
+                        std::uniform_real_distribution<tscalar>
                 >::type                                                 die_t;
 
                 // attributes

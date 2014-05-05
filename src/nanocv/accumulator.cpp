@@ -19,6 +19,7 @@ namespace ncv
                         m_model(model),
                         m_data(dimensions())
         {
+                m_data.m_params = model->params();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -51,26 +52,18 @@ namespace ncv
         {
                 assert(m_model);
                 m_model = model.clone();
+                m_data.m_params = model.params();
 
                 reset();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void accumulator_t::reset(const vector_t& data)
+        void accumulator_t::reset(const vector_t& params)
         {
-                m_data.m_source = data;
-
-                switch (m_settings.m_source)
-                {
-                case source::params:
-                        assert(m_model);
-                        m_model->load_params(data);
-                        break;
-
-                case source::inputs:
-                        break;
-                }
+                assert(m_model);
+                m_model->load_params(params);
+                m_data.m_params = params;
 
                 reset();
         }
@@ -88,7 +81,7 @@ namespace ncv
 
         void accumulator_t::reset()
         {
-                m_data = data_t(dimensions());
+                m_data.reset();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -287,7 +280,7 @@ namespace ncv
 
                 case regularizer::l2norm:
                         return m_data.m_value / count()
-                               + 0.5 * m_settings.m_lambda / dimensions() * m_data.m_source.squaredNorm();
+                               + 0.5 * m_settings.m_lambda / dimensions() * m_data.m_params.squaredNorm();
 
                 case regularizer::variational:
                 default:
@@ -318,7 +311,7 @@ namespace ncv
 
                 case regularizer::l2norm:
                         return m_data.m_vgrad / count()
-                               + m_settings.m_lambda / dimensions() * m_data.m_source;
+                               + m_settings.m_lambda / dimensions() * m_data.m_params;
 
                 case regularizer::variational:
                 default:

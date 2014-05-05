@@ -17,7 +17,7 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
 
         vector_t params(n_params);
         vector_t target(n_outputs);
-        tensor_t inputs(model.n_inputs(), model.n_rows(), model.n_cols());
+        tensor_t inputs(model.n_planes(), model.n_rows(), model.n_cols());
 
         // optimization problem (wrt parameters): size
         auto opt_fn_params_size = [&] ()
@@ -86,6 +86,9 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
                 trgen(target.data(), target.data() + n_outputs);
                 irgen(inputs.data(), inputs.data() + n_inputs);
 
+                acc_params.reset(params);
+                acc_inputs.reset(params);
+
                 vector_t params_analytic_grad, params_aproxdif_grad;
                 problem_params_analytic(params, params_analytic_grad);
                 problem_params_aproxdif(params, params_aproxdif_grad);
@@ -123,7 +126,7 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
                 {
                         test_grad(header, loss_id, model, n_tests,
                                 { model, accumulator_t::type::vgrad, accumulator_t::source::params, regularizer, 0.0 },
-                                { model, accumulator_t::type::vgrad, accumulator_t::source::inputs, regularizer, 0.0 });
+                                { model, accumulator_t::type::vgrad, accumulator_t::source::inputs, accumulator_t::regularizer::none, 0.0 });
                 }
 
                 else
@@ -133,7 +136,7 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
                         {
                                 test_grad(header, loss_id, model, n_tests,
                                         { model, accumulator_t::type::vgrad, accumulator_t::source::params, regularizer, lambda },
-                                        { model, accumulator_t::type::vgrad, accumulator_t::source::inputs, regularizer, lambda });
+                                        { model, accumulator_t::type::vgrad, accumulator_t::source::inputs, accumulator_t::regularizer::none, lambda });
                         }
                 }
         }

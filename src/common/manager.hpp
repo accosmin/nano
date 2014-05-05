@@ -125,7 +125,7 @@ namespace ncv
 	private:
 
                 // attributes
-                protos_t                        m_protos;
+                protos_t                m_protos;
         };
 
         ///
