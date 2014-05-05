@@ -55,18 +55,18 @@ int main(int argc, char *argv[])
         string_t lmodel5 = lmodel4 + "linear:dims=100;snorm;";
 
         string_t cmodel1;
-        cmodel1 = cmodel1 + "conv:dims=8,rows=7,cols=7;snorm;smax-abs-pool;";
-        cmodel1 = cmodel1 + "conv:dims=16,rows=4,cols=4;snorm;smax-abs-pool;";
+        cmodel1 = cmodel1 + "conv:dims=32,rows=7,cols=7;snorm;smax-abs-pool;";
+        cmodel1 = cmodel1 + "conv:dims=32,rows=4,cols=4;snorm;smax-abs-pool;";
         cmodel1 = cmodel1 + "conv:dims=32,rows=4,cols=4;snorm;";
 
         string_t cmodel2;
-        cmodel2 = cmodel2 + "conv:dims=8,rows=7,cols=7;snorm;smax-abs-pool;";
-        cmodel2 = cmodel2 + "conv:dims=16,rows=6,cols=6;snorm;smax-abs-pool;";
+        cmodel2 = cmodel2 + "conv:dims=32,rows=7,cols=7;snorm;smax-abs-pool;";
+        cmodel2 = cmodel2 + "conv:dims=32,rows=6,cols=6;snorm;smax-abs-pool;";
         cmodel2 = cmodel2 + "conv:dims=32,rows=3,cols=3;snorm;";
 
         string_t cmodel3;
-        cmodel3 = cmodel3 + "conv:dims=8,rows=5,cols=5;snorm;smax-abs-pool;";
-        cmodel3 = cmodel3 + "conv:dims=16,rows=5,cols=5;snorm;smax-abs-pool;";
+        cmodel3 = cmodel3 + "conv:dims=32,rows=5,cols=5;snorm;smax-abs-pool;";
+        cmodel3 = cmodel3 + "conv:dims=32,rows=5,cols=5;snorm;smax-abs-pool;";
         cmodel3 = cmodel3 + "conv:dims=32,rows=4,cols=4;snorm;";
 
         strings_t cmd_networks =

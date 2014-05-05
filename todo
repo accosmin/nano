@@ -1,3 +1,8 @@
+- update the minibatch & batch trainers to also specify the regularization method:
+	- modify train_mnist.sh script to compare various regularization methods (none, l2, var)
+
+- check if the new accumulator is slower than before (4-5sec on the i7)
+
 - softmax layer: update clasnll loss, may remove the logistic losses
 
 - reduce the number of input/output buffers for consecutive layers: use the output of a layer as the input for the next
