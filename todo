@@ -3,6 +3,8 @@
 
 - check if the new accumulator is slower than before (4-5sec on the i7)
 
+- speed-up convolutions: back to switching for fixed size convolutions 
+
 - softmax layer: update clasnll loss, may remove the logistic losses
 
 - reduce the number of input/output buffers for consecutive layers: use the output of a layer as the input for the next
