@@ -9,6 +9,8 @@
 
 - reduce the number of input/output buffers for consecutive layers: use the output of a layer as the input for the next
 
+- test program to compute inputs that maximize a model's output
+
 - new datasets: INRIA car and person datasets, dymlerchrysler human detection
 
 - more efficient way to store & select samples for large datasets:

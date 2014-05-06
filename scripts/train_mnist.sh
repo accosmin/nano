@@ -2,67 +2,74 @@
 
 source common.sh
 
-# paths
-dir_exp=${dir_results}/mnist
-mkdir -p ${dir_exp}
-
 # common parameters
-param=""
-param=${param}"--task mnist --task-dir ${dir_db}/mnist/ "
-param=${param}"--loss classnll --trials 1 --threads 4"
+params=""
+params=${params}"--loss classnll --trials 10 --threads 1"
 
+#batch="--trainer batch --trainer-params opt=lbfgs,iters=1024,eps=1e-6"
+#stochastic="--trainer stochastic --trainer-params opt=sgd,epoch=64"
 
+# trainers (minibatch configurations to evaluate)
+minibatch_none="--trainer minibatch --trainer-params batch=1024,iters=32,eps=1e-6,reg=none"
+minibatch_l2nm="--trainer minibatch --trainer-params batch=1024,iters=32,eps=1e-6,reg=l2"
+minibatch_vari="--trainer minibatch --trainer-params batch=1024,iters=32,eps=1e-6,reg=var"
 
-# trainers
-batch="--trainer batch --trainer-params opt=lbfgs,iters=1024,eps=1e-6"
-minibatch="--trainer minibatch --trainer-params batch=1024,iters=1024,eps=1e-6"
-stochastic="--trainer stochastic --trainer-params opt=sgd,epoch=64"
+batch_none="--trainer batch --trainer-params opt=lbfgs,iters=8,eps=1e-6,reg=none"
+batch_l2nm="--trainer batch --trainer-params opt=lbfgs,iters=8,eps=1e-6,reg=l2"
+batch_vari="--trainer batch --trainer-params opt=lbfgs,iters=8,eps=1e-6,reg=var"
 
-# common parameters
-batch="opt=lbfgs,iters=1024,eps=1e-6"
-minibatch="batch=1024,iters=1024,eps=1e-6"
-stoch="opt=sgd,epoch=64"
-
-
+trainers=("minibatch_none#${minibatch_none}"
+        "minibatch_l2nm#${minibatch_l2nm}"
+        "minibatch_vari#${minibatch_vari}"
+        "batch_none#${batch_none}"
+        "batch_l2nm#${batch_l2nm}"
+        "batch_vari#${batch_vari}")
+ 
 # models
-conv0=""
-
+conv0="--model forward-network --model-params "
 conv1=${conv0}"conv:dims=32,rows=7,cols=7;snorm;smax-abs-pool;"
-conv1=${conv1}"conv:dims=32,rows=4,cols=4;snorm;smax-abs-pool;"
-conv1=${conv1}"conv:dims=32,rows=4,cols=4;snorm;"
+conv2=${conv1}"conv:dims=32,rows=4,cols=4;snorm;smax-abs-pool;"
+conv3=${conv2}"conv:dims=32,rows=4,cols=4;snorm;"
 
-conv2=${conv0}"conv:dims=32,rows=7,cols=7;snorm;smax-abs-pool;"
-conv2=${conv2}"conv:dims=32,rows=6,cols=6;snorm;smax-abs-pool;"
-conv2=${conv2}"conv:dims=32,rows=3,cols=3;snorm;"
-
-conv3=${conv0}"conv:dims=32,rows=5,cols=5;snorm;smax-abs-pool;"
-conv3=${conv3}"conv:dims=32,rows=5,cols=5;snorm;smax-abs-pool;"
-conv3=${conv3}"conv:dims=32,rows=4,cols=4;snorm;"
-
-mlp0=""
+mlp0="--model forward-network --model-params "
 mlp1=${mlp0}"linear:dims=100;snorm;"
 mlp2=${mlp1}"linear:dims=100;snorm;"
 mlp3=${mlp2}"linear:dims=100;snorm;"
 mlp4=${mlp3}"linear:dims=100;snorm;"
 
+models=("conv1#${conv1}"
+      "conv2#${conv2}"
+      "conv3#${conv3}"
+      "mlp0#${mlp0}"
+      "mlp1#${mlp1}"
+      "mlp2#${mlp2}"
+      "mlp3#${mlp3}"
+      "mlp4#${mlp4}")
+
 # train models
-#fn_train forward-network ${conv0} stochastic ${stoch} conv0
-#fn_train forward-network ${conv1} stochastic ${stoch} conv1
-#fn_train forward-network ${conv2} stochastic ${stoch} conv2
-#fn_train forward-network ${conv3} stochastic ${stoch} conv3
-
-#fn_train forward-network ${conv0} batch ${batch} conv0
-#fn_train forward-network ${conv1} batch ${batch} conv1
-#fn_train forward-network ${conv2} batch ${batch} conv2
-#fn_train forward-network ${conv3} batch ${batch} conv3
-
-#fn_train forward-network ${conv0} minibatch ${minibatch} conv0
-#fn_train forward-network ${conv1} minibatch ${minibatch} conv1
-#fn_train forward-network ${conv2} minibatch ${minibatch} conv2
-#fn_train forward-network ${conv3} minibatch ${minibatch} conv3
-
-fn_train forward-network ${mlp0} minibatch ${minibatch} mlp0
-fn_train forward-network ${mlp1} minibatch ${minibatch} mlp1
-fn_train forward-network ${mlp2} minibatch ${minibatch} mlp2
-fn_train forward-network ${mlp3} minibatch ${minibatch} mlp3
-fn_train forward-network ${mlp4} minibatch ${minibatch} mlp4
+for ((i=0;i<${#trainers[*]};i++))
+{
+        trainer=${trainers[$i]}
+        tname=${trainer//#*/}
+        tparams=${trainer/*#/}
+        
+        for ((j=0;j<${#models[*]};j++))
+        {
+                model=${models[$j]}
+                mname=${model//#*/}
+                mparams=${model/*#/}
+                
+                mfile=${dir_exp_mnist}/test-${tname}-${mname}.model
+                lfile=${dir_exp_mnist}/test-${tname}-${mname}.log
+        
+                echo "using trainer <${tparams}> ..."
+                echo "using model <${mparams}> ..."
+                echo "using task <${task_mnist}> ..."
+                echo "using parameters <${params}> ..." 
+                echo "saving model <${mfile}> ..."
+                echo "saving log <${lfile}> ..."
+                time ${exe_trainer} ${tparams} ${mparams} ${params} ${task_mnist} --output ${mfile} > ${lfile}
+                echo -e "\tlog saved to <${lfile}>"
+                echo
+        }        
+}
