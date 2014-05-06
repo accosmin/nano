@@ -9,9 +9,10 @@ namespace ncv
         /// batch trainer: each gradient update is computed for all samples.
         ///
         /// parameters:
-        ///      opt=lbfgs[,cgd,gd]      - optimization method
-        ///      iters=1024[4,4096]      - maximum number of iterations
-        ///      eps=1e-6[1e-8,1e-3]     - convergence
+        ///     opt=lbfgs[,cgd,gd]      - optimization method
+        ///     iters=1024[4,4096]      - maximum number of iterations
+        ///     eps=1e-6[1e-8,1e-3]     - convergence
+        ///     reg=none[,l2,var]       - regularization method
         ///
         class batch_trainer_t : public trainer_t
         {

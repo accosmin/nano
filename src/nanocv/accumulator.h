@@ -116,6 +116,11 @@ namespace ncv
                 ///
                 size_t count() const;
 
+                ///
+                /// \brief regularization weight (if any)
+                ///
+                scalar_t lambda() const;
+
         private:
 
                 ///

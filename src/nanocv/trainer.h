@@ -10,6 +10,7 @@ namespace ncv
         class trainer_t;
         class sampler_t;
         class loss_t;
+        class accumulator_t;
 
         ///
         /// \brief stores registered prototypes
@@ -86,13 +87,16 @@ namespace ncv
         protected:
 
                 ///
-                /// \brief train the given model stochastically (if batchsize > 0) or with all samples
-                /// using the L2-regularized loss
+                /// \brief train the given model stochastically (minibatch) or with all samples (batch)
                 ///
                 static bool train(
                         const task_t&, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
-                        const loss_t&, scalar_t l2_weight, const string_t& optimizer, size_t iterations, scalar_t epsilon,
-                        const model_t& model, trainer_state_t& state);
+                        const loss_t&, const string_t& optimizer, size_t iterations, scalar_t epsilon,
+                        const string_t& regularizer, const model_t&, trainer_state_t& state);
+                static bool train(
+                        const task_t&, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
+                        const loss_t&, const string_t& optimizer, size_t iterations, scalar_t epsilon,
+                        const vector_t& x0, accumulator_t& ldata, accumulator_t& gdata, trainer_state_t& state);
         };
 }
 

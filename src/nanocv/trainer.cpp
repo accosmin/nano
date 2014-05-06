@@ -58,19 +58,90 @@ namespace ncv
 
         bool trainer_t::train(
                 const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
-                const loss_t& loss, scalar_t l2_weight, const string_t& optimizer, size_t iterations, scalar_t epsilon,
-                const model_t& model, trainer_state_t& state)
+                const loss_t& loss, const string_t& optimizer, size_t iterations, scalar_t epsilon,
+                const string_t& regularizer, const model_t& model, trainer_state_t& state)
+        {
+                // no regularization
+                if (regularizer == "none")
+                {
+                        accumulator_t ldata(model,
+                                            accumulator_t::type::value,
+                                            accumulator_t::regularizer::none);
+                        accumulator_t gdata(model,
+                                            accumulator_t::type::vgrad,
+                                            accumulator_t::regularizer::none);
+
+                        trainer_t::train(task, tsampler, vsampler, nthreads,
+                                         loss, optimizer, iterations, epsilon,
+                                         model.params(), ldata, gdata, state);
+                }
+
+                // L2-norm regularization
+                else if (regularizer == "l2")
+                {
+                        const scalars_t lambdas = { 0.0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
+
+                        // regularize the loss
+                        trainer_state_t state(model.psize());
+                        for (scalar_t lambda : lambdas)
+                        {
+                                accumulator_t ldata(model,
+                                                    accumulator_t::type::value,
+                                                    accumulator_t::regularizer::l2norm, lambda);
+                                accumulator_t gdata(model,
+                                                    accumulator_t::type::vgrad,
+                                                    accumulator_t::regularizer::l2norm, lambda);
+
+                                trainer_t::train(task, tsampler, vsampler, nthreads,
+                                                 loss, optimizer, iterations, epsilon,
+                                                 model.params(), ldata, gdata, state);
+                        }
+                }
+
+                // variational regularization
+                else if (regularizer == "var")
+                {
+                        const scalars_t lambdas = { 0.0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
+
+                        // regularize the loss
+                        trainer_state_t state(model.psize());
+                        for (scalar_t lambda : lambdas)
+                        {
+                                accumulator_t ldata(model,
+                                                    accumulator_t::type::value,
+                                                    accumulator_t::regularizer::variational, lambda);
+                                accumulator_t gdata(model,
+                                                    accumulator_t::type::vgrad,
+                                                    accumulator_t::regularizer::variational, lambda);
+
+                                trainer_t::train(task, tsampler, vsampler, nthreads,
+                                                 loss, optimizer, iterations, epsilon,
+                                                 model.params(), ldata, gdata, state);
+                        }
+                }
+
+                else
+                {
+                        log_error() << "trainer: invalid regularization method <" << regularizer << ">!";
+                        return false;
+                }
+
+                // OK
+                return true;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        bool trainer_t::train(
+                const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
+                const loss_t& loss, const string_t& optimizer, size_t iterations, scalar_t epsilon,
+                const vector_t& x0, accumulator_t& ldata, accumulator_t& gdata, trainer_state_t& state)
         {
                 samples_t utsamples = tsampler.get();
                 samples_t uvsamples = vsampler.get();
 
-                const scalar_t l2w = l2_weight / model.psize();
-
                 // construct the optimization problem
                 const timer_t timer;
-
-                accumulator_t ldata(model, accumulator_t::type::value, accumulator_t::regularizer::none);
-                accumulator_t gdata(model, accumulator_t::type::vgrad, accumulator_t::regularizer::none);
 
                 auto fn_size = [&] ()
                 {
@@ -82,36 +153,38 @@ namespace ncv
                         // training samples: loss value
                         ldata.reset(x);
                         ldata.update_mt(task, utsamples, loss, nthreads);
-                        const scalar_t tvalue = ldata.value() + 0.5 * l2w * x.squaredNorm();
+                        const scalar_t tvalue = ldata.value();
 
                         return tvalue;
                 };
 
                 auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
-                        // fixme: what is the resampling condition?!
-//                        if (tsampler.is_random() > 0)
-//                        {
-//                                // stochastic mode: resample training & validation samples
-//                                utsamples = tsampler.get();
-//                                uvsamples = vsampler.get();
-//                        }
+                        // stochastic mode: resample training & validation samples
+                        if (tsampler.is_random())
+                        {
+                                utsamples = tsampler.get();
+                        }
+                        if (vsampler.is_random())
+                        {
+                                uvsamples = vsampler.get();
+                        }
 
                         // training samples: loss value & gradient
                         gdata.reset(x);
                         gdata.update_mt(task, utsamples, loss, nthreads);
-                        const scalar_t tvalue = gdata.value() + 0.5 * l2w * x.squaredNorm();
+                        const scalar_t tvalue = gdata.value();
                         const scalar_t terror = gdata.error();
-                        gx = gdata.vgrad() + l2w * x;
+                        gx = gdata.vgrad();
 
                         // validation samples: loss value
                         ldata.reset(x);
                         ldata.update_mt(task, uvsamples, loss, nthreads);
-                        const scalar_t vvalue = ldata.value() + 0.5 * l2w * x.squaredNorm();
+                        const scalar_t vvalue = ldata.value();
                         const scalar_t verror = ldata.error();
 
                         // update the optimum state
-                        state.update(x, tvalue, terror, vvalue, verror, l2_weight);
+                        state.update(x, tvalue, terror, vvalue, verror, ldata.lambda());
 
                         return tvalue;
                 };
@@ -131,32 +204,30 @@ namespace ncv
                                    << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
                                    << ", train* = " << state.m_tvalue << "/" << state.m_terror
                                    << ", valid* = " << state.m_vvalue << "/" << state.m_verror
-                                   << ", l2/l2* = " << l2_weight << "/" << state.m_lambda
+                                   << ", lambda* = " << ldata.lambda() << "/" << state.m_lambda
                                    << "] done in " << timer.elapsed() << ".";
                 };
 
                 // assembly optimization problem & optimize the model
                 const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
 
-                const vector_t x = model.params();
-
                 const opt_opulog_t fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer));
 
                 if (text::iequals(optimizer, "lbfgs"))
                 {
-                        optimize::lbfgs(problem, x, iterations, epsilon, fn_wlog, fn_elog, fn_ulog_ref);
+                        optimize::lbfgs(problem, x0, iterations, epsilon, fn_wlog, fn_elog, fn_ulog_ref);
                 }
                 else if (text::iequals(optimizer, "cgd"))
                 {
-                        optimize::cgd_hs(problem, x, iterations, epsilon, fn_wlog, fn_elog, fn_ulog_ref);
+                        optimize::cgd_hs(problem, x0, iterations, epsilon, fn_wlog, fn_elog, fn_ulog_ref);
                 }
                 else if (text::iequals(optimizer, "gd"))
                 {
-                        optimize::gd(problem, x, iterations, epsilon, fn_wlog, fn_elog, fn_ulog_ref);
+                        optimize::gd(problem, x0, iterations, epsilon, fn_wlog, fn_elog, fn_ulog_ref);
                 }
                 else
                 {
-                        log_error() << "batch trainer: invalid optimization method <" << optimizer << ">!";
+                        log_error() << "trainer: invalid optimization method <" << optimizer << ">!";
                         return false;
                 }
 

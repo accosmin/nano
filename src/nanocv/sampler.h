@@ -88,6 +88,11 @@ namespace ncv
                 ///
                 const task_t& task() const { return m_task; }
 
+                ///
+                /// \brief return if the samples are selected randomly
+                ///
+                bool is_random() const { return m_stype != stype::batch; }
+
         private:
 
                 ///
