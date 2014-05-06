@@ -42,6 +42,12 @@ int main(int argc, char *argv[])
         const bool cmd_forward = po_vm.count("forward");
         const bool cmd_backward = po_vm.count("backward");
 
+        if (!cmd_forward && !cmd_backward)
+        {
+                std::cout << po_desc;
+                return EXIT_FAILURE;
+        }
+
         const color_mode cmd_color = color_mode::luma;
         const size_t cmd_rows = 28;
         const size_t cmd_cols = 28;
