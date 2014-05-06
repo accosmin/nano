@@ -7,7 +7,7 @@ using namespace ncv;
 
 static void test_grad(const string_t& header, const string_t& loss_id, const model_t& model, accumulator_t acc_params)
 {
-        random_t<size_t> rand(4, 32);
+        random_t<size_t> rand(2, 16);
         const size_t n_tests = 64;
         const size_t n_samples = rand();
 
@@ -32,7 +32,7 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
         auto opt_fn_params_fval = [&] (const vector_t& x)
         {
                 acc_params.reset(x);
-                acc_params.update_mt(inputs, targets, loss);
+                acc_params.update(inputs, targets, loss);
 
                 return acc_params.value();
         };
@@ -93,7 +93,7 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
 
         scalars_t lambdas =
         {
-                0.0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0
+                1e-3, 1e-2, 1e-1, 1.0
         };
 
         // check regularizers
@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
         const strings_t conv_layer_ids { "", "conv" };
         const strings_t pool_layer_ids { "", "smax-pool", "smax-abs-pool" };
         const strings_t full_layer_ids { "", "linear" };
-        const strings_t actv_layer_ids { "", "unit", "tanh", "snorm" };        
+        const strings_t actv_layer_ids { "", "unit", "tanh", "snorm" };
         const strings_t loss_ids = { "classnll" };//loss_manager_t::instance().ids();
 
         const color_mode cmd_color = color_mode::luma;
@@ -178,6 +178,7 @@ int main(int argc, char *argv[])
                                                 }
 
                                                 descs.insert(desc);
+                                                descs.insert(desc + "softmax;");
                                         }
                                 }
                         }
