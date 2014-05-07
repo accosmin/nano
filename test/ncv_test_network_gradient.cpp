@@ -123,9 +123,9 @@ int main(int argc, char *argv[])
 
         const strings_t conv_layer_ids { "", "conv" };
         const strings_t pool_layer_ids { "", "pool" };
-        const strings_t full_layer_ids { "", "linear", "smax" };
+        const strings_t full_layer_ids { "", "linear" };//, "smax" };
         const strings_t actv_layer_ids { "", "unit", "tanh", "snorm", "smax-plane" };
-        const strings_t loss_ids = loss_manager_t::instance().ids();
+        const strings_t loss_ids = { "classnll" };//loss_manager_t::instance().ids();
 
         const color_mode cmd_color = color_mode::luma;
         const size_t cmd_irows = 10;
@@ -178,7 +178,6 @@ int main(int argc, char *argv[])
                                                 }
 
                                                 descs.insert(desc);
-                                                descs.insert(desc + "smax;");
                                         }
                                 }
                         }

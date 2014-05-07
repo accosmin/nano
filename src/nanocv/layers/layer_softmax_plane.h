@@ -56,8 +56,6 @@ namespace ncv
                 // attributes
                 tensor_t                m_idata;        ///< input buffer
                 tensor_t                m_odata;        ///< output buffer
-
-                tensor_t                m_wdata;        ///< weights
         };
 }
 

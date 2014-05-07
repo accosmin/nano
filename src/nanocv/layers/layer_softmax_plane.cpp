@@ -10,19 +10,18 @@ namespace ncv
                 typename tsize
         >
         static void _forward(
-                const tscalar* idata, tsize size,
-                tscalar* wdata, tscalar* odata)
+                tscalar* idata, tsize size, tscalar* odata)
         {
-                auto wmap = tensor::make_vector(wdata, size);
-                auto omap = tensor::make_vector(odata, size);
                 auto imap = tensor::make_vector(idata, size);
+                auto omap = tensor::make_vector(odata, size);                
+                
+                for (tsize i = 0; i < size; i ++)
+                {
+                        imap(i) = std::exp(imap(i));
+                }
 
-                wmap = imap.array().exp();
-
-                const tscalar sumw = wmap.sum();
-                const tscalar isumw = 1 / (sumw);
-
-                omap = imap * isumw;
+                const tscalar sume = imap.sum();
+                omap = imap / sume;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -33,19 +32,15 @@ namespace ncv
                 typename tsize
         >
         static void _backward(
-                tscalar* idata, tsize size,
-                const tscalar* wdata, const tscalar* gdata)
+                tscalar* idata, tsize size, const tscalar* odata, const tscalar* gdata)
         {
-                auto wmap = tensor::make_vector(wdata, size);
-                auto gmap = tensor::make_vector(gdata, size);
                 auto imap = tensor::make_vector(idata, size);
-
-                const tscalar sumw = wmap.sum();
-                const tscalar isumw2 = 1 / (sumw * sumw);
+                auto omap = tensor::make_vector(odata, size);
+                auto gmap = tensor::make_vector(gdata, size);                
 
                 for (tsize i = 0; i < size; i ++)
                 {
-                        imap(i) = gmap(i) * wmap(i) * (sumw - wmap(i)) * isumw2;
+                        imap(i) = gmap(i) * omap(i) * (1 - omap(i));
                 }
         }
 
@@ -59,7 +54,6 @@ namespace ncv
 
                 m_idata.resize(dims, rows, cols);
                 m_odata.resize(dims, rows, cols);
-                m_wdata.resize(dims, rows, cols);
 
                 return 0;
         }
@@ -77,7 +71,6 @@ namespace ncv
                 for (size_t o = 0; o < dims(); o ++)
                 {
                         _forward(m_idata.plane_data(o), m_idata.plane_size(),
-                                 m_wdata.plane_data(o),
                                  m_odata.plane_data(o));
                 }
 
@@ -95,7 +88,7 @@ namespace ncv
                 for (size_t o = 0; o < dims(); o ++)
                 {
                         _backward(m_idata.plane_data(o), m_idata.plane_size(),
-                                  m_wdata.plane_data(o),
+                                  m_odata.plane_data(o),
                                   gradient.plane_data(o));
                 }
 
