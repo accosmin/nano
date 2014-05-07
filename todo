@@ -1,6 +1,5 @@
 - templated unrolling: http://stackoverflow.com/questions/16982283/c-template-for-unrolling-a-loop-using-a-switch
-
-- class target coding as {0, 1} -> modify the classnll loss
+	- check if it can be used to speed-up some layers
 
 - update the minibatch & batch trainers to also specify the regularization method:
 	- modify train_mnist.sh script to compare various regularization methods (none, l2, var)

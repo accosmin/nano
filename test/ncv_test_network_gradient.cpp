@@ -23,13 +23,13 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
         tensors_t inputs(n_samples, tensor_t(model.idims(), model.irows(), model.icols()));
 
         // optimization problem (wrt parameters): size
-        auto opt_fn_params_size = [&] ()
+        auto opt_fn_size = [&] ()
         {
                 return acc_params.dimensions();
         };
 
         // optimization problem (wrt parameters): function value
-        auto opt_fn_params_fval = [&] (const vector_t& x)
+        auto opt_fn_fval = [&] (const vector_t& x)
         {
                 acc_params.reset(x);
                 acc_params.update(inputs, targets, loss);
@@ -38,7 +38,7 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
         };
 
         // optimization problem (wrt parameters): function value & gradient
-        auto opt_fn_params_grad = [&] (const vector_t& x, vector_t& gx)
+        auto opt_fn_grad = [&] (const vector_t& x, vector_t& gx)
         {
                 acc_params.reset(x);
                 acc_params.update(inputs, targets, loss);
@@ -48,8 +48,8 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
         };
 
         // construct optimization problem: analytic gradient and finite difference approximation
-        const opt_problem_t problem_params_analytic(opt_fn_params_size, opt_fn_params_fval, opt_fn_params_grad);
-        const opt_problem_t problem_params_aproxdif(opt_fn_params_size, opt_fn_params_fval);
+        const opt_problem_t problem_analytic(opt_fn_size, opt_fn_fval, opt_fn_grad);
+        const opt_problem_t problem_aproxdif(opt_fn_size, opt_fn_fval);
 
         for (size_t t = 0; t < n_tests; t ++)
         {
@@ -67,18 +67,16 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
                         irgen(input.data(), input.data() + n_inputs);
                 }
 
-                vector_t params_analytic_grad, params_aproxdif_grad;
-                problem_params_analytic(params, params_analytic_grad);
-                problem_params_aproxdif(params, params_aproxdif_grad);
+                vector_t analytic_grad, aproxdif_grad;
+                problem_analytic(params, analytic_grad);
+                problem_aproxdif(params, aproxdif_grad);
 
-                const scalar_t params_dgrad = (params_analytic_grad - params_aproxdif_grad).lpNorm<Eigen::Infinity>();
-
+                const scalar_t dgrad = (analytic_grad - aproxdif_grad).lpNorm<Eigen::Infinity>();
                 const scalar_t eps = 1e-6;
 
                 log_info() << header << " [" << (t + 1) << "/" << n_tests
                            << "]: samples = " << n_samples
-                           << ", dgrad = " << params_dgrad
-                           << " (" << (params_dgrad > eps ? "ERROR" : "OK") << ").";
+                           << ", dgrad = " << dgrad << " (" << (dgrad > eps ? "ERROR" : "OK") << ").";
         }
 }
 
