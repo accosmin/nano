@@ -1,6 +1,6 @@
 #include "nanocv.h"
 #include "models/forward_network.h"
-#include "losses/loss_logistic.h"
+#include "losses/loss_classnll.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
                 cmodel3
         };
 
-        const max_logistic_loss_t loss;
+        const classnll_loss_t loss;
 
         for (const string_t& cmd_network : cmd_networks)
         {

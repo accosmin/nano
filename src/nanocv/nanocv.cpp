@@ -1,9 +1,7 @@
 #include "nanocv.h"
 
 #include "losses/loss_classnll.h"
-#include "losses/loss_logistic.h"
 #include "losses/loss_square.h"
-#include "losses/loss_saturate.h"
 
 #include "tasks/task_mnist.h"
 #include "tasks/task_cifar10.h"
@@ -18,7 +16,6 @@
 #include "layers/layer_activation_snorm.h"
 #include "layers/layer_convolution.h"
 #include "layers/layer_pool_softmax.h"
-#include "layers/layer_pool_softmax_abs.h"
 #include "layers/layer_softmax.h"
 #include "layers/layer_softmax_plane.h"
 
@@ -44,10 +41,7 @@ namespace ncv
 
                 // register losses
                 loss_manager_t::instance().add("classnll", classnll_loss_t());
-                loss_manager_t::instance().add("logistic-sum", sum_logistic_loss_t());
-                loss_manager_t::instance().add("logistic-max", max_logistic_loss_t());
                 loss_manager_t::instance().add("square", square_loss_t());
-                loss_manager_t::instance().add("saturate", saturate_loss_t());
 
                 // register tasks
                 task_manager_t::instance().add("mnist", mnist_task_t());
@@ -63,8 +57,7 @@ namespace ncv
                 layer_manager_t::instance().add("tanh", tanh_activation_layer_t());
                 layer_manager_t::instance().add("snorm", snorm_activation_layer_t());
                 layer_manager_t::instance().add("conv", conv_layer_t());
-                layer_manager_t::instance().add("pool-smax", pool_softmax_layer_t());
-                layer_manager_t::instance().add("pool-smax-abs", pool_softmax_abs_layer_t());
+                layer_manager_t::instance().add("pool", pool_softmax_layer_t());
                 layer_manager_t::instance().add("smax", softmax_layer_t());
                 layer_manager_t::instance().add("smax-plane", softmax_plane_layer_t());
 
