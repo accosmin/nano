@@ -1,4 +1,4 @@
-#include "layer_softmax.h"
+#include "layer_softmax_plane.h"
 
 namespace ncv
 {
@@ -51,7 +51,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        size_t softmax_layer_t::resize(const tensor_t& tensor)
+        size_t softmax_plane_layer_t::resize(const tensor_t& tensor)
         {
                 const size_t dims = tensor.dims();
                 const size_t rows = tensor.rows();
@@ -66,7 +66,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        const tensor_t& softmax_layer_t::forward(const tensor_t& input)
+        const tensor_t& softmax_plane_layer_t::forward(const tensor_t& input)
         {
                 assert(dims() == input.dims());
                 assert(rows() == input.rows());
@@ -74,24 +74,30 @@ namespace ncv
 
                 m_idata.copy_from(input);
 
-                _forward(m_idata.data(), m_idata.size(),
-                         m_wdata.data(),
-                         m_odata.data());
+                for (size_t o = 0; o < dims(); o ++)
+                {
+                        _forward(m_idata.plane_data(o), m_idata.plane_size(),
+                                 m_wdata.plane_data(o),
+                                 m_odata.plane_data(o));
+                }
 
                 return m_odata;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        const tensor_t& softmax_layer_t::backward(const tensor_t& gradient)
+        const tensor_t& softmax_plane_layer_t::backward(const tensor_t& gradient)
         {
                 assert(dims() == gradient.dims());
                 assert(rows() == gradient.rows());
                 assert(cols() == gradient.cols());
 
-                _backward(m_idata.data(), m_idata.size(),
-                          m_wdata.data(),
-                          gradient.data());
+                for (size_t o = 0; o < dims(); o ++)
+                {
+                        _backward(m_idata.plane_data(o), m_idata.plane_size(),
+                                  m_wdata.plane_data(o),
+                                  gradient.plane_data(o));
+                }
 
                 return m_idata;
         }

@@ -1,5 +1,5 @@
-#ifndef NANOCV_SOFTMAX_POOL_LAYER_H
-#define NANOCV_SOFTMAX_POOL_LAYER_H
+#ifndef NANOCV_POOL_SOFTMAX_LAYER_H
+#define NANOCV_POOL_SOFTMAX_LAYER_H
 
 #include "layer.h"
 
@@ -10,12 +10,12 @@ namespace ncv
         ///      down-sample by 2 from a 3x3 neighbouring region using a soft-max weighting.
         ///      weight ~ input value.
         ///
-        class softmax_pool_layer_t : public layer_t
+        class pool_softmax_layer_t : public layer_t
         {
         public:
 
                 // constructor
-                softmax_pool_layer_t(const string_t& parameters = string_t())
+                pool_softmax_layer_t(const string_t& parameters = string_t())
                         :       layer_t(parameters, "soft-max pooling layer")
                 {
                 }
@@ -23,7 +23,7 @@ namespace ncv
                 // create an object clone
                 virtual rlayer_t clone(const string_t& parameters) const
                 {
-                        return rlayer_t(new softmax_pool_layer_t(parameters));
+                        return rlayer_t(new pool_softmax_layer_t(parameters));
                 }
 
                 // resize to process new tensors of the given type
@@ -69,5 +69,5 @@ namespace ncv
         };
 }
 
-#endif // NANOCV_SOFTMAX_POOL_LAYER_H
+#endif // NANOCV_POOL_SOFTMAX_LAYER_H
 

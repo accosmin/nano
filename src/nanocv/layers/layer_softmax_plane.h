@@ -1,29 +1,27 @@
-#ifndef NANOCV_SOFTMAX_ABS_POOL_LAYER_H
-#define NANOCV_SOFTMAX_ABS_POOL_LAYER_H
+#ifndef NANOCV_SOFTMAX_LAYER_PLANE_H
+#define NANOCV_SOFTMAX_LAYER_PLANE_H
 
 #include "layer.h"
 
 namespace ncv
 {
         ///
-        /// softmax pooling layer:
-        ///      down-sample by 2 from a 3x3 neighbouring region using a soft-max weighting.
-        ///      weight ~ absolute input value.
+        /// softmax layer.
         ///
-        class softmax_abs_pool_layer_t : public layer_t
+        class softmax_plane_layer_t : public layer_t
         {
         public:
 
                 // constructor
-                softmax_abs_pool_layer_t(const string_t& parameters = string_t())
-                        :       layer_t(parameters, "soft-max absolute pooling layer")
+                softmax_plane_layer_t(const string_t& parameters = string_t())
+                        :       layer_t(parameters, "soft-max by plane layer")
                 {
                 }
 
                 // create an object clone
                 virtual rlayer_t clone(const string_t& parameters) const
                 {
-                        return rlayer_t(new softmax_abs_pool_layer_t(parameters));
+                        return rlayer_t(new softmax_plane_layer_t(parameters));
                 }
 
                 // resize to process new tensors of the given type
@@ -49,13 +47,9 @@ namespace ncv
 
         private:
 
-                size_t idims() const { return m_idata.dims(); }
-                size_t irows() const { return m_idata.rows(); }
-                size_t icols() const { return m_idata.cols(); }
-
-                size_t odims() const { return m_odata.dims(); }
-                size_t orows() const { return m_odata.rows(); }
-                size_t ocols() const { return m_odata.cols(); }
+                size_t dims() const { return m_idata.dims(); }
+                size_t rows() const { return m_idata.rows(); }
+                size_t cols() const { return m_idata.cols(); }
 
         private:
 
@@ -63,11 +57,9 @@ namespace ncv
                 tensor_t                m_idata;        ///< input buffer
                 tensor_t                m_odata;        ///< output buffer
 
-                tensor_t                m_wdata;        ///< pooling weights
-                tensor_t                m_sdata;        ///< nominator
-                tensor_t                m_tdata;        ///< denominator
+                tensor_t                m_wdata;        ///< weights
         };
 }
 
-#endif // NANOCV_SOFTMAX_ABS_POOL_LAYER_H
+#endif // NANOCV_SOFTMAX_PLANE_LAYER_H
 

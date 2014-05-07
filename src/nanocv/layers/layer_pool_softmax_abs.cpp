@@ -1,4 +1,4 @@
-#include "layer_softmax_pool.h"
+#include "layer_pool_softmax_abs.h"
 
 namespace ncv
 {
@@ -31,10 +31,10 @@ namespace ncv
                 {
                         for (tsize c = 0, cc = 0; c < icols; c ++, cc = c / 2)
                         {
-                                const tscalar w = wmap(r, c);
+                                const tscalar w = wmap(r, c), iw = 1 / w;
 
-                                smap(rr, cc) += w * imap(r, c);
-                                tmap(rr, cc) += w;
+                                smap(rr, cc) += (w + iw) * imap(r, c);
+                                tmap(rr, cc) += (w + iw);
                         }
                 }
 
@@ -65,20 +65,20 @@ namespace ncv
                 {
                         for (tsize c = 0, cc = 0; c < icols; c ++, cc = c / 2)
                         {
-                                const tscalar w = wmap(r, c);
+                                const tscalar w = wmap(r, c), iw = 1 / w;
                                 const tscalar i = imap(r, c);
                                 const tscalar s = smap(rr, cc);
                                 const tscalar t = tmap(rr, cc);
 
                                 imap(r, c) =
-                                gmap(rr, cc) * (t * (w + w * i) - s * w) / (t * t);
+                                gmap(rr, cc) * (t * ((w + iw) + (w - iw) * i) - s * (w - iw)) / (t * t);
                         }
                 }
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        size_t softmax_pool_layer_t::resize(const tensor_t& tensor)
+        size_t pool_softmax_abs_layer_t::resize(const tensor_t& tensor)
         {
                 const size_t idims = tensor.dims();
                 const size_t irows = tensor.rows();
@@ -100,7 +100,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        const tensor_t& softmax_pool_layer_t::forward(const tensor_t& input)
+        const tensor_t& pool_softmax_abs_layer_t::forward(const tensor_t& input)
         {
                 assert(idims() == input.dims());
                 assert(irows() <= input.rows());
@@ -122,7 +122,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        const tensor_t& softmax_pool_layer_t::backward(const tensor_t& gradient)
+        const tensor_t& pool_softmax_abs_layer_t::backward(const tensor_t& gradient)
         {
                 assert(odims() == gradient.dims());
                 assert(orows() == gradient.rows());

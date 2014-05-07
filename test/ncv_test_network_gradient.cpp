@@ -8,7 +8,7 @@ using namespace ncv;
 static void test_grad(const string_t& header, const string_t& loss_id, const model_t& model, accumulator_t acc_params)
 {
         random_t<size_t> rand(2, 16);
-        const size_t n_tests = 64;
+        const size_t n_tests = 4;
         const size_t n_samples = rand();
 
         const rloss_t rloss = loss_manager_t::instance().get(loss_id);
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
         ncv::init();
 
         const strings_t conv_layer_ids { "", "conv" };
-        const strings_t pool_layer_ids { "", "smax-pool", "smax-abs-pool" };
+        const strings_t pool_layer_ids { "", "smax-pool", "smax-abs-pool", "smax-plane" };
         const strings_t full_layer_ids { "", "linear" };
         const strings_t actv_layer_ids { "", "unit", "tanh", "snorm" };
         const strings_t loss_ids = { "classnll" };//loss_manager_t::instance().ids();
@@ -178,7 +178,7 @@ int main(int argc, char *argv[])
                                                 }
 
                                                 descs.insert(desc);
-                                                descs.insert(desc + "softmax;");
+                                                descs.insert(desc + "smax;");
                                         }
                                 }
                         }
