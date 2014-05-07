@@ -68,7 +68,9 @@ namespace ncv
                 // output
                 const tensor_t& _forward(const tensor_t& input)
                 {
-                        assert(m_data.size() == input.size());
+                        assert(m_data.dims() == input.dims());
+                        assert(m_data.rows() == input.rows());
+                        assert(m_data.cols() == input.cols());
 
                         math::transform(input, m_data, std::bind(teval_op(), _1));
 
@@ -78,7 +80,9 @@ namespace ncv
                 // gradient
                 const tensor_t& _backward(const tensor_t& gradient)
                 {
-                        assert(m_data.size() == gradient.size());
+                        assert(m_data.dims() == gradient.dims());
+                        assert(m_data.rows() == gradient.rows());
+                        assert(m_data.cols() == gradient.cols());
 
                         math::transform(gradient, m_data, m_data, std::bind(tgrad_op(), _1, _2));
 

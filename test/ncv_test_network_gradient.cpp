@@ -8,7 +8,7 @@ using namespace ncv;
 static void test_grad(const string_t& header, const string_t& loss_id, const model_t& model, accumulator_t acc_params)
 {
         random_t<size_t> rand(2, 16);
-        const size_t n_tests = 4;
+        const size_t n_tests = 1;
         const size_t n_samples = rand();
 
         const rloss_t rloss = loss_manager_t::instance().get(loss_id);
@@ -123,14 +123,14 @@ int main(int argc, char *argv[])
 
         const strings_t conv_layer_ids { "", "conv" };
         const strings_t pool_layer_ids { "", "pool" };
-        const strings_t full_layer_ids { "", "linear" };//, "smax" };
-        const strings_t actv_layer_ids { "", "unit", "tanh", "snorm", "smax-plane" };
-        const strings_t loss_ids = { "classnll" };//loss_manager_t::instance().ids();
+        const strings_t full_layer_ids { "", "linear" };
+        const strings_t actv_layer_ids { "", "unit", "tanh", "snorm" };//, "smax-plane" };
+        const strings_t loss_ids = loss_manager_t::instance().ids();
 
         const color_mode cmd_color = color_mode::luma;
         const size_t cmd_irows = 10;
         const size_t cmd_icols = 10;
-        const size_t cmd_outputs = 3;
+        const size_t cmd_outputs = 4;
         const size_t cmd_max_layers = 2;
 
         // evaluate the analytical gradient vs. the finite difference approximation for various:
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
                                                 // fully-connected part
                                                 for (size_t l = 0; l < n_layers && !full_layer_id.empty(); l ++)
                                                 {
-                                                        random_t<size_t> rgen(1, 10);
+                                                        random_t<size_t> rgen(1, 8);
 
                                                         string_t params;
                                                         params += "dims=" + text::to_string(rgen());
@@ -176,8 +176,10 @@ int main(int argc, char *argv[])
                                                         desc += full_layer_id + ":" + params + ";";
                                                         desc += actv_layer_id + ";";
                                                 }
+                                                desc += "linear:dims=" + text::to_string(cmd_outputs) + ";";
 
                                                 descs.insert(desc);
+                                                descs.insert(desc + "smax;");
                                         }
                                 }
                         }
@@ -185,7 +187,7 @@ int main(int argc, char *argv[])
         }
 
         for (const string_t& desc : descs)
-        {                
+        {
                 // create network
                 forward_network_t network(desc);
                 network.resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color, true);

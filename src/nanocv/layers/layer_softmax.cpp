@@ -9,20 +9,30 @@ namespace ncv
                 typename tscalar,
                 typename tsize
         >
-        static void _forward(
-                const tscalar* idata, tsize size,
-                tscalar* wdata, tscalar* odata)
+        static void _forward(const tscalar* idata, tsize size, tscalar* data)
         {
-                auto wmap = tensor::make_vector(wdata, size);
-                auto omap = tensor::make_vector(odata, size);
-                auto imap = tensor::make_vector(idata, size);
+                tscalar sume = 0;
+                for (tsize i = 0; i < size; i ++)
+                {
+                        sume += (data[i] = std::exp(idata[i]));
+                }
 
-                wmap = imap.array().exp();
+                const tscalar isume = 1 / sume;
+                for (tsize i = 0; i < size; i ++)
+                {
+                        data[i] *= isume;
+                }
 
-                const tscalar sumw = wmap.sum();
-                const tscalar isumw = 1 / (sumw);
+                tscalar sumd = 0;
+                for (tsize i = 0; i < size; i ++)
+                {
+                        sumd += data[i];
+                }
 
-                omap = imap * isumw;
+                if (std::fabs(1 - sumd) > 1e-10)
+                {
+                        std::cout << "sumd = " << sumd << std::endl;
+                }
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -32,20 +42,11 @@ namespace ncv
                 typename tscalar,
                 typename tsize
         >
-        static void _backward(
-                tscalar* idata, tsize size,
-                const tscalar* wdata, const tscalar* gdata)
+        static void _backward(const tscalar* gdata, tsize size, tscalar* data)
         {
-                auto wmap = tensor::make_vector(wdata, size);
-                auto gmap = tensor::make_vector(gdata, size);
-                auto imap = tensor::make_vector(idata, size);
-
-                const tscalar sumw = wmap.sum();
-                const tscalar isumw2 = 1 / (sumw * sumw);
-
                 for (tsize i = 0; i < size; i ++)
                 {
-                        imap(i) = gmap(i) * wmap(i) * (sumw - wmap(i)) * isumw2;
+                        data[i] = gdata[i] * data[i] * (1 - data[i]);
                 }
         }
 
@@ -57,9 +58,7 @@ namespace ncv
                 const size_t rows = tensor.rows();
                 const size_t cols = tensor.cols();
 
-                m_idata.resize(dims, rows, cols);
-                m_odata.resize(dims, rows, cols);
-                m_wdata.resize(dims, rows, cols);
+                m_data.resize(dims, rows, cols);
 
                 return 0;
         }
@@ -72,13 +71,9 @@ namespace ncv
                 assert(rows() == input.rows());
                 assert(cols() == input.cols());
 
-                m_idata.copy_from(input);
+                _forward(input.data(), m_data.size(), m_data.data());
 
-                _forward(m_idata.data(), m_idata.size(),
-                         m_wdata.data(),
-                         m_odata.data());
-
-                return m_odata;
+                return m_data;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -89,11 +84,9 @@ namespace ncv
                 assert(rows() == gradient.rows());
                 assert(cols() == gradient.cols());
 
-                _backward(m_idata.data(), m_idata.size(),
-                          m_wdata.data(),
-                          gradient.data());
+                _backward(gradient.data(), m_data.size(), m_data.data());
 
-                return m_idata;
+                return m_data;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

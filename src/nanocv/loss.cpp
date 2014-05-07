@@ -24,14 +24,6 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        scalar_t sign_class_error(const vector_t& targets, const vector_t& scores)
-        {
-                const scalar_t eps = std::numeric_limits<scalar_t>::epsilon();
-                return ((targets.array() * scores.array()) < eps).count() > 0;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         scalar_t multi_class_error(const vector_t& targets, const vector_t& scores)
         {
                 std::ptrdiff_t idx = 0;

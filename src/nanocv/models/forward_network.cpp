@@ -151,7 +151,7 @@ namespace ncv
                 m_layers.clear();
                 strings_t layer_ids;
 
-                // create hidden layers
+                // create layers
                 strings_t net_params;
                 text::split(net_params, configuration(), text::is_any_of(";"));
                 for (size_t l = 0; l < net_params.size(); l ++)
@@ -191,12 +191,17 @@ namespace ncv
                         input = layer->output();
                 }
 
-                // Create the output layer
-                const string_t layer_id = "linear";
-                const rlayer_t layer = layer_manager_t::instance().get(layer_id, "dims=" + text::to_string(osize()));
-                n_params += layer->resize(input);
-                m_layers.push_back(layer);
-                layer_ids.push_back(layer_id);
+                // check output size to match the target
+                if (    input.dims() != osize() ||
+                        input.rows() != 1 ||
+                        input.cols() != 1)
+                {
+                        const string_t message = "miss-matching output size! expecting " +
+                                text::to_string(osize()) + "!";
+
+                        log_error() << "forward network: " << message;
+                        throw std::runtime_error(message);
+                }
 
                 if (verbose)
                 {

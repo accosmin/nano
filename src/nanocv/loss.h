@@ -22,7 +22,7 @@ namespace ncv
         ///
         /// \brief target value of the negative class
         ///
-        inline scalar_t neg_target() { return -1.0; }
+        inline scalar_t neg_target() { return +0.0; }
 
         ///
         /// \brief target value for multi-class classification problems with [n_labels] classes
@@ -33,11 +33,6 @@ namespace ncv
         /// \brief multivariate L1 regression error
         ///
         scalar_t l1_error(const vector_t& targets, const vector_t& scores);
-
-        ///
-        /// \brief multivariate classification error: matches the sign of predictions vs target classes
-        ///
-        scalar_t sign_class_error(const vector_t& targets, const vector_t& scores);
 
         ///
         /// \brief multivariate classification error: highest score corresponds to the target class

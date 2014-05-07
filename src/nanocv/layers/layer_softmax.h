@@ -40,24 +40,20 @@ namespace ncv
                 virtual const tensor_t& forward(const tensor_t& input);
                 virtual const tensor_t& backward(const tensor_t& gradient);
 
-                // access functions
-                virtual const tensor_t& input() const { return m_idata; }
-                virtual const tensor_t& output() const { return m_odata; }
+                virtual const tensor_t& input() const { return m_data; }
+                virtual const tensor_t& output() const { return m_data; }
                 virtual size_t psize() const { return 0; }
 
         private:
 
-                size_t dims() const { return m_idata.dims(); }
-                size_t rows() const { return m_idata.rows(); }
-                size_t cols() const { return m_idata.cols(); }
+                size_t dims() const { return m_data.dims(); }
+                size_t rows() const { return m_data.rows(); }
+                size_t cols() const { return m_data.cols(); }
 
         private:
 
                 // attributes
-                tensor_t                m_idata;        ///< input buffer
-                tensor_t                m_odata;        ///< output buffer
-
-                tensor_t                m_wdata;        ///< weights
+                tensor_t                m_data;         ///< input-output buffer
         };
 }
 
