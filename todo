@@ -1,16 +1,9 @@
-- templated unrolling: http://stackoverflow.com/questions/16982283/c-template-for-unrolling-a-loop-using-a-switch
-	- check if it can be used to speed-up some layers
-
 - update the minibatch & batch trainers to also specify the regularization method:
 	- modify train_mnist.sh script to compare various regularization methods (none, l2, var)
 
 - check if the new accumulator is slower than before (4-5sec on the i7)
 
-- speed-up convolutions: back to switching for fixed size convolutions 
-
-- softmax layer: update clasnll loss, may remove the logistic losses
-
-- reduce the number of input/output buffers for consecutive layers: use the output of a layer as the input for the next
+- reduce the number of input/output buffers for layers
 
 - test program to compute inputs that maximize a model's output
 

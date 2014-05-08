@@ -16,9 +16,8 @@ namespace ncv
                 
                 dmap = imap.array().exp();
 
-                const tscalar sume = dmap.sum();
-                const tscalar isume = 1 / sume;
-                dmap.noalias() = dmap * isume;
+                const tscalar sumd = dmap.sum();
+                dmap.noalias() = dmap / sumd;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -34,11 +33,7 @@ namespace ncv
                 auto dmap = tensor::make_vector( data, size);
                 
                 const tscalar gd = gmap.dot(dmap);
-                
-                for (tsize i = 0; i < size; i ++)
-                {
-                        dmap(i) = dmap(i) * (gmap(i) - gd);
-                }
+                dmap.noalias() = (dmap.array() * (gmap.array() - gd)).matrix();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

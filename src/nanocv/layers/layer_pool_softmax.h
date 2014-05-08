@@ -6,7 +6,7 @@
 namespace ncv
 {
         ///
-        /// softmax pooling layer:
+        /// soft-max pooling layer:
         ///      down-sample by 2 from a 3x3 neighbouring region using a soft-max weighting.
         ///      weight ~ input value.
         ///

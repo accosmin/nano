@@ -16,8 +16,10 @@ namespace ncv
         {
                 assert(targets.size() == scores.size());
 
-                return  std::log(scores.array().exp().sum()) - 
-                        targets.dot(scores);
+                vector_t probs = scores.array().exp();
+                probs.noalias() = probs / probs.sum();
+
+                return -probs.dot(targets);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -26,8 +28,12 @@ namespace ncv
         {
                 assert(targets.size() == scores.size());
 
-                return  scores.array().exp().matrix() / scores.array().exp().sum() -
-                        targets;
+                vector_t probs = scores.array().exp();
+                probs.noalias() = probs / probs.sum();
+
+                const scalar_t tprobs = probs.dot(targets);
+
+                return probs.array() * (tprobs - targets.array());
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
