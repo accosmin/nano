@@ -19,13 +19,6 @@ namespace ncv
                 const tscalar sume = dmap.sum();
                 const tscalar isume = 1 / sume;
                 dmap.noalias() = dmap * isume;
-
-                const tscalar sumd = dmap.sum();
-
-                if (std::fabs(1 - sumd) > 1e-10)
-                {
-                        std::cout << "sumd = " << sumd << std::endl;
-                }
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

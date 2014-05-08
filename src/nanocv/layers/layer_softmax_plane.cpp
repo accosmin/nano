@@ -11,28 +11,14 @@ namespace ncv
         >
         static void _forward(const tscalar* idata, tsize size, tscalar* data)
         {
-                tscalar sume = 0;
-                for (tsize i = 0; i < size; i ++)
-                {
-                        sume += (data[i] = std::exp(idata[i]));
-                }
+                auto imap = tensor::make_vector(idata, size);
+                auto dmap = tensor::make_vector( data, size);
+                
+                dmap = imap.array().exp();
 
+                const tscalar sume = dmap.sum();
                 const tscalar isume = 1 / sume;
-                for (tsize i = 0; i < size; i ++)
-                {
-                        data[i] *= isume;
-                }
-
-                tscalar sumd = 0;
-                for (tsize i = 0; i < size; i ++)
-                {
-                        sumd += data[i];
-                }
-
-                if (std::fabs(1 - sumd) > 1e-10)
-                {
-                        std::cout << "sumd = " << sumd << std::endl;
-                }
+                dmap.noalias() = dmap * isume;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -44,9 +30,14 @@ namespace ncv
         >
         static void _backward(const tscalar* gdata, tsize size, tscalar* data)
         {
+                auto gmap = tensor::make_vector(gdata, size);
+                auto dmap = tensor::make_vector( data, size);
+                
+                const tscalar gd = gmap.dot(dmap);
+                
                 for (tsize i = 0; i < size; i ++)
                 {
-                        data[i] = gdata[i] * data[i] * (1 - data[i]);
+                        dmap(i) = dmap(i) * (gmap(i) - gd);
                 }
         }
 
