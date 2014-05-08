@@ -24,8 +24,8 @@ trainers=("minibatch128#${minibatch128}"
  
 # models
 conv0="--model forward-network --model-params "
-conv1=${conv0}"conv:dims=32,rows=7,cols=7;snorm;smax-abs-pool;"
-conv2=${conv1}"conv:dims=32,rows=4,cols=4;snorm;smax-abs-pool;"
+conv1=${conv0}"conv:dims=32,rows=7,cols=7;snorm;pool-abs;"
+conv2=${conv1}"conv:dims=32,rows=4,cols=4;snorm;pool-abs;"
 conv3=${conv2}"conv:dims=32,rows=4,cols=4;snorm;"
 
 mlp0="--model forward-network --model-params "
@@ -34,14 +34,14 @@ mlp2=${mlp1}"linear:dims=100;snorm;"
 mlp3=${mlp2}"linear:dims=100;snorm;"
 mlp4=${mlp3}"linear:dims=100;snorm;"
 
-models=("conv1#${conv1}"
-      "conv2#${conv2}"
-      "conv3#${conv3}"
-      "mlp0#${mlp0}"
-      "mlp1#${mlp1}"
-      "mlp2#${mlp2}"
-      "mlp3#${mlp3}"
-      "mlp4#${mlp4}")
+models=("conv1#${conv1};linear:dims=10;"
+      "conv2#${conv2};linear:dims=10;"
+      "conv3#${conv3};linear:dims=10;"
+      "mlp0#${mlp0};linear:dims=10;"
+      "mlp1#${mlp1};linear:dims=10;"
+      "mlp2#${mlp2};linear:dims=10;"
+      "mlp3#${mlp3};linear:dims=10;"
+      "mlp4#${mlp4};linear:dims=10;")
 
 # train models
 for ((i=0;i<${#trainers[*]};i++))
