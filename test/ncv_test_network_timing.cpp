@@ -61,32 +61,34 @@ int main(int argc, char *argv[])
         string_t lmodel5 = lmodel4 + "linear:dims=100;snorm;";
 
         string_t cmodel1;
-        cmodel1 = cmodel1 + "conv:dims=32,rows=7,cols=7;snorm;smax-abs-pool;";
-        cmodel1 = cmodel1 + "conv:dims=32,rows=4,cols=4;snorm;smax-abs-pool;";
+        cmodel1 = cmodel1 + "conv:dims=32,rows=7,cols=7;snorm;pool;";
+        cmodel1 = cmodel1 + "conv:dims=32,rows=4,cols=4;snorm;pool;";
         cmodel1 = cmodel1 + "conv:dims=32,rows=4,cols=4;snorm;";
 
         string_t cmodel2;
-        cmodel2 = cmodel2 + "conv:dims=32,rows=7,cols=7;snorm;smax-abs-pool;";
-        cmodel2 = cmodel2 + "conv:dims=32,rows=6,cols=6;snorm;smax-abs-pool;";
+        cmodel2 = cmodel2 + "conv:dims=32,rows=7,cols=7;snorm;pool;";
+        cmodel2 = cmodel2 + "conv:dims=32,rows=6,cols=6;snorm;pool;";
         cmodel2 = cmodel2 + "conv:dims=32,rows=3,cols=3;snorm;";
 
         string_t cmodel3;
-        cmodel3 = cmodel3 + "conv:dims=32,rows=5,cols=5;snorm;smax-abs-pool;";
-        cmodel3 = cmodel3 + "conv:dims=32,rows=5,cols=5;snorm;smax-abs-pool;";
+        cmodel3 = cmodel3 + "conv:dims=32,rows=5,cols=5;snorm;pool;";
+        cmodel3 = cmodel3 + "conv:dims=32,rows=5,cols=5;snorm;pool;";
         cmodel3 = cmodel3 + "conv:dims=32,rows=4,cols=4;snorm;";
+        
+        const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";smax;";
 
         strings_t cmd_networks =
         {
-                lmodel0,
-                lmodel1,
-                lmodel2,
-                lmodel3,
-                lmodel4,
-                lmodel5,
+                lmodel0 + outlayer,
+                lmodel1 + outlayer,
+                lmodel2 + outlayer,
+                lmodel3 + outlayer,
+                lmodel4 + outlayer,
+                lmodel5 + outlayer,
 
-                cmodel1,
-                cmodel2,
-                cmodel3
+                cmodel1 + outlayer,
+                cmodel2 + outlayer,
+                cmodel3 + outlayer
         };
 
         const classnll_loss_t loss;
