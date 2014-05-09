@@ -1,6 +1,7 @@
 #include "nanocv.h"
 
 #include "losses/loss_classnll.h"
+#include "losses/loss_classdif.h"
 #include "losses/loss_square.h"
 
 #include "tasks/task_mnist.h"
@@ -42,6 +43,7 @@ namespace ncv
 
                 // register losses
                 loss_manager_t::instance().add("classnll", classnll_loss_t());
+                loss_manager_t::instance().add("classdif", classdif_loss_t());
                 loss_manager_t::instance().add("square", square_loss_t());
 
                 // register tasks
