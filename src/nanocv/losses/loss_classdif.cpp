@@ -16,7 +16,7 @@ namespace ncv
         {
                 assert(targets.size() == scores.size());
 
-                return  (2.0 * targets.array() - 1.0).matrix().dot(scores.array().exp().matrix());
+                return  (1.0 - 2.0 * targets.array()).matrix().dot(scores.array().exp().matrix());
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -25,7 +25,7 @@ namespace ncv
         {
                 assert(targets.size() == scores.size());
 
-                return  (2.0 * targets.array() - 1.0) * scores.array().exp();
+                return  (1.0 - 2.0 * targets.array()) * scores.array().exp();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
