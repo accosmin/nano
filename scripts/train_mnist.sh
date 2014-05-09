@@ -10,13 +10,13 @@ params=${params}"--loss classnll --trials 10 --threads 1"
 #stochastic="--trainer stochastic --trainer-params opt=sgd,epoch=64"
 
 # trainers (minibatch configurations to evaluate)
-minibatch_none="--trainer minibatch --trainer-params batch=1024,iters=32,eps=1e-6,reg=none"
-minibatch_l2nm="--trainer minibatch --trainer-params batch=1024,iters=32,eps=1e-6,reg=l2"
-minibatch_vari="--trainer minibatch --trainer-params batch=1024,iters=32,eps=1e-6,reg=var"
+minibatch_none="--trainer minibatch --trainer-params batch=1024,iters=256,eps=1e-6,reg=none"
+minibatch_l2nm="--trainer minibatch --trainer-params batch=1024,iters=256,eps=1e-6,reg=l2"
+minibatch_vari="--trainer minibatch --trainer-params batch=1024,iters=256,eps=1e-6,reg=var"
 
-batch_none="--trainer batch --trainer-params opt=lbfgs,iters=8,eps=1e-6,reg=none"
-batch_l2nm="--trainer batch --trainer-params opt=lbfgs,iters=8,eps=1e-6,reg=l2"
-batch_vari="--trainer batch --trainer-params opt=lbfgs,iters=8,eps=1e-6,reg=var"
+batch_none="--trainer batch --trainer-params opt=lbfgs,iters=32,eps=1e-6,reg=none"
+batch_l2nm="--trainer batch --trainer-params opt=lbfgs,iters=32,eps=1e-6,reg=l2"
+batch_vari="--trainer batch --trainer-params opt=lbfgs,iters=32,eps=1e-6,reg=var"
 
 trainers=("minibatch_none#${minibatch_none}"
         "minibatch_l2nm#${minibatch_l2nm}"
@@ -38,14 +38,14 @@ mlp2=${mlp1}"linear:dims=100;snorm;"
 mlp3=${mlp2}"linear:dims=100;snorm;"
 mlp4=${mlp3}"linear:dims=100;snorm;"
 
-models=("conv1#${conv1};linear:dims=10;"
-      "conv2#${conv2};linear:dims=10;"
-      "conv3#${conv3};linear:dims=10;"
-      "mlp0#${mlp0};linear:dims=10;"
-      "mlp1#${mlp1};linear:dims=10;"
-      "mlp2#${mlp2};linear:dims=10;"
-      "mlp3#${mlp3};linear:dims=10;"
-      "mlp4#${mlp4};linear:dims=10;")
+models=("mlp0#${mlp0};linear:dims=10;"
+	"mlp1#${mlp1};linear:dims=10;"
+	"mlp2#${mlp2};linear:dims=10;"
+	"mlp3#${mlp3};linear:dims=10;"
+	"mlp4#${mlp4};linear:dims=10;")
+#	"conv1#${conv1};linear:dims=10;"
+#	"conv2#${conv2};linear:dims=10;"
+#	"conv3#${conv3};linear:dims=10;")
 
 # train models
 for ((i=0;i<${#trainers[*]};i++))
