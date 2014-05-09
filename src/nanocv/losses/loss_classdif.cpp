@@ -16,7 +16,9 @@ namespace ncv
         {
                 assert(targets.size() == scores.size());
 
-                return  (1.0 - 2.0 * targets.array()).matrix().dot(scores.array().exp().matrix());
+                const vector_t escores = scores.array().exp();
+
+                return  -targets.dot(escores) / escores.sum();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -25,7 +27,11 @@ namespace ncv
         {
                 assert(targets.size() == scores.size());
 
-                return  (1.0 - 2.0 * targets.array()) * scores.array().exp();
+                const vector_t escores = scores.array().exp();
+                const scalar_t est = targets.dot(escores);
+                const scalar_t ess = escores.sum();
+
+                return  escores.array() * (est / (ess * ess) - targets.array() / ess);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

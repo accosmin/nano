@@ -17,7 +17,7 @@ namespace ncv
                 assert(targets.size() == scores.size());
 
                 return  std::log(scores.array().exp().sum()) -
-                        targets.dot(scores);
+                        0.5 * (1.0  + targets.array()).matrix().dot(scores);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -27,7 +27,7 @@ namespace ncv
                 assert(targets.size() == scores.size());
 
                 return  scores.array().exp().matrix() / scores.array().exp().sum() -
-                        targets;
+                        0.5 * (1.0  + targets.array()).matrix();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

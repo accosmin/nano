@@ -16,7 +16,10 @@ namespace ncv
                 square_loss_t();
 
                 // create an object clone
-                virtual rloss_t clone(const string_t&) const { return rloss_t(new square_loss_t); }
+                virtual rloss_t clone(const string_t&) const
+                {
+                        return rloss_t(new square_loss_t);
+                }
 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const

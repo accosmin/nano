@@ -18,8 +18,9 @@
 #include "layers/layer_convolution.h"
 #include "layers/layer_pool_softmax.h"
 #include "layers/layer_pool_softabs.h"
+#include "layers/layer_norm_softmax.h"
+#include "layers/layer_norm_softabs.h"
 #include "layers/layer_softmax.h"
-#include "layers/layer_softmax_plane.h"
 
 #include "models/forward_network.h"
 
@@ -62,8 +63,9 @@ namespace ncv
                 layer_manager_t::instance().add("conv", conv_layer_t());
                 layer_manager_t::instance().add("pool-max", pool_softmax_layer_t());
                 layer_manager_t::instance().add("pool-abs", pool_softabs_layer_t());
-                layer_manager_t::instance().add("smax", softmax_layer_t());
-                layer_manager_t::instance().add("smax-plane", softmax_plane_layer_t());
+                layer_manager_t::instance().add("norm-max", norm_softmax_layer_t());
+                layer_manager_t::instance().add("norm-abs", norm_softabs_layer_t());
+                layer_manager_t::instance().add("smax", softmax_layer_t());                
 
                 // register models
                 model_manager_t::instance().add("forward-network", forward_network_t());

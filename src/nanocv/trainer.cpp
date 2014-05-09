@@ -79,7 +79,7 @@ namespace ncv
                 // L2-norm regularization
                 else if (regularizer == "l2")
                 {
-                        const scalars_t lambdas = { 0.0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
+                        const scalars_t lambdas = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
 
                         // regularize the loss
                         trainer_state_t state(model.psize());
@@ -101,7 +101,7 @@ namespace ncv
                 // variational regularization
                 else if (regularizer == "var")
                 {
-                        const scalars_t lambdas = { 0.0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
+                        const scalars_t lambdas = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
 
                         // regularize the loss
                         trainer_state_t state(model.psize());
