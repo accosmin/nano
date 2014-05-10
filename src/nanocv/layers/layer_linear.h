@@ -8,6 +8,9 @@ namespace ncv
         ///
         /// \brief fully-connected linear layer (as in MLP models)
         ///
+        /// parameters:
+        ///     dims=10[1,4096]          - number of output dimensions
+        ///
         class linear_layer_t : public layer_t
         {
         public:

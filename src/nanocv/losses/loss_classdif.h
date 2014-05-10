@@ -8,6 +8,8 @@ namespace ncv
         ///
         /// \brief multi-class positive vs negative difference loss
         ///
+        /// NB: to be used with normalized weights.
+        ///
         class classdif_loss_t : public loss_t
         {
         public:

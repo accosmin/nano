@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
         cmodel3 = cmodel3 + "conv:dims=32,rows=5,cols=5;snorm;pool-abs;";
         cmodel3 = cmodel3 + "conv:dims=32,rows=4,cols=4;snorm;";
         
-        const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";smax;";
+        const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
 
         strings_t cmd_networks =
         {

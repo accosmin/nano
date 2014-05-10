@@ -1,4 +1,5 @@
 #include "layer_norm_softabs.h"
+#include "common/logger.h"
 
 namespace ncv
 {
@@ -43,8 +44,33 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        norm_softabs_layer_t::norm_softabs_layer_t(const string_t& parameters)
+                :       layer_t(parameters, "soft-abs normalize layer, parameters: type=plane[,global]"),
+                        m_type(type::plane)
+        {
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
         size_t norm_softabs_layer_t::resize(const tensor_t& tensor)
         {
+                const string_t t = text::from_params<string_t>(configuration(), "type", "global");
+                if (t == "plane")
+                {
+                        m_type = type::plane;
+                }
+                else if (t == "global")
+                {
+                        m_type = type::global;
+                }
+                else
+                {
+                        const string_t message = "unknown normalization type <" + t + ">!";
+
+                        log_error() << "normalization layer: " << message;
+                        throw std::runtime_error(message);
+                }
+
                 const size_t dims = tensor.dims();
                 const size_t rows = tensor.rows();
                 const size_t cols = tensor.cols();
@@ -63,10 +89,20 @@ namespace ncv
                 assert(rows() == input.rows());
                 assert(cols() == input.cols());
 
-                for (size_t o = 0; o < dims(); o ++)
+                switch (m_type)
                 {
-                        _forward(input.plane_data(o), m_data.plane_size(),
-                                 m_data.plane_data(o), m_wdata.plane_data(o));
+                case type::plane:
+                        for (size_t o = 0; o < dims(); o ++)
+                        {
+                                _forward(input.plane_data(o), m_data.plane_size(),
+                                         m_data.plane_data(o), m_wdata.plane_data(o));
+                        }
+                        break;
+
+                case type::global:
+                default:
+                        _forward(input.data(), m_data.size(),
+                                 m_data.data(), m_wdata.data());
                 }
 
                 return m_data;
@@ -80,10 +116,21 @@ namespace ncv
                 assert(rows() == gradient.rows());
                 assert(cols() == gradient.cols());
 
-                for (size_t o = 0; o < dims(); o ++)
+                switch (m_type)
                 {
-                        _backward(gradient.plane_data(o), m_data.plane_size(),
-                                  m_data.plane_data(o), m_wdata.plane_data(o));
+                case type::plane:
+                        for (size_t o = 0; o < dims(); o ++)
+                        {
+                                _backward(gradient.plane_data(o), m_data.plane_size(),
+                                          m_data.plane_data(o), m_wdata.plane_data(o));
+                        }
+                        break;
+
+                case type::global:
+                default:
+                        _backward(gradient.data(), m_data.size(),
+                                  m_data.data(), m_wdata.data());
+                        break;
                 }
 
                 return m_data;

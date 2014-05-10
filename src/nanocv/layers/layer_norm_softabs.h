@@ -6,17 +6,17 @@
 namespace ncv
 {
         ///
-        /// soft-abs normalize-by-plane layer.
+        /// soft-abs normalize layer.
+        ///
+        /// parameters:
+        ///     type=plane[,global]        - normalization method: by plane or global
         ///
         class norm_softabs_layer_t : public layer_t
         {
         public:
 
                 // constructor
-                norm_softabs_layer_t(const string_t& parameters = string_t())
-                        :       layer_t(parameters, "soft-abs normalize by plane layer")
-                {
-                }
+                norm_softabs_layer_t(const string_t& parameters = string_t());
 
                 // create an object clone
                 virtual rlayer_t clone(const string_t& parameters) const
@@ -51,11 +51,18 @@ namespace ncv
                 size_t rows() const { return m_data.rows(); }
                 size_t cols() const { return m_data.cols(); }
 
+                enum class type : int
+                {
+                        plane,
+                        global
+                };
+
         private:
 
                 // attributes
                 tensor_t                m_data;         ///< input-output buffer
                 tensor_t                m_wdata;
+                type                    m_type;
         };
 }
 

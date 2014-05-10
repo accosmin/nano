@@ -1,22 +1,22 @@
-#ifndef NANOCV_NORM_SOFTMAX_LAYER_H
-#define NANOCV_NORM_SOFTMAX_LAYER_H
+#ifndef NANOCV_SOFTMAX_LAYER_PLANE_H
+#define NANOCV_SOFTMAX_LAYER_PLANE_H
 
 #include "layer.h"
 
 namespace ncv
 {
         ///
-        /// soft-max normalize-by-plane layer.
+        /// soft-max normalize layer.
+        ///
+        /// parameters:
+        ///     type=plane[,global]        - normalization method: by plane or global
         ///
         class norm_softmax_layer_t : public layer_t
         {
         public:
 
                 // constructor
-                norm_softmax_layer_t(const string_t& parameters = string_t())
-                        :       layer_t(parameters, "soft-max normalize by plane layer")
-                {
-                }
+                norm_softmax_layer_t(const string_t& parameters = string_t());
 
                 // create an object clone
                 virtual rlayer_t clone(const string_t& parameters) const
@@ -51,10 +51,17 @@ namespace ncv
                 size_t rows() const { return m_data.rows(); }
                 size_t cols() const { return m_data.cols(); }
 
+                enum class type : int
+                {
+                        plane,
+                        global
+                };
+
         private:
 
                 // attributes
                 tensor_t                m_data;         ///< input-output buffer
+                type                    m_type;
         };
 }
 

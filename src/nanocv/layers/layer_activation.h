@@ -7,7 +7,7 @@
 namespace ncv
 {
         ///
-        /// activation layer: pplies a non-linear scalar function to the each input
+        /// activation layer: applies a non-linear scalar function to the each input
         ///
         template
         <
