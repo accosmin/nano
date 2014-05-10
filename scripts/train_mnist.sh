@@ -4,7 +4,7 @@ source common.sh
 
 # common parameters
 params=""
-params=${params}"--loss classnll --trials 10 --threads 1"
+params=${params}"--loss classdif --trials 10 --threads 1"
 
 #batch="--trainer batch --trainer-params opt=lbfgs,iters=1024,eps=1e-6"
 #stochastic="--trainer stochastic --trainer-params opt=sgd,epoch=64"
@@ -38,14 +38,16 @@ mlp2=${mlp1}"linear:dims=100;snorm;"
 mlp3=${mlp2}"linear:dims=100;snorm;"
 mlp4=${mlp3}"linear:dims=100;snorm;"
 
-models=("mlp0#${mlp0};linear:dims=10;"
-	"mlp1#${mlp1};linear:dims=10;"
-	"mlp2#${mlp2};linear:dims=10;"
-	"mlp3#${mlp3};linear:dims=10;"
-	"mlp4#${mlp4};linear:dims=10;")
-#	"conv1#${conv1};linear:dims=10;"
-#	"conv2#${conv2};linear:dims=10;"
-#	"conv3#${conv3};linear:dims=10;")
+outlayer=";linear:dims=10;norm-max:type=global;"
+
+models=("mlp0#${mlp0}${outlayer}"
+	"mlp1#${mlp1}${outlayer}"
+	"mlp2#${mlp2}${outlayer}"
+	"mlp3#${mlp3}${outlayer}"
+	"mlp4#${mlp4}${outlayer}")
+#	"conv1#${conv1};${outlayer}"
+#	"conv2#${conv2};${outlayer}"
+#	"conv3#${conv3};${outlayer}")
 
 # train models
 for ((i=0;i<${#trainers[*]};i++))
