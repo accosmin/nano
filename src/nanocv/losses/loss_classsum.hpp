@@ -56,7 +56,7 @@ namespace ncv
                         case true:
                                 {
                                         // inputs are normalized ([0,1] or [-1,1])
-                                        return -targets.dot(scores.array().matrix());
+                                        return -targets.dot(scores);
                                 }
 
                         case false:
@@ -88,7 +88,7 @@ namespace ncv
                                         const scalar_t est = targets.dot(escores);
                                         const scalar_t ess = escores.sum();
 
-                                        return  escores.array() * (est / (ess * ess) - targets.array() / ess);
+                                        return escores.array() * (est / (ess * ess) - targets.array() / ess);
                                 }
                         }
                 }
