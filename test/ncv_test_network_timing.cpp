@@ -84,11 +84,11 @@ int main(int argc, char *argv[])
                 lmodel2 + outlayer,
                 lmodel3 + outlayer,
                 lmodel4 + outlayer,
-                lmodel5 + outlayer,
+                lmodel5 + outlayer/*,
 
                 cmodel1 + outlayer,
                 cmodel2 + outlayer,
-                cmodel3 + outlayer
+                cmodel3 + outlayer*/
         };
 
         const classnll_loss_t loss;
