@@ -1,6 +1,6 @@
 #include "nanocv.h"
 #include "models/forward_network.h"
-#include "losses/loss_classnll.h"
+#include "losses/loss_classnll.hpp"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])

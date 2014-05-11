@@ -122,9 +122,9 @@ int main(int argc, char *argv[])
         const strings_t conv_layer_ids { "", "conv" };
         const strings_t pool_layer_ids { "", "pool-max", "pool-abs" };
         const strings_t full_layer_ids { "", "linear" };
-        const strings_t actv_layer_ids { "", "unit", "tanh", "snorm",
-                                         "norm-max:type=plane",
-                                         "norm-abs:type=plane" };
+        const strings_t actv_layer_ids { "", "unit", "tanh", "snorm" };
+//                                         "norm-max:type=plane"
+//                                         "norm-abs:type=plane"
         const strings_t loss_ids = loss_manager_t::instance().ids();
 
         const color_mode cmd_color = color_mode::luma;
