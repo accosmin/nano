@@ -4,7 +4,7 @@ source common.sh
 
 # common parameters
 params=""
-params=${params}"--loss classdif --trials 10 --threads 1"
+params=${params}"--loss classsum --trials 1 --threads 1"
 
 #batch="--trainer batch --trainer-params opt=lbfgs,iters=1024,eps=1e-6"
 #stochastic="--trainer stochastic --trainer-params opt=sgd,epoch=64"
@@ -38,7 +38,7 @@ mlp2=${mlp1}"linear:dims=100;snorm;"
 mlp3=${mlp2}"linear:dims=100;snorm;"
 mlp4=${mlp3}"linear:dims=100;snorm;"
 
-outlayer=";linear:dims=10;norm-max:type=global;"
+outlayer=";linear:dims=10;norm-abs:type=global;"
 
 models=("mlp0#${mlp0}${outlayer}"
 	"mlp1#${mlp1}${outlayer}"
