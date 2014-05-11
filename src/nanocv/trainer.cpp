@@ -138,6 +138,8 @@ namespace ncv
                 samples_t utsamples = tsampler.get();
                 samples_t uvsamples = vsampler.get();
 
+                opt_state_t opt_state;
+
                 // construct the optimization problem
                 const timer_t timer;
 
@@ -188,6 +190,7 @@ namespace ncv
                                    << ", grad = " << gx.lpNorm<Eigen::Infinity>()
                                    << ", valid = " << vvalue << "/" << verror
                                    << ", lambda = " << ldata.lambda() << "/" << state.m_lambda
+                                   << ", calls = " << opt_state.n_fval_calls() << "/" << opt_state.n_grad_calls()
                                    << "] done in " << timer.elapsed() << ".";
 
                         return tvalue;
@@ -201,8 +204,9 @@ namespace ncv
                 {
                         log_error() << message;
                 };
-                auto fn_ulog = [&] (const opt_state_t& /*result*/, const timer_t& /*timer*/)
+                auto fn_ulog = [&] (const opt_state_t& result, const timer_t& /*timer*/)
                 {
+                        opt_state = result;
 //                        log_info() << "[loss = " << result.f
 //                                   << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
 //                                   << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
