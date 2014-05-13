@@ -34,6 +34,7 @@ set(CMAKE_CXX_FLAGS_DEBUG               "-g -Og")               # -fsanitize=add
 set(CMAKE_CXX_FLAGS_RELEASE             "-O4 -DNDEBUG")         # -DEIGEN_NO_DEBUG")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O2 -g")               # -DEIGEN_NO_DEBUG")
 set(CMAKE_CXX_FLAGS_MINSIZEREL          "-Os -DNDEBUG")         # -DEIGEN_NO_DEBUG")
+set(CMAKE_EXE_LINKER_FLAGS              "-ffunction-sections -flto")
 
 # Do not use Eigen's MT
 add_definitions(-DEIGEN_DONT_PARALLELIZE)
@@ -47,6 +48,7 @@ message("CXX DEBUG FLAGS:              " "${CMAKE_CXX_FLAGS_DEBUG}")
 message("CXX RELEASE FLAGS:            " "${CMAKE_CXX_FLAGS_RELEASE}")
 message("CXX RELWITHDEBINFO FLAGS:     " "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
 message("CXX MINSIZEREL FLAGS:         " "${CMAKE_CXX_FLAGS_MINSIZEREL}")
+message("CMAKE_EXE_LINKER_FLAGS:       " "${CMAKE_EXE_LINKER_FLAGS}")
 message("------------------------------------------------------------------------------" "")
 message("BUILD TYPE:                   " "${CMAKE_BUILD_TYPE}")
 message("------------------------------------------------------------------------------" "")
