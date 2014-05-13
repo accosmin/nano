@@ -254,6 +254,21 @@ namespace ncv
                         tsize                   m_cols;         ///< #cols (for each dimension)
                         tvector                 m_data;         ///< storage (1D vector)
                 };
+
+                ///
+                /// map data to tensors
+                ///
+                template
+                <
+                        typename tvalue_,
+                        typename tsize,
+                        typename tvalue = typename std::remove_const<tvalue_>::type,
+                        typename tresult = tensor_t<tvalue, tsize>
+                >
+                tresult make_tensor(tvalue_* data, tsize dims, tsize rows, tsize cols)
+                {
+                        return tresult((tvalue*)data, dims, rows, cols);
+                }
         }
 }
 
