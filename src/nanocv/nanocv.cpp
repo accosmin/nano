@@ -93,7 +93,7 @@ namespace ncv
                         const image_t& image = task.image(sample.m_index);
 
                         const vector_t& target = sample.m_target;
-                        const vector_t output = model.value(image, sample.m_region);
+                        const vector_t& output = model.value(image, sample.m_region).vector();
 
                         lvalue += loss.value(target, output);
                         lerror += loss.error(target, output);

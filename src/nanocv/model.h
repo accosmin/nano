@@ -53,10 +53,10 @@ namespace ncv
                 ///
                 /// \brief compute the model's output
                 ///
-                vector_t value(const image_t& image, coord_t x, coord_t y) const;
-                vector_t value(const image_t& image, const rect_t& region) const;
-                vector_t value(const vector_t& input) const;
-                virtual vector_t value(const tensor_t& input) const = 0;
+                const tensor_t& value(const image_t& image, coord_t x, coord_t y) const;
+                const tensor_t& value(const image_t& image, const rect_t& region) const;
+                const tensor_t& value(const vector_t& input) const;
+                virtual const tensor_t& value(const tensor_t& input) const = 0;
 
                 ///
                 /// \brief save its parameters to file
@@ -90,8 +90,9 @@ namespace ncv
 
                 ///
                 /// \brief compute the model's gradient (wrt parameters & inputs)
+		/// \return the gradient wrt the inputs
                 ///
-                virtual void gradient(const vector_t& ograd, vector_t& grad_params, vector_t& grad_inputs) const = 0;
+                virtual const tensor_t& gradient(const vector_t& ograd, vector_t& grad_params) const = 0;
 
                 // access functions
                 size_t irows() const { return m_rows; }

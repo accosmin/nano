@@ -51,21 +51,21 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        vector_t model_t::value(const image_t& image, const rect_t& region) const
+        const tensor_t& model_t::value(const image_t& image, const rect_t& region) const
         {
                 return value(image, geom::left(region), geom::top(region));
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        vector_t model_t::value(const image_t& image, coord_t x, coord_t y) const
+        const tensor_t& model_t::value(const image_t& image, coord_t x, coord_t y) const
         {
                 return value(make_input(image, x, y));
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        vector_t model_t::value(const vector_t& input) const
+        const tensor_t& model_t::value(const vector_t& input) const
         {
                 assert(static_cast<size_t>(input.size()) == isize());
 

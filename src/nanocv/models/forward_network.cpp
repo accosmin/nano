@@ -13,7 +13,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        vector_t forward_network_t::value(const tensor_t& _input) const
+        const tensor_t& forward_network_t::value(const tensor_t& _input) const
         {
                 const tensor_t* input = &_input;
                 for (rlayers_t::const_iterator it = m_layers.begin(); it != m_layers.end(); ++ it)
@@ -21,13 +21,12 @@ namespace ncv
                         input = &(*it)->forward(*input);
                 }
 
-                const tensor_t& output = *input;
-                return output.vector();
+		return *input;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void forward_network_t::gradient(const vector_t& ograd, vector_t& grad_params, vector_t& grad_inputs) const
+        const tensor_t& forward_network_t::gradient(const vector_t& ograd, vector_t& grad_params) const
         {
                 assert(static_cast<size_t>(ograd.size()) == osize());
 
@@ -50,7 +49,7 @@ namespace ncv
                 }
 
                 // wrt inputs
-                grad_inputs = gradient->vector();
+                return *gradient;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
