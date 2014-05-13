@@ -279,7 +279,6 @@ namespace ncv
                 m_odata.resize(odims, orows, ocols);
                 m_kdata.resize(odims * idims, krows, kcols);
 
-                m_gkdata.resize(odims * idims, krows, kcols);
                 m_gidata.resize(idims, irows, icols);
 
 #if NANOCV_HAVE_OPENCL
@@ -360,27 +359,21 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        ovectorizer_t& conv_layer_t::save_params(ovectorizer_t& s) const
+        scalar_t* conv_layer_t::save_params(scalar_t* params) const
         {
-                return s << m_kdata;
+                params = layer_t::save(m_kdata, params);
+                return params;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        ovectorizer_t& conv_layer_t::save_grad(ovectorizer_t& s) const
+        const scalar_t* conv_layer_t::load_params(const scalar_t* params)
         {
-                return s << m_gkdata;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        ivectorizer_t& conv_layer_t::load_params(ivectorizer_t& s)
-        {
-                s >> m_kdata;
+                params = layer_t::load(m_kdata, params);
 
                 params_changed();
 
-                return s;
+                return params;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -436,13 +429,13 @@ namespace ncv
         
 	/////////////////////////////////////////////////////////////////////////////////////////
 
-        const tensor_t& conv_layer_t::backward(const tensor_t& gradient)
+        const tensor_t& conv_layer_t::backward(const tensor_t& output, scalar_t* gradient)
         {
-                assert(odims() == gradient.dims());
-                assert(orows() == gradient.rows());
-                assert(ocols() == gradient.cols());
+                assert(odims() == output.dims());
+                assert(orows() == output.rows());
+                assert(ocols() == output.cols());
 
-		m_odata.copy_from(gradient);
+                m_odata.copy_from(output);
 
 #if NANOCV_HAVE_OPENCL
                 // OpenCL version
@@ -468,7 +461,7 @@ namespace ncv
 #endif
                 {
                         _backward(m_idata.data(), m_gidata.data(), idims(),
-                                  m_kdata.data(), m_gkdata.data(), krows(), kcols(),
+                                  m_kdata.data(), gradient, krows(), kcols(),
                                   m_odata.data(), odims(), orows(), ocols());
                 }
 

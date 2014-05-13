@@ -72,9 +72,6 @@ namespace ncv
                 m_wdata.resize(1, odims, idims);
                 m_bdata.resize(odims, 1, 1);
 
-                m_gwdata.resize(1, odims, idims);
-                m_gbdata.resize(odims, 1, 1);
-
                 return psize();
         }
 
@@ -96,32 +93,29 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        ovectorizer_t& linear_layer_t::save_params(ovectorizer_t& s) const
+        scalar_t* linear_layer_t::save_params(scalar_t* params) const
         {
-                return s << m_wdata << m_bdata;
+                params = layer_t::save(m_wdata, params);
+                params = layer_t::save(m_bdata, params);
+                return params;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        ovectorizer_t& linear_layer_t::save_grad(ovectorizer_t& s) const
+        const scalar_t* linear_layer_t::load_params(const scalar_t* params)
         {
-                return s << m_gwdata << m_gbdata;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        ivectorizer_t& linear_layer_t::load_params(ivectorizer_t& s)
-        {
-                return s >> m_wdata >> m_bdata;
+                params = layer_t::load(m_wdata, params);
+                params = layer_t::load(m_bdata, params);
+                return params;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
         const tensor_t& linear_layer_t::forward(const tensor_t& input)
         {
-                assert(input.dims() == m_idata.dims());
-                assert(input.rows() == m_idata.rows());
-                assert(input.cols() == m_idata.cols());
+                assert(idims() == input.dims());
+                assert(irows() == input.rows());
+                assert(icols() == input.cols());
 
                 m_idata.copy_from(input);
 
@@ -134,17 +128,16 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        const tensor_t& linear_layer_t::backward(const tensor_t& gradient)
+        const tensor_t& linear_layer_t::backward(const tensor_t& output, scalar_t* gradient)
         {
-                assert(gradient.dims() == m_odata.dims());
-                assert(gradient.rows() == m_odata.rows());
-                assert(gradient.cols() == m_odata.cols());
+                assert(output.dims() == odims());
+                assert(output.rows() == orows());
+                assert(output.cols() == ocols());
 
-                m_odata.copy_from(gradient);
+                m_odata.copy_from(output);
 
                 _backward(m_idata.data(), isize(),
-                          m_wdata.data(), m_gwdata.data(),
-                          m_gbdata.data(),
+                          m_wdata.data(), gradient, gradient + m_wdata.size(),
                           m_odata.data(), osize());
 
                 return m_idata;

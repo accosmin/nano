@@ -25,7 +25,7 @@ namespace ncv
                 virtual const tensor_t& value(const tensor_t& input) const;
 
                 // compute the model's gradient (wrt parameters & inputs)
-                virtual const tensor_t& gradient(const vector_t& ograd, vector_t& grad_params) const;
+                virtual const tensor_t& gradient(const vector_t& output, vector_t& gradient) const;
 
                 // save/load/initialize parameters
                 virtual bool load_params(const vector_t& x);

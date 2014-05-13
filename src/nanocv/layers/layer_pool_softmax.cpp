@@ -122,11 +122,11 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        const tensor_t& pool_softmax_layer_t::backward(const tensor_t& gradient)
+        const tensor_t& pool_softmax_layer_t::backward(const tensor_t& output, scalar_t*)
         {
-                assert(odims() == gradient.dims());
-                assert(orows() == gradient.rows());
-                assert(ocols() == gradient.cols());
+                assert(odims() == output.dims());
+                assert(orows() == output.rows());
+                assert(ocols() == output.cols());
 
                 for (size_t o = 0; o < odims(); o ++)
                 {
@@ -134,7 +134,7 @@ namespace ncv
                                   m_wdata.plane_data(o),
                                   m_sdata.plane_data(o),
                                   m_tdata.plane_data(o),
-                                  gradient.plane_data(o));
+                                  output.plane_data(o));
                 }
 
                 return m_idata;

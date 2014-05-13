@@ -92,7 +92,7 @@ namespace ncv
                 /// \brief compute the model's gradient (wrt parameters & inputs)
 		/// \return the gradient wrt the inputs
                 ///
-                virtual const tensor_t& gradient(const vector_t& ograd, vector_t& grad_params) const = 0;
+                virtual const tensor_t& gradient(const vector_t& output, vector_t& gradient) const = 0;
 
                 // access functions
                 size_t irows() const { return m_rows; }

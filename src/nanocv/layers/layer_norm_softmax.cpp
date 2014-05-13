@@ -81,14 +81,14 @@ namespace ncv
 
         const tensor_t& norm_softmax_layer_t::forward(const tensor_t& input)
         {
-                assert(dims() == input.dims());
-                assert(rows() == input.rows());
-                assert(cols() == input.cols());
+                assert(idims() == input.dims());
+                assert(irows() == input.rows());
+                assert(icols() == input.cols());
 
                 switch (m_type)
                 {
                 case type::plane:
-                        for (size_t o = 0; o < dims(); o ++)
+                        for (size_t o = 0; o < odims(); o ++)
                         {
                                 _forward(input.plane_data(o), m_data.plane_size(),
                                          m_data.plane_data(o));
@@ -106,25 +106,25 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        const tensor_t& norm_softmax_layer_t::backward(const tensor_t& gradient)
+        const tensor_t& norm_softmax_layer_t::backward(const tensor_t& output, scalar_t*)
         {
-                assert(dims() == gradient.dims());
-                assert(rows() == gradient.rows());
-                assert(cols() == gradient.cols());
+                assert(odims() == output.dims());
+                assert(orows() == output.rows());
+                assert(ocols() == output.cols());
 
                 switch (m_type)
                 {
                 case type::plane:
-                        for (size_t o = 0; o < dims(); o ++)
+                        for (size_t o = 0; o < odims(); o ++)
                         {
-                                _backward(gradient.plane_data(o), m_data.plane_size(),
+                                _backward(output.plane_data(o), m_data.plane_size(),
                                           m_data.plane_data(o));
                         }
                         break;
 
                 case type::global:
                 default:
-                        _backward(gradient.data(), m_data.size(),
+                        _backward(output.data(), m_data.size(),
                                   m_data.data());
                         break;
                 }

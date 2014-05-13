@@ -103,15 +103,15 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
                         { model, accumulator_t::type::vgrad, regularizer, 0.0 });
                 }
 
-                else
-                {
-                        // check regularization weights
-                        for (auto lambda : lambdas)
-                        {
-                                test_grad(header, loss_id, model,
-                                { model, accumulator_t::type::vgrad, regularizer, lambda });
-                        }
-                }
+//                else
+//                {
+//                        // check regularization weights
+//                        for (auto lambda : lambdas)
+//                        {
+//                                test_grad(header, loss_id, model,
+//                                { model, accumulator_t::type::vgrad, regularizer, lambda });
+//                        }
+//                }
         }
 }
 

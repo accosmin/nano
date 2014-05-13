@@ -41,18 +41,21 @@ namespace ncv
                 virtual void zero_params() {}
                 virtual void random_params(scalar_t min, scalar_t max) {}
 
-                // serialize parameters & gradients
-                virtual ovectorizer_t& save_params(ovectorizer_t& s) const { return s; }
-                virtual ovectorizer_t& save_grad(ovectorizer_t& s) const { return s; }
-                virtual ivectorizer_t& load_params(ivectorizer_t& s) { return s; }
+                // serialize parameters
+                virtual scalar_t* save_params(scalar_t* params) const { return params; }
+                virtual const scalar_t* load_params(const scalar_t* params) { return params; }
 
                 // process inputs (compute outputs & gradients)
                 virtual const tensor_t& forward(const tensor_t& input) { return _forward(input); }
-                virtual const tensor_t& backward(const tensor_t& gradient) { return _backward(gradient); }
+                virtual const tensor_t& backward(const tensor_t& output, scalar_t*) { return _backward(output); }
 
                 // access functions
-                virtual const tensor_t& input() const { return m_data; }
-                virtual const tensor_t& output() const { return m_data; }
+                virtual size_t idims() const { return m_data.dims(); }
+                virtual size_t irows() const { return m_data.rows(); }
+                virtual size_t icols() const { return m_data.cols(); }
+                virtual size_t odims() const { return m_data.dims(); }
+                virtual size_t orows() const { return m_data.rows(); }
+                virtual size_t ocols() const { return m_data.cols(); }
                 virtual size_t psize() const { return 0; }
 
         private:
@@ -78,13 +81,13 @@ namespace ncv
                 }
 
                 // gradient
-                const tensor_t& _backward(const tensor_t& gradient)
+                const tensor_t& _backward(const tensor_t& output)
                 {
-                        assert(m_data.dims() == gradient.dims());
-                        assert(m_data.rows() == gradient.rows());
-                        assert(m_data.cols() == gradient.cols());
+                        assert(m_data.dims() == output.dims());
+                        assert(m_data.rows() == output.rows());
+                        assert(m_data.cols() == output.cols());
 
-                        math::transform(gradient, m_data, m_data, std::bind(tgrad_op(), _1, _2));
+                        math::transform(output, m_data, m_data, std::bind(tgrad_op(), _1, _2));
 
                         return m_data;
                 }

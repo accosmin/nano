@@ -26,30 +26,30 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        const tensor_t& forward_network_t::gradient(const vector_t& ograd, vector_t& grad_params) const
+        const tensor_t& forward_network_t::gradient(const vector_t& _output, vector_t& gradient) const
         {
-                assert(static_cast<size_t>(ograd.size()) == osize());
+                assert(static_cast<size_t>(_output.size()) == osize());
+                assert(!m_layers.empty());
 
-                tensor_t _gradient(osize(), 1, 1);
-                ivectorizer_t(ograd) >> _gradient;
+                // output (gradient)
+                tensor_t output(osize(), 1, 1);
+                layer_t::load(output, _output.data());
 
-                const tensor_t* gradient = &_gradient;
+                // parameter gradient
+                gradient.resize(psize());
+
+                // backward step
+                const tensor_t* poutput = &output;
+                scalar_t* pgradient = gradient.data() + gradient.size();
+
                 for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                 {
-                        gradient = &(*it)->backward(*gradient);
+                        pgradient -= (*it)->psize();
+                        poutput = &(*it)->backward(*poutput, pgradient);
                 }
 
-                // wrt parameters
-                grad_params.resize(psize());
-
-                ovectorizer_t s(grad_params);
-                for (const rlayer_t& layer : m_layers)
-                {
-                        layer->save_grad(s);
-                }
-
-                // wrt inputs
-                return *gradient;
+                // wrt input gradient
+                return *poutput;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -58,10 +58,10 @@ namespace ncv
         {
                 vector_t x(psize());
 
-                ovectorizer_t s(x);
-                for (const rlayer_t& layer : m_layers)
+                scalar_t* px = x.data();
+                for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                 {
-                        layer->save_params(s);
+                        px = (*it)->save_params(px);
                 }
 
                 return x;
@@ -73,10 +73,10 @@ namespace ncv
         {
                 if (math::cast<size_t>(x.size()) == psize())
                 {
-                        ivectorizer_t s(x);
-                        for (const rlayer_t& layer : m_layers)
+                        const scalar_t* px = x.data();
+                        for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                         {
-                                layer->load_params(s);
+                                px = (*it)->load_params(px);
                         }
 
                         return true;
@@ -104,8 +104,8 @@ namespace ncv
         {
                 for (const rlayer_t& layer : m_layers)
                 {
-                        const size_t fanin = layer->input().dims();
-                        const size_t fanout = layer->output().dims();
+                        const size_t fanin = layer->idims();
+                        const size_t fanout = layer->odims();
                         const scalar_t min = -std::sqrt(6.0 / (1.0 + fanin + fanout));
                         const scalar_t max = +std::sqrt(6.0 / (1.0 + fanin + fanout));
 
@@ -187,7 +187,7 @@ namespace ncv
                         m_layers.push_back(layer);
                         layer_ids.push_back(layer_id);
 
-                        input = layer->output();
+                        input.resize(layer->odims(), layer->orows(), layer->ocols());
                 }
 
                 // check output size to match the target
@@ -219,10 +219,10 @@ namespace ncv
                         const rlayer_t& layer = m_layers[l];
 
                         log_info() <<
-                                boost::format("feed-forward network [%1%/%2%]: [%3%] (%4%x%5%x%6%) -> (%7%x%8%x%9%).")
+                                boost::format("forward network [%1%/%2%]: [%3%] (%4%x%5%x%6%) -> (%7%x%8%x%9%).")
                                 % (l + 1) % m_layers.size() % layer_ids[l]
-                                % layer->input().dims() % layer->input().rows() % layer->input().cols()
-                                % layer->output().dims() % layer->output().rows() % layer->output().cols();
+                                % layer->idims() % layer->irows() % layer->icols()
+                                % layer->odims() % layer->orows() % layer->ocols();
                 }
         }
 

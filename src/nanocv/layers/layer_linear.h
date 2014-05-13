@@ -31,18 +31,21 @@ namespace ncv
                 virtual void zero_params();
                 virtual void random_params(scalar_t min, scalar_t max);
 
-                // serialize parameters & gradients
-                virtual ovectorizer_t& save_params(ovectorizer_t& s) const;
-                virtual ovectorizer_t& save_grad(ovectorizer_t& s) const;
-                virtual ivectorizer_t& load_params(ivectorizer_t& s);
+                // serialize parameters
+                virtual scalar_t* save_params(scalar_t* params) const;
+                virtual const scalar_t* load_params(const scalar_t* params);
 
                 // process inputs (compute outputs & gradients)
                 virtual const tensor_t& forward(const tensor_t& input);
-                virtual const tensor_t& backward(const tensor_t& gradient);
+                virtual const tensor_t& backward(const tensor_t& output, scalar_t* gradient);
 
                 // access functions
-                virtual const tensor_t& input() const { return m_idata; }
-                virtual const tensor_t& output() const { return m_odata; }
+                virtual size_t idims() const { return m_idata.dims(); }
+                virtual size_t irows() const { return m_idata.rows(); }
+                virtual size_t icols() const { return m_idata.cols(); }
+                virtual size_t odims() const { return m_odata.dims(); }
+                virtual size_t orows() const { return m_odata.rows(); }
+                virtual size_t ocols() const { return m_odata.cols(); }
                 virtual size_t psize() const { return m_wdata.size() + m_bdata.size(); }
 
         private:
@@ -62,9 +65,6 @@ namespace ncv
 
                 tensor_t                m_wdata;        ///< weights:           1 x osize x isize
                 tensor_t                m_bdata;        ///< bias:              osize x 1 x 1
-
-                tensor_t                m_gwdata;       ///< cumulated weight gradients
-                tensor_t                m_gbdata;       ///< cumulated bias gradients
         };
 }
 

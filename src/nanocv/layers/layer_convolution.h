@@ -36,31 +36,26 @@ namespace ncv
                 virtual void zero_params();
                 virtual void random_params(scalar_t min, scalar_t max);
 
-                // serialize parameters & gradients
-                virtual ovectorizer_t& save_params(ovectorizer_t& s) const;
-                virtual ovectorizer_t& save_grad(ovectorizer_t& s) const;
-                virtual ivectorizer_t& load_params(ivectorizer_t& s);
+                // serialize parameters
+                virtual scalar_t* save_params(scalar_t* params) const;
+                virtual const scalar_t* load_params(const scalar_t* params);
 
                 // process inputs (compute outputs & gradients)
                 virtual const tensor_t& forward(const tensor_t& input);
-                virtual const tensor_t& backward(const tensor_t& gradient);
+                virtual const tensor_t& backward(const tensor_t& output, scalar_t* gradient);
 
                 // access functions
-                virtual const tensor_t& input() const { return m_idata; }
-                virtual const tensor_t& output() const { return m_odata; }
+                virtual size_t idims() const { return m_idata.dims(); }
+                virtual size_t irows() const { return m_idata.rows(); }
+                virtual size_t icols() const { return m_idata.cols(); }
+                virtual size_t odims() const { return m_odata.dims(); }
+                virtual size_t orows() const { return m_odata.rows(); }
+                virtual size_t ocols() const { return m_odata.cols(); }
                 virtual size_t psize() const { return m_kdata.size(); }
 
         private:
 
                 /////////////////////////////////////////////////////////////////////////////////////////
-
-                size_t idims() const { return m_idata.dims(); }
-                size_t irows() const { return m_idata.rows(); }
-                size_t icols() const { return m_idata.cols(); }
-
-                size_t odims() const { return m_odata.dims(); }
-                size_t orows() const { return m_odata.rows(); }
-                size_t ocols() const { return m_odata.cols(); }
 
                 size_t krows() const { return m_kdata.rows(); }
                 size_t kcols() const { return m_kdata.cols(); }
@@ -76,8 +71,7 @@ namespace ncv
                 tensor_t                m_odata;                ///< output buffer:             odims x orows x ocols
                 tensor_t                m_kdata;                ///< convolution kernels:       odims x idims x krows x kcols
 
-                tensor_t                m_gkdata;               ///< cumulated kernel gradients
-                tensor_t                m_gidata;               ///< cumulated input gradients
+                tensor_t                m_gidata;
 
 #if NANOCV_HAVE_OPENCL
                 cl::CommandQueue        m_ocl_queue;            ///< opencl command queue

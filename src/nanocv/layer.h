@@ -51,28 +51,60 @@ namespace ncv
                 virtual void random_params(scalar_t min, scalar_t max) = 0;
 
                 ///
-                /// \brief serialize parameters & gradients
+                /// \brief serialize parameters
                 ///
-                virtual ovectorizer_t& save_params(ovectorizer_t& s) const = 0;
-                virtual ivectorizer_t& load_params(ivectorizer_t& s) = 0;
-                virtual ovectorizer_t& save_grad(ovectorizer_t& s) const = 0;
+                virtual scalar_t* save_params(scalar_t* params) const = 0;
+                virtual const scalar_t* load_params(const scalar_t* params) = 0;
 
                 ///
                 /// \brief compute the output/gradient tensor
                 ///
                 virtual const tensor_t& forward(const tensor_t& input) = 0;
-                virtual const tensor_t& backward(const tensor_t& gradient) = 0;
+                virtual const tensor_t& backward(const tensor_t& output, scalar_t* gradient) = 0;
 
                 ///
-                /// \brief returns the input/output tensor
+                /// \brief returns the input/output dimensions
                 ///
-                virtual const tensor_t& input() const = 0;
-                virtual const tensor_t& output() const = 0;
+                virtual size_t idims() const = 0;
+                virtual size_t irows() const = 0;
+                virtual size_t icols() const = 0;
+
+                virtual size_t odims() const = 0;
+                virtual size_t orows() const = 0;
+                virtual size_t ocols() const = 0;
 
                 ///
                 /// \brief returns the number of (optimization) parameters
                 ///
                 virtual size_t psize() const = 0;
+
+        public:
+
+                ///
+                /// \brief serialize a tensor
+                ///
+                template
+                <
+                        typename ttensor
+                >
+                static scalar_t* save(const ttensor& t, scalar_t* data)
+                {
+                        std::copy(t.data(), t.data() + t.size(), data);
+                        return data + t.size();
+                }
+
+                ///
+                /// \brief serialize a tensor
+                ///
+                template
+                <
+                        typename ttensor
+                >
+                static const scalar_t* load(ttensor& t, const scalar_t* data)
+                {
+                        std::copy(data, data + t.size(), t.data());
+                        return data + t.size();
+                }
         };
 }
 

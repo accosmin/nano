@@ -2,7 +2,6 @@
 #define NANOCV_TYPES_H
 
 #include "tensor/tensor.hpp"
-#include "tensor/vectorizer.hpp"
 #include "optimize/problem.hpp"
 #include "common/text.h"
 #include <cstdint>
@@ -24,9 +23,6 @@ namespace ncv
 
         typedef tensor::tensor_t<scalar_t, size_t>              tensor_t;
         typedef std::vector<tensor_t>                           tensors_t;
-
-        typedef tensor::ivectorizer_t<scalar_t, size_t>         ivectorizer_t;
-        typedef tensor::ovectorizer_t<scalar_t, size_t>         ovectorizer_t;
 
         // strings
         typedef std::string                                     string_t;

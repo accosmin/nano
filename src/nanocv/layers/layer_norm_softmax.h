@@ -31,25 +31,24 @@ namespace ncv
                 virtual void zero_params() {}
                 virtual void random_params(scalar_t min, scalar_t max) {}
 
-                // serialize parameters & gradients
-                virtual ovectorizer_t& save_params(ovectorizer_t& s) const { return s; }
-                virtual ovectorizer_t& save_grad(ovectorizer_t& s) const { return s; }
-                virtual ivectorizer_t& load_params(ivectorizer_t& s) { return s; }
+                // serialize parameters
+                virtual scalar_t* save_params(scalar_t* params) const { return params; }
+                virtual const scalar_t* load_params(const scalar_t* params) { return params; }
 
                 // process inputs (compute outputs & gradients)
                 virtual const tensor_t& forward(const tensor_t& input);
-                virtual const tensor_t& backward(const tensor_t& gradient);
+                virtual const tensor_t& backward(const tensor_t& output, scalar_t* gradient);
 
                 // access functions
-                virtual const tensor_t& input() const { return m_data; }
-                virtual const tensor_t& output() const { return m_data; }
+                virtual size_t idims() const { return m_data.dims(); }
+                virtual size_t irows() const { return m_data.rows(); }
+                virtual size_t icols() const { return m_data.cols(); }
+                virtual size_t odims() const { return m_data.dims(); }
+                virtual size_t orows() const { return m_data.rows(); }
+                virtual size_t ocols() const { return m_data.cols(); }
                 virtual size_t psize() const { return 0; }
 
         private:
-
-                size_t dims() const { return m_data.dims(); }
-                size_t rows() const { return m_data.rows(); }
-                size_t cols() const { return m_data.cols(); }
 
                 enum class type : int
                 {
