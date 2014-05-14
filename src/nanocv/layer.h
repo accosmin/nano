@@ -77,34 +77,6 @@ namespace ncv
                 /// \brief returns the number of (optimization) parameters
                 ///
                 virtual size_t psize() const = 0;
-
-        public:
-
-                ///
-                /// \brief serialize a tensor
-                ///
-                template
-                <
-                        typename ttensor
-                >
-                static scalar_t* save(const ttensor& t, scalar_t* data)
-                {
-                        std::copy(t.data(), t.data() + t.size(), data);
-                        return data + t.size();
-                }
-
-                ///
-                /// \brief serialize a tensor
-                ///
-                template
-                <
-                        typename ttensor
-                >
-                static const scalar_t* load(ttensor& t, const scalar_t* data)
-                {
-                        std::copy(data, data + t.size(), t.data());
-                        return data + t.size();
-                }
         };
 }
 

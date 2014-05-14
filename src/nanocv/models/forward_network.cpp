@@ -1,6 +1,7 @@
 #include "forward_network.h"
 #include "common/logger.h"
 #include "common/math.hpp"
+#include "tensor/util.hpp"
 
 namespace ncv
 {
@@ -33,7 +34,7 @@ namespace ncv
 
                 // output (gradient)
                 tensor_t output(osize(), 1, 1);
-                layer_t::load(output, _output.data());
+                tensor::load(output, _output.data());
 
                 // parameter gradient
                 gradient.resize(psize());

@@ -1,6 +1,7 @@
 #include "layer_linear.h"
 #include "common/math.hpp"
 #include "common/random.hpp"
+#include "tensor/util.hpp"
 
 namespace ncv
 {
@@ -95,8 +96,8 @@ namespace ncv
 
         scalar_t* linear_layer_t::save_params(scalar_t* params) const
         {
-                params = layer_t::save(m_wdata, params);
-                params = layer_t::save(m_bdata, params);
+                params = tensor::save(m_wdata, params);
+                params = tensor::save(m_bdata, params);
                 return params;
         }
 
@@ -104,8 +105,8 @@ namespace ncv
 
         const scalar_t* linear_layer_t::load_params(const scalar_t* params)
         {
-                params = layer_t::load(m_wdata, params);
-                params = layer_t::load(m_bdata, params);
+                params = tensor::load(m_wdata, params);
+                params = tensor::load(m_bdata, params);
                 return params;
         }
 

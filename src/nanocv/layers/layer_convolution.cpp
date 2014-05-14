@@ -2,6 +2,7 @@
 #include "common/logger.h"
 #include "common/math.hpp"
 #include "common/random.hpp"
+#include "tensor/util.hpp"
 
 namespace ncv
 {
@@ -361,7 +362,7 @@ namespace ncv
 
         scalar_t* conv_layer_t::save_params(scalar_t* params) const
         {
-                params = layer_t::save(m_kdata, params);
+                params = tensor::save(m_kdata, params);
                 return params;
         }
 
@@ -369,7 +370,7 @@ namespace ncv
 
         const scalar_t* conv_layer_t::load_params(const scalar_t* params)
         {
-                params = layer_t::load(m_kdata, params);
+                params = tensor::load(m_kdata, params);
 
                 params_changed();
 

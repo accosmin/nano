@@ -1,9 +1,10 @@
 #ifndef NANOCV_TENSOR_HPP
 #define NANOCV_TENSOR_HPP
 
-#include <boost/serialization/access.hpp>
+#include "vector.hpp"
 #include "matrix.hpp"
 #include <cassert>
+#include <boost/serialization/access.hpp>
 
 namespace ncv
 {
