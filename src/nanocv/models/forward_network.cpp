@@ -58,10 +58,11 @@ namespace ncv
         {
                 vector_t x(psize());
 
-                scalar_t* px = x.data();
+                scalar_t* px = x.data() + x.size();
                 for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                 {
-                        px = (*it)->save_params(px);
+                        px -= (*it)->psize();
+                        (*it)->save_params(px);
                 }
 
                 return x;
@@ -73,10 +74,11 @@ namespace ncv
         {
                 if (math::cast<size_t>(x.size()) == psize())
                 {
-                        const scalar_t* px = x.data();
+                        const scalar_t* px = x.data() + x.size();
                         for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                         {
-                                px = (*it)->load_params(px);
+                                px -= (*it)->psize();
+                                (*it)->load_params(px);
                         }
 
                         return true;
