@@ -240,20 +240,20 @@ namespace ncv
 
                 case type::vgrad:
                         {
-                                vector_t grad_params;
-                                m_model->gradient(loss.vgrad(target, output), grad_params);
+                                vector_t grad;
+                                m_model->gradient(loss.vgrad(target, output), grad);
 
                                 switch (m_settings.m_regularizer)
                                 {
                                 case regularizer::none:
                                 case regularizer::l2norm:
-                                        m_data.m_grad1 += grad_params;
+                                        m_data.m_grad1 += grad;
                                         break;
 
                                 case regularizer::variational:
                                 default:
-                                        m_data.m_grad1 += grad_params;
-                                        m_data.m_grad2 += value * grad_params;
+                                        m_data.m_grad1 += grad;
+                                        m_data.m_grad2 += value * grad;
                                 }
                         }
                         break;

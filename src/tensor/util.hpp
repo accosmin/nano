@@ -18,8 +18,7 @@ namespace ncv
                 >
                 typename ttensor::Scalar* save(const ttensor& t, typename ttensor::Scalar* data)
                 {
-//                        std::copy(t.data(), t.data() + t.size(), data);
-                        std::memcpy(data, t.data(), t.size() * sizeof(typename ttensor::Scalar));
+                        std::copy(t.data(), t.data() + t.size(), data);
                         return data + t.size();
                 }
 
@@ -32,8 +31,7 @@ namespace ncv
                 >
                 const typename ttensor::Scalar* load(ttensor& t, const typename ttensor::Scalar* data)
                 {
-//                        std::copy(data, data + t.size(), t.data());
-                        std::memcpy(t.data(), data, t.size() * sizeof(typename ttensor::Scalar));
+                        std::copy(data, data + t.size(), t.data());
                         return data + t.size();
                 }
         }
