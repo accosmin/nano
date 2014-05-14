@@ -19,7 +19,7 @@ namespace ncv
                 tscalar* odata, tsize osize)
         {
                 // output
-                tensor::make_vector(odata, osize) =
+                tensor::make_vector(odata, osize).noalias() =
                         tensor::make_vector(bdata, osize) +
                         tensor::make_matrix(wdata, osize, isize) *
                         tensor::make_vector(idata, isize);
@@ -39,32 +39,15 @@ namespace ncv
                 const tscalar* odata, tsize osize)
         {
                 // bias & weights gradient
-                tensor::make_vector(gbdata, osize) =
+                tensor::make_vector(gbdata, osize).noalias() =
                         tensor::make_vector(odata, osize);
 
-//                tensor::make_matrix(gwdata, osize, isize) =
-//                        tensor::make_vector(odata, osize) *
-//                        tensor::make_vector(idata, isize).transpose();
-
-                tsize isize4 = isize & (~tsize(3));
-                for (tsize o = 0, k = 0; o < osize; o ++)
-                {
-                        const tscalar oval = odata[o];
-                        for (tsize i = 0; i < isize4; i += 4, k += 4)
-                        {
-                                gwdata[k + 0] = oval * idata[i + 0];
-                                gwdata[k + 1] = oval * idata[i + 1];
-                                gwdata[k + 2] = oval * idata[i + 2];
-                                gwdata[k + 3] = oval * idata[i + 3];
-                        }
-                        for (tsize i = isize4; i < isize; i ++, k ++)
-                        {
-                                gwdata[k + 0] = oval * idata[i];
-                        }
-                }
+                tensor::make_matrix(gwdata, osize, isize).noalias() =
+                        tensor::make_vector(odata, osize) *
+                        tensor::make_vector(idata, isize).transpose();
 
                 // input gradient
-                tensor::make_vector(idata, isize) =
+                tensor::make_vector(idata, isize).noalias() =
                         tensor::make_matrix(wdata, osize, isize).transpose() *
                         tensor::make_vector(odata, osize);
         }
