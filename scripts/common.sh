@@ -35,31 +35,23 @@ mkdir -p ${dir_exp_cbclfaces}
 #stochastic="--trainer stochastic --trainer-params opt=sgd,epoch=64"
 #minibatch="--trainer minibatch --trainer-params batch=1024,iters=4096,eps=1e-6"
 
-# train a model (model-type, model-parameters, trainer-type, trainer-parameters, configuration-name)
+# train a model (results directory, name, parameters)
 function fn_train
 {
-        if [[ $# -eq 4 ]]
-        then 
-                mfile=${dir_exp}/$1-$2-$4.model
-                lfile=${dir_exp}/$1-$2-$4.log
-
-                mconfig="--model $1"
-                tconfig="--trainer $2 --trainer-params $3"
-                pconfig=${param} 
-        else
-                mfile=${dir_exp}/$1-$3-$5.model
-                lfile=${dir_exp}/$1-$3-$5.log
-
-                mconfig="--model $1 --model-params $2"
-                tconfig="--trainer $3 --trainer-params $4"
-                pconfig=${param}
-        fi      
+        _mfile=$1/$2.model
+        _lfile=$1/$2.log
+        _args=("$@")
         
-        echo "running <${mconfig}> ..."
-        echo "running <${tconfig}> ..."
-        echo "running <${pconfig}> ..."
-        time ${trainer} ${pconfig} ${mconfig} ${tconfig} --output ${mfile} > ${lfile}
-        echo -e "\tlog saved to <${lfile}>"
+        _param="" 
+        for ((i=2;i<${#_args[*]};i++))
+        do
+                _param=${_param}" "${_args[$i]}
+        done
+        
+        echo "running <${_param}> ..."
+        echo "running <${_param}> ..." > ${_lfile}        
+        time ${exe_trainer} ${_param} --output ${_mfile} >> ${_lfile}
+        echo -e "\tlog saved to <${_lfile}>"
         echo
 }  
 
