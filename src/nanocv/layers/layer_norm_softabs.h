@@ -6,10 +6,10 @@
 namespace ncv
 {
         ///
-        /// soft-abs normalize layer.
+        /// soft-abs (-1, +1) normalization layer.
         ///
         /// parameters:
-        ///     type=plane[,global]        - normalization method: by plane or global
+        ///     type=plane[,global]        - normalization method: by plane or globally
         ///
         class norm_softabs_layer_t : public layer_t
         {

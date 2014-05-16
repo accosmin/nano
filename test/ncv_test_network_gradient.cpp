@@ -82,17 +82,17 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
 
 static void test_grad(const string_t& header, const string_t& loss_id, const model_t& model)
 {
-        std::vector<accumulator_t::regularizer> regularizers =
+        const std::vector<accumulator_t::regularizer> regularizers =
         {
                 accumulator_t::regularizer::none,
                 accumulator_t::regularizer::l2norm,
                 accumulator_t::regularizer::variational
         };
 
-        scalars_t lambdas =
-        {
-                1e-3, 1e-2, 1e-1, 1.0
-        };
+//        const scalars_t lambdas =
+//        {
+//                1e-3, 1e-2, 1e-1, 1.0
+//        };
 
         // check regularizers
         for (auto regularizer : regularizers)
@@ -123,8 +123,7 @@ int main(int argc, char *argv[])
         const strings_t pool_layer_ids { "", "pool-max", "pool-abs" };
         const strings_t full_layer_ids { "", "linear" };
         const strings_t actv_layer_ids { "", "unit", "tanh", "snorm" };
-//                                         "norm-max:type=plane"
-//                                         "norm-abs:type=plane"
+                //, "norm-max:type=plane", "norm-abs:type=plane" }
         const strings_t loss_ids = loss_manager_t::instance().ids();
 
         const color_mode cmd_color = color_mode::luma;

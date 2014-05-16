@@ -6,10 +6,10 @@
 namespace ncv
 {
         ///
-        /// soft-max normalize layer.
+        /// soft-max (0, 1) normalization layer.
         ///
         /// parameters:
-        ///     type=plane[,global]        - normalization method: by plane or global
+        ///     type=plane[,global]        - normalization method: by plane or globally
         ///
         class norm_softmax_layer_t : public layer_t
         {

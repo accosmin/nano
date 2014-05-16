@@ -17,10 +17,10 @@ namespace ncv
                 auto wmap = tensor::make_vector(wdata, size);
 
                 dmap = imap.array().exp();
-                wmap = dmap.array() - 1.0 / dmap.array();
-                dmap.noalias() = (dmap.array() + 1.0 / dmap.array()).matrix();
+                wmap = dmap.array() + 1.0 / dmap.array();
+                dmap.noalias() = (dmap.array() - 1.0 / dmap.array()).matrix();
 
-                const tscalar sumd = dmap.sum();
+                const tscalar sumd = wmap.sum();
                 dmap.noalias() = dmap / sumd;
                 wmap.noalias() = wmap / sumd;
         }
@@ -39,7 +39,7 @@ namespace ncv
                 auto wmap = tensor::make_vector(wdata, size);
 
                 const tscalar gd = gmap.dot(dmap);
-                dmap.noalias() = (wmap.array() * (gmap.array() - gd)).matrix();
+                dmap.noalias() = (gmap.array() * wmap.array() - gd * dmap.array()).matrix();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
