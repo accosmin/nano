@@ -78,13 +78,13 @@ int main(int argc, char *argv[])
                 lmodel3 + outlayer,
                 lmodel4 + outlayer,
                 lmodel5 + outlayer
-                ,
-                cmodel1 + outlayer,
-                cmodel2 + outlayer,
-                cmodel3 + outlayer,
-                cmodel4 + outlayer,
-                cmodel5 + outlayer,
-                cmodel6 + outlayer
+//                ,
+//                cmodel1 + outlayer,
+//                cmodel2 + outlayer,
+//                cmodel3 + outlayer,
+//                cmodel4 + outlayer,
+//                cmodel5 + outlayer,
+//                cmodel6 + outlayer
         };
 
         const classnll_loss_t loss;
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
                         accumulator_t ldata(model, accumulator_t::type::value, accumulator_t::regularizer::none);
 
                         const ncv::timer_t timer;
-                        ldata.update_mt(samples, targets, loss, cmd_threads);
+                        ldata.update(samples, targets, loss, cmd_threads);
 
                         log_info() << "<<< processed [" << ldata.count() << "] forward samples in " << timer.elapsed() << ".";
                 }
@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
                         accumulator_t gdata(model, accumulator_t::type::vgrad, accumulator_t::regularizer::none);
 
                         const ncv::timer_t timer;
-                        gdata.update_mt(samples, targets, loss, cmd_threads);
+                        gdata.update(samples, targets, loss, cmd_threads);
 
                         log_info() << "<<< processed [" << gdata.count() << "] backward samples in " << timer.elapsed() << ".";
                 }

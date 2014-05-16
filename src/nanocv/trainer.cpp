@@ -152,7 +152,7 @@ namespace ncv
                 {
                         // training samples: loss value
                         ldata.reset(x);
-                        ldata.update_mt(task, utsamples, loss, nthreads);
+                        ldata.update(task, utsamples, loss, nthreads);
                         const scalar_t tvalue = ldata.value();
 
                         return tvalue;
@@ -172,14 +172,14 @@ namespace ncv
 
                         // training samples: loss value & gradient
                         gdata.reset(x);
-                        gdata.update_mt(task, utsamples, loss, nthreads);
+                        gdata.update(task, utsamples, loss, nthreads);
                         const scalar_t tvalue = gdata.value();
                         const scalar_t terror = gdata.error();
                         gx = gdata.vgrad();
 
                         // validation samples: loss value
                         ldata.reset(x);
-                        ldata.update_mt(task, uvsamples, loss, nthreads);
+                        ldata.update(task, uvsamples, loss, nthreads);
                         const scalar_t vvalue = ldata.value();
                         const scalar_t verror = ldata.error();
 

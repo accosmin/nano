@@ -124,101 +124,104 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void accumulator_t::update(const task_t& task, const samples_t& samples, const loss_t& loss)
+        void accumulator_t::update(const task_t& task, const samples_t& samples, const loss_t& loss, size_t nthreads)
         {
-                for (size_t i = 0; i < samples.size(); i ++)
+                if (nthreads == 1)
                 {
-                        update(task, samples[i], loss);
+                        for (size_t i = 0; i < samples.size(); i ++)
+                        {
+                                update(task, samples[i], loss);
+                        }
+                }
+
+                else
+                {
+                        thread_loop_cumulate<accumulator_t>
+                        (
+                                samples.size(),
+                                [&] (accumulator_t& data)
+                                {
+                                        data = *this;
+                                },
+                                [&] (size_t i, accumulator_t& data)
+                                {
+                                        data.update(task, samples[i], loss);
+                                },
+                                [&] (accumulator_t& data)
+                                {
+                                        this->operator +=(data);
+                                },
+                                nthreads
+                        );
                 }
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void accumulator_t::update(const tensors_t& inputs, const vectors_t& targets, const loss_t& loss)
+        void accumulator_t::update(const tensors_t& inputs, const vectors_t& targets, const loss_t& loss, size_t nthreads)
         {
-                for (size_t i = 0; i < inputs.size(); i ++)
+                if (nthreads == 1)
                 {
-                        update(inputs[i], targets[i], loss);
+                        for (size_t i = 0; i < inputs.size(); i ++)
+                        {
+                                update(inputs[i], targets[i], loss);
+                        }
+                }
+
+                else
+                {
+                        thread_loop_cumulate<accumulator_t>
+                        (
+                                inputs.size(),
+                                [&] (accumulator_t& data)
+                                {
+                                        data = *this;
+                                },
+                                [&] (size_t i, accumulator_t& data)
+                                {
+                                        data.update(inputs[i], targets[i], loss);
+                                },
+                                [&] (accumulator_t& data)
+                                {
+                                        this->operator +=(data);
+                                },
+                                nthreads
+                        );
                 }
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void accumulator_t::update(const vectors_t& inputs, const vectors_t& targets, const loss_t& loss)
+        void accumulator_t::update(const vectors_t& inputs, const vectors_t& targets, const loss_t& loss, size_t nthreads)
         {
-                for (size_t i = 0; i < inputs.size(); i ++)
+                if (nthreads == 1)
                 {
-                        update(inputs[i], targets[i], loss);
+                        for (size_t i = 0; i < inputs.size(); i ++)
+                        {
+                                update(inputs[i], targets[i], loss);
+                        }
                 }
-        }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        void accumulator_t::update_mt(const task_t& task, const samples_t& samples, const loss_t& loss, size_t nthreads)
-        {
-                thread_loop_cumulate<accumulator_t>
-                (
-                        samples.size(),
-                        [&] (accumulator_t& data)
-                        {
-                                data = *this;
-                        },
-                        [&] (size_t i, accumulator_t& data)
-                        {
-                                data.update(task, samples[i], loss);
-                        },
-                        [&] (accumulator_t& data)
-                        {
-                                this->operator +=(data);
-                        },
-                        nthreads
-                );
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        void accumulator_t::update_mt(const tensors_t& inputs, const vectors_t& targets, const loss_t& loss, size_t nthreads)
-        {
-                thread_loop_cumulate<accumulator_t>
-                (
-                        inputs.size(),
-                        [&] (accumulator_t& data)
-                        {
-                                data = *this;
-                        },
-                        [&] (size_t i, accumulator_t& data)
-                        {
-                                data.update(inputs[i], targets[i], loss);
-                        },
-                        [&] (accumulator_t& data)
-                        {
-                                this->operator +=(data);
-                        },
-                        nthreads
-                );
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        void accumulator_t::update_mt(const vectors_t& inputs, const vectors_t& targets, const loss_t& loss, size_t nthreads)
-        {
-                thread_loop_cumulate<accumulator_t>
-                (
-                        inputs.size(),
-                        [&] (accumulator_t& data)
-                        {
-                                data = *this;
-                        },
-                        [&] (size_t i, accumulator_t& data)
-                        {
-                                data.update(inputs[i], targets[i], loss);
-                        },
-                        [&] (accumulator_t& data)
-                        {
-                                this->operator +=(data);
-                        },
-                        nthreads
-                );
+                else
+                {
+                        thread_loop_cumulate<accumulator_t>
+                        (
+                                inputs.size(),
+                                [&] (accumulator_t& data)
+                                {
+                                        data = *this;
+                                },
+                                [&] (size_t i, accumulator_t& data)
+                                {
+                                        data.update(inputs[i], targets[i], loss);
+                                },
+                                [&] (accumulator_t& data)
+                                {
+                                        this->operator +=(data);
+                                },
+                                nthreads
+                        );
+                }
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
