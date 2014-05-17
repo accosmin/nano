@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
         const string_t cmodel5 = cmodel4 + "conv:dims=16,rows=4,cols=4;snorm;";
         const string_t cmodel6 = cmodel5 + "conv:dims=16,rows=3,cols=3;snorm;";
         
-        const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs);
+        const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";softmax:type=global;";
 
         strings_t cmd_networks =
         {

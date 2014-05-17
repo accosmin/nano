@@ -1,27 +1,27 @@
-#ifndef NANOCV_SOFTABS_LAYER_PLANE_H
-#define NANOCV_SOFTABS_LAYER_PLANE_H
+#ifndef NANOCV_SOFTMAX_LAYER_H
+#define NANOCV_SOFTMAX_LAYER_H
 
 #include "layer.h"
 
 namespace ncv
 {
         ///
-        /// soft-abs (-1, +1) normalization layer.
+        /// soft-max (0, 1) normalization layer.
         ///
         /// parameters:
         ///     type=plane[,global]        - normalization method: by plane or globally
         ///
-        class norm_softabs_layer_t : public layer_t
+        class softmax_layer_t : public layer_t
         {
         public:
 
                 // constructor
-                norm_softabs_layer_t(const string_t& parameters = string_t());
+                softmax_layer_t(const string_t& parameters = string_t());
 
                 // create an object clone
                 virtual rlayer_t clone(const string_t& parameters) const
                 {
-                        return rlayer_t(new norm_softabs_layer_t(parameters));
+                        return rlayer_t(new softmax_layer_t(parameters));
                 }
 
                 // resize to process new tensors of the given type
@@ -29,7 +29,7 @@ namespace ncv
 
                 // reset parameters
                 virtual void zero_params() {}
-                virtual void random_params(scalar_t min, scalar_t max) {}
+                virtual void random_params(scalar_t, scalar_t) {}
 
                 // serialize parameters
                 virtual scalar_t* save_params(scalar_t* params) const { return params; }
@@ -60,10 +60,9 @@ namespace ncv
 
                 // attributes
                 tensor_t                m_data;         ///< input-output buffer
-                tensor_t                m_wdata;
                 type                    m_type;
         };
 }
 
-#endif // NANOCV_SOFTMAX_PLANE_LAYER_H
+#endif // NANOCV_SOFTMAX_LAYER_H
 
