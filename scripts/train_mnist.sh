@@ -7,17 +7,10 @@ params=""
 params=${params}${task_mnist}
 params=${params}" --loss class-ratio --trials 10 --threads 1"
 
-#batch="--trainer batch --trainer-params opt=lbfgs,iters=1024,eps=1e-6"
-#stochastic="--trainer stochastic --trainer-params opt=sgd,epoch=64"
-
-# trainers (minibatch configurations to evaluate)
-minibatch_none="--trainer minibatch --trainer-params batch=1024,iters=256,eps=1e-6,reg=none"
-minibatch_l2nm="--trainer minibatch --trainer-params batch=1024,iters=256,eps=1e-6,reg=l2"
-minibatch_vari="--trainer minibatch --trainer-params batch=1024,iters=256,eps=1e-6,reg=var"
-
-batch_none="--trainer batch --trainer-params opt=cgd,iters=128,eps=1e-6,reg=none"
-batch_l2nm="--trainer batch --trainer-params opt=cgd,iters=128,eps=1e-6,reg=l2"
-batch_vari="--trainer batch --trainer-params opt=cgd,iters=128,eps=1e-6,reg=var"
+# trainers 
+stochastic="--trainer stochastic --trainer-params opt=sgd,epoch=256"
+minibatch="--trainer minibatch --trainer-params batch=1024,iters=256,eps=1e-6"
+batch="--trainer batch --trainer-params opt=cgd,iters=256,eps=1e-6,reg=none"
 
 # models
 conv0="--model forward-network --model-params "
@@ -39,6 +32,14 @@ mlp6=${mlp5}"linear:dims=64;snorm;"
 outlayer=";linear:dims=10;softmax:type=global;"
 
 # train models
-fn_train ${dir_exp_mnist} minibatchL2-mlp0 ${params} ${minibatch_l2nm} ${mlp0}${outlayer}
-fn_train ${dir_exp_mnist} minibatchL2-mlp1 ${params} ${minibatch_l2nm} ${mlp1}${outlayer}
-fn_train ${dir_exp_mnist} minibatchL2-mlp2 ${params} ${minibatch_l2nm} ${mlp2}${outlayer}
+fn_train ${dir_exp_mnist} stochastic-mlp0 ${params} ${stochastic} ${mlp0}${outlayer}
+fn_train ${dir_exp_mnist} stochastic-mlp1 ${params} ${stochastic} ${mlp1}${outlayer}
+fn_train ${dir_exp_mnist} stochastic-mlp2 ${params} ${stochastic} ${mlp2}${outlayer}
+
+fn_train ${dir_exp_mnist} minibatch-mlp0 ${params} ${minibatch} ${mlp0}${outlayer}
+fn_train ${dir_exp_mnist} minibatch-mlp1 ${params} ${minibatch} ${mlp1}${outlayer}
+fn_train ${dir_exp_mnist} minibatch-mlp2 ${params} ${minibatch} ${mlp2}${outlayer}
+
+fn_train ${dir_exp_mnist} batch-mlp0 ${params} ${batch} ${mlp0}${outlayer}
+fn_train ${dir_exp_mnist} batch-mlp1 ${params} ${batch} ${mlp1}${outlayer}
+fn_train ${dir_exp_mnist} batch-mlp2 ${params} ${batch} ${mlp2}${outlayer}

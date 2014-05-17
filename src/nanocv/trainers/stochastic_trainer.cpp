@@ -13,7 +13,9 @@ namespace ncv
         /////////////////////////////////////////////////////////////////////////////////////////
 
         stochastic_trainer_t::stochastic_trainer_t(const string_t& parameters)
-                :       trainer_t(parameters, "stochastic trainer, parameters: opt=sgd[,asgd],epoch=16[1,1024]"),
+                :       trainer_t(parameters,
+                                  "stochastic trainer, "\
+                                  "parameters: opt=sgd[,asgd],epoch=16[1,1024]"),
                         m_optimizer(text::from_params<string_t>(parameters, "opt", "sgd")),
                         m_epochs(text::from_params<size_t>(parameters, "epoch", 16))
         {
@@ -39,11 +41,11 @@ namespace ncv
 
         static void sgd_train(
                 const task_t& task, samples_t& tsamples, const samples_t& vsamples, const loss_t& loss,
-                size_t epochs, scalar_t alpha0, scalar_t beta, bool asgd,
+                size_t epochs, scalar_t alpha0, scalar_t beta, bool asgd, scalar_t lambda,
                 const model_t& model, trainer_state_t& state, thread_pool_t::mutex_t& mutex)
         {
-                accumulator_t ldata(model, accumulator_t::type::value, accumulator_t::regularizer::none);
-                accumulator_t gdata(model, accumulator_t::type::vgrad, accumulator_t::regularizer::none);
+                accumulator_t ldata(model, accumulator_t::type::value, lambda);
+                accumulator_t gdata(model, accumulator_t::type::vgrad, lambda);
 
                 random_t<size_t> xrng(0, tsamples.size());
                 rnd_t xrnd(xrng);
@@ -109,10 +111,11 @@ namespace ncv
                         if (state.update(xparam, tvalue, terror, vvalue, verror, 0.0))
                         {
                                 log_info()
-                                << "[train* = " << state.m_tvalue << "/" << state.m_terror
-                                << ", valid* = " << state.m_vvalue << "/" << state.m_verror
-                                << ", rate = " << alpha << "/" << alpha0
+                                << "[rate = " << alpha << "/" << alpha0
                                 << ", epoch = " << e << "/" << epochs
+                                << ", train* = " << state.m_tvalue << "/" << state.m_terror
+                                << ", valid* = " << state.m_vvalue << "/" << state.m_verror                                   
+                                << ", lambda* = " << ldata.lambda() << "/" << state.m_lambda
                                 << "] done in " << timer.elapsed() << ".";
                         }
                 }
@@ -178,9 +181,13 @@ namespace ncv
                 {
                         wpool.enqueue([=, &model, &task, &tsamples, &vsamples, &loss, &state, &mutex]()
                         {
-                                sgd_train(task, tsamples, vsamples, loss,
-                                          m_epochs, alpha0, beta, asgd,
-                                          model, state, mutex);
+                                const scalars_t lambdas = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
+                                for (scalar_t lambda : lambdas)
+                                {
+                                        sgd_train(task, tsamples, vsamples, loss,
+                                                  m_epochs, alpha0, beta, asgd, lambda,
+                                                  model, state, mutex);
+                                }
                         });
                 }
 

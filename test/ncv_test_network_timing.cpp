@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
                 // process the samples
                 if (cmd_forward)
                 {
-                        accumulator_t ldata(model, accumulator_t::type::value, accumulator_t::regularizer::none);
+                        accumulator_t ldata(model, accumulator_t::type::value, 0.1);
 
                         const ncv::timer_t timer;
                         ldata.update(samples, targets, loss, cmd_threads);
@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
 
                 if (cmd_backward)
                 {
-                        accumulator_t gdata(model, accumulator_t::type::vgrad, accumulator_t::regularizer::none);
+                        accumulator_t gdata(model, accumulator_t::type::vgrad, 0.1);
 
                         const ncv::timer_t timer;
                         gdata.update(samples, targets, loss, cmd_threads);

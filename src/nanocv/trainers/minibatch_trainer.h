@@ -12,7 +12,6 @@ namespace ncv
         ///     batch=1024[256,8192]    - mini-batch size (#samples)
         ///     iters=1024[4,4096]      - maximum number of iterations
         ///     eps=1e-6[1e-8,1e-3]     - convergence
-        ///     reg=none[,l2,var]       - regularization method
         ///
         class minibatch_trainer_t : public trainer_t
         {

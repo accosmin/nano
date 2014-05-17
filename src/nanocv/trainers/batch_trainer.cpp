@@ -10,8 +10,7 @@ namespace ncv
         batch_trainer_t::batch_trainer_t(const string_t& parameters)
                 :       trainer_t(parameters,
                                   "batch trainer, "\
-                                  "parameters: opt=lbfgs[,cgd,gd],iters=1024[4,4096],"\
-                                  "eps=1e-6[1e-8,1e-3],reg=none[,l2,var]")
+                                  "parameters: opt=lbfgs[,cgd,gd],iters=1024[4,4096],eps=1e-6[1e-8,1e-3]")
         {
         }
 
@@ -48,12 +47,11 @@ namespace ncv
                 const string_t optimizer = text::from_params<string_t>(configuration(), "opt", "lbfgs");
                 const size_t iterations = math::clamp(text::from_params<size_t>(configuration(), "iters", 1024), 4, 4096);
                 const scalar_t epsilon = math::clamp(text::from_params<scalar_t>(configuration(), "eps", 1e-6), 1e-8, 1e-3);
-                const string_t regularizer = text::from_params<string_t>(configuration(), "reg", "none");
 
                 // train the model
                 trainer_state_t state(model.psize());
                 return  trainer_t::train(task, tsampler, vsampler, nthreads,
-                                         loss, optimizer, iterations, epsilon, regularizer,
+                                         loss, optimizer, iterations, epsilon,
                                          model, state) &&
                         model.load_params(state.m_params);
         }

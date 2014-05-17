@@ -92,7 +92,7 @@ namespace ncv
                 static bool train(
                         const task_t&, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                         const loss_t&, const string_t& optimizer, size_t iterations, scalar_t epsilon,
-                        const string_t& regularizer, const model_t&, trainer_state_t& state);
+                        const model_t&, trainer_state_t& state);
                 static bool train(
                         const task_t&, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                         const loss_t&, const string_t& optimizer, size_t iterations, scalar_t epsilon,

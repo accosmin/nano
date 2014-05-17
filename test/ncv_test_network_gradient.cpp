@@ -5,7 +5,8 @@
 
 using namespace ncv;
 
-static void test_grad(const string_t& header, const string_t& loss_id, const model_t& model, accumulator_t acc_params)
+static void test_grad(const string_t& header, const string_t& loss_id, const model_t& model,
+                      accumulator_t acc_params)
 {
         random_t<size_t> rand(2, 16);
         const size_t n_tests = 16;
@@ -82,36 +83,10 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
 
 static void test_grad(const string_t& header, const string_t& loss_id, const model_t& model)
 {
-        const std::vector<accumulator_t::regularizer> regularizers =
+        const scalars_t lambdas = { 0.0, 1e-3, 1e-2, 1e-1, 1.0 };
+        for (scalar_t lambda : lambdas)
         {
-                accumulator_t::regularizer::none,
-                accumulator_t::regularizer::l2norm,
-                accumulator_t::regularizer::variational
-        };
-
-//        const scalars_t lambdas =
-//        {
-//                1e-3, 1e-2, 1e-1, 1.0
-//        };
-
-        // check regularizers
-        for (auto regularizer : regularizers)
-        {
-                if (regularizer == accumulator_t::regularizer::none)
-                {
-                        test_grad(header, loss_id, model,
-                        { model, accumulator_t::type::vgrad, regularizer, 0.0 });
-                }
-
-//                else
-//                {
-//                        // check regularization weights
-//                        for (auto lambda : lambdas)
-//                        {
-//                                test_grad(header, loss_id, model,
-//                                { model, accumulator_t::type::vgrad, regularizer, lambda });
-//                        }
-//                }
+                test_grad(header, loss_id, model, { model, accumulator_t::type::vgrad, lambda });
         }
 }
 

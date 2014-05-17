@@ -59,69 +59,18 @@ namespace ncv
         bool trainer_t::train(
                 const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, const string_t& optimizer, size_t iterations, scalar_t epsilon,
-                const string_t& regularizer, const model_t& model, trainer_state_t& state)
+                const model_t& model, trainer_state_t& state)
         {
-                // no regularization
-                if (regularizer == "none")
+                // L2-norm regularization
+                const scalars_t lambdas = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
+                for (scalar_t lambda : lambdas)
                 {
-                        accumulator_t ldata(model,
-                                            accumulator_t::type::value,
-                                            accumulator_t::regularizer::none);
-                        accumulator_t gdata(model,
-                                            accumulator_t::type::vgrad,
-                                            accumulator_t::regularizer::none);
+                        accumulator_t ldata(model, accumulator_t::type::value, lambda);
+                        accumulator_t gdata(model, accumulator_t::type::vgrad, lambda);
 
                         trainer_t::train(task, tsampler, vsampler, nthreads,
                                          loss, optimizer, iterations, epsilon,
                                          model.params(), ldata, gdata, state);
-                }
-
-                // L2-norm regularization
-                else if (regularizer == "l2")
-                {
-                        const scalars_t lambdas = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
-
-                        // regularize the loss
-                        for (scalar_t lambda : lambdas)
-                        {
-                                accumulator_t ldata(model,
-                                                    accumulator_t::type::value,
-                                                    accumulator_t::regularizer::l2norm, lambda);
-                                accumulator_t gdata(model,
-                                                    accumulator_t::type::vgrad,
-                                                    accumulator_t::regularizer::l2norm, lambda);
-
-                                trainer_t::train(task, tsampler, vsampler, nthreads,
-                                                 loss, optimizer, iterations, epsilon,
-                                                 model.params(), ldata, gdata, state);
-                        }
-                }
-
-                // variational regularization
-                else if (regularizer == "var")
-                {
-                        const scalars_t lambdas = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
-
-                        // regularize the loss
-                        for (scalar_t lambda : lambdas)
-                        {
-                                accumulator_t ldata(model,
-                                                    accumulator_t::type::value,
-                                                    accumulator_t::regularizer::variational, lambda);
-                                accumulator_t gdata(model,
-                                                    accumulator_t::type::vgrad,
-                                                    accumulator_t::regularizer::variational, lambda);
-
-                                trainer_t::train(task, tsampler, vsampler, nthreads,
-                                                 loss, optimizer, iterations, epsilon,
-                                                 model.params(), ldata, gdata, state);
-                        }
-                }
-
-                else
-                {
-                        log_error() << "trainer: invalid regularization method <" << regularizer << ">!";
-                        return false;
                 }
 
                 // OK

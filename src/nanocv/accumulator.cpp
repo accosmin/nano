@@ -8,15 +8,15 @@ namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        accumulator_t::accumulator_t(const model_t& model, type t, regularizer r, scalar_t lambda)
-                :       accumulator_t(model.clone(), t, r, lambda)
+        accumulator_t::accumulator_t(const model_t& model, type t, scalar_t lambda)
+                :       accumulator_t(model.clone(), t, lambda)
         {
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        accumulator_t::accumulator_t(const rmodel_t& model, type t, regularizer r, scalar_t lambda)
-                :       m_settings(t, r, lambda),
+        accumulator_t::accumulator_t(const rmodel_t& model, type t, scalar_t lambda)
+                :       m_settings(t, lambda),
                         m_model(model),
                         m_data(model ? dimensions() : 0)
         {
@@ -74,9 +74,9 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void accumulator_t::reset(type t, regularizer r, scalar_t lambda)
+        void accumulator_t::reset(type t, scalar_t lambda)
         {
-                m_settings = settings_t(t, r, lambda);
+                m_settings = settings_t(t, lambda);
 
                 reset();
         }
@@ -246,49 +246,23 @@ namespace ncv
                                 vector_t grad;
                                 m_model->gradient(loss.vgrad(target, output), grad);
 
-                                switch (m_settings.m_regularizer)
-                                {
-                                case regularizer::none:
-                                case regularizer::l2norm:
-                                        m_data.m_grad1 += grad;
-                                        break;
-
-                                case regularizer::variational:
-                                default:
-                                        m_data.m_grad1 += grad;
-                                        m_data.m_grad2 += value * grad;
-                                }
+                                m_data.m_vgrad += grad;
                         }
                         break;
                 }
 
                 // loss value
-                switch (m_settings.m_regularizer)
-                {
-                case regularizer::none:
-                case regularizer::l2norm:
-                        m_data.m_value1 += value;
-                        m_data.m_error += error;
-                        m_data.m_count ++;
-                        break;
-
-                case regularizer::variational:
-                default:
-                        m_data.m_value1 += value;
-                        m_data.m_value2 += value * value;
-                        m_data.m_error += error;
-                        m_data.m_count ++;
-                }
+                m_data.m_value += value;
+                m_data.m_error += error;
+                m_data.m_count ++;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
         accumulator_t& accumulator_t::operator+=(const accumulator_t& other)
         {
-                m_data.m_value1 += other.m_data.m_value1;
-                m_data.m_value2 += other.m_data.m_value2;
-                m_data.m_grad1 += other.m_data.m_grad1;
-                m_data.m_grad2 += other.m_data.m_grad2;
+                m_data.m_value += other.m_data.m_value;
+                m_data.m_vgrad += other.m_data.m_vgrad;
                 m_data.m_error += other.m_data.m_error;
                 m_data.m_count += other.m_data.m_count;
                 return *this;
@@ -301,20 +275,8 @@ namespace ncv
                 assert(count() > 0);
                 assert(m_model);
 
-                switch (m_settings.m_regularizer)
-                {
-                case regularizer::none:
-                        return m_data.m_value1 / count();
-
-                case regularizer::l2norm:
-                        return m_data.m_value1 / count() +
-                               0.5 * m_settings.m_lambda / dimensions() * m_data.m_params.squaredNorm();
-
-                case regularizer::variational:
-                default:// check my PhD thesis for the derivation!
-                        return m_settings.m_lambda / count() * m_data.m_value2 +
-                               (1.0 - m_settings.m_lambda) / math::square(count()) * math::square(m_data.m_value1);
-                }
+                return  m_data.m_value / count() +
+                        0.5 * m_settings.m_lambda / dimensions() * m_data.m_params.squaredNorm();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -332,20 +294,8 @@ namespace ncv
         {
                 assert(count() > 0);
 
-                switch (m_settings.m_regularizer)
-                {
-                case regularizer::none:
-                        return m_data.m_grad1 / count();
-
-                case regularizer::l2norm:
-                        return m_data.m_grad1 / count() +
-                               m_settings.m_lambda / dimensions() * m_data.m_params;
-
-                case regularizer::variational:
-                default:// check my PhD thesis for the derivation!
-                        return 2.0 * m_settings.m_lambda / count() * m_data.m_grad2 +
-                               2.0 * (1.0 - m_settings.m_lambda) / math::square(count()) * m_data.m_value1 * m_data.m_grad1;
-                }
+                return  m_data.m_vgrad / count() +
+                        m_settings.m_lambda / dimensions() * m_data.m_params;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
