@@ -108,7 +108,7 @@ namespace ncv
                         // OK, update the optimum solution
                         const thread_pool_t::lock_t lock(mutex);
 
-                        if (state.update(xparam, tvalue, terror, vvalue, verror, 0.0))
+                        if (state.update(xparam, tvalue, terror, vvalue, verror, lambda))
                         {
                                 log_info()
                                 << "[rate = " << alpha << "/" << alpha0
