@@ -5,15 +5,15 @@ source common.sh
 # common parameters
 params=""
 params=${params}${task_mnist}
-params=${params}" --loss classsum --trials 10 --threads 1"
+params=${params}" --loss classdot --trials 10 --threads 1"
 
 #batch="--trainer batch --trainer-params opt=lbfgs,iters=1024,eps=1e-6"
 #stochastic="--trainer stochastic --trainer-params opt=sgd,epoch=64"
 
 # trainers (minibatch configurations to evaluate)
-minibatch_none="--trainer minibatch --trainer-params batch=1024,iters=1024,eps=1e-6,reg=none"
-minibatch_l2nm="--trainer minibatch --trainer-params batch=1024,iters=1024,eps=1e-6,reg=l2"
-minibatch_vari="--trainer minibatch --trainer-params batch=1024,iters=1024,eps=1e-6,reg=var"
+minibatch_none="--trainer minibatch --trainer-params batch=1024,iters=128,eps=1e-6,reg=none"
+minibatch_l2nm="--trainer minibatch --trainer-params batch=1024,iters=128,eps=1e-6,reg=l2"
+minibatch_vari="--trainer minibatch --trainer-params batch=1024,iters=128,eps=1e-6,reg=var"
 
 batch_none="--trainer batch --trainer-params opt=lbfgs,iters=32,eps=1e-6,reg=none"
 batch_l2nm="--trainer batch --trainer-params opt=lbfgs,iters=32,eps=1e-6,reg=l2"
@@ -36,7 +36,7 @@ mlp4=${mlp3}"linear:dims=100;snorm;"
 mlp5=${mlp4}"linear:dims=100;snorm;"
 mlp6=${mlp5}"linear:dims=100;snorm;"
 
-outlayer=";linear:dims=10;norm-abs:type=global;"
+outlayer=";linear:dims=10;softmax:type=global;"
 
 # train models
 fn_train ${dir_exp_mnist} minibatchL2-mlp0 ${params} ${minibatch_l2nm} ${mlp0}${outlayer}

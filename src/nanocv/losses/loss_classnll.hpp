@@ -7,7 +7,9 @@
 namespace ncv
 {
         ///
-        /// \brief multi-class negative log-likelihood loss
+        /// \brief multi-class negative log-likelihood loss.
+        ///
+        /// NB: assumes un-normalized inputs.
         ///
         class classnll_loss_t : public loss_t
         {

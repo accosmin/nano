@@ -1,5 +1,5 @@
-#ifndef NANOCV_LOSS_CLASS_SUM_HPP
-#define NANOCV_LOSS_CLASS_SUM_HPP
+#ifndef NANOCV_LOSS_CLASS_DOT_HPP
+#define NANOCV_LOSS_CLASS_DOT_HPP
 
 #include "loss.h"
 #include <cassert>
@@ -7,26 +7,28 @@
 namespace ncv
 {
         ///
-        /// \brief multi-class positive vs negative difference loss
+        /// \brief multi-class positive vs negative difference loss.
+        ///
+        /// NB: assumes {-1, +1} targets.
         ///
         template
         <
-                bool tnormalized_inputs         ///< normalized input scores?!
+                bool tnormalized_inputs         ///< [0, 1] normalized input scores?!
         >
-        class classsum_loss_t : public loss_t
+        class classdot_loss_t : public loss_t
         {
         public:
 
                 // constructor
-                classsum_loss_t()
-                        :       loss_t(string_t(), "class positive vs negative difference loss")
+                classdot_loss_t()
+                        :       loss_t(string_t(), "class dot-product loss")
                 {
                 }
 
                 // create an object clone
                 virtual rloss_t clone(const string_t&) const
                 {
-                        return rloss_t(new classsum_loss_t);
+                        return rloss_t(new classdot_loss_t);
                 }
 
                 // compute the error value
@@ -55,7 +57,7 @@ namespace ncv
                         {
                         case true:
                                 {
-                                        // inputs are normalized ([0,1] or [-1,1])
+                                        // inputs are [0, 1] normalized
                                         return -targets.dot(scores);
                                 }
 
@@ -77,8 +79,8 @@ namespace ncv
                         {
                         case true:
                                 {
-                                        // inputs are normalized ([0,1] or [-1,1])
-                                        return -targets.array();
+                                        // inputs are [0, 1] normalized
+                                        return -targets;
                                 }
 
                         case false:
@@ -95,4 +97,4 @@ namespace ncv
         };
 }
 
-#endif // NANOCV_LOSS_CLASS_SUM_HPP
+#endif // NANOCV_LOSS_CLASS_DOT_HPP

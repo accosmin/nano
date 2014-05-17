@@ -1,7 +1,7 @@
 #include "nanocv.h"
 
 #include "losses/loss_classnll.hpp"
-#include "losses/loss_classsum.hpp"
+#include "losses/loss_classdot.hpp"
 #include "losses/loss_square.hpp"
 
 #include "tasks/task_mnist.h"
@@ -42,8 +42,8 @@ namespace ncv
 
                 // register losses
                 loss_manager_t::instance().add("classnll", classnll_loss_t());
-                loss_manager_t::instance().add("classsum", classsum_loss_t<true>());
-                loss_manager_t::instance().add("classsumexp", classsum_loss_t<false>());
+                loss_manager_t::instance().add("classdot", classdot_loss_t<true>());
+                loss_manager_t::instance().add("classdotn", classdot_loss_t<false>());
                 loss_manager_t::instance().add("square", square_loss_t());
 
                 // register tasks
