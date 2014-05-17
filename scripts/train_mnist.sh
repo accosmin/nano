@@ -5,19 +5,19 @@ source common.sh
 # common parameters
 params=""
 params=${params}${task_mnist}
-params=${params}" --loss classdot --trials 10 --threads 1"
+params=${params}" --loss class-ratio --trials 10 --threads 1"
 
 #batch="--trainer batch --trainer-params opt=lbfgs,iters=1024,eps=1e-6"
 #stochastic="--trainer stochastic --trainer-params opt=sgd,epoch=64"
 
 # trainers (minibatch configurations to evaluate)
-minibatch_none="--trainer minibatch --trainer-params batch=1024,iters=128,eps=1e-6,reg=none"
-minibatch_l2nm="--trainer minibatch --trainer-params batch=1024,iters=128,eps=1e-6,reg=l2"
-minibatch_vari="--trainer minibatch --trainer-params batch=1024,iters=128,eps=1e-6,reg=var"
+minibatch_none="--trainer minibatch --trainer-params batch=1024,iters=256,eps=1e-6,reg=none"
+minibatch_l2nm="--trainer minibatch --trainer-params batch=1024,iters=256,eps=1e-6,reg=l2"
+minibatch_vari="--trainer minibatch --trainer-params batch=1024,iters=256,eps=1e-6,reg=var"
 
-batch_none="--trainer batch --trainer-params opt=lbfgs,iters=32,eps=1e-6,reg=none"
-batch_l2nm="--trainer batch --trainer-params opt=lbfgs,iters=32,eps=1e-6,reg=l2"
-batch_vari="--trainer batch --trainer-params opt=lbfgs,iters=32,eps=1e-6,reg=var"
+batch_none="--trainer batch --trainer-params opt=cgd,iters=128,eps=1e-6,reg=none"
+batch_l2nm="--trainer batch --trainer-params opt=cgd,iters=128,eps=1e-6,reg=l2"
+batch_vari="--trainer batch --trainer-params opt=cgd,iters=128,eps=1e-6,reg=var"
 
 # models
 conv0="--model forward-network --model-params "
@@ -29,12 +29,12 @@ conv5=${conv4}"conv:dims=16,rows=4,cols=4;snorm;"
 conv6=${conv5}"conv:dims=16,rows=3,cols=3;snorm;"
 
 mlp0="--model forward-network --model-params "
-mlp1=${mlp0}"linear:dims=100;snorm;"
-mlp2=${mlp1}"linear:dims=100;snorm;"
-mlp3=${mlp2}"linear:dims=100;snorm;"
-mlp4=${mlp3}"linear:dims=100;snorm;"
-mlp5=${mlp4}"linear:dims=100;snorm;"
-mlp6=${mlp5}"linear:dims=100;snorm;"
+mlp1=${mlp0}"linear:dims=64;snorm;"
+mlp2=${mlp1}"linear:dims=64;snorm;"
+mlp3=${mlp2}"linear:dims=64;snorm;"
+mlp4=${mlp3}"linear:dims=64;snorm;"
+mlp5=${mlp4}"linear:dims=64;snorm;"
+mlp6=${mlp5}"linear:dims=64;snorm;"
 
 outlayer=";linear:dims=10;softmax:type=global;"
 

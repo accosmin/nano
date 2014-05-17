@@ -138,8 +138,6 @@ namespace ncv
                 samples_t utsamples = tsampler.get();
                 samples_t uvsamples = vsampler.get();
 
-                opt_state_t opt_state;
-
                 // construct the optimization problem
                 const timer_t timer;
 
@@ -186,13 +184,6 @@ namespace ncv
                         // update the optimum state
                         state.update(x, tvalue, terror, vvalue, verror, ldata.lambda());
 
-                        log_info() << "[train = " << tvalue << "/" << terror
-                                   << ", grad = " << gx.lpNorm<Eigen::Infinity>()
-                                   << ", valid = " << vvalue << "/" << verror
-                                   << ", lambda = " << ldata.lambda() << "/" << state.m_lambda
-                                   << ", calls = " << opt_state.n_fval_calls() << "/" << opt_state.n_grad_calls()
-                                   << "] done in " << timer.elapsed() << ".";
-
                         return tvalue;
                 };
 
@@ -204,16 +195,15 @@ namespace ncv
                 {
                         log_error() << message;
                 };
-                auto fn_ulog = [&] (const opt_state_t& result, const timer_t& /*timer*/)
+                auto fn_ulog = [&] (const opt_state_t& result, const timer_t& timer)
                 {
-                        opt_state = result;
-//                        log_info() << "[loss = " << result.f
-//                                   << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
-//                                   << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
-//                                   << ", train* = " << state.m_tvalue << "/" << state.m_terror
-//                                   << ", valid* = " << state.m_vvalue << "/" << state.m_verror
-//                                   << ", lambda* = " << ldata.lambda() << "/" << state.m_lambda
-//                                   << "] done in " << timer.elapsed() << ".";
+                        log_info() << "[loss = " << result.f
+                                   << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
+                                   << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
+                                   << ", train* = " << state.m_tvalue << "/" << state.m_terror
+                                   << ", valid* = " << state.m_vvalue << "/" << state.m_verror
+                                   << ", lambda* = " << ldata.lambda() << "/" << state.m_lambda
+                                   << "] done in " << timer.elapsed() << ".";
                 };
 
                 // assembly optimization problem & optimize the model

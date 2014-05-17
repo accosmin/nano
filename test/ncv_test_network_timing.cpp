@@ -1,6 +1,5 @@
 #include "nanocv.h"
 #include "models/forward_network.h"
-#include "losses/loss_classnll.hpp"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
@@ -54,11 +53,11 @@ int main(int argc, char *argv[])
         const size_t cmd_outputs = 10;
 
         const string_t lmodel0;
-        const string_t lmodel1 = lmodel0 + "linear:dims=100;snorm;";
-        const string_t lmodel2 = lmodel1 + "linear:dims=100;snorm;";
-        const string_t lmodel3 = lmodel2 + "linear:dims=100;snorm;";
-        const string_t lmodel4 = lmodel3 + "linear:dims=100;snorm;";
-        const string_t lmodel5 = lmodel4 + "linear:dims=100;snorm;";
+        const string_t lmodel1 = lmodel0 + "linear:dims=64;snorm;";
+        const string_t lmodel2 = lmodel1 + "linear:dims=64;snorm;";
+        const string_t lmodel3 = lmodel2 + "linear:dims=64;snorm;";
+        const string_t lmodel4 = lmodel3 + "linear:dims=64;snorm;";
+        const string_t lmodel5 = lmodel4 + "linear:dims=64;snorm;";
 
         const string_t cmodel0;
         const string_t cmodel1 = cmodel0 + "conv:dims=16,rows=8,cols=8;snorm;";
@@ -87,7 +86,9 @@ int main(int argc, char *argv[])
 //                cmodel6 + outlayer
         };
 
-        const classnll_loss_t loss;
+        const rloss_t rloss = loss_manager_t::instance().get("class-ratio");
+        assert(rloss);
+        const loss_t& loss = *rloss;
 
         for (const string_t& cmd_network : cmd_networks)
         {
