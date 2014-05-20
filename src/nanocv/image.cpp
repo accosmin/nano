@@ -237,6 +237,54 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        bool load_rgba(const tensor_t& data, rgba_matrix_t& rgba)
+        {
+                if (data.dims() == 1)
+                {
+                        const auto gmap = data.plane_matrix(0);
+
+                        rgba.resize(data.rows(), data.cols());
+                        for (size_t r = 0; r < data.rows(); r ++)
+                        {
+                                for (size_t c = 0; c < data.cols(); c ++)
+                                {
+                                        const rgba_t gray = math::cast<rgba_t>(gmap(r, c) * 255.0) & 0xFF;
+                                        rgba(r, c) = color::make_rgba(gray, gray, gray);
+                                }
+                        }
+
+                        return true;
+                }
+
+                else if (data.dims() == 3)
+                {
+                        const auto rmap = data.plane_matrix(0);
+                        const auto gmap = data.plane_matrix(1);
+                        const auto bmap = data.plane_matrix(2);
+
+                        rgba.resize(data.rows(), data.cols());
+                        for (size_t r = 0; r < data.rows(); r ++)
+                        {
+                                for (size_t c = 0; c < data.cols(); c ++)
+                                {
+                                        const rgba_t red = math::cast<rgba_t>(rmap(r, c) * 255.0) & 0xFF;
+                                        const rgba_t green = math::cast<rgba_t>(gmap(r, c) * 255.0) & 0xFF;
+                                        const rgba_t blue = math::cast<rgba_t>(bmap(r, c) * 255.0) & 0xFF;
+                                        rgba(r, c) = color::make_rgba(red, green, blue);
+                                }
+                        }
+
+                        return true;
+                }
+
+                else
+                {
+                        return false;
+                }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
         bool image_t::load(const string_t& path)
         {
                 return ncv::load_rgba(path, m_rgba);

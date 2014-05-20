@@ -130,7 +130,8 @@ set(nanocv_programs
         ncv_info
         ncv_info_task
         ncv_trainer
-        ncv_tester)
+        ncv_tester
+        ncv_generator)
 
 # Build executables
 foreach(proj ${nanocv_test_programs})

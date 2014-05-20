@@ -94,6 +94,11 @@ namespace ncv
                 ///
                 virtual const tensor_t& gradient(const vector_t& output, vector_t& gradient) const = 0;
 
+                ///
+                /// \brief construct (from a random initialization) an input that matches closely the target
+                ///
+                tensor_t generate(const vector_t& target) const;
+
                 // access functions
                 size_t irows() const { return m_rows; }
                 size_t icols() const { return m_cols; }

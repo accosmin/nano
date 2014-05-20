@@ -17,6 +17,11 @@ namespace ncv
         bool load_rgba(const string_t& path, rgba_matrix_t& rgba);
 
         ///
+        /// \brief load gray/color image from [0, 1] normalized tensor
+        ///
+        bool load_rgba(const tensor_t& tensor, rgba_matrix_t& rgba);
+
+        ///
         /// \brief fold: <fold index, protocol: train|test>
         ///
         typedef std::pair<size_t, protocol>     fold_t;
@@ -70,17 +75,17 @@ namespace ncv
                 bool load_rgba(const char* buffer, size_t rows, size_t cols, size_t stride);    // rows * cols * 3
 
                 // retrieve the scaled [0, 1] RGB input vector
-                matrix_t make_red(const rect_t& region) const { return get(region, color::make_red); }
-                matrix_t make_green(const rect_t& region) const { return get(region, color::make_green); }
-                matrix_t make_blue(const rect_t& region) const { return get(region, color::make_blue); }
-                matrix_t make_luma(const rect_t& region) const { return get(region, color::make_luma); }
+                matrix_t make_red(const rect_t& region) const { return make(region, color::make_red); }
+                matrix_t make_green(const rect_t& region) const { return make(region, color::make_green); }
+                matrix_t make_blue(const rect_t& region) const { return make(region, color::make_blue); }
+                matrix_t make_luma(const rect_t& region) const { return make(region, color::make_luma); }
 
-                // retrieve the [0,1] normalized color channel
+                // retrieve the [0, 1] normalized color channel
                 template
                 <
                         typename toperator
                 >
-                matrix_t get(const rect_t& region, const toperator& op) const
+                matrix_t make(const rect_t& region, const toperator& op) const
                 {
                         const coord_t top = geom::top(region), left = geom::left(region);
                         const coord_t rows = geom::rows(region), cols = geom::cols(region);

@@ -1,3 +1,7 @@
+- remove image_t: make its functions part of ncv:
+	- ncv::load_rgba(rgba, tensor), ncv::load_gray() ...
+	- 
+
 - check if the new accumulator is slower than before (4-5sec on the i7)
 
 - reduce the number of input/output buffers for layers

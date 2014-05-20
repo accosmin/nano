@@ -89,19 +89,18 @@ int main(int argc, char *argv[])
         // create model
         const rmodel_t rmodel = model_manager_t::instance().get(cmd_model);
 
-        // load best model
+        // load model
         ncv::measure_critical_call(
                 [&] () { return rmodel->load(cmd_input); },
                 "loaded model",
                 "failed to load model from <" + cmd_input + ">");
 
-        // test models
+        // test model
         stats_t<scalar_t> lstats, estats;
         for (size_t f = 0; f < rtask->n_folds(); f ++)
         {
                 const fold_t test_fold = std::make_pair(f, protocol::test);
 
-                // test
                 const ncv::timer_t timer;
                 scalar_t lvalue, lerror;
                 ncv::test(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror);

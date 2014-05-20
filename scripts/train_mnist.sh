@@ -32,14 +32,14 @@ mlp6=${mlp5}"linear:dims=64;snorm;"
 outlayer=";linear:dims=10;softmax:type=global;"
 
 # train models
-fn_train ${dir_exp_mnist} stochastic-mlp0 ${params} ${stochastic} ${mlp0}${outlayer}
-fn_train ${dir_exp_mnist} stochastic-mlp1 ${params} ${stochastic} ${mlp1}${outlayer}
-fn_train ${dir_exp_mnist} stochastic-mlp2 ${params} ${stochastic} ${mlp2}${outlayer}
+#fn_train ${dir_exp_mnist} stochastic-mlp0 ${params} ${stochastic} ${mlp0}${outlayer}
+#fn_train ${dir_exp_mnist} stochastic-mlp1 ${params} ${stochastic} ${mlp1}${outlayer}
+#fn_train ${dir_exp_mnist} stochastic-mlp2 ${params} ${stochastic} ${mlp2}${outlayer}
 
 fn_train ${dir_exp_mnist} minibatch-mlp0 ${params} ${minibatch} ${mlp0}${outlayer}
 fn_train ${dir_exp_mnist} minibatch-mlp1 ${params} ${minibatch} ${mlp1}${outlayer}
 fn_train ${dir_exp_mnist} minibatch-mlp2 ${params} ${minibatch} ${mlp2}${outlayer}
 
-fn_train ${dir_exp_mnist} batch-mlp0 ${params} ${batch} ${mlp0}${outlayer}
-fn_train ${dir_exp_mnist} batch-mlp1 ${params} ${batch} ${mlp1}${outlayer}
-fn_train ${dir_exp_mnist} batch-mlp2 ${params} ${batch} ${mlp2}${outlayer}
+#fn_train ${dir_exp_mnist} batch-mlp0 ${params} ${batch} ${mlp0}${outlayer}
+#fn_train ${dir_exp_mnist} batch-mlp1 ${params} ${batch} ${mlp1}${outlayer}
+#fn_train ${dir_exp_mnist} batch-mlp2 ${params} ${batch} ${mlp2}${outlayer}

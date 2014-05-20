@@ -1,5 +1,9 @@
 #include "model.h"
 #include "common/logger.h"
+#include "common/timer.h"
+#include "common/random.hpp"
+#include "losses/loss_square.hpp"
+#include "optimize/opt_lbfgs.hpp"
 #include "task.h"
 #include <fstream>
 
@@ -146,6 +150,73 @@ namespace ncv
                 }
 
                 return true;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        tensor_t model_t::generate(const vector_t& target) const
+        {
+                const square_loss_t loss;
+
+                // construct the optimization problem
+                const timer_t timer;
+
+                auto fn_size = [&] ()
+                {
+                        return isize();
+                };
+
+                auto fn_fval = [&] (const vector_t& x)
+                {
+                        const tensor_t& output = this->value(x);
+
+                        return loss.value(target, output.vector());
+                };
+
+                auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
+                {
+                        const tensor_t& output = this->value(x);
+                        const vector_t ograd = loss.vgrad(target, output.vector());
+
+                        vector_t pgrad;
+                        gx = this->gradient(ograd, pgrad).vector();
+
+                        return loss.value(target, output.vector());
+                };
+
+                auto fn_wlog = [] (const string_t& message)
+                {
+                        log_warning() << message;
+                };
+                auto fn_elog = [] (const string_t& message)
+                {
+                        log_error() << message;
+                };
+                auto fn_ulog = [&] (const opt_state_t& result, const timer_t& timer)
+                {
+                        log_info() << "[loss = " << result.f
+                                   << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
+                                   << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
+                                   << "] done in " << timer.elapsed() << ".";
+                };
+
+                // assembly optimization problem & optimize the input
+                const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
+
+                const opt_opulog_t fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer));
+
+                const size_t iterations = 256;
+                const scalar_t epsilon = 1e-6;
+
+                tensor_t input(idims(), irows(), icols());
+                input.random(random_t<scalar_t>(0.0, 1.0));
+
+                const opt_state_t result = optimize::lbfgs(problem, input.vector(), iterations, epsilon,
+                                                           fn_wlog, fn_elog, fn_ulog_ref);
+                input.copy_from(result.x.data());
+
+                // OK
+                return input;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
