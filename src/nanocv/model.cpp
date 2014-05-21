@@ -4,6 +4,8 @@
 #include "common/random.hpp"
 #include "losses/loss_square.hpp"
 #include "optimize/opt_lbfgs.hpp"
+#include "optimize/opt_cgd.hpp"
+#include "optimize/opt_gd.hpp"
 #include "task.h"
 #include <fstream>
 
@@ -168,14 +170,14 @@ namespace ncv
 
                 auto fn_fval = [&] (const vector_t& x)
                 {
-                        const tensor_t& output = this->value(x);
+                        const tensor_t output = this->value(x);
 
                         return loss.value(target, output.vector());
                 };
 
                 auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
-                        const tensor_t& output = this->value(x);
+                        const tensor_t output = this->value(x);
                         const vector_t ograd = loss.vgrad(target, output.vector());
 
                         vector_t pgrad;
