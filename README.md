@@ -16,16 +16,16 @@ datasets: **MNIST**, **CIFAR-10**, **CIFAR-100**, **CMU-FACES**, **STL-10**, **S
 
 A model predicts the correct output for a given image patch, either its label (if a classification task) or a score (if a regression task). The library 
 implements various networks with any user-selectable combination of layers: **convolution**, **activation** (hyperbolic tangent, unit, signed 
-normalization), **linear** and **pooling** (maximum, maximum absolute).
+normalization), **linear** and **pooling**.
 
 #### Loss 
 
 A loss function assigns a scalar score to the prediction of a model by comparing it with the ground truth target (if provided). 
-The lower the score, the better the prediction. Implemented instances: **class-NLL**, **logistic** and **square**.
+The lower the score, the better the prediction. Implemented instances: **class-NLL** and **square**.
 
 #### Trainer
 
-A trainer otimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as 
+A trainer optimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as 
 a numerical optimization criteria. Implemented instances: **batch** (using **L-BFGS**, conjugate gradient descent - **CGD** or gradient descent - **GD**), **minibatch** 
 and **stochastic**.
 
@@ -50,7 +50,9 @@ The library provides various command line programs and utilities. Each program d
 
 * **ncv_tester** - test a model on a given task.
 
-The `experiments.sh` contains examples on how to train various models on different tasks.
+* **ncv_generator** - creates input image patches that maximally activates an output unit (e.g. associated to a class label).
+
+The `scripts` directory contains examples on how to train various models on different tasks.
 
 
 
