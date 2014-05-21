@@ -25,9 +25,12 @@ int main(int argc, char *argv[])
         po_desc.add_options()("save-dir",
                 boost::program_options::value<string_t>()->default_value("./"),
                 "directory to save generated samples to");
-        po_desc.add_options()("save-count",
+        po_desc.add_options()("save-group-rows",
                 boost::program_options::value<size_t>()->default_value(32),
-                "number of generated samples to construct for each label [1, 1024]");
+                "number of generated samples to construct for each label [1, 128]");
+        po_desc.add_options()("save-group-cols",
+                boost::program_options::value<size_t>()->default_value(32),
+                "number of generated samples to construct for each label [1, 128]");
 
         boost::program_options::variables_map po_vm;
         boost::program_options::store(
@@ -48,7 +51,8 @@ int main(int argc, char *argv[])
         const string_t cmd_model = po_vm["model"].as<string_t>();
         const string_t cmd_input = po_vm["model-file"].as<string_t>();
         const string_t cmd_save_dir = po_vm.count("save-dir") ? po_vm["save-dir"].as<string_t>() : "";
-        const size_t cmd_save_count = math::clamp(po_vm["save-count"].as<size_t>(), 1, 1024);
+        const size_t cmd_save_group_rows = math::clamp(po_vm["save-group-rows"].as<size_t>(), 1, 128);
+        const size_t cmd_save_group_cols = math::clamp(po_vm["save-group-cols"].as<size_t>(), 1, 128);
 
         // create model
         const rmodel_t rmodel = model_manager_t::instance().get(cmd_model);
@@ -63,27 +67,33 @@ int main(int argc, char *argv[])
         const size_t labels = rmodel->osize();
         for (size_t l = 0; l < labels; l ++)
         {
+                grid_image_t grid_image(rmodel->irows(), rmodel->icols(), cmd_save_group_rows, cmd_save_group_cols);
+
                 const vector_t target = ncv::class_target(l, labels);
-
-                for (size_t i = 0; i < cmd_save_count; i ++)
+                for (size_t r = 0; r < cmd_save_group_rows; r ++)
                 {
-                        const tensor_t input = rmodel->generate(target);
-
-                        rgba_matrix_t rgba;
-                        if (!ncv::load_rgba(input, rgba))
+                        for (size_t c = 0; c < cmd_save_group_cols; c ++)
                         {
-                                log_error() << "failed to map the generated input to RGBA image!";
-                                return EXIT_FAILURE;
-                        }
+                                const tensor_t input = rmodel->generate(target);
 
-                        const string_t path =
-                                cmd_save_dir + "/" + boost::filesystem::basename(cmd_input) +
-                                "_label" + text::to_string(l) + "_count" + text::to_string(i) + ".png";
-                        if (!ncv::save_rgba(path, rgba))
-                        {
-                                log_error() << "failed to save the generated input as RGBA image!";
-                                return EXIT_FAILURE;
+                                rgba_matrix_t rgba;
+                                if (!ncv::load_rgba(input, rgba))
+                                {
+                                        log_error() << "failed to map the generated input to RGBA image!";
+                                        return EXIT_FAILURE;
+                                }
+
+                                grid_image.set(r, c, rgba);
                         }
+                }
+
+                const string_t path =
+                        cmd_save_dir + "/" + boost::filesystem::basename(cmd_input) +
+                        "_label" + text::to_string(l) + ".png";
+                if (!ncv::save_rgba(path, grid_image.rgba()))
+                {
+                        log_error() << "failed to save the generated input as RGBA image!";
+                        return EXIT_FAILURE;
                 }
         }
 

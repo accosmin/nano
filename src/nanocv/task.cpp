@@ -43,12 +43,7 @@ namespace ncv
         void task_t::save_as_images(const fold_t& fold, const string_t& basepath, size_t grows, size_t gcols) const
         {
                 const size_t border = 8;
-                const size_t rows = n_rows() * grows + border * (grows + 1);
-                const size_t cols = n_cols() * gcols + border * (gcols + 1);
-
                 const rgba_t back_color = color::make_rgba(225, 225, 0);
-
-                rgba_matrix_t rgba(rows, cols);
 
                 // process each label ...
                 const strings_t labels = this->labels();
@@ -63,7 +58,7 @@ namespace ncv
                         // process all samples with this label ...
                         for (size_t i = 0, g = 1; i < samples.size(); g ++)
                         {
-                                rgba.setConstant(back_color);
+                                grid_image_t grid_image(n_rows(), n_cols(), grows, gcols, border, back_color);
 
                                 // select samples
                                 samples_t gsamples;
@@ -81,17 +76,11 @@ namespace ncv
                                                 const image_t& image = this->image(sample.m_index);
                                                 const rect_t& region = sample.m_region;
 
-                                                const size_t iy = n_rows() * r + border * (r + 1);
-                                                const size_t ix = n_cols() * c + border * (c + 1);
-                                                const size_t ih = n_rows();
-                                                const size_t iw = n_cols();
-
-                                                // image patch
-                                                rgba.block(iy, ix, ih, iw) = image.m_rgba.block(
+                                                grid_image.set(r, c, image.m_rgba.block(
                                                         geom::top(region),
                                                         geom::left(region),
                                                         geom::height(region),
-                                                        geom::width(region));
+                                                        geom::width(region)));
                                         }
                                 }
 
@@ -100,7 +89,7 @@ namespace ncv
                                                 + (label.empty() ? "" : ("_" + label))
                                                 + "_group" + text::to_string(g) + ".png";
                                 log_info() << "saving images to <" << path << "> ...";
-                                ncv::save_rgba(path, rgba);
+                                ncv::save_rgba(path, grid_image.rgba());
                         }
                 }
         }
