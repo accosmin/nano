@@ -192,12 +192,12 @@ namespace ncv
                 {
                         log_error() << message;
                 };
-                auto fn_ulog = [&] (const opt_state_t& result, const timer_t& timer)
+                auto fn_ulog = [&] (const opt_state_t& /*result*/, const timer_t& /*timer*/)
                 {
-                        log_info() << "[loss = " << result.f
-                                   << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
-                                   << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
-                                   << "] done in " << timer.elapsed() << ".";
+//                        log_info() << "[loss = " << result.f
+//                                   << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
+//                                   << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
+//                                   << "] done in " << timer.elapsed() << ".";
                 };
 
                 // assembly optimization problem & optimize the input
@@ -214,6 +214,11 @@ namespace ncv
                 const opt_state_t result = optimize::lbfgs(problem, input.vector(), iterations, epsilon,
                                                            fn_wlog, fn_elog, fn_ulog_ref);
                 input.copy_from(result.x.data());
+
+                log_info() << "[loss = " << result.f
+                           << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
+                           << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
+                           << "] done in " << timer.elapsed() << ".";
 
                 // OK
                 return input;
