@@ -4,8 +4,6 @@
 #include "common/random.hpp"
 #include "losses/loss_square.hpp"
 #include "optimize/opt_lbfgs.hpp"
-#include "optimize/opt_cgd.hpp"
-#include "optimize/opt_gd.hpp"
 #include "task.h"
 #include <fstream>
 
@@ -93,14 +91,14 @@ namespace ncv
                 {
                 case color_mode::luma:
                         data.resize(1, irows(), icols());
-                        data.copy_plane_from(0, image.make_luma(region));
+                        data.copy_plane_from(0, load_luma(image, region));
                         break;
 
                 case color_mode::rgba:
                         data.resize(3, irows(), icols());
-                        data.copy_plane_from(0, image.make_red(region));
-                        data.copy_plane_from(1, image.make_green(region));
-                        data.copy_plane_from(2, image.make_blue(region));
+                        data.copy_plane_from(0, load_red(image, region));
+                        data.copy_plane_from(1, load_green(image, region));
+                        data.copy_plane_from(2, load_blue(image, region));
                         break;
                 }
 

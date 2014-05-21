@@ -2,7 +2,7 @@
 #define NANOCV_MODEL_H
 
 #include "common/manager.hpp"
-#include "geom.h"
+#include "image.h"
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 
@@ -17,7 +17,6 @@ namespace ncv
         typedef model_manager_t::robject_t      rmodel_t;
 
         class task_t;
-        class image_t;
 
         ///
         /// \brief generic model used for computing:

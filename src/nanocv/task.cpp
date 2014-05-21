@@ -76,7 +76,7 @@ namespace ncv
                                                 const image_t& image = this->image(sample.m_index);
                                                 const rect_t& region = sample.m_region;
 
-                                                grid_image.set(r, c, image.m_rgba.block(
+                                                grid_image.set(r, c, image.block(
                                                         geom::top(region),
                                                         geom::left(region),
                                                         geom::height(region),

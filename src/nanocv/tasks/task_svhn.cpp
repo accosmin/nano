@@ -174,7 +174,7 @@ namespace ncv
 
                         // image ...
                         image_t image;
-                        image.m_rgba.resize(n_rows(), n_cols());
+                        image.resize(n_rows(), n_cols());
 
                         const size_t px = n_rows() * n_cols();
                         const size_t ix = n_rows() * n_cols() * 3;
@@ -188,7 +188,7 @@ namespace ncv
                                         const size_t ig = ibeg + (px * 1 + p);
                                         const size_t ib = ibeg + (px * 2 + p);
 
-                                        image.m_rgba(c, r) = color::make_rgba(idata[ir], idata[ig], idata[ib]);
+                                        image(c, r) = color::make_rgba(idata[ir], idata[ig], idata[ib]);
                                 }
                         }
 

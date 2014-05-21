@@ -285,22 +285,15 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        bool image_t::load(const string_t& path)
+        bool load_gray(const char* buffer, size_t rows, size_t cols, rgba_matrix_t& rgba)
         {
-                return ncv::load_rgba(path, m_rgba);
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        bool image_t::load_gray(const char* buffer, size_t rows, size_t cols)
-        {
-                m_rgba.resize(rows, cols);
+                rgba.resize(rows, cols);
 
                 for (size_t y = 0, i = 0; y < rows; y ++)
                 {
                         for (size_t x = 0; x < cols; x ++, i ++)
                         {
-                                m_rgba(y, x) = color::make_rgba(buffer[i], buffer[i], buffer[i]);
+                                rgba(y, x) = color::make_rgba(buffer[i], buffer[i], buffer[i]);
                         }
                 }
 
@@ -309,15 +302,15 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        bool image_t::load_rgba(const char* buffer, size_t rows, size_t cols, size_t stride)
+        bool load_rgba(const char* buffer, size_t rows, size_t cols, size_t stride, rgba_matrix_t& rgba)
         {
-                m_rgba.resize(rows, cols);
+                rgba.resize(rows, cols);
 
                 for (size_t y = 0, dr = 0, dg = dr + stride, db = dg + stride; y < rows; y ++)
                 {
                         for (size_t x = 0; x < cols; x ++, dr ++, dg ++, db ++)
                         {
-                                m_rgba(y, x) = color::make_rgba(buffer[dr], buffer[dg], buffer[db]);
+                                rgba(y, x) = color::make_rgba(buffer[dr], buffer[dg], buffer[db]);
                         }
                 }
 
