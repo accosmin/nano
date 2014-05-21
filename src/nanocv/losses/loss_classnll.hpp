@@ -48,7 +48,7 @@ namespace ncv
                         assert(targets.size() == scores.size());
 
                         return  std::log(scores.array().exp().sum()) -
-                                0.5 * (1.0  + targets.array()).matrix().dot(scores);
+                                targets.dot(scores);
                 }
 
                 vector_t _vgrad(const vector_t& targets, const vector_t& scores) const
@@ -56,7 +56,7 @@ namespace ncv
                         assert(targets.size() == scores.size());
 
                         return  scores.array().exp().matrix() / scores.array().exp().sum() -
-                                0.5 * (1.0  + targets.array()).matrix();
+                                targets;
                 }
         };
 }

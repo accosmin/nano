@@ -10,7 +10,7 @@ namespace ncv
         ///
         /// \brief multi-class loss: minimize the ratio of the negative outputs to the positive outputs.
         ///
-        /// NB: assumes {-1, +1} targets.
+        /// NB: assumes {+0, +1} targets.
         ///
         template
         <
@@ -63,7 +63,7 @@ namespace ncv
                                 {
                                         const vector_t escores = (elf() * scores.array()).exp();
                                         const vector_t neg = (1.0 - targets.array()) * escores.array();
-                                        const vector_t pos = (1.0 + targets.array()) * escores.array();
+                                        const vector_t pos = (0.0 + targets.array()) * escores.array();
 
                                         const scalar_t sumneg = eps() + neg.sum();
                                         const scalar_t sumpos = eps() + pos.sum();
@@ -74,7 +74,7 @@ namespace ncv
                         case true:      // inputs are (0, 1) normalized
                                 {
                                         const vector_t neg = (1.0 - targets.array()) * scores.array();
-                                        const vector_t pos = (1.0 + targets.array()) * scores.array();
+                                        const vector_t pos = (0.0 + targets.array()) * scores.array();
 
                                         const scalar_t sumneg = eps() + neg.sum();
                                         const scalar_t sumpos = eps() + pos.sum();
@@ -94,26 +94,26 @@ namespace ncv
                                 {
                                         const vector_t escores = (elf() * scores.array()).exp();
                                         const vector_t neg = (1.0 - targets.array()) * escores.array();
-                                        const vector_t pos = (1.0 + targets.array()) * escores.array();
+                                        const vector_t pos = (0.0 + targets.array()) * escores.array();
 
                                         const scalar_t sumneg = eps() + neg.sum();
                                         const scalar_t sumpos = eps() + pos.sum();
 
                                         return  elf() * escores.array() *
                                                 ((1.0 - targets.array()) * sumpos -
-                                                 (1.0 + targets.array()) * sumneg) / math::square(sumpos);
+                                                 (0.0 + targets.array()) * sumneg) / math::square(sumpos);
                                 }                                
 
                         case true:      // inputs are (0, 1) normalized
                                 {
                                         const vector_t neg = (1.0 - targets.array()) * scores.array();
-                                        const vector_t pos = (1.0 + targets.array()) * scores.array();
+                                        const vector_t pos = (0.0 + targets.array()) * scores.array();
 
                                         const scalar_t sumneg = eps() + neg.sum();
                                         const scalar_t sumpos = eps() + pos.sum();
 
                                         return  ((1.0 - targets.array()) * sumpos -
-                                                 (1.0 + targets.array()) * sumneg) / math::square(sumpos);
+                                                 (0.0 + targets.array()) * sumneg) / math::square(sumpos);
                                 }
                         }
                 }
