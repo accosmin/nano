@@ -137,13 +137,6 @@ namespace ncv
 
                         // update the optimum state
                         state.update(x, tvalue, terror, vvalue, verror, ldata.lambda());
-
-                        log_info() << "[grad = " << gx.lpNorm<Eigen::Infinity>()
-                                   << ", train = " << tvalue << "/" << terror
-                                   << ", valid = " << vvalue << "/" << verror
-                                   << ", lambda = " << ldata.lambda()
-                                   << "] done in " << timer.elapsed() << ".";
-
                         return tvalue;
                 };
 
@@ -155,33 +148,33 @@ namespace ncv
                 {
                         log_error() << message;
                 };
-//                auto fn_ulog = [&] (const opt_state_t& result, const timer_t& timer)
-//                {
-//                        log_info() << "[loss = " << result.f
-//                                   << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
-//                                   << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
-//                                   << ", train* = " << state.m_tvalue << "/" << state.m_terror
-//                                   << ", valid* = " << state.m_vvalue << "/" << state.m_verror
-//                                   << ", lambda* = " << ldata.lambda() << "/" << state.m_lambda
-//                                   << "] done in " << timer.elapsed() << ".";
-//                };
+                auto fn_ulog = [&] (const opt_state_t& result, const timer_t& timer)
+                {
+                        log_info() << "[loss = " << result.f
+                                   << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
+                                   << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
+                                   << ", train* = " << state.m_tvalue << "/" << state.m_terror
+                                   << ", valid* = " << state.m_vvalue << "/" << state.m_verror
+                                   << ", lambda* = " << ldata.lambda() << "/" << state.m_lambda
+                                   << "] done in " << timer.elapsed() << ".";
+                };
 
                 // assembly optimization problem & optimize the model
                 const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
 
-//                const opt_opulog_t fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer));
+                const opt_opulog_t fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer));
 
                 if (text::iequals(optimizer, "lbfgs"))
                 {
-                        optimize::lbfgs(problem, x0, iterations, epsilon, fn_wlog, fn_elog/*, fn_ulog_ref*/);
+                        optimize::lbfgs(problem, x0, iterations, epsilon, fn_wlog, fn_elog, fn_ulog_ref);
                 }
                 else if (text::iequals(optimizer, "cgd"))
                 {
-                        optimize::cgd_hs(problem, x0, iterations, epsilon, fn_wlog, fn_elog/*, fn_ulog_ref*/);
+                        optimize::cgd_hs(problem, x0, iterations, epsilon, fn_wlog, fn_elog, fn_ulog_ref);
                 }
                 else if (text::iequals(optimizer, "gd"))
                 {
-                        optimize::gd(problem, x0, iterations, epsilon, fn_wlog, fn_elog/*, fn_ulog_ref*/);
+                        optimize::gd(problem, x0, iterations, epsilon, fn_wlog, fn_elog, fn_ulog_ref);
                 }
                 else
                 {
