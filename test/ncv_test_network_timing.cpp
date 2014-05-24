@@ -109,9 +109,11 @@ int main(int argc, char *argv[])
 
                 // create random targets
                 vectors_t targets(cmd_samples, vector_t(cmd_outputs));
+
+                random_t<size_t> tgen(0, cmd_outputs);
                 for (vector_t& target : targets)
                 {
-                        target.setRandom();
+                        target = ncv::class_target(tgen(), cmd_outputs);
                 }
 
                 // process the samples
