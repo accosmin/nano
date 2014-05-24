@@ -97,7 +97,7 @@ namespace ncv
 
                 const image_t& image = task.image(sample.m_index);
                 const vector_t& target = sample.m_target;
-                const vector_t& output = m_model->value(image, sample.m_region).vector();
+                const vector_t& output = m_model->forward(image, sample.m_region).vector();
 
                 cumulate(output, target, loss);
         }
@@ -107,7 +107,7 @@ namespace ncv
         void accumulator_t::update(const tensor_t& input, const vector_t& target, const loss_t& loss)
         {
                 assert(m_model);
-                const vector_t& output = m_model->value(input).vector();
+                const vector_t& output = m_model->forward(input).vector();
 
                 cumulate(output, target, loss);
         }
@@ -117,7 +117,7 @@ namespace ncv
         void accumulator_t::update(const vector_t& input, const vector_t& target, const loss_t& loss)
         {
                 assert(m_model);
-                const vector_t& output = m_model->value(input).vector();
+                const vector_t& output = m_model->forward(input).vector();
 
                 cumulate(output, target, loss);
         }
@@ -243,8 +243,7 @@ namespace ncv
 
                 case type::vgrad:
                         {
-                                vector_t grad;
-                                m_model->gradient(loss.vgrad(target, output), grad);
+                                const vector_t grad = m_model->gradient(loss.vgrad(target, output));
 
                                 m_data.m_vgrad += grad;
                         }

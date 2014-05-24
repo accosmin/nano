@@ -22,10 +22,13 @@ namespace ncv
                 virtual rmodel_t clone(const string_t& parameters) const;
 
                 // compute the model's output
-                virtual const tensor_t& value(const tensor_t& input) const;
+                virtual const tensor_t& forward(const tensor_t& input) const;
+
+                // compute the model's gradient wrt parameters
+                virtual vector_t gradient(const vector_t& output) const;
 
                 // compute the model's gradient (wrt parameters & inputs)
-                virtual const tensor_t& gradient(const vector_t& output, vector_t& gradient) const;
+                virtual const tensor_t& backward(const vector_t& output) const;
 
                 // save/load/initialize parameters
                 virtual bool load_params(const vector_t& x);

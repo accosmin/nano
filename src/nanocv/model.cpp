@@ -55,28 +55,28 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        const tensor_t& model_t::value(const image_t& image, const rect_t& region) const
+        const tensor_t& model_t::forward(const image_t& image, const rect_t& region) const
         {
-                return value(image, geom::left(region), geom::top(region));
+                return forward(image, geom::left(region), geom::top(region));
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        const tensor_t& model_t::value(const image_t& image, coord_t x, coord_t y) const
+        const tensor_t& model_t::forward(const image_t& image, coord_t x, coord_t y) const
         {
-                return value(make_input(image, x, y));
+                return forward(make_input(image, x, y));
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        const tensor_t& model_t::value(const vector_t& input) const
+        const tensor_t& model_t::forward(const vector_t& input) const
         {
                 assert(static_cast<size_t>(input.size()) == isize());
 
                 tensor_t xinput(idims(), irows(), icols());
                 xinput.copy_from(input.data());
 
-                return value(xinput);
+                return forward(xinput);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -168,18 +168,17 @@ namespace ncv
 
                 auto fn_fval = [&] (const vector_t& x)
                 {
-                        const tensor_t output = this->value(x);
+                        const tensor_t output = this->forward(x);
 
                         return loss.value(target, output.vector());
                 };
 
                 auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
-                        const tensor_t output = this->value(x);
+                        const tensor_t output = this->forward(x);
                         const vector_t ograd = loss.vgrad(target, output.vector());
 
-                        vector_t pgrad;
-                        gx = this->gradient(ograd, pgrad).vector();
+                        gx = this->backward(ograd).vector();
 
                         return loss.value(target, output.vector());
                 };

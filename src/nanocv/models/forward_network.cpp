@@ -14,7 +14,7 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        const tensor_t& forward_network_t::value(const tensor_t& _input) const
+        const tensor_t& forward_network_t::forward(const tensor_t& _input) const
         {
                 const tensor_t* input = &_input;
                 for (rlayers_t::const_iterator it = m_layers.begin(); it != m_layers.end(); ++ it)
@@ -27,7 +27,28 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        const tensor_t& forward_network_t::gradient(const vector_t& _output, vector_t& gradient) const
+        const tensor_t& forward_network_t::backward(const vector_t& _output) const
+        {
+                assert(static_cast<size_t>(_output.size()) == osize());
+                assert(!m_layers.empty());
+
+                // output (gradient)
+                tensor_t output(osize(), 1, 1);
+                tensor::load(output, _output.data());
+
+                // backward step
+                const tensor_t* poutput = &output;
+                for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
+                {
+                        poutput = &(*it)->backward(*poutput, 0);
+                }
+
+                return *poutput;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        vector_t forward_network_t::gradient(const vector_t& _output) const
         {
                 assert(static_cast<size_t>(_output.size()) == osize());
                 assert(!m_layers.empty());
@@ -37,7 +58,7 @@ namespace ncv
                 tensor::load(output, _output.data());
 
                 // parameter gradient
-                gradient.resize(psize());
+                vector_t gradient(psize());
 
                 // backward step
                 const tensor_t* poutput = &output;
@@ -49,8 +70,7 @@ namespace ncv
                         poutput = &(*it)->backward(*poutput, pgradient);
                 }
 
-                // wrt input gradient
-                return *poutput;
+                return gradient;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

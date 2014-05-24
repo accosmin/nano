@@ -5,11 +5,11 @@ source common.sh
 # common parameters
 params=""
 params=${params}${task_mnist}
-params=${params}" --loss class-ratio --trials 10 --threads 1"
+params=${params}" --loss class-ratio --trials 1 --threads 1"
 
 # trainers 
 stochastic="--trainer stochastic --trainer-params opt=sgd,epoch=256"
-minibatch="--trainer minibatch --trainer-params batch=1024,iters=256,eps=1e-6"
+minibatch="--trainer minibatch --trainer-params batch=1024,iters=4000,eps=1e-6"
 batch="--trainer batch --trainer-params opt=cgd,iters=256,eps=1e-6,reg=none"
 
 # models
@@ -39,6 +39,10 @@ outlayer=";linear:dims=10;softmax:type=global;"
 fn_train ${dir_exp_mnist} minibatch-mlp0 ${params} ${minibatch} ${mlp0}${outlayer}
 fn_train ${dir_exp_mnist} minibatch-mlp1 ${params} ${minibatch} ${mlp1}${outlayer}
 fn_train ${dir_exp_mnist} minibatch-mlp2 ${params} ${minibatch} ${mlp2}${outlayer}
+fn_train ${dir_exp_mnist} minibatch-mlp3 ${params} ${minibatch} ${mlp3}${outlayer}
+fn_train ${dir_exp_mnist} minibatch-mlp4 ${params} ${minibatch} ${mlp4}${outlayer}
+fn_train ${dir_exp_mnist} minibatch-mlp5 ${params} ${minibatch} ${mlp5}${outlayer}
+fn_train ${dir_exp_mnist} minibatch-mlp6 ${params} ${minibatch} ${mlp6}${outlayer}
 
 #fn_train ${dir_exp_mnist} batch-mlp0 ${params} ${batch} ${mlp0}${outlayer}
 #fn_train ${dir_exp_mnist} batch-mlp1 ${params} ${batch} ${mlp1}${outlayer}

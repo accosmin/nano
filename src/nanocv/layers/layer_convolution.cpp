@@ -66,6 +66,8 @@ namespace ncv
                 const tsize osize = orows * ocols;
                 const tsize ksize = krows * kcols;
 
+                const bool has_gradient = gkdata != 0;
+
                 std::fill(gidata, gidata + idims * isize, tscalar(0));
 
                 for (tsize o = 0; o < odims; o ++)
@@ -88,11 +90,14 @@ namespace ncv
                                         }
                                 }
 
-                                for (tsize kr = 0; kr < krows; kr ++)
+                                if (has_gradient)
                                 {
-                                        for (tsize kc = 0; kc < kcols; kc ++)
+                                        for (tsize kr = 0; kr < krows; kr ++)
                                         {
-                                                gkmap(kr, kc) = omap.cwiseProduct(imap.block(kr, kc, orows, ocols)).sum();
+                                                for (tsize kc = 0; kc < kcols; kc ++)
+                                                {
+                                                        gkmap(kr, kc) = omap.cwiseProduct(imap.block(kr, kc, orows, ocols)).sum();
+                                                }
                                         }
                                 }
                         }

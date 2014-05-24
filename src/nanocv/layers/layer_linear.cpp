@@ -38,13 +38,18 @@ namespace ncv
                 tscalar* gbdata,
                 const tscalar* odata, tsize osize)
         {
-                // bias & weights gradient
-                tensor::make_vector(gbdata, osize).noalias() =
-                        tensor::make_vector(odata, osize);
+                const bool has_gradient = gwdata != 0;
 
-                tensor::make_matrix(gwdata, osize, isize).noalias() =
-                        tensor::make_vector(odata, osize) *
-                        tensor::make_vector(idata, isize).transpose();
+                if (has_gradient)
+                {
+                        // bias & weights gradient
+                        tensor::make_vector(gbdata, osize).noalias() =
+                                tensor::make_vector(odata, osize);
+
+                        tensor::make_matrix(gwdata, osize, isize).noalias() =
+                                tensor::make_vector(odata, osize) *
+                                tensor::make_vector(idata, isize).transpose();
+                }
 
                 // input gradient
                 tensor::make_vector(idata, isize).noalias() =
