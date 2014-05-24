@@ -1,8 +1,9 @@
-- check if the new accumulator is slower than before (4-5sec on the i7)
+- optimization statistics computed at the layer level: average gradient LInf-norm, number of calls
+	- to be printed when the layers are destroyed?
+	- this is to investigate why it takes many more iterations to optimize networks with more layers
+		(diminishing gradient)
 
 - reduce the number of input/output buffers for layers
-
-- test program to compute inputs that maximize a model's output
 
 - new datasets: INRIA car and person datasets, dymlerchrysler human detection
 
