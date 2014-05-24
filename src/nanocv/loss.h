@@ -22,7 +22,7 @@ namespace ncv
         ///
         /// \brief target value of the negative class
         ///
-        inline scalar_t neg_target() { return 0.0; }
+        inline scalar_t neg_target() { return +0.0; }
 
         ///
         /// \brief target value for multi-class classification problems with [n_labels] classes

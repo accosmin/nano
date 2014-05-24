@@ -55,13 +55,13 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
         for (size_t t = 0; t < n_tests; t ++)
         {
                 random_t<scalar_t> prgen(-1.0, +1.0);
-                random_t<scalar_t> trgen(-1.0, +1.0);
+                random_t<size_t> trgen(0, n_outputs);
                 random_t<scalar_t> irgen(-0.1, +0.1);
 
                 prgen(params.data(), params.data() + n_params);
                 for (vector_t& target : targets)
                 {
-                        trgen(target.data(), target.data() + n_outputs);
+                        target = ncv::class_target(trgen(), n_outputs);
                 }
                 for (tensor_t& input : inputs)
                 {
