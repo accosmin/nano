@@ -34,8 +34,10 @@ namespace ncv
         using std::placeholders::_3;
         using std::placeholders::_4;
 
-        // color channels
-        enum class channel : int
+        ///
+        /// \brief color channels
+        ///
+        enum class color_channel : int
         {
                 red = 0,                // R
                 green,                  // G
@@ -46,43 +48,47 @@ namespace ncv
                 cielab_b                // CIELab b
         };
 
-        // machine learning protocol
-        enum class protocol : int
-        {
-                train = 0,              // training
-                test                    // testing
-        };
-
-        // color processing mode method
+        ///
+        /// \brief color processing mode methods
+        ///
         enum class color_mode : int
         {
-                luma,                   // process only grayscale color channel
-                rgba                    // process red, green & blue color channels
+                luma,                   ///< process only grayscale color channel
+                rgba                    ///< process red, green & blue color channels
+        };
+
+        ///
+        /// \brief machine learning protocols
+        ///
+        enum class protocol : int
+        {
+                train = 0,              ///< training
+                test                    ///< testing
+        };
+
+        ///
+        /// \brief stochastic optimization methods
+        ///
+        enum class stochastic_optimizer : int
+        {
+                SG,                     ///< stochastic gradient
+                SGA,                    ///< stochastic gradient averaging
+                SIA                     ///< stochastic iterate averaging
+        };
+
+        ///
+        /// \brief batch optimization methods
+        ///
+        enum class batch_optimizer : int
+        {
+                GD,                     ///< gradient descent
+                CGD,                    ///< conjugate gradient descent
+                LBFGS                   ///< limited-memory BFGS
         };
 
         // string cast for enumerations
         namespace text
         {
-                template <>
-                inline std::string to_string(protocol type)
-                {
-                        switch (type)
-                        {
-                        case protocol::train:           return "train";
-                        case protocol::test:            return "test";
-                        default:                        return "train";
-                        }
-                }
-
-                template <>
-                inline protocol from_string<protocol>(const std::string& string)
-                {
-                        if (string == "train")          return protocol::train;
-                        if (string == "test")           return protocol::test;
-                        throw std::invalid_argument("invalid protocol type <" + string + ">!");
-                        return protocol::train;
-                }
-
                 template <>
                 inline std::string to_string(color_mode mode)
                 {
@@ -104,33 +110,97 @@ namespace ncv
                 }
 
                 template <>
-                inline std::string to_string(channel dtype)
+                inline std::string to_string(color_channel dtype)
                 {
                         switch (dtype)
                         {
-                        case channel::red:              return "red";
-                        case channel::green:            return "green";
-                        case channel::blue:             return "blue";
-                        case channel::luma:             return "luma";
-                        case channel::cielab_l:         return "cielab_l";
-                        case channel::cielab_a:         return "cielab_a";
-                        case channel::cielab_b:         return "cielab_b";
+                        case color_channel::red:        return "red";
+                        case color_channel::green:      return "green";
+                        case color_channel::blue:       return "blue";
+                        case color_channel::luma:       return "luma";
+                        case color_channel::cielab_l:   return "cielab_l";
+                        case color_channel::cielab_a:   return "cielab_a";
+                        case color_channel::cielab_b:   return "cielab_b";
                         default:                        return "luma";
                         }
                 }
 
                 template <>
-                inline channel from_string<channel>(const std::string& string)
+                inline color_channel from_string<color_channel>(const std::string& string)
                 {
-                        if (string == "red")            return channel::red;
-                        if (string == "green")          return channel::green;
-                        if (string == "blue")           return channel::blue;
-                        if (string == "luma")           return channel::luma;
-                        if (string == "cielab_l")       return channel::cielab_l;
-                        if (string == "cielab_a")       return channel::cielab_a;
-                        if (string == "cielab_b")       return channel::cielab_b;
-                        throw std::invalid_argument("Invalid channel type <" + string + ">!");
-                        return channel::luma;
+                        if (string == "red")            return color_channel::red;
+                        if (string == "green")          return color_channel::green;
+                        if (string == "blue")           return color_channel::blue;
+                        if (string == "luma")           return color_channel::luma;
+                        if (string == "cielab_l")       return color_channel::cielab_l;
+                        if (string == "cielab_a")       return color_channel::cielab_a;
+                        if (string == "cielab_b")       return color_channel::cielab_b;
+                        throw std::invalid_argument("Invalid color channel <" + string + ">!");
+                        return color_channel::luma;
+                }
+
+                template <>
+                inline std::string to_string(protocol type)
+                {
+                        switch (type)
+                        {
+                        case protocol::train:           return "train";
+                        case protocol::test:            return "test";
+                        default:                        return "train";
+                        }
+                }
+
+                template <>
+                inline protocol from_string<protocol>(const std::string& string)
+                {
+                        if (string == "train")          return protocol::train;
+                        if (string == "test")           return protocol::test;
+                        throw std::invalid_argument("invalid protocol <" + string + ">!");
+                        return protocol::train;
+                }
+
+                template <>
+                inline std::string to_string(stochastic_optimizer type)
+                {
+                        switch (type)
+                        {
+                        case stochastic_optimizer::SG:  return "sg";
+                        case stochastic_optimizer::SGA: return "sga";
+                        case stochastic_optimizer::SIA: return "sia";
+                        default:                        return "sg";
+                        }
+                }
+
+                template <>
+                inline stochastic_optimizer from_string<stochastic_optimizer>(const std::string& string)
+                {
+                        if (string == "sg")             return stochastic_optimizer::SG;
+                        if (string == "sga")            return stochastic_optimizer::SGA;
+                        if (string == "sia")            return stochastic_optimizer::SIA;
+                        throw std::invalid_argument("invalid stochastic optimizer <" + string + ">!");
+                        return stochastic_optimizer::SG;
+                }
+
+                template <>
+                inline std::string to_string(batch_optimizer type)
+                {
+                        switch (type)
+                        {
+                        case batch_optimizer::GD:       return "gd";
+                        case batch_optimizer::CGD:      return "cgd";
+                        case batch_optimizer::LBFGS:    return "lbfgs";
+                        default:                        return "gd";
+                        }
+                }
+
+                template <>
+                inline batch_optimizer from_string<batch_optimizer>(const std::string& string)
+                {
+                        if (string == "gg")             return batch_optimizer::GD;
+                        if (string == "cgd")            return batch_optimizer::CGD;
+                        if (string == "lbfgs")          return batch_optimizer::LBFGS;
+                        throw std::invalid_argument("invalid batch optimizer <" + string + ">!");
+                        return batch_optimizer::GD;
                 }
         }
 

@@ -43,33 +43,33 @@ namespace ncv
                 rgba_t make_rgba(const cielab_t& cielab);
 
                 // color channel range
-                inline scalar_t min(channel ch)
+                inline scalar_t min(color_channel ch)
                 {
                         switch (ch)
                         {
-                        case channel::red:      return 0.0;
-                        case channel::green:    return 0.0;
-                        case channel::blue:     return 0.0;
-                        case channel::luma:     return 0.0;
-                        case channel::cielab_l: return 0.0;
-                        case channel::cielab_a: return -86.1846;
-                        case channel::cielab_b: return -107.864;
-                        default:                return 0.0;
+                        case color_channel::red:        return 0.0;
+                        case color_channel::green:      return 0.0;
+                        case color_channel::blue:       return 0.0;
+                        case color_channel::luma:       return 0.0;
+                        case color_channel::cielab_l:   return 0.0;
+                        case color_channel::cielab_a:   return -86.1846;
+                        case color_channel::cielab_b:   return -107.864;
+                        default:                        return 0.0;
                         }
                 }
 
-                inline scalar_t max(channel ch)
+                inline scalar_t max(color_channel ch)
                 {
                         switch (ch)
                         {
-                        case channel::red:      return 255.0;
-                        case channel::green:    return 255.0;
-                        case channel::blue:     return 255.0;
-                        case channel::luma:     return 255.0;
-                        case channel::cielab_l: return 100.0;
-                        case channel::cielab_a: return 98.2542;
-                        case channel::cielab_b: return 94.4825;
-                        default:                return 255.0;
+                        case color_channel::red:        return 255.0;
+                        case color_channel::green:      return 255.0;
+                        case color_channel::blue:       return 255.0;
+                        case color_channel::luma:       return 255.0;
+                        case color_channel::cielab_l:   return 100.0;
+                        case color_channel::cielab_a:   return 98.2542;
+                        case color_channel::cielab_b:   return 94.4825;
+                        default:                        return 255.0;
                         }
                 }
         }

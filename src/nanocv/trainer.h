@@ -31,18 +31,12 @@ namespace ncv
 
                 ///
                 /// \brief update the current/optimum state with a possible better state
-                /// \param params
-                /// \param tvalue
-                /// \param terror
-                /// \param vvalue
-                /// \param verror
-                /// \param lambda
-                /// \return
+                /// \return true is the state was improved (aka lower validation error)
                 ///
                 bool update(const vector_t& params,
                             scalar_t tvalue, scalar_t terror,
                             scalar_t vvalue, scalar_t verror,
-                            scalar_t lambda);
+                            scalar_t lambda, size_t fcalls, size_t gcalls);
 
                 ///
                 /// \brief update the current/optimum state with a possible better state
@@ -58,6 +52,8 @@ namespace ncv
                 scalar_t        m_vvalue;       ///< optimum validation loss value
                 scalar_t        m_verror;       ///< optimum validation error
                 scalar_t        m_lambda;       ///< optimum regularization weight
+                size_t          m_fcalls;       ///< loss function calls
+                size_t          m_gcalls;       ///< loss gradient calls
         };
                 
         ///

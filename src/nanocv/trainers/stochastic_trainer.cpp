@@ -41,18 +41,9 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        enum class sg_type : int
-        {
-                SG,             ///< Stochastic Gradient
-                SGA,            ///< Stochastic Gradient Averaging
-                SIA             ///< Stochastic Iterate Averaging
-        };
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         static void sgd_train(
                 const task_t& task, samples_t& tsamples, const samples_t& vsamples, const loss_t& loss,
-                size_t epochs, scalar_t alpha0, scalar_t beta, sg_type type, scalar_t lambda,
+                size_t epochs, scalar_t alpha0, scalar_t beta, stochastic_optimizer type, scalar_t lambda,
                 const model_t& model, trainer_state_t& state, thread_pool_t::mutex_t& mutex)
         {
                 accumulator_t ldata(model, accumulator_t::type::value, lambda);
@@ -80,7 +71,7 @@ namespace ncv
 
                         switch (type)
                         {
-                        case sg_type::SG:
+                        case stochastic_optimizer::SG:
                                 for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
                                 {
                                         gdata.reset(x);
@@ -91,7 +82,7 @@ namespace ncv
                                 xparam = x;
                                 break;
 
-                        case sg_type::SGA:
+                        case stochastic_optimizer::SGA:
                                 for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
                                 {
                                         gdata.reset(x);
@@ -108,7 +99,7 @@ namespace ncv
                                 xparam = xavg;
                                 break;
 
-                        case sg_type::SIA:
+                        case stochastic_optimizer::SIA:
                         default:
                                 for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
                                 {
@@ -208,33 +199,10 @@ namespace ncv
                                 const scalars_t lambdas = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
                                 for (scalar_t lambda : lambdas)
                                 {
-                                        if (text::iequals(m_optimizer, "sg"))
-                                        {
-                                                sgd_train(task, tsamples, vsamples, loss,
-                                                          m_epochs, alpha0, beta, sg_type::SG, lambda,
-                                                          model, state, mutex);
-                                        }
-                                        else if (text::iequals(m_optimizer, "sga"))
-                                        {
-                                                sgd_train(task, tsamples, vsamples, loss,
-                                                          m_epochs, alpha0, beta, sg_type::SGA, lambda,
-                                                          model, state, mutex);
-                                        }
-                                        else if (text::iequals(m_optimizer, "sia"))
-                                        {
-                                                sgd_train(task, tsamples, vsamples, loss,
-                                                          m_epochs, alpha0, beta, sg_type::SIA, lambda,
-                                                          model, state, mutex);
-                                        }
-                                        else
-                                        {
-                                                const string_t message =
-                                                        "stochastic trainer: invalid optimization method <"
-                                                        + m_optimizer + ">!";
-
-                                                log_error() << message;
-                                                throw std::runtime_error(message);
-                                        }
+                                        sgd_train(task, tsamples, vsamples, loss,
+                                                  m_epochs, alpha0, beta,
+                                                  text::from_string<stochastic_optimizer>(m_optimizer), lambda,
+                                                  model, state, mutex);
                                 }
                         });
                 }

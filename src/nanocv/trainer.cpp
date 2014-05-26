@@ -17,7 +17,9 @@ namespace ncv
                         m_terror(std::numeric_limits<scalar_t>::max()),
                         m_vvalue(std::numeric_limits<scalar_t>::max()),
                         m_verror(std::numeric_limits<scalar_t>::max()),
-                        m_lambda(std::numeric_limits<scalar_t>::max())
+                        m_lambda(std::numeric_limits<scalar_t>::max()),
+                        m_fcalls(0),
+                        m_gcalls(0)
         {
         }
 
@@ -26,7 +28,7 @@ namespace ncv
         bool trainer_state_t::update(const vector_t& params,
                     scalar_t tvalue, scalar_t terror,
                     scalar_t vvalue, scalar_t verror,
-                    scalar_t lambda)
+                    scalar_t lambda, size_t fcalls, size_t gcalls)
         {
                 if (verror < m_verror)
                 {
@@ -36,6 +38,8 @@ namespace ncv
                         m_vvalue = vvalue;
                         m_verror = verror;
                         m_lambda = lambda;
+                        m_fcalls = fcalls;
+                        m_gcalls = gcalls;
                         return true;
                 }
 
@@ -51,7 +55,7 @@ namespace ncv
         {
                 return update(state.m_params,
                               state.m_tvalue, state.m_terror, state.m_vvalue, state.m_verror,
-                              state.m_lambda);
+                              state.m_lambda, state.m_fcalls, state.m_gcalls);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -76,6 +80,7 @@ namespace ncv
                 log_info() << "optimum [train = " << state.m_tvalue << "/" << state.m_terror
                            << ", valid = " << state.m_vvalue << "/" << state.m_verror
                            << ", lambda = " << state.m_lambda
+                           << ", funs = " << state.m_fcalls << "/" << state.m_gcalls
                            << "].";
 
                 // OK
@@ -112,31 +117,12 @@ namespace ncv
 
                 auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
-                        // stochastic mode: resample training & validation samples
-                        if (tsampler.is_random())
-                        {
-                                utsamples = tsampler.get();
-                        }
-                        if (vsampler.is_random())
-                        {
-                                uvsamples = vsampler.get();
-                        }
-
                         // training samples: loss value & gradient
                         gdata.reset(x);
                         gdata.update(task, utsamples, loss, nthreads);
                         const scalar_t tvalue = gdata.value();
-                        const scalar_t terror = gdata.error();
                         gx = gdata.vgrad();
 
-                        // validation samples: loss value
-                        ldata.reset(x);
-                        ldata.update(task, uvsamples, loss, nthreads);
-                        const scalar_t vvalue = ldata.value();
-                        const scalar_t verror = ldata.error();
-
-                        // update the optimum state
-                        state.update(x, tvalue, terror, vvalue, verror, ldata.lambda());
                         return tvalue;
                 };
 
@@ -150,13 +136,35 @@ namespace ncv
                 };
                 auto fn_ulog = [&] (const opt_state_t& result, const timer_t& timer)
                 {
-                        log_info() << "[loss = " << result.f
+                        const scalar_t tvalue = gdata.value();
+                        const scalar_t terror = gdata.error();
+
+                        // validation samples: loss value
+                        ldata.reset(result.x);
+                        ldata.update(task, uvsamples, loss, nthreads);
+                        const scalar_t vvalue = ldata.value();
+                        const scalar_t verror = ldata.error();
+
+                        // update the optimum state
+                        state.update(result.x, tvalue, terror, vvalue, verror,
+                                     ldata.lambda(), result.n_fval_calls(), result.n_grad_calls());
+
+                        log_info() << "[train = " << tvalue << "/" << terror
+                                   << ", valid = " << vvalue << "/" << verror
                                    << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
+                                   << ", lambda = " << ldata.lambda()
                                    << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
-                                   << ", train* = " << state.m_tvalue << "/" << state.m_terror
-                                   << ", valid* = " << state.m_vvalue << "/" << state.m_verror
-                                   << ", lambda* = " << ldata.lambda() << "/" << state.m_lambda
                                    << "] done in " << timer.elapsed() << ".";
+
+                        // stochastic mode: resample training & validation samples
+                        if (tsampler.is_random())
+                        {
+                                utsamples = tsampler.get();
+                        }
+                        if (vsampler.is_random())
+                        {
+                                uvsamples = vsampler.get();
+                        }
                 };
 
                 // assembly optimization problem & optimize the model
@@ -164,22 +172,20 @@ namespace ncv
 
                 const opt_opulog_t fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer));
 
-                if (text::iequals(optimizer, "lbfgs"))
+                switch (text::from_string<batch_optimizer>(optimizer))
                 {
+                case batch_optimizer::LBFGS:
                         optimize::lbfgs(problem, x0, iterations, epsilon, fn_wlog, fn_elog, fn_ulog_ref);
-                }
-                else if (text::iequals(optimizer, "cgd"))
-                {
+                        break;
+
+                case batch_optimizer::CGD:
                         optimize::cgd_hs(problem, x0, iterations, epsilon, fn_wlog, fn_elog, fn_ulog_ref);
-                }
-                else if (text::iequals(optimizer, "gd"))
-                {
+                        break;
+
+                case batch_optimizer::GD:
+                default:
                         optimize::gd(problem, x0, iterations, epsilon, fn_wlog, fn_elog, fn_ulog_ref);
-                }
-                else
-                {
-                        log_error() << "trainer: invalid optimization method <" << optimizer << ">!";
-                        return false;
+                        break;
                 }
 
                 // OK
