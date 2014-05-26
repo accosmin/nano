@@ -10,8 +10,12 @@ namespace ncv
         ///     a geometrically decreasing learning rate.
         ///
         /// parameters:
-        ///     opt=sgd[,asgd]          - optimization method: (average) stochastic gradient descent
+        ///     opt=sg[,sga,sia]        - optimization method:
+        ///                               stochastic gradient, (s) gradient averaging, (s) iterate averaging
         ///     epoch=16[1,1024]        - #epochs (~ #samples)
+        ///
+        /// NB: "Minimizing Finite Sums with the Stochastic Average Gradient"
+        ///     - Mark Schmidth, Nicolas Le Roux, Francis Bach
         ///
         class stochastic_trainer_t : public trainer_t
         {
