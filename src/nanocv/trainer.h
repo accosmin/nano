@@ -28,6 +28,14 @@ namespace ncv
                 const vector_t& x0, accumulator_t& ldata, accumulator_t& gdata, trainer_state_t& state);
 
         ///
+        /// \brief stochastic-train the given model
+        ///
+        opt_state_t stochastic_train(
+                const task_t&, const samples_t& tsamples, const samples_t& vsamples, size_t nthreads,
+                const loss_t&, stochastic_optimizer optimizer, size_t epochs, scalar_t epsilon,
+                const vector_t& x0, accumulator_t& ldata, accumulator_t& gdata, trainer_state_t& state);
+
+        ///
         /// \brief track the current/optimum model state
         ///
         struct trainer_state_t
