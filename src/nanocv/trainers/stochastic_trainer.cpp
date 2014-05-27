@@ -15,11 +15,8 @@ namespace ncv
         stochastic_trainer_t::stochastic_trainer_t(const string_t& parameters)
                 :       trainer_t(parameters,
                                   "stochastic trainer, "\
-                                  "parameters: opt=sg[,sga,sia],epoch=16[1,1024]"),
-                        m_optimizer(text::from_params<string_t>(parameters, "opt", "sgd")),
-                        m_epochs(text::from_params<size_t>(parameters, "epoch", 16))
+                                  "parameters: opt=sg[,sga,sia],epoch=16[1,1024]")
         {
-                m_epochs = math::clamp(m_epochs, 1, 1024);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -174,12 +171,17 @@ namespace ncv
                 samples_t tsamples, vsamples;
                 ncv::uniform_split(samples, size_t(90), random_t<size_t>(0, samples.size()), tsamples, vsamples);
 
+                // parameters
+                const size_t epochs = math::clamp(text::from_params<size_t>(configuration(), "epoch", 16), 1, 1024);
+                const size_t iterations = epochs * tsamples.size();             // SGD iterations
+                const scalar_t beta = std::pow(0.01, 1.0 / iterations);         // Learning rate decay rate
+
+                const stochastic_optimizer optimizer = text::from_string<stochastic_optimizer>
+                        (text::from_params<string_t>(configuration(), "opt", "sg"));
+
                 // prepare workers
                 thread_pool_t wpool(nthreads);
                 thread_pool_t::mutex_t mutex;
-
-                const size_t iterations = m_epochs * tsamples.size();           // SGD iterations
-                const scalar_t beta = std::pow(0.01, 1.0 / iterations);         // Learning rate decay rate
 
                 // optimum model parameters (to update)
                 trainer_state_t state(model.psize());
@@ -200,8 +202,7 @@ namespace ncv
                                 for (scalar_t lambda : lambdas)
                                 {
                                         sgd_train(task, tsamples, vsamples, loss,
-                                                  m_epochs, alpha0, beta,
-                                                  text::from_string<stochastic_optimizer>(m_optimizer), lambda,
+                                                  epochs, alpha0, beta, optimizer, lambda,
                                                   model, state, mutex);
                                 }
                         });

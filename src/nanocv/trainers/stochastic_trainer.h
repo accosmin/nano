@@ -10,8 +10,7 @@ namespace ncv
         ///     a geometrically decreasing learning rate.
         ///
         /// parameters:
-        ///     opt=sg[,sga,sia]        - optimization method:
-        ///                               stochastic gradient, (s) gradient averaging, (s) iterate averaging
+        ///     opt=sg[,sga,sia]        - optimization method: SG, SGA, SIA
         ///     epoch=16[1,1024]        - #epochs (~ #samples)
         ///
         /// NB: "Minimizing Finite Sums with the Stochastic Average Gradient"
@@ -32,12 +31,6 @@ namespace ncv
 
                 // train the model
                 virtual bool train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const;
-
-        private:
-
-                // attributes
-                string_t                m_optimizer;
-                size_t                  m_epochs;
         };
 }
 

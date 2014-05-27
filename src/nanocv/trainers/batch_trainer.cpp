@@ -2,6 +2,7 @@
 #include "common/math.hpp"
 #include "common/logger.h"
 #include "sampler.h"
+#include "accumulator.h"
 
 namespace ncv
 {
@@ -44,16 +45,38 @@ namespace ncv
                 }
 
                 // parameters
-                const string_t optimizer = text::from_params<string_t>(configuration(), "opt", "lbfgs");
                 const size_t iterations = math::clamp(text::from_params<size_t>(configuration(), "iters", 1024), 4, 4096);
                 const scalar_t epsilon = math::clamp(text::from_params<scalar_t>(configuration(), "eps", 1e-6), 1e-8, 1e-3);
 
-                // train the model
+                const batch_optimizer optimizer = text::from_string<batch_optimizer>
+                                (text::from_params<string_t>(configuration(), "opt", "lbfgs"));
+
                 trainer_state_t state(model.psize());
-                return  trainer_t::train(task, tsampler, vsampler, nthreads,
-                                         loss, optimizer, iterations, epsilon,
-                                         model, state) &&
-                        model.load_params(state.m_params);
+
+                // train the model
+                const scalars_t lambdas = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
+                for (scalar_t lambda : lambdas)
+                {
+                        accumulator_t ldata(model, accumulator_t::type::value, lambda);
+                        accumulator_t gdata(model, accumulator_t::type::vgrad, lambda);
+
+                        const samples_t tsamples = tsampler.get();
+                        const samples_t vsamples = vsampler.get();
+
+                        const vector_t x0 = model.params();
+                        batch_train(task, tsamples, vsamples, nthreads,
+                                    loss, optimizer, iterations / 8, 8, epsilon,
+                                    x0, ldata, gdata, state);
+                }
+
+                log_info() << "optimum [train = " << state.m_tvalue << "/" << state.m_terror
+                           << ", valid = " << state.m_vvalue << "/" << state.m_verror
+                           << ", lambda = " << state.m_lambda
+                           << ", funs = " << state.m_fcalls << "/" << state.m_gcalls
+                           << "].";
+
+                // OK
+                return model.load_params(state.m_params);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

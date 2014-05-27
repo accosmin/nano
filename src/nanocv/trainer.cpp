@@ -60,42 +60,12 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        bool trainer_t::train(
-                const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
-                const loss_t& loss, const string_t& optimizer, size_t iterations, scalar_t epsilon,
-                const model_t& model, trainer_state_t& state)
-        {
-                // L2-norm regularization
-                const scalars_t lambdas = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
-                for (scalar_t lambda : lambdas)
-                {
-                        accumulator_t ldata(model, accumulator_t::type::value, lambda);
-                        accumulator_t gdata(model, accumulator_t::type::vgrad, lambda);
-
-                        trainer_t::train(task, tsampler, vsampler, nthreads,
-                                         loss, optimizer, iterations, epsilon,
-                                         model.params(), ldata, gdata, state);
-                }
-
-                log_info() << "optimum [train = " << state.m_tvalue << "/" << state.m_terror
-                           << ", valid = " << state.m_vvalue << "/" << state.m_verror
-                           << ", lambda = " << state.m_lambda
-                           << ", funs = " << state.m_fcalls << "/" << state.m_gcalls
-                           << "].";
-
-                // OK
-                return true;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        bool trainer_t::train(
-                const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
-                const loss_t& loss, const string_t& optimizer, size_t iterations, scalar_t epsilon,
+        opt_state_t batch_train(
+                const task_t& task, const samples_t& tsamples, const samples_t& vsamples, size_t nthreads,
+                const loss_t& loss, batch_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon,
                 const vector_t& x0, accumulator_t& ldata, accumulator_t& gdata, trainer_state_t& state)
         {
-                samples_t utsamples = tsampler.get();
-                samples_t uvsamples = vsampler.get();
+                size_t iteration = 0;
 
                 // construct the optimization problem
                 const timer_t timer;
@@ -109,7 +79,7 @@ namespace ncv
                 {
                         // training samples: loss value
                         ldata.reset(x);
-                        ldata.update(task, utsamples, loss, nthreads);
+                        ldata.update(task, tsamples, loss, nthreads);
                         const scalar_t tvalue = ldata.value();
 
                         return tvalue;
@@ -119,7 +89,7 @@ namespace ncv
                 {
                         // training samples: loss value & gradient
                         gdata.reset(x);
-                        gdata.update(task, utsamples, loss, nthreads);
+                        gdata.update(task, tsamples, loss, nthreads);
                         const scalar_t tvalue = gdata.value();
                         gx = gdata.vgrad();
 
@@ -136,34 +106,29 @@ namespace ncv
                 };
                 auto fn_ulog = [&] (const opt_state_t& result, const timer_t& timer)
                 {
-                        const scalar_t tvalue = gdata.value();
-                        const scalar_t terror = gdata.error();
+                        ++ iteration;
 
-                        // validation samples: loss value
-                        ldata.reset(result.x);
-                        ldata.update(task, uvsamples, loss, nthreads);
-                        const scalar_t vvalue = ldata.value();
-                        const scalar_t verror = ldata.error();
-
-                        // update the optimum state
-                        state.update(result.x, tvalue, terror, vvalue, verror,
-                                     ldata.lambda(), result.n_fval_calls(), result.n_grad_calls());
-
-                        log_info() << "[train = " << tvalue << "/" << terror
-                                   << ", valid = " << vvalue << "/" << verror
-                                   << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
-                                   << ", lambda = " << ldata.lambda()
-                                   << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
-                                   << "] done in " << timer.elapsed() << ".";
-
-                        // stochastic mode: resample training & validation samples
-                        if (tsampler.is_random())
+                        if ((iteration % iterations) == 0)
                         {
-                                utsamples = tsampler.get();
-                        }
-                        if (vsampler.is_random())
-                        {
-                                uvsamples = vsampler.get();
+                                const scalar_t tvalue = gdata.value();
+                                const scalar_t terror = gdata.error();
+
+                                // validation samples: loss value
+                                ldata.reset(result.x);
+                                ldata.update(task, vsamples, loss, nthreads);
+                                const scalar_t vvalue = ldata.value();
+                                const scalar_t verror = ldata.error();
+
+                                // update the optimum state
+                                state.update(result.x, tvalue, terror, vvalue, verror,
+                                             ldata.lambda(), result.n_fval_calls(), result.n_grad_calls());
+
+                                log_info() << "[train = " << tvalue << "/" << terror
+                                           << ", valid = " << vvalue << "/" << verror
+                                           << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
+                                           << ", lambda = " << ldata.lambda()
+                                           << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
+                                           << "] done in " << timer.elapsed() << ".";
                         }
                 };
 
@@ -172,24 +137,21 @@ namespace ncv
 
                 const opt_opulog_t fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer));
 
-                switch (text::from_string<batch_optimizer>(optimizer))
+                switch (optimizer)
                 {
                 case batch_optimizer::LBFGS:
-                        optimize::lbfgs(problem, x0, iterations, epsilon, fn_wlog, fn_elog, fn_ulog_ref);
-                        break;
+                        return optimize::lbfgs(problem, x0, epochs * iterations, epsilon,
+                                               fn_wlog, fn_elog, fn_ulog_ref);
 
                 case batch_optimizer::CGD:
-                        optimize::cgd_hs(problem, x0, iterations, epsilon, fn_wlog, fn_elog, fn_ulog_ref);
-                        break;
+                        return optimize::cgd_hs(problem, x0, epochs * iterations, epsilon,
+                                                fn_wlog, fn_elog, fn_ulog_ref);
 
                 case batch_optimizer::GD:
                 default:
-                        optimize::gd(problem, x0, iterations, epsilon, fn_wlog, fn_elog, fn_ulog_ref);
-                        break;
+                        return optimize::gd(problem, x0, epochs * iterations, epsilon,
+                                            fn_wlog, fn_elog, fn_ulog_ref);
                 }
-
-                // OK
-                return true;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

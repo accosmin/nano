@@ -11,12 +11,21 @@ namespace ncv
         class sampler_t;
         class loss_t;
         class accumulator_t;
+        struct trainer_state_t;
 
         ///
         /// \brief stores registered prototypes
         ///
         typedef manager_t<trainer_t>                    trainer_manager_t;
         typedef trainer_manager_t::robject_t            rtrainer_t;
+
+        ///
+        /// \brief batch-train the given model
+        ///
+        opt_state_t batch_train(
+                const task_t&, const samples_t& tsamples, const samples_t& vsamples, size_t nthreads,
+                const loss_t&, batch_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon,
+                const vector_t& x0, accumulator_t& ldata, accumulator_t& gdata, trainer_state_t& state);
 
         ///
         /// \brief track the current/optimum model state
@@ -79,20 +88,6 @@ namespace ncv
                 /// \return
                 ///
                 virtual bool train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const = 0;
-
-        protected:
-
-                ///
-                /// \brief train the given model stochastically (minibatch) or with all samples (batch)
-                ///
-                static bool train(
-                        const task_t&, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
-                        const loss_t&, const string_t& optimizer, size_t iterations, scalar_t epsilon,
-                        const model_t&, trainer_state_t& state);
-                static bool train(
-                        const task_t&, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
-                        const loss_t&, const string_t& optimizer, size_t iterations, scalar_t epsilon,
-                        const vector_t& x0, accumulator_t& ldata, accumulator_t& gdata, trainer_state_t& state);
         };
 }
 
