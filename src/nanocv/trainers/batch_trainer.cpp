@@ -64,9 +64,9 @@ namespace ncv
                         const samples_t vsamples = vsampler.get();
 
                         const vector_t x0 = model.params();
-                        batch_train(task, tsamples, vsamples, nthreads,
-                                    loss, optimizer, iterations / 8, 8, epsilon,
-                                    x0, ldata, gdata, state);
+                        ncv::batch_train(task, tsamples, vsamples, nthreads,
+                                         loss, optimizer, iterations / 8, 8, epsilon,
+                                         x0, ldata, gdata, state);
                 }
 
                 log_info() << "optimum [train = " << state.m_tvalue << "/" << state.m_terror

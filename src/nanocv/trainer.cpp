@@ -2,6 +2,7 @@
 #include "common/timer.h"
 #include "common/logger.h"
 #include "common/thread_pool.h"
+#include "common/random.hpp"
 #include "optimize/opt_gd.hpp"
 #include "optimize/opt_cgd.hpp"
 #include "optimize/opt_lbfgs.hpp"
@@ -157,106 +158,124 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        static void stochastic_train(
-                const task_t& task, samples_t& tsamples, const samples_t& vsamples, const loss_t& loss,
-                size_t epochs, scalar_t alpha0, scalar_t beta, stochastic_optimizer type, scalar_t lambda,
-                const model_t& model, trainer_state_t& state, thread_pool_t::mutex_t& mutex)
+        namespace detail
         {
-                accumulator_t ldata(model, accumulator_t::type::value, lambda);
-                accumulator_t gdata(model, accumulator_t::type::vgrad, lambda);
-
-                random_t<size_t> xrng(0, tsamples.size());
-                rnd_t xrnd(xrng);
-
-                // (weighted-average) stochastic gradient descent
-                timer_t timer;
-
-                vector_t x = model.params();
-                vector_t xparam = x;
-
-                vector_t xavg = x;
-                vector_t gavg(x.size());
-                gavg.setZero();
-
-                scalar_t alpha = alpha0;
-                scalar_t sumb = 1.0 / alpha;
-
-                for (size_t e = 0; e < epochs; e ++)
+                struct rnd_t
                 {
-                        std::random_shuffle(tsamples.begin(), tsamples.end(), xrnd);
-
-                        switch (type)
+                        rnd_t(random_t<size_t>& gen)
+                                :       m_gen(gen)
                         {
-                        case stochastic_optimizer::SG:
-                                for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
-                                {
-                                        gdata.reset(x);
-                                        gdata.update(task, tsamples[i], loss);
-
-                                        x.noalias() -= alpha * gdata.vgrad();
-                                }
-                                xparam = x;
-                                break;
-
-                        case stochastic_optimizer::SGA:
-                                for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
-                                {
-                                        gdata.reset(x);
-                                        gdata.update(task, tsamples[i], loss);
-
-                                        const vector_t g = gdata.vgrad();
-
-                                        const scalar_t b = 1.0 / alpha;
-                                        gavg = (gavg * sumb + g * b) / (sumb + b);
-                                        sumb = sumb + b;
-
-                                        x.noalias() -= alpha * gavg;
-                                }
-                                xparam = xavg;
-                                break;
-
-                        case stochastic_optimizer::SIA:
-                        default:
-                                for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
-                                {
-                                        gdata.reset(x);
-                                        gdata.update(task, tsamples[i], loss);
-
-                                        x.noalias() -= alpha * gdata.vgrad();
-
-                                        const scalar_t b = 1.0 / alpha;
-                                        xavg = (xavg * sumb + x * b) / (sumb + b);
-                                        sumb = sumb + b;
-                                }
-                                xparam = x;
-                                break;
                         }
 
-                        // evaluate training samples
-                        ldata.reset(xparam);
-                        ldata.update(task, tsamples, loss);
-                        const scalar_t tvalue = ldata.value();
-                        const scalar_t terror = ldata.error();
-
-                        // evaluate validation samples
-                        ldata.reset(xparam);
-                        ldata.update(task, vsamples, loss);
-                        const scalar_t vvalue = ldata.value();
-                        const scalar_t verror = ldata.error();
-
-                        // OK, update the optimum solution
-                        const thread_pool_t::lock_t lock(mutex);
-
-                        if (state.update(xparam, tvalue, terror, vvalue, verror,
-                                         ldata.lambda(), e * tsamples.size(), e * tsamples.size()))
+                        size_t operator()(size_t i)
                         {
-                                log_info()
-                                << "[rate = " << alpha << "/" << alpha0
-                                << ", epoch = " << e << "/" << epochs
-                                << ", train* = " << state.m_tvalue << "/" << state.m_terror
-                                << ", valid* = " << state.m_vvalue << "/" << state.m_verror
-                                << ", lambda* = " << ldata.lambda() << "/" << state.m_lambda
-                                << "] done in " << timer.elapsed() << ".";
+                                return m_gen() % i;
+                        }
+
+                        random_t<size_t>&  m_gen;
+                };
+
+                static void stochastic_train(
+                        const task_t& task, const samples_t& tsamples_, const samples_t& vsamples, const loss_t& loss,
+                        stochastic_optimizer type, size_t epochs, scalar_t alpha0, scalar_t beta,
+                        const vector_t& x0, accumulator_t& ldata, accumulator_t& gdata, trainer_state_t& state,
+                        thread_pool_t::mutex_t& mutex)
+                {
+                        samples_t tsamples = tsamples_;
+
+                        random_t<size_t> xrng(0, tsamples.size());
+                        rnd_t xrnd(xrng);
+
+                        timer_t timer;
+
+                        vector_t x = x0;
+                        vector_t xparam = x;
+
+                        vector_t xavg = x;
+                        vector_t gavg(x.size());
+                        gavg.setZero();
+
+                        scalar_t alpha = alpha0;
+                        scalar_t sumb = 1.0 / alpha;
+
+                        for (size_t e = 0; e < epochs; e ++)
+                        {
+                                std::random_shuffle(tsamples.begin(), tsamples.end(), xrnd);
+
+                                // one epoch: a pass through all training samples
+                                switch (type)
+                                {
+                                case stochastic_optimizer::SG:
+                                        for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
+                                        {
+                                                gdata.reset(x);
+                                                gdata.update(task, tsamples[i], loss);
+
+                                                x.noalias() -= alpha * gdata.vgrad();
+                                        }
+                                        xparam = x;
+                                        break;
+
+                                case stochastic_optimizer::SGA:
+                                        for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
+                                        {
+                                                gdata.reset(x);
+                                                gdata.update(task, tsamples[i], loss);
+
+                                                const vector_t g = gdata.vgrad();
+
+                                                const scalar_t b = 1.0 / alpha;
+                                                gavg = (gavg * sumb + g * b) / (sumb + b);
+                                                sumb = sumb + b;
+
+                                                x.noalias() -= alpha * gavg;
+                                        }
+                                        xparam = xavg;
+                                        break;
+
+                                case stochastic_optimizer::SIA:
+                                default:
+                                        for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
+                                        {
+                                                gdata.reset(x);
+                                                gdata.update(task, tsamples[i], loss);
+
+                                                x.noalias() -= alpha * gdata.vgrad();
+
+                                                const scalar_t b = 1.0 / alpha;
+                                                xavg = (xavg * sumb + x * b) / (sumb + b);
+                                                sumb = sumb + b;
+                                        }
+                                        xparam = x;
+                                        break;
+                                }
+
+                                // evaluate training samples
+                                ldata.reset(xparam);
+                                ldata.update(task, tsamples, loss);
+                                const scalar_t tvalue = ldata.value();
+                                const scalar_t terror = ldata.error();
+
+                                // evaluate validation samples
+                                ldata.reset(xparam);
+                                ldata.update(task, vsamples, loss);
+                                const scalar_t vvalue = ldata.value();
+                                const scalar_t verror = ldata.error();
+
+                                // OK, update the optimum solution
+                                const thread_pool_t::lock_t lock(mutex);
+
+                                if (state.update(xparam, tvalue, terror, vvalue, verror,
+                                                 ldata.lambda(), e * tsamples.size(), e * tsamples.size()))
+                                {
+                                        log_info()
+                                        << "[rate = " << alpha << "/" << alpha0
+                                        << ", epoch = " << e << "/" << epochs
+                                        << ", train* = " << state.m_tvalue << "/" << state.m_terror
+                                        << ", valid* = " << state.m_vvalue << "/" << state.m_verror
+                                        << ", lambda* = " << ldata.lambda() << "/" << state.m_lambda
+                                        << "] done in " << timer.elapsed() << ".";
+                                }
                         }
                 }
         }
@@ -265,7 +284,7 @@ namespace ncv
 
         opt_state_t stochastic_train(
                 const task_t& task, const samples_t& tsamples, const samples_t& vsamples, size_t nthreads,
-                const loss_t& loss, stochastic_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon,
+                const loss_t& loss, stochastic_optimizer optimizer, size_t epochs,
                 const vector_t& x0, accumulator_t& ldata, accumulator_t& gdata, trainer_state_t& state)
         {
                 // prepare workers
@@ -278,20 +297,27 @@ namespace ncv
                 const scalar_t var_alpha = std::exp((std::log(max_alpha) - std::log(min_alpha))
                                            / std::min(size_t(8), wpool.n_workers()));
 
+                const size_t iterations = epochs * tsamples.size();             // SGD iterations
+                const scalar_t beta = std::pow(0.01, 1.0 / iterations);         // Learning rate decay rate
+
                 for (scalar_t alpha0 = min_alpha; alpha0 <= max_alpha; alpha0 *= var_alpha)
                 {
-                        wpool.enqueue([=, &model, &task, &tsamples, &vsamples, &loss, &state, &mutex]()
+                        wpool.enqueue([=, &task, &tsamples, &vsamples, &loss, &x0, &ldata, &gdata, &state, &mutex]()
                         {
-                                stochastic_train(task, tsamples, vsamples, loss,
-                                                 epochs, alpha0, beta, optimizer, lambda,
-                                                 x0, ldata, gdata, state, mutex);
+                                detail::stochastic_train(
+                                        task, tsamples, vsamples, loss,
+                                        optimizer, epochs, alpha0, beta,
+                                        x0, ldata, gdata, state, mutex);
                         });
                 }
 
                 wpool.wait();
 
-                opt_state_t result;
-                result;
+                // OK
+                opt_state_t result(x0.size());
+                result.x = state.m_params;
+                result.f = state.m_tvalue;
+                return result;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

@@ -72,7 +72,7 @@ namespace ncv
                                 const samples_t tsamples = tsampler.get();
                                 const samples_t vsamples = vsampler.get();
 
-                                const opt_state_t result = batch_train(
+                                const opt_state_t result = ncv::batch_train(
                                         task, tsamples, vsamples, nthreads,
                                         loss, optimizer, 1, iterations, epsilon,
                                         x0, ldata, gdata, state);

@@ -8,7 +8,6 @@
 namespace ncv
 {
         class trainer_t;
-        class sampler_t;
         class loss_t;
         class accumulator_t;
         struct trainer_state_t;
@@ -32,7 +31,7 @@ namespace ncv
         ///
         opt_state_t stochastic_train(
                 const task_t&, const samples_t& tsamples, const samples_t& vsamples, size_t nthreads,
-                const loss_t&, stochastic_optimizer optimizer, size_t epochs, scalar_t epsilon,
+                const loss_t&, stochastic_optimizer optimizer, size_t epochs,
                 const vector_t& x0, accumulator_t& ldata, accumulator_t& gdata, trainer_state_t& state);
 
         ///
