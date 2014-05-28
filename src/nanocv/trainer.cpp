@@ -128,8 +128,8 @@ namespace ncv
                                 log_info() << "[train = " << tvalue << "/" << terror
                                            << ", valid = " << vvalue << "/" << verror
                                            << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
-                                           << ", lambda = " << ldata.lambda()
                                            << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
+                                           << ", lambda = " << ldata.lambda()
                                            << "] done in " << timer.elapsed() << ".";
                         }
                 };
@@ -269,11 +269,11 @@ namespace ncv
                                                  ldata.lambda(), e * tsamples.size(), e * tsamples.size()))
                                 {
                                         log_info()
-                                        << "[rate = " << alpha << "/" << alpha0
+                                        << "[train = " << tvalue << "/" << terror
+                                        << ", valid = " << vvalue << "/" << verror
+                                        << ", rate = " << alpha << "/" << alpha0
                                         << ", epoch = " << e << "/" << epochs
-                                        << ", train* = " << state.m_tvalue << "/" << state.m_terror
-                                        << ", valid* = " << state.m_vvalue << "/" << state.m_verror
-                                        << ", lambda* = " << ldata.lambda() << "/" << state.m_lambda
+                                        << ", lambda = " << ldata.lambda()
                                         << "] done in " << timer.elapsed() << ".";
                                 }
                         }

@@ -69,8 +69,11 @@ namespace ncv
                                               x0, ldata, gdata, state);
                 }
 
-                log_info() << "[train* = " << state.m_tvalue << "/" << state.m_terror
-                           << ", valid* = " << state.m_vvalue << "/" << state.m_verror << "].";
+                log_info() << "optimum [train = " << state.m_tvalue << "/" << state.m_terror
+                           << ", valid = " << state.m_vvalue << "/" << state.m_verror
+                           << ", lambda = " << state.m_lambda
+                           << ", funs = " << state.m_fcalls << "/" << state.m_gcalls
+                           << "].";
 
                 // OK
                 return model.load_params(state.m_params);
