@@ -188,10 +188,8 @@ namespace ncv
 
                         timer_t timer;
 
-                        vector_t x = x0;
-                        vector_t xparam = x;
+                        vector_t x = x0, xparam = x, xavg = x;
 
-                        vector_t xavg = x;
                         vector_t gavg(x.size());
                         gavg.setZero();
 
@@ -246,7 +244,7 @@ namespace ncv
                                                 xavg = (xavg * sumb + x * b) / (sumb + b);
                                                 sumb = sumb + b;
                                         }
-                                        xparam = x;
+                                        xparam = xavg;
                                         break;
                                 }
 
@@ -290,22 +288,18 @@ namespace ncv
                 thread_pool_t wpool(nthreads);
                 thread_pool_t::mutex_t mutex;
 
-                // tune the learning rate
-                const scalar_t max_alpha = 1e-1;
-                const scalar_t min_alpha = 1e-3;
-                const scalar_t var_alpha = std::exp((std::log(max_alpha) - std::log(min_alpha))
-                                           / std::min(size_t(8), wpool.n_workers()));
-
                 const size_t iterations = epochs * tsamples.size();             // SGD iterations
                 const scalar_t beta = std::pow(0.01, 1.0 / iterations);         // Learning rate decay rate
 
-                for (scalar_t alpha0 = min_alpha; alpha0 <= max_alpha; alpha0 *= var_alpha)
+                // tune the learning rate
+                const scalars_t alphas = { 0.001, 0.010, 0.100 };
+                for (scalar_t alpha : alphas)
                 {
                         wpool.enqueue([=, &task, &tsamples, &vsamples, &loss, &x0, &ldata, &gdata, &state, &mutex]()
                         {
                                 detail::stochastic_train(
                                         task, tsamples, vsamples, loss,
-                                        optimizer, epochs, alpha0, beta,
+                                        optimizer, epochs, alpha, beta,
                                         x0, ldata, gdata, state, mutex);
                         });
                 }
