@@ -196,7 +196,7 @@ namespace ncv
                 template <>
                 inline batch_optimizer from_string<batch_optimizer>(const std::string& string)
                 {
-                        if (string == "gg")             return batch_optimizer::GD;
+                        if (string == "gd")             return batch_optimizer::GD;
                         if (string == "cgd")            return batch_optimizer::CGD;
                         if (string == "lbfgs")          return batch_optimizer::LBFGS;
                         throw std::invalid_argument("invalid batch optimizer <" + string + ">!");
