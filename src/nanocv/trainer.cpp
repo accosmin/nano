@@ -265,17 +265,16 @@ namespace ncv
                                 // OK, update the optimum solution
                                 const thread_pool_t::lock_t lock(mutex);
 
-                                if (state.update(xparam, tvalue, terror, vvalue, verror,
-                                                 ldata.lambda(), e * tsamples.size(), e * tsamples.size()))
-                                {
-                                        log_info()
+                                state.update(xparam, tvalue, terror, vvalue, verror,
+                                             ldata.lambda(), e * tsamples.size(), e * tsamples.size());
+
+                                log_info()
                                         << "[train = " << tvalue << "/" << terror
                                         << ", valid = " << vvalue << "/" << verror
                                         << ", rate = " << alpha << "/" << alpha0
                                         << ", epoch = " << e << "/" << epochs
                                         << ", lambda = " << ldata.lambda()
                                         << "] done in " << timer.elapsed() << ".";
-                                }
                         }
                 }
         }
