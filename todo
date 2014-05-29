@@ -1,3 +1,10 @@
+- stochastic trainer: 
+	- too slow -> it uses the accumulator inefficiently
+	- double check the L2-regularization
+
+- CGD methods:
+	- double check the + versions (read carefully the paper)
+
 - optimization statistics computed at the layer level: average gradient LInf-norm, number of calls
 	- to be printed when the layers are destroyed?
 	- this is to investigate why it takes many more iterations to optimize networks with more layers
