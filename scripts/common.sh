@@ -35,6 +35,9 @@ mkdir -p ${dir_exp_cbclfaces}
 #stochastic="--trainer stochastic --trainer-params opt=sgd,epoch=64"
 #minibatch="--trainer minibatch --trainer-params batch=1024,iters=4096,eps=1e-6"
 
+# number of available threads
+max_threads=`less /proc/cpuinfo | grep -i processor | wc -l`
+
 # train a model (results directory, name, parameters)
 function fn_train
 {
