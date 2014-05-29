@@ -63,7 +63,6 @@ namespace ncv
                         const samples_t vsamples = vsampler.get();
 
                         const vector_t x0 = model.params();
-
                         ncv::stochastic_train(task, tsamples, vsamples, nthreads,
                                               loss, optimizer, epochs,
                                               x0, ldata, gdata, state);

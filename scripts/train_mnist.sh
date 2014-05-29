@@ -5,20 +5,20 @@ source common.sh
 # common parameters
 params=""
 params=${params}${task_mnist}
-params=${params}" --loss class-ratio --trials 1 --threads 1"
+params=${params}" --loss class-ratio --trials 1 --threads 4"
 
 # trainers 
 stoch_sg="--trainer stochastic --trainer-params opt=sg,epoch=16"
 stoch_sga="--trainer stochastic --trainer-params opt=sga,epoch=16"
 stoch_sia="--trainer stochastic --trainer-params opt=sia,epoch=16"
 
-mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epochs=64,batch=1024,iters=8,eps=1e-6"
-mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epochs=64,batch=1024,iters=8,eps=1e-6"
-mbatch_gd="--trainer minibatch --trainer-params opt=gd,epochs=64,batch=1024,iters=8,eps=1e-6"
+mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=256,batch=1024,iters=8,eps=1e-6"
+mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=256,batch=1024,iters=8,eps=1e-6"
+mbatch_gd="--trainer minibatch --trainer-params opt=gd,epoch=256,batch=1024,iters=8,eps=1e-6"
 
-batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,iters=256,eps=1e-6"
-batch_cgd="--trainer batch --trainer-params opt=cgd,iters=256,eps=1e-6"
-batch_gd="--trainer batch --trainer-params opt=gd,iters=256,eps=1e-6"
+batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,iters=1024,eps=1e-6"
+batch_cgd="--trainer batch --trainer-params opt=cgd,iters=1024,eps=1e-6"
+batch_gd="--trainer batch --trainer-params opt=gd,iters=1024,eps=1e-6"
 
 # models
 conv0="--model forward-network --model-params "
@@ -40,7 +40,11 @@ mlp6=${mlp5}"linear:dims=64;snorm;"
 outlayer=";linear:dims=10;softmax:type=global;"
 
 # train models
-for trainer in `echo "stoch_sg stoch_sga stoch_sia mbatch_gd mbatch_cgd mbatch_lbfgs batch_gd batch_cgd batch_lbfgs"`
+#for trainer in `echo "stoch_sg stoch_sga stoch_sia mbatch_gd mbatch_cgd mbatch_lbfgs batch_gd batch_cgd batch_lbfgs"`
+for trainer in `echo "mbatch_gd mbatch_cgd mbatch_lbfgs batch_gd batch_cgd batch_lbfgs"`
 do
         fn_train ${dir_exp_mnist} mlp0_${trainer} ${params} ${!trainer} ${mlp0}${outlayer}
+        fn_train ${dir_exp_mnist} mlp1_${trainer} ${params} ${!trainer} ${mlp1}${outlayer}
+        fn_train ${dir_exp_mnist} mlp2_${trainer} ${params} ${!trainer} ${mlp2}${outlayer}
+        fn_train ${dir_exp_mnist} mlp3_${trainer} ${params} ${!trainer} ${mlp3}${outlayer}
 done
