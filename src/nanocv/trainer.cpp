@@ -230,7 +230,7 @@ namespace ncv
 
                                                 x.noalias() -= alpha * gavg;
                                         }
-                                        xparam = xavg;
+                                        xparam = x;
                                         break;
 
                                 case stochastic_optimizer::SIA:
