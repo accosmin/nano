@@ -16,7 +16,6 @@ namespace ncv
                         m_rows(0),
                         m_cols(0),
                         m_outputs(0),
-                        m_nparams(0),
                         m_color(color_mode::luma)
         {
         }
@@ -31,7 +30,6 @@ namespace ncv
                 oa << m_rows;
                 oa << m_cols;
                 oa << m_outputs;
-                oa << m_nparams;
                 oa << m_color;
 
                 return save(oa) && os.good();
@@ -47,7 +45,6 @@ namespace ncv
                 ia >> m_rows;
                 ia >> m_cols;
                 ia >> m_outputs;
-                ia >> m_nparams;
                 ia >> m_color;
 
                 return load(ia) && is.good();
@@ -142,7 +139,7 @@ namespace ncv
                 m_cols = cols;
                 m_outputs = outputs;
                 m_color = color;
-                m_nparams = resize(verbose);
+                resize(verbose);
 
                 if (verbose)
                 {

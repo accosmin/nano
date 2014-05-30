@@ -108,7 +108,7 @@ namespace ncv
                 size_t idims() const;
                 size_t isize() const { return idims() * irows() * icols(); }
                 size_t osize() const { return m_outputs; }
-                size_t psize() const { return m_nparams; }
+                virtual size_t psize() const = 0;
                 color_mode color() const { return m_color; }
 
         protected:
@@ -131,7 +131,6 @@ namespace ncv
                 // attributes
                 size_t          m_rows, m_cols;         ///< input patch size
                 size_t          m_outputs;              ///< output size
-                size_t          m_nparams;              ///< #number of parameters
                 color_mode      m_color;                ///< input color mode
         };
 }

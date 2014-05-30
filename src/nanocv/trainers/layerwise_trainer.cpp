@@ -1,16 +1,17 @@
-#include "minibatch_trainer.h"
+#include "layerwise_trainer.h"
 #include "common/math.hpp"
 #include "common/logger.h"
 #include "sampler.h"
 #include "accumulator.h"
+#include "models/forward_network.h"
 
 namespace ncv
 {
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        minibatch_trainer_t::minibatch_trainer_t(const string_t& parameters)
+        layerwise_trainer_t::layerwise_trainer_t(const string_t& parameters)
                 :       trainer_t(parameters,
-                                  "minibatch trainer, "\
+                                  "layerwise trainer, "\
                                   "parameters: opt=gd[,lbfgs,cgd],epoch=16[1,1024],"\
                                   "batch=1024[256,8192],iters=8[4,128],eps=1e-6[1e-8,1e-3]")
         {
@@ -18,13 +19,13 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        bool minibatch_trainer_t::train(
+        bool layerwise_trainer_t::train(
                 const task_t& task, const fold_t& fold, const loss_t& loss, size_t nthreads,
                 model_t& model) const
         {
                 if (fold.second != protocol::train)
                 {
-                        log_error() << "minibatch trainer: cannot only train models with training samples!";
+                        log_error() << "layerwise trainer: cannot only train models with training samples!";
                         return false;
                 }
 
@@ -41,7 +42,7 @@ namespace ncv
 
                 if (tsampler.empty() || vsampler.empty())
                 {
-                        log_error() << "minibatch trainer: no annotated training samples!";
+                        log_error() << "layerwise trainer: no annotated training samples!";
                         return false;
                 }
 

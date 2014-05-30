@@ -1,12 +1,13 @@
-#ifndef MINIBATCH_TRAINER_H
-#define MINIBATCH_TRAINER_H
+#ifndef LAYERWISE_TRAINER_H
+#define LAYERWISE_TRAINER_H
 
 #include "trainer.h"
 
 namespace ncv
 {
         ///
-        /// mini-batch trainer: each gradient update is computed for a random sub-set of samples.
+        /// layer-wise trainer: a single layer is trained at a time (in a forward network)
+        ///     using a mini-batch approach.
         ///
         /// parameters:
         ///     opt=gd[,lbfgs,cgd]      - optimization method
@@ -15,17 +16,17 @@ namespace ncv
         ///     iters=8[4,128]          - maximum number of iterations
         ///     eps=1e-6[1e-8,1e-3]     - convergence
         ///
-        class minibatch_trainer_t : public trainer_t
+        class layerwise_trainer_t : public trainer_t
         {
         public:
 
                 // constructor
-                minibatch_trainer_t(const string_t& parameters = string_t());
+                layerwise_trainer_t(const string_t& parameters = string_t());
 
                 // create an object clone
                 virtual rtrainer_t clone(const string_t& parameters) const
                 {
-                        return rtrainer_t(new minibatch_trainer_t(parameters));
+                        return rtrainer_t(new layerwise_trainer_t(parameters));
                 }
 
                 // train the model
@@ -33,4 +34,4 @@ namespace ncv
         };
 }
 
-#endif // MINIBATCH_TRAINER_H
+#endif // LAYERWISE_TRAINER_H

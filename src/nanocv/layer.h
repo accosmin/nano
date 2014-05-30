@@ -66,8 +66,8 @@ namespace ncv
                 ///
                 /// \brief toggle the layer (for gradient computation)
                 ///
-                void enable() { m_enabled = true; }
-                void disable() { m_enabled = false; }
+                bool enable() { return toggable() && (m_enabled = true); }
+                bool disable() { return toggable() && !(m_enabled = false); }
 
                 ///
                 /// \brief returns the input/output dimensions

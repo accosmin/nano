@@ -15,28 +15,57 @@ namespace ncv
 
                 using model_t::resize;
                 
-                // constructor
+                ///
+                /// \brief constructor
+                ///
                 forward_network_t(const string_t& parameters = string_t());
 
-                // create an object clone
+                ///
+                /// \brief create an object clone
+                ///
                 virtual rmodel_t clone(const string_t& parameters) const;
 
-                // compute the model's output
+                ///
+                /// \brief compute the model's output
+                ///
                 virtual const tensor_t& forward(const tensor_t& input) const;
 
-                // compute the model's gradient wrt parameters
+                ///
+                /// \brief compute the model's gradient wrt parameters
+                ///
                 virtual vector_t gradient(const vector_t& output) const;
 
-                // compute the model's gradient (wrt parameters & inputs)
+                ///
+                /// \brief compute the model's gradient (wrt parameters & inputs)
+                ///
                 virtual const tensor_t& backward(const vector_t& output) const;
 
-                // save/load/initialize parameters
+                ///
+                /// \brief save/load/initialize parameters
+                ///
                 virtual bool load_params(const vector_t& x);
                 virtual void zero_params();
                 virtual void random_params();
 
-                // access current parameters
+                ///
+                /// \brief current parameters
+                ///
                 virtual vector_t params() const;
+
+                ///
+                /// \brief number of parameters
+                ///
+                virtual size_t psize() const;
+
+                ///
+                /// \brief manage layers
+                ///
+                size_t n_layers() const { return m_layers.size(); }
+
+                bool toggable(size_t layer) const;
+                bool enabled(size_t layer) const;
+                bool enable(size_t layer);
+                bool disable(size_t layer);
 
         protected:
 
@@ -49,13 +78,15 @@ namespace ncv
 
         private:
 
-                // display the model structure
+                ///
+                /// \brief display the model structure
+                ///
                 void print(const strings_t& layer_ids) const;
 
         private:
 
                 // attributes
-                rlayers_t               m_layers;       // feed-forward layers
+                rlayers_t               m_layers;       ///< feed-forward layers
         };
 }
 
