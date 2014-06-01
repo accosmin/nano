@@ -15,14 +15,10 @@ namespace ncv
         {
         public:
 
+                NANOCV_MAKE_CLONABLE(softmax_layer_t)
+
                 // constructor
                 softmax_layer_t(const string_t& parameters = string_t());
-
-                // create an object clone
-                virtual rlayer_t clone(const string_t& parameters) const
-                {
-                        return rlayer_t(new softmax_layer_t(parameters));
-                }
 
                 // resize to process new tensors of the given type
                 virtual size_t resize(const tensor_t& tensor);

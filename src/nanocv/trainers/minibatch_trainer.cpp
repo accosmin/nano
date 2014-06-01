@@ -60,7 +60,7 @@ namespace ncv
                 trainer_state_t state(model.psize());
 
                 // train the model
-                const scalars_t lambdas = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
+                const scalars_t lambdas = { 1e-3, 1e-2, 1e-1, 1.0 };
                 for (scalar_t lambda : lambdas)
                 {
                         accumulator_t ldata(model, accumulator_t::type::value, lambda);
@@ -69,11 +69,8 @@ namespace ncv
                         vector_t x0 = model.params();
                         for (size_t e = 0; e < epochs; e ++)
                         {
-                                const samples_t tsamples = tsampler.get();
-                                const samples_t vsamples = vsampler.get();
-
                                 const opt_state_t result = ncv::batch_train(
-                                        task, tsamples, vsamples, nthreads,
+                                        task, tsampler.get(), vsampler.get(), nthreads,
                                         loss, optimizer, 1, iterations, epsilon,
                                         x0, ldata, gdata, state);
                                 x0 = result.x;

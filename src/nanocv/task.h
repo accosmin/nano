@@ -3,6 +3,7 @@
 
 #include "common/manager.hpp"
 #include "image.h"
+#include "sample.h"
 
 namespace ncv
 {

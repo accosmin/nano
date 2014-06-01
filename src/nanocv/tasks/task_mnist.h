@@ -16,16 +16,13 @@ namespace ncv
         class mnist_task_t : public task_t
         {
         public:
+
+                NANOCV_MAKE_CLONABLE(mnist_task_t)
+
                 // constructor
-                mnist_task_t()
+                mnist_task_t(const string_t& = string_t())
                         :       task_t("MNIST (digit classification)")
                 {
-                }
-
-                // create an object clone
-                virtual rtask_t clone(const string_t&) const
-                {
-                        return rtask_t(new mnist_task_t);
                 }
 
                 // load images from the given directory

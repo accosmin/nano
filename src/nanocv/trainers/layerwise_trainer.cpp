@@ -29,6 +29,13 @@ namespace ncv
                         return false;
                 }
 
+                forward_network_t* fmodel = dynamic_cast<forward_network_t*>(&model);
+                if (!fmodel)
+                {
+                        log_error() << "layerwise trainer: cannot only train forward network models!";
+                        return false;
+                }
+
                 // initialize the model
                 model.resize(task, true);
                 model.random_params();
@@ -46,6 +53,16 @@ namespace ncv
                         return false;
                 }
 
+                // find toggable layers
+                std::vector<size_t> tlayers;
+                for (size_t l = 0; l < fmodel->n_layers(); l ++)
+                {
+                        if (fmodel->toggable(l))
+                        {
+                                tlayers.push_back(l);
+                        }
+                }
+
                 // parameters
                 const size_t epochs = math::clamp(text::from_params<size_t>(configuration(), "epoch", 16), 1, 1024);
                 const size_t batchsize = math::clamp(text::from_params<size_t>(configuration(), "batch", 1024), 256, 8192);
@@ -61,20 +78,35 @@ namespace ncv
                 trainer_state_t state(model.psize());
 
                 // train the model
-                const scalars_t lambdas = { 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0 };
+                const scalars_t lambdas = { 1e-3, 1e-2, 1e-1, 1.0 };
                 for (scalar_t lambda : lambdas)
                 {
-                        accumulator_t ldata(model, accumulator_t::type::value, lambda);
-                        accumulator_t gdata(model, accumulator_t::type::vgrad, lambda);
-
                         vector_t x0 = model.params();
                         for (size_t e = 0; e < epochs; e ++)
                         {
-                                const samples_t tsamples = tsampler.get();
-                                const samples_t vsamples = vsampler.get();
+                                // select a single layer for training ...
+                                for (size_t il = 0; il < tlayers.size(); il ++)
+                                {
+                                        if (il == (e % tlayers.size()))
+                                        {
+                                                std::cout << "enable layer [" << il << "/" << tlayers.size() << "]" << std::endl;
+                                                fmodel->enable(tlayers[il]);
+                                        }
+                                        else
+                                        {
+                                                std::cout << "disable layer [" << il << "/" << tlayers.size() << "]" << std::endl;
+                                                fmodel->disable(tlayers[il]);
+                                        }
+                                }
+
+                                std::cout << "#params = " << fmodel->psize() << "/" << model.psize() << std::endl;
+
+                                // ... and optimize
+                                accumulator_t ldata(model, accumulator_t::type::value, lambda);
+                                accumulator_t gdata(model, accumulator_t::type::vgrad, lambda);
 
                                 const opt_state_t result = ncv::batch_train(
-                                        task, tsamples, vsamples, nthreads,
+                                        task, tsampler.get(), vsampler.get(), nthreads,
                                         loss, optimizer, 1, iterations, epsilon,
                                         x0, ldata, gdata, state);
                                 x0 = result.x;

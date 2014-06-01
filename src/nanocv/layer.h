@@ -26,8 +26,7 @@ namespace ncv
                 /// \brief constructor
                 ///
                 layer_t(const string_t& parameters, const string_t& description)
-                        :       clonable_t<layer_t>(parameters, description),
-                                m_enabled(true)
+                        :       clonable_t<layer_t>(parameters, description)
                 {
                 }
 

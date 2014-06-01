@@ -17,16 +17,12 @@ namespace ncv
         {
         public:
 
+                NANOCV_MAKE_CLONABLE(cbclfaces_task_t)
+
                 // constructor
-                cbclfaces_task_t()
+                cbclfaces_task_t(const string_t& = string_t())
                         :       task_t("CBCL faces (face/non-face classification)")
                 {
-                }
-
-                // create an object clone
-                virtual rtask_t clone(const string_t&) const
-                {
-                        return rtask_t(new cbclfaces_task_t());
                 }
 
                 // load images from the given directory

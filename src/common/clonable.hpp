@@ -8,7 +8,8 @@ namespace ncv
 {
         ///
         /// the clonable interface to be used with a manager:
-        ///      ::clone(const std::string&)    - create a new object (with the given configuration)
+        ///      ::make(const std::string&)     - create a new object (with the given configuration)
+        ///      ::clone()                      - create a copy of the current object
         ///      ::configuration()              - parametrization
         ///      ::description()                - short description (configuration included)
         ///
@@ -32,15 +33,11 @@ namespace ncv
                 {
                 }
 
-                // disable copying
-                clonable_t(const clonable_t&) = delete;
-                clonable_t& operator=(const clonable_t&) = delete;
-
                 ///
                 /// \brief create an object clone
                 ///
-                robject_t clone() const { return clone(configuration()); }
-                virtual robject_t clone(const std::string& params) const = 0;
+                virtual robject_t make(const std::string& configuration) const = 0;
+                virtual robject_t clone() const = 0;
                 
                 ///
                 /// \brief describe the object
@@ -54,6 +51,16 @@ namespace ncv
                 std::string     m_configuration;
                 std::string     m_description;
         };
+
+        #define NANOCV_MAKE_CLONABLE(base_class) \
+                virtual robject_t make(const std::string& configuration) const \
+                { \
+                        return robject_t(new base_class(configuration)); \
+                } \
+                virtual robject_t clone() const \
+                { \
+                        return robject_t(new base_class(*this)); \
+                }
 }
 
 #endif // NANOCV_CLONABLE_H

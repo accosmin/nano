@@ -467,7 +467,7 @@ namespace ncv
 #endif
                 {
                         _backward(m_idata.data(), m_gidata.data(), idims(),
-                                  m_kdata.data(), enabled() ? gradient : 0, krows(), kcols(),
+                                  m_kdata.data(), gradient, krows(), kcols(),
                                   m_odata.data(), odims(), orows(), ocols());
                 }
 

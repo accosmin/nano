@@ -6,7 +6,6 @@
 #include "optimize/opt_gd.hpp"
 #include "optimize/opt_cgd.hpp"
 #include "optimize/opt_lbfgs.hpp"
-#include "sampler.h"
 #include "accumulator.h"
 
 namespace ncv
@@ -109,7 +108,6 @@ namespace ncv
                 auto fn_ulog = [&] (const opt_state_t& result, const timer_t& timer)
                 {
                         ++ iteration;
-
                         if ((iteration % iterations) == 0)
                         {
                                 const scalar_t tvalue = gdata.value();
@@ -128,7 +126,7 @@ namespace ncv
                                 log_info() << "[train = " << tvalue << "/" << terror
                                            << ", valid = " << vvalue << "/" << verror
                                            << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
-                                           << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
+                                           << ", dims = " << ldata.dimensions()
                                            << ", lambda = " << ldata.lambda()
                                            << "] done in " << timer.elapsed() << ".";
                         }
@@ -203,6 +201,7 @@ namespace ncv
                                 // one epoch: a pass through all training samples
                                 switch (type)
                                 {
+                                        // stochastic gradient
                                 case stochastic_optimizer::SG:
                                         for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
                                         {
@@ -214,6 +213,7 @@ namespace ncv
                                         xparam = x;
                                         break;
 
+                                        // stochastic gradient average
                                 case stochastic_optimizer::SGA:
                                         for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
                                         {
@@ -231,6 +231,7 @@ namespace ncv
                                         xparam = x;
                                         break;
 
+                                        // stochastic iterative average
                                 case stochastic_optimizer::SIA:
                                 default:
                                         for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
@@ -271,6 +272,7 @@ namespace ncv
                                         << ", valid = " << vvalue << "/" << verror
                                         << ", rate = " << alpha << "/" << alpha0
                                         << ", epoch = " << e << "/" << epochs
+                                        << ", dims = " << ldata.dimensions()
                                         << ", lambda = " << ldata.lambda()
                                         << "] done in " << timer.elapsed() << ".";
                         }

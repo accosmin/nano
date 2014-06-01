@@ -16,16 +16,13 @@ namespace ncv
         class stl10_task_t : public task_t
         {
         public:
+
+                NANOCV_MAKE_CLONABLE(stl10_task_t)
+
                 // constructor
-                stl10_task_t()
+                stl10_task_t(const string_t& = string_t())
                         :       task_t("STL-10 (object classification)")
                 {
-                }
-
-                // create an object clone
-                virtual rtask_t clone(const string_t&) const
-                {
-                        return rtask_t(new stl10_task_t);
                 }
 
                 // load images from the given directory

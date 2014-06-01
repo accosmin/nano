@@ -23,7 +23,8 @@ namespace ncv
                 ///
                 /// \brief create an object clone
                 ///
-                virtual rmodel_t clone(const string_t& parameters) const;
+                virtual rmodel_t make(const string_t& configuration) const;
+                virtual rmodel_t clone() const;
 
                 ///
                 /// \brief compute the model's output
@@ -64,6 +65,7 @@ namespace ncv
 
                 bool toggable(size_t layer) const;
                 bool enabled(size_t layer) const;
+
                 bool enable(size_t layer);
                 bool disable(size_t layer);
 
@@ -86,7 +88,7 @@ namespace ncv
         private:
 
                 // attributes
-                rlayers_t               m_layers;       ///< feed-forward layers
+                rlayers_t               m_layers;               ///< feed-forward layers
         };
 }
 

@@ -143,7 +143,7 @@ namespace ncv
                 m_odata.copy_from(output);
 
                 _backward(m_idata.data(), isize(),
-                          m_wdata.data(), enabled() ? gradient : 0, enabled() ? gradient + m_wdata.size() : 0,
+                          m_wdata.data(), gradient, gradient + m_wdata.size(),
                           m_odata.data(), osize());
 
                 return m_idata;

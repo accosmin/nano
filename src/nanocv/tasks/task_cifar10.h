@@ -16,16 +16,13 @@ namespace ncv
         class cifar10_task_t : public task_t
         {
         public:
+
+                NANOCV_MAKE_CLONABLE(cifar10_task_t)
+
                 // constructor
-                cifar10_task_t()
+                cifar10_task_t(const string_t& = string_t())
                         :       task_t("CIFAR-10 (object classification)")
                 {
-                }
-
-                // create an object clone
-                virtual rtask_t clone(const string_t&) const
-                {
-                        return rtask_t(new cifar10_task_t());
                 }
 
                 // load images from the given directory

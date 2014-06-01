@@ -73,8 +73,14 @@ namespace ncv
                         const rlayer_t& layer = *it;
 
                         if (layer->enabled())
-                        pgradient -= layer->psize();
-                        poutput = &layer->backward(*poutput, pgradient);
+                        {
+                                pgradient -= layer->psize();
+                                poutput = &layer->backward(*poutput, pgradient);
+                        }
+                        else
+                        {
+                                poutput = &layer->backward(*poutput, 0);
+                        }
                 }
 
                 return gradient;
@@ -110,6 +116,8 @@ namespace ncv
                         const scalar_t* px = x.data() + x.size();
                         for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                         {
+                                const rlayer_t& layer = *it;
+
                                 if (layer->enabled())
                                 {
                                         px -= layer->psize();
@@ -132,7 +140,10 @@ namespace ncv
         {
                 for (const rlayer_t& layer : m_layers)
                 {
-                        layer->zero_params();
+                        if (layer->enabled())
+                        {
+                                layer->zero_params();
+                        }
                 }
         }
 
@@ -256,7 +267,9 @@ namespace ncv
 
         void forward_network_t::print(const strings_t& layer_ids) const
         {
-                for (size_t l = 0; l < m_layers.size(); l ++)
+                assert(n_layers() == layer_ids.size());
+
+                for (size_t l = 0; l < n_layers(); l ++)
                 {
                         const rlayer_t& layer = m_layers[l];
 
@@ -270,24 +283,23 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        rmodel_t forward_network_t::clone(const string_t& parameters) const
+        rmodel_t forward_network_t::make(const string_t& configuration) const
         {
-                const rmodel_t model(new forward_network_t(parameters));
+                return rmodel_t(new forward_network_t(configuration));
+        }
 
-                // copy layers
-                if (osize() > 0)
-                {
-                        model->resize(irows(), icols(), osize(), color(), false);
-                }
-                model->load_params(this->params());
+        /////////////////////////////////////////////////////////////////////////////////////////
 
-                // copy flags
+        rmodel_t forward_network_t::clone() const
+        {
+                std::auto_ptr<forward_network_t> model(new forward_network_t(*this));
+
                 for (size_t l = 0; l < n_layers(); l ++)
                 {
-                        dynamic_cast<forward_network_t*>(model)->m_layers.push_back(layer->clone());
+                        model->m_layers[l] = this->m_layers[l]->clone();
                 }
 
-                return model;
+                return rmodel_t(model.release());
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

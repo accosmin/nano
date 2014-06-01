@@ -58,7 +58,7 @@ namespace ncv
 
                 bool _add(const std::string& id, const tobject& proto)
                 {
-                        return m_protos.insert(typename protos_t::value_type(id, proto.clone(""))).second;
+                        return m_protos.insert(typename protos_t::value_type(id, proto.clone())).second;
                 }
 
                 /////////////////////////////////////////////////////////////////////////////////////////
@@ -89,7 +89,7 @@ namespace ncv
                         {
                                 throw std::runtime_error("invalid object id <" + id + ">!");
                         }
-                        return it->second->clone(params);
+                        return it->second->make(params);
                 }
 
                 /////////////////////////////////////////////////////////////////////////////////////////

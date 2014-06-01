@@ -19,14 +19,10 @@ namespace ncv
         {
         public:
 
+                NANOCV_MAKE_CLONABLE(minibatch_trainer_t)
+
                 // constructor
                 minibatch_trainer_t(const string_t& parameters = string_t());
-
-                // create an object clone
-                virtual rtrainer_t clone(const string_t& parameters) const
-                {
-                        return rtrainer_t(new minibatch_trainer_t(parameters));
-                }
 
                 // train the model
                 virtual bool train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const;

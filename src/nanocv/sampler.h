@@ -1,7 +1,7 @@
 #ifndef NANOCV_SAMPLER_H
 #define NANOCV_SAMPLER_H
 
-#include "image.h"
+#include "sample.h"
 
 namespace ncv
 {
