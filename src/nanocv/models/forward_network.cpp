@@ -14,6 +14,31 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
+        forward_network_t::forward_network_t(const forward_network_t& other)
+                :       model_t(other),
+                        m_layers(other.m_layers)
+        {
+                for (size_t l = 0; l < n_layers(); l ++)
+                {
+                        m_layers[l] = other.m_layers[l]->clone();
+                }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
+        forward_network_t& forward_network_t::operator=(forward_network_t other)
+        {
+                if (this != &other)
+                {
+                        model_t::operator=(other);
+                        std::swap(m_layers, other.m_layers);
+                }
+
+                return *this;
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+
         const tensor_t& forward_network_t::forward(const tensor_t& _input) const
         {
                 const tensor_t* input = &_input;
@@ -279,27 +304,6 @@ namespace ncv
                                 % layer->idims() % layer->irows() % layer->icols()
                                 % layer->odims() % layer->orows() % layer->ocols();
                 }
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        rmodel_t forward_network_t::make(const string_t& configuration) const
-        {
-                return rmodel_t(new forward_network_t(configuration));
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        rmodel_t forward_network_t::clone() const
-        {
-                std::auto_ptr<forward_network_t> model(new forward_network_t(*this));
-
-                for (size_t l = 0; l < n_layers(); l ++)
-                {
-                        model->m_layers[l] = this->m_layers[l]->clone();
-                }
-
-                return rmodel_t(model.release());
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

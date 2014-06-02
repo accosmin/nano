@@ -13,6 +13,8 @@ namespace ncv
         {
         public:
 
+                NANOCV_MAKE_CLONABLE(forward_network_t)
+
                 using model_t::resize;
                 
                 ///
@@ -21,10 +23,14 @@ namespace ncv
                 forward_network_t(const string_t& parameters = string_t());
 
                 ///
-                /// \brief create an object clone
+                /// \brief copy constructor
                 ///
-                virtual rmodel_t make(const string_t& configuration) const;
-                virtual rmodel_t clone() const;
+                forward_network_t(const forward_network_t& other);
+
+                ///
+                /// \brief assignment operator
+                ///
+                forward_network_t& operator=(forward_network_t other);
 
                 ///
                 /// \brief compute the model's output
