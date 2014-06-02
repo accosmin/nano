@@ -72,8 +72,8 @@ namespace ncv
                 bool toggable(size_t layer) const;
                 bool enabled(size_t layer) const;
 
-                bool enable(size_t layer);
-                bool disable(size_t layer);
+                void enable(size_t layer);
+                void disable(size_t layer);
 
         protected:
 
@@ -91,10 +91,32 @@ namespace ncv
                 ///
                 void print(const strings_t& layer_ids) const;
 
+                ///
+                /// \brief feed-forward layer
+                ///
+                struct flayer_t
+                {
+                        flayer_t(const rlayer_t& layer = rlayer_t(), bool enable = true)
+                                :       m_layer(layer), m_enable(enable)
+                        {
+                        }
+
+                        bool toggable() const { return m_layer->psize() > 0; }
+                        bool enabled() const { return m_enable; }
+                        void enable() { m_enable = true; }
+                        void disable() { m_enable = false; }
+
+                        // attributes
+                        rlayer_t        m_layer;                ///< layer
+                        bool            m_enable;               ///< enable flag
+                };
+
+                typedef std::vector<flayer_t>   flayers_t;
+
         private:
 
                 // attributes
-                rlayers_t               m_layers;               ///< feed-forward layers
+                flayers_t               m_layers;               ///< feed-forward layers
         };
 }
 

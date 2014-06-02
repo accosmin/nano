@@ -63,12 +63,6 @@ namespace ncv
                 virtual const tensor_t& backward(const tensor_t& output, scalar_t* gradient) = 0;
 
                 ///
-                /// \brief toggle the layer (for gradient computation)
-                ///
-                bool enable() { return toggable() && (m_enabled = true); }
-                bool disable() { return toggable() && !(m_enabled = false); }
-
-                ///
                 /// \brief returns the input/output dimensions
                 ///
                 virtual size_t idims() const = 0;
@@ -83,17 +77,6 @@ namespace ncv
                 /// \brief returns the number of (optimization) parameters
                 ///
                 virtual size_t psize() const = 0;
-
-                ///
-                /// \brief returns the toggling state (for gradient computation)
-                ///
-                bool enabled() const { return m_enabled; }
-                bool toggable() const { return psize() > 0; }
-
-        private:
-
-                // attributes
-                bool            m_enabled;
         };
 }
 
