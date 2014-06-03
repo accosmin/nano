@@ -88,8 +88,6 @@ namespace ncv
 
                 auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
-                        std::cout << "fn_fval_grad: psize = " << ldata.dimensions() << "/" << gdata.dimensions() << std::endl;
-                        
                         // training samples: loss value & gradient
                         gdata.reset(x);
                         gdata.update(task, tsamples, loss, nthreads);

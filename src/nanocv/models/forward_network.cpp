@@ -129,8 +129,6 @@ namespace ncv
                         }
                 }
                 
-                std::cout << "forward_network_t::params() = " << x.size() << std::endl;
-
                 return x;
         }
 
@@ -138,8 +136,6 @@ namespace ncv
 
         bool forward_network_t::load_params(const vector_t& x)
         {
-                std::cout << "forward_network_t::load_params() = " << x.size() << "/" << psize() << std::endl;
-                
                 if (math::cast<size_t>(x.size()) == psize())
                 {
                         const scalar_t* px = x.data() + x.size();

@@ -32,8 +32,6 @@ namespace ncv
                 // initialize the model
                 model.resize(task, true);
                 model.random_params();
-                
-                const vector_t x0 = model.params();
 
                 // prune training & validation data
                 sampler_t tsampler(task);
@@ -59,7 +57,7 @@ namespace ncv
 
                 tsampler.setup(sampler_t::stype::uniform, batchsize);   // random training samples
                 vsampler.setup(sampler_t::stype::batch);                // but all validation samples
-
+                
                 trainer_state_t state(model.psize());
 
                 // train the model
@@ -67,7 +65,6 @@ namespace ncv
                 for (scalar_t lambda : lambdas)
                 {                           
                         const rmodel_t cmodel = model.clone();
-                        cmodel->load_params(x0);
 
                         forward_network_t* fmodel = dynamic_cast<forward_network_t*>(cmodel.get());
                         if (!fmodel)
@@ -89,9 +86,6 @@ namespace ncv
                         // optimize
                         for (size_t e = 0; e < epochs; e ++)
                         {
-                                accumulator_t ldata(cmodel, accumulator_t::type::value, lambda);
-                                accumulator_t gdata(cmodel, accumulator_t::type::vgrad, lambda);  
-                                
                                 // select a single layer for training ...
                                 for (size_t il = 0; il < tlayers.size(); il ++)
                                 {
@@ -103,23 +97,24 @@ namespace ncv
                                         {
                                                 fmodel->disable(tlayers[il]);
                                         }
-                                }               
+                                }          
+                                
+                                trainer_state_t cstate(cmodel->psize());                
+                                accumulator_t ldata(cmodel, accumulator_t::type::value, lambda);
+                                accumulator_t gdata(cmodel, accumulator_t::type::vgrad, lambda);
 
                                 // ... and optimize
                                 const opt_state_t result = ncv::batch_train(
                                         task, tsampler.get(), vsampler.get(), nthreads,
                                         loss, optimizer, 1, iterations, epsilon,
-                                        cmodel->params(), ldata, gdata, state);
-                                cmodel->load_params(result.x);
+                                        cmodel->params(), ldata, gdata, cstate);
+                                
+                                // update optimum (for all layers)
+                                cmodel->load_params(result.x);                                
+                                fmodel->enable_all();
+                                cstate.m_params = cmodel->params();
+                                state.update(cstate);
                         }
-                        
-                        // store the optimum 
-                        for (size_t l = 0; l < fmodel->n_layers(); l ++)
-                        {
-                                fmodel->enable(l);
-                        }
-                        
-                        // TODO                        
                 }
 
                 log_info() << "optimum [train = " << state.m_tvalue << "/" << state.m_terror
