@@ -23,7 +23,7 @@ namespace ncv
         {
                 if (fold.second != protocol::train)
                 {
-                        log_error() << "batch trainer: cannot only train models with training samples!";
+                        log_error() << "batch trainer: can only train models with training samples!";
                         return false;
                 }
 

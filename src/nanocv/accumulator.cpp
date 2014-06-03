@@ -66,7 +66,10 @@ namespace ncv
         void accumulator_t::reset(const vector_t& params)
         {
                 assert(m_model);
-                m_model->load_params(params);
+                if (!m_model->load_params(params))
+                {
+                        std::cout << "accumulator_t::reset: params = " << params.size() << "/" << m_model->psize() << std::endl;
+                }
                 m_data.m_params = params;
 
                 reset();

@@ -25,20 +25,24 @@ namespace ncv
         {
                 if (fold.second != protocol::train)
                 {
-                        log_error() << "layerwise trainer: cannot only train models with training samples!";
+                        log_error() << "layerwise trainer: can only train models with training samples!";
                         return false;
                 }
 
                 forward_network_t* fmodel = dynamic_cast<forward_network_t*>(&model);
                 if (!fmodel)
                 {
-                        log_error() << "layerwise trainer: cannot only train forward network models!";
+                        log_error() << "layerwise trainer: can only train forward network models!";
                         return false;
                 }
+                
+                const rmodel_t cmodel = model.clone();
 
                 // initialize the model
                 model.resize(task, true);
                 model.random_params();
+                
+                const vector_t x0 = model.params();
 
                 // prune training & validation data
                 sampler_t tsampler(task);
@@ -80,8 +84,7 @@ namespace ncv
                 // train the model
                 const scalars_t lambdas = { 1e-3, 1e-2, 1e-1, 1.0 };
                 for (scalar_t lambda : lambdas)
-                {
-                        vector_t x0 = model.params();
+                {                                             
                         for (size_t e = 0; e < epochs; e ++)
                         {
                                 // select a single layer for training ...
@@ -89,17 +92,13 @@ namespace ncv
                                 {
                                         if (il == (e % tlayers.size()))
                                         {
-                                                std::cout << "enable layer [" << il << "/" << tlayers.size() << "]" << std::endl;
                                                 fmodel->enable(tlayers[il]);
                                         }
                                         else
                                         {
-                                                std::cout << "disable layer [" << il << "/" << tlayers.size() << "]" << std::endl;
                                                 fmodel->disable(tlayers[il]);
                                         }
-                                }
-
-                                std::cout << "#params = " << fmodel->psize() << "/" << model.psize() << std::endl;
+                                }               
 
                                 // ... and optimize
                                 accumulator_t ldata(model, accumulator_t::type::value, lambda);
@@ -108,9 +107,11 @@ namespace ncv
                                 const opt_state_t result = ncv::batch_train(
                                         task, tsampler.get(), vsampler.get(), nthreads,
                                         loss, optimizer, 1, iterations, epsilon,
-                                        x0, ldata, gdata, state);
-                                x0 = result.x;
+                                        cmodel.params(), ldata, gdata, state);
+                                cmodel.load_params(result.x);
                         }
+                        
+                        
                 }
 
                 log_info() << "optimum [train = " << state.m_tvalue << "/" << state.m_terror
@@ -118,6 +119,12 @@ namespace ncv
                            << ", lambda = " << state.m_lambda
                            << ", funs = " << state.m_fcalls << "/" << state.m_gcalls
                            << "].";
+                           
+                // enable all layers
+                for (size_t il = 0; il < tlayers.size(); il ++)
+                {
+                        fmodel->enable(tlayers[il]);
+                }
 
                 // OK
                 return model.load_params(state.m_params);

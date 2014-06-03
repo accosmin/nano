@@ -23,7 +23,7 @@ namespace ncv
         {
                 if (fold.second != protocol::train)
                 {
-                        log_error() << "stochastic trainer: cannot only train models with training samples!";
+                        log_error() << "stochastic trainer: can only train models with training samples!";
                         return false;
                 }
 
@@ -40,7 +40,7 @@ namespace ncv
 
                 if (tsampler.empty() || vsampler.empty())
                 {
-                        log_error() << "batch trainer: no annotated training samples!";
+                        log_error() << "stochastic trainer: no annotated training samples!";
                         return false;
                 }
 
