@@ -29,15 +29,6 @@ namespace ncv
                         return false;
                 }
 
-                forward_network_t* fmodel = dynamic_cast<forward_network_t*>(&model);
-                if (!fmodel)
-                {
-                        log_error() << "layerwise trainer: can only train forward network models!";
-                        return false;
-                }
-                
-                const rmodel_t cmodel = model.clone();
-
                 // initialize the model
                 model.resize(task, true);
                 model.random_params();
@@ -57,16 +48,6 @@ namespace ncv
                         return false;
                 }
 
-                // find toggable layers
-                std::vector<size_t> tlayers;
-                for (size_t l = 0; l < fmodel->n_layers(); l ++)
-                {
-                        if (fmodel->toggable(l))
-                        {
-                                tlayers.push_back(l);
-                        }
-                }
-
                 // parameters
                 const size_t epochs = math::clamp(text::from_params<size_t>(configuration(), "epoch", 16), 1, 1024);
                 const size_t batchsize = math::clamp(text::from_params<size_t>(configuration(), "batch", 1024), 256, 8192);
@@ -84,9 +65,33 @@ namespace ncv
                 // train the model
                 const scalars_t lambdas = { 1e-3, 1e-2, 1e-1, 1.0 };
                 for (scalar_t lambda : lambdas)
-                {                                             
+                {                           
+                        const rmodel_t cmodel = model.clone();
+                        cmodel->load_params(x0);
+
+                        forward_network_t* fmodel = dynamic_cast<forward_network_t*>(cmodel.get());
+                        if (!fmodel)
+                        {
+                                log_error() << "layerwise trainer: can only train forward network models!";
+                                return false;
+                        }
+
+                        // find toggable layers
+                        std::vector<size_t> tlayers;
+                        for (size_t l = 0; l < fmodel->n_layers(); l ++)
+                        {
+                                if (fmodel->toggable(l))
+                                {
+                                        tlayers.push_back(l);
+                                }
+                        }                              
+                        
+                        // optimize
                         for (size_t e = 0; e < epochs; e ++)
                         {
+                                accumulator_t ldata(cmodel, accumulator_t::type::value, lambda);
+                                accumulator_t gdata(cmodel, accumulator_t::type::vgrad, lambda);  
+                                
                                 // select a single layer for training ...
                                 for (size_t il = 0; il < tlayers.size(); il ++)
                                 {
@@ -101,17 +106,20 @@ namespace ncv
                                 }               
 
                                 // ... and optimize
-                                accumulator_t ldata(model, accumulator_t::type::value, lambda);
-                                accumulator_t gdata(model, accumulator_t::type::vgrad, lambda);
-
                                 const opt_state_t result = ncv::batch_train(
                                         task, tsampler.get(), vsampler.get(), nthreads,
                                         loss, optimizer, 1, iterations, epsilon,
-                                        cmodel.params(), ldata, gdata, state);
-                                cmodel.load_params(result.x);
+                                        cmodel->params(), ldata, gdata, state);
+                                cmodel->load_params(result.x);
                         }
                         
+                        // store the optimum 
+                        for (size_t l = 0; l < fmodel->n_layers(); l ++)
+                        {
+                                fmodel->enable(l);
+                        }
                         
+                        // TODO                        
                 }
 
                 log_info() << "optimum [train = " << state.m_tvalue << "/" << state.m_terror
@@ -119,12 +127,6 @@ namespace ncv
                            << ", lambda = " << state.m_lambda
                            << ", funs = " << state.m_fcalls << "/" << state.m_gcalls
                            << "].";
-                           
-                // enable all layers
-                for (size_t il = 0; il < tlayers.size(); il ++)
-                {
-                        fmodel->enable(tlayers[il]);
-                }
 
                 // OK
                 return model.load_params(state.m_params);

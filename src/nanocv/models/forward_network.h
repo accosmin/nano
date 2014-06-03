@@ -73,6 +73,8 @@ namespace ncv
                 bool enabled(size_t layer) const;
 
                 void enable(size_t layer);
+                void enable_all();
+                
                 void disable(size_t layer);
 
         protected:
