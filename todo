@@ -1,3 +1,7 @@
+- layer-wise trainer:
+	- fewer model cloning and parameter resets
+	- maybe more efficient accumulator (e.g. a single model copy)
+
 - stochastic trainer: 
 	- too slow -> it uses the accumulator inefficiently
 	- double check the L2-regularization
