@@ -20,8 +20,8 @@ namespace ncv
                         m_vvalue(std::numeric_limits<scalar_t>::max()),
                         m_verror(std::numeric_limits<scalar_t>::max()),
                         m_lambda(std::numeric_limits<scalar_t>::max()),
-                        m_fcalls(0),
-                        m_gcalls(0)
+                        m_epoch(0),
+                        m_epochs(0)
         {
         }
 
@@ -30,7 +30,7 @@ namespace ncv
         bool trainer_state_t::update(const vector_t& params,
                     scalar_t tvalue, scalar_t terror,
                     scalar_t vvalue, scalar_t verror,
-                    scalar_t lambda, size_t fcalls, size_t gcalls)
+                    scalar_t lambda, size_t epoch, size_t epochs)
         {
                 if (verror < m_verror)
                 {
@@ -40,8 +40,8 @@ namespace ncv
                         m_vvalue = vvalue;
                         m_verror = verror;
                         m_lambda = lambda;
-                        m_fcalls = fcalls;
-                        m_gcalls = gcalls;
+                        m_epoch = epoch;
+                        m_epochs = epochs;
                         return true;
                 }
 
@@ -57,7 +57,7 @@ namespace ncv
         {
                 return update(state.m_params,
                               state.m_tvalue, state.m_terror, state.m_vvalue, state.m_verror,
-                              state.m_lambda, state.m_fcalls, state.m_gcalls);
+                              state.m_lambda, state.m_epoch, state.m_epochs);
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -69,7 +69,8 @@ namespace ncv
                         const loss_t& loss, batch_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon,
                         const vector_t& x0, accumulator_t& ldata, accumulator_t& gdata, trainer_state_t& state)
                 {
-                        size_t iteration = 0;                        
+                        size_t iteration = 0;                   
+                        size_t epoch = 0;
                         
                         samples_t tsamples = tsampler.get();
                         samples_t vsamples = vsampler.get();                        
@@ -116,6 +117,8 @@ namespace ncv
                                 ++ iteration;
                                 if ((iteration % iterations) == 0)
                                 {
+                                        ++ epoch;
+                                        
                                         const scalar_t tvalue = gdata.value();
                                         const scalar_t terror = gdata.error();
 
@@ -127,7 +130,7 @@ namespace ncv
 
                                         // update the optimum state
                                         state.update(result.x, tvalue, terror, vvalue, verror,
-                                                ldata.lambda(), result.n_fval_calls(), result.n_grad_calls());
+                                                ldata.lambda(), epoch, epochs);
 
                                         log_info() << "[train = " << tvalue << "/" << terror
                                                 << ", valid = " << vvalue << "/" << verror
@@ -301,7 +304,7 @@ namespace ncv
                                 const thread_pool_t::lock_t lock(mutex);
 
                                 state.update(xparam, tvalue, terror, vvalue, verror,
-                                             ldata.lambda(), e * tsamples.size(), e * tsamples.size());
+                                             ldata.lambda(), e, epochs);
 
                                 log_info()
                                         << "[train = " << tvalue << "/" << terror

@@ -60,7 +60,7 @@ namespace ncv
                 log_info() << "optimum [train = " << state.m_tvalue << "/" << state.m_terror
                            << ", valid = " << state.m_vvalue << "/" << state.m_verror
                            << ", lambda = " << state.m_lambda
-                           << ", funs = " << state.m_fcalls << "/" << state.m_gcalls
+                           << ", epoch = " << state.m_epoch << "/" << state.m_epochs
                            << "].";
 
                 // OK

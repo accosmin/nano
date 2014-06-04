@@ -51,7 +51,7 @@ namespace ncv
                 bool update(const vector_t& params,
                             scalar_t tvalue, scalar_t terror,
                             scalar_t vvalue, scalar_t verror,
-                            scalar_t lambda, size_t fcalls, size_t gcalls);
+                            scalar_t lambda, size_t epoch, size_t epochs);
 
                 ///
                 /// \brief update the current/optimum state with a possible better state
@@ -67,8 +67,8 @@ namespace ncv
                 scalar_t        m_vvalue;       ///< optimum validation loss value
                 scalar_t        m_verror;       ///< optimum validation error
                 scalar_t        m_lambda;       ///< optimum regularization weight
-                size_t          m_fcalls;       ///< loss function calls
-                size_t          m_gcalls;       ///< loss gradient calls
+                size_t          m_epoch;        ///< current epoch
+                size_t          m_epochs;       ///< maximum number of epochs
         };
                 
         ///
