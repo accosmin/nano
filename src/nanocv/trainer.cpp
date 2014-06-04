@@ -7,6 +7,7 @@
 #include "optimize/opt_cgd.hpp"
 #include "optimize/opt_lbfgs.hpp"
 #include "accumulator.h"
+#include "sampler.h"
 
 namespace ncv
 {
@@ -61,97 +62,132 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        opt_state_t batch_train(
-                const task_t& task, const samples_t& tsamples, const samples_t& vsamples, size_t nthreads,
-                const loss_t& loss, batch_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon,
-                const vector_t& x0, accumulator_t& ldata, accumulator_t& gdata, trainer_state_t& state)
-        {
-                size_t iteration = 0;
-
-                // construct the optimization problem
-                const timer_t timer;
-
-                auto fn_size = [&] ()
+        namespace detail
+        {        
+                static opt_state_t batch_train(
+                        const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
+                        const loss_t& loss, batch_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon,
+                        const vector_t& x0, accumulator_t& ldata, accumulator_t& gdata, trainer_state_t& state)
                 {
-                        return ldata.dimensions();
-                };
+                        size_t iteration = 0;                        
+                        
+                        samples_t tsamples = tsampler.get();
+                        samples_t vsamples = vsampler.get();                        
 
-                auto fn_fval = [&] (const vector_t& x)
-                {
-                        // training samples: loss value
-                        ldata.reset(x);
-                        ldata.update(task, tsamples, loss, nthreads);
-                        const scalar_t tvalue = ldata.value();
+                        // construct the optimization problem
+                        const timer_t timer;
 
-                        return tvalue;
-                };
-
-                auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
-                {
-                        // training samples: loss value & gradient
-                        gdata.reset(x);
-                        gdata.update(task, tsamples, loss, nthreads);
-                        const scalar_t tvalue = gdata.value();
-                        gx = gdata.vgrad();
-
-                        return tvalue;
-                };
-
-                auto fn_wlog = [] (const string_t& message)
-                {
-                        log_warning() << message;
-                };
-                auto fn_elog = [] (const string_t& message)
-                {
-                        log_error() << message;
-                };
-                auto fn_ulog = [&] (const opt_state_t& result, const timer_t& timer)
-                {
-                        ++ iteration;
-                        if ((iteration % iterations) == 0)
+                        auto fn_size = [&] ()
                         {
+                                return ldata.dimensions();
+                        };
+
+                        auto fn_fval = [&] (const vector_t& x)
+                        {
+                                // training samples: loss value
+                                ldata.reset(x);
+                                ldata.update(task, tsamples, loss, nthreads);
+                                const scalar_t tvalue = ldata.value();
+
+                                return tvalue;
+                        };
+
+                        auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
+                        {
+                                // training samples: loss value & gradient
+                                gdata.reset(x);
+                                gdata.update(task, tsamples, loss, nthreads);
                                 const scalar_t tvalue = gdata.value();
-                                const scalar_t terror = gdata.error();
+                                gx = gdata.vgrad();
 
-                                // validation samples: loss value
-                                ldata.reset(result.x);
-                                ldata.update(task, vsamples, loss, nthreads);
-                                const scalar_t vvalue = ldata.value();
-                                const scalar_t verror = ldata.error();
+                                return tvalue;
+                        };
 
-                                // update the optimum state
-                                state.update(result.x, tvalue, terror, vvalue, verror,
-                                             ldata.lambda(), result.n_fval_calls(), result.n_grad_calls());
+                        auto fn_wlog = [] (const string_t& message)
+                        {
+                                log_warning() << message;
+                        };
+                        auto fn_elog = [] (const string_t& message)
+                        {
+                                log_error() << message;
+                        };
+                        auto fn_ulog = [&] (const opt_state_t& result, const timer_t& timer)
+                        {
+                                ++ iteration;
+                                if ((iteration % iterations) == 0)
+                                {
+                                        const scalar_t tvalue = gdata.value();
+                                        const scalar_t terror = gdata.error();
 
-                                log_info() << "[train = " << tvalue << "/" << terror
-                                           << ", valid = " << vvalue << "/" << verror
-                                           << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
-                                           << ", dims = " << ldata.dimensions()
-                                           << ", lambda = " << ldata.lambda()
-                                           << "] done in " << timer.elapsed() << ".";
+                                        // validation samples: loss value
+                                        ldata.reset(result.x);
+                                        ldata.update(task, vsamples, loss, nthreads);
+                                        const scalar_t vvalue = ldata.value();
+                                        const scalar_t verror = ldata.error();
+
+                                        // update the optimum state
+                                        state.update(result.x, tvalue, terror, vvalue, verror,
+                                                ldata.lambda(), result.n_fval_calls(), result.n_grad_calls());
+
+                                        log_info() << "[train = " << tvalue << "/" << terror
+                                                << ", valid = " << vvalue << "/" << verror
+                                                << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
+                                                << ", dims = " << ldata.dimensions()
+                                                << ", lambda = " << ldata.lambda()
+                                                << "] done in " << timer.elapsed() << ".";
+                                                
+                                        // resample
+                                        samples_t tsamples = tsampler.get();
+                                        samples_t vsamples = vsampler.get();  
+                                }
+                        };
+
+                        // assembly optimization problem & optimize the model
+                        const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
+
+                        const opt_opulog_t fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer));
+
+                        switch (optimizer)
+                        {
+                        case batch_optimizer::LBFGS:
+                                return optimize::lbfgs(problem, x0, epochs * iterations, epsilon,
+                                                       fn_wlog, fn_elog, fn_ulog_ref);
+
+                        case batch_optimizer::CGD:
+                                return optimize::cgd_hs(problem, x0, epochs * iterations, epsilon,
+                                                        fn_wlog, fn_elog, fn_ulog_ref);
+
+                        case batch_optimizer::GD:
+                        default:
+                                return optimize::gd(problem, x0, epochs * iterations, epsilon,
+                                                    fn_wlog, fn_elog, fn_ulog_ref);
                         }
-                };
-
-                // assembly optimization problem & optimize the model
-                const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
-
-                const opt_opulog_t fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer));
-
-                switch (optimizer)
-                {
-                case batch_optimizer::LBFGS:
-                        return optimize::lbfgs(problem, x0, epochs * iterations, epsilon,
-                                               fn_wlog, fn_elog, fn_ulog_ref);
-
-                case batch_optimizer::CGD:
-                        return optimize::cgd_hs(problem, x0, epochs * iterations, epsilon,
-                                                fn_wlog, fn_elog, fn_ulog_ref);
-
-                case batch_optimizer::GD:
-                default:
-                        return optimize::gd(problem, x0, epochs * iterations, epsilon,
-                                            fn_wlog, fn_elog, fn_ulog_ref);
                 }
+        }
+        
+        /////////////////////////////////////////////////////////////////////////////////////////
+        
+        bool batch_train(
+                const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
+                const loss_t& loss, batch_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon,
+                const model_t& model, trainer_state_t& state)
+        {
+                const vector_t x0 = model.params();
+                
+                // tune the regularization factor
+                const scalars_t lambdas = { 1e-3, 1e-2, 1e-1, 1.0 };
+                for (scalar_t lambda : lambdas)
+                {
+                        accumulator_t ldata(model, accumulator_t::type::value, lambda);
+                        accumulator_t gdata(model, accumulator_t::type::vgrad, lambda);
+                        
+                        detail::batch_train(task, tsampler, vsampler, nthreads,
+                                            loss, optimizer, epochs, iterations, epsilon,
+                                            x0, ldata, gdata, state);
+                }
+                
+                // OK
+                return true;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -281,38 +317,48 @@ namespace ncv
 
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        opt_state_t stochastic_train(
-                const task_t& task, const samples_t& tsamples, const samples_t& vsamples, size_t nthreads,
+        bool stochastic_train(
+                const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, stochastic_optimizer optimizer, size_t epochs,
-                const vector_t& x0, accumulator_t& ldata, accumulator_t& gdata, trainer_state_t& state)
+                const model_t& model, trainer_state_t& state)
         {
+                const samples_t tsamples = tsampler.get();
+                const samples_t vsamples = vsampler.get();
+                
                 // prepare workers
                 thread_pool_t wpool(nthreads);
                 thread_pool_t::mutex_t mutex;
 
                 const size_t iterations = epochs * tsamples.size();             // SGD iterations
                 const scalar_t beta = std::pow(0.01, 1.0 / iterations);         // Learning rate decay rate
-
-                // tune the learning rate
-                const scalars_t alphas = { 0.001, 0.010, 0.100 };
-                for (scalar_t alpha : alphas)
+                
+                const vector_t x0 = model.params();
+                
+                // tune the regularization factor
+                const scalars_t lambdas = { 1e-3, 1e-2, 1e-1, 1.0 };
+                for (scalar_t lambda : lambdas)
                 {
-                        wpool.enqueue([=, &task, &tsamples, &vsamples, &loss, &x0, &ldata, &gdata, &state, &mutex]()
+                        // tune the learning rate
+                        const scalars_t alphas = { 0.001, 0.010, 0.100 };
+                        for (scalar_t alpha : alphas)
                         {
-                                detail::stochastic_train(
-                                        task, tsamples, vsamples, loss,
-                                        optimizer, epochs, alpha, beta,
-                                        x0, ldata, gdata, state, mutex);
-                        });
+                                wpool.enqueue([=, &task, &tsamples, &vsamples, &loss, &model, &x0, &state, &mutex]()
+                                {
+                                        accumulator_t ldata(model, accumulator_t::type::value, lambda);
+                                        accumulator_t gdata(model, accumulator_t::type::vgrad, lambda);
+                                        
+                                        detail::stochastic_train(
+                                                task, tsamples, vsamples, loss,
+                                                optimizer, epochs, alpha, beta,
+                                                x0, ldata, gdata, state, mutex);
+                                });
+                        }
                 }
 
                 wpool.wait();
 
                 // OK
-                opt_state_t result(x0.size());
-                result.x = state.m_params;
-                result.f = state.m_tvalue;
-                return result;
+                return true;
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////

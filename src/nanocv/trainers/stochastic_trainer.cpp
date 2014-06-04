@@ -50,20 +50,11 @@ namespace ncv
                 const stochastic_optimizer optimizer = text::from_string<stochastic_optimizer>
                         (text::from_params<string_t>(configuration(), "opt", "sg"));
 
-                trainer_state_t state(model.psize());
-
                 // train the model
-                const scalars_t lambdas = { 1e-3, 1e-2, 1e-1, 1.0 };
-                for (scalar_t lambda : lambdas)
-                {
-                        accumulator_t ldata(model, accumulator_t::type::value, lambda);
-                        accumulator_t gdata(model, accumulator_t::type::vgrad, lambda);
-
-                        const vector_t x0 = model.params();
-                        ncv::stochastic_train(task, tsampler.get(), vsampler.get(), nthreads,
-                                              loss, optimizer, epochs,
-                                              x0, ldata, gdata, state);
-                }
+                trainer_state_t state(model.psize());
+                ncv::stochastic_train(task, tsampler, vsampler, nthreads,
+                                      loss, optimizer, epochs,
+                                      model, state);
 
                 log_info() << "optimum [train = " << state.m_tvalue << "/" << state.m_terror
                            << ", valid = " << state.m_vvalue << "/" << state.m_verror

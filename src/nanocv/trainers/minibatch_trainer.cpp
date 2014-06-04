@@ -57,25 +57,11 @@ namespace ncv
                 tsampler.setup(sampler_t::stype::uniform, batchsize);   // random training samples
                 vsampler.setup(sampler_t::stype::batch);                // but all validation samples
 
-                trainer_state_t state(model.psize());
-
                 // train the model
-                const scalars_t lambdas = { 1e-3, 1e-2, 1e-1, 1.0 };
-                for (scalar_t lambda : lambdas)
-                {
-                        accumulator_t ldata(model, accumulator_t::type::value, lambda);
-                        accumulator_t gdata(model, accumulator_t::type::vgrad, lambda);
-
-                        vector_t x0 = model.params();
-                        for (size_t e = 0; e < epochs; e ++)
-                        {
-                                const opt_state_t result = ncv::batch_train(
-                                        task, tsampler.get(), vsampler.get(), nthreads,
-                                        loss, optimizer, 1, iterations, epsilon,
-                                        x0, ldata, gdata, state);
-                                x0 = result.x;
-                        }
-                }
+                trainer_state_t state(model.psize());
+                ncv::batch_train(task, tsampler, vsampler, nthreads,
+                                 loss, optimizer, 1, iterations, epsilon,
+                                 model, state);
 
                 log_info() << "optimum [train = " << state.m_tvalue << "/" << state.m_terror
                            << ", valid = " << state.m_vvalue << "/" << state.m_verror

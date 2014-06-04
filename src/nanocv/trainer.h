@@ -2,14 +2,13 @@
 #define NANOCV_TRAINER_H
 
 #include "task.h"
-#include "model.h"
-#include <cassert>
 
 namespace ncv
 {
         class trainer_t;
         class loss_t;
-        class accumulator_t;
+        class sampler_t;
+        class model_t;
         struct trainer_state_t;
 
         ///
@@ -21,18 +20,18 @@ namespace ncv
         ///
         /// \brief batch-train the given model
         ///
-        opt_state_t batch_train(
-                const task_t&, const samples_t& tsamples, const samples_t& vsamples, size_t nthreads,
+        bool batch_train(
+                const task_t&, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t&, batch_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon,
-                const vector_t& x0, accumulator_t& ldata, accumulator_t& gdata, trainer_state_t& state);
+                const model_t& model, trainer_state_t& state);
 
         ///
         /// \brief stochastic-train the given model
         ///
-        opt_state_t stochastic_train(
-                const task_t&, const samples_t& tsamples, const samples_t& vsamples, size_t nthreads,
+        bool stochastic_train(
+                const task_t&, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t&, stochastic_optimizer optimizer, size_t epochs,
-                const vector_t& x0, accumulator_t& ldata, accumulator_t& gdata, trainer_state_t& state);
+                const model_t& model, trainer_state_t& state);
 
         ///
         /// \brief track the current/optimum model state
