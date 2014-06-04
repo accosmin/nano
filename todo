@@ -1,6 +1,6 @@
-- layer-wise trainer:
-	- fewer model cloning and parameter resets
-	- maybe more efficient accumulator (e.g. a single model copy)
+- stop early if no improvement in the validation error:
+	- e.g. no improvement in the last N(=8) epochs
+	- for all trainers
 
 - stochastic trainer: 
 	- too slow -> it uses the accumulator inefficiently
