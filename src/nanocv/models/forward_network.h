@@ -69,14 +69,6 @@ namespace ncv
                 ///
                 size_t n_layers() const { return m_layers.size(); }
 
-                bool toggable(size_t layer) const;
-                bool enabled(size_t layer) const;
-
-                void enable(size_t layer);
-                void enable_all();
-                
-                void disable(size_t layer);
-
         protected:
 
                 // save/load from file
