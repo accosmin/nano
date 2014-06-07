@@ -18,6 +18,15 @@ void print(const opt_state_t& result, size_t max_iterations, const string_t& hea
         std::cout << del_line << std::endl;
 }
 
+auto fn_wlog = [] (const string_t& message)
+{
+        log_warning() << message;
+};
+auto fn_elog = [] (const string_t& message)
+{
+        log_error() << message;
+};
+
 // optimize a problem starting from random points
 void test(const opt_problem_t& problem, size_t max_iters, scalar_t eps, const string_t& name, size_t trials)
 {
@@ -38,7 +47,7 @@ void test(const opt_problem_t& problem, size_t max_iters, scalar_t eps, const st
                 { \
                         ncv::timer_t timer; \
                         problem.reset(); \
-                        const opt_state_t res = optimize::FUN(problem, x0, max_iters, eps); \
+                        const opt_state_t res = optimize::FUN(problem, x0, max_iters, eps, fn_wlog, fn_elog); \
                         print(res, max_iters, name + " " + #NAME + name_trial, timer.elapsed()); \
                 }
 
