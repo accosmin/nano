@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
         const size_t cmd_iters = math::clamp(po_vm["iters"].as<size_t>(), 8, 16000);
         const scalar_t cmd_eps = math::clamp(po_vm["eps"].as<scalar_t>(), 1e-20, 1e-1);
         const size_t cmd_dims = math::clamp(po_vm["dim"].as<size_t>(), 2, 1024);
-        const size_t cmd_trials = 64;
+        const size_t cmd_trials = 256;
 
 //         // sphere function
 //         for (size_t n = 2; n <= cmd_dims; n *= 2)

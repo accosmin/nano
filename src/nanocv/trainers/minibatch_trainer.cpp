@@ -60,7 +60,7 @@ namespace ncv
                 // train the model
                 trainer_state_t state(model.psize());
                 ncv::batch_train(task, tsampler, vsampler, nthreads,
-                                 loss, optimizer, epochs, iterations, epsilon,
+                                 loss, optimizer, epochs, 1, iterations, epsilon,
                                  model, state);
 
                 log_info() << "optimum [train = " << state.m_tvalue << "/" << state.m_terror

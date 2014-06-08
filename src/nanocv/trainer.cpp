@@ -67,10 +67,11 @@ namespace ncv
                 static opt_state_t batch_train(
                         const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                         const loss_t& loss, batch_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon,
-                        const vector_t& x0, accumulator_t& ldata, accumulator_t& gdata, trainer_state_t& state)
+                        const vector_t& x0, 
+                        accumulator_t& ldata, accumulator_t& gdata, 
+                        trainer_state_t& state, size_t& epoch, size_t max_epochs)
                 {
-                        size_t iteration = 0;                   
-                        size_t epoch = 0;
+                        size_t iteration = 0;  
                         
                         samples_t tsamples = tsampler.get();
                         samples_t vsamples = vsampler.get();                        
@@ -130,7 +131,7 @@ namespace ncv
 
                                         // update the optimum state
                                         state.update(result.x, tvalue, terror, vvalue, verror,
-                                                ldata.lambda(), epoch, epochs);
+                                                ldata.lambda(), epoch, max_epochs);
 
                                         log_info() << "[train = " << tvalue << "/" << terror
                                                 << ", valid = " << vvalue << "/" << verror
@@ -140,8 +141,11 @@ namespace ncv
                                                 << "] done in " << timer.elapsed() << ".";
                                                 
                                         // resample
-                                        samples_t tsamples = tsampler.get();
-                                        samples_t vsamples = vsampler.get();  
+                                        if (iteration < iterations)
+                                        {
+                                                tsamples = tsampler.get();
+                                                vsamples = vsampler.get();  
+                                        }
                                 }
                         };
 
@@ -157,7 +161,7 @@ namespace ncv
                                                        fn_wlog, fn_elog, fn_ulog_ref);
 
                         case batch_optimizer::CGD:
-                                return optimize::cgd_hs(problem, x0, epochs * iterations, epsilon,
+                                return optimize::cgd_pr(problem, x0, epochs * iterations, epsilon,
                                                         fn_wlog, fn_elog, fn_ulog_ref);
 
                         case batch_optimizer::GD:
@@ -172,10 +176,13 @@ namespace ncv
         
         bool batch_train(
                 const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
-                const loss_t& loss, batch_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon,
+                const loss_t& loss, batch_optimizer optimizer, 
+                size_t cycles, size_t epochs, size_t iterations, scalar_t epsilon,
                 const model_t& model, trainer_state_t& state)
         {
                 const vector_t x0 = model.params();
+                
+                std::cout << "::batch_train: cycles = " << cycles << ", epochs = " << epochs << ", iterations = " << iterations << std::endl;
                 
                 // tune the regularization factor
                 const scalars_t lambdas = { 1e-3, 1e-2, 1e-1, 1.0 };
@@ -183,10 +190,15 @@ namespace ncv
                 {
                         accumulator_t ldata(model, accumulator_t::type::value, lambda);
                         accumulator_t gdata(model, accumulator_t::type::vgrad, lambda);
-                        
-                        detail::batch_train(task, tsampler, vsampler, nthreads,
-                                            loss, optimizer, epochs, iterations, epsilon,
-                                            x0, ldata, gdata, state);
+			
+			vector_t x = x0;
+			for (size_t c = 0, epoch = 0; c < cycles; c ++)
+			{                        
+                                const opt_state_t result = detail::batch_train(task, tsampler, vsampler, nthreads,
+                                        loss, optimizer, epochs, iterations, epsilon,
+                                        x, ldata, gdata, state, epoch, epochs * cycles);                                
+                                x = result.x;
+                        }
                 }
                 
                 // OK
