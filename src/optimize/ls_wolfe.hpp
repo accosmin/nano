@@ -102,7 +102,7 @@ namespace ncv
                         {
                                 // check sufficient decrease
                                 ft = problem(st.x + t * st.d, gt);
-                                if (ft > st.f + c1 * t * dg || ft >= ft0)
+                                if (ft > st.f + c1 * t * dg || (ft >= ft0 && i > 0))
                                 {
                                         return ls_zoom(problem, st, ft, gt, t0, t, ft0, ft, c1, c2, max_iters);
                                 }
