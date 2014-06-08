@@ -1,12 +1,42 @@
 #include "nanocv.h"
 #include <boost/program_options.hpp>
+#include <map>
 
 using namespace ncv;
 
-// display the formatted optimization history
-void print(const opt_state_t& result, size_t max_iterations, const string_t& header, const string_t& time)
+struct opt_info_t
 {
-        static const size_t col_size = 32;
+        opt_info_t()
+                :       m_miliseconds(0),
+                        m_iterations(0),
+                        m_failures(0),
+                        m_count(0)
+        {
+        }
+        
+        void update(const opt_state_t& result, size_t miliseconds)
+        {
+                m_miliseconds += miliseconds;
+                m_iterations += result.m_iterations;
+                if (!result.converged(1e-6))
+                {
+                        m_failures ++;
+                }
+                m_count ++;                        
+        }
+        
+        size_t  m_miliseconds;          ///< total amount of time (miliseconds)
+        size_t  m_iterations;           ///< total number of iterations
+        size_t  m_failures;             ///< total number of failed problems
+        size_t  m_count;                ///< number of tests
+};
+
+std::map<string_t, opt_info_t> opt_statistics;
+
+// display the formatted optimization history (for an optimization problem)
+void print_one(const opt_state_t& result, size_t max_iterations, const string_t& header, const string_t& time)
+{
+        static const size_t col_size = 16;
         static const string_t del_line(4 * col_size + 4, '-');
 
         std::cout << del_line << std::endl;
@@ -18,10 +48,38 @@ void print(const opt_state_t& result, size_t max_iterations, const string_t& hea
         std::cout << del_line << std::endl;
 }
 
+// display the formatted optimization statistics for all optimization algorithms
+void print_all()
+{
+        static const size_t col_size = 32;
+        static const string_t del_line(4 * col_size + 4, '$');
+        
+        std::cout << del_line << std::endl;
+        std::cout 
+                << ncv::text::resize("[algo]", col_size) 
+                << ncv::text::resize("[failures]", col_size) 
+                << ncv::text::resize("[iterations]", col_size)
+                << ncv::text::resize("[time (ms)]", col_size) << std::endl;
+        for (const auto& it : opt_statistics)
+        {
+                const string_t& name = it.first;
+                const opt_info_t& info = it.second;
+                
+                std::cout 
+                        << ncv::text::resize(name, col_size) 
+                        << ncv::text::resize(ncv::text::to_string(info.m_failures), col_size)  
+                        << ncv::text::resize(ncv::text::to_string(info.m_iterations), col_size) 
+                        << ncv::text::resize(ncv::text::to_string(info.m_miliseconds), col_size) 
+                        << std::endl;
+        }
+        std::cout << del_line << std::endl;
+}
+
 auto fn_wlog = [] (const string_t& message)
 {
         log_warning() << message;
 };
+
 auto fn_elog = [] (const string_t& message)
 {
         log_error() << message;
@@ -45,10 +103,11 @@ void test(const opt_problem_t& problem, size_t max_iters, scalar_t eps, const st
 
                 #define NCV_TEST_OPTIMIZER(FUN, NAME) \
                 { \
-                        ncv::timer_t timer; \
+                        const ncv::timer_t timer; \
                         problem.reset(); \
                         const opt_state_t res = optimize::FUN(problem, x0, max_iters, eps, fn_wlog, fn_elog); \
-                        print(res, max_iters, name + " " + #NAME + name_trial, timer.elapsed()); \
+                        print_one(res, max_iters, name + " " + #NAME + name_trial, timer.elapsed()); \
+                        opt_statistics[#NAME].update(res, timer.miliseconds()); \
                 }
 
                 NCV_TEST_OPTIMIZER(gd,          GD)
@@ -95,54 +154,54 @@ int main(int argc, char *argv[])
         const size_t cmd_iters = math::clamp(po_vm["iters"].as<size_t>(), 8, 16000);
         const scalar_t cmd_eps = math::clamp(po_vm["eps"].as<scalar_t>(), 1e-20, 1e-1);
         const size_t cmd_dims = math::clamp(po_vm["dim"].as<size_t>(), 2, 1024);
-        const size_t cmd_trials = 16;
+        const size_t cmd_trials = 64;
 
-//        // sphere function
-//        for (size_t n = 2; n <= cmd_dims; n *= 2)
-//        {
-//                const auto op_size = [=] ()
-//                {
-//                        return n;
-//                };
+//         // sphere function
+//         for (size_t n = 2; n <= cmd_dims; n *= 2)
+//         {
+//                 const auto op_size = [=] ()
+//                 {
+//                         return n;
+//                 };
+// 
+//                 const auto op_fval = [=] (const vector_t& x)
+//                 {
+//                         return x.dot(x);
+//                 };
+// 
+//                 const auto op_grad = [=] (const vector_t& x, vector_t& g)
+//                 {
+//                         g = 2.0 * x;
+//                 };
+// 
+//                 const auto op_fval_grad = [=] (const vector_t& x, vector_t& g)
+//                 {
+//                         op_grad(x, g);
+//                         return op_fval(x);
+//                 };
+// 
+//                 const opt_problem_t problem(op_size, op_fval, op_fval_grad);
+//                 test(problem, cmd_iters, cmd_eps, "sphere [" + text::to_string(n) + "D]", cmd_trials);
+//         }
 
-//                const auto op_fval = [=] (const vector_t& x)
-//                {
-//                        return x.dot(x);
-//                };
-
-//                const auto op_grad = [=] (const vector_t& x, vector_t& g)
-//                {
-//                        g = 2.0 * x;
-//                };
-
-//                const auto op_fval_grad = [=] (const vector_t& x, vector_t& g)
-//                {
-//                        op_grad(x, g);
-//                        return op_fval(x);
-//                };
-
-//                const problem_t problem(op_size, op_fval, op_fval_grad, cmd_iters, cmd_eps);
-//                test(problem, "sphere [" + text::to_string(n) + "D]", cmd_trials);
-//        }
-
-//        // ellipsoidal function
-//        for (size_t n = 2; n <= cmd_dims; n *= 2)
-//        {
-//                const auto op_size = [=] ()
-//                {
-//                        return n;
-//                };
-
-//                const auto op_fval = [=] (const vector_t& x)
-//                {
-//                        scalar_t f = 0.0;
-//                        for (size_t i = 0; i < n; i ++)
-//                        {
-//                                f += (i + 1.0) * math::square(x[i]);
-//                        }
-//                        return f;
-//                };
-
+//         // ellipsoidal function
+//         for (size_t n = 2; n <= cmd_dims; n *= 2)
+//         {
+//                 const auto op_size = [=] ()
+//                 {
+//                         return n;
+//                 };
+// 
+//                 const auto op_fval = [=] (const vector_t& x)
+//                 {
+//                         scalar_t f = 0.0;
+//                         for (size_t i = 0; i < n; i ++)
+//                         {
+//                                 f += (i + 1.0) * math::square(x[i]);
+//                         }
+//                         return f;
+//                 };
+// 
 //                const auto op_grad = [=] (const vector_t& x, vector_t& g)
 //                {
 //                        g.resize(n);
@@ -151,15 +210,15 @@ int main(int argc, char *argv[])
 //                                g(i) = 2.0 * (i + 1.0) * x[i];
 //                        }
 //                };
-
+// 
 //                const auto op_fval_grad = [=] (const vector_t& x, vector_t& g)
 //                {
 //                        op_grad(x, g);
 //                        return op_fval(x);
 //                };
-
-//                const problem_t problem(op_size, op_fval, op_fval_grad, cmd_iters, cmd_eps);
-//                test(problem, "ellipsoidal [" + text::to_string(n) + "D]", cmd_trials);
+// 
+//                const opt_problem_t problem(op_size, op_fval, op_fval_grad);
+//                test(problem, cmd_iters, cmd_eps, "ellipsoidal [" + text::to_string(n) + "D]", cmd_trials);
 //        }
 
 //        // rotated ellipsoidal function
@@ -169,11 +228,11 @@ int main(int argc, char *argv[])
 //                {
 //                        return n;
 //                };
-
+// 
 //                const auto op_fval = [=] (const vector_t& x)
 //                {
 //                        scalar_t f = 0.0;
-
+// 
 //                        for (size_t i = 0; i < n; i ++)
 //                        {
 //                                scalar_t s = 0.0;
@@ -181,16 +240,16 @@ int main(int argc, char *argv[])
 //                                {
 //                                        s += x[j];
 //                                }
-
+// 
 //                                f += math::square(s);
 //                        }
 //                        return f;
 //                };
-
-//                const problem_t problem(op_size, op_fval, cmd_iters, cmd_eps);
-//                test(problem, "rotated ellipsoidal [" + text::to_string(n) + "D]", cmd_trials);
+// 
+//                const opt_problem_t problem(op_size, op_fval);
+//                test(problem, cmd_iters, cmd_eps, "rotated ellipsoidal [" + text::to_string(n) + "D]", cmd_trials);
 //        }
-
+// 
 //        // Whitley's function
 //        for (size_t n = 2; n <= cmd_dims; n *= 2)
 //        {
@@ -198,7 +257,7 @@ int main(int argc, char *argv[])
 //                {
 //                        return n;
 //                };
-
+// 
 //                const auto op_fval = [=] (const vector_t& x)
 //                {
 //                        scalar_t f = 0.0;
@@ -211,12 +270,12 @@ int main(int argc, char *argv[])
 //                                        f += d * d / 4000.0 - std::cos(d) + 1.0;
 //                                }
 //                        }
-
+// 
 //                        return f;
 //                };
-
-//                const problem_t problem(op_size, op_fval, cmd_iters, cmd_eps);
-//                test(problem, "whitley [" + text::to_string(n) + "D]", cmd_trials);
+// 
+//                const opt_problem_t problem(op_size, op_fval);
+//                test(problem, cmd_iters, cmd_eps, "whitley [" + text::to_string(n) + "D]", cmd_trials);
 //        }
 
         // Rosenbrock problem
@@ -271,6 +330,8 @@ int main(int argc, char *argv[])
                 const opt_problem_t problem(op_size, op_fval, op_fval_grad);
                 test(problem, cmd_iters, cmd_eps, "himmelblau [2D]", cmd_trials);
         }
+        
+        print_all();
 
         // OK
         log_info() << done;
