@@ -182,8 +182,6 @@ namespace ncv
         {
                 const vector_t x0 = model.params();
                 
-                std::cout << "::batch_train: cycles = " << cycles << ", epochs = " << epochs << ", iterations = " << iterations << std::endl;
-                
                 // tune the regularization factor
                 const scalars_t lambdas = { 1e-3, 1e-2, 1e-1, 1.0 };
                 for (scalar_t lambda : lambdas)
