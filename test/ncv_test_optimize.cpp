@@ -65,22 +65,22 @@ void print_all()
         
         std::cout << del_line << std::endl;
         std::cout 
-                << ncv::text::resize("[algo]", col_size) 
-                << ncv::text::resize("[failures]", col_size) 
-                << ncv::text::resize("[not converged]", col_size) 
-                << ncv::text::resize("[iterations]", col_size)
-                << ncv::text::resize("[time (ms)]", col_size) << std::endl;
+                << text::resize("[algo]", col_size) 
+                << text::resize("[failures]", col_size) 
+                << text::resize("[not converged]", col_size) 
+                << text::resize("[iterations]", col_size)
+                << text::resize("[time (ms)]", col_size) << std::endl;
         for (const auto& it : opt_statistics)
         {
                 const string_t& name = it.first;
                 const opt_info_t& info = it.second;
                 
                 std::cout 
-                        << ncv::text::resize(name, col_size) 
-                        << ncv::text::resize(ncv::text::to_string(info.m_failures), col_size)  
-                        << ncv::text::resize(ncv::text::to_string(info.m_notconverged), col_size)  
-                        << ncv::text::resize(ncv::text::to_string(info.m_iterations), col_size) 
-                        << ncv::text::resize(ncv::text::to_string(info.m_miliseconds), col_size) 
+                        << text::resize(name, col_size) 
+                        << text::resize(text::to_string(info.m_failures) + "/" + text::to_string(info.m_count), col_size)  
+                        << text::resize(text::to_string(info.m_notconverged) + "/" + text::to_string(info.m_count), col_size)  
+                        << text::resize(text::to_string(info.m_iterations), col_size) 
+                        << text::resize(text::to_string(info.m_miliseconds), col_size) 
                         << std::endl;
         }
         std::cout << del_line << std::endl;
