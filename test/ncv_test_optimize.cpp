@@ -10,24 +10,33 @@ struct opt_info_t
                 :       m_miliseconds(0),
                         m_iterations(0),
                         m_failures(0),
+                        m_notconverged(0),
                         m_count(0)
         {
         }
         
-        void update(const opt_state_t& result, size_t miliseconds)
+        void update(const opt_state_t& result, size_t max_iterations,  size_t miliseconds)
         {
                 m_miliseconds += miliseconds;
                 m_iterations += result.m_iterations;
                 if (!result.converged(1e-6))
                 {
-                        m_failures ++;
+                        if (result.m_iterations < max_iterations)
+                        {
+                                m_failures ++;
+                        }
+                        else
+                        {
+                                m_notconverged ++;
+                        }
                 }
                 m_count ++;                        
         }
         
         size_t  m_miliseconds;          ///< total amount of time (miliseconds)
         size_t  m_iterations;           ///< total number of iterations
-        size_t  m_failures;             ///< total number of failed problems
+        size_t  m_failures;             ///< total number of problems where the algorithm fails
+        size_t  m_notconverged;         ///< total number of problems where the algorithm does not converge in the maximum number of iterations
         size_t  m_count;                ///< number of tests
 };
 
@@ -51,13 +60,14 @@ void print_one(const opt_state_t& result, size_t max_iterations, const string_t&
 // display the formatted optimization statistics for all optimization algorithms
 void print_all()
 {
-        static const size_t col_size = 32;
+        static const size_t col_size = 16;
         static const string_t del_line(4 * col_size + 4, '$');
         
         std::cout << del_line << std::endl;
         std::cout 
                 << ncv::text::resize("[algo]", col_size) 
                 << ncv::text::resize("[failures]", col_size) 
+                << ncv::text::resize("[not converged]", col_size) 
                 << ncv::text::resize("[iterations]", col_size)
                 << ncv::text::resize("[time (ms)]", col_size) << std::endl;
         for (const auto& it : opt_statistics)
@@ -68,6 +78,7 @@ void print_all()
                 std::cout 
                         << ncv::text::resize(name, col_size) 
                         << ncv::text::resize(ncv::text::to_string(info.m_failures), col_size)  
+                        << ncv::text::resize(ncv::text::to_string(info.m_notconverged), col_size)  
                         << ncv::text::resize(ncv::text::to_string(info.m_iterations), col_size) 
                         << ncv::text::resize(ncv::text::to_string(info.m_miliseconds), col_size) 
                         << std::endl;
@@ -107,7 +118,7 @@ void test(const opt_problem_t& problem, size_t max_iters, scalar_t eps, const st
                         problem.reset(); \
                         const opt_state_t res = optimize::FUN(problem, x0, max_iters, eps, fn_wlog, fn_elog); \
                         print_one(res, max_iters, name + " " + #NAME + name_trial, timer.elapsed()); \
-                        opt_statistics[#NAME].update(res, timer.miliseconds()); \
+                        opt_statistics[#NAME].update(res, max_iters, timer.miliseconds()); \
                 }
 
                 NCV_TEST_OPTIMIZER(gd,          GD)
