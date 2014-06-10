@@ -1,12 +1,7 @@
-* update test programs (convolutions with the maxpooling)
-
-* check if adding a bias slows-down the training too much 
-
 * can express all the convolution gradients in terms of (rotated) convolutions:
 http://www.math.duke.edu/~jvb/papers/cnn_tutorial.pdf
 
-* proper const-ness for tensor::make_xxx functions by specializing them to const and non-const inputs:
-Eigen::Map<VectorXf> vs Eigen::Map<const VectorXf>
+* check if adding a bias slows-down the training too much 
 
 * new options for Cmake: address sanitizer, leak sanitizer, coverage
 * coverage tutorial:
