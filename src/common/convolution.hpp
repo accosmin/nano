@@ -12,10 +12,12 @@ namespace ncv
                 ///
                 template
                 <
-                        typename tmatrix,
-                        typename tscalar = typename tmatrix::Scalar
+                        typename tmatrixi,
+                        typename tmatrixk = tmatrixi,
+                        typename tmatrixo = tmatrixi,
+                        typename tscalar = typename tmatrixi::Scalar
                 >
-                void conv(const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
+                void conv(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
                 {
                         for (auto r = 0; r < odata.rows(); r ++)
                         {
@@ -33,10 +35,12 @@ namespace ncv
                 ///
                 template
                 <
-                        typename tmatrix,
-                        typename tscalar = typename tmatrix::Scalar
+                        typename tmatrixi,
+                        typename tmatrixk = tmatrixi,
+                        typename tmatrixo = tmatrixi,
+                        typename tscalar = typename tmatrixi::Scalar
                 >
-                void wconv(const tmatrix& idata, const tmatrix& kdata, tscalar weight, tmatrix& odata)
+                void wconv(const tmatrixi& idata, const tmatrixk& kdata, tscalar weight, tmatrixo& odata)
                 {
                         for (auto r = 0; r < odata.rows(); r ++)
                         {
