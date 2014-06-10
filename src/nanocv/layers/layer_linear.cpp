@@ -38,7 +38,7 @@ namespace ncv
                 tscalar* gbdata,
                 const tscalar* odata, tsize osize)
         {
-                const bool has_gradient = gwdata != 0;
+                const bool has_gradient = gwdata != nullptr;
 
                 if (has_gradient)
                 {

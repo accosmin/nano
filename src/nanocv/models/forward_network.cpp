@@ -69,7 +69,7 @@ namespace ncv
                 {
                         const flayer_t& layer = *it;
 
-                        poutput = &layer.m_layer->backward(*poutput, 0);
+                        poutput = &layer.m_layer->backward(*poutput, nullptr);
                 }
 
                 return *poutput;
@@ -104,7 +104,7 @@ namespace ncv
                         }
                         else
                         {
-                                poutput = &layer.m_layer->backward(*poutput, 0);
+                                poutput = &layer.m_layer->backward(*poutput, nullptr);
                         }
                 }
 

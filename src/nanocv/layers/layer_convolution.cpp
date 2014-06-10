@@ -2,6 +2,7 @@
 #include "common/logger.h"
 #include "common/math.hpp"
 #include "common/random.hpp"
+#include "common/convolution.hpp"
 #include "tensor/util.hpp"
 
 namespace ncv
@@ -22,7 +23,7 @@ namespace ncv
                 const tsize icols = ocols + kcols - 1;
                 const tsize isize = irows * icols;
 
-                const tsize osize = orows * ocols;
+                const tsize osize = orows * ocols;                
                 const tsize ksize = krows * kcols;
 
                 // output
@@ -35,14 +36,8 @@ namespace ncv
                         {
                                 auto imap = tensor::make_matrix(idata + i * isize, irows, icols);
                                 auto kmap = tensor::make_matrix(kdata + (o * idims + i) * ksize, krows, kcols);
-
-                                for (tsize r = 0; r < orows; r ++)
-                                {
-                                        for (tsize c = 0; c < ocols; c ++)
-                                        {
-                                                omap(r, c) += kmap.cwiseProduct(imap.block(r, c, krows, kcols)).sum();
-                                        }
-                                }
+                                
+                                math::conv(imap, kmap, omap);
                         }
                 }
         }
@@ -66,7 +61,7 @@ namespace ncv
                 const tsize osize = orows * ocols;
                 const tsize ksize = krows * kcols;
 
-                const bool has_gradient = gkdata != 0;
+                const bool has_gradient = gkdata != nullptr;
 
                 std::fill(gidata, gidata + idims * isize, tscalar(0));
 
@@ -92,6 +87,8 @@ namespace ncv
 
                                 if (has_gradient)
                                 {
+                                        math::conv(imap, omap, gkmap);
+                                        
                                         for (tsize kr = 0; kr < krows; kr ++)
                                         {
                                                 for (tsize kc = 0; kc < kcols; kc ++)
