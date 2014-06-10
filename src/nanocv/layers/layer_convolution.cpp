@@ -37,7 +37,7 @@ namespace ncv
                                 auto imap = tensor::make_matrix(idata + i * isize, irows, icols);
                                 auto kmap = tensor::make_matrix(kdata + (o * idims + i) * ksize, krows, kcols);
                                 
-                                math::conv(imap, kmap, omap);
+                                math::conv_sum(imap, kmap, omap);
                         }
                 }
         }
@@ -88,14 +88,6 @@ namespace ncv
                                 if (has_gradient)
                                 {
                                         math::conv(imap, omap, gkmap);
-                                        
-                                        for (tsize kr = 0; kr < krows; kr ++)
-                                        {
-                                                for (tsize kc = 0; kc < kcols; kc ++)
-                                                {
-                                                        gkmap(kr, kc) = omap.cwiseProduct(imap.block(kr, kc, orows, ocols)).sum();
-                                                }
-                                        }
                                 }
                         }
                 }
