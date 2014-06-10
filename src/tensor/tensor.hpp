@@ -38,28 +38,6 @@ namespace ncv
                         }
 
                         ///
-                        /// \brief copy constructor
-                        ///
-                        tensor_t(const tensor_t& other)
-                        {
-                                resize(other.dims(), other.rows(), other.cols());
-                                copy_from(other.data());
-                        }
-
-                        ///
-                        /// \brief copy constructor
-                        ///
-                        tensor_t& operator=(const tensor_t& other)
-                        {
-                                if (this != &other)
-                                {
-                                        resize(other.dims(), other.rows(), other.cols());
-                                        copy_from(other.data());
-                                }
-                                return *this;
-                        }
-
-                        ///
                         /// \brief resize to new dimensions
                         ///
                         tsize resize(tsize dims, tsize rows, tsize cols)
