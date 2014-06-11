@@ -27,7 +27,6 @@ namespace ncv
                                         kdata.cwiseProduct(idata.block(r, c, kdata.rows(), kdata.cols())).sum();
                                 }
                         }
-                        
                 }
                 
                 ///
@@ -49,8 +48,7 @@ namespace ncv
                                         odata(r, c) =
                                         kdata.cwiseProduct(idata.block(r, c, kdata.rows(), kdata.cols())).sum();
                                 }
-                        }
-                        
+                        }                        
                 }
 
                 ///
