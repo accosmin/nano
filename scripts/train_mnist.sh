@@ -51,9 +51,9 @@ outlayer=";linear:dims=10;softmax:type=global;"
 for trainer in `echo "mbatch_gd stoch_sg"`
 do
         fn_train ${dir_exp_mnist} mlp0_${trainer} ${params} ${!trainer} ${mlp0}${outlayer}
+        fn_train ${dir_exp_mnist} mlp1_${trainer} ${params} ${!trainer} ${mlp1}${outlayer}
         fn_train ${dir_exp_mnist} mlp2_${trainer} ${params} ${!trainer} ${mlp2}${outlayer}
         fn_train ${dir_exp_mnist} mlp3_${trainer} ${params} ${!trainer} ${mlp3}${outlayer}
-        fn_train ${dir_exp_mnist} mlp4_${trainer} ${params} ${!trainer} ${mlp4}${outlayer}
         fn_train ${dir_exp_mnist} conv1_${trainer} ${params} ${!trainer} ${conv1}${outlayer}
         fn_train ${dir_exp_mnist} conv2_${trainer} ${params} ${!trainer} ${conv2}${outlayer}
         fn_train ${dir_exp_mnist} conv3_${trainer} ${params} ${!trainer} ${conv3}${outlayer}
