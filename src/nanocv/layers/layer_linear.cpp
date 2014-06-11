@@ -5,8 +5,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         template
         <
                 typename tscalar,
@@ -24,8 +22,6 @@ namespace ncv
                         tensor::make_matrix(wdata, osize, isize) *
                         tensor::make_vector(idata, isize);
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         template
         <
@@ -57,14 +53,10 @@ namespace ncv
                         tensor::make_vector(odata, osize);
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         linear_layer_t::linear_layer_t(const string_t& parameters)
                 :       layer_t(parameters, "fully-connected linear layer, parameters: dims=10[1,4096]")
         {
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         size_t linear_layer_t::resize(const tensor_t& tensor)
         {
@@ -81,23 +73,17 @@ namespace ncv
                 return psize();
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         void linear_layer_t::zero_params()
         {
                 m_wdata.zero();
                 m_bdata.zero();
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         void linear_layer_t::random_params(scalar_t min, scalar_t max)
         {
                 m_wdata.random(random_t<scalar_t>(min, max));
                 m_bdata.random(random_t<scalar_t>(min, max));
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         scalar_t* linear_layer_t::save_params(scalar_t* params) const
         {
@@ -106,16 +92,12 @@ namespace ncv
                 return params;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         const scalar_t* linear_layer_t::load_params(const scalar_t* params)
         {
                 params = tensor::load(m_wdata, params);
                 params = tensor::load(m_bdata, params);
                 return params;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         const tensor_t& linear_layer_t::forward(const tensor_t& input)
         {
@@ -132,8 +114,6 @@ namespace ncv
                 return m_odata;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         const tensor_t& linear_layer_t::backward(const tensor_t& output, scalar_t* gradient)
         {
                 assert(output.dims() == odims());
@@ -148,7 +128,5 @@ namespace ncv
 
                 return m_idata;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }
 

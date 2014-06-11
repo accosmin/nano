@@ -5,14 +5,10 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         static u_int32_t make_uint32(const unsigned char* data)
         {
                 return *reinterpret_cast<const u_int32_t*>(data);
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         mat5::section_t::section_t(size_t begin)
                 :       m_begin(begin), m_end(begin),
@@ -20,8 +16,6 @@ namespace ncv
                         m_dtype(data_type::miUNKNOWN)
         {
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         bool mat5::section_t::load(size_t offset, size_t end, u_int32_t dtype, u_int32_t bytes)
         {
@@ -54,8 +48,6 @@ namespace ncv
                 return m_end <= end;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         bool mat5::section_t::load(std::ifstream& istream)
         {
                 u_int32_t dtype, bytes;
@@ -64,8 +56,6 @@ namespace ncv
                         load(0, std::numeric_limits<size_t>::max(), dtype, bytes);
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         bool mat5::section_t::load(const std::vector<u_int8_t>& data, size_t offset)
         {
                 return  offset + 8 <= data.size() &&
@@ -73,20 +63,14 @@ namespace ncv
                              make_uint32(&data[offset + 0]), make_uint32(&data[offset + 4]));
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         bool mat5::section_t::load(const std::vector<u_int8_t>& data, const section_t& prv)
         {
                 return load(data, prv.m_end);
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         mat5::array_t::array_t()
         {
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         bool mat5::array_t::load(const std::vector<u_int8_t>& data)
         {
@@ -172,8 +156,6 @@ namespace ncv
                 return true;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         void mat5::array_t::log(logger_t& logger) const
         {
                 logger << "sections = " << m_sections.size()
@@ -184,6 +166,4 @@ namespace ncv
                         logger << m_dims[i] << ((i + 1 == m_dims.size()) ? "" : "x");
                 }
         }
-
-	/////////////////////////////////////////////////////////////////////////////////////////
 }

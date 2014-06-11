@@ -2,8 +2,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         template
         <
                 typename tscalar,
@@ -41,8 +39,6 @@ namespace ncv
                 omap = smap.array() / tmap.array();
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         template
         <
                 typename tscalar,
@@ -76,8 +72,6 @@ namespace ncv
                 }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         size_t pool_softabs_layer_t::resize(const tensor_t& tensor)
         {
                 const size_t idims = tensor.dims();
@@ -97,8 +91,6 @@ namespace ncv
 
                 return 0;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         const tensor_t& pool_softabs_layer_t::forward(const tensor_t& input)
         {
@@ -120,8 +112,6 @@ namespace ncv
                 return m_odata;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         const tensor_t& pool_softabs_layer_t::backward(const tensor_t& output, scalar_t*)
         {
                 assert(odims() == output.dims());
@@ -139,8 +129,6 @@ namespace ncv
 
                 return m_idata;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }
 
 

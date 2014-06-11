@@ -11,8 +11,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         trainer_state_t::trainer_state_t(size_t n_parameters)
                 :       m_params(n_parameters),
                         m_tvalue(std::numeric_limits<scalar_t>::max()),
@@ -24,8 +22,6 @@ namespace ncv
                         m_epochs(0)
         {
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         bool trainer_state_t::update(const vector_t& params,
                     scalar_t tvalue, scalar_t terror,
@@ -51,16 +47,12 @@ namespace ncv
                 }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         bool trainer_state_t::update(const trainer_state_t& state)
         {
                 return update(state.m_params,
                               state.m_tvalue, state.m_terror, state.m_vvalue, state.m_verror,
                               state.m_lambda, state.m_epoch, state.m_epochs);
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         namespace detail
         {        
@@ -172,8 +164,6 @@ namespace ncv
                 }
         }
         
-        /////////////////////////////////////////////////////////////////////////////////////////
-        
         bool batch_train(
                 const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, batch_optimizer optimizer, 
@@ -202,8 +192,6 @@ namespace ncv
                 // OK
                 return true;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         namespace detail
         {
@@ -328,8 +316,6 @@ namespace ncv
                 }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         bool stochastic_train(
                 const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, stochastic_optimizer optimizer, size_t epochs,
@@ -373,7 +359,5 @@ namespace ncv
                 // OK
                 return true;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }
 	

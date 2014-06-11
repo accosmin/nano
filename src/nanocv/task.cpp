@@ -5,21 +5,15 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         rect_t task_t::sample_size() const
         {
                 return geom::make_size(n_cols(), n_rows());
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         rect_t task_t::sample_region(coord_t x, coord_t y) const
         {
                 return geom::make_rect(x, y, n_cols(), n_rows());
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         strings_t task_t::labels() const
         {
@@ -37,8 +31,6 @@ namespace ncv
                 std::copy(slabels.begin(), slabels.end(), std::back_inserter(result));
                 return result;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         void task_t::save_as_images(const fold_t& fold, const string_t& basepath, size_t grows, size_t gcols) const
         {
@@ -93,6 +85,4 @@ namespace ncv
                         }
                 }
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }

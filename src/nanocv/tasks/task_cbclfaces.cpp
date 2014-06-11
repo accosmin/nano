@@ -7,8 +7,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         bool cbclfaces_task_t::load(const string_t& dir)
         {
                 const string_t train_face_dir = dir + "/train/face/";
@@ -27,8 +25,6 @@ namespace ncv
                         load(test_face_dir, true, protocol::test) +
                         load(test_nonface_dir, false, protocol::test) == n_test_samples;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         size_t cbclfaces_task_t::load(const string_t& dir, bool is_face, protocol p)
         {
@@ -66,6 +62,4 @@ namespace ncv
 
                 return cnt;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }

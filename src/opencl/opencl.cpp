@@ -6,8 +6,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         ocl::manager_t::manager_t()
         {
                 try
@@ -92,8 +90,6 @@ namespace ncv
                 }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         cl::CommandQueue ocl::manager_t::make_command_queue() const
         {
                 assert(valid());
@@ -102,14 +98,10 @@ namespace ncv
                 return cl::CommandQueue(m_context, device, 0);
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         cl::Program ocl::manager_t::make_program_from_file(const std::string& filepath) const
         {
                 return make_program_from_text(ocl::load_text_file(filepath));
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         cl::Program ocl::manager_t::make_program_from_text(const std::string& source) const
         {
@@ -137,8 +129,6 @@ namespace ncv
                 return program;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         cl::Kernel ocl::manager_t::make_kernel(const cl::Program& program, const std::string& name) const
         {
                 assert(valid());
@@ -146,16 +136,12 @@ namespace ncv
                 return cl::Kernel(program, name.c_str());
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         cl::Buffer ocl::manager_t::make_buffer(size_t bytesize, int flags) const
         {
                 assert(valid());
 
                 return cl::Buffer(m_context, flags, bytesize, NULL);;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         const char* ocl::error_string(cl_int error)
         {
@@ -233,8 +219,6 @@ namespace ncv
                 return (index >= 0 && index < errorCount) ? errorString[index] : "";
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         std::string ocl::load_text_file(const std::string& filepath)
         {
                 std::ifstream file(filepath, std::ios::in);
@@ -251,7 +235,5 @@ namespace ncv
                         return std::string();
                 }
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }
 	

@@ -4,8 +4,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         bool io::zuncompress(std::istream& istream, std::size_t bytes, std::vector<unsigned char>& data)
         {
                 // zlib decompression buffers
@@ -64,6 +62,4 @@ namespace ncv
                 // OK
                 return num_bytes == 0;
         }
-
-	/////////////////////////////////////////////////////////////////////////////////////////
 }

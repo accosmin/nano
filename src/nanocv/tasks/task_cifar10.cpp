@@ -6,8 +6,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         static const string_t tlabels[] =
         {
                 "airplane",
@@ -21,8 +19,6 @@ namespace ncv
                 "ship",
                 "truck"
         };
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         bool cifar10_task_t::load(const string_t& dir)
         {
@@ -46,8 +42,6 @@ namespace ncv
                         load(train_bfile5, protocol::train) == n_train_images &&
                         load(test_bfile, protocol::test) == n_test_images;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         size_t cifar10_task_t::load(const string_t& bfile, protocol p)
         {
@@ -92,6 +86,4 @@ namespace ncv
 
                 return cnt;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }

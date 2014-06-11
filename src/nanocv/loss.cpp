@@ -2,8 +2,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         vector_t class_target(size_t ilabel, size_t n_labels)
         {
                 vector_t target(n_labels);
@@ -15,14 +13,10 @@ namespace ncv
                 return target;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         scalar_t l1_error(const vector_t& targets, const vector_t& scores)
         {
                 return (targets - scores).array().abs().sum();
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         scalar_t multi_class_error(const vector_t& targets, const vector_t& scores)
         {
@@ -31,7 +25,5 @@ namespace ncv
 
                 return targets(idx) > 0.5 ? 0.0 : 1.0;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }
 	

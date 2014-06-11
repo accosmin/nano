@@ -6,14 +6,10 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         accumulator_t::accumulator_t(const model_t& model, type t, scalar_t lambda)
                 :       accumulator_t(model.clone(), t, lambda)
         {
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         accumulator_t::accumulator_t(const rmodel_t& model, type t, scalar_t lambda)
                 :       m_settings(t, lambda),
@@ -26,16 +22,12 @@ namespace ncv
                 }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         accumulator_t::accumulator_t(const accumulator_t& other)
                 :       m_settings(other.m_settings),
                         m_model(other.m_model->clone()),
                         m_data(other.m_data)
         {
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         accumulator_t& accumulator_t::operator=(const accumulator_t& other)
         {
@@ -50,8 +42,6 @@ namespace ncv
                 return *this;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         void accumulator_t::reset(const model_t& model)
         {
                 assert(m_model);
@@ -60,8 +50,6 @@ namespace ncv
 
                 reset();
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         void accumulator_t::reset(const vector_t& params)
         {
@@ -75,8 +63,6 @@ namespace ncv
                 reset();
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         void accumulator_t::reset(type t, scalar_t lambda)
         {
                 m_settings = settings_t(t, lambda);
@@ -84,14 +70,10 @@ namespace ncv
                 reset();
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         void accumulator_t::reset()
         {
                 m_data.reset();
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         void accumulator_t::update(const task_t& task, const sample_t& sample, const loss_t& loss)
         {
@@ -105,8 +87,6 @@ namespace ncv
                 cumulate(output, target, loss);
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         void accumulator_t::update(const tensor_t& input, const vector_t& target, const loss_t& loss)
         {
                 assert(m_model);
@@ -115,8 +95,6 @@ namespace ncv
                 cumulate(output, target, loss);
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         void accumulator_t::update(const vector_t& input, const vector_t& target, const loss_t& loss)
         {
                 assert(m_model);
@@ -124,8 +102,6 @@ namespace ncv
 
                 cumulate(output, target, loss);
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         void accumulator_t::update(const task_t& task, const samples_t& samples, const loss_t& loss, size_t nthreads)
         {
@@ -159,8 +135,6 @@ namespace ncv
                 }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         void accumulator_t::update(const tensors_t& inputs, const vectors_t& targets, const loss_t& loss, size_t nthreads)
         {
                 if (nthreads == 1)
@@ -192,8 +166,6 @@ namespace ncv
                         );
                 }
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         void accumulator_t::update(const vectors_t& inputs, const vectors_t& targets, const loss_t& loss, size_t nthreads)
         {
@@ -227,8 +199,6 @@ namespace ncv
                 }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         void accumulator_t::cumulate(const vector_t& output, const vector_t& target, const loss_t& loss)
         {
                 assert(m_model);
@@ -259,8 +229,6 @@ namespace ncv
                 m_data.m_count ++;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         accumulator_t& accumulator_t::operator+=(const accumulator_t& other)
         {
                 m_data.m_value += other.m_data.m_value;
@@ -269,8 +237,6 @@ namespace ncv
                 m_data.m_count += other.m_data.m_count;
                 return *this;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         scalar_t accumulator_t::value() const
         {
@@ -281,16 +247,12 @@ namespace ncv
                         0.5 * m_settings.m_lambda / dimensions() * m_data.m_params.squaredNorm();
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         scalar_t accumulator_t::error() const
         {
                 assert(count() > 0);
 
                 return m_data.m_error / count();
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         vector_t accumulator_t::vgrad() const
         {
@@ -300,28 +262,20 @@ namespace ncv
                         m_settings.m_lambda / dimensions() * m_data.m_params;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         size_t accumulator_t::dimensions() const
         {
                 assert(m_model);
                 return m_model->psize();
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         size_t accumulator_t::count() const
         {
                 return m_data.m_count;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         scalar_t accumulator_t::lambda() const
         {
                 return m_settings.m_lambda;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }
 	

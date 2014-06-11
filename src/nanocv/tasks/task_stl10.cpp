@@ -6,8 +6,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         static const string_t tlabels[] =
         {
                 "airplane",
@@ -21,8 +19,6 @@ namespace ncv
                 "ship",
                 "truck"
         };
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         bool stl10_task_t::load(const string_t& dir)
         {
@@ -45,8 +41,6 @@ namespace ncv
                         load_binary(test_ifile, test_gfile) == n_test_samples &&
                         load_folds(fold_indices_file, 5000, 100000, n_test_samples);
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
         
         size_t stl10_task_t::load_binary(const string_t& ifile, const string_t& gfile)
         {
@@ -93,8 +87,6 @@ namespace ncv
                 return cnt;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         size_t stl10_task_t::load_binary(const string_t& ifile)
         {
                 log_info() << "STL-10: loading file <" << ifile << "> ...";
@@ -129,8 +121,6 @@ namespace ncv
 
                 return cnt;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         bool stl10_task_t::load_folds(const string_t& ifile, size_t n_train, size_t n_unlabeled, size_t n_test)
         {
@@ -209,6 +199,4 @@ namespace ncv
 
                 return true;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }

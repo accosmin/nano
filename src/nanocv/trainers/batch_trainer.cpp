@@ -6,16 +6,12 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         batch_trainer_t::batch_trainer_t(const string_t& parameters)
                 :       trainer_t(parameters,
                                   "batch trainer, "\
                                   "parameters: opt=lbfgs[,cgd,gd],iters=1024[4,4096],eps=1e-6[1e-8,1e-3]")
         {
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         bool batch_trainer_t::train(
                 const task_t& task, const fold_t& fold, const loss_t& loss, size_t nthreads,
@@ -66,6 +62,4 @@ namespace ncv
                 // OK
                 return model.load_params(state.m_params);
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }

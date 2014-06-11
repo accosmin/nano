@@ -2,8 +2,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         void thread_pool_t::worker_t::operator()()
         {
                 task_t task;
@@ -45,8 +43,6 @@ namespace ncv
                 }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         thread_pool_t::thread_pool_t(size_t nthreads)
         {
                 nthreads = (nthreads == 0) ? ncv::n_threads() : std::min(nthreads, ncv::n_threads());
@@ -55,8 +51,6 @@ namespace ncv
                         m_workers.push_back(std::thread(thread_pool_t::worker_t(m_data)));
                 }
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         thread_pool_t::~thread_pool_t()
         {
@@ -73,8 +67,6 @@ namespace ncv
                 }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         void thread_pool_t::wait()
         {
                 // wait for all tasks to be taken and the workers to finish
@@ -85,8 +77,6 @@ namespace ncv
                         m_data.m_condition.wait(lock);
                 }
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }
 
 

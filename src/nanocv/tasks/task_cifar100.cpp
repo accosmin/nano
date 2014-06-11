@@ -6,8 +6,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         static const string_t tlabels[] =
         {
                 "apple",
@@ -112,8 +110,6 @@ namespace ncv
                 "worm"
         };
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         bool cifar100_task_t::load(const string_t& dir)
         {
                 const string_t train_bfile = dir + "/train.bin";
@@ -128,9 +124,7 @@ namespace ncv
                 return  load(train_bfile, protocol::train) == n_train_images &&
                         load(test_bfile, protocol::test) == n_test_images;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
+        
         size_t cifar100_task_t::load(const string_t& bfile, protocol p)
         {
                 log_info() << "CIFAR-100: loading file <" << bfile << "> ...";
@@ -174,6 +168,4 @@ namespace ncv
 
                 return cnt;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }

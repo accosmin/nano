@@ -9,8 +9,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         model_t::model_t(const string_t& parameters, const string_t& description)
                 :       clonable_t<model_t>(parameters, description),
                         m_rows(0),
@@ -19,8 +17,6 @@ namespace ncv
                         m_color(color_mode::luma)
         {
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         bool model_t::save(const string_t& path) const
         {
@@ -35,8 +31,6 @@ namespace ncv
                 return save(oa) && os.good();
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         bool model_t::load(const string_t& path)
         {
                 std::ifstream is(path, std::ios::binary);
@@ -50,21 +44,15 @@ namespace ncv
                 return load(ia) && is.good();
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         const tensor_t& model_t::forward(const image_t& image, const rect_t& region) const
         {
                 return forward(image, geom::left(region), geom::top(region));
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         const tensor_t& model_t::forward(const image_t& image, coord_t x, coord_t y) const
         {
                 return forward(make_input(image, x, y));
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         const tensor_t& model_t::forward(const vector_t& input) const
         {
@@ -75,8 +63,6 @@ namespace ncv
 
                 return forward(xinput);
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         tensor_t model_t::make_input(const image_t& image, coord_t x, coord_t y) const
         {
@@ -102,14 +88,10 @@ namespace ncv
                 return data;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         tensor_t model_t::make_input(const image_t& image, const rect_t& region) const
         {
                 return make_input(image, geom::left(region), geom::top(region));
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         size_t model_t::idims() const
         {
@@ -124,14 +106,10 @@ namespace ncv
                 }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         bool model_t::resize(const task_t& task, bool verbose)
         {
                 return resize(task.n_rows(), task.n_cols(), task.n_outputs(), task.color(), verbose);
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         bool model_t::resize(size_t rows, size_t cols, size_t outputs, color_mode color, bool verbose)
         {
@@ -148,8 +126,6 @@ namespace ncv
 
                 return true;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         tensor_t model_t::generate(const vector_t& target) const
         {
@@ -219,6 +195,4 @@ namespace ncv
                 // OK
                 return input;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }

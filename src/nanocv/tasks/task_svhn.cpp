@@ -10,8 +10,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         bool svhn_task_t::load(const string_t& dir)
         {
                 const string_t train_file = dir + "/train_32x32.mat";
@@ -28,8 +26,6 @@ namespace ncv
                         load(extra_file, protocol::train) == n_train_images &&
                         load(test_file, protocol::test) == n_test_images;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         size_t svhn_task_t::load(const string_t& bfile, protocol p)
         {
@@ -94,8 +90,6 @@ namespace ncv
                 // decode the uncompressed bytes
                 return decode(image_data, label_data, p);
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         size_t svhn_task_t::decode(
                 const std::vector<u_int8_t>& idata,
@@ -199,6 +193,4 @@ namespace ncv
 
                 return cnt;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }

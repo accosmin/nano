@@ -6,8 +6,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         minibatch_trainer_t::minibatch_trainer_t(const string_t& parameters)
                 :       trainer_t(parameters,
                                   "minibatch trainer, "\
@@ -15,8 +13,6 @@ namespace ncv
                                   "batch=1024[256,8192],iters=8[4,128],eps=1e-6[1e-8,1e-3]")
         {
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         bool minibatch_trainer_t::train(
                 const task_t& task, const fold_t& fold, const loss_t& loss, size_t nthreads,
@@ -72,6 +68,4 @@ namespace ncv
                 // OK
                 return model.load_params(state.m_params);
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }

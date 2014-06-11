@@ -1,17 +1,13 @@
-* can express all the convolution gradients in terms of (rotated) convolutions:
-http://www.math.duke.edu/~jvb/papers/cnn_tutorial.pdf
+* can make the accumulator more efficient for MT parts by storing an accumulator_t::data_t directly per thread
 
-* check if adding a bias slows-down the training too much 
+* reset the CGD's & LBFGS's history when in mini-batch mode (otherwise the line-search will fail)
 
 * new options for Cmake: address sanitizer, leak sanitizer, coverage
+
 * coverage tutorial:
 http://gaming.jhu.edu/~phf/tut/gcov-tutorial.pdf
 
 * more asserts: http://cpp-today.blogspot.ch/
-
-* can make the accumulator more efficient for MT parts by storing an accumulator_t::data_t directly per thread
-
-* reset the CGD's & LBFGS's history when in mini-batch mode (otherwise the line-search will fail)
 
 * remove the artificial function delimiters
 

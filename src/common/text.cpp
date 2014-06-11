@@ -3,8 +3,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         std::string text::resize(const std::string& str, std::size_t str_size, align alignment)
 	{
                 const std::size_t fill_size = str.size() > str_size ? 0 : str_size - str.size();
@@ -22,6 +20,4 @@ namespace ncv
                         return str + std::string(fill_size, ' ');
 		}
         }
-
-	/////////////////////////////////////////////////////////////////////////////////////////
 }

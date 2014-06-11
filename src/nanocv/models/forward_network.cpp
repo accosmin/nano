@@ -5,14 +5,10 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         forward_network_t::forward_network_t(const string_t& parameters)
                 :       model_t(parameters, "feed-forward network, parameters: [layer_id[:layer_parameters][;]]*")
         {                
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         forward_network_t::forward_network_t(const forward_network_t& other)
                 :       model_t(other),
@@ -24,8 +20,6 @@ namespace ncv
                 }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         forward_network_t& forward_network_t::operator=(forward_network_t other)
         {
                 if (this != &other)
@@ -36,8 +30,6 @@ namespace ncv
 
                 return *this;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         const tensor_t& forward_network_t::forward(const tensor_t& _input) const
         {
@@ -51,8 +43,6 @@ namespace ncv
 
 		return *input;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         const tensor_t& forward_network_t::backward(const vector_t& _output) const
         {
@@ -74,8 +64,6 @@ namespace ncv
 
                 return *poutput;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         vector_t forward_network_t::gradient(const vector_t& _output) const
         {
@@ -111,8 +99,6 @@ namespace ncv
                 return gradient;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         vector_t forward_network_t::params() const
         {
                 vector_t x(psize());
@@ -131,8 +117,6 @@ namespace ncv
                 
                 return x;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         bool forward_network_t::load_params(const vector_t& x)
         {
@@ -159,8 +143,6 @@ namespace ncv
                 }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         void forward_network_t::zero_params()
         {
                 for (const flayer_t& layer : m_layers)
@@ -171,8 +153,6 @@ namespace ncv
                         }
                 }
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         void forward_network_t::random_params()
         {
@@ -190,8 +170,6 @@ namespace ncv
                 }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         bool forward_network_t::save(boost::archive::binary_oarchive& oa) const
         {
                 const vector_t p = this->params();
@@ -201,8 +179,6 @@ namespace ncv
 
                 return true;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         bool forward_network_t::load(boost::archive::binary_iarchive& ia)
         {
@@ -216,8 +192,6 @@ namespace ncv
 
                 return true;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         size_t forward_network_t::resize(bool verbose)
         {
@@ -288,8 +262,6 @@ namespace ncv
                 return n_params;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         void forward_network_t::print(const strings_t& layer_ids) const
         {
                 assert(n_layers() == layer_ids.size());
@@ -306,8 +278,6 @@ namespace ncv
                 }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         size_t forward_network_t::psize() const
         {
                 size_t nparams = 0;
@@ -321,7 +291,5 @@ namespace ncv
 
                 return nparams;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }
 

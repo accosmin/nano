@@ -6,8 +6,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         sampler_t::sampler_t(const task_t& task)
                 :       m_task(task),
                         m_stype(stype::batch),
@@ -16,15 +14,11 @@ namespace ncv
                 reset();
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         void sampler_t::reset()
         {
                 // collect all available samples (no restriction)
                 m_samples = m_task.samples();
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         sampler_t& sampler_t::setup(fold_t fold)
         {
@@ -35,8 +29,6 @@ namespace ncv
                 return order();
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         sampler_t& sampler_t::setup(protocol p)
         {
                 m_samples.erase(std::remove_if(m_samples.begin(), m_samples.end(),
@@ -46,8 +38,6 @@ namespace ncv
                 return order();
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         sampler_t& sampler_t::setup(stype s, size_t size)
         {
                 m_stype = s;
@@ -55,8 +45,6 @@ namespace ncv
 
                 return *this;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         sampler_t& sampler_t::setup(atype a)
         {
@@ -69,8 +57,6 @@ namespace ncv
                 return order();
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         sampler_t& sampler_t::setup(const string_t& label)
         {
                 m_samples.erase(std::remove_if(m_samples.begin(), m_samples.end(),
@@ -79,8 +65,6 @@ namespace ncv
 
                 return order();
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         sampler_t& sampler_t::split(size_t percentage, sampler_t& other)
         {
@@ -95,8 +79,6 @@ namespace ncv
 
                 return order();
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         samples_t sampler_t::get() const
         {
@@ -117,14 +99,10 @@ namespace ncv
                 return samples;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         sampler_t& sampler_t::order()
         {
                 std::sort(m_samples.begin(), m_samples.end());
 
                 return *this;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }

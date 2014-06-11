@@ -3,8 +3,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         template
         <
                 typename tscalar,
@@ -23,8 +21,6 @@ namespace ncv
                 assert(std::fabs(sumd - 1.0) < 1e-6);
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         template
         <
                 typename tscalar,
@@ -39,15 +35,11 @@ namespace ncv
                 dmap.noalias() = (dmap.array() * (gmap.array() - gd)).matrix();
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         softmax_layer_t::softmax_layer_t(const string_t& parameters)
                 :       layer_t(parameters, "softmax layer, parameters: type=plane[,global]"),
                         m_type(type::plane)
         {
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         size_t softmax_layer_t::resize(const tensor_t& tensor)
         {
@@ -77,8 +69,6 @@ namespace ncv
                 return 0;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         const tensor_t& softmax_layer_t::forward(const tensor_t& input)
         {
                 assert(idims() == input.dims());
@@ -103,8 +93,6 @@ namespace ncv
 
                 return m_data;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         const tensor_t& softmax_layer_t::backward(const tensor_t& output, scalar_t*)
         {
@@ -131,8 +119,6 @@ namespace ncv
 
                 return m_data;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }
 
 

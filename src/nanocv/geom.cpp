@@ -3,8 +3,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         rect_t geom::intersection(const rect_t& rect1, const rect_t& rect2)
         {
                 rect_t result;
@@ -18,8 +16,6 @@ namespace ncv
                 }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         rect_t geom::union_(const rect_t& rect1, const rect_t& rect2)
         {
                 const coord_t l = std::min(left(rect1), left(rect2));
@@ -30,15 +26,11 @@ namespace ncv
                 return make_rect(l, t, r - l, b - t);
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         scalar_t geom::overlap(const rect_t& rect1, const rect_t& rect2)
         {
                 return (area(intersection(rect1, rect2)) + 1.0) /
                        (area(union_(rect1, rect2)) + 1.0);
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }
 
 

@@ -6,8 +6,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         bool mnist_task_t::load(const string_t& dir)
         {
                 const string_t test_ifile = dir + "/t10k-images-idx3-ubyte";
@@ -24,8 +22,6 @@ namespace ncv
                 return  load(train_ifile, train_gfile, protocol::train) == n_train_samples &&
                         load(test_ifile, test_gfile, protocol::test) == n_test_samples;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         size_t mnist_task_t::load(const string_t& ifile, const string_t& gfile, protocol p)
         {
@@ -77,6 +73,4 @@ namespace ncv
 
                 return cnt;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }

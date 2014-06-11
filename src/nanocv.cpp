@@ -30,8 +30,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         void init()
         {
                 // round to nearest integer
@@ -73,8 +71,6 @@ namespace ncv
                 trainer_manager_t::instance().add("stochastic", stochastic_trainer_t());                
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         size_t test(const task_t& task, const fold_t& fold, const loss_t& loss, const model_t& model,
                 scalar_t& lvalue, scalar_t& lerror)
         {
@@ -106,7 +102,5 @@ namespace ncv
 
                 return count;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }
 	

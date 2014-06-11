@@ -8,14 +8,10 @@ namespace ncv
                 // note: the RGB - XYZ - CIELab color transformations are taken from:
                 //      --- http://www.easyrgb.com/ ---                
 
-                /////////////////////////////////////////////////////////////////////////////////////////
-
                 scalar_t fn_pow_12_5(scalar_t x)
                 {
                         return std::pow(x, 2.4);
                 }
-
-                /////////////////////////////////////////////////////////////////////////////////////////
 
                 scalar_t fn_pow_5_12(scalar_t x)
                 {
@@ -23,8 +19,6 @@ namespace ncv
                         const scalar_t cbx = std::cbrt(x);
                         return cbx * std::sqrt(std::sqrt(cbx));
                 }
-
-                /////////////////////////////////////////////////////////////////////////////////////////
 
                 scalar_t fn_xyz2lab(scalar_t t)
                 {
@@ -37,8 +31,6 @@ namespace ncv
                                 return 7.787 * t + 16.0 / 116.0;
                         }
                 }
-
-                /////////////////////////////////////////////////////////////////////////////////////////
 
                 scalar_t fn_lab2xyz(scalar_t t)
                 {
@@ -54,8 +46,6 @@ namespace ncv
                         }
                 }
 
-                /////////////////////////////////////////////////////////////////////////////////////////
-
                 scalar_t fn_rgb2xyz(scalar_t t)
                 {
                         if (t > 0.04045)
@@ -68,8 +58,6 @@ namespace ncv
                         }
                 }
 
-                /////////////////////////////////////////////////////////////////////////////////////////
-
                 scalar_t fn_xyz2rgb(scalar_t t)
                 {
                         if (t > 0.0031308)
@@ -81,8 +69,6 @@ namespace ncv
                                 return 12.92 * t;
                         }
                 }
-
-                /////////////////////////////////////////////////////////////////////////////////////////
 
                 class rgb2xyz_map
                 {
@@ -137,15 +123,11 @@ namespace ncv
 
                 static const rgb2xyz_map the_rgb2xyz_map;
 
-                /////////////////////////////////////////////////////////////////////////////////////////
-
                 void rgb2xyz(rgba_t rgb_r, rgba_t rgb_g, rgba_t rgb_b,
                              scalar_t& xyz_x, scalar_t& xyz_y, scalar_t& xyz_z)
                 {
                         the_rgb2xyz_map(rgb_r, rgb_g, rgb_b, xyz_x, xyz_y, xyz_z);
                 }
-
-                /////////////////////////////////////////////////////////////////////////////////////////
 
                 void xyz2rgb(scalar_t xyz_x, scalar_t xyz_y, scalar_t xyz_z,
                              rgba_t& rgb_r, rgba_t& rgb_g, rgba_t& rgb_b)
@@ -158,8 +140,6 @@ namespace ncv
                         rgb_g = math::clamp(math::cast<rgba_t>(255.0 * fn_xyz2rgb(var_g)), 0, 255);
                         rgb_b = math::clamp(math::cast<rgba_t>(255.0 * fn_xyz2rgb(var_b)), 0, 255);
                 }
-
-                /////////////////////////////////////////////////////////////////////////////////////////
 
                 void xyz2lab(scalar_t xyz_x, scalar_t xyz_y, scalar_t xyz_z,
                              scalar_t& cie_l, scalar_t& cie_a, scalar_t& cie_b)
@@ -177,8 +157,6 @@ namespace ncv
                         cie_a = 500.0 * (var_x - var_y);
                         cie_b = 200.0 * (var_y - var_z);
                 }
-
-                /////////////////////////////////////////////////////////////////////////////////////////
 
                 void lab2xyz(scalar_t cie_l, scalar_t cie_a, scalar_t cie_b,
                              scalar_t& xyz_x, scalar_t& xyz_y, scalar_t& xyz_z)
@@ -199,8 +177,6 @@ namespace ncv
                 }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         cielab_t color::make_cielab(rgba_t rgba)
         {
                 cielab_t cielab;
@@ -212,8 +188,6 @@ namespace ncv
                 return cielab;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         rgba_t color::make_rgba(const cielab_t& cielab)
         {
                 rgba_t r, g, b;
@@ -224,6 +198,4 @@ namespace ncv
 
                 return make_rgba(r, g, b);
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }

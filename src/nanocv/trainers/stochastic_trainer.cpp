@@ -7,16 +7,12 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         stochastic_trainer_t::stochastic_trainer_t(const string_t& parameters)
                 :       trainer_t(parameters,
                                   "stochastic trainer, "\
                                   "parameters: opt=sg[,sga,sia],epoch=16[1,1024]")
         {
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         bool stochastic_trainer_t::train(
                 const task_t& task, const fold_t& fold, const loss_t& loss, size_t nthreads, model_t& model) const
@@ -65,6 +61,4 @@ namespace ncv
                 // OK
                 return model.load_params(state.m_params);
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }

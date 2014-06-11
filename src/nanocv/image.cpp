@@ -21,8 +21,6 @@ namespace ncv
                 unknown
         };
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         imagetype decode_image_type(const string_t& path)
         {
                 if (text::iends_with(path, ".jpg") || text::iends_with(path, ".jpeg"))
@@ -50,8 +48,6 @@ namespace ncv
                         return imagetype::unknown;
                 }
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         bool load_rgba(const string_t& path, rgba_matrix_t& rgba)
         {
@@ -144,8 +140,6 @@ namespace ncv
                 }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         bool save_rgba(const string_t& path, const rgba_matrix_t& rgba)
         {
                 const int rows = math::cast<int>(rgba.rows());
@@ -235,8 +229,6 @@ namespace ncv
                 }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         bool load_rgba(const tensor_t& data, rgba_matrix_t& rgba)
         {
                 if (data.dims() == 1)
@@ -283,8 +275,6 @@ namespace ncv
                 }
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         bool load_gray(const char* buffer, size_t rows, size_t cols, rgba_matrix_t& rgba)
         {
                 rgba.resize(rows, cols);
@@ -300,8 +290,6 @@ namespace ncv
                 return true;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         bool load_rgba(const char* buffer, size_t rows, size_t cols, size_t stride, rgba_matrix_t& rgba)
         {
                 rgba.resize(rows, cols);
@@ -316,8 +304,6 @@ namespace ncv
 
                 return true;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         grid_image_t::grid_image_t(
                 size_t patch_rows, size_t patch_cols,
@@ -337,8 +323,6 @@ namespace ncv
                 m_image.resize(rows, cols);
                 m_image.setConstant(m_bcolor);
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         bool grid_image_t::set(size_t grow, size_t gcol, const rgba_matrix_t& patch)
         {
@@ -360,6 +344,4 @@ namespace ncv
                         return false;
                 }
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }

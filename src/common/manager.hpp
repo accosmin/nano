@@ -54,21 +54,15 @@ namespace ncv
                 
         private:
                 
-                /////////////////////////////////////////////////////////////////////////////////////////
-
                 bool _add(const std::string& id, const tobject& proto)
                 {
                         return m_protos.insert(typename protos_t::value_type(id, proto.clone())).second;
                 }
 
-                /////////////////////////////////////////////////////////////////////////////////////////
-
                 bool _has(const std::string& id) const
                 {
                         return m_protos.find(id) != m_protos.end();
                 }
-
-                /////////////////////////////////////////////////////////////////////////////////////////
 
                 robject_t _get(const std::string& id) const
                 {
@@ -80,8 +74,6 @@ namespace ncv
                         return it->second->clone();
                 }
 
-                /////////////////////////////////////////////////////////////////////////////////////////
-
                 robject_t _get(const std::string& id, const std::string& params) const
                 {
                         const protos_const_it it = m_protos.find(id);
@@ -91,8 +83,6 @@ namespace ncv
                         }
                         return it->second->make(params);
                 }
-
-                /////////////////////////////////////////////////////////////////////////////////////////
 
 		template <typename TFunctor>
                 std::vector<std::string> _collect(const TFunctor& fun) const
@@ -106,21 +96,15 @@ namespace ncv
 			return result;
 		}
 
-                /////////////////////////////////////////////////////////////////////////////////////////
-
                 std::vector<std::string> _ids() const
                 {
 			return _collect([] (const protos_const_it& it) { return it->first; });
                 }
 
-                /////////////////////////////////////////////////////////////////////////////////////////
-
                 std::vector<std::string> _descriptions() const
 		{
                         return _collect([] (const protos_const_it& it) { return it->second->description(); });
 		}
-
-                /////////////////////////////////////////////////////////////////////////////////////////
 		
 	private:
 

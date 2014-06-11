@@ -7,8 +7,6 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         template
         <
                 typename tscalar,
@@ -41,8 +39,6 @@ namespace ncv
                         }
                 }
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         template
         <
@@ -92,8 +88,6 @@ namespace ncv
                         }
                 }
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
 #if NANOCV_HAVE_OPENCL
         static const string_t ocl_conv_source = R"xxx(
@@ -236,14 +230,10 @@ namespace ncv
         )xxx";
 #endif
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         conv_layer_t::conv_layer_t(const string_t& parameters)
                 :       layer_t(parameters, "convolution layer, parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
         {
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         size_t conv_layer_t::resize(const tensor_t& tensor)
         {
@@ -334,16 +324,12 @@ namespace ncv
                 return psize();
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         void conv_layer_t::zero_params()
         {
                 m_kdata.zero();
 
                 params_changed();
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         void conv_layer_t::random_params(scalar_t min, scalar_t max)
         {
@@ -352,15 +338,11 @@ namespace ncv
                 params_changed();
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         scalar_t* conv_layer_t::save_params(scalar_t* params) const
         {
                 params = tensor::save(m_kdata, params);
                 return params;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         const scalar_t* conv_layer_t::load_params(const scalar_t* params)
         {
@@ -370,8 +352,6 @@ namespace ncv
 
                 return params;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         void conv_layer_t::params_changed() const
         {
@@ -384,8 +364,6 @@ namespace ncv
                 }
 #endif
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         const tensor_t& conv_layer_t::forward(const tensor_t& input)
         {
@@ -421,8 +399,6 @@ namespace ncv
 
                 return m_odata;
         }        
-        
-	/////////////////////////////////////////////////////////////////////////////////////////
 
         const tensor_t& conv_layer_t::backward(const tensor_t& output, scalar_t* gradient)
         {
@@ -462,8 +438,6 @@ namespace ncv
 
                 return m_gidata;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }
 
 
