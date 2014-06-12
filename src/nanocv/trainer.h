@@ -9,7 +9,7 @@ namespace ncv
         class loss_t;
         class sampler_t;
         class model_t;
-        struct trainer_state_t;
+        struct trainer_result_t;
 
         ///
         /// \brief stores registered prototypes
@@ -24,7 +24,7 @@ namespace ncv
                 const task_t&, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t&, batch_optimizer optimizer, 
                 size_t cycles, size_t epochs, size_t iterations, scalar_t epsilon,
-                const model_t& model, trainer_state_t& state);
+                const model_t& model, trainer_result_t& result);
 
         ///
         /// \brief stochastic-train the given model
@@ -32,18 +32,60 @@ namespace ncv
         bool stochastic_train(
                 const task_t&, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t&, stochastic_optimizer optimizer, size_t epochs,
-                const model_t& model, trainer_state_t& state);
-
+                const model_t& model, trainer_result_t& result);
+        
         ///
-        /// \brief track the current/optimum model state
+        /// \brief training state
         ///
         struct trainer_state_t
         {
                 ///
                 /// \brief constructor
-                /// \param n_parameters
                 ///
-                trainer_state_t(size_t n_parameters);
+                trainer_state_t(scalar_t tvalue = std::numeric_limits<scalar_t>::max(),
+                                scalar_t terror = std::numeric_limits<scalar_t>::max(),
+                                scalar_t vvalue = std::numeric_limits<scalar_t>::max(),
+                                scalar_t verror = std::numeric_limits<scalar_t>::max())
+                        :       m_tvalue(tvalue),
+                                m_terror(terror),
+                                m_vvalue(vvalue),
+                                m_verror(verror)
+                {
+                }
+                
+                // attributes
+                scalar_t                m_tvalue;       ///< train loss value
+                scalar_t                m_terror;       ///< train error
+                scalar_t                m_vvalue;       ///< validation loss value
+                scalar_t                m_verror;       ///< validation error        
+        };
+        
+        typedef std::vector
+        <trainer_state_t>               trainer_states_t;
+        
+        ///
+        /// \brief training configuration (e.g. learning rate, regularization weight)
+        ///
+        typedef scalars_t               trainer_config_t;
+        
+        ///
+        /// \brief training history (configuration, optimization states)
+        ///
+        typedef std::map
+        <
+                trainer_config_t,
+                trainer_states_t
+        >                               trainer_history_t;
+        
+        ///
+        /// \brief track the current/optimum model state
+        ///
+        struct trainer_result_t
+        {
+                ///
+                /// \brief constructor
+                ///
+                trainer_result_t(size_t n_parameters, size_t epochs);
 
                 ///
                 /// \brief update the current/optimum state with a possible better state
@@ -52,18 +94,15 @@ namespace ncv
                 bool update(const vector_t& params,
                             scalar_t tvalue, scalar_t terror,
                             scalar_t vvalue, scalar_t verror,
-                            size_t epoch, size_t epochs,
-                            const scalars_t& config);
+                            size_t epoch, const scalars_t& config);
 
                 // attributes
-                vector_t        m_params;       ///< current model parameters
-                scalar_t        m_tvalue;       ///< train loss value (at the optimum)
-                scalar_t        m_terror;       ///< train error (at the optimum)
-                scalar_t        m_vvalue;       ///< optimum validation loss value
-                scalar_t        m_verror;       ///< optimum validation error
-                size_t          m_epoch;        ///< current epoch
-                size_t          m_epochs;       ///< maximum number of epochs
-                scalars_t       m_config;       ///< optimum configuration (e.g. learning rate| regularization weight)                
+                vector_t                m_opt_params;           ///< optimum model parameters
+                trainer_state_t         m_opt_state;            ///< optimum training state
+                trainer_config_t        m_opt_config;           ///< optimum configuration
+                size_t                  m_opt_epoch;            ///< optimum epoch
+                size_t                  m_epochs;               ///< maximum number of epochs
+                trainer_history_t       m_history;              ///< optimization history
         };
                 
         ///

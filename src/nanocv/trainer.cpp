@@ -11,33 +11,27 @@
 
 namespace ncv
 {
-        trainer_state_t::trainer_state_t(size_t n_parameters)
-                :       m_params(n_parameters),
-                        m_tvalue(std::numeric_limits<scalar_t>::max()),
-                        m_terror(std::numeric_limits<scalar_t>::max()),
-                        m_vvalue(std::numeric_limits<scalar_t>::max()),
-                        m_verror(std::numeric_limits<scalar_t>::max()),
-                        m_epoch(0),
-                        m_epochs(0)
+        trainer_result_t::trainer_result_t(size_t n_parameters, size_t epochs)
+                :       m_opt_params(n_parameters),
+                        m_epochs(epochs)
         {
         }
 
-        bool trainer_state_t::update(const vector_t& params,
+        bool trainer_result_t::update(const vector_t& params,
                     scalar_t tvalue, scalar_t terror,
                     scalar_t vvalue, scalar_t verror,
-                    size_t epoch, size_t epochs,
-                    const scalars_t& config)
+                    size_t epoch, const scalars_t& config)
         {
-                if (verror < m_verror)
+                if (verror < m_opt_state.m_verror)
                 {
-                        m_params = params;
-                        m_tvalue = tvalue;
-                        m_terror = terror;
-                        m_vvalue = vvalue;
-                        m_verror = verror;
-                        m_epoch = epoch;
-                        m_epochs = epochs;
-                        m_config = config;
+                        const trainer_state_t state(tvalue, terror, vvalue, verror);
+                        m_history[config].push_back(state);
+
+                        m_opt_params = params;
+                        m_opt_state = state;
+                        m_opt_epoch = epoch;
+                        m_opt_config = config;
+
                         return true;
                 }
 
@@ -54,7 +48,7 @@ namespace ncv
                         const loss_t& loss, batch_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon,
                         const vector_t& x0, 
                         accumulator_t& ldata, accumulator_t& gdata, 
-                        trainer_state_t& state, size_t& epoch, size_t max_epochs)
+                        trainer_result_t& result, size_t& epoch)
                 {
                         size_t iteration = 0;  
                         
@@ -98,7 +92,7 @@ namespace ncv
                         {
                                 log_error() << message;
                         };
-                        auto fn_ulog = [&] (const opt_state_t& result, const timer_t& timer)
+                        auto fn_ulog = [&] (const opt_state_t& state, const timer_t& timer)
                         {
                                 ++ iteration;
                                 if ((iteration % iterations) == 0)
@@ -109,18 +103,17 @@ namespace ncv
                                         const scalar_t terror = gdata.error();
 
                                         // validation samples: loss value
-                                        ldata.reset(result.x);
+                                        ldata.reset(state.x);
                                         ldata.update(task, vsamples, loss, nthreads);
                                         const scalar_t vvalue = ldata.value();
                                         const scalar_t verror = ldata.error();
 
                                         // update the optimum state
-                                        state.update(result.x, tvalue, terror, vvalue, verror, 
-                                                     epoch, max_epochs, { ldata.lambda() });
+                                        result.update(state.x, tvalue, terror, vvalue, verror, epoch, { ldata.lambda() });
 
                                         log_info() << "[train = " << tvalue << "/" << terror
                                                 << ", valid = " << vvalue << "/" << verror
-                                                << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
+                                                << ", grad = " << state.g.lpNorm<Eigen::Infinity>()
                                                 << ", dims = " << ldata.dimensions()
                                                 << ", lambda = " << ldata.lambda()
                                                 << "] done in " << timer.elapsed() << ".";
@@ -161,7 +154,7 @@ namespace ncv
                 const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, batch_optimizer optimizer, 
                 size_t cycles, size_t epochs, size_t iterations, scalar_t epsilon,
-                const model_t& model, trainer_state_t& state)
+                const model_t& model, trainer_result_t& result)
         {
                 const vector_t x0 = model.params();
                 
@@ -175,10 +168,10 @@ namespace ncv
 			vector_t x = x0;
 			for (size_t c = 0, epoch = 0; c < cycles; c ++)
 			{                        
-                                const opt_state_t result = detail::batch_train(task, tsampler, vsampler, nthreads,
+                                const opt_state_t state = detail::batch_train(task, tsampler, vsampler, nthreads,
                                         loss, optimizer, epochs, iterations, epsilon,
-                                        x, ldata, gdata, state, epoch, epochs * cycles);                                
-                                x = result.x;
+                                        x, ldata, gdata, result, epoch);
+                                x = state.x;
                         }
                 }
                 
@@ -206,7 +199,7 @@ namespace ncv
                 static void stochastic_train(
                         const task_t& task, const samples_t& tsamples_, const samples_t& vsamples, const loss_t& loss,
                         stochastic_optimizer type, size_t epochs, scalar_t alpha0, scalar_t beta,
-                        const vector_t& x0, accumulator_t& ldata, accumulator_t& gdata, trainer_state_t& state,
+                        const vector_t& x0, accumulator_t& ldata, accumulator_t& gdata, trainer_result_t& result,
                         thread_pool_t::mutex_t& mutex)
                 {
                         samples_t tsamples = tsamples_;
@@ -294,8 +287,7 @@ namespace ncv
                                 // OK, update the optimum solution
                                 const thread_pool_t::lock_t lock(mutex);
 
-                                state.update(xparam, tvalue, terror, vvalue, verror,
-                                             e, epochs, { alpha0, ldata.lambda() });
+                                result.update(xparam, tvalue, terror, vvalue, verror, e, { alpha0, ldata.lambda() });
 
                                 log_info()
                                         << "[train = " << tvalue << "/" << terror
@@ -312,7 +304,7 @@ namespace ncv
         bool stochastic_train(
                 const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, stochastic_optimizer optimizer, size_t epochs,
-                const model_t& model, trainer_state_t& state)
+                const model_t& model, trainer_result_t& result)
         {
                 const samples_t tsamples = tsampler.get();
                 const samples_t vsamples = vsampler.get();
@@ -334,7 +326,7 @@ namespace ncv
                         const scalars_t alphas = { 0.001, 0.010, 0.100 };
                         for (scalar_t alpha : alphas)
                         {
-                                wpool.enqueue([=, &task, &tsamples, &vsamples, &loss, &model, &x0, &state, &mutex]()
+                                wpool.enqueue([=, &task, &tsamples, &vsamples, &loss, &model, &x0, &result, &mutex]()
                                 {
                                         accumulator_t ldata(model, accumulator_t::type::value, lambda);
                                         accumulator_t gdata(model, accumulator_t::type::vgrad, lambda);
@@ -342,7 +334,7 @@ namespace ncv
                                         detail::stochastic_train(
                                                 task, tsamples, vsamples, loss,
                                                 optimizer, epochs, alpha, beta,
-                                                x0, ldata, gdata, state, mutex);
+                                                x0, ldata, gdata, result, mutex);
                                 });
                         }
                 }

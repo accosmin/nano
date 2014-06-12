@@ -47,18 +47,18 @@ namespace ncv
                         (text::from_params<string_t>(configuration(), "opt", "sg"));
 
                 // train the model
-                trainer_state_t state(model.psize());
+                trainer_result_t result(model.psize(), epochs);
                 ncv::stochastic_train(task, tsampler, vsampler, nthreads,
                                       loss, optimizer, epochs,
-                                      model, state);
+                                      model, result);
 
-                log_info() << "optimum [train = " << state.m_tvalue << "/" << state.m_terror
-                           << ", valid = " << state.m_vvalue << "/" << state.m_verror
-                           << ", epoch = " << state.m_epoch << "/" << state.m_epochs
-                           << ", config = " << text::concatenate(state.m_config, "/")
+                log_info() << "optimum [train = " << result.m_opt_state.m_tvalue << "/" << result.m_opt_state.m_terror
+                           << ", valid = " << result.m_opt_state.m_vvalue << "/" << result.m_opt_state.m_verror
+                           << ", epoch = " << result.m_opt_epoch << "/" << result.m_epochs
+                           << ", config = " << text::concatenate(result.m_opt_config, "/")
                            << "].";
 
                 // OK
-                return model.load_params(state.m_params);
+                return model.load_params(result.m_opt_params);
         }
 }
