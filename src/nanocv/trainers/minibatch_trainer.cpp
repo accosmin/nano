@@ -61,8 +61,8 @@ namespace ncv
 
                 log_info() << "optimum [train = " << state.m_tvalue << "/" << state.m_terror
                            << ", valid = " << state.m_vvalue << "/" << state.m_verror
-                           << ", lambda = " << state.m_lambda
                            << ", epoch = " << state.m_epoch << "/" << state.m_epochs
+                           << ", config = " << text::concatenate(state.m_config, "/")
                            << "].";
 
                 // OK

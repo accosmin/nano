@@ -17,7 +17,6 @@ namespace ncv
                         m_terror(std::numeric_limits<scalar_t>::max()),
                         m_vvalue(std::numeric_limits<scalar_t>::max()),
                         m_verror(std::numeric_limits<scalar_t>::max()),
-                        m_lambda(std::numeric_limits<scalar_t>::max()),
                         m_epoch(0),
                         m_epochs(0)
         {
@@ -26,7 +25,8 @@ namespace ncv
         bool trainer_state_t::update(const vector_t& params,
                     scalar_t tvalue, scalar_t terror,
                     scalar_t vvalue, scalar_t verror,
-                    scalar_t lambda, size_t epoch, size_t epochs)
+                    size_t epoch, size_t epochs,
+                    const scalars_t& config)
         {
                 if (verror < m_verror)
                 {
@@ -35,9 +35,9 @@ namespace ncv
                         m_terror = terror;
                         m_vvalue = vvalue;
                         m_verror = verror;
-                        m_lambda = lambda;
                         m_epoch = epoch;
                         m_epochs = epochs;
+                        m_config = config;
                         return true;
                 }
 
@@ -45,13 +45,6 @@ namespace ncv
                 {
                         return false;
                 }
-        }
-
-        bool trainer_state_t::update(const trainer_state_t& state)
-        {
-                return update(state.m_params,
-                              state.m_tvalue, state.m_terror, state.m_vvalue, state.m_verror,
-                              state.m_lambda, state.m_epoch, state.m_epochs);
         }
 
         namespace detail
@@ -122,8 +115,8 @@ namespace ncv
                                         const scalar_t verror = ldata.error();
 
                                         // update the optimum state
-                                        state.update(result.x, tvalue, terror, vvalue, verror,
-                                                ldata.lambda(), epoch, max_epochs);
+                                        state.update(result.x, tvalue, terror, vvalue, verror, 
+                                                     epoch, max_epochs, { ldata.lambda() });
 
                                         log_info() << "[train = " << tvalue << "/" << terror
                                                 << ", valid = " << vvalue << "/" << verror
@@ -302,7 +295,7 @@ namespace ncv
                                 const thread_pool_t::lock_t lock(mutex);
 
                                 state.update(xparam, tvalue, terror, vvalue, verror,
-                                             ldata.lambda(), e, epochs);
+                                             e, epochs, { alpha0, ldata.lambda() });
 
                                 log_info()
                                         << "[train = " << tvalue << "/" << terror
