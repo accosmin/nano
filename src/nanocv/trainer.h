@@ -62,6 +62,11 @@ namespace ncv
         
         typedef std::vector
         <trainer_state_t>               trainer_states_t;
+
+        ///
+        /// \brief save optimization states to text file
+        ///
+        bool save(const string_t& path, const trainer_states_t& states);
         
         ///
         /// \brief training configuration (e.g. learning rate, regularization weight)
@@ -85,7 +90,7 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                trainer_result_t(size_t n_parameters, size_t epochs);
+                trainer_result_t(size_t n_parameters = 0, size_t epochs = 0);
 
                 ///
                 /// \brief update the current/optimum state with a possible better state
@@ -95,6 +100,14 @@ namespace ncv
                             scalar_t tvalue, scalar_t terror,
                             scalar_t vvalue, scalar_t verror,
                             size_t epoch, const scalars_t& config);
+
+                ///
+                /// \brief check if valid result
+                ///
+                bool valid() const
+                {
+                        return m_epochs > 0 && !m_history.empty();
+                }
 
                 // attributes
                 vector_t                m_opt_params;           ///< optimum model parameters
@@ -112,6 +125,9 @@ namespace ncv
         {
         public:
 
+                ///
+                /// \brief constructor
+                ///
                 trainer_t(const string_t& parameters, const string_t& description)
                         :       clonable_t<trainer_t>(parameters, description)
                 {
@@ -124,10 +140,8 @@ namespace ncv
 
                 ///
                 /// \brief train the given model
-                /// \param nthreads
-                /// \return
                 ///
-                virtual bool train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const = 0;
+                virtual trainer_result_t train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const = 0;
         };
 }
 

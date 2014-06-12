@@ -13,14 +13,14 @@ namespace ncv
         {
         }
 
-        bool batch_trainer_t::train(
+        trainer_result_t batch_trainer_t::train(
                 const task_t& task, const fold_t& fold, const loss_t& loss, size_t nthreads,
                 model_t& model) const
         {
                 if (fold.second != protocol::train)
                 {
                         log_error() << "batch trainer: can only train models with training samples!";
-                        return false;
+                        return trainer_result_t();
                 }
 
                 // initialize the model
@@ -37,7 +37,7 @@ namespace ncv
                 if (tsampler.empty() || vsampler.empty())
                 {
                         log_error() << "batch trainer: no annotated training samples!";
-                        return false;
+                        return trainer_result_t();
                 }
 
                 // parameters
@@ -60,6 +60,10 @@ namespace ncv
                            << "].";
 
                 // OK
-                return model.load_params(result.m_opt_params);
+                if (result.valid())
+                {
+                        model.load_params(result.m_opt_params);
+                }
+                return result;
         }
 }

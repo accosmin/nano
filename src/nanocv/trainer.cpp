@@ -8,9 +8,30 @@
 #include "optimize/opt_lbfgs.hpp"
 #include "accumulator.h"
 #include "sampler.h"
+#include <fstream>
 
 namespace ncv
 {
+        bool save(const string_t& path, const trainer_states_t& states)
+        {
+                std::ofstream ofs(path.c_str(), std::ofstream::out);
+                if (!ofs.is_open())
+                {
+                        return false;
+                }
+
+                const string_t delim = "\t";
+                for (const trainer_state_t& state : states)
+                {
+                        ofs << state.m_tvalue << delim
+                            << state.m_terror << delim
+                            << state.m_vvalue << delim
+                            << state.m_verror << delim << "\n";
+                }
+
+                return ofs.good();
+        }
+
         trainer_result_t::trainer_result_t(size_t n_parameters, size_t epochs)
                 :       m_opt_params(n_parameters),
                         m_epochs(epochs)

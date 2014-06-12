@@ -1,5 +1,6 @@
 #include "nanocv.h"
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
 
 int main(int argc, char *argv[])
 {
@@ -145,8 +146,13 @@ int main(int argc, char *argv[])
                         const fold_t test_fold = std::make_pair(f, protocol::test);
 
                         // train
+                        trainer_result_t result;
                         ncv::measure_critical_call(
-                                [&] () { return rtrainer->train(*rtask, train_fold, *rloss, cmd_threads, *rmodel); },
+                                [&] ()
+                                {
+                                        result = rtrainer->train(*rtask, train_fold, *rloss, cmd_threads, *rmodel);
+                                        return result.valid();
+                                },
                                 "model trained",
                                 "failed to train model");
 
@@ -162,6 +168,24 @@ int main(int argc, char *argv[])
 
                         // update the best model
                         models[lerror] = rmodel->clone();
+
+                        // save optimization history
+                        for (trainer_history_t::const_iterator it = result.m_history.cbegin(); it != result.m_history.cend(); ++ it)
+                        {
+                                const trainer_config_t& config = it->first;
+                                const trainer_states_t& states = it->second;
+
+                                const string_t path = (boost::filesystem::path(cmd_output).parent_path() /
+                                                      boost::filesystem::path(cmd_output).stem()).string() +
+                                                      "_trial" + text::to_string(t + 1) +
+                                                      "_fold" + text::to_string(f + 1) +
+                                                      "_config" + text::concatenate(config, "_") + ".state";
+
+                                ncv::measure_critical_call(
+                                        [&] () { return ncv::save(path, states); },
+                                        "saved state",
+                                        "failed to save state to <" + path + ">");
+                        }
                 }
         }        
 
