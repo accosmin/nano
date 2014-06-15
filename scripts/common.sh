@@ -53,8 +53,14 @@ function fn_train
         
         echo "running <${_param}> ..."
         echo "running <${_param}> ..." > ${_lfile}        
-        time ${exe_trainer} ${_param} --output ${_mfile} >> ${_lfile}
+        time ${exe_trainer} ${_param} --output ${_mfile} >> ${_lfile}        
         echo -e "\tlog saved to <${_lfile}>"
+        echo
+        echo -e "\tplotting optimization states ..."
+        for _sfile in $1/$2_*.state
+        do
+                bash plot_trainlog.sh ${_sfile}
+        done
         echo
 }  
 
