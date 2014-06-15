@@ -19,14 +19,24 @@ namespace ncv
                 {
                         return false;
                 }
+                
+                const string_t delim = "\t";              
+                
+                // header
+                ofs 
+                << text::resize("train-loss", 16) << delim
+                << text::resize("train-error", 16) << delim
+                << text::resize("valid-loss", 16) << delim
+                << text::resize("valid-error", 16) << delim << "\n";
 
-                const string_t delim = "\t";
+                // optimization states
                 for (const trainer_state_t& state : states)
                 {
-                        ofs << state.m_tvalue << delim
-                            << state.m_terror << delim
-                            << state.m_vvalue << delim
-                            << state.m_verror << delim << "\n";
+                        ofs 
+                        << text::resize(text::to_string(state.m_tvalue), 16) << delim
+                        << text::resize(text::to_string(state.m_terror), 16) << delim
+                        << text::resize(text::to_string(state.m_vvalue), 16) << delim
+                        << text::resize(text::to_string(state.m_verror), 16) << delim << "\n";
                 }
 
                 return ofs.good();
