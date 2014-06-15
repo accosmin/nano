@@ -53,11 +53,11 @@ namespace ncv
                     scalar_t vvalue, scalar_t verror,
                     size_t epoch, const scalars_t& config)
         {
+                const trainer_state_t state(tvalue, terror, vvalue, verror);
+                m_history[config].push_back(state);
+                
                 if (verror < m_opt_state.m_verror)
                 {
-                        const trainer_state_t state(tvalue, terror, vvalue, verror);
-                        m_history[config].push_back(state);
-
                         m_opt_params = params;
                         m_opt_state = state;
                         m_opt_epoch = epoch;
@@ -140,7 +140,8 @@ namespace ncv
                                         const scalar_t verror = ldata.error();
 
                                         // update the optimum state
-                                        result.update(state.x, tvalue, terror, vvalue, verror, epoch, { ldata.lambda() });
+                                        result.update(state.x, tvalue, terror, vvalue, verror, epoch,
+                                                      scalars_t({ ldata.lambda() }));
 
                                         log_info() << "[train = " << tvalue << "/" << terror
                                                 << ", valid = " << vvalue << "/" << verror
@@ -318,7 +319,8 @@ namespace ncv
                                 // OK, update the optimum solution
                                 const thread_pool_t::lock_t lock(mutex);
 
-                                result.update(xparam, tvalue, terror, vvalue, verror, e, { alpha0, ldata.lambda() });
+                                result.update(xparam, tvalue, terror, vvalue, verror, e, 
+                                              scalars_t({ alpha0, ldata.lambda() }));
 
                                 log_info()
                                         << "[train = " << tvalue << "/" << terror
