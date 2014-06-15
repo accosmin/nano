@@ -22,7 +22,7 @@ vlindex=2
 veindex=3
 
 labels=(`echo "train-loss train-error valid-loss valid-error"`)
-styles=(`echo "lt:4:pt:1:lw:1 lt:1:pt:2:lw:2 lt:3:pt:3:lw:1 lt:5:pt:6:lw:2"`)
+styles=(`echo "lt:4:pt:1:lw:1:ps:0.3 lt:1:pt:2:lw:2:ps:0.3 lt:3:pt:3:lw:1:ps:0.3 lt:5:pt:6:lw:2:ps:0.3"`)
 
 # set the plotting attributes
 rm -f ${pfile}
@@ -58,7 +58,7 @@ echo "set title \"${title}\"" >> ${pfile}
 echo "set xlabel \"epochs/iterations\"" >> ${pfile}
 echo "set ylabel \"error\"" >> ${pfile}
 echo "set xrange [*:*]" >> ${pfile}
-echo "set yrange [0.0:1.0]" >> ${pfile}
+echo "set yrange [*:*]" >> ${pfile}
 echo "set xtic auto" >> ${pfile}
 echo "set ytic auto" >> ${pfile}
 echo "set grid xtics ytics" >> ${pfile}
