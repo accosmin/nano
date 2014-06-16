@@ -3,9 +3,10 @@
 
 #include "task.h"
 #include "model.h"
+#include "common/thread_pool.h"
 
 namespace ncv
-{
+{        
         class loss_t;
 
         ///
@@ -27,31 +28,19 @@ namespace ncv
                 ///
                 /// \brief constructors
                 ///
-                accumulator_t(const model_t&,
-                              type = type::value,
-                              scalar_t lambda = 0.0);
-
-                accumulator_t(const rmodel_t& = rmodel_t(),
-                              type = type::value,
-                              scalar_t lambda = 0.0);
+                explicit accumulator_t(const model_t&, size_t nthreads, type = type::value, scalar_t lambda = 0.0);
 
                 ///
-                /// \brief copy constructor
+                /// \brief disable copying
                 ///
-                accumulator_t(const accumulator_t& other);
-
-                ///
-                /// \brief assignment operator
-                ///
-                accumulator_t& operator=(const accumulator_t& other);
-
+                accumulator_t(const accumulator_t& other) = delete;
+                accumulator_t& operator=(const accumulator_t& other) = delete;
+                
                 ///
                 /// \brief reset statistics and settings
                 ///
                 void reset();
-                void reset(const model_t& model);
                 void reset(const vector_t& params);
-                void reset(type, scalar_t lambda);
 
                 ///
                 /// \brief update statistics with a new sample
@@ -63,14 +52,9 @@ namespace ncv
                 ///
                 /// \brief update statistics for a set of samples
                 ///
-                void update(const task_t& task, const samples_t& samples, const loss_t& loss, size_t nthreads = 1);
-                void update(const tensors_t& inputs, const vectors_t& targets, const loss_t& loss, size_t nthreads = 1);
-                void update(const vectors_t& inputs, const vectors_t& targets, const loss_t& loss, size_t nthreads = 1);
-
-                ///
-                /// \brief update statistics with another instance
-                ///
-                accumulator_t& operator+=(const accumulator_t& other);
+                void update(const task_t& task, const samples_t& samples, const loss_t& loss);
+                void update(const tensors_t& inputs, const vectors_t& targets, const loss_t& loss);
+                void update(const vectors_t& inputs, const vectors_t& targets, const loss_t& loss);
 
                 ///
                 /// \brief average loss value
@@ -86,6 +70,11 @@ namespace ncv
                 /// \brief average gradient
                 ///
                 vector_t vgrad() const;
+                
+                ///
+                /// \brief total number of processed samples
+                ///
+                size_t count() const;
 
                 ///
                 /// \brief number of dimensions
@@ -93,24 +82,12 @@ namespace ncv
                 size_t dimensions() const;
 
                 ///
-                /// \brief total number of processed samples
-                ///
-                size_t count() const;
-
-                ///
                 /// \brief regularization weight (if any)
                 ///
                 scalar_t lambda() const;
-
-        private:
-
-                ///
-                /// \brief accumulate the output
-                ///
-                void cumulate(const vector_t& output, const vector_t& target, const loss_t& loss);
-
-        private:
-
+                
+        private:                
+                
                 struct settings_t
                 {
                         // constructor
@@ -119,12 +96,12 @@ namespace ncv
                                         m_lambda(lambda)
                         {
                         }
-
+                        
                         // attributes
                         type            m_type;
                         scalar_t        m_lambda;       ///< L2-regularization factor
                 };
-
+                
                 struct data_t
                 {
                         // constructor
@@ -136,7 +113,7 @@ namespace ncv
                         {
                                 reset();
                         }
-
+                        
                         // clear statistics
                         void reset()
                         {
@@ -145,7 +122,16 @@ namespace ncv
                                 m_error = 0.0;
                                 m_count = 0;
                         }
-
+                        
+                        // cumulate statistics
+                        void operator+=(const data_t& other)
+                        {
+                                m_value += other.m_value;
+                                m_vgrad += other.m_vgrad;
+                                m_error += other.m_error;
+                                m_count += other.m_count;
+                        }
+                        
                         // attributes
                         scalar_t        m_value;        ///< cumulated loss value
                         vector_t        m_vgrad;        ///< cumulated gradient
@@ -153,11 +139,27 @@ namespace ncv
                         size_t          m_count;        ///< #processed samples
                         vector_t        m_params;       ///< model's parameters
                 };
+                
+        private:
+                
+                ///
+                /// \brief accumulate the output
+                ///
+                static void cumulate(
+                        const model_t&, const vector_t& output, const vector_t& target, const loss_t&,
+                        const settings_t&, data_t&);
+
+        private:
 
                 // attributes
-                settings_t              m_settings;
-                rmodel_t                m_model;        ///< current model
+                thread_pool_t           m_pool;         ///< thread pool
+                std::vector<rmodel_t>   m_models;       ///< models / thread
+                std::vector<settings_t> m_configs;      ///< settings / thread
+                std::vector<data_t>     m_datas;        ///< data / thread
+                
+                settings_t              m_config;      
                 data_t                  m_data;
+                
         };
 }
 
