@@ -106,8 +106,7 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        worker_t(data_t& data)
-                                :       m_data(data)
+                        worker_t(data_t& data) : m_data(data)
                         {
                         }
 
@@ -127,7 +126,8 @@ namespace ncv
                 void _enqueue(F f)
                 {
                         {
-                                lock_t lock(m_data.m_mutex);
+                                const lock_t lock(m_data.m_mutex);
+                                
                                 m_data.m_tasks.push_back(task_t(f));
                         }
                         m_data.m_condition.notify_one();

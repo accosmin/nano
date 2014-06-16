@@ -35,7 +35,7 @@ namespace ncv
 
                         // announce that a task was completed
                         {
-                                lock_t lock(m_data.m_mutex);
+                                const lock_t lock(m_data.m_mutex);
 
                                 m_data.m_running --;
                                 m_data.m_condition.notify_all();
@@ -57,6 +57,7 @@ namespace ncv
                 // stop & join
                 {
                         const lock_t lock(m_data.m_mutex);
+                        
                         m_data.m_stop = true;
                 }
                 m_data.m_condition.notify_all();
