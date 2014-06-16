@@ -8,6 +8,7 @@
 #include "optimize/opt_lbfgs.hpp"
 #include "accumulator.h"
 #include "sampler.h"
+#include "loss.h"
 #include <fstream>
 
 namespace ncv
@@ -338,15 +339,12 @@ namespace ncv
                 const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, stochastic_optimizer optimizer, size_t epochs,
                 const model_t& model, trainer_result_t& result)
-        {
-                const samples_t tsamples = tsampler.get();
-                const samples_t vsamples = vsampler.get();
-                
+        {                
                 // prepare workers
                 thread_pool_t wpool(nthreads);
                 thread_pool_t::mutex_t mutex;
 
-                const size_t iterations = epochs * tsamples.size();             // SGD iterations
+                const size_t iterations = epochs * tsampler.size();             // SGD iterations
                 const scalar_t beta = std::pow(0.01, 1.0 / iterations);         // Learning rate decay rate
                 
                 const vector_t x0 = model.params();
@@ -359,13 +357,17 @@ namespace ncv
                         const scalars_t alphas = { 0.001, 0.010, 0.100 };
                         for (scalar_t alpha : alphas)
                         {
-                                wpool.enqueue([=, &task, &tsamples, &vsamples, &loss, &model, &x0, &result, &mutex]()
+                                wpool.enqueue([=, &task, &loss, &model, &x0, &result, &mutex]()
                                 {
                                         accumulator_t ldata(model, accumulator_t::type::value, lambda);
                                         accumulator_t gdata(model, accumulator_t::type::vgrad, lambda);
+                                                                                
+                                        const samples_t tsamples = tsampler.get();
+                                        const samples_t vsamples = vsampler.get();
+                                        const rloss_t rloss = loss.clone();
                                         
                                         detail::stochastic_train(
-                                                task, tsamples, vsamples, loss,
+                                                task, tsamples, vsamples, *rloss,
                                                 optimizer, epochs, alpha, beta,
                                                 x0, ldata, gdata, result, mutex);
                                 });
