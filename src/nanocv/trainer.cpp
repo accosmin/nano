@@ -76,7 +76,7 @@ namespace ncv
         namespace detail
         {        
                 static opt_state_t batch_train(
-                        const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
+                        const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, 
                         const loss_t& loss, batch_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon,
                         const vector_t& x0, 
                         accumulator_t& ldata, accumulator_t& gdata, 
@@ -99,7 +99,7 @@ namespace ncv
                         {
                                 // training samples: loss value
                                 ldata.reset(x);
-                                ldata.update(task, tsamples, loss, nthreads);
+                                ldata.update(task, tsamples, loss);
                                 const scalar_t tvalue = ldata.value();
 
                                 return tvalue;
@@ -109,7 +109,7 @@ namespace ncv
                         {
                                 // training samples: loss value & gradient
                                 gdata.reset(x);
-                                gdata.update(task, tsamples, loss, nthreads);
+                                gdata.update(task, tsamples, loss);
                                 const scalar_t tvalue = gdata.value();
                                 gx = gdata.vgrad();
 
@@ -136,7 +136,7 @@ namespace ncv
 
                                         // validation samples: loss value
                                         ldata.reset(state.x);
-                                        ldata.update(task, vsamples, loss, nthreads);
+                                        ldata.update(task, vsamples, loss);
                                         const scalar_t vvalue = ldata.value();
                                         const scalar_t verror = ldata.error();
 
@@ -189,24 +189,36 @@ namespace ncv
                 size_t cycles, size_t epochs, size_t iterations, scalar_t epsilon,
                 const model_t& model, trainer_result_t& result)
         {
+                // prepare workers
+                thread_pool_t wpool(nthreads);
+                thread_pool_t::mutex_t mutex;
+                
                 const vector_t x0 = model.params();
                 
                 // tune the regularization factor
                 const scalars_t lambdas = { 1e-3, 1e-2, 1e-1, 1.0 };
                 for (scalar_t lambda : lambdas)
                 {
-                        accumulator_t ldata(model, accumulator_t::type::value, lambda);
-                        accumulator_t gdata(model, accumulator_t::type::vgrad, lambda);
-			
-			vector_t x = x0;
-			for (size_t c = 0, epoch = 0; c < cycles; c ++)
-			{                        
-                                const opt_state_t state = detail::batch_train(task, tsampler, vsampler, nthreads,
-                                        loss, optimizer, epochs, iterations, epsilon,
-                                        x, ldata, gdata, result, epoch);
-                                x = state.x;
-                        }
+                        wpool.enqueue([=, &task, &loss, &model, &x0, &result, &mutex]()
+                        {
+                                accumulator_t ldata(model, accumulator_t::type::value, lambda);
+                                accumulator_t gdata(model, accumulator_t::type::vgrad, lambda);
+                                
+                                const rloss_t rloss = loss.clone();
+                                
+                                vector_t x = x0;
+                                for (size_t c = 0, epoch = 0; c < cycles; c ++)
+                                {                        
+                                        const opt_state_t state = detail::batch_train(
+                                                task, tsampler, vsampler,
+                                                *rloss, optimizer, epochs, iterations, epsilon,
+                                                x, ldata, gdata, result, epoch);
+                                        x = state.x;
+                                }
+                        });
                 }
+                
+                wpool.wait();
                 
                 // OK
                 return true;
