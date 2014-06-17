@@ -28,7 +28,7 @@ namespace ncv
                 ///
                 /// \brief constructors
                 ///
-                explicit accumulator_t(const model_t&, size_t nthreads, type = type::value, scalar_t lambda = 0.0);
+                accumulator_t(const model_t&, size_t nthreads, type = type::value, scalar_t lambda = 0.0);
 
                 ///
                 /// \brief disable copying
@@ -105,8 +105,9 @@ namespace ncv
                 struct data_t
                 {
                         // constructor
-                        data_t(size_t size = 0)
-                                :       m_value(0.0),
+                        data_t(size_t size = 0, type t = type::value, scalar_t lambda = 0.0)
+                                :       m_config(t, lambda),
+                                        m_value(0.0),
                                         m_vgrad(size),
                                         m_error(0.0),
                                         m_count(0)
@@ -115,6 +116,19 @@ namespace ncv
                         }
                         
                         // clear statistics
+                        void reset(const model_t& model)
+                        {
+                                m_model = model.clone();
+                                m_params = model.params();
+                                
+                                reset();
+                        }
+                        void reset(const vector_t& params)
+                        {
+                                m_model->load_params(params);
+                                
+                                reset();
+                        }
                         void reset()
                         {
                                 m_value = 0.0;
@@ -122,6 +136,12 @@ namespace ncv
                                 m_error = 0.0;
                                 m_count = 0;
                         }
+                        
+                        // update statistics with a new sample
+                        void update(const task_t& task, const sample_t& sample, const loss_t& loss);
+                        void update(const tensor_t& input, const vector_t& target, const loss_t& loss);
+                        void update(const vector_t& input, const vector_t& target, const loss_t& loss);
+                        void cumulate(const vector_t& output, const vector_t& target, const loss_t& loss);
                         
                         // cumulate statistics
                         void operator+=(const data_t& other)
@@ -133,33 +153,22 @@ namespace ncv
                         }
                         
                         // attributes
+                        rmodel_t        m_model;        ///< model copy
+                        settings_t      m_config;       ///< settings
                         scalar_t        m_value;        ///< cumulated loss value
                         vector_t        m_vgrad;        ///< cumulated gradient
                         scalar_t        m_error;        ///< cumulated loss error
                         size_t          m_count;        ///< #processed samples
                         vector_t        m_params;       ///< model's parameters
                 };
-                
-        private:
-                
-                ///
-                /// \brief accumulate the output
-                ///
-                static void cumulate(
-                        const model_t&, const vector_t& output, const vector_t& target, const loss_t&,
-                        const settings_t&, data_t&);
 
         private:
 
                 // attributes
                 thread_pool_t           m_pool;         ///< thread pool
-                std::vector<rmodel_t>   m_models;       ///< models / thread
-                std::vector<settings_t> m_configs;      ///< settings / thread
                 std::vector<data_t>     m_datas;        ///< data / thread
                 
-                settings_t              m_config;      
                 data_t                  m_data;
-                
         };
 }
 

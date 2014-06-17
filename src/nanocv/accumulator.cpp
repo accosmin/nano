@@ -1,100 +1,101 @@
 #include "accumulator.h"
 #include "loss.h"
+#include "common/thread_loop.hpp"
 #include <cassert>
 
 namespace ncv
 {        
         accumulator_t::accumulator_t(const model_t& model, size_t nthreads, type t, scalar_t lambda)
-                :       m_pool(nthreads),
-                        m_models(m_pool.n_workers()),
-                        m_configs(m_pool.n_workers(), { t, lambda }),
-                        m_datas(m_pool.n_workers(), { model.psize() }),
-                        
-                        m_config(t, lambda),
-                        m_data(model.psize())
+                :       m_pool(nthreads),                        
+                        m_datas(m_pool.n_workers(), { model.psize(), t, lambda }),
+                        m_data(model.psize(), t, lambda)
         {
-                m_data.m_params = model.params();
-                
-                for (size_t th = 0; th < m_pool.n_workers(); th ++)
-                {                
-                        m_models[th] = model.clone();
-                        m_datas[th].m_params = m_data.m_params;
+                m_data.reset(model);                
+                for (data_t& data : m_datas)
+                {
+                        data.reset(model);
                 }                
         }
 
         void accumulator_t::reset(const vector_t& params)
         {
-                m_data.m_params = params;
-                
-                for (size_t th = 0; th < m_pool.n_workers(); th ++)
-                {                
-                        m_models[th]->load_params(params);
-                }                
-
-                reset();
+                m_data.reset(params);
+                for (data_t& data : m_datas)
+                {
+                        data.reset(params);
+                }
         }
 
         void accumulator_t::reset()
         {
                 m_data.reset();
-                
-                for (size_t th = 0; th < m_pool.n_workers(); th ++)
+                for (data_t& data : m_datas)
                 {
-                        m_datas[th].reset();
+                        data.reset();
                 }
         }
         
-        void accumulator_t::cumulate(
-                const model_t& model, const vector_t& output, const vector_t& target, const loss_t& loss,
-                const settings_t& config, data_t& data)
+        void accumulator_t::data_t::cumulate(
+                const vector_t& output, const vector_t& target, const loss_t& loss)
         {
-                assert(static_cast<size_t>(output.size()) == model.osize());
-                assert(static_cast<size_t>(target.size()) == model.osize());
+                assert(static_cast<size_t>(output.size()) == m_model->osize());
+                assert(static_cast<size_t>(target.size()) == m_model->osize());
                 
                 // loss gradient
-                switch (config.m_type)
+                switch (m_config.m_type)
                 {
                 case type::value:
                         break;
                         
                 case type::vgrad:
-                        data.m_vgrad += model.gradient(loss.vgrad(target, output));
+                        m_vgrad += m_model->gradient(loss.vgrad(target, output));
                         break;
                 }
                 
                 // loss value
-                data.m_value += loss.value(target, output);
-                data.m_error += loss.error(target, output);
-                data.m_count ++;
+                m_value += loss.value(target, output);
+                m_error += loss.error(target, output);
+                m_count ++;
+        }
+        
+        void accumulator_t::data_t::update(const task_t& task, const sample_t& sample, const loss_t& loss)
+        {
+                assert(sample.m_index < task.n_images());
+                
+                const image_t& image = task.image(sample.m_index);
+                const vector_t& target = sample.m_target;                
+                const vector_t& output = m_model->forward(image, sample.m_region).vector();
+                
+                cumulate(output, target, loss);
+        }
+        
+        void accumulator_t::data_t::update(const tensor_t& input, const vector_t& target, const loss_t& loss)
+        {
+                const vector_t& output = m_model->forward(input).vector();
+                
+                cumulate(output, target, loss);
+        }
+        
+        void accumulator_t::data_t::update(const vector_t& input, const vector_t& target, const loss_t& loss)
+        {
+                const vector_t& output = m_model->forward(input).vector();
+                
+                cumulate(output, target, loss);
         }
 
         void accumulator_t::update(const task_t& task, const sample_t& sample, const loss_t& loss)
         {
-                assert(sample.m_index < task.n_images());
-
-                const image_t& image = task.image(sample.m_index);
-                const vector_t& target = sample.m_target;
-                
-                const model_t& model = *m_models.begin()->get();                                
-                const vector_t& output = model.forward(image, sample.m_region).vector();
-
-                cumulate(model, output, target, loss, m_config, m_data);
+                m_data.update(task, sample, loss);
         }
 
         void accumulator_t::update(const tensor_t& input, const vector_t& target, const loss_t& loss)
         {
-                const model_t& model = *m_models.begin()->get();
-                const vector_t& output = model.forward(input).vector();
-
-                cumulate(model, output, target, loss, m_config, m_data);
+                m_data.update(input, target, loss);
         }
 
         void accumulator_t::update(const vector_t& input, const vector_t& target, const loss_t& loss)
         {
-                const model_t& model = *m_models.begin()->get();
-                const vector_t& output = model.forward(input).vector();
-
-                cumulate(model, output, target, loss, m_config, m_data);
+                m_data.update(input, target, loss);
         }
 
         void accumulator_t::update(const task_t& task, const samples_t& samples, const loss_t& loss)
@@ -109,23 +110,20 @@ namespace ncv
 
                 else
                 {
-                        thread_loop_cumulate<size_t>
+                        thread_loopit
                         (
                                 samples.size(),
-                                [&] (accumulator_t& data)
+                                [&] (size_t i, size_t th)
                                 {
-                                        data = *this;
-                                },
-                                [&] (size_t i, accumulator_t& data)
-                                {
-                                        data.update(task, samples[i], loss);
-                                },
-                                [&] (accumulator_t& data)
-                                {
-                                        this->operator +=(data);
+                                        m_datas[th].update(task, samples[i], loss);
                                 },
                                 m_pool
                         );
+                        
+                        for (const data_t& data : m_datas)
+                        {
+                                m_data += data;
+                        }
                 }
         }
 
@@ -141,23 +139,20 @@ namespace ncv
 
                 else
                 {
-                        thread_loop_cumulate<accumulator_t>
+                        thread_loopit
                         (
                                 inputs.size(),
-                                [&] (accumulator_t& data)
+                                [&] (size_t i, size_t th)
                                 {
-                                        data = *this;
+                                        m_datas[th].update(inputs[i], targets[i], loss);
                                 },
-                                [&] (size_t i, accumulator_t& data)
-                                {
-                                        data.update(inputs[i], targets[i], loss);
-                                },
-                                [&] (accumulator_t& data)
-                                {
-                                        this->operator +=(data);
-                                },
-                                nthreads
+                                m_pool
                         );
+                        
+                        for (const data_t& data : m_datas)
+                        {
+                                m_data += data;
+                        }
                 }
         }
 
@@ -173,23 +168,20 @@ namespace ncv
 
                 else
                 {
-                        thread_loop_cumulate<accumulator_t>
+                        thread_loopit
                         (
                                 inputs.size(),
-                                [&] (accumulator_t& data)
+                                [&] (size_t i, size_t th)
                                 {
-                                        data = *this;
+                                        m_datas[th].update(inputs[i], targets[i], loss);
                                 },
-                                [&] (size_t i, accumulator_t& data)
-                                {
-                                        data.update(inputs[i], targets[i], loss);
-                                },
-                                [&] (accumulator_t& data)
-                                {
-                                        this->operator +=(data);
-                                },
-                                nthreads
+                                m_pool
                         );
+                        
+                        for (const data_t& data : m_datas)
+                        {
+                                m_data += data;
+                        }
                 }
         }
         
@@ -198,7 +190,7 @@ namespace ncv
                 assert(count() > 0);
 
                 return  m_data.m_value / count() +
-                        0.5 * m_config.m_lambda / dimensions() * m_data.m_params.squaredNorm();
+                        0.5 * m_data.m_config.m_lambda / dimensions() * m_data.m_params.squaredNorm();
         }
 
         scalar_t accumulator_t::error() const
@@ -213,12 +205,12 @@ namespace ncv
                 assert(count() > 0);
 
                 return  m_data.m_vgrad / count() +
-                        m_config.m_lambda / dimensions() * m_data.m_params;
+                        m_data.m_config.m_lambda / dimensions() * m_data.m_params;
         }
 
         size_t accumulator_t::dimensions() const
         {
-                return m_data.m_params.size();
+                return static_cast<size_t>(m_data.m_params.size());
         }
 
         size_t accumulator_t::count() const
@@ -228,7 +220,7 @@ namespace ncv
 
         scalar_t accumulator_t::lambda() const
         {
-                return m_config.m_lambda;
+                return m_data.m_config.m_lambda;
         }
 }
 	

@@ -35,7 +35,7 @@ ncv::stats_t<ncv::scalar_t> test_ncv(int size, int trials, toperator op)
         {
                 const ncv::timer_t timer;
 
-                ncv::thread_loop(size, op);
+                ncv::thread_loopi(size, op);
 
                 timings(timer.miliseconds());
         }
