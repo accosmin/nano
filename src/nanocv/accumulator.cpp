@@ -5,57 +5,27 @@
 
 namespace ncv
 {        
-        accumulator_t::accumulator_t(const model_t& model, size_t nthreads, type t, scalar_t lambda)
-                :       m_pool(nthreads),                        
-                        m_datas(m_pool.n_workers(), { model.psize(), t, lambda }),
-                        m_data(model.psize(), t, lambda)
-        {
-                m_data.reset(model);                
-                for (data_t& data : m_datas)
-                {
-                        data.reset(model);
-                }                
-        }
-
-        void accumulator_t::reset(const vector_t& params)
-        {
-                m_data.reset(params);
-                for (data_t& data : m_datas)
-                {
-                        data.reset(params);
-                }
-        }
-
-        void accumulator_t::reset()
-        {
-                m_data.reset();
-                for (data_t& data : m_datas)
-                {
-                        data.reset();
-                }
-        }
-        
         void accumulator_t::data_t::cumulate(
                 const vector_t& output, const vector_t& target, const loss_t& loss)
         {
                 assert(static_cast<size_t>(output.size()) == m_model->osize());
                 assert(static_cast<size_t>(target.size()) == m_model->osize());
                 
-                // loss gradient
-                switch (m_config.m_type)
-                {
-                case type::value:
-                        break;
-                        
-                case type::vgrad:
-                        m_vgrad += m_model->gradient(loss.vgrad(target, output));
-                        break;
-                }
-                
                 // loss value
                 m_value += loss.value(target, output);
                 m_error += loss.error(target, output);
                 m_count ++;
+                
+                // loss gradient
+                switch (m_config.m_type)
+                {
+                        case type::value:
+                                break;
+                                
+                        case type::vgrad:
+                                m_vgrad += m_model->gradient(loss.vgrad(target, output));
+                                break;
+                }
         }
         
         void accumulator_t::data_t::update(const task_t& task, const sample_t& sample, const loss_t& loss)
@@ -82,6 +52,36 @@ namespace ncv
                 
                 cumulate(output, target, loss);
         }
+        
+        accumulator_t::accumulator_t(const model_t& model, size_t nthreads, type t, scalar_t lambda)
+                :       m_pool(nthreads),                        
+                        m_datas(m_pool.n_workers(), { model.psize(), t, lambda }),
+                        m_data(model.psize(), t, lambda)
+        {
+                m_data.reset(model);                
+                for (data_t& data : m_datas)
+                {
+                        data.reset(model);
+                }
+        }
+
+        void accumulator_t::reset(const vector_t& params)
+        {
+                m_data.reset(params);
+                for (data_t& data : m_datas)
+                {
+                        data.reset(params);
+                }
+        }
+
+        void accumulator_t::reset()
+        {
+                m_data.reset();
+                for (data_t& data : m_datas)
+                {
+                        data.reset();
+                }
+        }       
 
         void accumulator_t::update(const task_t& task, const sample_t& sample, const loss_t& loss)
         {

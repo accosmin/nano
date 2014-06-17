@@ -126,6 +126,7 @@ namespace ncv
                         void reset(const vector_t& params)
                         {
                                 m_model->load_params(params);
+                                m_params = params;
                                 
                                 reset();
                         }

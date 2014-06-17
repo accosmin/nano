@@ -11,7 +11,7 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
         
         accumulator_t acc_params(model, 1 + (rand() % 2), accumulator_t::type::vgrad, lambda);
         
-        const size_t n_tests = 16;
+        const size_t n_tests = 64;
         const size_t n_samples = rand();
 
         const rloss_t rloss = loss_manager_t::instance().get(loss_id);
