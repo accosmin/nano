@@ -198,14 +198,12 @@ namespace ncv
                         accumulator_t ldata(model, nthreads, accumulator_t::type::value, lambda);
                         accumulator_t gdata(model, nthreads, accumulator_t::type::vgrad, lambda);
                         
-                        const rloss_t rloss = loss.clone();
-                        
                         vector_t x = x0;
                         for (size_t c = 0, epoch = 0; c < cycles; c ++)
                         {                        
                                 const opt_state_t state = detail::batch_train(
                                         task, tsampler, vsampler,  
-                                        *rloss, optimizer, epochs, iterations, epsilon,
+                                        loss, optimizer, epochs, iterations, epsilon,
                                         x, ldata, gdata, result, epoch);
                                 x = state.x;
                         }
@@ -367,10 +365,9 @@ namespace ncv
                                                                                 
                                         const samples_t tsamples = tsampler.get();
                                         const samples_t vsamples = vsampler.get();
-                                        const rloss_t rloss = loss.clone();
                                         
                                         detail::stochastic_train(
-                                                task, tsamples, vsamples, *rloss,
+                                                task, tsamples, vsamples, loss,
                                                 optimizer, epochs, alpha, beta,
                                                 x0, ldata, gdata, result, mutex);
                                 });
