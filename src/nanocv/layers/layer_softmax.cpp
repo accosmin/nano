@@ -17,8 +17,8 @@ namespace ncv
 
                 const tscalar sumd = dmap.sum();
                 dmap.noalias() = dmap / sumd;
-
-                assert(std::fabs(sumd - 1.0) < 1e-6);
+                
+                assert(std::fabs(dmap.sum() - 1.0) < 1e-6);
         }
 
         template
