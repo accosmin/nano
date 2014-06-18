@@ -7,6 +7,7 @@ namespace ncv
 {
         ///
         /// \brief split a loop computation of the given size using a thread pool
+        /// NB: the operator receives the index of the sample to process: op(i)
         ///
         template
         <
@@ -34,6 +35,7 @@ namespace ncv
         
         ///
         /// \brief split a loop computation of the given size using a thread pool
+        /// NB: the operator receives the index of the sample to process and the assigned thread index: op(i, t)
         ///
         template
         <
