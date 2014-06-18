@@ -53,6 +53,25 @@ namespace ncv
                 cumulate(output, target, loss);
         }
         
+        void accumulator_t::cache_t::reset(const model_t& model)
+        {
+                m_model = model.clone();
+                m_params = model.params();
+                m_data.reset();
+        }
+        
+        void accumulator_t::cache_t::reset(const vector_t& params)
+        {
+                m_model->load_params(params);
+                m_params = params;
+                m_data.reset();
+        }
+        
+        void accumulator_t::cache_t::reset()
+        {
+                m_data.reset();
+        } 
+        
         accumulator_t::accumulator_t(const model_t& model, size_t nthreads, type t, scalar_t lambda)
                 :       m_pool(nthreads),                        
                         m_caches(m_pool.n_workers(), { model.psize(), t, lambda }),
@@ -120,7 +139,7 @@ namespace ncv
                                 m_pool
                         );
                         
-                        for (const cache_t& cache: m_caches)
+                        for (const cache_t& cache : m_caches)
                         {
                                 m_cache += cache;
                         }
@@ -149,7 +168,7 @@ namespace ncv
                                 m_pool
                         );
                         
-                        for (const cache_t& cache: m_caches)
+                        for (const cache_t& cache : m_caches)
                         {
                                 m_cache += cache;
                         }
@@ -178,7 +197,7 @@ namespace ncv
                                 m_pool
                         );
                         
-                        for (const cache_t& cache: m_caches)
+                        for (const cache_t& cache : m_caches)
                         {
                                 m_cache += cache;
                         }

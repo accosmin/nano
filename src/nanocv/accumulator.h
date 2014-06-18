@@ -149,22 +149,9 @@ namespace ncv
                         }
                         
                         // clear statistics
-                        void reset(const model_t& model)
-                        {
-                                m_model = model.clone();
-                                m_params = model.params();
-                                m_data.reset();
-                        }
-                        void reset(const vector_t& params)
-                        {
-                                m_model->load_params(params);
-                                m_params = params;
-                                m_data.reset();
-                        }
-                        void reset()
-                        {
-                                m_data.reset();
-                        }                                
+                        void reset(const model_t& model);
+                        void reset(const vector_t& params);
+                        void reset();          
                         
                         // update statistics with a new sample
                         void update(const task_t& task, const sample_t& sample, const loss_t& loss);
