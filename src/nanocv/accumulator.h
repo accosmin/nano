@@ -88,10 +88,10 @@ namespace ncv
                 
         private:                
                 
-                struct settings_t
+                struct config_t
                 {
                         // constructor
-                        settings_t(type t, scalar_t lambda)
+                        config_t(type t, scalar_t lambda)
                                 :       m_type(t),
                                         m_lambda(lambda)
                         {
@@ -105,9 +105,8 @@ namespace ncv
                 struct data_t
                 {
                         // constructor
-                        data_t(size_t size = 0, type t = type::value, scalar_t lambda = 0.0)
-                                :       m_config(t, lambda),
-                                        m_value(0.0),
+                        data_t(size_t size = 0)
+                                :       m_value(0.0),
                                         m_vgrad(size),
                                         m_error(0.0),
                                         m_count(0)
@@ -116,20 +115,6 @@ namespace ncv
                         }
                         
                         // clear statistics
-                        void reset(const model_t& model)
-                        {
-                                m_model = model.clone();
-                                m_params = model.params();
-                                
-                                reset();
-                        }
-                        void reset(const vector_t& params)
-                        {
-                                m_model->load_params(params);
-                                m_params = params;
-                                
-                                reset();
-                        }
                         void reset()
                         {
                                 m_value = 0.0;
@@ -137,12 +122,6 @@ namespace ncv
                                 m_error = 0.0;
                                 m_count = 0;
                         }
-                        
-                        // update statistics with a new sample
-                        void update(const task_t& task, const sample_t& sample, const loss_t& loss);
-                        void update(const tensor_t& input, const vector_t& target, const loss_t& loss);
-                        void update(const vector_t& input, const vector_t& target, const loss_t& loss);
-                        void cumulate(const vector_t& output, const vector_t& target, const loss_t& loss);
                         
                         // cumulate statistics
                         void operator+=(const data_t& other)
@@ -154,22 +133,64 @@ namespace ncv
                         }
                         
                         // attributes
-                        rmodel_t        m_model;        ///< model copy
-                        settings_t      m_config;       ///< settings
                         scalar_t        m_value;        ///< cumulated loss value
                         vector_t        m_vgrad;        ///< cumulated gradient
                         scalar_t        m_error;        ///< cumulated loss error
                         size_t          m_count;        ///< #processed samples
+                };
+                
+                struct cache_t
+                {
+                        // constructor
+                        cache_t(size_t size = 0, type t = type::value, scalar_t lambda = 0.0)
+                                :       m_config(t, lambda),
+                                        m_data(size)
+                        {
+                        }
+                        
+                        // clear statistics
+                        void reset(const model_t& model)
+                        {
+                                m_model = model.clone();
+                                m_params = model.params();
+                                m_data.reset();
+                        }
+                        void reset(const vector_t& params)
+                        {
+                                m_model->load_params(params);
+                                m_params = params;
+                                m_data.reset();
+                        }
+                        void reset()
+                        {
+                                m_data.reset();
+                        }                                
+                        
+                        // update statistics with a new sample
+                        void update(const task_t& task, const sample_t& sample, const loss_t& loss);
+                        void update(const tensor_t& input, const vector_t& target, const loss_t& loss);
+                        void update(const vector_t& input, const vector_t& target, const loss_t& loss);
+                        void cumulate(const vector_t& output, const vector_t& target, const loss_t& loss);
+                        
+                        // cumulate statistics
+                        void operator+=(const cache_t& other)
+                        {
+                                m_data += other.m_data;
+                        }
+                        
+                        // attributes
+                        rmodel_t        m_model;        ///< model copy
                         vector_t        m_params;       ///< model's parameters
+                        config_t        m_config;       ///< settings
+                        data_t          m_data;         ///< cumulated data                        
                 };
 
         private:
 
                 // attributes
                 thread_pool_t           m_pool;         ///< thread pool
-                std::vector<data_t>     m_datas;        ///< data / thread
-                
-                data_t                  m_data;
+                std::vector<cache_t>    m_caches;       ///< cache / thread                
+                cache_t                 m_cache;        ///< global (cumulated) cache
         };
 }
 
