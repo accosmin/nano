@@ -1,15 +1,10 @@
-* can make the accumulator more efficient for MT parts by storing an accumulator_t::data_t directly per thread
+- more plots to assess the effect of the regularization: 
+        - e.g. y - loss value / error bars for all trials and folds 
+        - e.g. x - number of iterations / epochs
 
-* reset the CGD's & LBFGS's history when in mini-batch mode (otherwise the line-search will fail)
+- reset the CGD's & LBFGS's history when in mini-batch mode (otherwise the line-search will fail)
 
-* new options for Cmake: address sanitizer, leak sanitizer, coverage
-
-* coverage tutorial:
-http://gaming.jhu.edu/~phf/tut/gcov-tutorial.pdf
-
-* more asserts: http://cpp-today.blogspot.ch/
-
-* remove the artificial function delimiters
+- more asserts: http://cpp-today.blogspot.ch/
 
 - stop early if no improvement in the validation error:
 	- e.g. no improvement in the last N(=8) epochs
