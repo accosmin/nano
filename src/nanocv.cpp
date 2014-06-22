@@ -11,14 +11,13 @@
 #include "tasks/task_cbclfaces.h"
 #include "tasks/task_svhn.h"
 
-#include "layers/layer_linear.h"
 #include "layers/layer_activation_unit.h"
 #include "layers/layer_activation_tanh.h"
 #include "layers/layer_activation_snorm.h"
-#include "layers/layer_activation_softplus.h"
+#include "layers/layer_activation_splus.h"
 #include "layers/layer_convolution.h"
-#include "layers/layer_pool_softmax.h"
-#include "layers/layer_pool_softabs.h"
+#include "layers/layer_linear.h"
+#include "layers/layer_pool.h"
 #include "layers/layer_softmax.h"
 
 #include "models/forward_network.h"
@@ -54,14 +53,15 @@ namespace ncv
                 task_manager_t::instance().add("svhn", svhn_task_t());
 
                 // register layers
-                layer_manager_t::instance().add("linear", linear_layer_t());
                 layer_manager_t::instance().add("unit", unit_activation_layer_t());
                 layer_manager_t::instance().add("tanh", tanh_activation_layer_t());
                 layer_manager_t::instance().add("snorm", snorm_activation_layer_t());
-                layer_manager_t::instance().add("softplus", softplus_activation_layer_t());
+                layer_manager_t::instance().add("splus", softplus_activation_layer_t());
+                layer_manager_t::instance().add("linear", linear_layer_t());                
                 layer_manager_t::instance().add("conv", conv_layer_t());
-                layer_manager_t::instance().add("pool-max", pool_softmax_layer_t());
-                layer_manager_t::instance().add("pool-abs", pool_softabs_layer_t());
+                layer_manager_t::instance().add("pool-max", pool_max_layer_t());
+                layer_manager_t::instance().add("pool-min", pool_min_layer_t());
+                layer_manager_t::instance().add("pool-avg", pool_avg_layer_t());
                 layer_manager_t::instance().add("softmax", softmax_layer_t());
 
                 // register models
