@@ -67,8 +67,6 @@ function fn_train
 # train a model (results directory, name, parameters) using callgrind for profiling
 function fn_train_callgrind
 {
-        _mfile=$1/$2.model
-        _lfile=$1/$2.log
         _args=("$@")
         
         _param="" 
@@ -77,9 +75,7 @@ function fn_train_callgrind
                 _param=${_param}" "${_args[$i]}
         done
         
-        echo "running <${_param}> ..."
-        echo "running <${_param}> ..." > ${_lfile}        
-        bash ../callgrind.sh ${exe_trainer} ${_param} --output ${_mfile} >> ${_lfile}    
-        echo -e "\tlog saved to <${_lfile}>"
+        echo "running callgrind <${_param}> ..."
+        bash ../callgrind.sh ${exe_trainer} ${_param}
         echo
 }  
