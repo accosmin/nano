@@ -15,6 +15,7 @@
 #include "layers/layer_activation_unit.h"
 #include "layers/layer_activation_tanh.h"
 #include "layers/layer_activation_snorm.h"
+#include "layers/layer_activation_softplus.h"
 #include "layers/layer_convolution.h"
 #include "layers/layer_pool_softmax.h"
 #include "layers/layer_pool_softabs.h"
@@ -57,6 +58,7 @@ namespace ncv
                 layer_manager_t::instance().add("unit", unit_activation_layer_t());
                 layer_manager_t::instance().add("tanh", tanh_activation_layer_t());
                 layer_manager_t::instance().add("snorm", snorm_activation_layer_t());
+                layer_manager_t::instance().add("softplus", softplus_activation_layer_t());
                 layer_manager_t::instance().add("conv", conv_layer_t());
                 layer_manager_t::instance().add("pool-max", pool_softmax_layer_t());
                 layer_manager_t::instance().add("pool-abs", pool_softabs_layer_t());

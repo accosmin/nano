@@ -1,0 +1,48 @@
+#ifndef NANOCV_SOFTPLUS_ACTIVATION_LAYER_H
+#define NANOCV_SOFTPLUS_ACTIVATION_LAYER_H
+
+#include "layer_activation.h"
+
+namespace ncv
+{        
+        namespace detail
+        {
+                struct softplus_activation_layer_eval_t
+                {
+                        scalar_t operator()(scalar_t x) const
+                        {
+                                return std::log(1.0 + std::exp(x));
+                        }
+                };
+
+                struct softplus_activation_layer_grad_t
+                {
+                        scalar_t operator()(scalar_t g, scalar_t o) const
+                        {
+                                return g * (1.0 - std::exp(-o));
+                        }
+                };
+        }
+
+        ///
+        /// soft-plus (max approximation) activation function
+        ///
+        class softplus_activation_layer_t : public activation_layer_t
+        <
+                detail::softplus_activation_layer_eval_t,
+                detail::softplus_activation_layer_grad_t
+        >
+        {
+        public:
+
+                NANOCV_MAKE_CLONABLE(softplus_activation_layer_t)
+
+                // constructor
+                softplus_activation_layer_t(const string_t& parameters = string_t())
+                        :       activation_layer_t(parameters, "soft-plus activation layer")
+                {
+                }
+        };
+}
+
+#endif // NANOCV_SOFTPLUS_ACTIVATION_LAYER_H

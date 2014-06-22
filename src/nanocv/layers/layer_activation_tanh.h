@@ -11,7 +11,7 @@ namespace ncv
                 {
                         scalar_t operator()(scalar_t x) const
                         {
-                                const scalar_t pexp = exp(x), nexp = 1.0 / pexp;
+                                const scalar_t pexp = std::exp(x), nexp = 1.0 / pexp;
                                 return (pexp - nexp) / (pexp + nexp);
                         }
                 };
