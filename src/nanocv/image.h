@@ -46,16 +46,32 @@ namespace ncv
                 {
                         const coord_t top = geom::top(region), left = geom::left(region);
                         const coord_t rows = geom::rows(region), cols = geom::cols(region);
-
+                        const scalar_t scale = 1.0 / 255.0;
+                        
                         matrix_t data(rows, cols);
-                        for (coord_t r = 0; r < rows; r ++)
+                        
+                        if (    top == 0 && left == 0 && 
+                                rows == static_cast<coord_t>(rgba.rows()) && 
+                                cols == static_cast<coord_t>(rgba.cols()))
                         {
-                                for (coord_t c = 0; c < cols; c ++)
+                                const coord_t size = rows * cols;
+                                
+                                for (coord_t i = 0; i < size; i ++)
                                 {
-                                        data(r, c) = op(rgba(top + r, left + c));
+                                        data(i) = scale * op(rgba(i));
                                 }
                         }
-                        data /= 255.0;
+                        
+                        else
+                        {                        
+                                for (coord_t r = 0; r < rows; r ++)
+                                {
+                                        for (coord_t c = 0; c < cols; c ++)
+                                        {
+                                                data(r, c) = scale * op(rgba(top + r, left + c));
+                                        }
+                                }
+                        }
 
                         return data;
                 }
