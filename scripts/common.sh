@@ -53,7 +53,7 @@ function fn_train
         
         echo "running <${_param}> ..."
         echo "running <${_param}> ..." > ${_lfile}        
-        time ${exe_trainer} ${_param} --output ${_mfile} >> ${_lfile}        
+        time ${exe_trainer} ${_param} --output ${_mfile} >> ${_lfile}     
         echo -e "\tlog saved to <${_lfile}>"
         echo
         echo -e "\tplotting optimization states ..."
@@ -64,3 +64,22 @@ function fn_train
         echo
 }  
 
+# train a model (results directory, name, parameters) using callgrind for profiling
+function fn_train_callgrind
+{
+        _mfile=$1/$2.model
+        _lfile=$1/$2.log
+        _args=("$@")
+        
+        _param="" 
+        for ((i=2;i<${#_args[*]};i++))
+        do
+                _param=${_param}" "${_args[$i]}
+        done
+        
+        echo "running <${_param}> ..."
+        echo "running <${_param}> ..." > ${_lfile}        
+        bash ../callgrind.sh ${exe_trainer} ${_param} --output ${_mfile} >> ${_lfile}    
+        echo -e "\tlog saved to <${_lfile}>"
+        echo
+}  
