@@ -53,10 +53,10 @@ namespace ncv
                 task_manager_t::instance().add("svhn", svhn_task_t());
 
                 // register layers
-                layer_manager_t::instance().add("unit", unit_activation_layer_t());
-                layer_manager_t::instance().add("tanh", tanh_activation_layer_t());
-                layer_manager_t::instance().add("snorm", snorm_activation_layer_t());
-                layer_manager_t::instance().add("splus", softplus_activation_layer_t());
+                layer_manager_t::instance().add("act-unit", unit_activation_layer_t());
+                layer_manager_t::instance().add("act-tanh", tanh_activation_layer_t());
+                layer_manager_t::instance().add("act-snorm", snorm_activation_layer_t());
+                layer_manager_t::instance().add("act-splus", softplus_activation_layer_t());
                 layer_manager_t::instance().add("linear", linear_layer_t());                
                 layer_manager_t::instance().add("conv", conv_layer_t());
                 layer_manager_t::instance().add("pool-max", pool_max_layer_t());
