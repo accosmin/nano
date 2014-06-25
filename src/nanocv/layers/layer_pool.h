@@ -53,8 +53,9 @@ namespace ncv
                 tensor_t                m_idata;        ///< input buffer
                 tensor_t                m_odata;        ///< output buffer
 
-                tensor_t                m_wdata;        
-                tensor_t                m_sdata;        
+                tensor_t                m_wdata;       	///< weights buffer: exp(input)
+                tensor_t                m_sdata;    	///< sum buffer: cumulated exponents / output pixel    		
+		tensor_t		m_cdata;	///< counts buffer: #hits / output pixel
         };
         
         class pool_max_layer_t : public pool_layer_t
