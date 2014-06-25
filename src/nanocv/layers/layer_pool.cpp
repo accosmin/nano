@@ -46,14 +46,13 @@ namespace ncv
         >
         static void _backward(
                 tscalar* idata, tsize irows, tsize icols,
-                const tscalar* wdata, const tscalar* sdata, const tscalar* cdata, const tscalar* gdata)
+                const tscalar* wdata, const tscalar* sdata, const tscalar*, const tscalar* gdata)
         {
                 const tsize orows = (irows + 1) / 2;
                 const tsize ocols = (icols + 1) / 2;
 
                 auto wmap = tensor::make_matrix(wdata, irows, icols);
                 auto smap = tensor::make_matrix(sdata, orows, ocols);
-                auto cmap = tensor::make_matrix(cdata, orows, ocols);
                 auto gmap = tensor::make_matrix(gdata, orows, ocols);
                 auto imap = tensor::make_matrix(idata, irows, icols);
 
