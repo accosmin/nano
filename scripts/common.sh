@@ -58,7 +58,7 @@ function fn_train
         echo -e "\tlog saved to <${_lfile}>"
         echo
         echo -e "\tplotting optimization states ..."
-        bash plot_trainlog.sh ${_sfile}
+        bash plot_model.sh ${_sfile}
         echo
 }  
 
