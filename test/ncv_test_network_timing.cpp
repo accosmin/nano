@@ -60,18 +60,18 @@ int main(int argc, char *argv[])
         const string_t lmodel5 = lmodel4 + "linear:dims=64;act-snorm;";
         
         string_t cmodel1;
-        cmodel1 = cmodel1 + "conv:dims=16,rows=7,cols=7;act-snorm;pool-abs;";
-        cmodel1 = cmodel1 + "conv:dims=16,rows=4,cols=4;act-snorm;pool-abs;";
+        cmodel1 = cmodel1 + "conv:dims=16,rows=7,cols=7;act-snorm;pool-max;";
+        cmodel1 = cmodel1 + "conv:dims=16,rows=4,cols=4;act-snorm;pool-max;";
         cmodel1 = cmodel1 + "conv:dims=16,rows=4,cols=4;act-snorm;";
         
         string_t cmodel2;
-        cmodel2 = cmodel2 + "conv:dims=16,rows=7,cols=7;act-snorm;pool-abs;";
-        cmodel2 = cmodel2 + "conv:dims=16,rows=6,cols=6;act-snorm;pool-abs;";
+        cmodel2 = cmodel2 + "conv:dims=16,rows=7,cols=7;act-snorm;pool-max;";
+        cmodel2 = cmodel2 + "conv:dims=16,rows=6,cols=6;act-snorm;pool-max;";
         cmodel2 = cmodel2 + "conv:dims=16,rows=3,cols=3;act-snorm;";
         
         string_t cmodel3;
-        cmodel3 = cmodel3 + "conv:dims=16,rows=5,cols=5;act-snorm;pool-abs;";
-        cmodel3 = cmodel3 + "conv:dims=16,rows=5,cols=5;act-snorm;pool-abs;";
+        cmodel3 = cmodel3 + "conv:dims=16,rows=5,cols=5;act-snorm;pool-max;";
+        cmodel3 = cmodel3 + "conv:dims=16,rows=5,cols=5;act-snorm;pool-max;";
         cmodel3 = cmodel3 + "conv:dims=16,rows=4,cols=4;act-snorm;";
         
         const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";softmax:type=global;";
