@@ -42,6 +42,7 @@ max_threads=`less /proc/cpuinfo | grep -i processor | wc -l`
 function fn_train
 {
         _mfile=$1/$2.model
+        _sfile=$1/$2.state
         _lfile=$1/$2.log
         _args=("$@")
         
@@ -57,10 +58,7 @@ function fn_train
         echo -e "\tlog saved to <${_lfile}>"
         echo
         echo -e "\tplotting optimization states ..."
-        for _sfile in $1/$2_*.state
-        do
-                bash plot_trainlog.sh ${_sfile}
-        done
+        bash plot_trainlog.sh ${_sfile}
         echo
 }  
 

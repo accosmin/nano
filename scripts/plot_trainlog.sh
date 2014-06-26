@@ -11,9 +11,7 @@ ofile=${ifile/.state/.pdf}
 
 # title
 bifile=`basename ${ifile} .state`
-title=${bifile/*_config/config}
-title=${title/config/config-}
-title=${title//_/-}
+title=${bifile//_/-}
 
 # data attributes
 tlindex=0
