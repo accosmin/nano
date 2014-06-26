@@ -73,6 +73,7 @@ namespace ncv
                                 auto imap = tensor::make_matrix(idata + i * isize, irows, icols);
                                 auto gimap = tensor::make_matrix(gidata + i * isize, irows, icols);
 
+                                // input gradient
                                 for (tsize r = 0; r < orows; r ++)
                                 {
                                         for (tsize c = 0; c < ocols; c ++)
@@ -81,6 +82,7 @@ namespace ncv
                                         }
                                 }
 
+                                // convolution gradient
                                 if (has_gradient)
                                 {
                                         math::conv(imap, omap, gkmap);
