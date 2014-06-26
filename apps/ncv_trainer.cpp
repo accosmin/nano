@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
         const rtrainer_t rtrainer = trainer_manager_t::instance().get(cmd_trainer, cmd_trainer_params);
 
         // train & test models
-        std::map<scalar_t, rmodel_t> models;
+        std::map<scalar_t, std::tuple<rmodel_t, trainer_states_t>> models;
 
         stats_t<scalar_t> lstats, estats;
         for (size_t t = 0; t < cmd_trials; t ++)
@@ -167,25 +167,7 @@ int main(int argc, char *argv[])
                         estats(lerror);
 
                         // update the best model
-                        models[lerror] = rmodel->clone();
-
-                        // save optimization history
-                        for (trainer_history_t::const_iterator it = result.m_history.cbegin(); it != result.m_history.cend(); ++ it)
-                        {
-                                const trainer_config_t& config = it->first;
-                                const trainer_states_t& states = it->second;
-
-                                const string_t path = (boost::filesystem::path(cmd_output).parent_path() /
-                                                      boost::filesystem::path(cmd_output).stem()).string() +
-                                                      "_trial" + text::to_string(t + 1) +
-                                                      "_fold" + text::to_string(f + 1) +
-                                                      "_config" + text::concatenate(config, "_") + ".state";
-
-                                ncv::measure_critical_call(
-                                        [&] () { return ncv::save(path, states); },
-                                        "saved state",
-                                        "failed to save state to <" + path + ">");
-                        }
+                        models[lerror] = std::make_tuple(rmodel->clone(), result.optimum_states());
                 }
         }        
 
@@ -195,13 +177,24 @@ int main(int argc, char *argv[])
         log_info() << ">>> performance: loss error = " << estats.avg() << " +/- " << estats.stdev()
                    << " in [" << estats.min() << ", " << estats.max() << "].";
 
-        // save the best model (if any trained)
+        // save the best model & optimization history (if any trained)
         if (!models.empty() && !cmd_output.empty())
         {
+                const rmodel_t& opt_model = std::get<0>(models.begin()->second);
+                const trainer_states_t& opt_states = std::get<1>(models.begin()->second);
+                
                 ncv::measure_critical_call(
-                        [&] () { return models.begin()->second->save(cmd_output); },
+                        [&] () { return opt_model->save(cmd_output); },
                         "saved model",
                         "failed to save model to <" + cmd_output + ">");
+                
+                const string_t path = (boost::filesystem::path(cmd_output).parent_path() /
+                        boost::filesystem::path(cmd_output).stem()).string() + ".state";
+                
+                ncv::measure_critical_call(
+                        [&] () { return ncv::save(path, opt_states); },
+                        "saved state",
+                        "failed to save state to <" + path + ">");
         }
 
         // OK

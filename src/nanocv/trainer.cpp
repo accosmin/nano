@@ -72,6 +72,21 @@ namespace ncv
                         return false;
                 }
         }
+        
+        trainer_states_t trainer_result_t::optimum_states() const
+        {
+                const string_t str_opt_config = text::concatenate(m_opt_config, "-");
+                for (const auto& it : m_history)
+                {
+                        const string_t str_config = text::concatenate(it.first, "-");
+                        if (str_config == str_opt_config)
+                        {
+                                return it.second;
+                        }
+                }
+                
+                return trainer_states_t();
+        }
 
         namespace detail
         {        

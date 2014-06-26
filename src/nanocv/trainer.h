@@ -108,6 +108,11 @@ namespace ncv
                 {
                         return m_epochs > 0 && !m_history.empty();
                 }
+                
+                ///
+                /// \brief training history for the optimum configuration
+                ///
+                trainer_states_t optimum_states() const;
 
                 // attributes
                 vector_t                m_opt_params;           ///< optimum model parameters

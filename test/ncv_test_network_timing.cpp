@@ -78,13 +78,13 @@ int main(int argc, char *argv[])
 
         strings_t cmd_networks =
         {
-                lmodel0 + outlayer,
-                lmodel1 + outlayer,
-                lmodel2 + outlayer,
-                lmodel3 + outlayer,
-                lmodel4 + outlayer,
-                lmodel5 + outlayer
-                ,
+//                 lmodel0 + outlayer,
+//                 lmodel1 + outlayer,
+//                 lmodel2 + outlayer,
+//                 lmodel3 + outlayer,
+//                 lmodel4 + outlayer,
+//                 lmodel5 + outlayer
+//                 ,
                 cmodel1 + outlayer,
                 cmodel2 + outlayer,
                 cmodel3 + outlayer
