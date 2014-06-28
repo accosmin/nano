@@ -14,7 +14,7 @@ stoch_sia="--trainer stochastic --trainer-params opt=sia,epoch=256"
 
 mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=2048,batch=1024,iters=16,eps=1e-6"
 mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=2048,batch=1024,iters=16,eps=1e-6"
-mbatch_gd="--trainer minibatch --trainer-params opt=gd,epoch=128,batch=64,iters=4,eps=1e-6"
+mbatch_gd="--trainer minibatch --trainer-params opt=gd,epoch=16,batch=64,iters=4,eps=1e-6"
 
 batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,iters=2048,eps=1e-6"
 batch_cgd="--trainer batch --trainer-params opt=cgd,iters=2048,eps=1e-6"
@@ -56,8 +56,7 @@ mlp6=${mlp5}"linear:dims=64;act-snorm;"
 outlayer=";linear:dims=10;softmax:type=global;"
 
 # train models
-#for trainer in `echo "stoch_sg stoch_sga stoch_sia mbatch_gd mbatch_cgd mbatch_lbfgs batch_gd batch_cgd batch_lbfgs"`
-for trainer in `echo "mbatch_gd"`
+for trainer in `echo "mbatch_gd"` #"stoch_sg stoch_sga stoch_sia mbatch_gd mbatch_cgd mbatch_lbfgs batch_gd batch_cgd batch_lbfgs"`
 do
         #fn_train ${dir_exp_mnist} mlp0_${trainer} ${params} ${!trainer} ${mlp0}${outlayer}
         #fn_train ${dir_exp_mnist} mlp1_${trainer} ${params} ${!trainer} ${mlp1}${outlayer}
@@ -68,11 +67,14 @@ do
         fn_train ${dir_exp_mnist} conv1_min_${trainer} ${params} ${!trainer} ${conv1_min}${outlayer}
         fn_train ${dir_exp_mnist} conv1_avg_${trainer} ${params} ${!trainer} ${conv1_avg}${outlayer}
 
-        fn_train ${dir_exp_mnist} conv2_max_${trainer} ${params} ${!trainer} ${conv2_max}${outlayer}
-        fn_train ${dir_exp_mnist} conv2_min_${trainer} ${params} ${!trainer} ${conv2_min}${outlayer}
-        fn_train ${dir_exp_mnist} conv2_avg_${trainer} ${params} ${!trainer} ${conv2_avg}${outlayer}
-        
-        fn_train ${dir_exp_mnist} conv3_max_${trainer} ${params} ${!trainer} ${conv3_max}${outlayer}
-        fn_train ${dir_exp_mnist} conv3_min_${trainer} ${params} ${!trainer} ${conv3_min}${outlayer}
-        fn_train ${dir_exp_mnist} conv3_avg_${trainer} ${params} ${!trainer} ${conv3_avg}${outlayer}
+#         fn_train ${dir_exp_mnist} conv2_max_${trainer} ${params} ${!trainer} ${conv2_max}${outlayer}
+#         fn_train ${dir_exp_mnist} conv2_min_${trainer} ${params} ${!trainer} ${conv2_min}${outlayer}
+#         fn_train ${dir_exp_mnist} conv2_avg_${trainer} ${params} ${!trainer} ${conv2_avg}${outlayer}
+#         
+#         fn_train ${dir_exp_mnist} conv3_max_${trainer} ${params} ${!trainer} ${conv3_max}${outlayer}
+#         fn_train ${dir_exp_mnist} conv3_min_${trainer} ${params} ${!trainer} ${conv3_min}${outlayer}
+#         fn_train ${dir_exp_mnist} conv3_avg_${trainer} ${params} ${!trainer} ${conv3_avg}${outlayer}
 done
+
+# compare models
+bash plot_models.sh ${dir_exp_mnist}/models.pdf ${dir_exp_mnist}/*.state

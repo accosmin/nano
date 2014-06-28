@@ -13,7 +13,7 @@ fi
 ofile=${ifiles[0]}
 
 # temporary gnuplot script file
-pfile=${ofile/.state/.gnuplot}
+pfile=${ofile/.pdf/.gnuplot}
 
 # data attributes
 indices=(1 2 3 4)
@@ -55,7 +55,7 @@ do
                 label=`basename ${ifile} .state`
                 label=${label//_/-}
                 
-                echo -e "\t'${ifile}' using ${index} title '${label}' with linespoints" >> ${pfile}
+                echo -e -n "\t'${ifile}' using ${index} title '${label}' with linespoints" >> ${pfile}
                 
                 let ii=${i}+1
                 if [ $ii -eq ${#ifiles[*]} ] 
