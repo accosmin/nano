@@ -58,10 +58,10 @@ outlayer=";linear:dims=10;softmax:type=global;"
 # train models
 for trainer in `echo "mbatch_gd"` #"stoch_sg stoch_sga stoch_sia mbatch_gd mbatch_cgd mbatch_lbfgs batch_gd batch_cgd batch_lbfgs"`
 do
-        #fn_train ${dir_exp_mnist} mlp0_${trainer} ${params} ${!trainer} ${mlp0}${outlayer}
-        #fn_train ${dir_exp_mnist} mlp1_${trainer} ${params} ${!trainer} ${mlp1}${outlayer}
-        #fn_train ${dir_exp_mnist} mlp2_${trainer} ${params} ${!trainer} ${mlp2}${outlayer}
-        #fn_train ${dir_exp_mnist} mlp3_${trainer} ${params} ${!trainer} ${mlp3}${outlayer}
+#         fn_train ${dir_exp_mnist} mlp0_${trainer} ${params} ${!trainer} ${mlp0}${outlayer}
+#         fn_train ${dir_exp_mnist} mlp1_${trainer} ${params} ${!trainer} ${mlp1}${outlayer}
+#         fn_train ${dir_exp_mnist} mlp2_${trainer} ${params} ${!trainer} ${mlp2}${outlayer}
+#         fn_train ${dir_exp_mnist} mlp3_${trainer} ${params} ${!trainer} ${mlp3}${outlayer}
         
         fn_train ${dir_exp_mnist} conv1_max_${trainer} ${params} ${!trainer} ${conv1_max}${outlayer}
         fn_train ${dir_exp_mnist} conv1_min_${trainer} ${params} ${!trainer} ${conv1_min}${outlayer}

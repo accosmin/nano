@@ -55,7 +55,7 @@ do
                 label=`basename ${ifile} .state`
                 label=${label//_/-}
                 
-                echo -e -n "\t'${ifile}' using ${index} title '${label}' with linespoints" >> ${pfile}
+                echo -e -n "\t'${ifile}' using ${index} title '${label}' with linespoints ps 0.3" >> ${pfile}
                 
                 let ii=${i}+1
                 if [ $ii -eq ${#ifiles[*]} ] 
