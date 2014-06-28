@@ -14,7 +14,7 @@ namespace ncv
                 typename tsize,
                 class toperator
         >
-        void thread_loopi(tsize N, toperator op, thread_pool_t& pool)
+        void thread_loopi(tsize N, thread_pool_t& pool, toperator op)
         {
                 const tsize n_tasks = static_cast<tsize>(pool.n_workers());
                 const tsize task_size = N / n_tasks + 1;
@@ -42,7 +42,7 @@ namespace ncv
                 typename tsize,
                 class toperator
         >
-        void thread_loopit(tsize N, toperator op, thread_pool_t& pool)
+        void thread_loopit(tsize N, thread_pool_t& pool, toperator op)
         {
                 const tsize n_tasks = static_cast<tsize>(pool.n_workers());
                 const tsize task_size = N / n_tasks + 1;
@@ -69,10 +69,23 @@ namespace ncv
                 typename tsize,
                 class toperator
         >
-        void thread_loopi(tsize N, toperator op, tsize nthreads = tsize(0))
+        void thread_loopi(tsize N, tsize nthreads, toperator op)
         {
                 thread_pool_t pool(nthreads);
-                thread_loopi(N, op, pool);
+                thread_loopi(N, pool, op);
+        }
+        
+        ///
+        /// \brief split a loop computation of the given size using all availabe threads
+        ///
+        template
+        <
+                typename tsize,
+                class toperator
+        >
+        void thread_loopi(tsize N, toperator op)
+        {
+                thread_loopi(N, 0, op);
         }
         
         ///
@@ -83,10 +96,23 @@ namespace ncv
                 typename tsize,
                 class toperator
         >
-        void thread_loopit(tsize N, toperator op, tsize nthreads = tsize(0))
+        void thread_loopit(tsize N, tsize nthreads, toperator op)
         {
                 thread_pool_t pool(nthreads);
-                thread_loopit(N, op, pool);
+                thread_loopit(N, pool, op);
+        }
+        
+        ///
+        /// \brief split a loop computation of the given size using all available threads
+        ///
+        template
+        <
+                typename tsize,
+                class toperator
+        >
+        void thread_loopit(tsize N, toperator op)
+        {
+                thread_loopit(N, 0, op);
         }
 }
 

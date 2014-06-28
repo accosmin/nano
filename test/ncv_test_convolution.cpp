@@ -125,10 +125,10 @@ scalar_t test_conv2D_xcpu(top op, const char* name, const matrices_t& idatas, co
 
                 const ncv::timer_t timer;
 
-                ncv::thread_loopi(idatas.size(), [&] (size_t i)
+                ncv::thread_loopi(idatas.size(), pool, [&] (size_t i)
                 {
                         op(idatas[i], kdata, odatas[i]);
-                }, pool);
+                });
 
                 proc_stats(timer.miliseconds());
         }

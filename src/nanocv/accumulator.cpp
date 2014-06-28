@@ -129,15 +129,10 @@ namespace ncv
 
                 else
                 {
-                        thread_loopit
-                        (
-                                samples.size(),
-                                [&] (size_t i, size_t th)
-                                {
-                                        m_caches[th].update(task, samples[i], loss);
-                                },
-                                m_pool
-                        );
+                        thread_loopit(samples.size(), m_pool, [&] (size_t i, size_t th)
+                        {
+                                m_caches[th].update(task, samples[i], loss);
+                        });
                         
                         for (const cache_t& cache : m_caches)
                         {
@@ -158,15 +153,10 @@ namespace ncv
 
                 else
                 {
-                        thread_loopit
-                        (
-                                inputs.size(),
-                                [&] (size_t i, size_t th)
-                                {
-                                        m_caches[th].update(inputs[i], targets[i], loss);
-                                },
-                                m_pool
-                        );
+                        thread_loopit(inputs.size(), m_pool, [&] (size_t i, size_t th)
+                        {
+                                m_caches[th].update(inputs[i], targets[i], loss);
+                        });
                         
                         for (const cache_t& cache : m_caches)
                         {
@@ -187,15 +177,10 @@ namespace ncv
 
                 else
                 {
-                        thread_loopit
-                        (
-                                inputs.size(),
-                                [&] (size_t i, size_t th)
-                                {
-                                        m_caches[th].update(inputs[i], targets[i], loss);
-                                },
-                                m_pool
-                        );
+                        thread_loopit(inputs.size(), m_pool, [&] (size_t i, size_t th)
+                        {
+                                m_caches[th].update(inputs[i], targets[i], loss);
+                        });
                         
                         for (const cache_t& cache : m_caches)
                         {
