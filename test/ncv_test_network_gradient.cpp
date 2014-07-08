@@ -9,7 +9,7 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
 {
         random_t<size_t> rand(2, 16);        
         
-        accumulator_t acc_params(model, 1 + (rand() % 2), accumulator_t::type::vgrad, lambda);
+        accumulator_t acc_params(model, /*1 + (rand() % 2)*/ 1, accumulator_t::type::vgrad, lambda);
         
         const size_t n_tests = 64;
         const size_t n_samples = rand();
@@ -56,9 +56,9 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
 
         for (size_t t = 0; t < n_tests; t ++)
         {
-                random_t<scalar_t> prgen(-1.0, +1.0);
-                random_t<size_t> trgen(0, n_outputs);
+                random_t<scalar_t> prgen(-1.0, +1.0);                
                 random_t<scalar_t> irgen(-0.1, +0.1);
+                random_t<size_t> trgen(0, n_outputs);
 
                 prgen(params.data(), params.data() + n_params);
                 for (vector_t& target : targets)

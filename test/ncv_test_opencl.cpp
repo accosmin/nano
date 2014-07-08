@@ -147,10 +147,10 @@ int main(int argc, char *argv[])
                                 // V - multi-threaded cpu processing
                                 timer.start();
                                 {
-                                        ncv::thread_loop(size, [&] (size_t i)
+                                        ncv::thread_loopi(size, pool, [&] (size_t i)
                                         {
                                                 c(i) = cpu_op(a(i), b(i));
-                                        }, pool);
+                                        });
                                 }
                                 mcpu_stats(timer.microseconds());
 

@@ -264,13 +264,13 @@ void test(int isize, int ksize, int n_samples)
         if ((diff = std::fabs(sum1cpu - sum1cpu)) > eps) { std::cout << "conv(1CPU) FAILED (diff = " << diff << ")!" << std::endl; }
         if ((diff = std::fabs(sumxcpu - sum1cpu)) > eps) { std::cout << "conv(xCPU) FAILED (diff = " << diff << ")!" << std::endl; }
 #ifdef NANOCV_HAVE_OPENCL
-        if ((diff = std::fabs(sumg8dot - sum1eib)) > eps) { std::cout << "dot(8GPU) FAILED (diff = " << diff << ")!" << std::endl; }
-        if ((diff = std::fabs(sumg16dot - sum1eib)) > eps) { std::cout << "dot(16GPU) FAILED (diff = " << diff << ")!" << std::endl; }
-        if ((diff = std::fabs(sumg32dot - sum1eib)) > eps) { std::cout << "dot(32GPU) FAILED (diff = " << diff << ")!" << std::endl; }
-        if ((diff = std::fabs(sumg64dot - sum1eib)) > eps) { std::cout << "dot(64GPU) FAILED (diff = " << diff << ")!" << std::endl; }
-        if ((diff = std::fabs(sumg128dot - sum1eib)) > eps) { std::cout << "dot(128GPU) FAILED (diff = " << diff << ")!" << std::endl; }
-        if ((diff = std::fabs(sumg256dot - sum1eib)) > eps) { std::cout << "dot(256GPU) FAILED (diff = " << diff << ")!" << std::endl; }
-        if ((diff = std::fabs(sumg1024dot - sum1eib)) > eps) { std::cout << "dot(1024GPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sumg8dot - sum1cpu)) > eps) { std::cout << "dot(8GPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sumg16dot - sum1cpu)) > eps) { std::cout << "dot(16GPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sumg32dot - sum1cpu)) > eps) { std::cout << "dot(32GPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sumg64dot - sum1cpu)) > eps) { std::cout << "dot(64GPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sumg128dot - sum1cpu)) > eps) { std::cout << "dot(128GPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sumg256dot - sum1cpu)) > eps) { std::cout << "dot(256GPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sumg1024dot - sum1cpu)) > eps) { std::cout << "dot(1024GPU) FAILED (diff = " << diff << ")!" << std::endl; }
 #endif
 }
 

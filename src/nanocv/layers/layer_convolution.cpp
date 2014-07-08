@@ -286,39 +286,31 @@ namespace ncv
                         m_ocl_odata = theocl.make_buffer(ocl::bytesize(m_odata), CL_MEM_READ_WRITE);
 
                         // backward buffers
+                        m_gkdata.resize(odims * idims, krows, kcols);
                         m_ocl_gidata = theocl.make_buffer(ocl::bytesize(m_gidata), CL_MEM_WRITE_ONLY);
                         m_ocl_gkdata = theocl.make_buffer(ocl::bytesize(m_gkdata), CL_MEM_WRITE_ONLY);
 
-                        const int idims_ = static_cast<int>(idims);
-
-                        const int krows_ = static_cast<int>(krows);
-                        const int kcols_ = static_cast<int>(kcols);
-
-                        const int odims_ = static_cast<int>(odims);
-                        const int orows_ = static_cast<int>(orows);
-                        const int ocols_ = static_cast<int>(ocols);
-
                         // setup forward kernel
                         m_ocl_fkernel.setArg(0, m_ocl_idata);
-                        m_ocl_fkernel.setArg(1, sizeof(int), (void*)&idims_);
+                        m_ocl_fkernel.setArg(1, int(idims));
                         m_ocl_fkernel.setArg(2, m_ocl_kdata);
-                        m_ocl_fkernel.setArg(3, sizeof(int), (void*)&krows_);
-                        m_ocl_fkernel.setArg(4, sizeof(int), (void*)&kcols_);
+                        m_ocl_fkernel.setArg(3, int(krows));
+                        m_ocl_fkernel.setArg(4, int(kcols));
                         m_ocl_fkernel.setArg(5, m_ocl_odata);
 
                         // setup backward kernels
                         m_ocl_bikernel.setArg(0, m_ocl_odata);
-                        m_ocl_bikernel.setArg(1, sizeof(int), (void*)&odims_);
+                        m_ocl_bikernel.setArg(1, int(odims));
                         m_ocl_bikernel.setArg(2, m_ocl_kdata);
-                        m_ocl_bikernel.setArg(3, sizeof(int), (void*)&krows_);
-                        m_ocl_bikernel.setArg(4, sizeof(int), (void*)&kcols_);
+                        m_ocl_bikernel.setArg(3, int(krows));
+                        m_ocl_bikernel.setArg(4, int(kcols));
                         m_ocl_bikernel.setArg(5, m_ocl_gidata);
 
                         m_ocl_bkkernel.setArg(0, m_ocl_odata);
-                        m_ocl_bkkernel.setArg(1, sizeof(int), (void*)&orows_);
-                        m_ocl_bkkernel.setArg(2, sizeof(int), (void*)&ocols_);
+                        m_ocl_bkkernel.setArg(1, int(orows));
+                        m_ocl_bkkernel.setArg(2, int(ocols));
                         m_ocl_bkkernel.setArg(3, m_ocl_idata);
-                        m_ocl_bkkernel.setArg(4, sizeof(int), (void*)&idims_);
+                        m_ocl_bkkernel.setArg(4, int(idims));
                         m_ocl_bkkernel.setArg(5, m_ocl_gkdata);
                 }
 #endif
@@ -389,10 +381,9 @@ namespace ncv
 
                         m_ocl_queue.enqueueReadBuffer(m_ocl_odata, CL_TRUE, 0, ocl::bytesize(m_odata), m_odata.data());
                 }
-
-                // CPU version
                 else
 #endif
+                // CPU version
                 {
                         _forward(m_idata.data(), idims(),
                                  m_kdata.data(), krows(), kcols(),
@@ -418,20 +409,27 @@ namespace ncv
                         m_ocl_queue.enqueueWriteBuffer(m_ocl_odata, CL_TRUE, 0, ocl::bytesize(m_odata), m_odata.data());
 
                         m_ocl_queue.enqueueNDRangeKernel(m_ocl_bikernel, cl::NullRange,
-                                cl::NDRange(idims(), irows(), icols()),
-                                cl::NDRange(1, irows(), icols()));
+                                                         cl::NDRange(idims(), irows(), icols()),
+                                                         cl::NDRange(1, irows(), icols()));
 
-                        m_ocl_queue.enqueueNDRangeKernel(m_ocl_bkkernel, cl::NullRange,
-                                cl::NDRange(odims(), krows(), kcols()),
-                                cl::NDRange(1, krows(), kcols()));
+                        if (gradient)
+                        {
+                                m_ocl_queue.enqueueNDRangeKernel(m_ocl_bkkernel, cl::NullRange,
+                                                                 cl::NDRange(odims(), krows(), kcols()),
+                                                                 cl::NDRange(1, krows(), kcols()));
+                        }
 
                         m_ocl_queue.enqueueReadBuffer(m_ocl_gidata, CL_TRUE, 0, ocl::bytesize(m_gidata), m_gidata.data());
-                        m_ocl_queue.enqueueReadBuffer(m_ocl_gkdata, CL_TRUE, 0, ocl::bytesize(m_gkdata), m_gkdata.data());
-                }
 
-                // CPU version
+                        if (gradient)
+                        {
+                                m_ocl_queue.enqueueReadBuffer(m_ocl_gkdata, CL_TRUE, 0, ocl::bytesize(m_gkdata), m_gkdata.data());
+                                m_gkdata.copy_to(gradient);
+                        }
+                }
                 else
 #endif
+                // CPU version
                 {
                         _backward(m_idata.data(), m_gidata.data(), idims(),
                                   m_kdata.data(), gradient, krows(), kcols(),

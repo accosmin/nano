@@ -77,6 +77,7 @@ namespace ncv
 
                 cl::Buffer              m_ocl_gidata;
                 cl::Buffer              m_ocl_gkdata;
+                tensor_t                m_gkdata;
 
                 cl::Buffer              m_ocl_odata;
 #endif
