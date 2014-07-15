@@ -1,14 +1,4 @@
-- more plots to assess the effect of the regularization: 
-        - e.g. y - loss value / error bars for all trials and folds 
-        - e.g. x - number of iterations / epochs
-
-- reset the CGD's & LBFGS's history when in mini-batch mode (otherwise the line-search will fail)
-
 - more asserts: http://cpp-today.blogspot.ch/
-
-- stop early if no improvement in the validation error:
-	- e.g. no improvement in the last N(=8) epochs
-	- for all trainers
 
 - stochastic trainer: 
 	- too slow -> it uses the accumulator inefficiently
@@ -21,13 +11,10 @@
 
 - reduce the number of input/output buffers for layers
 
-- new datasets: INRIA car and person datasets, dymlerchrysler human detection
+- new datasets: The German Traffic Sign Detection, INRIA car and person datasets, dymlerchrysler human detection
 
 - more efficient way to store & select samples for large datasets:
 	- allocate xGB of RAM to store some samples in memory and load the others from the disk
-
-- function to generate a random input that will closely output a given target (class):
-	- can be used to check the learning
 
 - thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
 	
@@ -39,8 +26,5 @@
 
 	- regularization: variational learning (like in ebbbost)
         - regularization: l2, symmetry
-
-- make install:
-	- also copy the headers 
 
 
