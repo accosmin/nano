@@ -140,7 +140,7 @@ namespace ncv
         {
                 assert(valid());
 
-                return cl::Buffer(m_context, flags, bytesize, NULL);;
+                return cl::Buffer(m_context, flags, bytesize, NULL);
         }
 
         const char* ocl::error_string(cl_int error)

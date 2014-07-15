@@ -7,9 +7,10 @@ using namespace ncv;
 
 static void test_grad(const string_t& header, const string_t& loss_id, const model_t& model, scalar_t lambda)
 {
-        random_t<size_t> rand(2, 16);        
-        
-        accumulator_t acc_params(model, /*1 + (rand() % 2)*/ 1, accumulator_t::type::vgrad, lambda);
+        random_t<size_t> rand(2, 16);
+        const size_t n_threads = 1 + (rand() % 2);
+
+        accumulator_t acc_params(model, n_threads, accumulator_t::type::vgrad, lambda);
         
         const size_t n_tests = 64;
         const size_t n_samples = rand();

@@ -70,7 +70,7 @@ namespace ncv
                 // register trainers
                 trainer_manager_t::instance().add("batch", batch_trainer_t());
                 trainer_manager_t::instance().add("minibatch", minibatch_trainer_t());
-                trainer_manager_t::instance().add("stochastic", stochastic_trainer_t());                
+                trainer_manager_t::instance().add("stochastic", stochastic_trainer_t());
         }
 
         size_t test(const task_t& task, const fold_t& fold, const loss_t& loss, const model_t& model,
