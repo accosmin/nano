@@ -23,6 +23,11 @@ namespace ncv
         /// \brief target value of the negative class
         ///
         inline scalar_t neg_target() { return +0.0; }
+        
+        ///
+        /// \brief check if a target value maps to a positive class
+        ///
+        inline bool is_pos_target(scalar_t target) { return target > 0.5; }
 
         ///
         /// \brief target value for multi-class classification problems with [n_labels] classes

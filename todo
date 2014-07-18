@@ -1,5 +1,3 @@
-- more asserts: http://cpp-today.blogspot.ch/
-
 - stochastic trainer: 
 	- too slow -> it uses the accumulator inefficiently
 	- double check the L2-regularization
