@@ -20,8 +20,7 @@ normalization), **linear** and **pooling**.
 
 #### Loss 
 
-A loss function assigns a scalar score to the prediction of a model by comparing it with the ground truth target (if provided). 
-The lower the score, the better the prediction. Implemented instances: **class-NLL** and **square**.
+A loss function assigns a scalar score to the prediction of a model by comparing it with the ground truth target (if provided): the lower the score, the better the prediction.
 
 #### Trainer
 
