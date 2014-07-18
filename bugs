@@ -1,1 +1,0 @@
-- wrong gradient for convolution networks if using multiple threads & the OpenCL mode  
