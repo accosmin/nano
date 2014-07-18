@@ -9,8 +9,6 @@
 
 - reduce the number of input/output buffers for layers
 
-- new datasets: The German Traffic Sign Detection, INRIA car and person datasets, dymlerchrysler human detection
-
 - more efficient way to store & select samples for large datasets:
 	- allocate xGB of RAM to store some samples in memory and load the others from the disk
 
