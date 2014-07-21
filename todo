@@ -1,13 +1,31 @@
-- stochastic trainer: 
-	- too slow -> it uses the accumulator inefficiently
-	- double check the L2-regularization
+- update the gradient test program to also check the gradient wrt the inputs
+        - and also the sum(k, d2L / dxk dpj) (see below)
 
+- regularization:
+        - model_t level: 
+                - L2-regularization term: scalar_t ::l2_param() const
+                - feature cross-correlation term: for the current feature planes (0 if MLP)
+                        - decorelated feature planes (using Pearson's product-moment coefficient or mutual information)???
+                        - goal: make sure the learned features are as distinct as possible
+                - robustness to inputs:
+                        - d2L / dxk dpj -> may only need to compute sum(k, d2L / dxk dpj) = loss variation wrt j-th dimension
+                                of the parameter p cumulated over all k-th dimension of the input x
+                
+        - accumulator_t level:
+                - l2p_reg
+                - fcc_reg
+                - var_reg (variational learning like in ebbbost)
+                - symmetry?! 
+                - information?!
+                
+        - also print at each optimization iteration these regularization terms 
+                
+- reduce the number of input/output buffers for layers
+                
 - optimization statistics computed at the layer level: average gradient LInf-norm, number of calls
 	- to be printed when the layers are destroyed?
 	- this is to investigate why it takes many more iterations to optimize networks with more layers
 		(diminishing gradient)
-
-- reduce the number of input/output buffers for layers
 
 - more efficient way to store & select samples for large datasets:
 	- allocate xGB of RAM to store some samples in memory and load the others from the disk
@@ -19,9 +37,6 @@
 		- new loss (without the output layer): a single output should have a much larger value magnitude than the others 
 			(e.g. learn to disintangle the variation modes)
 		- than train the output layer with the annotated samples
-
-	- regularization: variational learning (like in ebbbost)
-        - regularization: l2, symmetry
 
 - opencl:
 	- faster implementation: slightly slower for --forward, much slower for --backward (optimize memory accesses!)
