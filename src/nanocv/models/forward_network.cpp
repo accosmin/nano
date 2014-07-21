@@ -16,7 +16,7 @@ namespace ncv
         {
                 for (size_t l = 0; l < n_layers(); l ++)
                 {
-                        m_layers[l].m_layer = other.m_layers[l].m_layer->clone();
+                        m_layers[l] = other.m_layers[l]->clone();
                 }
         }
 
@@ -34,11 +34,11 @@ namespace ncv
         const tensor_t& forward_network_t::forward(const tensor_t& _input) const
         {
                 const tensor_t* input = &_input;
-                for (flayers_t::const_iterator it = m_layers.begin(); it != m_layers.end(); ++ it)
+                for (rlayers_t::const_iterator it = m_layers.begin(); it != m_layers.end(); ++ it)
                 {
-                        const flayer_t& layer = *it;
+                        const rlayer_t& layer = *it;
 
-                        input = &layer.m_layer->forward(*input);
+                        input = &layer->forward(*input);
                 }
 
 		return *input;
@@ -55,11 +55,11 @@ namespace ncv
 
                 // backward step
                 const tensor_t* poutput = &output;
-                for (flayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
+                for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                 {
-                        const flayer_t& layer = *it;
+                        const rlayer_t& layer = *it;
 
-                        poutput = &layer.m_layer->backward(*poutput, nullptr);
+                        poutput = &layer->backward(*poutput, nullptr);
                 }
 
                 return *poutput;
@@ -81,19 +81,12 @@ namespace ncv
                 const tensor_t* poutput = &output;
                 scalar_t* pgradient = gradient.data() + gradient.size();
 
-                for (flayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
+                for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                 {
-                        const flayer_t& layer = *it;
+                        const rlayer_t& layer = *it;
 
-                        if (layer.enabled())
-                        {
-                                pgradient -= layer.m_layer->psize();
-                                poutput = &layer.m_layer->backward(*poutput, pgradient);
-                        }
-                        else
-                        {
-                                poutput = &layer.m_layer->backward(*poutput, nullptr);
-                        }
+                        pgradient -= layer->psize();
+                        poutput = &layer->backward(*poutput, pgradient);
                 }
 
                 return gradient;
@@ -104,15 +97,12 @@ namespace ncv
                 vector_t x(psize());
 
                 scalar_t* px = x.data() + x.size();
-                for (flayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
+                for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                 {
-                        const flayer_t& layer = *it;
+                        const rlayer_t& layer = *it;
 
-                        if (layer.enabled())
-                        {
-                                px -= layer.m_layer->psize();
-                                layer.m_layer->save_params(px);
-                        }
+                        px -= layer->psize();
+                        layer->save_params(px);
                 }
                 
                 return x;
@@ -123,15 +113,12 @@ namespace ncv
                 if (math::cast<size_t>(x.size()) == psize())
                 {
                         const scalar_t* px = x.data() + x.size();
-                        for (flayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
+                        for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                         {
-                                const flayer_t& layer = *it;
+                                const rlayer_t& layer = *it;
 
-                                if (layer.enabled())
-                                {
-                                        px -= layer.m_layer->psize();
-                                        layer.m_layer->load_params(px);
-                                }
+                                px -= layer->psize();
+                                layer->load_params(px);
                         }
 
                         return true;
@@ -145,28 +132,22 @@ namespace ncv
 
         void forward_network_t::zero_params()
         {
-                for (const flayer_t& layer : m_layers)
+                for (const rlayer_t& layer : m_layers)
                 {
-                        if (layer.enabled())
-                        {
-                                layer.m_layer->zero_params();
-                        }
+                        layer->zero_params();
                 }
         }
 
         void forward_network_t::random_params()
         {
-                for (const flayer_t& layer : m_layers)
+                for (const rlayer_t& layer : m_layers)
                 {
-                        if (layer.enabled())
-                        {
-                                const size_t fanin = layer.m_layer->idims();
-                                const size_t fanout = layer.m_layer->odims();
-                                const scalar_t min = -std::sqrt(6.0 / (1.0 + fanin + fanout));
-                                const scalar_t max = +std::sqrt(6.0 / (1.0 + fanin + fanout));
+                        const size_t fanin = layer->idims();
+                        const size_t fanout = layer->odims();
+                        const scalar_t min = -std::sqrt(6.0 / (1.0 + fanin + fanout));
+                        const scalar_t max = +std::sqrt(6.0 / (1.0 + fanin + fanout));
 
-                                layer.m_layer->random_params(min, max);
-                        }
+                        layer->random_params(min, max);
                 }
         }
 
@@ -268,7 +249,7 @@ namespace ncv
 
                 for (size_t l = 0; l < n_layers(); l ++)
                 {
-                        const rlayer_t& layer = m_layers[l].m_layer;
+                        const rlayer_t& layer = m_layers[l];
 
                         log_info() <<
                                 boost::format("forward network [%1%/%2%]: [%3%] (%4%x%5%x%6%) -> (%7%x%8%x%9%).")
@@ -281,12 +262,9 @@ namespace ncv
         size_t forward_network_t::psize() const
         {
                 size_t nparams = 0;
-                for (const flayer_t& layer : m_layers)
+                for (const rlayer_t& layer : m_layers)
                 {
-                        if (layer.enabled())
-                        {
-                                nparams += layer.m_layer->psize();
-                        }
+                        nparams += layer->psize();
                 }
 
                 return nparams;
