@@ -51,10 +51,10 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
         {
                 rmodel_inputs->load_params(params);
 
-                const vector_t& target = targets[0];
-                const tensor_t& output = rmodel_inputs->forward(x);
+                const vector_t target = targets[0];
+                const vector_t output = rmodel_inputs->forward(x).vector();
 
-                return loss.value(output.vector(), target);
+                return loss.value(target, output);
         };
 
         // optimization problem (wrt parameters & inputs): function value & gradient
@@ -71,11 +71,11 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
         {
                 rmodel_inputs->load_params(params);
 
-                const vector_t& target = targets[0];
-                const tensor_t& output = rmodel_inputs->forward(x);
+                const vector_t target = targets[0];
+                const vector_t output = rmodel_inputs->forward(x).vector();
 
-                gx = rmodel_inputs->backward(loss.vgrad(output.vector(), target)).vector();
-                return loss.value(output.vector(), target);
+                gx = rmodel_inputs->backward(loss.vgrad(target, output)).vector();
+                return loss.value(target, output);
         };
 
         // construct optimization problem: analytic gradient and finite difference approximation
@@ -89,7 +89,7 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
         {
                 random_t<scalar_t> prgen(-1.0, +1.0);                
                 random_t<scalar_t> irgen(-0.1, +0.1);
-                random_t<size_t> trgen(0, osize);
+                random_t<size_t> trgen(0, osize - 1);
 
                 prgen(params.data(), params.data() + psize);
                 for (vector_t& target : targets)
