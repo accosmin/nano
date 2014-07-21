@@ -11,29 +11,35 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
         const size_t n_threads = 1 + (rand() % 2);
 
         accumulator_t acc_params(model, n_threads, accumulator_t::type::vgrad, lambda);
-        
+        rmodel_t rmodel_inputs = model.clone();
+
         const size_t n_tests = 64;
         const size_t n_samples = rand();
 
         const rloss_t rloss = loss_manager_t::instance().get(loss_id);
         const loss_t& loss = *rloss;
 
-        const size_t n_params = model.psize();
-        const size_t n_inputs = model.isize();
-        const size_t n_outputs = model.osize();
+        const size_t psize = model.psize();
+        const size_t isize = model.isize();
+        const size_t osize = model.osize();
 
-        vector_t params(n_params);
-        vectors_t targets(n_samples, vector_t(n_outputs));
+        vector_t params(psize);
+        vectors_t targets(n_samples, vector_t(osize));
         tensors_t inputs(n_samples, tensor_t(model.idims(), model.irows(), model.icols()));
 
-        // optimization problem (wrt parameters): size
-        auto opt_fn_size = [&] ()
+        // optimization problem (wrt parameters & inputs): size
+        auto fn_params_size = [&] ()
         {
-                return acc_params.dimensions();
+                return psize;
         };
 
-        // optimization problem (wrt parameters): function value
-        auto opt_fn_fval = [&] (const vector_t& x)
+        auto fn_inputs_size = [&] ()
+        {
+                return isize;
+        };
+
+        // optimization problem (wrt parameters & inputs): function value
+        auto fn_params_fval = [&] (const vector_t& x)
         {
                 acc_params.reset(x);
                 acc_params.update(inputs, targets, loss);
@@ -41,8 +47,18 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
                 return acc_params.value();
         };
 
-        // optimization problem (wrt parameters): function value & gradient
-        auto opt_fn_grad = [&] (const vector_t& x, vector_t& gx)
+        auto fn_inputs_fval = [&] (const vector_t& x)
+        {
+                rmodel_inputs->load_params(params);
+
+                const vector_t& target = targets[0];
+                const tensor_t& output = rmodel_inputs->forward(x);
+
+                return loss.value(output.vector(), target);
+        };
+
+        // optimization problem (wrt parameters & inputs): function value & gradient
+        auto fn_params_grad = [&] (const vector_t& x, vector_t& gx)
         {
                 acc_params.reset(x);
                 acc_params.update(inputs, targets, loss);
@@ -51,36 +67,58 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
                 return acc_params.value();
         };
 
+        auto fn_inputs_grad = [&] (const vector_t& x, vector_t& gx)
+        {
+                rmodel_inputs->load_params(params);
+
+                const vector_t& target = targets[0];
+                const tensor_t& output = rmodel_inputs->forward(x);
+
+                gx = rmodel_inputs->backward(loss.vgrad(output.vector(), target)).vector();
+                return loss.value(output.vector(), target);
+        };
+
         // construct optimization problem: analytic gradient and finite difference approximation
-        const opt_problem_t problem_analytic(opt_fn_size, opt_fn_fval, opt_fn_grad);
-        const opt_problem_t problem_aproxdif(opt_fn_size, opt_fn_fval);
+        const opt_problem_t problem_analytic_params(fn_params_size, fn_params_fval, fn_params_grad);
+        const opt_problem_t problem_aproxdif_params(fn_params_size, fn_params_fval);
+
+        const opt_problem_t problem_analytic_inputs(fn_inputs_size, fn_inputs_fval, fn_inputs_grad);
+        const opt_problem_t problem_aproxdif_inputs(fn_inputs_size, fn_inputs_fval);
 
         for (size_t t = 0; t < n_tests; t ++)
         {
                 random_t<scalar_t> prgen(-1.0, +1.0);                
                 random_t<scalar_t> irgen(-0.1, +0.1);
-                random_t<size_t> trgen(0, n_outputs);
+                random_t<size_t> trgen(0, osize);
 
-                prgen(params.data(), params.data() + n_params);
+                prgen(params.data(), params.data() + psize);
                 for (vector_t& target : targets)
                 {
-                        target = ncv::class_target(trgen(), n_outputs);
+                        target = ncv::class_target(trgen(), osize);
                 }
                 for (tensor_t& input : inputs)
                 {
-                        irgen(input.data(), input.data() + n_inputs);
+                        irgen(input.data(), input.data() + isize);
                 }
 
-                vector_t analytic_grad, aproxdif_grad;
-                problem_analytic(params, analytic_grad);
-                problem_aproxdif(params, aproxdif_grad);
+                vector_t analytic_params_grad, aproxdif_params_grad;
+                vector_t analytic_inputs_grad, aproxdif_inputs_grad;
 
-                const scalar_t dgrad = (analytic_grad - aproxdif_grad).lpNorm<Eigen::Infinity>();
+                problem_analytic_params(params, analytic_params_grad);
+                problem_aproxdif_params(params, aproxdif_params_grad);
+
+                problem_analytic_inputs(inputs[0].vector(), analytic_inputs_grad);
+                problem_aproxdif_inputs(inputs[0].vector(), aproxdif_inputs_grad);
+
+                const scalar_t dg_params = (analytic_params_grad - aproxdif_params_grad).lpNorm<Eigen::Infinity>();
+                const scalar_t dg_inputs = (analytic_inputs_grad - aproxdif_inputs_grad).lpNorm<Eigen::Infinity>();
+
                 const scalar_t eps = 1e-6;
 
                 log_info() << header << " [" << (t + 1) << "/" << n_tests
                            << "]: samples = " << n_samples
-                           << ", dgrad = " << dgrad << " (" << (dgrad > eps ? "ERROR" : "OK") << ").";
+                           << ", dg_params = " << dg_params << " (" << (dg_params > eps ? "ERROR" : "OK") << ")"
+                           << ", dg_inputs = " << dg_inputs << " (" << (dg_inputs > eps ? "ERROR" : "OK") << ").";
         }
 }
 
