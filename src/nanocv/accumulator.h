@@ -3,11 +3,13 @@
 
 #include "task.h"
 #include "model.h"
-#include "common/thread_pool.h"
 
 namespace ncv
 {        
         class loss_t;
+        
+        struct accumulator_impl_t;
+        typedef std::shared_ptr<accumulator_impl_t> raccumulator_impl_t;
 
         ///
         /// \brief cumulate sample evaluations (loss value, error and gradient)
@@ -85,99 +87,12 @@ namespace ncv
                 /// \brief regularization weight (if any)
                 ///
                 scalar_t lambda() const;
-                
-        private:                
-                
-                struct config_t
-                {
-                        // constructor
-                        config_t(type t, scalar_t lambda)
-                                :       m_type(t),
-                                        m_lambda(lambda)
-                        {
-                        }
-                        
-                        // attributes
-                        type            m_type;
-                        scalar_t        m_lambda;       ///< L2-regularization factor
-                };
-                
-                struct data_t
-                {
-                        // constructor
-                        data_t(size_t size = 0)
-                                :       m_value(0.0),
-                                        m_vgrad(size),
-                                        m_error(0.0),
-                                        m_count(0)
-                        {
-                                reset();
-                        }
-                        
-                        // clear statistics
-                        void reset()
-                        {
-                                m_value = 0.0;
-                                m_vgrad.setZero();
-                                m_error = 0.0;
-                                m_count = 0;
-                        }
-                        
-                        // cumulate statistics
-                        void operator+=(const data_t& other)
-                        {
-                                m_value += other.m_value;
-                                m_vgrad += other.m_vgrad;
-                                m_error += other.m_error;
-                                m_count += other.m_count;
-                        }
-                        
-                        // attributes
-                        scalar_t        m_value;        ///< cumulated loss value
-                        vector_t        m_vgrad;        ///< cumulated gradient
-                        scalar_t        m_error;        ///< cumulated loss error
-                        size_t          m_count;        ///< #processed samples
-                };
-                
-                struct cache_t
-                {
-                        // constructor
-                        cache_t(size_t size = 0, type t = type::value, scalar_t lambda = 0.0)
-                                :       m_config(t, lambda),
-                                        m_data(size)
-                        {
-                        }
-                        
-                        // clear statistics
-                        void reset(const model_t& model);
-                        void reset(const vector_t& params);
-                        void reset();          
-                        
-                        // update statistics with a new sample
-                        void update(const task_t& task, const sample_t& sample, const loss_t& loss);
-                        void update(const tensor_t& input, const vector_t& target, const loss_t& loss);
-                        void update(const vector_t& input, const vector_t& target, const loss_t& loss);
-                        void cumulate(const vector_t& output, const vector_t& target, const loss_t& loss);
-                        
-                        // cumulate statistics
-                        void operator+=(const cache_t& other)
-                        {
-                                m_data += other.m_data;
-                        }
-                        
-                        // attributes
-                        rmodel_t        m_model;        ///< model copy
-                        vector_t        m_params;       ///< model's parameters
-                        config_t        m_config;       ///< settings
-                        data_t          m_data;         ///< cumulated data                        
-                };
 
         private:
 
                 // attributes
-                thread_pool_t           m_pool;         ///< thread pool
-                std::vector<cache_t>    m_caches;       ///< cache / thread                
-                cache_t                 m_cache;        ///< global (cumulated) cache
+                std::shared_ptr
+                <accumulator_impl_t>    m_impl;
         };
 }
 
