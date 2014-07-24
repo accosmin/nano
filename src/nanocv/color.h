@@ -8,11 +8,14 @@ namespace ncv
         // RGBA
         typedef uint32_t                                                        rgba_t;
         typedef tensor::matrix_types_t<rgba_t>::tmatrix                         rgba_matrix_t;
-        typedef std::vector<rgba_t>                                             rgbas_t;
 
         // CIELab
         typedef tensor::fixed_size_vector_types_t<scalar_t, 3>::tvector         cielab_t;
         typedef tensor::matrix_types_t<cielab_t>::tmatrix                       cielab_matrix_t;
+
+        // Grayscale
+        typedef uint8_t                                                         gray_t;
+        typedef tensor::matrix_types_t<gray_t>::tmatrix                         gray_matrix_t;
 
         // manipulate colors
         namespace color

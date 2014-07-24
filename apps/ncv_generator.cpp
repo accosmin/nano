@@ -1,4 +1,5 @@
 #include "nanocv.h"
+#include "grid_image.h"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 

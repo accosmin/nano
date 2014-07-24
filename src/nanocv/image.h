@@ -24,14 +24,14 @@ namespace ncv
         ///
         /// \brief load gray image from buffer
         ///
-        bool load_gray(const char* buffer, size_t rows, size_t cols,                    // rows * cols
-                       rgba_matrix_t& rgba);
+        bool load_gray(const char* buffer, size_t rows, size_t cols, rgba_matrix_t&);
+        bool load_gray(const char* buffer, size_t rows, size_t cols, gray_matrix_t&);
 
         ///
         /// \brief load RGBA image from buffer
         ///
-        bool load_rgba(const char* buffer, size_t rows, size_t cols, size_t stride,     // rows * cols * 3
-                       rgba_matrix_t& rgba);
+        bool load_rgba(const char* buffer, size_t rows, size_t cols, size_t stride, rgba_matrix_t&);
+        bool load_rgba(const char* buffer, size_t rows, size_t cols, size_t stride, gray_matrix_t&);
 
         namespace detail
         {
@@ -40,9 +40,10 @@ namespace ncv
                 ///
                 template
                 <
+                        typename timage,
                         typename toperator
                 >
-                matrix_t make_data(const rgba_matrix_t& rgba, const rect_t& region, const toperator& op)
+                matrix_t make_data(const timage& image, const rect_t& region, const toperator& op)
                 {
                         const coord_t top = geom::top(region), left = geom::left(region);
                         const coord_t rows = geom::rows(region), cols = geom::cols(region);
@@ -51,14 +52,14 @@ namespace ncv
                         matrix_t data(rows, cols);
                         
                         if (    top == 0 && left == 0 && 
-                                rows == static_cast<coord_t>(rgba.rows()) && 
-                                cols == static_cast<coord_t>(rgba.cols()))
+                                rows == static_cast<coord_t>(image.rows()) &&
+                                cols == static_cast<coord_t>(image.cols()))
                         {
                                 const coord_t size = rows * cols;
                                 
                                 for (coord_t i = 0; i < size; i ++)
                                 {
-                                        data(i) = scale * op(rgba(i));
+                                        data(i) = scale * op(image(i));
                                 }
                         }
                         
@@ -68,7 +69,7 @@ namespace ncv
                                 {
                                         for (coord_t c = 0; c < cols; c ++)
                                         {
-                                                data(r, c) = scale * op(rgba(top + r, left + c));
+                                                data(r, c) = scale * op(image(top + r, left + c));
                                         }
                                 }
                         }
@@ -96,37 +97,10 @@ namespace ncv
         {
                 return detail::make_data(rgba, region, color::make_luma);
         }
-
-        ///
-        /// \brief create an RGBA image composed from fixed-size RGBA patches disposed in a grid
-        ///
-        class grid_image_t
+        inline matrix_t load_luma(const gray_matrix_t& gray, const rect_t& region)
         {
-        public:
-
-                // constructor
-                grid_image_t(   size_t patch_rows, size_t patch_cols,
-                                size_t group_rows, size_t group_cols,
-                                size_t border = 8,
-                                rgba_t back_color = color::make_rgba(225, 225, 0));
-
-                // setup a patch at a given grid position
-                bool set(size_t grow, size_t gcol, const rgba_matrix_t& patch);
-
-                // access functions
-                const rgba_matrix_t& rgba() const { return m_image; }
-
-        private:
-
-                // attributes
-                size_t          m_prows;        ///< patch size
-                size_t          m_pcols;
-                size_t          m_grows;        ///< grid size
-                size_t          m_gcols;
-                size_t          m_border;       ///< grid border in pixels
-                rgba_t          m_bcolor;       ///< background color
-                rgba_matrix_t   m_image;
-        };
+                return detail::make_data(gray, region, [] (gray_t g) { return g; });
+        }
 
         typedef rgba_matrix_t           image_t;
         typedef std::vector<image_t>    images_t;
