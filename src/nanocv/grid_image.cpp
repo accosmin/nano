@@ -17,8 +17,8 @@ namespace ncv
                 const size_t rows = m_prows * m_grows + m_border * (m_grows + 1);
                 const size_t cols = m_pcols * m_gcols + m_border * (m_gcols + 1);
 
-                m_image.resize(rows, cols);
-                m_image.setConstant(m_bcolor);
+                m_image.resize(rows, cols, color_mode::rgba);
+                m_image.fill(m_bcolor);
         }
 
         bool grid_image_t::set(size_t grow, size_t gcol, const rgba_matrix_t& patch)
@@ -33,7 +33,7 @@ namespace ncv
                         const size_t ih = m_prows;
                         const size_t iw = m_pcols;
 
-                        m_image.block(iy, ix, ih, iw) = patch;
+                        m_image.fill(geom::make_rect(ix, iy, iw, ih), patch);
                         return true;
                 }
                 else

@@ -69,7 +69,7 @@ namespace ncv
                                                 const image_t& image = this->image(sample.m_index);
                                                 const rect_t& region = sample.m_region;
 
-                                                grid_image.set(r, c, image.block(
+                                                grid_image.set(r, c, image.rgba().block(
                                                         geom::top(region),
                                                         geom::left(region),
                                                         geom::height(region),
@@ -82,7 +82,7 @@ namespace ncv
                                                 + (label.empty() ? "" : ("_" + label))
                                                 + "_group" + text::to_string(g) + ".png";
                                 log_info() << "saving images to <" << path << "> ...";
-                                ncv::save_rgba(path, grid_image.rgba());
+                                grid_image.image().save(path);
                         }
                 }
         }

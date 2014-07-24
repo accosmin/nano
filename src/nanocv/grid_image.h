@@ -1,7 +1,7 @@
 #ifndef NANOCV_GRID_IMAGE_H
 #define NANOCV_GRID_IMAGE_H
 
-#include "color.h"
+#include "image.h"
 
 namespace ncv
 {
@@ -24,7 +24,7 @@ namespace ncv
                 bool set(size_t grow, size_t gcol, const rgba_matrix_t& patch);
 
                 // access functions
-                const rgba_matrix_t& rgba() const { return m_image; }
+                const image_t& image() const { return m_image; }
 
         private:
 
@@ -35,7 +35,7 @@ namespace ncv
                 size_t          m_gcols;
                 size_t          m_border;       ///< grid border in pixels
                 rgba_t          m_bcolor;       ///< background color
-                rgba_matrix_t   m_image;
+                image_t         m_image;
         };
 }
 
