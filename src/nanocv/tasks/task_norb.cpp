@@ -6,9 +6,7 @@
 
 namespace ncv
 {
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        static const strings_t labels =
+        static const strings_t tlabels =
         {
                 "animal",
                 "human",
@@ -17,8 +15,6 @@ namespace ncv
                 "car",
                 "blank"
         };
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         bool norb_task_t::load(const string_t& dir)
         {
@@ -40,12 +36,8 @@ namespace ncv
                         load(dir + "/norb-5x46789x9x18x6x2x108x108-training-10", protocol::train) == n_train_samples &&
 
                         load(dir + "/norb-5x01235x9x18x6x2x108x108-testing-01", protocol::test) +
-                        load(dir + "/norb-5x01235x9x18x6x2x108x108-testing-02", protocol::test) == n_test_samples &&
-
-                        build_folds(n_train_samples, n_test_samples);
+                        load(dir + "/norb-5x01235x9x18x6x2x108x108-testing-02", protocol::test) == n_test_samples;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         static bool read_header(std::ifstream& file, int32_t& magic, std::vector<int32_t>& dims)
         {
@@ -79,14 +71,10 @@ namespace ncv
                 return true;
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////
-
         size_t norb_task_t::load(const string_t& bfile, protocol p)
         {
                 return load(bfile + "-cat.mat", bfile + "-dat.mat", p);
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 
         size_t norb_task_t::load(const string_t& cfile, const string_t& dfile, protocol p)
         {
@@ -158,22 +146,21 @@ namespace ncv
                 for (size_t i = 0; i < cnt; i ++)
                 {
                         const size_t ilabel = dlabel[i];
-                        if (ilabel >= labels.size())
+                        if (ilabel >= n_outputs())
                         {
                                 continue;
                         }
 
-                        const annotation_t anno(sample_region(0, 0),
-                                labels[ilabel],
-                                ncv::class_target(ilabel, n_outputs()));
-
                         for (size_t camera = 0; camera < n_cameras; camera ++)
                         {
-                                image_t image;
-                                image.m_protocol = p;
-                                image.m_annotations.push_back(anno);
-                                image.load_gray(&dimage[i * n_pixels * n_cameras + camera], n_rows, n_cols);
+                                sample_t sample(m_images.size(), sample_region(0, 0));
+                                sample.m_label = tlabels[ilabel];
+                                sample.m_target = ncv::class_target(ilabel, n_outputs());
+                                sample.m_fold = { 0, p };
+                                m_samples.push_back(sample);
 
+                                image_t image;
+                                load_gray(&dimage[i * n_pixels * n_cameras + camera], n_rows, n_cols, image);
                                 m_images.push_back(image);
                         }
                 }
@@ -182,19 +169,4 @@ namespace ncv
 
                 return cnt;
         }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
-
-        bool norb_task_t::build_folds(size_t n_train, size_t n_test)
-        {
-                const fold_t train_fold = std::make_pair(0, protocol::train);
-                m_folds[train_fold] = make_samples(0, n_train, sample_region(0, 0));
-
-                const fold_t test_fold = std::make_pair(0, protocol::test);
-                m_folds[test_fold] = make_samples(n_train, n_test, sample_region(0, 0));
-
-                return true;
-        }
-
-        /////////////////////////////////////////////////////////////////////////////////////////
 }

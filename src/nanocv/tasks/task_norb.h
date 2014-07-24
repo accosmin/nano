@@ -40,9 +40,6 @@ namespace ncv
                 // load binary file
                 size_t load(const string_t& bfile, protocol p);
                 size_t load(const string_t& cfile, const string_t& dfile, protocol p);
-
-                // build folds
-                bool build_folds(size_t n_train, size_t n_test);
         };
 }
 
