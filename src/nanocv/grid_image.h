@@ -2,10 +2,11 @@
 #define NANOCV_GRID_IMAGE_H
 
 #include "color.h"
-#include "geom.h"
 
 namespace ncv
 {
+        // fixme: merge in image_t!
+
         ///
         /// \brief create an RGBA image composed from fixed-size RGBA patches disposed in a grid
         ///

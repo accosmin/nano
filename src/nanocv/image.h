@@ -104,6 +104,60 @@ namespace ncv
 
         typedef rgba_matrix_t           image_t;
         typedef std::vector<image_t>    images_t;
+
+        namespace temp
+        {
+                ///
+                /// \brief stores an image either as grayscale or RGBA buffer.
+                ///
+                /// operations:
+                ///     - loading and saving from and to files
+                ///     - scaling to [0, 1] tensors
+                ///
+                /// fixme: merge grid_image here!
+                ///
+                class image_t
+                {
+                public:
+
+                        // constructors
+                        image_t(size_t rows = 0, size_t cols = 0, color_mode mode = color_mode::rgba);
+
+                        ///
+                        /// \brief save image to disk
+                        ///
+                        bool save_rgba(const string_t& path) const;
+                        bool save_gray(const string_t& path) const;
+                        bool save(const string_t& path) const;
+
+                        ///
+                        /// \brief load image from disk
+                        ///
+                        bool load_rgba(const string_t& path);
+                        bool load_gray(const string_t& path);
+                        bool load(const string_t& path);
+
+                        ///
+                        /// \brief load the scaled [0, 1] tensor
+                        ///     with 1 (grayscale) or 3 (rgba) planes
+                        ///
+                        tensor_t as_tensor(const rect_t& region) const;
+
+                        // access functions
+                        size_t rows() const { return m_rows; }
+                        size_t cols() const { return m_cols; }
+
+                private:
+
+                        // attributes
+                        size_t                  m_rows;
+                        size_t                  m_cols;
+                        color_mode              m_mode;
+
+                        rgba_matrix_t           m_rgba;
+                        gray_matrix_t           m_gray;
+                };
+        }
 }
 
 #endif //  NANOCV_IMAGE_H

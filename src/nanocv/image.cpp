@@ -21,7 +21,7 @@ namespace ncv
                 unknown
         };
 
-        imagetype decode_image_type(const string_t& path)
+        static imagetype decode_image_type(const string_t& path)
         {
                 if (text::iends_with(path, ".jpg") || text::iends_with(path, ".jpeg"))
                 {
@@ -304,4 +304,65 @@ namespace ncv
 
                 return true;
         }
+
+//        temp::image_t::image_t(size_t rows, size_t cols, color_mode mode)
+//                :       m_rows(rows),
+//                        m_cols(cols),
+//                        m_mode(mode)
+//        {
+//                switch (m_mode)
+//                {
+//                case color_mode::luma:
+//                        m_gray.resize(rows, cols);
+//                        m_gray.setZero();
+//                        break;
+
+//                case color_mode::rgba:
+//                        m_rgba.resize(rows, cols);
+//                        m_rgba.setZero();
+//                        break;
+//                }
+//        }
+
+//        bool temp::image_t::save_rgba(const string_t& path) const
+//        {
+
+//        }
+
+//        bool temp::image_t::save_gray(const string_t& path) const
+//        {
+
+//        }
+
+//        bool temp::image_t::save(const string_t& path) const
+//        {
+//                switch (m_mode)
+//                {
+//                case color_mode::luma:
+//                        return save_luma(path);
+
+//                case color_mode::rgba:
+//                        return save_rgba(path);
+//                }
+//        }
+
+//        bool temp::image_t::load_rgba(const string_t& path)
+//        {
+
+//        }
+
+//        bool temp::image_t::load_gray(const string_t& path)
+//        {
+
+//        }
+
+//        bool temp::image_t::load(const string_t& path)
+//        {
+
+//        }
+
+//        tensor_t temp::image_t::as_tensor(const rect_t& region) const
+//        {
+
+//        }
 }
