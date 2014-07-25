@@ -305,33 +305,6 @@ namespace ncv
                 return true;
         }
 
-        ///
-        /// \brief save RGBA image to disk
-        ///
-        bool save_rgba(const string_t& path, const rgba_matrix_t& rgba);
-
-        ///
-        /// \brief load RGBA image from disk
-        ///
-        bool load_rgba(const string_t& path, rgba_matrix_t& rgba);
-
-        ///
-        /// \brief load gray/color image from [0, 1] normalized tensor
-        ///
-        bool load_rgba(const tensor_t& tensor, rgba_matrix_t& rgba);
-
-        ///
-        /// \brief load gray image from buffer
-        ///
-        bool load_gray(const char* buffer, size_t rows, size_t cols, rgba_matrix_t&);
-        bool load_gray(const char* buffer, size_t rows, size_t cols, gray_matrix_t&);
-
-        ///
-        /// \brief load RGBA image from buffer
-        ///
-        bool load_rgba(const char* buffer, size_t rows, size_t cols, size_t stride, rgba_matrix_t&);
-        bool load_rgba(const char* buffer, size_t rows, size_t cols, size_t stride, gray_matrix_t&);
-
         namespace detail
         {
                 ///
@@ -396,11 +369,180 @@ namespace ncv
         {
                 return detail::make_data(rgba, region, color::make_luma);
         }
-        inline matrix_t load_luma(const gray_matrix_t& gray, const rect_t& region)
+        inline matrix_t load_luma(const luma_matrix_t& luma, const rect_t& region)
         {
-                return detail::make_data(gray, region, [] (gray_t g) { return g; });
+                return detail::make_data(luma, region, [] (luma_t g) { return g; });
         }
 
+        image_t::image_t(size_t rows, size_t cols, color_mode mode)
+                :       m_rows(rows),
+                        m_cols(cols),
+                        m_mode(mode)
+        {
+                resize(rows, cols, mode);
+        }
+
+        void image_t::resize(size_t rows, size_t cols, color_mode mode)
+        {
+                m_mode = mode;
+                m_rows = rows;
+                m_cols = cols;
+
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        m_luma.resize(rows, cols);
+                        m_rgba.resize(0, 0);
+                        break;
+
+                case color_mode::rgba:
+                        m_luma.resize(0, 0);
+                        m_rgba.resize(rows, cols);
+                        break;
+                }
+        }
+
+        bool image_t::load_rgba(const string_t& path)
+        {
+
+        }
+
+        bool image_t::load_luma(const string_t& path)
+        {
+
+        }
+
+        bool image_t::load_luma(const char* buffer, size_t rows, size_t cols)
+        {
+
+        }
+
+        bool image_t::load_rgba(const char* buffer, size_t rows, size_t cols)
+        {
+
+        }
+
+        bool image_t::load_rgba(const char* buffer, size_t rows, size_t cols, size_t stride)
+        {
+
+        }
+
+        bool image_t::load_rgba(const rgba_matrix_t& data)
+        {
+
+        }
+
+        bool image_t::load_luma(const rgba_matrix_t& data)
+        {
+
+        }
+
+        bool image_t::load_luma(const luma_matrix_t& data)
+        {
+
+        }
+
+        bool image_t::from_tensor(const tensor_t& data) const
+        {
+
+        }
+
+        bool image_t::from_tensor(const tensor_t& data, const rect_t& region) const
+        {
+
+        }
+
+        bool image_t::save(const string_t& path) const
+        {
+
+        }
+
+        tensor_t image_t::to_tensor() const
+        {
+
+        }
+
+        tensor_t image_t::to_tensor(const rect_t& region) const
+        {
+
+        }
+
+        bool image_t::make_rgba()
+        {
+                switch (m_mode)
+                {
+                case color_mode::rgba:
+                        break;
+
+                case color_mode::luma:
+                        m_rgba.resize(rows(), cols());
+                        math::transform(m_luma, m_rgba, [] (luma_t luma) { return color::make_rgba(luma, luma, luma); });
+                        m_luma.resize(0, 0);
+                        break;
+                }
+
+                return true;
+        }
+
+        bool image_t::make_luma()
+        {
+
+        }
+
+        void image_t::fill(rgba_t rgba) const
+        {
+
+        }
+
+        void image_t::fill(luma_t luma) const
+        {
+
+        }
+
+        bool image_t::copy(coord_t r, coord_t c, const rgba_matrix_t& patch) const
+        {
+
+        }
+
+        bool image_t::copy(coord_t r, coord_t c, const luma_matrix_t& patch) const
+        {
+
+        }
+
+        bool image_t::copy(coord_t r, coord_t c, const image_t& patch) const
+        {
+
+        }
+
+        bool image_t::copy(coord_t r, coord_t c, const image_t& patch, const rect_t& region) const
+        {
+
+        }
+
+        bool image_t::set(coord_t r, coord_t c, rgba_t rgba)
+        {
+
+        }
+
+        bool image_t::set(coord_t r, coord_t c, luma_t gray)
+        {
+                if (    r >= 0 && r < static_cast<coord_t>(rows()) &&
+                        c >= 0 && c < static_cast<coord_t>(cols()))
+                {
+
+                }
+
+                else
+                {
+                        return false;
+                }
+        }
+
+        void image_t::transpose_in_place()
+        {
+                m_rgba.transposeInPlace();
+                m_luma.transposeInPlace();
+        }
 
 
 //        switch (m_color)

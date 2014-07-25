@@ -7,7 +7,7 @@
 namespace ncv
 {
         ///
-        /// \brief stores an image either as grayscale or RGBA buffer.
+        /// \brief stores an image either as grayscale (luma) or RGBA buffer.
         ///
         /// operations:
         ///     - loading and saving from and to files
@@ -19,7 +19,9 @@ namespace ncv
         {
         public:
 
-                // constructors
+                ///
+                /// \brief constructor
+                ///
                 image_t(size_t rows = 0, size_t cols = 0, color_mode mode = color_mode::rgba);
 
                 ///
@@ -31,22 +33,21 @@ namespace ncv
                 /// \brief load image from disk
                 ///
                 bool load_rgba(const string_t& path);
-                bool load_gray(const string_t& path);
-                bool load(const string_t& path);
+                bool load_luma(const string_t& path);
 
                 ///
                 /// \brief load image from buffer
                 ///
-                bool load_gray(const char* buffer, size_t rows, size_t cols);
+                bool load_luma(const char* buffer, size_t rows, size_t cols);
                 bool load_rgba(const char* buffer, size_t rows, size_t cols);
                 bool load_rgba(const char* buffer, size_t rows, size_t cols, size_t stride);
                 bool load_rgba(const rgba_matrix_t& data);
-                bool load_gray(const rgba_matrix_t& data);
-                bool load_gray(const gray_matrix_t& data);
+                bool load_luma(const rgba_matrix_t& data);
+                bool load_luma(const luma_matrix_t& data);
 
                 ///
                 /// \brief load image from scaled [0, 1] tensor
-                ///     having 1 (grayscale) or 3 (rgba) planes
+                ///     having 1 (lumascale) or 3 (rgba) planes
                 ///
                 bool from_tensor(const tensor_t& data) const;
                 bool from_tensor(const tensor_t& data, const rect_t& region) const;
@@ -54,28 +55,32 @@ namespace ncv
                 ///
                 /// \brief save image to disk
                 ///
-                bool save_rgba(const string_t& path) const;
-                bool save_gray(const string_t& path) const;
                 bool save(const string_t& path) const;
 
                 ///
                 /// \brief save image to scaled [0, 1] tensor
-                ///     with 1 (grayscale) or 3 (rgba) planes
+                ///     with 1 (luma) or 3 (rgba) planes
                 ///
                 tensor_t to_tensor() const;
                 tensor_t to_tensor(const rect_t& region) const;
 
                 ///
+                /// \brief transform between color mode
+                ///
+                bool make_rgba();
+                bool make_luma();
+
+                ///
                 /// \brief fill image with constant color
                 ///
                 void fill(rgba_t rgba) const;
-                void fill(gray_t gray) const;
+                void fill(luma_t luma) const;
 
                 ///
                 /// \brief copy the given (region of the given) patch at the (r, c) location
                 ///
                 bool copy(coord_t r, coord_t c, const rgba_matrix_t& patch) const;
-                bool copy(coord_t r, coord_t c, const gray_matrix_t& patch) const;
+                bool copy(coord_t r, coord_t c, const luma_matrix_t& patch) const;
 
                 bool copy(coord_t r, coord_t c, const image_t& patch) const;
                 bool copy(coord_t r, coord_t c, const image_t& patch, const rect_t& region) const;
@@ -84,7 +89,7 @@ namespace ncv
                 /// \brief change a pixel
                 ///
                 bool set(coord_t r, coord_t c, rgba_t rgba);
-                bool set(coord_t r, coord_t c, gray_t gray);
+                bool set(coord_t r, coord_t c, luma_t luma);
 
                 ///
                 /// \brief transpose in place the pixel matrix
@@ -94,9 +99,13 @@ namespace ncv
                 // access functions
                 size_t rows() const { return m_rows; }
                 size_t cols() const { return m_cols; }
+                color_mode mode() const { return m_mode; }
+
+                bool is_rgba() const { return mode() == color_mode::rgba; }
+                bool is_luma() const { return mode() == color_mode::luma; }
 
                 const rgba_matrix_t& rgba() const { return m_rgba; }
-                const gray_matrix_t& gray() const { return m_gray; }
+                const luma_matrix_t& luma() const { return m_luma; }
 
         private:
 
@@ -106,7 +115,7 @@ namespace ncv
                 color_mode              m_mode;
 
                 rgba_matrix_t           m_rgba;
-                gray_matrix_t           m_gray;
+                luma_matrix_t           m_luma;
         };
 
         typedef std::vector<image_t>    images_t;

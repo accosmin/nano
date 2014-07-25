@@ -4,6 +4,8 @@
 
 int main(int argc, char *argv[])
 {
+        using namespace ncv;
+
         ncv::init();
         
         // parse the command line
@@ -41,72 +43,71 @@ int main(int argc, char *argv[])
                 return EXIT_FAILURE;
         }
 
-        const ncv::string_t cmd_input = po_vm["input"].as<ncv::string_t>();
-        const ncv::scalar_t cmd_scale = ncv::math::clamp(po_vm["scale"].as<ncv::scalar_t>(), 0.1, 10.0);
-        const ncv::size_t cmd_width = ncv::math::clamp(po_vm["width"].as<ncv::size_t>(), 0, 4096);
-        const ncv::size_t cmd_height = ncv::math::clamp(po_vm["height"].as<ncv::size_t>(), 0, 4096);
-        const ncv::string_t cmd_output = po_vm["output"].as<ncv::string_t>();
+        const string_t cmd_input = po_vm["input"].as<string_t>();
+        const scalar_t cmd_scale = math::clamp(po_vm["scale"].as<scalar_t>(), 0.1, 10.0);
+        const size_t cmd_width = math::clamp(po_vm["width"].as<size_t>(), 0, 4096);
+        const size_t cmd_height = math::clamp(po_vm["height"].as<size_t>(), 0, 4096);
+        const string_t cmd_output = po_vm["output"].as<string_t>();
 
         ncv::timer_t timer;
 
         // load input image
         timer.start();
-        ncv::image_t image;
+        image_t image;
         if (!image.load_rgba(cmd_input))
         {
-                ncv::log_error() << "<<< failed to load image <" << cmd_input << ">!";
+                log_error() << "<<< failed to load image <" << cmd_input << ">!";
                 return EXIT_FAILURE;
         }
         else
         {
-                ncv::log_info() << "<<< loaded image <" << cmd_input << "> in " << timer.elapsed() << ".";
+                log_info() << "<<< loaded image <" << cmd_input << "> in " << timer.elapsed() << ".";
         }
 
-        ncv::rgba_matrix_t rgba_image = image.rgba();
+        rgba_matrix_t rgba_image = image.rgba();
 
         // transform RGBA to CIELab
-        ncv::cielab_matrix_t cielab_image, cielab_image_scaled;
+        cielab_matrix_t cielab_image, cielab_image_scaled;
 
         timer.start();
         cielab_image.resize(rgba_image.rows(), rgba_image.cols());
-        ncv::math::transform(rgba_image, cielab_image, ncv::color::make_cielab);
-        ncv::log_info() << "transformed RGBA to CIELab in " << timer.elapsed() << ".";
+        math::transform(rgba_image, cielab_image, color::make_cielab);
+        log_info() << "transformed RGBA to CIELab in " << timer.elapsed() << ".";
 
         // resize image
         timer.start();
         if (cmd_width > 0 && cmd_height > 0)
         {
-                ncv::math::bilinear(cielab_image, cielab_image_scaled, cmd_width, cmd_height);
+                math::bilinear(cielab_image, cielab_image_scaled, cmd_width, cmd_height);
         }
         else
         {
-                ncv::math::bilinear(cielab_image, cielab_image_scaled, cmd_scale);
+                math::bilinear(cielab_image, cielab_image_scaled, cmd_scale);
         }
-        ncv::log_info() << "scaled image from <" << cielab_image.cols() << "x" << cielab_image.rows()
-                        << "> to <" << cielab_image_scaled.cols() << "x" << cielab_image_scaled.rows()
-                        << "> in " << timer.elapsed() << ".";
+        log_info() << "scaled image from <" << cielab_image.cols() << "x" << cielab_image.rows()
+                   << "> to <" << cielab_image_scaled.cols() << "x" << cielab_image_scaled.rows()
+                   << "> in " << timer.elapsed() << ".";
 
         // transform CIELab to RGBA
         timer.start();
         rgba_image.resize(cielab_image_scaled.rows(), cielab_image_scaled.cols());
-        ncv::math::transform(cielab_image_scaled, rgba_image,
-                             [](const ncv::cielab_t& cielab) { return ncv::color::make_rgba(cielab); });
-        ncv::log_info() << "transformed CIELab to RGBA in " << timer.elapsed() << ".";
+        math::transform(cielab_image_scaled, rgba_image, [] (const cielab_t& cielab) { return color::make_rgba(cielab); });
+        log_info() << "transformed CIELab to RGBA in " << timer.elapsed() << ".";
 
         // save output image
         timer.start();
         image.load_rgba(rgba_image);
-        if (!image.save_rgba(cmd_output))
+        if (!image.save(cmd_output))
         {
-                ncv::log_error() << ">>> failed to save image <" << cmd_output << ">!";
+                log_error() << ">>> failed to save image <" << cmd_output << ">!";
                 return EXIT_FAILURE;
         }
         else
         {
-                ncv::log_info() << ">>> saved image <" << cmd_output << "> in " << timer.elapsed() << ".";
+                log_info() << ">>> saved image <" << cmd_output << "> in " << timer.elapsed() << ".";
         }
 		
         // OK
-        ncv::log_info() << ncv::done;
+        log_info() << ncv::done;
         return EXIT_SUCCESS;
 }

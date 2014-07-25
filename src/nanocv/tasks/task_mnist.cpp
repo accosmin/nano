@@ -63,7 +63,7 @@ namespace ncv
                         m_samples.push_back(sample);
 
                         image_t image(n_rows(), n_cols(), color());
-                        image.load_gray(buffer, n_rows(), n_cols());
+                        image.load_luma(buffer, n_rows(), n_cols());
                         m_images.push_back(image);
 
                         ++ cnt;

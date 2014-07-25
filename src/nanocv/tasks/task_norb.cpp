@@ -157,7 +157,7 @@ namespace ncv
                                 m_samples.push_back(sample);
 
                                 image_t image(n_rows(), n_cols(), color());
-                                image.load_gray(&dimage[i * n_pixels * n_cameras + camera], n_rows(), n_cols());
+                                image.load_luma(&dimage[i * n_pixels * n_cameras + camera], n_rows(), n_cols());
                                 m_images.push_back(image);
                         }
                 }

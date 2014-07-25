@@ -14,8 +14,8 @@ namespace ncv
         typedef tensor::matrix_types_t<cielab_t>::tmatrix                       cielab_matrix_t;
 
         // Grayscale
-        typedef uint8_t                                                         gray_t;
-        typedef tensor::matrix_types_t<gray_t>::tmatrix                         gray_matrix_t;
+        typedef uint8_t                                                         luma_t;
+        typedef tensor::matrix_types_t<luma_t>::tmatrix                         luma_matrix_t;
 
         // manipulate colors
         namespace color
