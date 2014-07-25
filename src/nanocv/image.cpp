@@ -401,67 +401,22 @@ namespace ncv
                 return detail::make_data(gray, region, [] (gray_t g) { return g; });
         }
 
-        typedef rgba_matrix_t           image_t;
-        typedef std::vector<image_t>    images_t;
 
-//        temp::image_t::image_t(size_t rows, size_t cols, color_mode mode)
-//                :       m_rows(rows),
-//                        m_cols(cols),
-//                        m_mode(mode)
+
+//        switch (m_color)
 //        {
-//                switch (m_mode)
-//                {
-//                case color_mode::luma:
-//                        m_gray.resize(rows, cols);
-//                        m_gray.setZero();
-//                        break;
+//        case color_mode::luma:
+//                data.resize(1, irows(), icols());
+//                data.copy_plane_from(0, load_luma(image, region));
+//                break;
 
-//                case color_mode::rgba:
-//                        m_rgba.resize(rows, cols);
-//                        m_rgba.setZero();
-//                        break;
-//                }
+//        case color_mode::rgba:
+//                data.resize(3, irows(), icols());
+//                data.copy_plane_from(0, load_red(image, region));
+//                data.copy_plane_from(1, load_green(image, region));
+//                data.copy_plane_from(2, load_blue(image, region));
+//                break;
 //        }
 
-//        bool temp::image_t::save_rgba(const string_t& path) const
-//        {
-
-//        }
-
-//        bool temp::image_t::save_gray(const string_t& path) const
-//        {
-
-//        }
-
-//        bool temp::image_t::save(const string_t& path) const
-//        {
-//                switch (m_mode)
-//                {
-//                case color_mode::luma:
-//                        return save_luma(path);
-
-//                case color_mode::rgba:
-//                        return save_rgba(path);
-//                }
-//        }
-
-//        bool temp::image_t::load_rgba(const string_t& path)
-//        {
-
-//        }
-
-//        bool temp::image_t::load_gray(const string_t& path)
-//        {
-
-//        }
-
-//        bool temp::image_t::load(const string_t& path)
-//        {
-
-//        }
-
-//        tensor_t temp::image_t::as_tensor(const rect_t& region) const
-//        {
-
-//        }
+//        return data;
 }

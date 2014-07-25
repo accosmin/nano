@@ -50,11 +50,9 @@ int main(int argc, char *argv[])
         ncv::timer_t timer;
 
         // load input image
-        ncv::rgba_matrix_t rgba_image;
-        ncv::cielab_matrix_t cielab_image, cielab_image_scaled;
-
         timer.start();
-        if (!ncv::load_rgba(cmd_input, rgba_image))
+        ncv::image_t image;
+        if (!image.load_rgba(cmd_input))
         {
                 ncv::log_error() << "<<< failed to load image <" << cmd_input << ">!";
                 return EXIT_FAILURE;
@@ -64,7 +62,11 @@ int main(int argc, char *argv[])
                 ncv::log_info() << "<<< loaded image <" << cmd_input << "> in " << timer.elapsed() << ".";
         }
 
+        ncv::rgba_matrix_t rgba_image = image.rgba();
+
         // transform RGBA to CIELab
+        ncv::cielab_matrix_t cielab_image, cielab_image_scaled;
+
         timer.start();
         cielab_image.resize(rgba_image.rows(), rgba_image.cols());
         ncv::math::transform(rgba_image, cielab_image, ncv::color::make_cielab);
@@ -93,7 +95,8 @@ int main(int argc, char *argv[])
 
         // save output image
         timer.start();
-        if (!ncv::save_rgba(cmd_output, rgba_image))
+        image.load_rgba(rgba_image);
+        if (!image.save_rgba(cmd_output))
         {
                 ncv::log_error() << ">>> failed to save image <" << cmd_output << ">!";
                 return EXIT_FAILURE;

@@ -42,7 +42,7 @@ namespace ncv
                                         const boost::filesystem::path path(*it_dir);
 
                                         image_t image;
-                                        if (load_rgba(path.string(), image))
+                                        if (image.load_gray(path.string()))
                                         {
                                                 sample_t sample(m_images.size(), sample_region(0, 0));
                                                 sample.m_label = is_face ? "face" : "nonface";

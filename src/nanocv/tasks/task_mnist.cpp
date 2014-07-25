@@ -62,8 +62,8 @@ namespace ncv
                         sample.m_fold = { 0, p };
                         m_samples.push_back(sample);
 
-                        image_t image;
-                        load_gray(buffer, n_rows(), n_cols(), image);
+                        image_t image(n_rows(), n_cols(), color());
+                        image.load_gray(buffer, n_rows(), n_cols());
                         m_images.push_back(image);
 
                         ++ cnt;

@@ -21,7 +21,8 @@ namespace ncv
                                 rgba_t back_color = color::make_rgba(225, 225, 0));
 
                 // setup a patch at a given grid position
-                bool set(size_t grow, size_t gcol, const rgba_matrix_t& patch);
+                bool set(size_t grow, size_t gcol, const image_t& image);
+                bool set(size_t grow, size_t gcol, const image_t& image, const rect_t& region);
 
                 // access functions
                 const image_t& image() const { return m_image; }

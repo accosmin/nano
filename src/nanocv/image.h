@@ -40,6 +40,9 @@ namespace ncv
                 bool load_gray(const char* buffer, size_t rows, size_t cols);
                 bool load_rgba(const char* buffer, size_t rows, size_t cols);
                 bool load_rgba(const char* buffer, size_t rows, size_t cols, size_t stride);
+                bool load_rgba(const rgba_matrix_t& data);
+                bool load_gray(const rgba_matrix_t& data);
+                bool load_gray(const gray_matrix_t& data);
 
                 ///
                 /// \brief load image from scaled [0, 1] tensor
@@ -69,14 +72,31 @@ namespace ncv
                 void fill(gray_t gray) const;
 
                 ///
-                /// \brief fill image region with the given patch
+                /// \brief copy the given (region of the given) patch at the (r, c) location
                 ///
-                bool fill(const rect_t& region, const rgba_matrix_t& data) const;
-                bool full(const rect_t& region, const gray_matrix_t& data) const;
+                bool copy(coord_t r, coord_t c, const rgba_matrix_t& patch) const;
+                bool copy(coord_t r, coord_t c, const gray_matrix_t& patch) const;
+
+                bool copy(coord_t r, coord_t c, const image_t& patch) const;
+                bool copy(coord_t r, coord_t c, const image_t& patch, const rect_t& region) const;
+
+                ///
+                /// \brief change a pixel
+                ///
+                bool set(coord_t r, coord_t c, rgba_t rgba);
+                bool set(coord_t r, coord_t c, gray_t gray);
+
+                ///
+                /// \brief transpose in place the pixel matrix
+                ///
+                void transpose_in_place();
 
                 // access functions
                 size_t rows() const { return m_rows; }
                 size_t cols() const { return m_cols; }
+
+                const rgba_matrix_t& rgba() const { return m_rgba; }
+                const gray_matrix_t& gray() const { return m_gray; }
 
         private:
 

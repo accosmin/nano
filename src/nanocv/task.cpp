@@ -69,11 +69,7 @@ namespace ncv
                                                 const image_t& image = this->image(sample.m_index);
                                                 const rect_t& region = sample.m_region;
 
-                                                grid_image.set(r, c, image.rgba().block(
-                                                        geom::top(region),
-                                                        geom::left(region),
-                                                        geom::height(region),
-                                                        geom::width(region)));
+                                                grid_image.set(r, c, image, region);
                                         }
                                 }
 

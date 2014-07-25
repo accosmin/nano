@@ -21,20 +21,22 @@ namespace ncv
                 m_image.fill(m_bcolor);
         }
 
-        bool grid_image_t::set(size_t grow, size_t gcol, const rgba_matrix_t& patch)
+        bool grid_image_t::set(size_t grow, size_t gcol, const image_t& image)
+        {
+                return set(grow, gcol, image, geom::make_rect(0, 0, image.cols(), image.rows()));
+        }
+
+        bool grid_image_t::set(size_t grow, size_t gcol, const image_t& image, const rect_t& region)
         {
                 if (    grow < m_grows &&
                         gcol < m_gcols &&
-                        static_cast<size_t>(patch.rows()) == m_prows &&
-                        static_cast<size_t>(patch.cols()) == m_pcols)
+                        static_cast<size_t>(geom::rows(region)) == m_prows &&
+                        static_cast<size_t>(geom::cols(region)) == m_pcols)
                 {
                         const size_t iy = m_prows * grow + m_border * (grow + 1);
                         const size_t ix = m_pcols * gcol + m_border * (gcol + 1);
-                        const size_t ih = m_prows;
-                        const size_t iw = m_pcols;
 
-                        m_image.fill(geom::make_rect(ix, iy, iw, ih), patch);
-                        return true;
+                        return m_image.copy(iy, ix, image, region);
                 }
                 else
                 {

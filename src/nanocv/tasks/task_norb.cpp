@@ -107,9 +107,6 @@ namespace ncv
                         return 0;
                 }
 
-                const size_t n_rows = 108;              // original #rows
-                const size_t n_cols = 108;              // original #cols
-
                 if (    magic_image != magic_i08 ||
                         magic_label != magic_i32 ||
 
@@ -118,8 +115,8 @@ namespace ncv
 
                         dims_image[0] != dims_label[0] ||
                         dims_image[1] != 2 ||
-                        dims_image[2] != static_cast<int>(n_rows) ||
-                        dims_image[3] != static_cast<int>(n_cols) ||
+                        dims_image[2] != static_cast<int>(n_rows()) ||
+                        dims_image[3] != static_cast<int>(n_cols()) ||
 
                         dims_label[1] != 1)
                 {
@@ -128,8 +125,8 @@ namespace ncv
                 }
 
                 // load annotations and images (as binary data)
-                const size_t n_cameras = 2;             // original #cameras
-                const size_t n_pixels = n_rows * n_cols;
+                const size_t n_cameras = 2;
+                const size_t n_pixels = n_rows() * n_cols();
                 const size_t cnt = dims_image[0];
 
                 std::vector<char> dimage(cnt * n_pixels * n_cameras);
@@ -159,8 +156,8 @@ namespace ncv
                                 sample.m_fold = { 0, p };
                                 m_samples.push_back(sample);
 
-                                image_t image;
-                                load_gray(&dimage[i * n_pixels * n_cameras + camera], n_rows, n_cols, image);
+                                image_t image(n_rows(), n_cols(), color());
+                                image.load_gray(&dimage[i * n_pixels * n_cameras + camera], n_rows(), n_cols());
                                 m_images.push_back(image);
                         }
                 }
