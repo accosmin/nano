@@ -1,5 +1,6 @@
 #include "image.h"
 #include "common/math.hpp"
+#include "common/bilinear.hpp"
 #include <fstream>
 #include <boost/algorithm/string.hpp>
 
@@ -49,7 +50,8 @@ namespace ncv
                 }
         }
 
-        bool load_rgba(const string_t& path, rgba_matrix_t& rgba)
+        static bool load_image(const string_t& path,
+                color_mode mode, rgba_matrix_t& rgba, luma_matrix_t& luma)
         {
                 const imagetype itype = decode_image_type(path);
                 switch (itype)
@@ -75,16 +77,33 @@ namespace ncv
 
                                 const int rows = static_cast<int>(image.height());
                                 const int cols = static_cast<int>(image.width());
-                                rgba.resize(rows, cols);
 
                                 const boost::gil::argb8_image_t::const_view_t view = boost::gil::const_view(image);
-                                for (int r = 0; r < rows; r ++)
+                                switch (mode)
                                 {
-                                        for (int c = 0; c < cols; c ++)
+                                case color_mode::luma:
+                                        luma.resize(rows, cols);
+                                        for (int r = 0; r < rows; r ++)
                                         {
-                                                const boost::gil::argb8_pixel_t pixel = view(c, r);
-                                                rgba(r, c) = color::make_rgba(pixel[1], pixel[2], pixel[3], pixel[0]);
+                                                for (int c = 0; c < cols; c ++)
+                                                {
+                                                        const boost::gil::argb8_pixel_t pix = view(c, r);
+                                                        luma(r, c) = color::make_luma(pix[1], pix[2], pix[3]);
+                                                }
                                         }
+                                        break;
+
+                                case color_mode::rgba:
+                                        rgba.resize(rows, cols);
+                                        for (int r = 0; r < rows; r ++)
+                                        {
+                                                for (int c = 0; c < cols; c ++)
+                                                {
+                                                        const boost::gil::argb8_pixel_t pix = view(c, r);
+                                                        rgba(r, c) = color::make_rgba(pix[1], pix[2], pix[3], pix[0]);
+                                                }
+                                        }
+                                        break;
                                 }
                         }
 
@@ -122,14 +141,30 @@ namespace ncv
                                         return false;
                                 }
 
-                                rgba.resize(rows, cols);
-                                for (int r = 0, i = 0; r < rows; r ++)
+                                switch (mode)
                                 {
-                                        for (int c = 0; c < cols; c ++, i ++)
+                                case color_mode::luma:
+                                        luma.resize(rows, cols);
+                                        for (int r = 0, i = 0; r < rows; r ++)
                                         {
-                                                const rgba_t gray = grays[i];
-                                                rgba(r, c) = color::make_rgba(gray, gray, gray);
+                                                for (int c = 0; c < cols; c ++, i ++)
+                                                {
+                                                        luma(r, c) = grays[i];
+                                                }
                                         }
+                                        break;
+
+                                case color_mode::rgba:
+                                        rgba.resize(rows, cols);
+                                        for (int r = 0, i = 0; r < rows; r ++)
+                                        {
+                                                for (int c = 0; c < cols; c ++, i ++)
+                                                {
+                                                        const rgba_t gray = grays[i];
+                                                        rgba(r, c) = color::make_rgba(gray, gray, gray);
+                                                }
+                                        }
+                                        break;
                                 }
                         }
                         return true;
@@ -140,10 +175,11 @@ namespace ncv
                 }
         }
 
-        bool save_rgba(const string_t& path, const rgba_matrix_t& rgba)
+        static bool save_image(const string_t& path,
+                color_mode mode, const rgba_matrix_t& rgba, const luma_matrix_t& luma)
         {
-                const int rows = math::cast<int>(rgba.rows());
-                const int cols = math::cast<int>(rgba.cols());
+                const int rows = math::cast<int>(mode == color_mode::rgba ? rgba.rows() : luma.rows());
+                const int cols = math::cast<int>(mode == color_mode::rgba ? rgba.cols() : luma.cols());
 
                 const imagetype itype = decode_image_type(path);
                 switch (itype)
@@ -153,15 +189,33 @@ namespace ncv
                                 boost::gil::argb8_image_t image(cols, rows);
 
                                 boost::gil::argb8_image_t::view_t view = boost::gil::view(image);
-                                for (int r = 0; r < rows; r ++)
+                                switch (mode)
                                 {
-                                        for (int c = 0; c < cols; c ++)
+                                case color_mode::luma:
+                                        for (int r = 0; r < rows; r ++)
                                         {
-                                                boost::gil::argb8_pixel_t& pixel = view(c, r);
-                                                pixel[0] = color::make_alpha(rgba(r, c));
-                                                pixel[1] = color::make_red(rgba(r, c));
-                                                pixel[2] = color::make_green(rgba(r, c));
-                                                pixel[3] = color::make_blue(rgba(r, c));
+                                                for (int c = 0; c < cols; c ++)
+                                                {
+                                                        boost::gil::argb8_pixel_t& pixel = view(c, r);
+                                                        pixel[0] = 255;
+                                                        pixel[1] = luma(r, c);
+                                                        pixel[2] = luma(r, c);
+                                                        pixel[3] = luma(r, c);
+                                                }
+                                        }
+                                        break;
+
+                                case color_mode::rgba:
+                                        for (int r = 0; r < rows; r ++)
+                                        {
+                                                for (int c = 0; c < cols; c ++)
+                                                {
+                                                        boost::gil::argb8_pixel_t& pixel = view(c, r);
+                                                        pixel[0] = color::make_alpha(rgba(r, c));
+                                                        pixel[1] = color::make_red(rgba(r, c));
+                                                        pixel[2] = color::make_green(rgba(r, c));
+                                                        pixel[3] = color::make_blue(rgba(r, c));
+                                                }
                                         }
                                 }
 
@@ -175,15 +229,33 @@ namespace ncv
                                 boost::gil::rgb8_image_t image(cols, rows);
 
                                 boost::gil::rgb8_image_t::view_t view = boost::gil::view(image);
-                                for (int r = 0; r < rows; r ++)
+                                switch (mode)
                                 {
-                                        for (int c = 0; c < cols; c ++)
+                                case color_mode::luma:
+                                        for (int r = 0; r < rows; r ++)
                                         {
-                                                boost::gil::rgb8_pixel_t& pixel = view(c, r);
-                                                pixel[0] = color::make_red(rgba(r, c));
-                                                pixel[1] = color::make_green(rgba(r, c));
-                                                pixel[2] = color::make_blue(rgba(r, c));
+                                                for (int c = 0; c < cols; c ++)
+                                                {
+                                                        boost::gil::rgb8_pixel_t& pixel = view(c, r);
+                                                        pixel[0] = luma(r, c);
+                                                        pixel[1] = luma(r, c);
+                                                        pixel[2] = luma(r, c);
+                                                }
                                         }
+                                        break;
+
+                                case color_mode::rgba:
+                                        for (int r = 0; r < rows; r ++)
+                                        {
+                                                for (int c = 0; c < cols; c ++)
+                                                {
+                                                        boost::gil::rgb8_pixel_t& pixel = view(c, r);
+                                                        pixel[0] = color::make_red(rgba(r, c));
+                                                        pixel[1] = color::make_green(rgba(r, c));
+                                                        pixel[2] = color::make_blue(rgba(r, c));
+                                                }
+                                        }
+                                        break;
                                 }
 
                                 if (itype == imagetype::jpeg)
@@ -211,7 +283,23 @@ namespace ncv
                                 }
 
                                 // write pixels
-                                std::vector<u_int8_t> grays(rows * cols);
+                                tensor::matrix_types_t<u_int8_t>::tmatrix grays(rows * cols);
+                                switch (mode)
+                                {
+                                case color_mode::luma:
+                                        grays
+                                        for (int r = 0, i = 0; r < rows; r ++)
+                                        {
+                                                for (int c = 0; c < cols; c ++, i ++)
+                                                {
+                                                        grays[i] = static_cast<u_int8_t>(color::make_luma(rgba(r, c)));
+                                                }
+                                        }
+                                        break;
+
+                                        case color_
+                                }
+
                                 for (int r = 0, i = 0; r < rows; r ++)
                                 {
                                         for (int c = 0; c < cols; c ++, i ++)
@@ -388,17 +476,16 @@ namespace ncv
                 m_rows = rows;
                 m_cols = cols;
 
-                switch (m_mode)
+                if (is_luma())
                 {
-                case color_mode::luma:
                         m_luma.resize(rows, cols);
                         m_rgba.resize(0, 0);
-                        break;
+                }
 
-                case color_mode::rgba:
+                else if (is_rgba())
+                {
                         m_luma.resize(0, 0);
                         m_rgba.resize(rows, cols);
-                        break;
                 }
         }
 
@@ -467,26 +554,32 @@ namespace ncv
 
         }
 
-        bool image_t::make_rgba()
+        void image_t::make_rgba()
         {
-                switch (m_mode)
+                if (is_luma())
                 {
-                case color_mode::rgba:
-                        break;
-
-                case color_mode::luma:
                         m_rgba.resize(rows(), cols());
-                        math::transform(m_luma, m_rgba, [] (luma_t luma) { return color::make_rgba(luma, luma, luma); });
+                        math::transform(m_luma, m_rgba, color::make_rgba);
                         m_luma.resize(0, 0);
-                        break;
                 }
 
-                return true;
+                else if (is_rgba())
+                {
+                }
         }
 
-        bool image_t::make_luma()
+        void image_t::make_luma()
         {
+                if (is_luma())
+                {
+                }
 
+                else if (is_rgba())
+                {
+                        m_luma.resize(rows(), cols());
+                        math::transform(m_rgba, m_luma, color::make_luma);
+                        m_rgba.resize(0, 0);
+                }
         }
 
         void image_t::fill(rgba_t rgba) const
@@ -544,6 +637,32 @@ namespace ncv
                 m_luma.transposeInPlace();
         }
 
+        void image_t::scale(scalar_t factor)
+        {
+                if (is_luma())
+                {
+                        luma_matrix_t luma_scaled;
+                        math::bilinear(m_luma, luma_scaled, factor);
+
+                        m_luma = luma_scaled;
+                        m_rows = static_cast<size_t>(m_luma.rows());
+                        m_cols = static_cast<size_t>(m_luma.cols());
+                }
+
+                else if (is_rgba())
+                {
+                        cielab_matrix_t cielab, cielab_scaled;
+                        cielab.resize(rows(), cols());
+                        math::transform(m_rgba, cielab, color::make_cielab);
+
+                        math::bilinear(cielab, cielab_scaled, factor);
+
+                        m_rgba.resize(cielab_scaled.rows(), cielab_scaled.cols());
+                        math::transform(cielab_scaled, m_rgba, [] (const cielab_t& lab) { return color::make_rgba(lab); });
+                        m_rows = static_cast<size_t>(m_rgba.rows());
+                        m_cols = static_cast<size_t>(m_rgba.cols());
+                }
+        }
 
 //        switch (m_color)
 //        {

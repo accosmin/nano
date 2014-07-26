@@ -67,8 +67,8 @@ namespace ncv
                 ///
                 /// \brief transform between color mode
                 ///
-                bool make_rgba();
-                bool make_luma();
+                void make_rgba();
+                void make_luma();
 
                 ///
                 /// \brief fill image with constant color
@@ -95,6 +95,12 @@ namespace ncv
                 /// \brief transpose in place the pixel matrix
                 ///
                 void transpose_in_place();
+
+                ///
+                /// \brief scale with the given factor
+                ///
+                void scale(scalar_t factor);
+                void scale(size_t new_rows, size_t new_cols);
 
                 // access functions
                 size_t rows() const { return m_rows; }
