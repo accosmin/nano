@@ -113,16 +113,15 @@ namespace ncv
         bool cifar100_task_t::load(const string_t& dir)
         {
                 const string_t train_bfile = dir + "/train.bin";
-                const size_t n_train_images = 50000;
+                const size_t n_train_samples = 50000;
 
                 const string_t test_bfile = dir + "/test.bin";
-                const size_t n_test_images = 10000;
+                const size_t n_test_samples = 10000;
 
-                m_images.clear();
-                m_samples.clear();
+                clear_memory(n_train_samples + n_test_samples);
 
-                return  load(train_bfile, protocol::train) == n_train_images &&
-                        load(test_bfile, protocol::test) == n_test_images;
+                return  load(train_bfile, protocol::train) == n_train_samples &&
+                        load(test_bfile, protocol::test) == n_test_samples;
         }
         
         size_t cifar100_task_t::load(const string_t& bfile, protocol p)
@@ -158,7 +157,7 @@ namespace ncv
                         m_samples.push_back(sample);
 
                         image_t image;
-                        load_rgba(buffer, n_rows(), n_cols(), n_rows() * n_cols(), image);
+                        image.load_rgba(buffer, n_rows(), n_cols(), n_rows() * n_cols());
                         m_images.push_back(image);
 
                         ++ cnt;

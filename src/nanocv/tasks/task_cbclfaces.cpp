@@ -17,8 +17,7 @@ namespace ncv
                 const string_t test_nonface_dir = dir + "/test/non-face/";
                 const size_t n_test_samples = 472 + 23573;
 
-                m_images.clear();
-                m_samples.clear();
+                clear_memory(n_train_samples + n_test_samples);
 
                 return  load(train_face_dir, true, protocol::train) +
                         load(train_nonface_dir, false, protocol::train) == n_train_samples &&
@@ -42,7 +41,7 @@ namespace ncv
                                         const boost::filesystem::path path(*it_dir);
 
                                         image_t image;
-                                        if (load_rgba(path.string(), image))
+                                        if (image.load_luma(path.string()))
                                         {
                                                 sample_t sample(m_images.size(), sample_region(0, 0));
                                                 sample.m_label = is_face ? "face" : "nonface";

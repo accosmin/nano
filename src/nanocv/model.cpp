@@ -66,26 +66,8 @@ namespace ncv
 
         tensor_t model_t::make_input(const image_t& image, coord_t x, coord_t y) const
         {
-                tensor_t data;
-
                 const rect_t region = geom::make_rect(x, y, icols(), irows());
-
-                switch (m_color)
-                {
-                case color_mode::luma:
-                        data.resize(1, irows(), icols());
-                        data.copy_plane_from(0, load_luma(image, region));
-                        break;
-
-                case color_mode::rgba:
-                        data.resize(3, irows(), icols());
-                        data.copy_plane_from(0, load_red(image, region));
-                        data.copy_plane_from(1, load_green(image, region));
-                        data.copy_plane_from(2, load_blue(image, region));
-                        break;
-                }
-
-                return data;
+                return image.to_tensor(region);
         }
 
         tensor_t model_t::make_input(const image_t& image, const rect_t& region) const

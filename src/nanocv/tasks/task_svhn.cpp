@@ -14,17 +14,16 @@ namespace ncv
         {
                 const string_t train_file = dir + "/train_32x32.mat";
                 const string_t extra_file = dir + "/extra_32x32.mat";
-                const size_t n_train_images = 73257 + 531131;
+                const size_t n_train_samples = 73257 + 531131;
 
                 const string_t test_file = dir + "/test_32x32.mat";
-                const size_t n_test_images = 26032;
+                const size_t n_test_samples = 26032;
 
-                m_images.clear();
-                m_samples.clear();
+                clear_memory(n_train_samples + n_test_samples);
 
                 return  load(train_file, protocol::train) +
-                        load(extra_file, protocol::train) == n_train_images &&
-                        load(test_file, protocol::test) == n_test_images;
+                        load(extra_file, protocol::train) == n_train_samples &&
+                        load(test_file, protocol::test) == n_test_samples;
         }
 
         size_t svhn_task_t::load(const string_t& bfile, protocol p)
@@ -167,8 +166,7 @@ namespace ncv
                         m_samples.push_back(sample);
 
                         // image ...
-                        image_t image;
-                        image.resize(n_rows(), n_cols());
+                        image_t image(n_rows(), n_cols(), color());
 
                         const size_t px = n_rows() * n_cols();
                         const size_t ix = n_rows() * n_cols() * 3;
@@ -182,7 +180,7 @@ namespace ncv
                                         const size_t ig = ibeg + (px * 1 + p);
                                         const size_t ib = ibeg + (px * 2 + p);
 
-                                        image(c, r) = color::make_rgba(idata[ir], idata[ig], idata[ib]);
+                                        image.set(c, r, color::make_rgba(idata[ir], idata[ig], idata[ib]));
                                 }
                         }
 

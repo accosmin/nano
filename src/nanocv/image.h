@@ -7,128 +7,129 @@
 namespace ncv
 {
         ///
-        /// \brief save RGBA image to disk
+        /// \brief stores an image either as grayscale (luma) or RGBA buffer.
         ///
-        bool save_rgba(const string_t& path, const rgba_matrix_t& rgba);
-
+        /// operations:
+        ///     - loading and saving from and to files
+        ///     - scaling to [0, 1] tensors
         ///
-        /// \brief load RGBA image from disk
+        /// fixme: merge grid_image here!
         ///
-        bool load_rgba(const string_t& path, rgba_matrix_t& rgba);
-
-        ///
-        /// \brief load gray/color image from [0, 1] normalized tensor
-        ///
-        bool load_rgba(const tensor_t& tensor, rgba_matrix_t& rgba);
-
-        ///
-        /// \brief load gray image from buffer
-        ///
-        bool load_gray(const char* buffer, size_t rows, size_t cols,                    // rows * cols
-                       rgba_matrix_t& rgba);
-
-        ///
-        /// \brief load RGBA image from buffer
-        ///
-        bool load_rgba(const char* buffer, size_t rows, size_t cols, size_t stride,     // rows * cols * 3
-                       rgba_matrix_t& rgba);
-
-        namespace detail
-        {
-                ///
-                /// \brief retrieve the [0, 1] normalized color channel
-                ///
-                template
-                <
-                        typename toperator
-                >
-                matrix_t make_data(const rgba_matrix_t& rgba, const rect_t& region, const toperator& op)
-                {
-                        const coord_t top = geom::top(region), left = geom::left(region);
-                        const coord_t rows = geom::rows(region), cols = geom::cols(region);
-                        const scalar_t scale = 1.0 / 255.0;
-                        
-                        matrix_t data(rows, cols);
-                        
-                        if (    top == 0 && left == 0 && 
-                                rows == static_cast<coord_t>(rgba.rows()) && 
-                                cols == static_cast<coord_t>(rgba.cols()))
-                        {
-                                const coord_t size = rows * cols;
-                                
-                                for (coord_t i = 0; i < size; i ++)
-                                {
-                                        data(i) = scale * op(rgba(i));
-                                }
-                        }
-                        
-                        else
-                        {                        
-                                for (coord_t r = 0; r < rows; r ++)
-                                {
-                                        for (coord_t c = 0; c < cols; c ++)
-                                        {
-                                                data(r, c) = scale * op(rgba(top + r, left + c));
-                                        }
-                                }
-                        }
-
-                        return data;
-                }
-        }
-
-        ///
-        /// \brief retrieve the scaled [0, 1] RGB input vector
-        ///
-        inline matrix_t load_red(const rgba_matrix_t& rgba, const rect_t& region)
-        {
-                return detail::make_data(rgba, region, color::make_red);
-        }
-        inline matrix_t load_green(const rgba_matrix_t& rgba, const rect_t& region)
-        {
-                return detail::make_data(rgba, region, color::make_green);
-        }
-        inline matrix_t load_blue(const rgba_matrix_t& rgba, const rect_t& region)
-        {
-                return detail::make_data(rgba, region, color::make_blue);
-        }
-        inline matrix_t load_luma(const rgba_matrix_t& rgba, const rect_t& region)
-        {
-                return detail::make_data(rgba, region, color::make_luma);
-        }
-
-        ///
-        /// \brief create an RGBA image composed from fixed-size RGBA patches disposed in a grid
-        ///
-        class grid_image_t
+        class image_t
         {
         public:
 
-                // constructor
-                grid_image_t(   size_t patch_rows, size_t patch_cols,
-                                size_t group_rows, size_t group_cols,
-                                size_t border = 8,
-                                rgba_t back_color = color::make_rgba(225, 225, 0));
+                ///
+                /// \brief constructor
+                ///
+                image_t(coord_t rows = 0, coord_t cols = 0, color_mode mode = color_mode::rgba);
 
-                // setup a patch at a given grid position
-                bool set(size_t grow, size_t gcol, const rgba_matrix_t& patch);
+                ///
+                /// \brief resize to new dimensions
+                ///
+                void resize(coord_t rows, coord_t cols, color_mode mode);
+
+                ///
+                /// \brief load image from disk
+                ///
+                bool load_rgba(const string_t& path);
+                bool load_luma(const string_t& path);
+
+                ///
+                /// \brief load image from buffer
+                ///
+                bool load_luma(const char* buffer, coord_t rows, coord_t cols);
+                bool load_rgba(const char* buffer, coord_t rows, coord_t cols);
+                bool load_rgba(const char* buffer, coord_t rows, coord_t cols, coord_t stride);
+                bool load_rgba(const rgba_matrix_t& data);
+                bool load_luma(const rgba_matrix_t& data);
+                bool load_luma(const luma_matrix_t& data);
+
+                ///
+                /// \brief load image from scaled [0, 1] tensor
+                ///     having 1 (lumascale) or 3 (rgba) planes
+                ///
+                bool load(const tensor_t& data);
+
+                ///
+                /// \brief save image to disk
+                ///
+                bool save(const string_t& path) const;
+
+                ///
+                /// \brief save image to scaled [0, 1] tensor
+                ///     with 1 (luma) or 3 (rgba) planes
+                ///
+                tensor_t to_tensor() const;
+                tensor_t to_tensor(const rect_t& region) const;
+
+                ///
+                /// \brief transform between color mode
+                ///
+                bool make_rgba();
+                bool make_luma();
+
+                ///
+                /// \brief fill with constant color
+                ///
+                bool fill(rgba_t rgba);
+                bool fill(luma_t luma);
+
+                ///
+                /// \brief copy the given (region of the given) patch at the (r, c) location
+                ///
+                bool copy(coord_t top, coord_t left, const rgba_matrix_t& patch);
+                bool copy(coord_t top, coord_t left, const luma_matrix_t& patch);
+
+                bool copy(coord_t top, coord_t left, const image_t& patch);
+                bool copy(coord_t top, coord_t left, const image_t& patch, const rect_t& region);
+
+                ///
+                /// \brief change a pixel
+                ///
+                bool set(coord_t row, coord_t col, rgba_t rgba);
+                bool set(coord_t row, coord_t col, luma_t luma);
+
+                ///
+                /// \brief transpose in place the pixel matrix
+                ///
+                void transpose_in_place();
+
+                ///
+                /// \brief scale with the given factor
+                ///
+                bool scale(scalar_t factor);
 
                 // access functions
-                const rgba_matrix_t& rgba() const { return m_image; }
+                coord_t rows() const { return m_rows; }
+                coord_t cols() const { return m_cols; }
+                color_mode mode() const { return m_mode; }
+
+                bool is_rgba() const { return mode() == color_mode::rgba; }
+                bool is_luma() const { return mode() == color_mode::luma; }
+
+                const rgba_matrix_t& rgba() const { return m_rgba; }
+                const luma_matrix_t& luma() const { return m_luma; }
+
+        private:
+
+                ///
+                /// \brief setup internal variables after a successfull loading
+                ///
+                bool setup_rgba();
+                bool setup_luma();
 
         private:
 
                 // attributes
-                size_t          m_prows;        ///< patch size
-                size_t          m_pcols;
-                size_t          m_grows;        ///< grid size
-                size_t          m_gcols;
-                size_t          m_border;       ///< grid border in pixels
-                rgba_t          m_bcolor;       ///< background color
-                rgba_matrix_t   m_image;
+                coord_t                 m_rows;
+                coord_t                 m_cols;
+                color_mode              m_mode;
+
+                rgba_matrix_t           m_rgba;
+                luma_matrix_t           m_luma;
         };
 
-        typedef rgba_matrix_t           image_t;
         typedef std::vector<image_t>    images_t;
 }
 

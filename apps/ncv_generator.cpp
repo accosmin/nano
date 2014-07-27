@@ -1,4 +1,5 @@
 #include "nanocv.h"
+#include "grid_image.h"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 
@@ -76,21 +77,21 @@ int main(int argc, char *argv[])
                         {
                                 const tensor_t input = rmodel->generate(target);
 
-                                rgba_matrix_t rgba;
-                                if (!ncv::load_rgba(input, rgba))
+                                image_t image;
+                                if (!image.load(input))
                                 {
                                         log_error() << "failed to map the generated input to RGBA image!";
                                         return EXIT_FAILURE;
                                 }
 
-                                grid_image.set(r, c, rgba);
+                                grid_image.set(r, c, image);
                         }
                 }
 
                 const string_t path =
                         cmd_save_dir + "/" + boost::filesystem::basename(cmd_input) +
                         "_label" + text::to_string(l) + ".png";
-                if (!ncv::save_rgba(path, grid_image.rgba()))
+                if (!grid_image.image().save(path))
                 {
                         log_error() << "failed to save the generated input as RGBA image!";
                         return EXIT_FAILURE;

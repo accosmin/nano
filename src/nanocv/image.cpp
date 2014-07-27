@@ -1,5 +1,6 @@
 #include "image.h"
-#include "common/math.hpp"
+#include "common/bilinear.hpp"
+#include "tensor/util.hpp"
 #include <fstream>
 #include <boost/algorithm/string.hpp>
 
@@ -21,7 +22,7 @@ namespace ncv
                 unknown
         };
 
-        imagetype decode_image_type(const string_t& path)
+        static imagetype decode_image_type(const string_t& path)
         {
                 if (text::iends_with(path, ".jpg") || text::iends_with(path, ".jpeg"))
                 {
@@ -49,7 +50,8 @@ namespace ncv
                 }
         }
 
-        bool load_rgba(const string_t& path, rgba_matrix_t& rgba)
+        static bool load_image(const string_t& path,
+                color_mode mode, rgba_matrix_t& rgba, luma_matrix_t& luma)
         {
                 const imagetype itype = decode_image_type(path);
                 switch (itype)
@@ -75,18 +77,36 @@ namespace ncv
 
                                 const int rows = static_cast<int>(image.height());
                                 const int cols = static_cast<int>(image.width());
-                                rgba.resize(rows, cols);
 
                                 const boost::gil::argb8_image_t::const_view_t view = boost::gil::const_view(image);
-                                for (int r = 0; r < rows; r ++)
+                                switch (mode)
                                 {
-                                        for (int c = 0; c < cols; c ++)
+                                case color_mode::luma:
+                                        luma.resize(rows, cols);
+                                        for (int r = 0; r < rows; r ++)
                                         {
-                                                const boost::gil::argb8_pixel_t pixel = view(c, r);
-                                                rgba(r, c) = color::make_rgba(pixel[1], pixel[2], pixel[3], pixel[0]);
+                                                for (int c = 0; c < cols; c ++)
+                                                {
+                                                        const boost::gil::argb8_pixel_t pix = view(c, r);
+                                                        luma(r, c) = color::make_luma(pix[1], pix[2], pix[3]);
+                                                }
                                         }
+                                        break;
+
+                                case color_mode::rgba:
+                                        rgba.resize(rows, cols);
+                                        for (int r = 0; r < rows; r ++)
+                                        {
+                                                for (int c = 0; c < cols; c ++)
+                                                {
+                                                        const boost::gil::argb8_pixel_t pix = view(c, r);
+                                                        rgba(r, c) = color::make_rgba(pix[1], pix[2], pix[3], pix[0]);
+                                                }
+                                        }
+                                        break;
                                 }
                         }
+                        return true;
 
                 case imagetype::pgm:    // PGM binary decoding
                         {
@@ -122,14 +142,19 @@ namespace ncv
                                         return false;
                                 }
 
-                                rgba.resize(rows, cols);
-                                for (int r = 0, i = 0; r < rows; r ++)
+                                switch (mode)
                                 {
-                                        for (int c = 0; c < cols; c ++, i ++)
-                                        {
-                                                const rgba_t gray = grays[i];
-                                                rgba(r, c) = color::make_rgba(gray, gray, gray);
-                                        }
+                                case color_mode::luma:
+                                        luma.resize(rows, cols);
+                                        tensor::transform(tensor::make_matrix(grays.data(), rows, cols),
+                                                          luma, [] (luma_t g) { return g; });
+                                        break;
+
+                                case color_mode::rgba:
+                                        rgba.resize(rows, cols);
+                                        tensor::transform(tensor::make_matrix(grays.data(), rows, cols),
+                                                          rgba, [] (luma_t g) { return color::make_rgba(g, g, g); });
+                                        break;
                                 }
                         }
                         return true;
@@ -140,10 +165,11 @@ namespace ncv
                 }
         }
 
-        bool save_rgba(const string_t& path, const rgba_matrix_t& rgba)
+        static bool save_image(const string_t& path,
+                color_mode mode, const rgba_matrix_t& rgba, const luma_matrix_t& luma)
         {
-                const int rows = math::cast<int>(rgba.rows());
-                const int cols = math::cast<int>(rgba.cols());
+                const int rows = static_cast<int>(mode == color_mode::rgba ? rgba.rows() : luma.rows());
+                const int cols = static_cast<int>(mode == color_mode::rgba ? rgba.cols() : luma.cols());
 
                 const imagetype itype = decode_image_type(path);
                 switch (itype)
@@ -153,21 +179,39 @@ namespace ncv
                                 boost::gil::argb8_image_t image(cols, rows);
 
                                 boost::gil::argb8_image_t::view_t view = boost::gil::view(image);
-                                for (int r = 0; r < rows; r ++)
+                                switch (mode)
                                 {
-                                        for (int c = 0; c < cols; c ++)
+                                case color_mode::luma:
+                                        for (int r = 0; r < rows; r ++)
                                         {
-                                                boost::gil::argb8_pixel_t& pixel = view(c, r);
-                                                pixel[0] = color::make_alpha(rgba(r, c));
-                                                pixel[1] = color::make_red(rgba(r, c));
-                                                pixel[2] = color::make_green(rgba(r, c));
-                                                pixel[3] = color::make_blue(rgba(r, c));
+                                                for (int c = 0; c < cols; c ++)
+                                                {
+                                                        boost::gil::argb8_pixel_t& pixel = view(c, r);
+                                                        pixel[0] = 255;
+                                                        pixel[1] = luma(r, c);
+                                                        pixel[2] = luma(r, c);
+                                                        pixel[3] = luma(r, c);
+                                                }
+                                        }
+                                        break;
+
+                                case color_mode::rgba:
+                                        for (int r = 0; r < rows; r ++)
+                                        {
+                                                for (int c = 0; c < cols; c ++)
+                                                {
+                                                        boost::gil::argb8_pixel_t& pixel = view(c, r);
+                                                        pixel[0] = color::make_alpha(rgba(r, c));
+                                                        pixel[1] = color::make_red(rgba(r, c));
+                                                        pixel[2] = color::make_green(rgba(r, c));
+                                                        pixel[3] = color::make_blue(rgba(r, c));
+                                                }
                                         }
                                 }
 
                                 boost::gil::png_write_view(path, view);
-                                return true;
                         }
+                        return true;
 
                 case imagetype::jpeg: // boost::gil RGB encoding
                 case imagetype::tif:
@@ -175,15 +219,33 @@ namespace ncv
                                 boost::gil::rgb8_image_t image(cols, rows);
 
                                 boost::gil::rgb8_image_t::view_t view = boost::gil::view(image);
-                                for (int r = 0; r < rows; r ++)
+                                switch (mode)
                                 {
-                                        for (int c = 0; c < cols; c ++)
+                                case color_mode::luma:
+                                        for (int r = 0; r < rows; r ++)
                                         {
-                                                boost::gil::rgb8_pixel_t& pixel = view(c, r);
-                                                pixel[0] = color::make_red(rgba(r, c));
-                                                pixel[1] = color::make_green(rgba(r, c));
-                                                pixel[2] = color::make_blue(rgba(r, c));
+                                                for (int c = 0; c < cols; c ++)
+                                                {
+                                                        boost::gil::rgb8_pixel_t& pixel = view(c, r);
+                                                        pixel[0] = luma(r, c);
+                                                        pixel[1] = luma(r, c);
+                                                        pixel[2] = luma(r, c);
+                                                }
                                         }
+                                        break;
+
+                                case color_mode::rgba:
+                                        for (int r = 0; r < rows; r ++)
+                                        {
+                                                for (int c = 0; c < cols; c ++)
+                                                {
+                                                        boost::gil::rgb8_pixel_t& pixel = view(c, r);
+                                                        pixel[0] = color::make_red(rgba(r, c));
+                                                        pixel[1] = color::make_green(rgba(r, c));
+                                                        pixel[2] = color::make_blue(rgba(r, c));
+                                                }
+                                        }
+                                        break;
                                 }
 
                                 if (itype == imagetype::jpeg)
@@ -194,8 +256,8 @@ namespace ncv
                                 {
                                         boost::gil::tiff_write_view(path, view);
                                 }
-                                return true;
                         }
+                        return true;
 
                 case imagetype::pgm:    // PGM binary encoding
                         {
@@ -211,17 +273,22 @@ namespace ncv
                                 }
 
                                 // write pixels
-                                std::vector<u_int8_t> grays(rows * cols);
-                                for (int r = 0, i = 0; r < rows; r ++)
+                                luma_matrix_t grays(rows, cols);
+                                switch (mode)
                                 {
-                                        for (int c = 0; c < cols; c ++, i ++)
-                                        {
-                                                grays[i] = static_cast<u_int8_t>(color::make_luma(rgba(r, c)));
-                                        }
+                                case color_mode::luma:
+                                        grays = luma;
+                                        break;
+
+                                case color_mode::rgba:
+                                        tensor::transform(rgba, grays, [] (rgba_t c) { return color::make_luma(c); });
+                                        break;
                                 }
 
-                                return os.write((const char*)(grays.data()), grays.size());
+                                return os.write(reinterpret_cast<const char*>(grays.data()),
+                                                static_cast<std::streamsize>(grays.size()));
                         }
+                        return true;
 
                 case imagetype::unknown:
                 default:
@@ -229,23 +296,126 @@ namespace ncv
                 }
         }
 
-        bool load_rgba(const tensor_t& data, rgba_matrix_t& rgba)
+        image_t::image_t(coord_t rows, coord_t cols, color_mode mode)
+                :       m_rows(rows),
+                        m_cols(cols),
+                        m_mode(mode)
         {
+                resize(rows, cols, mode);
+        }
+
+        void image_t::resize(coord_t rows, coord_t cols, color_mode mode)
+        {
+                m_mode = mode;
+                m_rows = rows;
+                m_cols = cols;
+
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        m_luma.resize(rows, cols);
+                        m_rgba.resize(0, 0);
+                        break;
+
+                case color_mode::rgba:
+                        m_luma.resize(0, 0);
+                        m_rgba.resize(rows, cols);
+                        break;
+                }
+        }
+
+        bool image_t::setup_rgba()
+        {
+                m_luma.resize(0, 0);
+                m_mode = color_mode::rgba;
+                m_rows = static_cast<coord_t>(m_rgba.rows());
+                m_cols = static_cast<coord_t>(m_rgba.cols());
+                return true;
+        }
+
+        bool image_t::setup_luma()
+        {
+                m_rgba.resize(0, 0);
+                m_mode = color_mode::luma;
+                m_rows = static_cast<coord_t>(m_luma.rows());
+                m_cols = static_cast<coord_t>(m_luma.cols());
+                return true;
+        }
+
+        bool image_t::load_rgba(const string_t& path)
+        {
+                return  load_image(path, color_mode::rgba, m_rgba, m_luma) &&
+                        setup_rgba();
+        }
+
+        bool image_t::load_luma(const string_t& path)
+        {
+                return  load_image(path, color_mode::luma, m_rgba, m_luma) &&
+                        setup_luma();
+        }
+
+        bool image_t::load_luma(const char* buffer, coord_t rows, coord_t cols)
+        {
+                const coord_t size = rows * cols;
+
+                m_luma.resize(rows, cols);
+                tensor::transform(tensor::make_vector(buffer, size),
+                                  m_luma, [] (char luma) { return static_cast<luma_t>(luma); });
+
+                return setup_luma();
+        }
+
+        bool image_t::load_rgba(const char* buffer, coord_t rows, coord_t cols, coord_t stride)
+        {
+                const coord_t size = rows * cols;
+
+                m_rgba.resize(rows, cols);
+                tensor::transform(tensor::make_vector(buffer + 0 * stride, size),
+                                  tensor::make_vector(buffer + 1 * stride, size),
+                                  tensor::make_vector(buffer + 2 * stride, size),
+                                  m_rgba, [] (char r, char g, char b) { return color::make_rgba(r, g, b); });
+
+                return setup_rgba();
+        }
+
+        bool image_t::load_rgba(const rgba_matrix_t& data)
+        {
+                m_rgba = data;
+
+                return setup_rgba();
+        }
+
+        bool image_t::load_luma(const rgba_matrix_t& data)
+        {
+                m_luma.resize(data.rows(), data.cols());
+                tensor::transform(data, m_luma, [] (rgba_t c) { return color::make_luma(c); });
+
+                return setup_luma();
+        }
+
+        bool image_t::load_luma(const luma_matrix_t& data)
+        {
+                m_luma = data;
+
+                return setup_luma();
+        }
+
+        bool image_t::load(const tensor_t& data)
+        {
+                const scalar_t scale = 255.0;
+
                 if (data.dims() == 1)
                 {
                         const auto gmap = data.plane_matrix(0);
 
-                        rgba.resize(data.rows(), data.cols());
-                        for (size_t r = 0; r < data.rows(); r ++)
+                        m_luma.resize(data.rows(), data.cols());
+                        tensor::transform(gmap, m_luma, [=] (scalar_t l)
                         {
-                                for (size_t c = 0; c < data.cols(); c ++)
-                                {
-                                        const rgba_t gray = math::cast<rgba_t>(gmap(r, c) * 255.0) & 0xFF;
-                                        rgba(r, c) = color::make_rgba(gray, gray, gray);
-                                }
-                        }
+                                const rgba_t luma = static_cast<rgba_t>(l * scale) & 0xFF;
+                                return static_cast<luma_t>(luma);
+                        });
 
-                        return true;
+                        return setup_luma();
                 }
 
                 else if (data.dims() == 3)
@@ -254,19 +424,16 @@ namespace ncv
                         const auto gmap = data.plane_matrix(1);
                         const auto bmap = data.plane_matrix(2);
 
-                        rgba.resize(data.rows(), data.cols());
-                        for (size_t r = 0; r < data.rows(); r ++)
+                        m_rgba.resize(data.rows(), data.cols());
+                        tensor::transform(rmap, gmap, bmap, m_rgba, [=] (scalar_t r, scalar_t g, scalar_t b)
                         {
-                                for (size_t c = 0; c < data.cols(); c ++)
-                                {
-                                        const rgba_t red = math::cast<rgba_t>(rmap(r, c) * 255.0) & 0xFF;
-                                        const rgba_t green = math::cast<rgba_t>(gmap(r, c) * 255.0) & 0xFF;
-                                        const rgba_t blue = math::cast<rgba_t>(bmap(r, c) * 255.0) & 0xFF;
-                                        rgba(r, c) = color::make_rgba(red, green, blue);
-                                }
-                        }
+                                const rgba_t rr = static_cast<rgba_t>(r * scale) & 0xFF;
+                                const rgba_t gg = static_cast<rgba_t>(g * scale) & 0xFF;
+                                const rgba_t bb = static_cast<rgba_t>(b * scale) & 0xFF;
+                                return color::make_rgba(rr, gg, bb);
+                        });
 
-                        return true;
+                        return setup_rgba();
                 }
 
                 else
@@ -275,72 +442,282 @@ namespace ncv
                 }
         }
 
-        bool load_gray(const char* buffer, size_t rows, size_t cols, rgba_matrix_t& rgba)
+        bool image_t::save(const string_t& path) const
         {
-                rgba.resize(rows, cols);
+                return save_image(path, m_mode, m_rgba, m_luma);
+        }
 
-                for (size_t y = 0, i = 0; y < rows; y ++)
+        tensor_t image_t::to_tensor() const
+        {
+                return to_tensor(geom::make_rect(0, 0, cols(), rows()));
+        }
+
+        tensor_t image_t::to_tensor(const rect_t& region) const
+        {
+                const coord_t top = geom::top(region);
+                const coord_t left = geom::top(region);
+                const coord_t rows = geom::rows(region);
+                const coord_t cols = geom::cols(region);
+
+                const scalar_t scale = 1.0 / 255.0;
+
+                switch (m_mode)
                 {
-                        for (size_t x = 0; x < cols; x ++, i ++)
+                case color_mode::luma:
                         {
-                                rgba(y, x) = color::make_rgba(buffer[i], buffer[i], buffer[i]);
+                                tensor_t data(1, rows, cols);
+                                auto gmap = data.plane_matrix(0);
+
+                                tensor::transform(m_luma.block(top, left, rows, cols), gmap, [=] (luma_t luma)
+                                {
+                                        return scale * luma;
+                                });
+
+                                return data;
                         }
-                }
 
-                return true;
-        }
-
-        bool load_rgba(const char* buffer, size_t rows, size_t cols, size_t stride, rgba_matrix_t& rgba)
-        {
-                rgba.resize(rows, cols);
-
-                for (size_t y = 0, dr = 0, dg = dr + stride, db = dg + stride; y < rows; y ++)
-                {
-                        for (size_t x = 0; x < cols; x ++, dr ++, dg ++, db ++)
+                case color_mode::rgba:
                         {
-                                rgba(y, x) = color::make_rgba(buffer[dr], buffer[dg], buffer[db]);
+                                tensor_t data(3, rows, cols);
+                                auto rmap = data.plane_matrix(0);
+                                auto gmap = data.plane_matrix(1);
+                                auto bmap = data.plane_matrix(2);
+
+                                tensor::transform(m_rgba.block(top, left, rows, cols), rmap, [=] (rgba_t rgba)
+                                {
+                                        return scale * color::make_red(rgba);
+                                });
+                                tensor::transform(m_rgba.block(top, left, rows, cols), gmap, [=] (rgba_t rgba)
+                                {
+                                        return scale * color::make_green(rgba);
+                                });
+                                tensor::transform(m_rgba.block(top, left, rows, cols), bmap, [=] (rgba_t rgba)
+                                {
+                                        return scale * color::make_blue(rgba);
+                                });
+
+                                return data;
                         }
+                        break;
+
+                default:
+                        return tensor_t();
                 }
-
-                return true;
         }
 
-        grid_image_t::grid_image_t(
-                size_t patch_rows, size_t patch_cols,
-                size_t group_rows, size_t group_cols,
-                size_t border,
-                rgba_t back_color)
-                :       m_prows(patch_rows),
-                        m_pcols(patch_cols),
-                        m_grows(group_rows),
-                        m_gcols(group_cols),
-                        m_border(border),
-                        m_bcolor(back_color)
+        bool image_t::make_rgba()
         {
-                const size_t rows = m_prows * m_grows + m_border * (m_grows + 1);
-                const size_t cols = m_pcols * m_gcols + m_border * (m_gcols + 1);
-
-                m_image.resize(rows, cols);
-                m_image.setConstant(m_bcolor);
-        }
-
-        bool grid_image_t::set(size_t grow, size_t gcol, const rgba_matrix_t& patch)
-        {
-                if (    grow < m_grows &&
-                        gcol < m_gcols &&
-                        static_cast<size_t>(patch.rows()) == m_prows &&
-                        static_cast<size_t>(patch.cols()) == m_pcols)
+                switch (m_mode)
                 {
-                        const size_t iy = m_prows * grow + m_border * (grow + 1);
-                        const size_t ix = m_pcols * gcol + m_border * (gcol + 1);
-                        const size_t ih = m_prows;
-                        const size_t iw = m_pcols;
+                case color_mode::luma:
+                        m_rgba.resize(rows(), cols());
+                        tensor::transform(m_luma, m_rgba, [] (luma_t g) { return color::make_rgba(g, g, g); });
 
-                        m_image.block(iy, ix, ih, iw) = patch;
+                        return setup_rgba();
+
+                case color_mode::rgba:
                         return true;
+
+                default:
+                        return false;
                 }
-                else
+        }
+
+        bool image_t::make_luma()
+        {
+                switch (m_mode)
                 {
+                case color_mode::luma:
+                        return true;
+
+                case color_mode::rgba:
+                        m_luma.resize(rows(), cols());
+                        tensor::transform(m_rgba, m_luma, [] (rgba_t c) { return color::make_luma(c); });
+
+                        return setup_luma();
+
+                default:
+                        return false;
+                }
+        }
+
+        bool image_t::fill(rgba_t rgba)
+        {
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        m_luma.setConstant(color::make_luma(rgba));
+                        return true;
+
+                case color_mode::rgba:
+                        m_rgba.setConstant(rgba);
+                        return true;
+
+                default:
+                        return false;
+                }
+        }
+
+        bool image_t::fill(luma_t luma)
+        {
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        m_luma.setConstant(luma);
+                        return true;
+
+                case color_mode::rgba:
+                        m_rgba.setConstant(color::make_rgba(luma, luma, luma));
+                        return true;
+
+                default:
+                        return false;
+                }
+        }
+
+        bool image_t::copy(coord_t top, coord_t left, const rgba_matrix_t& patch)
+        {
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        {
+                                luma_matrix_t luma(patch.rows(), patch.cols());
+                                tensor::transform(patch, luma, [] (rgba_t rgba) { return color::make_luma(rgba); });
+                                m_luma.block(top, left, patch.rows(), patch.cols()) = luma;
+                        }
+                        return true;
+
+                case color_mode::rgba:
+                        m_rgba.block(top, left, patch.rows(), patch.cols()) = patch;
+                        return true;
+
+                default:
+                        return false;
+                }
+        }
+
+        bool image_t::copy(coord_t top, coord_t left, const luma_matrix_t& patch)
+        {
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        m_luma.block(top, left, patch.rows(), patch.cols()) = patch;
+                        return true;
+
+                case color_mode::rgba:
+                        {
+                                rgba_matrix_t rgba(patch.rows(), patch.cols());
+                                tensor::transform(patch, rgba, [] (luma_t luma) { return color::make_rgba(luma, luma, luma); });
+                                m_rgba.block(top, left, patch.rows(), patch.cols()) = rgba;
+                        }
+                        return true;
+
+                default:
+                        return false;
+                }
+        }
+
+        bool image_t::copy(coord_t top, coord_t left, const image_t& image)
+        {
+                switch (image.m_mode)
+                {
+                case color_mode::luma:
+                        return copy(top, left, image.m_luma);
+
+                case color_mode::rgba:
+                        return copy(top, left, image.m_rgba);
+
+                default:
+                        return false;
+                }
+        }
+
+        bool image_t::copy(coord_t top, coord_t left, const image_t& image, const rect_t& region)
+        {
+                switch (image.m_mode)
+                {
+                case color_mode::luma:
+                        return  copy(top, left, luma_matrix_t(image.m_luma.block(
+                                geom::top(region), geom::left(region), geom::rows(region), geom::cols(region))));
+
+                case color_mode::rgba:
+                        return  copy(top, left, rgba_matrix_t(image.m_rgba.block(
+                                geom::top(region), geom::left(region), geom::rows(region), geom::cols(region))));
+
+                default:
+                        return false;
+                }
+        }
+
+        bool image_t::set(coord_t row, coord_t col, rgba_t rgba)
+        {
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        m_luma(row, col) = color::make_luma(rgba);
+                        return true;
+
+                case color_mode::rgba:
+                        m_rgba(row, col) = rgba;
+                        return true;
+
+                default:
+                        return false;
+                }
+        }
+
+        bool image_t::set(coord_t row, coord_t col, luma_t luma)
+        {
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        m_luma(row, col) = luma;
+                        return true;
+
+                case color_mode::rgba:
+                        m_rgba(row, col) = color::make_rgba(luma, luma, luma);
+                        return true;
+
+                default:
+                        return false;
+                }
+        }
+
+        void image_t::transpose_in_place()
+        {
+                m_rgba.transposeInPlace();
+                m_luma.transposeInPlace();
+        }
+
+        bool image_t::scale(scalar_t factor)
+        {
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        {
+                                luma_matrix_t luma_scaled;
+                                math::bilinear(m_luma, luma_scaled, factor);
+
+                                m_luma = luma_scaled;
+                        }
+
+                        return setup_luma();
+
+                case color_mode::rgba:
+                        {
+                                cielab_matrix_t cielab(rows(), cols());
+                                tensor::transform(m_rgba, cielab, color::make_cielab);
+
+                                cielab_matrix_t cielab_scaled;
+                                math::bilinear(cielab, cielab_scaled, factor);
+
+                                m_rgba.resize(cielab_scaled.rows(), cielab_scaled.cols());
+                                tensor::transform(cielab_scaled, m_rgba, [] (const cielab_t& lab) { return color::make_rgba(lab); });
+                        }
+
+                        return setup_rgba();
+
+                default:
                         return false;
                 }
         }
