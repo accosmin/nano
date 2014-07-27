@@ -49,8 +49,8 @@ namespace ncv
                 /// \brief load image from scaled [0, 1] tensor
                 ///     having 1 (lumascale) or 3 (rgba) planes
                 ///
-                bool from_tensor(const tensor_t& data) const;
-                bool from_tensor(const tensor_t& data, const rect_t& region) const;
+                bool from_tensor(const tensor_t& data);
+                bool from_tensor(const tensor_t& data, const rect_t& region);
 
                 ///
                 /// \brief save image to disk
@@ -67,23 +67,23 @@ namespace ncv
                 ///
                 /// \brief transform between color mode
                 ///
-                void make_rgba();
-                void make_luma();
+                bool make_rgba();
+                bool make_luma();
 
                 ///
-                /// \brief fill image with constant color
+                /// \brief fill with constant color
                 ///
-                void fill(rgba_t rgba) const;
-                void fill(luma_t luma) const;
+                bool fill(rgba_t rgba);
+                bool fill(luma_t luma);
 
                 ///
                 /// \brief copy the given (region of the given) patch at the (r, c) location
                 ///
-                bool copy(coord_t r, coord_t c, const rgba_matrix_t& patch) const;
-                bool copy(coord_t r, coord_t c, const luma_matrix_t& patch) const;
+                bool copy(coord_t t, coord_t l, const rgba_matrix_t& patch) const;
+                bool copy(coord_t t, coord_t l, const luma_matrix_t& patch) const;
 
-                bool copy(coord_t r, coord_t c, const image_t& patch) const;
-                bool copy(coord_t r, coord_t c, const image_t& patch, const rect_t& region) const;
+                bool copy(coord_t t, coord_t l, const image_t& patch) const;
+                bool copy(coord_t t, coord_t l, const image_t& patch, const rect_t& region) const;
 
                 ///
                 /// \brief change a pixel
@@ -112,6 +112,14 @@ namespace ncv
 
                 const rgba_matrix_t& rgba() const { return m_rgba; }
                 const luma_matrix_t& luma() const { return m_luma; }
+
+        private:
+
+                ///
+                /// \brief setup internal variables after a successfull loading
+                ///
+                bool setup_rgba();
+                bool setup_luma();
 
         private:
 
