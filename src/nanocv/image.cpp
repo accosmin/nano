@@ -106,6 +106,7 @@ namespace ncv
                                         break;
                                 }
                         }
+                        return true;
 
                 case imagetype::pgm:    // PGM binary decoding
                         {
@@ -209,8 +210,8 @@ namespace ncv
                                 }
 
                                 boost::gil::png_write_view(path, view);
-                                return true;
                         }
+                        return true;
 
                 case imagetype::jpeg: // boost::gil RGB encoding
                 case imagetype::tif:
@@ -255,8 +256,8 @@ namespace ncv
                                 {
                                         boost::gil::tiff_write_view(path, view);
                                 }
-                                return true;
                         }
+                        return true;
 
                 case imagetype::pgm:    // PGM binary encoding
                         {
@@ -287,6 +288,7 @@ namespace ncv
                                 return os.write(reinterpret_cast<const char*>(grays.data()),
                                                 static_cast<std::streamsize>(grays.size()));
                         }
+                        return true;
 
                 case imagetype::unknown:
                 default:
@@ -327,7 +329,7 @@ namespace ncv
                 m_luma.resize(0, 0);
                 m_mode = color_mode::rgba;
                 m_rows = static_cast<coord_t>(m_rgba.rows());
-                m_cols = static_cast<coord_t>(m_rgba.rows());
+                m_cols = static_cast<coord_t>(m_rgba.cols());
                 return true;
         }
 
@@ -336,7 +338,7 @@ namespace ncv
                 m_rgba.resize(0, 0);
                 m_mode = color_mode::luma;
                 m_rows = static_cast<coord_t>(m_luma.rows());
-                m_cols = static_cast<coord_t>(m_luma.rows());
+                m_cols = static_cast<coord_t>(m_luma.cols());
                 return true;
         }
 
@@ -687,24 +689,6 @@ namespace ncv
                 m_luma.transposeInPlace();
         }
 
-        template
-        <
-                typename toperator
-        >
-        static void scale(luma_matrix_t& luma, toperator op)
-        {
-
-        }
-
-        template
-        <
-                typename toperator
-        >
-        static void scale(rgba_matrix_t& rgba, toperator op)
-        {
-
-        }
-
         bool image_t::scale(scalar_t factor)
         {
                 switch (m_mode)
@@ -721,10 +705,10 @@ namespace ncv
 
                 case color_mode::rgba:
                         {
-                                cielab_matrix_t cielab, cielab_scaled;
-                                cielab.resize(rows(), cols());
+                                cielab_matrix_t cielab(rows(), cols());
                                 tensor::transform(m_rgba, cielab, color::make_cielab);
 
+                                cielab_matrix_t cielab_scaled;
                                 math::bilinear(cielab, cielab_scaled, factor);
 
                                 m_rgba.resize(cielab_scaled.rows(), cielab_scaled.cols());

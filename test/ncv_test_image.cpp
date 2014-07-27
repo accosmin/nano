@@ -18,15 +18,13 @@ int main(int argc, char *argv[])
         po_desc.add_options()("scale,s",
                 boost::program_options::value<ncv::scalar_t>()->default_value(1.0),
                 "scaling factor [0.1, 10.0]");
-        po_desc.add_options()("width,w",
-                boost::program_options::value<ncv::size_t>()->default_value(0),
-                "scaling width [0, 4096] (considered if positive)");
-        po_desc.add_options()("height,h",
-                boost::program_options::value<ncv::size_t>()->default_value(0),
-                "scaling height [0, 4096] (considered if positive)");
         po_desc.add_options()("output,o",
                 boost::program_options::value<ncv::string_t>(),
                 "output image path");
+        po_desc.add_options()("luma",
+                "load and process the image as luma (grayscale)");
+        po_desc.add_options()("rgba",
+                "load nad process the image as RGBA (color)");
 	
         boost::program_options::variables_map po_vm;
         boost::program_options::store(
@@ -46,58 +44,39 @@ int main(int argc, char *argv[])
 
         const string_t cmd_input = po_vm["input"].as<string_t>();
         const scalar_t cmd_scale = math::clamp(po_vm["scale"].as<scalar_t>(), 0.1, 10.0);
-        const size_t cmd_width = math::clamp(po_vm["width"].as<size_t>(), 0, 4096);
-        const size_t cmd_height = math::clamp(po_vm["height"].as<size_t>(), 0, 4096);
         const string_t cmd_output = po_vm["output"].as<string_t>();
+        const bool cmd_luma = po_vm.count("luma");
+        const bool cmd_rgba = po_vm.count("rgba");
+
+        if (    (!cmd_luma && !cmd_rgba) ||
+                (cmd_luma && cmd_rgba))
+        {
+                std::cout << po_desc;
+                return EXIT_FAILURE;
+        }
 
         ncv::timer_t timer;
 
         // load input image
         timer.start();
         image_t image;
-        if (!image.load_rgba(cmd_input))
+        if (!(cmd_luma ? image.load_luma(cmd_input) : image.load_rgba(cmd_input)))
         {
                 log_error() << "<<< failed to load image <" << cmd_input << ">!";
                 return EXIT_FAILURE;
         }
         else
         {
-                log_info() << "<<< loaded image <" << cmd_input << "> in " << timer.elapsed() << ".";
+                log_info() << "<<< loaded " << image.cols() << "x" << image.rows() << " pixels in " << timer.elapsed() << ".";
         }
 
-        rgba_matrix_t rgba_image = image.rgba();
-
-        // transform RGBA to CIELab
-        cielab_matrix_t cielab_image, cielab_image_scaled;
-
+        // scale the image
         timer.start();
-        cielab_image.resize(rgba_image.rows(), rgba_image.cols());
-        tensor::transform(rgba_image, cielab_image, color::make_cielab);
-        log_info() << "transformed RGBA to CIELab in " << timer.elapsed() << ".";
-
-        // resize image
-        timer.start();
-        if (cmd_width > 0 && cmd_height > 0)
-        {
-                math::bilinear(cielab_image, cielab_image_scaled, cmd_width, cmd_height);
-        }
-        else
-        {
-                math::bilinear(cielab_image, cielab_image_scaled, cmd_scale);
-        }
-        log_info() << "scaled image from <" << cielab_image.cols() << "x" << cielab_image.rows()
-                   << "> to <" << cielab_image_scaled.cols() << "x" << cielab_image_scaled.rows()
-                   << "> in " << timer.elapsed() << ".";
-
-        // transform CIELab to RGBA
-        timer.start();
-        rgba_image.resize(cielab_image_scaled.rows(), cielab_image_scaled.cols());
-        tensor::transform(cielab_image_scaled, rgba_image, [] (const cielab_t& cielab) { return color::make_rgba(cielab); });
-        log_info() << "transformed CIELab to RGBA in " << timer.elapsed() << ".";
+        image.scale(cmd_scale);
+        log_info() << "<<< scaled to " << image.cols() << "x" << image.rows() << " pixels in " << timer.elapsed() << ".";
 
         // save output image
         timer.start();
-        image.load_rgba(rgba_image);
         if (!image.save(cmd_output))
         {
                 log_error() << ">>> failed to save image <" << cmd_output << ">!";
@@ -105,7 +84,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-                log_info() << ">>> saved image <" << cmd_output << "> in " << timer.elapsed() << ".";
+                log_info() << ">>> saved scaled image in " << timer.elapsed() << ".";
         }
 		
         // OK
