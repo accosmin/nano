@@ -33,8 +33,7 @@ namespace ncv
 
                 const string_t fold_indices_file = dir + "/fold_indices.txt";
 
-                m_images.clear();
-                m_samples.clear();
+                clear_memory(n_train_samples + n_test_samples);
 
                 return  load_binary(train_ifile, train_gfile) +
                         load_binary(train_uifile) == n_train_samples &&

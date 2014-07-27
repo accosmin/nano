@@ -60,6 +60,26 @@ namespace ncv
 
         protected:
 
+                void clear_images(size_t capacity)
+                {
+                        m_images.clear();
+                        m_images.reserve(capacity);
+                }
+
+                void clear_samples(size_t capacity)
+                {
+                        m_samples.clear();
+                        m_samples.reserve(capacity);
+                }
+
+                void clear_memory(size_t capacity)
+                {
+                        clear_images(capacity);
+                        clear_samples(capacity);
+                }
+
+        protected:
+
                 // attributes
                 images_t                m_images;
                 samples_t               m_samples;

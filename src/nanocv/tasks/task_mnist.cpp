@@ -16,8 +16,7 @@ namespace ncv
                 const string_t train_gfile = dir + "/train-labels-idx1-ubyte";
                 const size_t n_train_samples = 60000;
 
-                m_images.clear();
-                m_samples.clear();
+                clear_memory(n_train_samples + n_test_samples);
 
                 return  load(train_ifile, train_gfile, protocol::train) == n_train_samples &&
                         load(test_ifile, test_gfile, protocol::test) == n_test_samples;

@@ -21,8 +21,7 @@ namespace ncv
                 const size_t n_train_samples = 29160 * 10;
                 const size_t n_test_samples = 29160 * 2;
 
-                m_images.clear();
-                m_samples.clear();
+                clear_memory(n_train_samples + n_test_samples);
 
                 return  load(dir + "/norb-5x46789x9x18x6x2x108x108-training-01", protocol::train) +
                         load(dir + "/norb-5x46789x9x18x6x2x108x108-training-02", protocol::train) +

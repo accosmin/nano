@@ -17,8 +17,7 @@ namespace ncv
                 const string_t test_nonface_dir = dir + "/test/non-face/";
                 const size_t n_test_samples = 472 + 23573;
 
-                m_images.clear();
-                m_samples.clear();
+                clear_memory(n_train_samples + n_test_samples);
 
                 return  load(train_face_dir, true, protocol::train) +
                         load(train_nonface_dir, false, protocol::train) == n_train_samples &&
