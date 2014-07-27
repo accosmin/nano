@@ -22,12 +22,12 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                image_t(size_t rows = 0, size_t cols = 0, color_mode mode = color_mode::rgba);
+                image_t(coord_t rows = 0, coord_t cols = 0, color_mode mode = color_mode::rgba);
 
                 ///
                 /// \brief resize to new dimensions
                 ///
-                void resize(size_t rows, size_t cols, color_mode mode);
+                void resize(coord_t rows, coord_t cols, color_mode mode);
 
                 ///
                 /// \brief load image from disk
@@ -38,9 +38,9 @@ namespace ncv
                 ///
                 /// \brief load image from buffer
                 ///
-                bool load_luma(const char* buffer, size_t rows, size_t cols);
-                bool load_rgba(const char* buffer, size_t rows, size_t cols);
-                bool load_rgba(const char* buffer, size_t rows, size_t cols, size_t stride);
+                bool load_luma(const char* buffer, coord_t rows, coord_t cols);
+                bool load_rgba(const char* buffer, coord_t rows, coord_t cols);
+                bool load_rgba(const char* buffer, coord_t rows, coord_t cols, coord_t stride);
                 bool load_rgba(const rgba_matrix_t& data);
                 bool load_luma(const rgba_matrix_t& data);
                 bool load_luma(const luma_matrix_t& data);
@@ -79,11 +79,11 @@ namespace ncv
                 ///
                 /// \brief copy the given (region of the given) patch at the (r, c) location
                 ///
-                bool copy(coord_t t, coord_t l, const rgba_matrix_t& patch) const;
-                bool copy(coord_t t, coord_t l, const luma_matrix_t& patch) const;
+                bool copy(coord_t t, coord_t l, const rgba_matrix_t& patch);
+                bool copy(coord_t t, coord_t l, const luma_matrix_t& patch);
 
-                bool copy(coord_t t, coord_t l, const image_t& patch) const;
-                bool copy(coord_t t, coord_t l, const image_t& patch, const rect_t& region) const;
+                bool copy(coord_t t, coord_t l, const image_t& patch);
+                bool copy(coord_t t, coord_t l, const image_t& patch, const rect_t& region);
 
                 ///
                 /// \brief change a pixel
@@ -100,11 +100,11 @@ namespace ncv
                 /// \brief scale with the given factor
                 ///
                 void scale(scalar_t factor);
-                void scale(size_t new_rows, size_t new_cols);
+                void scale(coord_t new_rows, coord_t new_cols);
 
                 // access functions
-                size_t rows() const { return m_rows; }
-                size_t cols() const { return m_cols; }
+                coord_t rows() const { return m_rows; }
+                coord_t cols() const { return m_cols; }
                 color_mode mode() const { return m_mode; }
 
                 bool is_rgba() const { return mode() == color_mode::rgba; }
@@ -124,8 +124,8 @@ namespace ncv
         private:
 
                 // attributes
-                size_t                  m_rows;
-                size_t                  m_cols;
+                coord_t                 m_rows;
+                coord_t                 m_cols;
                 color_mode              m_mode;
 
                 rgba_matrix_t           m_rgba;

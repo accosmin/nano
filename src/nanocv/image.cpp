@@ -305,7 +305,7 @@ namespace ncv
                 }
         }
 
-        image_t::image_t(size_t rows, size_t cols, color_mode mode)
+        image_t::image_t(coord_t rows, coord_t cols, color_mode mode)
                 :       m_rows(rows),
                         m_cols(cols),
                         m_mode(mode)
@@ -313,7 +313,7 @@ namespace ncv
                 resize(rows, cols, mode);
         }
 
-        void image_t::resize(size_t rows, size_t cols, color_mode mode)
+        void image_t::resize(coord_t rows, coord_t cols, color_mode mode)
         {
                 m_mode = mode;
                 m_rows = rows;
@@ -337,8 +337,8 @@ namespace ncv
         {
                 m_luma.resize(0, 0);
                 m_mode = color_mode::rgba;
-                m_rows = static_cast<size_t>(m_rgba.rows());
-                m_cols = static_cast<size_t>(m_rgba.rows());
+                m_rows = static_cast<coord_t>(m_rgba.rows());
+                m_cols = static_cast<coord_t>(m_rgba.rows());
                 return true;
         }
 
@@ -346,8 +346,8 @@ namespace ncv
         {
                 m_rgba.resize(0, 0);
                 m_mode = color_mode::luma;
-                m_rows = static_cast<size_t>(m_luma.rows());
-                m_cols = static_cast<size_t>(m_luma.rows());
+                m_rows = static_cast<coord_t>(m_luma.rows());
+                m_cols = static_cast<coord_t>(m_luma.rows());
                 return true;
         }
 
@@ -363,12 +363,12 @@ namespace ncv
                         setup_luma();
         }
 
-        bool image_t::load_luma(const char* buffer, size_t rows, size_t cols)
+        bool image_t::load_luma(const char* buffer, coord_t rows, coord_t cols)
         {
                 m_luma.resize(rows, cols);
-                for (size_t r = 0, i = 0; r < rows; r ++)
+                for (coord_t r = 0, i = 0; r < rows; r ++)
                 {
-                        for (size_t c = 0; c < cols; c ++, i ++)
+                        for (coord_t c = 0; c < cols; c ++, i ++)
                         {
                                 m_luma(r, c) = static_cast<luma_t>(buffer[i]);
                         }
@@ -377,12 +377,12 @@ namespace ncv
                 return setup_luma();
         }
 
-        bool image_t::load_rgba(const char* buffer, size_t rows, size_t cols, size_t stride)
+        bool image_t::load_rgba(const char* buffer, coord_t rows, coord_t cols, coord_t stride)
         {
                 m_rgba.resize(rows, cols);
-                for (size_t r = 0, dr = 0, dg = dr + stride, db = dg + stride; r < rows; r ++)
+                for (coord_t r = 0, dr = 0, dg = dr + stride, db = dg + stride; r < rows; r ++)
                 {
-                        for (size_t c = 0; c < cols; c ++, dr ++, dg ++, db ++)
+                        for (coord_t c = 0; c < cols; c ++, dr ++, dg ++, db ++)
                         {
                                 m_rgba(r, c) = color::make_rgba(buffer[dr], buffer[dg], buffer[db]);
                         }
@@ -582,7 +582,7 @@ namespace ncv
                                         {
                                                 for (coord_t c = 0; c < cols; c ++)
                                                 {
-                                                        const rgba_t cc = m_rgba(t + r, l + cc);
+                                                        const rgba_t cc = m_rgba(t + r, l + c);
                                                         rmap(r, c) = scale * color::make_red(cc);
                                                         gmap(r, c) = scale * color::make_green(cc);
                                                         bmap(r, c) = scale * color::make_blue(cc);
@@ -664,19 +664,19 @@ namespace ncv
                 }
         }
 
-        bool image_t::copy(coord_t t, coord_t l, const rgba_matrix_t& patch) const
+        bool image_t::copy(coord_t t, coord_t l, const rgba_matrix_t& patch)
         {
-                const coord_t rows = static_cast<coord_t>(path.rows());
-                const coord_t cols = static_cast<coord_t>(path.cols());
+                const coord_t rows = static_cast<coord_t>(patch.rows());
+                const coord_t cols = static_cast<coord_t>(patch.cols());
 
-                if (    t >= 0 && t + rows < this->n_rows() &&
-                        l >= 0 && l + cols < this->n_cols())
+                if (    t >= 0 && t + rows < this->rows() &&
+                        l >= 0 && l + cols < this->cols())
                 {
                         switch (m_mode)
                         {
                         case color_mode::luma:
-                                math::transform(patch, m_luma.block(t, l, rows, cols),
-                                                [] (rgba_t rgba) { return color::make_luma(rgba); });
+//                                math::transform(patch, m_luma.block(t, l, rows, cols),
+//                                                [] (rgba_t rgba) { return color::make_luma(rgba); });
                                 return true;
 
                         case color_mode::rgba:
@@ -694,17 +694,17 @@ namespace ncv
                 }
         }
 
-        bool image_t::copy(coord_t t, coord_t l, const luma_matrix_t& patch) const
+        bool image_t::copy(coord_t t, coord_t l, const luma_matrix_t& patch)
         {
 
         }
 
-        bool image_t::copy(coord_t t, coord_t l, const image_t& patch) const
+        bool image_t::copy(coord_t t, coord_t l, const image_t& patch)
         {
 
         }
 
-        bool image_t::copy(coord_t t, coord_t l, const image_t& patch, const rect_t& region) const
+        bool image_t::copy(coord_t t, coord_t l, const image_t& patch, const rect_t& region)
         {
 
         }
@@ -742,8 +742,8 @@ namespace ncv
                         math::bilinear(m_luma, luma_scaled, factor);
 
                         m_luma = luma_scaled;
-                        m_rows = static_cast<size_t>(m_luma.rows());
-                        m_cols = static_cast<size_t>(m_luma.cols());
+                        m_rows = static_cast<coord_t>(m_luma.rows());
+                        m_cols = static_cast<coord_t>(m_luma.cols());
                 }
 
                 else if (is_rgba())
@@ -756,8 +756,8 @@ namespace ncv
 
                         m_rgba.resize(cielab_scaled.rows(), cielab_scaled.cols());
                         math::transform(cielab_scaled, m_rgba, [] (const cielab_t& lab) { return color::make_rgba(lab); });
-                        m_rows = static_cast<size_t>(m_rgba.rows());
-                        m_cols = static_cast<size_t>(m_rgba.cols());
+                        m_rows = static_cast<coord_t>(m_rgba.rows());
+                        m_cols = static_cast<coord_t>(m_rgba.cols());
                 }
         }
 }
