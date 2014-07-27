@@ -2,7 +2,7 @@
 #define NANOCV_ACTIVATION_LAYER_H
 
 #include "layer.h"
-#include "common/math.hpp"
+#include "tensor/util.hpp"
 
 namespace ncv
 {
@@ -75,7 +75,7 @@ namespace ncv
                         assert(m_data.rows() == input.rows());
                         assert(m_data.cols() == input.cols());
 
-                        math::transform(input, m_data, std::bind(teval_op(), _1));
+                        tensor::transform(input, m_data, std::bind(teval_op(), _1));
 
                         return m_data;
                 }
@@ -87,7 +87,7 @@ namespace ncv
                         assert(m_data.rows() == output.rows());
                         assert(m_data.cols() == output.cols());
 
-                        math::transform(output, m_data, m_data, std::bind(tgrad_op(), _1, _2));
+                        tensor::transform(output, m_data, m_data, std::bind(tgrad_op(), _1, _2));
 
                         return m_data;
                 }

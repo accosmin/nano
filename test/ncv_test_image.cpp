@@ -1,5 +1,6 @@
 #include "nanocv.h"
 #include "common/bilinear.hpp"
+#include "tensor/util.hpp"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
@@ -71,7 +72,7 @@ int main(int argc, char *argv[])
 
         timer.start();
         cielab_image.resize(rgba_image.rows(), rgba_image.cols());
-        math::transform(rgba_image, cielab_image, color::make_cielab);
+        tensor::transform(rgba_image, cielab_image, color::make_cielab);
         log_info() << "transformed RGBA to CIELab in " << timer.elapsed() << ".";
 
         // resize image
@@ -91,7 +92,7 @@ int main(int argc, char *argv[])
         // transform CIELab to RGBA
         timer.start();
         rgba_image.resize(cielab_image_scaled.rows(), cielab_image_scaled.cols());
-        math::transform(cielab_image_scaled, rgba_image, [] (const cielab_t& cielab) { return color::make_rgba(cielab); });
+        tensor::transform(cielab_image_scaled, rgba_image, [] (const cielab_t& cielab) { return color::make_rgba(cielab); });
         log_info() << "transformed CIELab to RGBA in " << timer.elapsed() << ".";
 
         // save output image

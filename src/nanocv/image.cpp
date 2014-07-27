@@ -1,6 +1,6 @@
 #include "image.h"
-#include "common/math.hpp"
 #include "common/bilinear.hpp"
+#include "tensor/util.hpp"
 #include <fstream>
 #include <boost/algorithm/string.hpp>
 
@@ -178,8 +178,8 @@ namespace ncv
         static bool save_image(const string_t& path,
                 color_mode mode, const rgba_matrix_t& rgba, const luma_matrix_t& luma)
         {
-                const int rows = math::cast<int>(mode == color_mode::rgba ? rgba.rows() : luma.rows());
-                const int cols = math::cast<int>(mode == color_mode::rgba ? rgba.cols() : luma.cols());
+                const int rows = static_cast<int>(mode == color_mode::rgba ? rgba.rows() : luma.rows());
+                const int cols = static_cast<int>(mode == color_mode::rgba ? rgba.cols() : luma.cols());
 
                 const imagetype itype = decode_image_type(path);
                 switch (itype)
@@ -291,7 +291,7 @@ namespace ncv
                                         break;
 
                                 case color_mode::rgba:
-                                        math::transform(rgba, grays, [] (rgba_t c) { return color::make_luma(c); });
+                                        tensor::transform(rgba, grays, [] (rgba_t c) { return color::make_luma(c); });
                                         break;
                                 }
 
@@ -401,7 +401,7 @@ namespace ncv
         bool image_t::load_luma(const rgba_matrix_t& data)
         {
                 m_luma.resize(data.rows(), data.cols());
-                math::transform(data, m_luma, [] (rgba_t c) { return color::make_luma(c); });
+                tensor::transform(data, m_luma, [] (rgba_t c) { return color::make_luma(c); });
 
                 return setup_luma();
         }
@@ -445,7 +445,7 @@ namespace ncv
                         {
                                 for (coord_t i = 0; i < size; i ++)
                                 {
-                                        const rgba_t gray = math::cast<rgba_t>(gmap(i) * scale) & 0xFF;
+                                        const rgba_t gray = static_cast<rgba_t>(gmap(i) * scale) & 0xFF;
                                         m_luma(i) = static_cast<luma_t>(gray);
                                 }
                         }
@@ -455,7 +455,7 @@ namespace ncv
                                 {
                                         for (coord_t c = 0; c < cols; c ++)
                                         {
-                                                const rgba_t gray = math::cast<rgba_t>(gmap(t + r, l + c) * scale) & 0xFF;
+                                                const rgba_t gray = static_cast<rgba_t>(gmap(t + r, l + c) * scale) & 0xFF;
                                                 m_luma(r, c) = static_cast<luma_t>(gray);
                                         }
                                 }
@@ -475,9 +475,9 @@ namespace ncv
                         {
                                 for (coord_t i = 0; i < size; i ++)
                                 {
-                                        const rgba_t red = math::cast<rgba_t>(rmap(i) * scale) & 0xFF;
-                                        const rgba_t green = math::cast<rgba_t>(gmap(i) * scale) & 0xFF;
-                                        const rgba_t blue = math::cast<rgba_t>(bmap(i) * scale) & 0xFF;
+                                        const rgba_t red = static_cast<rgba_t>(rmap(i) * scale) & 0xFF;
+                                        const rgba_t green = static_cast<rgba_t>(gmap(i) * scale) & 0xFF;
+                                        const rgba_t blue = static_cast<rgba_t>(bmap(i) * scale) & 0xFF;
                                         m_rgba(i) = color::make_rgba(red, green, blue);
                                 }
                         }
@@ -487,9 +487,9 @@ namespace ncv
                                 {
                                         for (coord_t c = 0; c < cols; c ++)
                                         {
-                                                const rgba_t red = math::cast<rgba_t>(rmap(t + r, l + c) * scale) & 0xFF;
-                                                const rgba_t green = math::cast<rgba_t>(gmap(t + r, l + c) * scale) & 0xFF;
-                                                const rgba_t blue = math::cast<rgba_t>(bmap(t + r, l + c) * scale) & 0xFF;
+                                                const rgba_t red = static_cast<rgba_t>(rmap(t + r, l + c) * scale) & 0xFF;
+                                                const rgba_t green = static_cast<rgba_t>(gmap(t + r, l + c) * scale) & 0xFF;
+                                                const rgba_t blue = static_cast<rgba_t>(bmap(t + r, l + c) * scale) & 0xFF;
                                                 m_rgba(r, c) = color::make_rgba(red, green, blue);
                                         }
                                 }
@@ -602,7 +602,7 @@ namespace ncv
                 {
                 case color_mode::luma:
                         m_rgba.resize(rows(), cols());
-                        math::transform(m_luma, m_rgba, [] (luma_t g) { return color::make_rgba(g, g, g); });
+                        tensor::transform(m_luma, m_rgba, [] (luma_t g) { return color::make_rgba(g, g, g); });
                         return setup_rgba();
 
                 case color_mode::rgba:
@@ -622,7 +622,7 @@ namespace ncv
 
                 case color_mode::rgba:
                         m_luma.resize(rows(), cols());
-                        math::transform(m_rgba, m_luma, [] (rgba_t c) { return color::make_luma(c); });
+                        tensor::transform(m_rgba, m_luma, [] (rgba_t c) { return color::make_luma(c); });
                         return setup_luma();
 
                 default:
@@ -675,7 +675,7 @@ namespace ncv
                         switch (m_mode)
                         {
                         case color_mode::luma:
-//                                math::transform(patch, m_luma.block(t, l, rows, cols),
+//                                tensor::transform(patch, m_luma.block(t, l, rows, cols),
 //                                                [] (rgba_t rgba) { return color::make_luma(rgba); });
                                 return true;
 
@@ -750,12 +750,12 @@ namespace ncv
                 {
                         cielab_matrix_t cielab, cielab_scaled;
                         cielab.resize(rows(), cols());
-                        math::transform(m_rgba, cielab, color::make_cielab);
+                        tensor::transform(m_rgba, cielab, color::make_cielab);
 
                         math::bilinear(cielab, cielab_scaled, factor);
 
                         m_rgba.resize(cielab_scaled.rows(), cielab_scaled.cols());
-                        math::transform(cielab_scaled, m_rgba, [] (const cielab_t& lab) { return color::make_rgba(lab); });
+                        tensor::transform(cielab_scaled, m_rgba, [] (const cielab_t& lab) { return color::make_rgba(lab); });
                         m_rows = static_cast<coord_t>(m_rgba.rows());
                         m_cols = static_cast<coord_t>(m_rgba.cols());
                 }
