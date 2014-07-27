@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
                                 const tensor_t input = rmodel->generate(target);
 
                                 image_t image;
-                                if (!image.from_tensor(input))
+                                if (!image.load(input))
                                 {
                                         log_error() << "failed to map the generated input to RGBA image!";
                                         return EXIT_FAILURE;

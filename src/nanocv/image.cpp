@@ -145,25 +145,14 @@ namespace ncv
                                 {
                                 case color_mode::luma:
                                         luma.resize(rows, cols);
-                                        for (int r = 0, i = 0; r < rows; r ++)
-                                        {
-                                                for (int c = 0; c < cols; c ++, i ++)
-                                                {
-                                                        luma(r, c) = grays[i];
-                                                }
-                                        }
+                                        tensor::transform(tensor::make_matrix(grays.data(), rows, cols),
+                                                          luma, [] (luma_t g) { return g; });
                                         break;
 
                                 case color_mode::rgba:
                                         rgba.resize(rows, cols);
-                                        for (int r = 0, i = 0; r < rows; r ++)
-                                        {
-                                                for (int c = 0; c < cols; c ++, i ++)
-                                                {
-                                                        const rgba_t gray = grays[i];
-                                                        rgba(r, c) = color::make_rgba(gray, gray, gray);
-                                                }
-                                        }
+                                        tensor::transform(tensor::make_matrix(grays.data(), rows, cols),
+                                                          rgba, [] (luma_t g) { return color::make_rgba(g, g, g); });
                                         break;
                                 }
                         }
@@ -365,28 +354,24 @@ namespace ncv
 
         bool image_t::load_luma(const char* buffer, coord_t rows, coord_t cols)
         {
+                const coord_t size = rows * cols;
+
                 m_luma.resize(rows, cols);
-                for (coord_t r = 0, i = 0; r < rows; r ++)
-                {
-                        for (coord_t c = 0; c < cols; c ++, i ++)
-                        {
-                                m_luma(r, c) = static_cast<luma_t>(buffer[i]);
-                        }
-                }
+                tensor::transform(tensor::make_vector(buffer, size),
+                                  m_luma, [] (char luma) { return static_cast<luma_t>(luma); });
 
                 return setup_luma();
         }
 
         bool image_t::load_rgba(const char* buffer, coord_t rows, coord_t cols, coord_t stride)
         {
+                const coord_t size = rows * cols;
+
                 m_rgba.resize(rows, cols);
-                for (coord_t r = 0, dr = 0, dg = dr + stride, db = dg + stride; r < rows; r ++)
-                {
-                        for (coord_t c = 0; c < cols; c ++, dr ++, dg ++, db ++)
-                        {
-                                m_rgba(r, c) = color::make_rgba(buffer[dr], buffer[dg], buffer[db]);
-                        }
-                }
+                tensor::transform(tensor::make_vector(buffer + 0 * stride, size),
+                                  tensor::make_vector(buffer + 1 * stride, size),
+                                  tensor::make_vector(buffer + 2 * stride, size),
+                                  m_rgba, [] (char r, char g, char b) { return color::make_rgba(r, g, b); });
 
                 return setup_rgba();
         }
@@ -413,53 +398,20 @@ namespace ncv
                 return setup_luma();
         }
 
-        bool image_t::from_tensor(const tensor_t& data)
+        bool image_t::load(const tensor_t& data)
         {
-                return from_tensor(data, geom::make_rect(0, 0, data.cols(), data.rows()));
-        }
-
-        bool image_t::from_tensor(const tensor_t& data, const rect_t& region)
-        {
-                const coord_t t = geom::top(region), l = geom::left(region);
-                const coord_t rows = geom::rows(region), cols = geom::cols(region);
-                const coord_t size = rows * cols;
-
-                const coord_t drows = static_cast<coord_t>(data.rows());
-                const coord_t dcols = static_cast<coord_t>(data.cols());
                 const scalar_t scale = 255.0;
-
-                if (    t < 0 || t + rows >= drows ||
-                        l < 0 || l + cols >= dcols)
-                {
-                        return false;
-                }
-
-                const bool use_all = t == 0 && l == 0 && rows == drows && cols == dcols;
 
                 if (data.dims() == 1)
                 {
                         const auto gmap = data.plane_matrix(0);
 
-                        m_luma.resize(rows, cols);
-                        if (use_all)
+                        m_luma.resize(data.rows(), data.cols());
+                        tensor::transform(gmap, m_luma, [=] (scalar_t l)
                         {
-                                for (coord_t i = 0; i < size; i ++)
-                                {
-                                        const rgba_t gray = static_cast<rgba_t>(gmap(i) * scale) & 0xFF;
-                                        m_luma(i) = static_cast<luma_t>(gray);
-                                }
-                        }
-                        else
-                        {
-                                for (coord_t r = 0; r < rows; r ++)
-                                {
-                                        for (coord_t c = 0; c < cols; c ++)
-                                        {
-                                                const rgba_t gray = static_cast<rgba_t>(gmap(t + r, l + c) * scale) & 0xFF;
-                                                m_luma(r, c) = static_cast<luma_t>(gray);
-                                        }
-                                }
-                        }
+                                const rgba_t luma = static_cast<rgba_t>(l * scale) & 0xFF;
+                                return static_cast<luma_t>(luma);
+                        });
 
                         return setup_luma();
                 }
@@ -470,30 +422,14 @@ namespace ncv
                         const auto gmap = data.plane_matrix(1);
                         const auto bmap = data.plane_matrix(2);
 
-                        m_rgba.resize(rows, cols);
-                        if (use_all)
+                        m_rgba.resize(data.rows(), data.cols());
+                        tensor::transform(rmap, gmap, bmap, m_rgba, [=] (scalar_t r, scalar_t g, scalar_t b)
                         {
-                                for (coord_t i = 0; i < size; i ++)
-                                {
-                                        const rgba_t red = static_cast<rgba_t>(rmap(i) * scale) & 0xFF;
-                                        const rgba_t green = static_cast<rgba_t>(gmap(i) * scale) & 0xFF;
-                                        const rgba_t blue = static_cast<rgba_t>(bmap(i) * scale) & 0xFF;
-                                        m_rgba(i) = color::make_rgba(red, green, blue);
-                                }
-                        }
-                        else
-                        {
-                                for (coord_t r = 0; r < rows; r ++)
-                                {
-                                        for (coord_t c = 0; c < cols; c ++)
-                                        {
-                                                const rgba_t red = static_cast<rgba_t>(rmap(t + r, l + c) * scale) & 0xFF;
-                                                const rgba_t green = static_cast<rgba_t>(gmap(t + r, l + c) * scale) & 0xFF;
-                                                const rgba_t blue = static_cast<rgba_t>(bmap(t + r, l + c) * scale) & 0xFF;
-                                                m_rgba(r, c) = color::make_rgba(red, green, blue);
-                                        }
-                                }
-                        }
+                                const rgba_t rr = static_cast<rgba_t>(r * scale) & 0xFF;
+                                const rgba_t gg = static_cast<rgba_t>(g * scale) & 0xFF;
+                                const rgba_t bb = static_cast<rgba_t>(b * scale) & 0xFF;
+                                return color::make_rgba(rr, gg, bb);
+                        });
 
                         return setup_rgba();
                 }
@@ -511,89 +447,60 @@ namespace ncv
 
         tensor_t image_t::to_tensor() const
         {
-                return to_tensor(geom::make_rect(0, 0, static_cast<coord_t>(cols()), static_cast<coord_t>(rows())));
+                return to_tensor(geom::make_rect(0, 0, cols(), rows()));
         }
 
         tensor_t image_t::to_tensor(const rect_t& region) const
         {
-                const coord_t t = geom::top(region), l = geom::left(region);
-                const coord_t rows = geom::rows(region), cols = geom::cols(region);
-                const coord_t size = rows * cols;
+                const coord_t top = geom::top(region);
+                const coord_t left = geom::top(region);
+                const coord_t rows = geom::rows(region);
+                const coord_t cols = geom::cols(region);
 
-                const coord_t drows = static_cast<coord_t>(m_rows);
-                const coord_t dcols = static_cast<coord_t>(m_cols);
                 const scalar_t scale = 1.0 / 255.0;
-
-                if (    t < 0 || t + rows >= drows ||
-                        l < 0 || l + cols >= dcols)
-                {
-                        return false;
-                }
-
-                const bool use_all = t == 0 && l == 0 && rows == drows && cols == dcols;
-
-                tensor_t data(m_mode == color_mode::luma ? 1 : 3, rows, cols);
 
                 switch (m_mode)
                 {
                 case color_mode::luma:
                         {
+                                tensor_t data(1, rows, cols);
                                 auto gmap = data.plane_matrix(0);
 
-                                if (use_all)
+                                tensor::transform(m_luma.block(top, left, rows, cols), gmap, [=] (luma_t luma)
                                 {
-                                        for (coord_t i = 0; i < size; i ++)
-                                        {
-                                                gmap(i) = scale * m_luma(i);
-                                        }
-                                }
-                                else
-                                {
-                                        for (coord_t r = 0; r < rows; r ++)
-                                        {
-                                                for (coord_t c = 0; c < cols; c ++)
-                                                {
-                                                        gmap(r, c) = scale * m_luma(t + r, l + c);
-                                                }
-                                        }
-                                }
+                                        return scale * luma;
+                                });
+
+                                return data;
                         }
-                        break;
 
                 case color_mode::rgba:
                         {
+                                tensor_t data(3, rows, cols);
                                 auto rmap = data.plane_matrix(0);
                                 auto gmap = data.plane_matrix(1);
                                 auto bmap = data.plane_matrix(2);
 
-                                if (use_all)
+                                tensor::transform(m_rgba.block(top, left, rows, cols), rmap, [=] (rgba_t rgba)
                                 {
-                                        for (coord_t i = 0; i < size; i ++)
-                                        {
-                                                const rgba_t cc = m_rgba(i);
-                                                rmap(i) = scale * color::make_red(cc);
-                                                gmap(i) = scale * color::make_green(cc);
-                                                bmap(i) = scale * color::make_blue(cc);
-                                        }
-                                }
-                                else
+                                        return scale * color::make_red(rgba);
+                                });
+                                tensor::transform(m_rgba.block(top, left, rows, cols), gmap, [=] (rgba_t rgba)
                                 {
-                                        for (coord_t r = 0; r < rows; r ++)
-                                        {
-                                                for (coord_t c = 0; c < cols; c ++)
-                                                {
-                                                        const rgba_t cc = m_rgba(t + r, l + c);
-                                                        rmap(r, c) = scale * color::make_red(cc);
-                                                        gmap(r, c) = scale * color::make_green(cc);
-                                                        bmap(r, c) = scale * color::make_blue(cc);
-                                                }
-                                        }
-                                }
+                                        return scale * color::make_green(rgba);
+                                });
+                                tensor::transform(m_rgba.block(top, left, rows, cols), bmap, [=] (rgba_t rgba)
+                                {
+                                        return scale * color::make_blue(rgba);
+                                });
+
+                                return data;
                         }
                         break;
-                }
 
-                return data;
+                default:
+                        return tensor_t();
+                }
         }
 
         bool image_t::make_rgba()
@@ -603,6 +510,7 @@ namespace ncv
                 case color_mode::luma:
                         m_rgba.resize(rows(), cols());
                         tensor::transform(m_luma, m_rgba, [] (luma_t g) { return color::make_rgba(g, g, g); });
+
                         return setup_rgba();
 
                 case color_mode::rgba:
@@ -623,6 +531,7 @@ namespace ncv
                 case color_mode::rgba:
                         m_luma.resize(rows(), cols());
                         tensor::transform(m_rgba, m_luma, [] (rgba_t c) { return color::make_luma(c); });
+
                         return setup_luma();
 
                 default:
@@ -664,66 +573,110 @@ namespace ncv
                 }
         }
 
-        bool image_t::copy(coord_t t, coord_t l, const rgba_matrix_t& patch)
+        bool image_t::copy(coord_t top, coord_t left, const rgba_matrix_t& patch)
         {
-                const coord_t rows = static_cast<coord_t>(patch.rows());
-                const coord_t cols = static_cast<coord_t>(patch.cols());
-
-                if (    t >= 0 && t + rows < this->rows() &&
-                        l >= 0 && l + cols < this->cols())
+                switch (m_mode)
                 {
-                        switch (m_mode)
+                case color_mode::luma:
                         {
-                        case color_mode::luma:
-//                                tensor::transform(patch, m_luma.block(t, l, rows, cols),
-//                                                [] (rgba_t rgba) { return color::make_luma(rgba); });
-                                return true;
-
-                        case color_mode::rgba:
-                                m_rgba.block(t, l, rows, cols) = patch;
-                                return true;
-
-                        default:
-                                return false;
+                                luma_matrix_t luma(patch.rows(), patch.cols());
+                                tensor::transform(patch, luma, [] (rgba_t rgba) { return color::make_luma(rgba); });
+                                m_luma.block(top, left, patch.rows(), patch.cols()) = luma;
                         }
-                }
+                        return true;
 
-                else
-                {
+                case color_mode::rgba:
+                        m_rgba.block(top, left, patch.rows(), patch.cols()) = patch;
+                        return true;
+
+                default:
                         return false;
                 }
         }
 
-        bool image_t::copy(coord_t t, coord_t l, const luma_matrix_t& patch)
+        bool image_t::copy(coord_t top, coord_t left, const luma_matrix_t& patch)
         {
-
-        }
-
-        bool image_t::copy(coord_t t, coord_t l, const image_t& patch)
-        {
-
-        }
-
-        bool image_t::copy(coord_t t, coord_t l, const image_t& patch, const rect_t& region)
-        {
-
-        }
-
-        bool image_t::set(coord_t r, coord_t c, rgba_t rgba)
-        {
-
-        }
-
-        bool image_t::set(coord_t r, coord_t c, luma_t gray)
-        {
-                if (    r >= 0 && r < static_cast<coord_t>(rows()) &&
-                        c >= 0 && c < static_cast<coord_t>(cols()))
+                switch (m_mode)
                 {
+                case color_mode::luma:
+                        m_luma.block(top, left, patch.rows(), patch.cols()) = patch;
+                        return true;
 
+                case color_mode::rgba:
+                        {
+                                rgba_matrix_t rgba(patch.rows(), patch.cols());
+                                tensor::transform(patch, rgba, [] (luma_t luma) { return color::make_rgba(luma, luma, luma); });
+                                m_rgba.block(top, left, patch.rows(), patch.cols()) = rgba;
+                        }
+                        return true;
+
+                default:
+                        return false;
                 }
+        }
 
-                else
+        bool image_t::copy(coord_t top, coord_t left, const image_t& image)
+        {
+                switch (image.m_mode)
                 {
+                case color_mode::luma:
+                        return copy(top, left, image.m_luma);
+
+                case color_mode::rgba:
+                        return copy(top, left, image.m_rgba);
+
+                default:
+                        return false;
+                }
+        }
+
+        bool image_t::copy(coord_t top, coord_t left, const image_t& image, const rect_t& region)
+        {
+                switch (image.m_mode)
+                {
+                case color_mode::luma:
+                        return  copy(top, left, luma_matrix_t(image.m_luma.block(
+                                geom::top(region), geom::left(region), geom::rows(region), geom::cols(region))));
+
+                case color_mode::rgba:
+                        return  copy(top, left, rgba_matrix_t(image.m_rgba.block(
+                                geom::top(region), geom::left(region), geom::rows(region), geom::cols(region))));
+
+                default:
+                        return false;
+                }
+        }
+
+        bool image_t::set(coord_t row, coord_t col, rgba_t rgba)
+        {
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        m_luma(row, col) = color::make_luma(rgba);
+                        return true;
+
+                case color_mode::rgba:
+                        m_rgba(row, col) = rgba;
+                        return true;
+
+                default:
+                        return false;
+                }
+        }
+
+        bool image_t::set(coord_t row, coord_t col, luma_t luma)
+        {
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        m_luma(row, col) = luma;
+                        return true;
+
+                case color_mode::rgba:
+                        m_rgba(row, col) = color::make_rgba(luma, luma, luma);
+                        return true;
+
+                default:
                         return false;
                 }
         }
@@ -734,30 +687,54 @@ namespace ncv
                 m_luma.transposeInPlace();
         }
 
-        void image_t::scale(scalar_t factor)
+        template
+        <
+                typename toperator
+        >
+        static void scale(luma_matrix_t& luma, toperator op)
         {
-                if (is_luma())
+
+        }
+
+        template
+        <
+                typename toperator
+        >
+        static void scale(rgba_matrix_t& rgba, toperator op)
+        {
+
+        }
+
+        bool image_t::scale(scalar_t factor)
+        {
+                switch (m_mode)
                 {
-                        luma_matrix_t luma_scaled;
-                        math::bilinear(m_luma, luma_scaled, factor);
+                case color_mode::luma:
+                        {
+                                luma_matrix_t luma_scaled;
+                                math::bilinear(m_luma, luma_scaled, factor);
 
-                        m_luma = luma_scaled;
-                        m_rows = static_cast<coord_t>(m_luma.rows());
-                        m_cols = static_cast<coord_t>(m_luma.cols());
-                }
+                                m_luma = luma_scaled;
+                        }
 
-                else if (is_rgba())
-                {
-                        cielab_matrix_t cielab, cielab_scaled;
-                        cielab.resize(rows(), cols());
-                        tensor::transform(m_rgba, cielab, color::make_cielab);
+                        return setup_luma();
 
-                        math::bilinear(cielab, cielab_scaled, factor);
+                case color_mode::rgba:
+                        {
+                                cielab_matrix_t cielab, cielab_scaled;
+                                cielab.resize(rows(), cols());
+                                tensor::transform(m_rgba, cielab, color::make_cielab);
 
-                        m_rgba.resize(cielab_scaled.rows(), cielab_scaled.cols());
-                        tensor::transform(cielab_scaled, m_rgba, [] (const cielab_t& lab) { return color::make_rgba(lab); });
-                        m_rows = static_cast<coord_t>(m_rgba.rows());
-                        m_cols = static_cast<coord_t>(m_rgba.cols());
+                                math::bilinear(cielab, cielab_scaled, factor);
+
+                                m_rgba.resize(cielab_scaled.rows(), cielab_scaled.cols());
+                                tensor::transform(cielab_scaled, m_rgba, [] (const cielab_t& lab) { return color::make_rgba(lab); });
+                        }
+
+                        return setup_rgba();
+
+                default:
+                        return false;
                 }
         }
 }

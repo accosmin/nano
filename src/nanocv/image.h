@@ -49,8 +49,7 @@ namespace ncv
                 /// \brief load image from scaled [0, 1] tensor
                 ///     having 1 (lumascale) or 3 (rgba) planes
                 ///
-                bool from_tensor(const tensor_t& data);
-                bool from_tensor(const tensor_t& data, const rect_t& region);
+                bool load(const tensor_t& data);
 
                 ///
                 /// \brief save image to disk
@@ -79,17 +78,17 @@ namespace ncv
                 ///
                 /// \brief copy the given (region of the given) patch at the (r, c) location
                 ///
-                bool copy(coord_t t, coord_t l, const rgba_matrix_t& patch);
-                bool copy(coord_t t, coord_t l, const luma_matrix_t& patch);
+                bool copy(coord_t top, coord_t left, const rgba_matrix_t& patch);
+                bool copy(coord_t top, coord_t left, const luma_matrix_t& patch);
 
-                bool copy(coord_t t, coord_t l, const image_t& patch);
-                bool copy(coord_t t, coord_t l, const image_t& patch, const rect_t& region);
+                bool copy(coord_t top, coord_t left, const image_t& patch);
+                bool copy(coord_t top, coord_t left, const image_t& patch, const rect_t& region);
 
                 ///
                 /// \brief change a pixel
                 ///
-                bool set(coord_t r, coord_t c, rgba_t rgba);
-                bool set(coord_t r, coord_t c, luma_t luma);
+                bool set(coord_t row, coord_t col, rgba_t rgba);
+                bool set(coord_t row, coord_t col, luma_t luma);
 
                 ///
                 /// \brief transpose in place the pixel matrix
@@ -99,8 +98,7 @@ namespace ncv
                 ///
                 /// \brief scale with the given factor
                 ///
-                void scale(scalar_t factor);
-                void scale(coord_t new_rows, coord_t new_cols);
+                bool scale(scalar_t factor);
 
                 // access functions
                 coord_t rows() const { return m_rows; }
