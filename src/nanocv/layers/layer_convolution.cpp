@@ -58,34 +58,41 @@ namespace ncv
                 const tsize ksize = krows * kcols;
 
                 const bool has_gradient = gkdata != nullptr;
+                
+                // convolution gradient
+                if (has_gradient)
+                {
+                        for (tsize o = 0; o < odims; o ++)
+                        {
+                                auto omap = tensor::make_matrix(odata + o * osize, orows, ocols);
 
+                                for (tsize i = 0; i < idims; i ++)
+                                {
+                                        auto imap = tensor::make_matrix(idata + i * isize, irows, icols);                                        
+                                        auto gkmap = tensor::make_matrix(gkdata + (o * idims + i) * ksize, krows, kcols);
+                                        
+                                        math::conv(imap, omap, gkmap);
+                                }
+                        }
+                }
+                
+                // input gradient
                 std::fill(gidata, gidata + idims * isize, tscalar(0));
-
                 for (tsize o = 0; o < odims; o ++)
                 {
                         auto omap = tensor::make_matrix(odata + o * osize, orows, ocols);
-
+                        
                         for (tsize i = 0; i < idims; i ++)
                         {
-                                auto kmap = tensor::make_matrix(kdata + (o * idims + i) * ksize, krows, kcols);
-                                auto gkmap = tensor::make_matrix(gkdata + (o * idims + i) * ksize, krows, kcols);
-
-                                auto imap = tensor::make_matrix(idata + i * isize, irows, icols);
                                 auto gimap = tensor::make_matrix(gidata + i * isize, irows, icols);
-
-                                // input gradient
+                                auto kmap = tensor::make_matrix(kdata + (o * idims + i) * ksize, krows, kcols);                                                                                                
+                                
                                 for (tsize r = 0; r < orows; r ++)
                                 {
                                         for (tsize c = 0; c < ocols; c ++)
                                         {
                                                 gimap.block(r, c, krows, kcols) += kmap * omap(r, c);
                                         }
-                                }
-
-                                // convolution gradient
-                                if (has_gradient)
-                                {
-                                        math::conv(imap, omap, gkmap);
                                 }
                         }
                 }
@@ -266,8 +273,6 @@ namespace ncv
                 m_odata.resize(odims, orows, ocols);
                 m_kdata.resize(odims * idims, krows, kcols);
 
-                m_gidata.resize(idims, irows, icols);
-
 #if NANOCV_HAVE_OPENCL
                 // create opencl objects (if available)
                 ocl::manager_t& theocl = ocl::manager_t::instance();
@@ -431,12 +436,12 @@ namespace ncv
 #endif
                 // CPU version
                 {
-                        _backward(m_idata.data(), m_gidata.data(), idims(),
+                        _backward(m_idata.data(), m_idata.data(), idims(),
                                   m_kdata.data(), gradient, krows(), kcols(),
                                   m_odata.data(), odims(), orows(), ocols());
                 }
 
-                return m_gidata;
+                return m_idata;
         }
 }
 
