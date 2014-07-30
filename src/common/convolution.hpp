@@ -8,6 +8,31 @@ namespace ncv
 {
         namespace math
         {
+                namespace detail
+                {
+                        template
+                        <
+                                bool tsum,
+                                typename tmatrixi,
+                                typename tmatrixk = tmatrixi,
+                                typename tmatrixo = tmatrixi,
+                                typename tscalar = typename tmatrixi::Scalar
+                        >
+                        void conv(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                        {
+                                for (auto r = 0; r < odata.rows(); r ++)
+                                {
+                                        for (auto c = 0; c < odata.cols(); c ++)
+                                        {
+                                                const tscalar sum =
+                                                kdata.cwiseProduct(idata.block(r, c, kdata.rows(), kdata.cols())).sum();
+
+                                                (tsum) ? (odata(r, c) += sum) : (odata(r, c) = sum);
+                                        }
+                                }
+                        }
+                }
+
                 ///
                 /// 2D convolution: odata += idata @ kdata (using Eigen 2D blocks)
                 ///
@@ -20,14 +45,7 @@ namespace ncv
                 >
                 void conv_sum(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
                 {
-                        for (auto r = 0; r < odata.rows(); r ++)
-                        {
-                                for (auto c = 0; c < odata.cols(); c ++)
-                                {
-                                        odata(r, c) +=
-                                        kdata.cwiseProduct(idata.block(r, c, kdata.rows(), kdata.cols())).sum();
-                                }
-                        }
+                        detail::conv<true>(idata, kdata, odata);
                 }
                 
                 ///
@@ -42,14 +60,7 @@ namespace ncv
                 >
                 void conv(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
                 {
-                        for (auto r = 0; r < odata.rows(); r ++)
-                        {
-                                for (auto c = 0; c < odata.cols(); c ++)
-                                {
-                                        odata(r, c) =
-                                        kdata.cwiseProduct(idata.block(r, c, kdata.rows(), kdata.cols())).sum();
-                                }
-                        }                        
+                        detail::conv<false>(idata, kdata, odata);
                 }
                 
                 ///
