@@ -696,7 +696,7 @@ namespace ncv
                 case color_mode::luma:
                         {
                                 luma_matrix_t luma_scaled;
-                                math::bilinear(m_luma, luma_scaled, factor);
+                                ncv::bilinear(m_luma, luma_scaled, factor);
 
                                 m_luma = luma_scaled;
                         }
@@ -709,7 +709,7 @@ namespace ncv
                                 tensor::transform(m_rgba, cielab, color::make_cielab);
 
                                 cielab_matrix_t cielab_scaled;
-                                math::bilinear(cielab, cielab_scaled, factor);
+                                ncv::bilinear(cielab, cielab_scaled, factor);
 
                                 m_rgba.resize(cielab_scaled.rows(), cielab_scaled.cols());
                                 tensor::transform(cielab_scaled, m_rgba, [] (const cielab_t& lab) { return color::make_rgba(lab); });

@@ -248,10 +248,10 @@ void test(int isize, int ksize, int n_samples)
         const string_t header = (boost::format("(%1%x%2% @ %3%x%4%): ") % isize % isize % ksize % ksize).str();
         std::cout << text::resize(header, 16);
         
-        const scalar_t sum1cpu = test_conv2D_1cpu(ncv::math::conv_eig_set<matrix_t>, "conv_eig(1CPU)", idatas, kdata, odatas);
-        const scalar_t sumxcpu = test_conv2D_xcpu(ncv::math::conv_eig_set<matrix_t>, "conv_eig(xCPU)", idatas, kdata, odatas);
-        const scalar_t sumf1cpu = test_conv2D_1cpu(ncv::math::conv_test<matrix_t>, "conv_test(1CPU)", idatas, kdata, odatas);
-        const scalar_t sumfxcpu = test_conv2D_xcpu(ncv::math::conv_test<matrix_t>, "conv_test(xCPU)", idatas, kdata, odatas);
+        const scalar_t sum1cpu = test_conv2D_1cpu(ncv::conv_eig_set<matrix_t>, "conv_eig(1CPU)", idatas, kdata, odatas);
+        const scalar_t sumxcpu = test_conv2D_xcpu(ncv::conv_eig_set<matrix_t>, "conv_eig(xCPU)", idatas, kdata, odatas);
+        const scalar_t sumf1cpu = test_conv2D_1cpu(ncv::conv_test<matrix_t>, "conv_test(1CPU)", idatas, kdata, odatas);
+        const scalar_t sumfxcpu = test_conv2D_xcpu(ncv::conv_test<matrix_t>, "conv_test(xCPU)", idatas, kdata, odatas);
 #ifdef NANOCV_HAVE_OPENCL
         const scalar_t sumg8dot = test_conv2D_gpu("dot(8GPU)", idatas, kdata, odatas, 8);
         const scalar_t sumg16dot = test_conv2D_gpu("dot(16GPU)", idatas, kdata, odatas, 16);
