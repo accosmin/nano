@@ -1,3 +1,10 @@
+* templated convolution layers (by the kernel size):
+	- check if any speed improvement (forward)
+	- update the outer convolution similarly to conv_test
+
+* do not do the input-gradient for the first layer:
+	- may save a lot of time for the backward step
+
 - reduce the number of input/output buffers for layers
                 
 - optimization statistics computed at the layer level: average gradient LInf-norm, number of calls
