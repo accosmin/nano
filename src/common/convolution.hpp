@@ -2,6 +2,7 @@
 #define NANOCV_CONVOLUTION_H
 
 #include <functional>
+#include <cassert>
 #include "dot.hpp"
 
 namespace ncv
@@ -186,6 +187,36 @@ namespace ncv
                 void conv_test(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
                 {
                         detail::conv_test<false>(idata, kdata, odata);
+                }
+
+                template
+                <
+                        int tsize,
+                        typename tmatrixi,
+                        typename tmatrixk = tmatrixi,
+                        typename tmatrixo = tmatrixi,
+                        typename tscalar = typename tmatrixi::Scalar
+                >
+                void conv_sum_test(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                {
+                        assert(tsize == kdata.cols());
+
+                        detail::conv_test<true>(idata, kdata, odata, dot<tscalar, tsize>);
+                }
+
+                template
+                <
+                        int tsize,
+                        typename tmatrixi,
+                        typename tmatrixk = tmatrixi,
+                        typename tmatrixo = tmatrixi,
+                        typename tscalar = typename tmatrixi::Scalar
+                >
+                void conv_test(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                {
+                        assert(tsize == kdata.cols());
+
+                        detail::conv_test<false>(idata, kdata, odata, dot<tscalar, tsize>);
                 }
         }
 }
