@@ -8,31 +8,6 @@ namespace ncv
 {
         namespace math
         {
-                namespace detail
-                {
-                        template
-                        <
-                                bool tsum,
-                                typename tmatrixi,
-                                typename tmatrixk = tmatrixi,
-                                typename tmatrixo = tmatrixi,
-                                typename tscalar = typename tmatrixi::Scalar
-                        >
-                        void conv(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
-                        {
-                                for (auto r = 0; r < odata.rows(); r ++)
-                                {
-                                        for (auto c = 0; c < odata.cols(); c ++)
-                                        {
-                                                const tscalar sum =
-                                                kdata.cwiseProduct(idata.block(r, c, kdata.rows(), kdata.cols())).sum();
-
-                                                (tsum) ? (odata(r, c) += sum) : (odata(r, c) = sum);
-                                        }
-                                }
-                        }
-                }
-
                 ///
                 /// 2D convolution: odata += idata @ kdata (using Eigen 2D blocks)
                 ///
@@ -43,9 +18,16 @@ namespace ncv
                         typename tmatrixo = tmatrixi,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                void conv_sum(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                void conv_eig_add(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
                 {
-                        detail::conv<true>(idata, kdata, odata);
+                        for (auto r = 0; r < odata.rows(); r ++)
+                        {
+                                for (auto c = 0; c < odata.cols(); c ++)
+                                {
+                                        odata(r, c) +=
+                                        kdata.cwiseProduct(idata.block(r, c, kdata.rows(), kdata.cols())).sum();
+                                }
+                        }
                 }
                 
                 ///
@@ -58,16 +40,44 @@ namespace ncv
                         typename tmatrixo = tmatrixi,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                void conv(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                void conv_eig_set(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
                 {
-                        detail::conv<false>(idata, kdata, odata);
+                        for (auto r = 0; r < odata.rows(); r ++)
+                        {
+                                for (auto c = 0; c < odata.cols(); c ++)
+                                {
+                                        odata(r, c) =
+                                        kdata.cwiseProduct(idata.block(r, c, kdata.rows(), kdata.cols())).sum();
+                                }
+                        }
                 }
-                
+
                 ///
-                /// 2D convolution: odata = idata @ kdata (using some awesome optimizations to be uncovered)
+                /// outer 2D convolution: odata += idata @ kdata (using Eigen 2D blocks)
                 ///
+                template
+                <
+                        typename tmatrixi,
+                        typename tmatrixk = tmatrixi,
+                        typename tmatrixo = tmatrixi,
+                        typename tscalar = typename tmatrixi::Scalar
+                >
+                void outer_conv_eig_add(tmatrixi& idata, const tmatrixk& kdata, const tmatrixo& odata)
+                {
+                        for (auto r = 0; r < odata.rows(); r ++)
+                        {
+                                for (auto c = 0; c < odata.cols(); c ++)
+                                {
+                                        idata.block(r, c, kdata.rows(), kdata.cols()) += kdata * odata(r, c);
+                                }
+                        }
+                }
+
                 namespace detail
                 {
+                        ///
+                        /// \brief general dot-product
+                        ///
                         template
                         <
                                 typename tscalar,
@@ -84,6 +94,9 @@ namespace ncv
                                 return sum;
                         }
 
+                        ///
+                        /// \brief fixed-size dot-product
+                        ///
                         template
                         <
                                 typename tscalar,
@@ -100,6 +113,9 @@ namespace ncv
                                 return sum;
                         }
 
+                        ///
+                        /// \brief 2D convolution using a dot-operator
+                        ///
                         template
                         <
                                 bool tsum,
@@ -148,6 +164,9 @@ namespace ncv
                                 }
                         }
 
+                        ///
+                        /// \brief 2D convolution with runtime decoding of the kernel size
+                        ///
                         template
                         <
                                 bool tsum,
@@ -175,7 +194,11 @@ namespace ncv
                                 else if (kcols == 10) { conv_test<tsum>(idata, kdata, odata, dot<tscalar, 10>); }
                                 else if (kcols == 11) { conv_test<tsum>(idata, kdata, odata, dot<tscalar, 11>); }
                                 else if (kcols == 12) { conv_test<tsum>(idata, kdata, odata, dot<tscalar, 12>); }
-//                                else { conv_test<tsum>(idata, kdata, odata, std::bind(detail::dot<tscalar>, _1, _2, kcols)); }
+                                else
+                                {
+                                        conv_test<tsum>(idata, kdata, odata,
+                                                        std::bind(dot<tscalar, decltype(kcols)>, _1, _2, kcols));
+                                }
                         }
                 }
 
@@ -201,27 +224,6 @@ namespace ncv
                 void conv_test(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
                 {
                         detail::conv_test<false>(idata, kdata, odata);
-                }
-                
-                ///
-                /// outer 2D convolution: odata += idata @ kdata (using Eigen 2D blocks)
-                ///
-                template
-                <
-                        typename tmatrixi,
-                        typename tmatrixk = tmatrixi,
-                        typename tmatrixo = tmatrixi,
-                        typename tscalar = typename tmatrixi::Scalar
-                >
-                void outer_conv_sum(tmatrixi& idata, const tmatrixk& kdata, const tmatrixo& odata)
-                {
-                        for (auto r = 0; r < odata.rows(); r ++)
-                        {
-                                for (auto c = 0; c < odata.cols(); c ++)
-                                {
-                                        idata.block(r, c, kdata.rows(), kdata.cols()) += kdata * odata(r, c);
-                                }
-                        }
                 }
         }
 }
