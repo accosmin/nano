@@ -5,6 +5,8 @@
 * do not do the input-gradient for the first layer:
 	- may save a lot of time for the backward step
 
+* check if any improvement in speed with OpenCL (fixed size convolutions)
+
 - reduce the number of input/output buffers for layers
                 
 - optimization statistics computed at the layer level: average gradient LInf-norm, number of calls
