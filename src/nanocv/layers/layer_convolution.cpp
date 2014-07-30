@@ -85,15 +85,9 @@ namespace ncv
                         for (tsize i = 0; i < idims; i ++)
                         {
                                 auto gimap = tensor::make_matrix(gidata + i * isize, irows, icols);
-                                auto kmap = tensor::make_matrix(kdata + (o * idims + i) * ksize, krows, kcols);                                                                                                
+                                auto kmap = tensor::make_matrix(kdata + (o * idims + i) * ksize, krows, kcols);     
                                 
-                                for (tsize r = 0; r < orows; r ++)
-                                {
-                                        for (tsize c = 0; c < ocols; c ++)
-                                        {
-                                                gimap.block(r, c, krows, kcols) += kmap * omap(r, c);
-                                        }
-                                }
+                                math::outer_conv_sum(gimap, kmap, omap);
                         }
                 }
         }
