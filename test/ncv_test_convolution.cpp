@@ -244,10 +244,14 @@ void test(int isize, int ksize, int n_samples)
         init_matrices(isize, isize, n_samples, idatas);
         init_matrices(osize, osize, n_samples, odatas);
         init_matrix(ksize, ksize, kdata);
-
-        std::cout << "(" << isize << "x" << isize << " @ " << ksize << "x" << ksize << "): ";
+        
+        const string_t header = (boost::format("(%1%x%2% @ %3%x%4%): ") % isize % isize % ksize % ksize).str();
+        std::cout << text::resize(header, 16);
+        
         const scalar_t sum1cpu = test_conv2D_1cpu(ncv::math::conv<matrix_t>, "conv(1CPU)", idatas, kdata, odatas);
         const scalar_t sumxcpu = test_conv2D_xcpu(ncv::math::conv<matrix_t>, "conv(xCPU)", idatas, kdata, odatas);
+        const scalar_t sumf1cpu = test_conv2D_1cpu(ncv::math::conv_fast<matrix_t>, "conv_fast(1CPU)", idatas, kdata, odatas);
+        const scalar_t sumfxcpu = test_conv2D_xcpu(ncv::math::conv_fast<matrix_t>, "conv_fast(xCPU)", idatas, kdata, odatas);
 #ifdef NANOCV_HAVE_OPENCL
         const scalar_t sumg8dot = test_conv2D_gpu("dot(8GPU)", idatas, kdata, odatas, 8);
         const scalar_t sumg16dot = test_conv2D_gpu("dot(16GPU)", idatas, kdata, odatas, 16);
@@ -263,6 +267,8 @@ void test(int isize, int ksize, int n_samples)
         scalar_t diff = 0.0;
         if ((diff = std::fabs(sum1cpu - sum1cpu)) > eps) { std::cout << "conv(1CPU) FAILED (diff = " << diff << ")!" << std::endl; }
         if ((diff = std::fabs(sumxcpu - sum1cpu)) > eps) { std::cout << "conv(xCPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sumf1cpu - sum1cpu)) > eps) { std::cout << "conv_fast(1CPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        if ((diff = std::fabs(sumfxcpu - sum1cpu)) > eps) { std::cout << "conv_fast(xCPU) FAILED (diff = " << diff << ")!" << std::endl; }
 #ifdef NANOCV_HAVE_OPENCL
         if ((diff = std::fabs(sumg8dot - sum1cpu)) > eps) { std::cout << "dot(8GPU) FAILED (diff = " << diff << ")!" << std::endl; }
         if ((diff = std::fabs(sumg16dot - sum1cpu)) > eps) { std::cout << "dot(16GPU) FAILED (diff = " << diff << ")!" << std::endl; }
