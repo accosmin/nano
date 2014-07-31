@@ -1,4 +1,5 @@
-* dot-based efficient outer_conv_
+* dot-based efficient outer_conv_xxx:
+	- update the test_convolution program to compare the Eigen and the dot versions of the outer convolutions
 
 * templated convolution layers (by the kernel size):
 	- check if any speed improvement (forward)
