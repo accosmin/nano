@@ -1,9 +1,12 @@
+* dot-based efficient outer_conv_
+
 * templated convolution layers (by the kernel size):
 	- check if any speed improvement (forward)
 	- update the outer convolution similarly to conv_test
 
 * do not do the input-gradient for the first layer:
 	- may save a lot of time for the backward step
+	- split ::backward() to ::xgrad() and ::pgrad()
 
 * check if any improvement in speed with OpenCL (fixed size convolutions)
 
