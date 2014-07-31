@@ -226,6 +226,27 @@ namespace ncv
 
                 detail::conv_dot<false>(idata, kdata, odata, dot<tscalar, tsize>);
         }
+        
+        ///
+        /// outer 2D convolution: odata += idata @ kdata (using a dot product)
+        ///
+        template
+        <
+                typename tmatrixi,
+                typename tmatrixk = tmatrixi,
+                typename tmatrixo = tmatrixi,
+                typename tscalar = typename tmatrixi::Scalar
+        >
+        void outer_conv_dot_add(tmatrixi& idata, const tmatrixk& kdata, const tmatrixo& odata)
+        {
+                for (auto r = 0; r < odata.rows(); r ++)
+                {
+                        for (auto c = 0; c < odata.cols(); c ++)
+                        {
+                                idata.block(r, c, kdata.rows(), kdata.cols()) += kdata * odata(r, c);
+                        }
+                }
+        }
 }
 
 #endif // NANOCV_CONVOLUTION_H
