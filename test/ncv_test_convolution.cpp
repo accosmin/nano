@@ -88,7 +88,7 @@ scalar_t sum_matrices(matrices_t& matrices)
 }
 
 template <typename top>
-scalar_t test_conv2D_cpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
+scalar_t test_cpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
 {
         ncv::stats_t<double, size_t> proc_stats;
         
@@ -104,15 +104,15 @@ scalar_t test_conv2D_cpu(top op, const char* name, const matrices_t& idatas, con
         }
         
         const size_t milis = static_cast<size_t>(proc_stats.avg());
-        std::cout << name << "= " << text::resize(text::to_string(milis), 4, align::right) << "ms  ";
+        std::cout << name << "= " << text::resize(text::to_string(milis), 3, align::right) << "ms  ";
         
         return sum_matrices(odatas);
 }
 
 template <typename top>
-scalar_t test_conv2D_1cpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
+scalar_t test_1cpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
 {
-        return test_conv2D_cpu([&] ()
+        return test_cpu([&] ()
         {
                 for (size_t i = 0; i < idatas.size(); i ++)
                 {
@@ -122,9 +122,9 @@ scalar_t test_conv2D_1cpu(top op, const char* name, const matrices_t& idatas, co
 }
 
 template <typename top>
-scalar_t test_conv2D_xcpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata,  matrices_t& odatas)
+scalar_t test_xcpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata,  matrices_t& odatas)
 {
-        return test_conv2D_cpu([&] ()
+        return test_cpu([&] ()
         {
                 ncv::thread_loopi(idatas.size(), pool, [&] (size_t i)
                 {
@@ -135,7 +135,7 @@ scalar_t test_conv2D_xcpu(top op, const char* name, const matrices_t& idatas, co
 
 #ifdef NANOCV_HAVE_OPENCL
 
-scalar_t test_conv2D_gpu(const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas, size_t tsend)
+scalar_t test_gpu(const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas, size_t tsend)
 {
         ocl::manager_t& theocl = ocl::manager_t::instance();
 
@@ -228,6 +228,17 @@ scalar_t test_conv2D_gpu(const char* name, const matrices_t& idatas, const matri
 
 #endif
 
+void check(scalar_t result, scalar_t baseline, const char* name)
+{
+        const scalar_t eps = 1e-12;//std::numeric_limits<scalar_t>::epsilon();
+        const scalar_t err = std::fabs(result - baseline);
+
+        if (err > eps)
+        {
+                std::cout << name << " FAILED (diff = " << err << ")!" << std::endl;
+        }
+}
+
 void test(int isize, int ksize, int n_samples)
 {
         const int osize = isize - ksize + 1;
@@ -239,37 +250,43 @@ void test(int isize, int ksize, int n_samples)
         init_matrices(osize, osize, n_samples, odatas);
         init_matrix(ksize, ksize, kdata);
         
-        const string_t header = (boost::format("(%1%x%2% @ %3%x%4%): ") % isize % isize % ksize % ksize).str();
-        std::cout << text::resize(header, 24);
+        const string_t header = (boost::format("(%1%x%2%@%3%x%4%): ") % isize % isize % ksize % ksize).str();
+        std::cout << text::resize(header, 16);
         
-        const scalar_t conveig1cpu = test_conv2D_1cpu(ncv::conv_eig_set<matrix_t>, "conv_eig(1CPU)", idatas, kdata, odatas);
-        const scalar_t conveigxcpu = test_conv2D_xcpu(ncv::conv_eig_set<matrix_t>, "conv_eig(xCPU)", idatas, kdata, odatas);
-        const scalar_t convdot1cpu = test_conv2D_1cpu(ncv::conv_dot_set<matrix_t>, "conv_dot(1CPU)", idatas, kdata, odatas);
-        const scalar_t convdotxcpu = test_conv2D_xcpu(ncv::conv_dot_set<matrix_t>, "conv_dot(xCPU)", idatas, kdata, odatas);
+        const scalar_t conve1cpu  = test_1cpu(ncv::conv_eig_set<matrix_t>, "conv_eig(1CPU)", idatas, kdata, odatas);
+        const scalar_t convexcpu  = test_xcpu(ncv::conv_eig_set<matrix_t>, "conv_eig(xCPU)", idatas, kdata, odatas);
+        const scalar_t convd1cpu  = test_1cpu(ncv::conv_dot_set<matrix_t>, "conv_dot(1CPU)", idatas, kdata, odatas);
+        const scalar_t convdxcpu  = test_xcpu(ncv::conv_dot_set<matrix_t>, "conv_dot(xCPU)", idatas, kdata, odatas);
 #ifdef NANOCV_HAVE_OPENCL
-        const scalar_t convdotg8   = test_conv2D_gpu("dot(8GPU)", idatas, kdata, odatas, 8);
-        const scalar_t convdotg16  = test_conv2D_gpu("dot(16GPU)", idatas, kdata, odatas, 16);
-        const scalar_t convdotg32  = test_conv2D_gpu("dot(32GPU)", idatas, kdata, odatas, 32);
-        const scalar_t convdotg64  = test_conv2D_gpu("dot(32GPU)", idatas, kdata, odatas, 64);
-        const scalar_t convdotg128 = test_conv2D_gpu("dot(32GPU)", idatas, kdata, odatas, 128);
-        const scalar_t convdotg256 = test_conv2D_gpu("dot(32GPU)", idatas, kdata, odatas, 256);
+        const scalar_t convg8     = test_gpu("conv_dot(8GPU)", idatas, kdata, odatas, 8);
+        const scalar_t convg16    = test_gpu("conv_dot(16GPU)", idatas, kdata, odatas, 16);
+        const scalar_t convg32    = test_gpu("conv_dot(32GPU)", idatas, kdata, odatas, 32);
+        const scalar_t convg64    = test_gpu("conv_dot(32GPU)", idatas, kdata, odatas, 64);
+        const scalar_t conv128    = test_gpu("conv_dot(32GPU)", idatas, kdata, odatas, 128);
+        const scalar_t conv256    = test_gpu("conv_dot(32GPU)", idatas, kdata, odatas, 256);
 #endif
+        const scalar_t oconve1cpu = test_1cpu(ncv::outer_conv_eig_add<matrix_t>, "oconv_eig(1CPU)", odatas, kdata, idatas);
+        const scalar_t oconvexcpu = test_xcpu(ncv::outer_conv_eig_add<matrix_t>, "oconv_eig(xCPU)", odatas, kdata, idatas);
+        const scalar_t oconvd1cpu = test_1cpu(ncv::outer_conv_dot_add<matrix_t>, "oconv_dot(1CPU)", odatas, kdata, idatas);
+        const scalar_t oconvdxcpu = test_xcpu(ncv::outer_conv_dot_add<matrix_t>, "oconv_dot(xCPU)", odatas, kdata, idatas);
         std::cout << std::endl;
 
-        const scalar_t eps = 1e-12;//std::numeric_limits<scalar_t>::epsilon();
-        scalar_t diff = 0.0;
-        if ((diff = std::fabs(conveig1cpu - convdot1cpu)) > eps) { std::cout << "conv_eig(1CPU) FAILED (diff = " << diff << ")!" << std::endl; }
-        if ((diff = std::fabs(conveigxcpu - convdot1cpu)) > eps) { std::cout << "conv_eig(xCPU) FAILED (diff = " << diff << ")!" << std::endl; }
-        if ((diff = std::fabs(convdot1cpu - convdot1cpu)) > eps) { std::cout << "conv_dot(1CPU) FAILED (diff = " << diff << ")!" << std::endl; }
-        if ((diff = std::fabs(convdotxcpu - convdot1cpu)) > eps) { std::cout << "conv_dot(xCPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        check(conve1cpu, conve1cpu, "conv_eig(1CPU)");
+        check(convexcpu, conve1cpu, "conv_eig(xCPU)");
+        check(convd1cpu, conve1cpu, "conv_dot(1CPU)");
+        check(convdxcpu, conve1cpu, "conv_dot(xCPU)");
 #ifdef NANOCV_HAVE_OPENCL
-        if ((diff = std::fabs(convdotg8   - conveig1cpu)) > eps) { std::cout << "conv_dot(8GPU) FAILED (diff = " << diff << ")!" << std::endl; }
-        if ((diff = std::fabs(convdotg16  - conveig1cpu)) > eps) { std::cout << "conv_dot(16GPU) FAILED (diff = " << diff << ")!" << std::endl; }
-        if ((diff = std::fabs(convdotg32  - conveig1cpu)) > eps) { std::cout << "conv_dot(32GPU) FAILED (diff = " << diff << ")!" << std::endl; }
-        if ((diff = std::fabs(convdotg64  - conveig1cpu)) > eps) { std::cout << "conv_dot(64GPU) FAILED (diff = " << diff << ")!" << std::endl; }
-        if ((diff = std::fabs(convdotg128 - conveig1cpu)) > eps) { std::cout << "conv_dot(128GPU) FAILED (diff = " << diff << ")!" << std::endl; }
-        if ((diff = std::fabs(convdotg256 - conveig1cpu)) > eps) { std::cout << "conv_dot(256GPU) FAILED (diff = " << diff << ")!" << std::endl; }
+        check(convg8  , conve1cpu, "conv_dot(8GPU)");
+        check(convg16 , conve1cpu, "conv_dot(16GPU)");
+        check(convg32 , conve1cpu, "conv_dot(32GPU)");
+        check(convg64 , conve1cpu, "conv_dot(64GPU)");
+        check(convg128, conve1cpu, "conv_dot(128GPU)");
+        check(convg256, conve1cpu, "conv_dot(256GPU)");
 #endif
+        check(oconve1cpu, oconvd1cpu, "oconv_eig(1CPU)");
+        check(oconvexcpu, oconvd1cpu, "oconv_eig(xCPU)");
+        check(oconvd1cpu, oconvd1cpu, "oconv_dot(1CPU)");
+        check(oconvdxcpu, oconvd1cpu, "oconv_dot(xCPU)");
 }
 
 int main(int argc, char* argv[])

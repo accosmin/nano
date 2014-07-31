@@ -61,7 +61,7 @@ namespace ncv
                 typename tmatrixo = tmatrixi,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void outer_conv_eig_add(tmatrixi& idata, const tmatrixk& kdata, const tmatrixo& odata)
+        void outer_conv_eig_add(const tmatrixk& kdata, const tmatrixo& odata, tmatrixi& idata)
         {
                 for (auto r = 0; r < odata.rows(); r ++)
                 {
@@ -237,7 +237,7 @@ namespace ncv
                 typename tmatrixo = tmatrixi,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void outer_conv_dot_add(tmatrixi& idata, const tmatrixk& kdata, const tmatrixo& odata)
+        void outer_conv_dot_add(const tmatrixk& kdata, const tmatrixo& odata, tmatrixi& idata)
         {
                 for (auto r = 0; r < odata.rows(); r ++)
                 {
