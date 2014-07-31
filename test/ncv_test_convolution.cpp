@@ -88,55 +88,49 @@ scalar_t sum_matrices(matrices_t& matrices)
 }
 
 template <typename top>
-scalar_t test_conv2D_1cpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
+scalar_t test_conv2D_cpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
 {
         ncv::stats_t<double, size_t> proc_stats;
-
+        
         // run multiple tests
         for (size_t t = 0; t < tests; t ++)
         {
                 zero_matrices(odatas);
-
+                
                 const ncv::timer_t timer;
+                op();
+                
+                proc_stats(timer.miliseconds());
+        }
+        
+        const size_t milis = static_cast<size_t>(proc_stats.avg());
+        std::cout << name << "= " << text::resize(text::to_string(milis), 4, align::right) << "ms  ";
+        
+        return sum_matrices(odatas);
+}
 
+template <typename top>
+scalar_t test_conv2D_1cpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
+{
+        return test_conv2D_cpu([&] ()
+        {
                 for (size_t i = 0; i < idatas.size(); i ++)
                 {
                         op(idatas[i], kdata, odatas[i]);
                 }
-
-                proc_stats(timer.miliseconds());
-        }
-
-        const size_t milis = static_cast<size_t>(proc_stats.avg());
-        std::cout << name << "= " << text::resize(text::to_string(milis), 4, align::right) << "ms  ";
-
-        return sum_matrices(odatas);
+        }, name, idatas, kdata, odatas);
 }
 
 template <typename top>
 scalar_t test_conv2D_xcpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata,  matrices_t& odatas)
 {
-        ncv::stats_t<double, size_t> proc_stats;
-
-        // run multiple tests
-        for (size_t t = 0; t < tests; t ++)
+        return test_conv2D_cpu([&] ()
         {
-                zero_matrices(odatas);
-
-                const ncv::timer_t timer;
-
                 ncv::thread_loopi(idatas.size(), pool, [&] (size_t i)
                 {
                         op(idatas[i], kdata, odatas[i]);
                 });
-
-                proc_stats(timer.miliseconds());
-        }
-
-        const size_t milis = static_cast<size_t>(proc_stats.avg());
-        std::cout << name << "=" << text::resize(text::to_string(milis), 4, align::right) << "ms  ";
-
-        return sum_matrices(odatas);
+        }, name, idatas, kdata, odatas);
 }
 
 #ifdef NANOCV_HAVE_OPENCL
