@@ -10,7 +10,7 @@ namespace ncv
         <
                 typename toperator
         >
-        void unroll(const toperator& op, int size)
+        void unroll(int size, const toperator& op)
         {
                 const int size4 = size - (size & 3);
                 
@@ -39,7 +39,7 @@ namespace ncv
                 typename toperator,
                 int tsize
         >
-        void unroll(const toperator& op, int tsize)
+        void unroll(const toperator& op)
         {
                 const int tsize4 = tsize - (tsize & 3);
                 

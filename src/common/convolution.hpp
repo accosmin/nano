@@ -86,7 +86,7 @@ namespace ncv
                         typename tdotop,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                void conv_test(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata, tdotop dotop)
+                void conv_dot(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata, tdotop dotop)
                 {
                         const auto orows = odata.rows();
                         const auto ocols = odata.cols();
@@ -136,29 +136,29 @@ namespace ncv
                         typename tmatrixo = tmatrixi,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                void conv_test(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                void conv_dot(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
                 {
                         const auto kcols = kdata.cols();
 
                         using std::placeholders::_1;
                         using std::placeholders::_2;
 
-                        if (kcols == 1) { conv_test<tsum>(idata, kdata, odata, dot<tscalar, 1>); }
-                        else if (kcols == 2) { conv_test<tsum>(idata, kdata, odata, dot<tscalar, 2>); }
-                        else if (kcols == 3) { conv_test<tsum>(idata, kdata, odata, dot<tscalar, 3>); }
-                        else if (kcols == 4) { conv_test<tsum>(idata, kdata, odata, dot<tscalar, 4>); }
-                        else if (kcols == 5) { conv_test<tsum>(idata, kdata, odata, dot<tscalar, 5>); }
-                        else if (kcols == 6) { conv_test<tsum>(idata, kdata, odata, dot<tscalar, 6>); }
-                        else if (kcols == 7) { conv_test<tsum>(idata, kdata, odata, dot<tscalar, 7>); }
-                        else if (kcols == 8) { conv_test<tsum>(idata, kdata, odata, dot<tscalar, 8>); }
-                        else if (kcols == 9) { conv_test<tsum>(idata, kdata, odata, dot<tscalar, 9>); }
-                        else if (kcols == 10) { conv_test<tsum>(idata, kdata, odata, dot<tscalar, 10>); }
-                        else if (kcols == 11) { conv_test<tsum>(idata, kdata, odata, dot<tscalar, 11>); }
-                        else if (kcols == 12) { conv_test<tsum>(idata, kdata, odata, dot<tscalar, 12>); }
+                        if (kcols == 1) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 1>); }
+                        else if (kcols == 2) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 2>); }
+                        else if (kcols == 3) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 3>); }
+                        else if (kcols == 4) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 4>); }
+                        else if (kcols == 5) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 5>); }
+                        else if (kcols == 6) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 6>); }
+                        else if (kcols == 7) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 7>); }
+                        else if (kcols == 8) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 8>); }
+                        else if (kcols == 9) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 9>); }
+                        else if (kcols == 10) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 10>); }
+                        else if (kcols == 11) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 11>); }
+                        else if (kcols == 12) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 12>); }
                         else
                         {
-                                conv_test<tsum>(idata, kdata, odata,
-                                                std::bind(dot<tscalar, decltype(kcols)>, _1, _2, kcols));
+                                conv_dot<tsum>(idata, kdata, odata, 
+                                               std::bind(dot<tscalar, decltype(kcols)>, _1, _2, kcols));
                         }
                 }
         }
@@ -170,9 +170,9 @@ namespace ncv
                 typename tmatrixo = tmatrixi,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void conv_sum_test(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+        void conv_dot_add(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
         {
-                detail::conv_test<true>(idata, kdata, odata);
+                detail::conv_dot<true>(idata, kdata, odata);
         }
 
         template
@@ -182,24 +182,9 @@ namespace ncv
                 typename tmatrixo = tmatrixi,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void conv_test(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+        void conv_dot_set(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
         {
-                detail::conv_test<false>(idata, kdata, odata);
-        }
-
-        template
-        <
-                int tsize,
-                typename tmatrixi,
-                typename tmatrixk = tmatrixi,
-                typename tmatrixo = tmatrixi,
-                typename tscalar = typename tmatrixi::Scalar
-        >
-        void conv_sum_test(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
-        {
-                assert(tsize == kdata.cols());
-
-                detail::conv_test<true>(idata, kdata, odata, dot<tscalar, tsize>);
+                detail::conv_dot<false>(idata, kdata, odata);
         }
 
         template
@@ -210,11 +195,26 @@ namespace ncv
                 typename tmatrixo = tmatrixi,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void conv_test(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+        void conv_dot_add(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
         {
                 assert(tsize == kdata.cols());
 
-                detail::conv_test<false>(idata, kdata, odata, dot<tscalar, tsize>);
+                detail::conv_dot<true>(idata, kdata, odata, dot<tscalar, tsize>);
+        }
+
+        template
+        <
+                int tsize,
+                typename tmatrixi,
+                typename tmatrixk = tmatrixi,
+                typename tmatrixo = tmatrixi,
+                typename tscalar = typename tmatrixi::Scalar
+        >
+        void conv_dot_set(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+        {
+                assert(tsize == kdata.cols());
+
+                detail::conv_dot<false>(idata, kdata, odata, dot<tscalar, tsize>);
         }
 }
 
