@@ -74,9 +74,6 @@ namespace ncv
 
         namespace detail
         {
-                ///
-                /// \brief 2D convolution using a dot-operator
-                ///
                 template
                 <
                         bool tsum,
@@ -125,9 +122,6 @@ namespace ncv
                         }
                 }
 
-                ///
-                /// \brief 2D convolution with runtime decoding of the kernel size
-                ///
                 template
                 <
                         bool tsum,
@@ -143,6 +137,7 @@ namespace ncv
                         using std::placeholders::_1;
                         using std::placeholders::_2;
 
+                        // decode at run-time the kernel size
                         if (kcols == 1) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 1>); }
                         else if (kcols == 2) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 2>); }
                         else if (kcols == 3) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 3>); }
@@ -155,6 +150,9 @@ namespace ncv
                         else if (kcols == 10) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 10>); }
                         else if (kcols == 11) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 11>); }
                         else if (kcols == 12) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 12>); }
+                        else if (kcols == 13) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 13>); }
+                        else if (kcols == 14) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 14>); }
+                        else if (kcols == 15) { conv_dot<tsum>(idata, kdata, odata, dot<tscalar, 15>); }
                         else
                         {
                                 conv_dot<tsum>(idata, kdata, odata, 
@@ -163,6 +161,9 @@ namespace ncv
                 }
         }
 
+        ///
+        /// 2D convolution: odata += idata @ kdata (using a dot operator)
+        ///
         template
         <
                 typename tmatrixi,
@@ -175,6 +176,9 @@ namespace ncv
                 detail::conv_dot<true>(idata, kdata, odata);
         }
 
+        ///
+        /// 2D convolution: odata = idata @ kdata (using a dot operator)
+        ///
         template
         <
                 typename tmatrixi,
@@ -187,6 +191,9 @@ namespace ncv
                 detail::conv_dot<false>(idata, kdata, odata);
         }
 
+        ///
+        /// 2D convolution for compile-time kernel size: odata += idata @ kdata (using a dot operator)
+        ///
         template
         <
                 int tsize,
@@ -202,6 +209,9 @@ namespace ncv
                 detail::conv_dot<true>(idata, kdata, odata, dot<tscalar, tsize>);
         }
 
+        ///
+        /// 2D convolution for compile-time kernel size: odata = idata @ kdata (using a dot operator)
+        ///
         template
         <
                 int tsize,
