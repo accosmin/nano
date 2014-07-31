@@ -112,7 +112,7 @@ namespace ncv
 
                 try
                 {
-                        program.build(m_devices);//, "-cl-fast-relaxed-math -cl-mad-enable");
+                        program.build(m_devices, "-cl-mad-enable");//, "-cl-fast-relaxed-math");
                 }
                 catch (cl::Error e)
                 {
