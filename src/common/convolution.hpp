@@ -61,7 +61,7 @@ namespace ncv
                 typename tmatrixo = tmatrixi,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void outer_conv_eig_add(const tmatrixk& kdata, const tmatrixo& odata, tmatrixi& idata)
+        void outer_conv_eig_add(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
         {
                 for (auto r = 0; r < odata.rows(); r ++)
                 {
@@ -237,13 +237,35 @@ namespace ncv
                 typename tmatrixo = tmatrixi,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void outer_conv_dot_add(const tmatrixk& kdata, const tmatrixo& odata, tmatrixi& idata)
+        void outer_conv_dot_add(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
         {
-                for (auto r = 0; r < odata.rows(); r ++)
+                const auto orows = odata.rows();
+                const auto ocols = odata.cols();
+                const auto krows = kdata.rows();
+                const auto kcols = kdata.cols();
+
+                const auto icols = ocols + kcols - 1;
+
+                const tscalar* pkdata = kdata.data();
+                const tscalar* podata = odata.data();
+                tscalar* pidata = idata.data();
+
+                for (auto r = 0; r < orows; r ++)
                 {
-                        for (auto c = 0; c < odata.cols(); c ++)
+                        const tscalar* ppodata = podata + r * ocols;
+
+                        for (auto kr = 0; kr < krows; kr ++)
                         {
-                                idata.block(r, c, kdata.rows(), kdata.cols()) += kdata * odata(r, c);
+                                tscalar* ppidata = pidata + (r + kr) * icols;
+                                const tscalar* ppkdata = pkdata + kr * kcols;
+
+                                for (auto c = 0; c < ocols; c ++)
+                                {
+                                        for (auto kc = 0; kc < kcols; kc ++)
+                                        {
+                                                ppidata[c + kc] += ppkdata[kc] * ppodata[c];
+                                        }
+                                }
                         }
                 }
         }
