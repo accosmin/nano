@@ -265,10 +265,10 @@ void test(int isize, int ksize, int n_samples)
         const scalar_t conv128    = test_gpu("convd(32GPU)", idatas, kdata, odatas, 128);
         const scalar_t conv256    = test_gpu("convd(32GPU)", idatas, kdata, odatas, 256);
 #endif
-        const scalar_t oconve1cpu = test_1cpu(ncv::outer_conv_eig<matrix_t>, "oconve(1CPU)", odatas, kdata, idatas);
-        const scalar_t oconvexcpu = test_xcpu(ncv::outer_conv_eig<matrix_t>, "oconve(xCPU)", odatas, kdata, idatas);
-        const scalar_t oconvd1cpu = test_1cpu(ncv::outer_conv_dot<matrix_t>, "oconvd(1CPU)", odatas, kdata, idatas);
-        const scalar_t oconvdxcpu = test_xcpu(ncv::outer_conv_dot<matrix_t>, "oconvd(xCPU)", odatas, kdata, idatas);
+        const scalar_t iconve1cpu = test_1cpu(ncv::iconv_eig<matrix_t>, "iconve(1CPU)", odatas, kdata, idatas);
+        const scalar_t iconvexcpu = test_xcpu(ncv::iconv_eig<matrix_t>, "iconve(xCPU)", odatas, kdata, idatas);
+        const scalar_t iconvm1cpu = test_1cpu(ncv::iconv_mad<matrix_t>, "iconvm(1CPU)", odatas, kdata, idatas);
+        const scalar_t iconvmxcpu = test_xcpu(ncv::iconv_mad<matrix_t>, "iconvm(xCPU)", odatas, kdata, idatas);
         std::cout << std::endl;
 
         check(conve1cpu, conve1cpu, "conve(1CPU)");
@@ -283,10 +283,10 @@ void test(int isize, int ksize, int n_samples)
         check(convg128, conve1cpu, "convd(128GPU)");
         check(convg256, conve1cpu, "convd(256GPU)");
 #endif
-        check(oconve1cpu, oconve1cpu, "oconve(1CPU)");
-        check(oconvexcpu, oconve1cpu, "oconve(xCPU)");
-        check(oconvd1cpu, oconve1cpu, "oconvd(1CPU)");
-        check(oconvdxcpu, oconve1cpu, "oconvd(xCPU)");
+        check(iconve1cpu, iconve1cpu, "iconve(1CPU)");
+        check(iconvexcpu, iconve1cpu, "iconve(xCPU)");
+        check(iconvm1cpu, iconve1cpu, "iconvm(1CPU)");
+        check(iconvmxcpu, iconve1cpu, "iconvm(xCPU)");
 }
 
 int main(int argc, char* argv[])

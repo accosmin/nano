@@ -89,7 +89,7 @@ namespace ncv
                                 auto gimap = tensor::make_matrix(gidata + i * isize, irows, icols);
                                 auto kmap = tensor::make_matrix(kdata + (o * idims + i) * ksize, krows, kcols);                                     
 
-                                ncv::outer_conv_eig(omap, kmap, gimap);
+                                ncv::iconv_eig(omap, kmap, gimap);
                         }
                 }
         }
