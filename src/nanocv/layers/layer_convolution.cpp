@@ -62,8 +62,6 @@ namespace ncv
                 // convolution gradient
                 if (has_gradient)
                 {
-                        tensor::make_vector(gkdata, odims * idims * ksize).setZero();
-
                         for (tsize o = 0; o < odims; o ++)
                         {
                                 auto omap = tensor::make_matrix(odata + o * osize, orows, ocols);
@@ -73,6 +71,7 @@ namespace ncv
                                         auto imap = tensor::make_matrix(idata + i * isize, irows, icols);                                        
                                         auto gkmap = tensor::make_matrix(gkdata + (o * idims + i) * ksize, krows, kcols);
                                         
+                                        gkmap.setZero();
                                         ncv::conv_dot(imap, omap, gkmap);
                                 }
                         }
@@ -89,7 +88,7 @@ namespace ncv
                                 auto gimap = tensor::make_matrix(gidata + i * isize, irows, icols);
                                 auto kmap = tensor::make_matrix(kdata + (o * idims + i) * ksize, krows, kcols);                                     
 
-                                ncv::iconv_eig(omap, kmap, gimap);
+                                ncv::iconv_mad(omap, kmap, gimap);
                         }
                 }
         }
