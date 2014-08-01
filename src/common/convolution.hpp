@@ -19,6 +19,9 @@ namespace ncv
         >
         void conv_eig(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
         {
+                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+
                 for (auto r = 0; r < odata.rows(); r ++)
                 {
                         for (auto c = 0; c < odata.cols(); c ++)
@@ -40,6 +43,9 @@ namespace ncv
         >
         void outer_conv_eig(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
         {
+                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+
                 for (auto r = 0; r < odata.rows(); r ++)
                 {
                         for (auto c = 0; c < odata.cols(); c ++)
@@ -138,6 +144,9 @@ namespace ncv
         >
         void conv_dot(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
         {
+                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+
                 detail::conv_dot(idata, kdata, odata);
         }
 
@@ -154,27 +163,11 @@ namespace ncv
         >
         void conv_dot(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
         {
+                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
                 assert(tsize == kdata.cols());
 
                 detail::conv_dot(idata, kdata, odata, dot<tscalar, tsize>);
-        }
-
-        ///
-        /// 2D convolution for compile-time kernel size: odata = idata @ kdata (using a dot operator)
-        ///
-        template
-        <
-                int tsize,
-                typename tmatrixi,
-                typename tmatrixk = tmatrixi,
-                typename tmatrixo = tmatrixi,
-                typename tscalar = typename tmatrixi::Scalar
-        >
-        void conv_dot_set(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
-        {
-                assert(tsize == kdata.cols());
-
-                detail::conv_dot<false>(idata, kdata, odata, dot<tscalar, tsize>);
         }
         
         ///
@@ -189,6 +182,9 @@ namespace ncv
         >
         void outer_conv_dot(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
         {
+                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+
                 const auto orows = odata.rows();
                 const auto ocols = odata.cols();
                 const auto krows = kdata.rows();
