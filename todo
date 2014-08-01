@@ -1,7 +1,3 @@
-* templated convolution layers (by the kernel size):
-	- check if any speed improvement (forward)
-	- update the outer convolution similarly to conv_test
-
 * do not do the input-gradient for the first layer:
 	- may save a lot of time for the backward step
 	- split ::backward() to ::xgrad() and ::pgrad()
