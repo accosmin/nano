@@ -46,8 +46,9 @@ namespace ncv
                 virtual const scalar_t* load_params(const scalar_t* params) { return params; }
 
                 // process inputs (compute outputs & gradients)
-                virtual const tensor_t& forward(const tensor_t& input) { return _forward(input); }
-                virtual const tensor_t& backward(const tensor_t& output, scalar_t*) { return _backward(output); }
+                virtual const tensor_t& output(const tensor_t& input) { return _output(input); }
+                virtual const tensor_t& igrad(const tensor_t& output) { return _igrad(output); }
+                virtual void pgrad(const tensor_t& output, scalar_t*) { return _pgrad(output); }
 
                 // access functions
                 virtual size_t idims() const { return m_data.dims(); }
@@ -69,7 +70,7 @@ namespace ncv
                 }
 
                 // output
-                const tensor_t& _forward(const tensor_t& input)
+                const tensor_t& _output(const tensor_t& input)
                 {
                         assert(m_data.dims() == input.dims());
                         assert(m_data.rows() == input.rows());
@@ -81,7 +82,7 @@ namespace ncv
                 }
 
                 // gradient
-                const tensor_t& _backward(const tensor_t& output)
+                const tensor_t& _igrad(const tensor_t& output)
                 {
                         assert(m_data.dims() == output.dims());
                         assert(m_data.rows() == output.rows());
@@ -90,6 +91,14 @@ namespace ncv
                         tensor::transform(output, m_data, m_data, std::bind(tgrad_op(), _1, _2));
 
                         return m_data;
+                }
+
+                // gradient
+                void _pgrad(const tensor_t& output)
+                {
+                        assert(m_data.dims() == output.dims());
+                        assert(m_data.rows() == output.rows());
+                        assert(m_data.cols() == output.cols());
                 }
 
         private:

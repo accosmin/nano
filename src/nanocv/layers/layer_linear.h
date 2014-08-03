@@ -32,8 +32,9 @@ namespace ncv
                 virtual const scalar_t* load_params(const scalar_t* params);
 
                 // process inputs (compute outputs & gradients)
-                virtual const tensor_t& forward(const tensor_t& input);
-                virtual const tensor_t& backward(const tensor_t& output, scalar_t* gradient);
+                virtual const tensor_t& output(const tensor_t& input);
+                virtual const tensor_t& igrad(const tensor_t& output);
+                virtual void pgrad(const tensor_t& output, scalar_t* gradient);
 
                 // access functions
                 virtual size_t idims() const { return m_idata.dims(); }

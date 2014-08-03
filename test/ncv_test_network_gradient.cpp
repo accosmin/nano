@@ -114,7 +114,7 @@ static void test_grad_inputs(const string_t& header, const string_t& loss_id, co
         {
                 rmodel_inputs->load_params(params);
                 
-                const vector_t output = rmodel_inputs->forward(x).vector();
+                const vector_t output = rmodel_inputs->output(x).vector();
                 
                 return loss.value(target, output);
         };
@@ -124,9 +124,9 @@ static void test_grad_inputs(const string_t& header, const string_t& loss_id, co
         {
                 rmodel_inputs->load_params(params);
                 
-                const vector_t output = rmodel_inputs->forward(x).vector();
+                const vector_t output = rmodel_inputs->output(x).vector();
                 
-                gx = rmodel_inputs->backward(loss.vgrad(target, output)).vector();
+                gx = rmodel_inputs->igrad(loss.vgrad(target, output)).vector();
                 return loss.value(target, output);
         };
         

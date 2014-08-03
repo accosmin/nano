@@ -57,10 +57,19 @@ namespace ncv
                 virtual const scalar_t* load_params(const scalar_t* params) = 0;
 
                 ///
-                /// \brief compute the output/gradient tensor
+                /// \brief compute the output
                 ///
-                virtual const tensor_t& forward(const tensor_t& input) = 0;
-                virtual const tensor_t& backward(const tensor_t& output, scalar_t* gradient) = 0;
+                virtual const tensor_t& output(const tensor_t& input) = 0;
+
+                ///
+                /// \brief compute the gradient wrt the inputs
+                ///
+                virtual const tensor_t& igrad(const tensor_t& output) = 0;
+
+                ///
+                /// \brief compute the gradient wrt the parameters
+                ///
+                virtual void pgrad(const tensor_t& output, scalar_t* gradient) = 0;
 
                 ///
                 /// \brief returns the input/output dimensions

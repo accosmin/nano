@@ -31,20 +31,20 @@ namespace ncv
                 return *this;
         }
 
-        const tensor_t& forward_network_t::forward(const tensor_t& _input) const
+        const tensor_t& forward_network_t::output(const tensor_t& _input) const
         {
                 const tensor_t* input = &_input;
                 for (rlayers_t::const_iterator it = m_layers.begin(); it != m_layers.end(); ++ it)
                 {
                         const rlayer_t& layer = *it;
 
-                        input = &layer->forward(*input);
+                        input = &layer->output(*input);
                 }
 
 		return *input;
         }
 
-        const tensor_t& forward_network_t::backward(const vector_t& _output) const
+        const tensor_t& forward_network_t::igrad(const vector_t& _output) const
         {
                 assert(static_cast<size_t>(_output.size()) == osize());
                 assert(!m_layers.empty());
@@ -59,13 +59,13 @@ namespace ncv
                 {
                         const rlayer_t& layer = *it;
 
-                        poutput = &layer->backward(*poutput, nullptr);
+                        poutput = &layer->igrad(*poutput);
                 }
 
                 return *poutput;
         }
 
-        vector_t forward_network_t::gradient(const vector_t& _output) const
+        vector_t forward_network_t::pgrad(const vector_t& _output) const
         {
                 assert(static_cast<size_t>(_output.size()) == osize());
                 assert(!m_layers.empty());
@@ -86,7 +86,8 @@ namespace ncv
                         const rlayer_t& layer = *it;
 
                         pgradient -= layer->psize();
-                        poutput = &layer->backward(*poutput, pgradient);
+                        layer->pgrad(*poutput, pgradient);
+                        poutput = &layer->igrad(*poutput);
                 }
 
                 return gradient;

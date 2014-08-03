@@ -8,7 +8,7 @@ namespace ncv
                 typename tscalar,
                 typename tsize
         >
-        static void _forward(
+        static void _output(
                 const tscalar* idata, tsize irows, tsize icols, tscalar alpha,
                 tscalar* wdata, tscalar* sdata, tscalar* cdata, tscalar* odata)
         {
@@ -44,7 +44,7 @@ namespace ncv
                 typename tscalar,
                 typename tsize
         >
-        static void _backward(
+        static void _igrad(
                 tscalar* idata, tsize irows, tsize icols,
                 const tscalar* wdata, const tscalar* sdata, const tscalar*, const tscalar* gdata)
         {
@@ -91,7 +91,7 @@ namespace ncv
                 return 0;
         }
 
-        const tensor_t& pool_layer_t::forward(const tensor_t& input)
+        const tensor_t& pool_layer_t::output(const tensor_t& input)
         {
                 assert(idims() == input.dims());
                 assert(irows() <= input.rows());
@@ -101,7 +101,7 @@ namespace ncv
 
                 for (size_t o = 0; o < odims(); o ++)
                 {
-                        _forward(m_idata.plane_data(o), irows(), icols(), m_alpha,
+                        _output(m_idata.plane_data(o), irows(), icols(), m_alpha,
                                  m_wdata.plane_data(o),
                                  m_sdata.plane_data(o),
 				 m_cdata.plane_data(o),
@@ -111,7 +111,7 @@ namespace ncv
                 return m_odata;
         }
 
-        const tensor_t& pool_layer_t::backward(const tensor_t& output, scalar_t*)
+        const tensor_t& pool_layer_t::igrad(const tensor_t& output)
         {
                 assert(odims() == output.dims());
                 assert(orows() == output.rows());
@@ -119,7 +119,7 @@ namespace ncv
 
                 for (size_t o = 0; o < odims(); o ++)
                 {
-                        _backward(m_idata.plane_data(o), irows(), icols(),
+                        _igrad(m_idata.plane_data(o), irows(), icols(),
                                   m_wdata.plane_data(o),
                                   m_sdata.plane_data(o),
 				  m_cdata.plane_data(o),
@@ -127,6 +127,13 @@ namespace ncv
                 }
 
                 return m_idata;
+        }
+
+        void pool_layer_t::pgrad(const tensor_t& output, scalar_t* gradient)
+        {
+                assert(odims() == output.dims());
+                assert(orows() == output.rows());
+                assert(ocols() == output.cols());
         }
 }
 

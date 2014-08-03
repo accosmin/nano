@@ -12,7 +12,7 @@ namespace ncv
                 typename tscalar,
                 typename tsize
         >
-        static void _forward(
+        static void _output(
                 const tscalar* idata, tsize idims,
                 const tscalar* kdata, tsize krows, tsize kcols,
                 tscalar* odata, tsize odims, tsize orows, tsize ocols)
@@ -45,9 +45,9 @@ namespace ncv
                 typename tscalar,
                 typename tsize
         >
-        static void _backward(
-                const tscalar* idata, tscalar* gidata, tsize idims,
-                const tscalar* kdata, tscalar* gkdata, tsize krows, tsize kcols,
+        static void _igrad(
+                tscalar* gidata, tsize idims,
+                const tscalar* kdata, tsize krows, tsize kcols,
                 const tscalar* odata, tsize odims, tsize orows, tsize ocols)
         {
                 const tsize irows = orows + krows - 1;
@@ -56,26 +56,6 @@ namespace ncv
 
                 const tsize osize = orows * ocols;
                 const tsize ksize = krows * kcols;
-
-                const bool has_gradient = gkdata != nullptr;
-                
-                // convolution gradient
-                if (has_gradient)
-                {
-                        for (tsize o = 0; o < odims; o ++)
-                        {
-                                auto omap = tensor::make_matrix(odata + o * osize, orows, ocols);
-
-                                for (tsize i = 0; i < idims; i ++)
-                                {
-                                        auto imap = tensor::make_matrix(idata + i * isize, irows, icols);                                        
-                                        auto gkmap = tensor::make_matrix(gkdata + (o * idims + i) * ksize, krows, kcols);
-                                        
-                                        gkmap.setZero();
-                                        ncv::conv_dot(imap, omap, gkmap);
-                                }
-                        }
-                }
                 
                 // input gradient
                 tensor::make_vector(gidata, idims * isize).setZero();
@@ -89,6 +69,38 @@ namespace ncv
                                 auto kmap = tensor::make_matrix(kdata + (o * idims + i) * ksize, krows, kcols);                                     
 
                                 ncv::iconv_mad(omap, kmap, gimap);
+                        }
+                }
+        }
+
+        template
+        <
+                typename tscalar,
+                typename tsize
+        >
+        static void _pgrad(
+                const tscalar* idata, tsize idims,
+                tscalar* gkdata, tsize krows, tsize kcols,
+                const tscalar* odata, tsize odims, tsize orows, tsize ocols)
+        {
+                const tsize irows = orows + krows - 1;
+                const tsize icols = ocols + kcols - 1;
+                const tsize isize = irows * icols;
+
+                const tsize osize = orows * ocols;
+                const tsize ksize = krows * kcols;
+
+                for (tsize o = 0; o < odims; o ++)
+                {
+                        auto omap = tensor::make_matrix(odata + o * osize, orows, ocols);
+
+                        for (tsize i = 0; i < idims; i ++)
+                        {
+                                auto imap = tensor::make_matrix(idata + i * isize, irows, icols);
+                                auto gkmap = tensor::make_matrix(gkdata + (o * idims + i) * ksize, krows, kcols);
+
+                                gkmap.setZero();
+                                ncv::conv_dot(imap, omap, gkmap);
                         }
                 }
         }
@@ -359,7 +371,7 @@ namespace ncv
 #endif
         }
 
-        const tensor_t& conv_layer_t::forward(const tensor_t& input)
+        const tensor_t& conv_layer_t::output(const tensor_t& input)
         {
                 assert(idims() == input.dims());
                 assert(irows() == input.rows());
@@ -385,15 +397,15 @@ namespace ncv
 #endif
                 // CPU version
                 {
-                        _forward(m_idata.data(), idims(),
-                                 m_kdata.data(), krows(), kcols(),
-                                 m_odata.data(), odims(), orows(), ocols());
+                        _output(m_idata.data(), idims(),
+                                m_kdata.data(), krows(), kcols(),
+                                m_odata.data(), odims(), orows(), ocols());
                 }
 
                 return m_odata;
         }        
 
-        const tensor_t& conv_layer_t::backward(const tensor_t& output, scalar_t* gradient)
+        const tensor_t& conv_layer_t::igrad(const tensor_t& output)
         {
                 assert(odims() == output.dims());
                 assert(orows() == output.rows());
@@ -431,12 +443,56 @@ namespace ncv
 #endif
                 // CPU version
                 {
-                        _backward(m_idata.data(), m_idata.data(), idims(),
-                                  m_kdata.data(), gradient, krows(), kcols(),
-                                  m_odata.data(), odims(), orows(), ocols());
+                        _igrad(m_idata.data(), idims(),
+                               m_kdata.data(), krows(), kcols(),
+                               m_odata.data(), odims(), orows(), ocols());
                 }
 
                 return m_idata;
+        }
+
+        void conv_layer_t::pgrad(const tensor_t& output, scalar_t* gradient)
+        {
+                assert(odims() == output.dims());
+                assert(orows() == output.rows());
+                assert(ocols() == output.cols());
+
+                m_odata.copy_from(output);
+
+#if NANOCV_HAVE_OPENCL
+                // OpenCL version
+                ocl::manager_t& theocl = ocl::manager_t::instance();
+                if (theocl.valid())
+                {
+                        m_ocl_queue.enqueueWriteBuffer(m_ocl_odata, CL_TRUE, 0, ocl::bytesize(m_odata), m_odata.data());
+
+                        m_ocl_queue.enqueueNDRangeKernel(m_ocl_bikernel, cl::NullRange,
+                                                         cl::NDRange(idims(), irows(), icols()),
+                                                         cl::NDRange(1, irows(), icols()));
+
+                        if (gradient)
+                        {
+                                m_ocl_queue.enqueueNDRangeKernel(m_ocl_bkkernel, cl::NullRange,
+                                                                 cl::NDRange(odims(), krows(), kcols()),
+                                                                 cl::NDRange(1, krows(), kcols()));
+                        }
+
+                        m_ocl_queue.enqueueReadBuffer(m_ocl_gidata, CL_TRUE, 0, ocl::bytesize(m_gidata), m_gidata.data());
+
+                        if (gradient)
+                        {
+                                m_ocl_queue.enqueueReadBuffer(m_ocl_gkdata, CL_TRUE, 0, ocl::bytesize(m_gkdata), m_gkdata.data());
+                                m_gkdata.copy_to(gradient);
+                        }
+                }
+                else
+#endif
+                // CPU version
+                {
+                        _pgrad(m_idata.data(), idims(),
+                               gradient, krows(), kcols(),
+                               m_odata.data(), odims(), orows(), ocols());
+                }
         }
 }
 

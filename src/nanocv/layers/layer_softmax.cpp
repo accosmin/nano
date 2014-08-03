@@ -8,7 +8,7 @@ namespace ncv
                 typename tscalar,
                 typename tsize
         >
-        static void _forward(const tscalar* idata, tsize size, tscalar* data)
+        static void _output(const tscalar* idata, tsize size, tscalar* data)
         {
                 auto imap = tensor::make_vector(idata, size);
                 auto dmap = tensor::make_vector( data, size);
@@ -26,7 +26,7 @@ namespace ncv
                 typename tscalar,
                 typename tsize
         >
-        static void _backward(const tscalar* gdata, tsize size, tscalar* data)
+        static void _igrad(const tscalar* gdata, tsize size, tscalar* data)
         {
                 auto gmap = tensor::make_vector(gdata, size);
                 auto dmap = tensor::make_vector( data, size);
@@ -69,7 +69,7 @@ namespace ncv
                 return 0;
         }
 
-        const tensor_t& softmax_layer_t::forward(const tensor_t& input)
+        const tensor_t& softmax_layer_t::output(const tensor_t& input)
         {
                 assert(idims() == input.dims());
                 assert(irows() == input.rows());
@@ -80,21 +80,19 @@ namespace ncv
                 case type::plane:
                         for (size_t o = 0; o < odims(); o ++)
                         {
-                                _forward(input.plane_data(o), m_data.plane_size(),
-                                         m_data.plane_data(o));
+                                _output(input.plane_data(o), m_data.plane_size(), m_data.plane_data(o));
                         }
                         break;
 
                 case type::global:
                 default:
-                        _forward(input.data(), m_data.size(),
-                                 m_data.data());
+                        _output(input.data(), m_data.size(), m_data.data());
                 }
 
                 return m_data;
         }
 
-        const tensor_t& softmax_layer_t::backward(const tensor_t& output, scalar_t*)
+        const tensor_t& softmax_layer_t::igrad(const tensor_t& output)
         {
                 assert(odims() == output.dims());
                 assert(orows() == output.rows());
@@ -105,19 +103,24 @@ namespace ncv
                 case type::plane:
                         for (size_t o = 0; o < odims(); o ++)
                         {
-                                _backward(output.plane_data(o), m_data.plane_size(),
-                                          m_data.plane_data(o));
+                                _igrad(output.plane_data(o), m_data.plane_size(), m_data.plane_data(o));
                         }
                         break;
 
                 case type::global:
                 default:
-                        _backward(output.data(), m_data.size(),
-                                  m_data.data());
+                        _igrad(output.data(), m_data.size(), m_data.data());
                         break;
                 }
 
                 return m_data;
+        }
+
+        void softmax_layer_t::pgrad(const tensor_t& output, scalar_t* gradient)
+        {
+                assert(odims() == output.dims());
+                assert(orows() == output.rows());
+                assert(ocols() == output.cols());
         }
 }
 

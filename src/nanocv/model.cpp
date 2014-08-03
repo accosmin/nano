@@ -44,24 +44,24 @@ namespace ncv
                 return load(ia) && is.good();
         }
 
-        const tensor_t& model_t::forward(const image_t& image, const rect_t& region) const
+        const tensor_t& model_t::output(const image_t& image, const rect_t& region) const
         {
-                return forward(image, geom::left(region), geom::top(region));
+                return output(image, geom::left(region), geom::top(region));
         }
 
-        const tensor_t& model_t::forward(const image_t& image, coord_t x, coord_t y) const
+        const tensor_t& model_t::output(const image_t& image, coord_t x, coord_t y) const
         {
-                return forward(make_input(image, x, y));
+                return output(make_input(image, x, y));
         }
 
-        const tensor_t& model_t::forward(const vector_t& input) const
+        const tensor_t& model_t::output(const vector_t& input) const
         {
                 assert(static_cast<size_t>(input.size()) == isize());
 
                 tensor_t xinput(idims(), irows(), icols());
                 xinput.copy_from(input.data());
 
-                return forward(xinput);
+                return output(xinput);
         }
 
         tensor_t model_t::make_input(const image_t& image, coord_t x, coord_t y) const
@@ -123,17 +123,17 @@ namespace ncv
 
                 auto fn_fval = [&] (const vector_t& x)
                 {
-                        const tensor_t output = this->forward(x);
+                        const tensor_t output = this->output(x);
 
                         return loss.value(target, output.vector());
                 };
 
                 auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                 {
-                        const tensor_t output = this->forward(x);
+                        const tensor_t output = this->output(x);
                         const vector_t ograd = loss.vgrad(target, output.vector());
 
-                        gx = this->backward(ograd).vector();
+                        gx = this->igrad(ograd).vector();
 
                         return loss.value(target, output.vector());
                 };

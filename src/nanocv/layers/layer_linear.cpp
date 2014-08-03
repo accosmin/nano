@@ -10,7 +10,7 @@ namespace ncv
                 typename tscalar,
                 typename tsize
         >
-        static void _forward(
+        static void _output(
                 const tscalar* idata, tsize isize,
                 const tscalar* wdata,
                 const tscalar* bdata,
@@ -28,29 +28,35 @@ namespace ncv
                 typename tscalar,
                 typename tsize
         >
-        static void _backward(
+        static void _igrad(
                 tscalar* idata, tsize isize,
-                const tscalar* wdata, tscalar* gwdata,
-                tscalar* gbdata,
+                const tscalar* wdata,
                 const tscalar* odata, tsize osize)
         {
-                const bool has_gradient = gwdata != nullptr;
-
-                if (has_gradient)
-                {
-                        // bias & weights gradient
-                        tensor::make_vector(gbdata, osize).noalias() =
-                                tensor::make_vector(odata, osize);
-
-                        tensor::make_matrix(gwdata, osize, isize).noalias() =
-                                tensor::make_vector(odata, osize) *
-                                tensor::make_vector(idata, isize).transpose();
-                }
-
                 // input gradient
                 tensor::make_vector(idata, isize).noalias() =
                         tensor::make_matrix(wdata, osize, isize).transpose() *
                         tensor::make_vector(odata, osize);
+        }
+
+        template
+        <
+                typename tscalar,
+                typename tsize
+        >
+        static void _pgrad(
+                tscalar* idata, tsize isize,
+                tscalar* gwdata,
+                tscalar* gbdata,
+                const tscalar* odata, tsize osize)
+        {
+                // bias & weights gradient
+                tensor::make_vector(gbdata, osize).noalias() =
+                        tensor::make_vector(odata, osize);
+
+                tensor::make_matrix(gwdata, osize, isize).noalias() =
+                        tensor::make_vector(odata, osize) *
+                        tensor::make_vector(idata, isize).transpose();
         }
 
         linear_layer_t::linear_layer_t(const string_t& parameters)
@@ -99,7 +105,7 @@ namespace ncv
                 return params;
         }
 
-        const tensor_t& linear_layer_t::forward(const tensor_t& input)
+        const tensor_t& linear_layer_t::output(const tensor_t& input)
         {
                 assert(idims() == input.dims());
                 assert(irows() == input.rows());
@@ -107,14 +113,14 @@ namespace ncv
 
                 m_idata.copy_from(input);
 
-                _forward(m_idata.data(), isize(),
-                         m_wdata.data(), m_bdata.data(),
-                         m_odata.data(), osize());
+                _output(m_idata.data(), isize(),
+                        m_wdata.data(), m_bdata.data(),
+                        m_odata.data(), osize());
 
                 return m_odata;
         }
 
-        const tensor_t& linear_layer_t::backward(const tensor_t& output, scalar_t* gradient)
+        const tensor_t& linear_layer_t::igrad(const tensor_t& output)
         {
                 assert(output.dims() == odims());
                 assert(output.rows() == orows());
@@ -122,11 +128,24 @@ namespace ncv
 
                 m_odata.copy_from(output);
 
-                _backward(m_idata.data(), isize(),
-                          m_wdata.data(), gradient, gradient + m_wdata.size(),
-                          m_odata.data(), osize());
+                _igrad(m_idata.data(), isize(),
+                       m_wdata.data(),
+                       m_odata.data(), osize());
 
                 return m_idata;
+        }
+
+        void linear_layer_t::pgrad(const tensor_t& output, scalar_t* gradient)
+        {
+                assert(output.dims() == odims());
+                assert(output.rows() == orows());
+                assert(output.cols() == ocols());
+
+                m_odata.copy_from(output);
+
+                _pgrad(m_idata.data(), isize(),
+                       gradient, gradient + m_wdata.size(),
+                       m_odata.data(), osize());
         }
 }
 

@@ -123,7 +123,7 @@ namespace ncv
                                 break;
                                 
                         case accumulator_t::type::vgrad:
-                                m_data.m_vgrad += m_model->gradient(loss.vgrad(target, output));
+                                m_data.m_vgrad += m_model->pgrad(loss.vgrad(target, output));
                                 break;
                 }
         }
@@ -134,21 +134,21 @@ namespace ncv
                 
                 const image_t& image = task.image(sample.m_index);
                 const vector_t& target = sample.m_target;                
-                const vector_t& output = m_model->forward(image, sample.m_region).vector();
+                const vector_t& output = m_model->output(image, sample.m_region).vector();
                 
                 cumulate(output, target, loss);
         }
         
         void cache_t::update(const tensor_t& input, const vector_t& target, const loss_t& loss)
         {
-                const vector_t& output = m_model->forward(input).vector();
+                const vector_t& output = m_model->output(input).vector();
                 
                 cumulate(output, target, loss);
         }
         
         void cache_t::update(const vector_t& input, const vector_t& target, const loss_t& loss)
         {
-                const vector_t& output = m_model->forward(input).vector();
+                const vector_t& output = m_model->output(input).vector();
                 
                 cumulate(output, target, loss);
         }

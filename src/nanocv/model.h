@@ -52,10 +52,10 @@ namespace ncv
                 ///
                 /// \brief compute the model's output
                 ///
-                const tensor_t& forward(const image_t& image, coord_t x, coord_t y) const;
-                const tensor_t& forward(const image_t& image, const rect_t& region) const;
-                const tensor_t& forward(const vector_t& input) const;
-                virtual const tensor_t& forward(const tensor_t& input) const = 0;
+                const tensor_t& output(const image_t& image, coord_t x, coord_t y) const;
+                const tensor_t& output(const image_t& image, const rect_t& region) const;
+                const tensor_t& output(const vector_t& input) const;
+                virtual const tensor_t& output(const tensor_t& input) const = 0;
 
                 ///
                 /// \brief save its parameters to file
@@ -90,12 +90,12 @@ namespace ncv
                 ///
                 /// \brief compute the model's gradient wrt parameters
                 ///
-                virtual vector_t gradient(const vector_t& output) const = 0;
+                virtual vector_t pgrad(const vector_t& output) const = 0;
 
                 ///
                 /// \brief compute the model's gradient wrt inputs
                 ///
-                virtual const tensor_t& backward(const vector_t& output) const = 0;
+                virtual const tensor_t& igrad(const vector_t& output) const = 0;
 
                 ///
                 /// \brief construct (from a random initialization) an input that matches closely the target
