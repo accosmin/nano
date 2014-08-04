@@ -121,7 +121,7 @@ namespace ncv
                 {
                         case accumulator_t::type::value:
                                 break;
-                                
+
                         case accumulator_t::type::vgrad:
                                 m_data.m_vgrad += m_model->pgrad(loss.vgrad(target, output));
                                 break;
