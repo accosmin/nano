@@ -81,7 +81,7 @@ namespace ncv
                         }
                 }
 
-                catch (cl::Error e)
+                catch (cl::Error& e)
                 {
                         log_error() << "OpenCL fatal error: <" << e.what() << "> (" << ocl::error_string(e.err()) << ")!";
 
@@ -114,7 +114,7 @@ namespace ncv
                 {
                         program.build(m_devices, "-cl-mad-enable");//, "-cl-fast-relaxed-math");
                 }
-                catch (cl::Error e)
+                catch (cl::Error& e)
                 {
                         // load compilation errors
                         const cl::Device& device = m_devices[0];
@@ -123,7 +123,7 @@ namespace ncv
                         log_error() << "OpenCL program build log:\t" << program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device);
 
                         // and re-throw the exception
-                        throw e;
+                        throw cl::Error(e.what());
                 }
 
                 return program;

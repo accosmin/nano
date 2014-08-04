@@ -88,7 +88,8 @@ namespace ncv
                         pgradient -= layer->psize();
                         layer->pgrad(*poutput, pgradient);
 
-                        if ((++ it) != m_layers.rend())
+                        ++ it;
+                        if (it != m_layers.rend())
                         {
                                 poutput = &layer->igrad(*poutput);
                         }

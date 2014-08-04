@@ -261,9 +261,9 @@ void test(int isize, int ksize, int n_samples)
         const scalar_t convg8     = test_gpu("convd(8GPU)", idatas, kdata, odatas, 8);
         const scalar_t convg16    = test_gpu("convd(16GPU)", idatas, kdata, odatas, 16);
         const scalar_t convg32    = test_gpu("convd(32GPU)", idatas, kdata, odatas, 32);
-        const scalar_t convg64    = test_gpu("convd(32GPU)", idatas, kdata, odatas, 64);
-        const scalar_t conv128    = test_gpu("convd(32GPU)", idatas, kdata, odatas, 128);
-        const scalar_t conv256    = test_gpu("convd(32GPU)", idatas, kdata, odatas, 256);
+        const scalar_t convg64    = test_gpu("convd(64GPU)", idatas, kdata, odatas, 64);
+        const scalar_t convg128   = test_gpu("convd(128GPU)", idatas, kdata, odatas, 128);
+        const scalar_t convg256   = test_gpu("convd(256GPU)", idatas, kdata, odatas, 256);
 #endif
         const scalar_t iconve1cpu = test_1cpu(ncv::iconv_eig<matrix_t>, "iconve(1CPU)", odatas, kdata, idatas);
         const scalar_t iconvexcpu = test_xcpu(ncv::iconv_eig<matrix_t>, "iconve(xCPU)", odatas, kdata, idatas);
@@ -319,7 +319,7 @@ int main(int argc, char* argv[])
         }
 
 #ifdef NANOCV_HAVE_OPENCL
-        catch (cl::Error e)
+        catch (cl::Error& e)
         {
                 log_error() << "OpenCL fatal error: <" << e.what() << "> (" << ocl::error_string(e.err()) << ")!";
         }

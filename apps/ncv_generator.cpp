@@ -10,8 +10,6 @@ int main(int argc, char *argv[])
         using namespace ncv;
 
         // prepare object string-based selection
-        const strings_t task_ids = task_manager_t::instance().ids();
-        const strings_t loss_ids = loss_manager_t::instance().ids();
         const strings_t model_ids = model_manager_t::instance().ids();
 
         // parse the command line

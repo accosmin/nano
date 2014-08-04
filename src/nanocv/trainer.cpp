@@ -45,6 +45,7 @@ namespace ncv
 
         trainer_result_t::trainer_result_t(size_t n_parameters, size_t epochs)
                 :       m_opt_params(n_parameters),
+                        m_opt_epoch(0),
                         m_epochs(epochs)
         {
         }

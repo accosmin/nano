@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
                 }
         }
 
-        catch (cl::Error e)
+        catch (cl::Error& e)
         {
                 log_error() << "OpenCL fatal error: <" << e.what() << "> (" << ocl::error_string(e.err()) << ")!";
         }
