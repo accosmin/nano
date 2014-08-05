@@ -1,8 +1,7 @@
-* do not do the input-gradient for the first layer:
-	- may save a lot of time for the backward step
-	- split ::backward() to ::xgrad() and ::pgrad()
+- implement the regularized criterion_t-based l2_criterion & var_criterion:
+	- integrate with the multi-threaded accumulator_t
 
-* check if any improvement in speed with OpenCL (fixed size convolutions)
+- implement the input-regularized (~auto-encoder) criterion
 
 - reduce the number of input/output buffers for layers
                 
