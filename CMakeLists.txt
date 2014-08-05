@@ -65,6 +65,7 @@ file(GLOB nanocv_sources
         src/tensor/*.*
         src/optimize/*.*
         src/nanocv/*.*
+        src/nanocv/criteria/*.*
         src/nanocv/losses/*.*
         src/nanocv/layers/*.*
         src/nanocv/tasks/*.*

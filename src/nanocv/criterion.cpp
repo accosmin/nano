@@ -6,8 +6,8 @@
 namespace ncv
 {        
         criterion_t::criterion_t(
-                const std::string& configuration,
-                const std::string& description)
+                const string_t& configuration,
+                const string_t& description)
                 :       clonable_t<criterion_t>(configuration, description),
                         m_lambda(0.0),
                         m_type(type::value),
@@ -52,14 +52,13 @@ namespace ncv
                 return *this;
         }
 
-        criterion_t& criterion_t::reset()
+        void criterion_t::reset()
         {
                 m_value = 0.0;
                 m_error = 0.0;
                 m_vgrad.resize(dimensions());
                 m_vgrad.setZero();
                 m_count = 0;
-                return *this;
         }
 
         criterion_t& criterion_t::operator+=(const criterion_t& other)

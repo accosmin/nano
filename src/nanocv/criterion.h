@@ -35,8 +35,8 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                criterion_t(const std::string& configuration,
-                            const std::string& description);
+                criterion_t(const string_t& configuration,
+                            const string_t& description);
                 
                 ///
                 /// \brief reset statistics and settings
@@ -46,7 +46,7 @@ namespace ncv
                 criterion_t& reset(const vector_t& params);
                 criterion_t& reset(type t);
                 criterion_t& reset(scalar_t lambda);
-                virtual criterion_t& reset();
+                virtual void reset();
 
                 ///
                 /// \brief update statistics with a new sample
