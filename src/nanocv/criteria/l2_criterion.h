@@ -11,6 +11,10 @@ namespace ncv
         class l2_criterion_t : public criterion_t
         {
         public:
+                
+                using criterion_t::robject_t;
+                
+                NANOCV_MAKE_CLONABLE(l2_criterion_t)
 
                 ///
                 /// \brief constructor

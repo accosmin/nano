@@ -14,6 +14,10 @@ namespace ncv
         class var_criterion_t : public criterion_t
         {
         public:
+                
+                using criterion_t::robject_t;
+                
+                NANOCV_MAKE_CLONABLE(var_criterion_t)
 
                 ///
                 /// \brief constructor

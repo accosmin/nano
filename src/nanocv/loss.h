@@ -56,9 +56,9 @@ namespace ncv
         {
         public:
 
-                loss_t(const string_t& parameters = string_t(),
+                loss_t(const string_t& configuration = string_t(),
                        const string_t& description = string_t())
-                        :       clonable_t<loss_t>(parameters, description)
+                        :       clonable_t<loss_t>(configuration, description)
                 {
                 }
 

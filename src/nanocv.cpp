@@ -27,6 +27,10 @@
 #include "trainers/minibatch_trainer.h"
 #include "trainers/stochastic_trainer.h"
 
+#include "criterion.h"
+#include "criteria/l2_criterion.h"
+#include "criteria/var_criterion.h"
+
 #include <cfenv>
 
 namespace ncv
@@ -73,6 +77,11 @@ namespace ncv
                 trainer_manager_t::instance().add("batch", batch_trainer_t());
                 trainer_manager_t::instance().add("minibatch", minibatch_trainer_t());
                 trainer_manager_t::instance().add("stochastic", stochastic_trainer_t());
+                
+                // register criteria
+                criterion_manager_t::instance().add("sum", criterion_t());
+                criterion_manager_t::instance().add("l2-reg", l2_criterion_t());
+                criterion_manager_t::instance().add("var-reg", var_criterion_t());
         }
 
         size_t test(const task_t& task, const fold_t& fold, const loss_t& loss, const model_t& model,

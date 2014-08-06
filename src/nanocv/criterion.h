@@ -17,11 +17,16 @@ namespace ncv
         typedef criterion_manager_t::robject_t          rcriterion_t;
 
         ///
-        /// \brief accumulate sample evaluations (loss value, error and gradient)
+        /// \brief accumulate sample evaluations (loss value, error and gradient),
+        ///     this is the base case without regularization
         ///
         class criterion_t : clonable_t<criterion_t>
         {
         public:
+                
+                using clonable_t<criterion_t>::robject_t;
+                
+                NANOCV_MAKE_CLONABLE(criterion_t)
 
                 ///
                 /// \brief processing method
@@ -35,8 +40,13 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                criterion_t(const string_t& configuration,
-                            const string_t& description);
+                criterion_t(const string_t& configuration = string_t(),
+                            const string_t& description = string_t());
+                
+                ///
+                /// \brief destructor
+                ///
+                virtual ~criterion_t() {}
                 
                 ///
                 /// \brief reset statistics and settings
