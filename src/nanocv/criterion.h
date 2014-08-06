@@ -100,6 +100,11 @@ namespace ncv
                 ///
                 scalar_t lambda() const;
 
+                ///
+                /// \brief check if the criterion has a regularization term to tune
+                ///
+                virtual bool can_regularize() const;
+
         protected:
 
                 ///

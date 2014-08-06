@@ -153,5 +153,10 @@ namespace ncv
         {
                 return m_lambda;
         }
+
+        bool criterion_t::can_regularize() const
+        {
+                return false;
+        }
 }
 	

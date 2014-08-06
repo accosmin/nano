@@ -69,5 +69,10 @@ namespace ncv
                 return  criterion_t::vgrad() +
                         m_lambda * (count() * m_sumvg - 2.0 * m_sumv * m_sumg) / (count() * count());
         }
+
+        bool var_criterion_t::can_regularize() const
+        {
+                return true;
+        }
 }
 	

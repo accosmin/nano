@@ -173,5 +173,10 @@ namespace ncv
         {
                 return m_impl->m_cache->lambda();
         }
+
+        bool accumulator_t::can_regularize() const
+        {
+                return m_impl->m_cache->can_regularize();
+        }
 }
 	

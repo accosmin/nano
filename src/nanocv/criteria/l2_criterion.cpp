@@ -41,5 +41,10 @@ namespace ncv
                 return  criterion_t::vgrad() +
                         m_lambda * m_params;
         }
+
+        bool l2_criterion_t::can_regularize() const
+        {
+                return true;
+        }
 }
 	
