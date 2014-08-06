@@ -15,6 +15,7 @@ namespace ncv
 
         criterion_t& l2_criterion_t::operator+=(const criterion_t& other)
         {
+                criterion_t::operator+=(other);
                 return *this;
         }
 

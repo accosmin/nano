@@ -51,6 +51,14 @@ namespace ncv
                 /// \brief update statistics with a new sample
                 ///
                 virtual void cumulate(const vector_t& input, const vector_t& target, const loss_t& loss);
+                
+        private:
+                
+                // attributes
+                scalar_t                m_sumv;         ///< loss value
+                scalar_t                m_sumvv;        ///< loss value squared
+                vector_t                m_sumg;         ///< gradient
+                vector_t                m_sumvg;        ///< loss value multiplied with the gradient
         };
 }
 
