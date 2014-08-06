@@ -211,8 +211,8 @@ namespace ncv
                 const scalars_t lambdas = { 1e-3, 1e-2, 1e-1, 1.0 };
                 for (scalar_t lambda : lambdas)
                 {
-                        accumulator_t ldata(model, nthreads, accumulator_t::type::value, lambda);
-                        accumulator_t gdata(model, nthreads, accumulator_t::type::vgrad, lambda);
+                        accumulator_t ldata(model, nthreads, "l2-reg", criterion_t::type::value, lambda);
+                        accumulator_t gdata(model, nthreads, "l2-reg", criterion_t::type::vgrad, lambda);
                         
                         vector_t x = x0;
                         for (size_t c = 0, epoch = 0; c < cycles; c ++)
@@ -376,8 +376,8 @@ namespace ncv
                         {
                                 wpool.enqueue([=, &task, &loss, &model, &x0, &result, &mutex]()
                                 {
-                                        accumulator_t ldata(model, 1, accumulator_t::type::value, lambda);
-                                        accumulator_t gdata(model, 1, accumulator_t::type::vgrad, lambda);
+                                        accumulator_t ldata(model, 1, "l2-reg", criterion_t::type::value, lambda);
+                                        accumulator_t gdata(model, 1, "l2-reg", criterion_t::type::vgrad, lambda);
                                                                                 
                                         const samples_t tsamples = tsampler.get();
                                         const samples_t vsamples = vsampler.get();

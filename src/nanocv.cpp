@@ -79,7 +79,7 @@ namespace ncv
                 trainer_manager_t::instance().add("stochastic", stochastic_trainer_t());
                 
                 // register criteria
-                criterion_manager_t::instance().add("sum", criterion_t());
+                criterion_manager_t::instance().add("avg", criterion_t());
                 criterion_manager_t::instance().add("l2-reg", l2_criterion_t());
                 criterion_manager_t::instance().add("var-reg", var_criterion_t());
         }

@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
                 // process the samples
                 if (cmd_forward)
                 {
-                        accumulator_t ldata(model, cmd_threads, accumulator_t::type::value, 0.1);
+                        accumulator_t ldata(model, cmd_threads, "l2-reg", criterion_t::type::value, 0.1);
 
                         const ncv::timer_t timer;
                         ldata.update(samples, targets, loss);
@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
 
                 if (cmd_backward)
                 {
-                        accumulator_t gdata(model, cmd_threads, accumulator_t::type::vgrad, 0.1);
+                        accumulator_t gdata(model, cmd_threads, "l2-reg", criterion_t::type::vgrad, 0.1);
 
                         const ncv::timer_t timer;
                         gdata.update(samples, targets, loss);

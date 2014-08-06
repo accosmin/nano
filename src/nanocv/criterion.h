@@ -2,13 +2,13 @@
 #define NANOCV_CRITERION_H
 
 #include "model.h"
+#include "sample.h"
 
 namespace ncv
 {        
         class criterion_t;
         class loss_t;
         class task_t;
-        struct sample_t;
 
         ///
         /// \brief stores registered prototypes
@@ -99,11 +99,6 @@ namespace ncv
                 /// \brief regularization weight (if any)
                 ///
                 scalar_t lambda() const;
-
-                ///
-                /// \brief regularization weights (to tune)
-                ///
-                scalars_t lambdas() const;
 
         protected:
 

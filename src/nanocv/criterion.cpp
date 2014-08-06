@@ -153,10 +153,5 @@ namespace ncv
         {
                 return m_lambda;
         }
-
-        scalars_t criterion_t::lambdas() const
-        {
-                return { 0.1, 0.2, 0.5, 1.0 };
-        }
 }
 	

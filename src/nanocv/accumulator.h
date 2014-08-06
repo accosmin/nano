@@ -1,13 +1,10 @@
 #ifndef NANOCV_ACCUMULATOR_H
 #define NANOCV_ACCUMULATOR_H
 
-#include "task.h"
-#include "model.h"
+#include "criterion.h"
 
 namespace ncv
-{        
-        class loss_t;
-        
+{
         struct accumulator_impl_t;
         typedef std::shared_ptr<accumulator_impl_t> raccumulator_impl_t;
 
@@ -19,18 +16,10 @@ namespace ncv
         public:
 
                 ///
-                /// \brief processing method
-                ///
-                enum class type : int
-                {
-                        value = 0,              ///< compute loss value (faster)
-                        vgrad                   ///< compute loss value and gradient (slower)
-                };
-
-                ///
                 /// \brief constructors
                 ///
-                accumulator_t(const model_t&, size_t nthreads, type = type::value, scalar_t lambda = 0.0);
+                accumulator_t(const model_t&, size_t nthreads, 
+                              const string_t& criterion_name, criterion_t::type, scalar_t lambda = 0.0);
 
                 ///
                 /// \brief disable copying
@@ -91,8 +80,7 @@ namespace ncv
         private:
 
                 // attributes
-                std::shared_ptr
-                <accumulator_impl_t>    m_impl;
+                raccumulator_impl_t     m_impl;
         };
 }
 

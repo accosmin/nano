@@ -10,7 +10,7 @@ static void test_grad_params(const string_t& header, const string_t& loss_id, co
         random_t<size_t> rand(2, 16);
         const size_t n_threads = 1 + (rand() % 2);
 
-        accumulator_t acc_params(model, n_threads, accumulator_t::type::vgrad, lambda);
+        accumulator_t acc_params(model, n_threads, "l2-reg", criterion_t::type::vgrad, lambda);
         
         const size_t n_tests = 64;
         const size_t n_samples = rand();
