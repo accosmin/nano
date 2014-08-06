@@ -1,7 +1,9 @@
-- implement the regularized criterion_t-based l2_criterion & var_criterion:
-	- integrate with the multi-threaded accumulator_t
+- new option to ncv_trainer to select the criterion from command line:
+	- check at run-time if there are parameters to tune (for l2-reg & var-reg, but not for avg)
 
-- implement the input-regularized (~auto-encoder) criterion
+- implement the input-regularized (~auto-encoder) criterion:
+	- may add another ::generate() method to use the learned parameters for generating inputs
+	- it may be interesting to compare the two methods
 
 - reduce the number of input/output buffers for layers
                 
