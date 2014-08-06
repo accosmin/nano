@@ -32,6 +32,7 @@ namespace ncv
                 ///
                 void reset();
                 void reset(const vector_t& params);
+                void reset(scalar_t lambda);
 
                 ///
                 /// \brief update statistics with a new sample

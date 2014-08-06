@@ -11,14 +11,11 @@ namespace ncv
         void var_criterion_t::reset()
         {
                 criterion_t::reset();
-                
-                m_sumg.resize(m_params.size());
-                m_sumvg.resize(m_params.size());                
-                
-                m_sumv = 0.0;
-                m_sumvv = 0.0;
-                m_sumg.setZero();
-                m_sumvg.setZero();
+
+                m_value2 = 0.0;
+
+                m_vgrad2.resize(m_params.size());
+                m_vgrad2.setZero();
         }
 
         criterion_t& var_criterion_t::operator+=(const criterion_t& other)
@@ -28,10 +25,8 @@ namespace ncv
                 const var_criterion_t* vother = dynamic_cast<const var_criterion_t*>(&other);
                 assert(vother != nullptr);
                 
-                m_sumv += vother->m_sumv;
-                m_sumvv += vother->m_sumvv;
-                m_sumg += vother->m_sumg;
-                m_sumvg += vother->m_sumvg;
+                m_value2 += vother->m_value2;
+                m_vgrad2 += vother->m_vgrad2;
                 
                 return *this;
         }
@@ -47,16 +42,14 @@ namespace ncv
                 const scalar_t crt_value = m_value - old_value;
                 const vector_t crt_vgrad = m_vgrad - old_vgrad;
                 
-                m_sumv += crt_value;
-                m_sumvv += crt_value * crt_value;
-                m_sumg += crt_vgrad;
-                m_sumvg += crt_value * crt_vgrad;
+                m_value2 += crt_value * crt_value;
+                m_vgrad2 += crt_value * crt_vgrad;
         }
         
         scalar_t var_criterion_t::value() const
         {
                 return  criterion_t::value() +
-                        m_lambda * (count() * m_sumvv - m_sumv * m_sumv) / (count() * count());
+                        m_lambda * (count() * m_value2 - m_value * m_value) / (count() * count());
         }
 
         scalar_t var_criterion_t::error() const
@@ -67,7 +60,7 @@ namespace ncv
         vector_t var_criterion_t::vgrad() const
         {
                 return  criterion_t::vgrad() +
-                        m_lambda * (count() * m_sumvg - 2.0 * m_sumv * m_sumg) / (count() * count());
+                        2.0 * m_lambda * (count() * m_vgrad2 - m_value * m_vgrad) / (count() * count());
         }
 
         bool var_criterion_t::can_regularize() const

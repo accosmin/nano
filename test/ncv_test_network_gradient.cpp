@@ -5,13 +5,11 @@
 
 using namespace ncv;
 
-static void test_grad_params(const string_t& header, const string_t& loss_id, const model_t& model, scalar_t lambda)
+static void test_grad_params(
+        const string_t& header, const string_t& loss_id, const model_t& model, accumulator_t& acc_params)
 {
         random_t<size_t> rand(2, 16);
-        const size_t n_threads = 1 + (rand() % 2);
 
-        accumulator_t acc_params(model, n_threads, "l2-reg", criterion_t::type::vgrad, lambda);
-        
         const size_t n_tests = 64;
         const size_t n_samples = rand();
 
@@ -160,12 +158,18 @@ static void test_grad_inputs(const string_t& header, const string_t& loss_id, co
 
 static void test_grad(const string_t& header, const string_t& loss_id, const model_t& model)
 {
-        const scalars_t lambdas = { 0.0, 1e-3, 1e-2, 1e-1, 1.0 };
-        for (scalar_t lambda : lambdas)
+        // check all criteria
+        const strings_t criteria = criterion_manager_t::instance().ids();
+        for (const string_t& criterion : criteria)
         {
-                test_grad_params(header, loss_id, model, lambda);
+                random_t<size_t> rand(2, 16);
+                const size_t n_threads = 1 + (rand() % 2);
+
+                accumulator_t acc_params(model, n_threads, criterion, criterion_t::type::vgrad, 1.0);
+                test_grad_params(header + "[criterion = " + criterion + "]", loss_id, model, acc_params);
         }
         
+        // check gradients wrt the input
         test_grad_inputs(header, loss_id, model);
 }
 

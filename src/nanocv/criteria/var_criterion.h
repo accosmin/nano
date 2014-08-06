@@ -64,10 +64,8 @@ namespace ncv
         private:
                 
                 // attributes
-                scalar_t                m_sumv;         ///< loss value
-                scalar_t                m_sumvv;        ///< loss value squared
-                vector_t                m_sumg;         ///< gradient
-                vector_t                m_sumvg;        ///< loss value multiplied with the gradient
+                scalar_t        m_value2;        ///< cumulated squared loss value
+                vector_t        m_vgrad2;        ///< cumulated loss value multiplied with the gradient
         };
 }
 

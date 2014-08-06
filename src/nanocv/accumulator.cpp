@@ -39,6 +39,15 @@ namespace ncv
         {
         }
 
+        void accumulator_t::reset(scalar_t lambda)
+        {
+                m_impl->m_cache->reset(lambda);
+                for (const rcriterion_t& cache : m_impl->m_caches)
+                {
+                        cache->reset(lambda);
+                }
+        }
+
         void accumulator_t::reset(const vector_t& params)
         {
                 m_impl->m_cache->reset(params);
