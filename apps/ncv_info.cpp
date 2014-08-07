@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
         print("layer",          ncv::layer_manager_t::instance());
         print("model",          ncv::model_manager_t::instance());
         print("trainer",        ncv::trainer_manager_t::instance());
+        print("criterion",      ncv::criterion_manager_t::instance());
 
         // OK
         ncv::log_info() << ncv::done;

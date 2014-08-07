@@ -20,11 +20,9 @@ namespace ncv
         /// \brief accumulate sample evaluations (loss value, error and gradient),
         ///     this is the base case without regularization
         ///
-        class criterion_t : clonable_t<criterion_t>
+        class criterion_t : public clonable_t<criterion_t>
         {
         public:
-                
-                using clonable_t<criterion_t>::robject_t;
                 
                 NANOCV_MAKE_CLONABLE(criterion_t)
 
@@ -41,7 +39,7 @@ namespace ncv
                 /// \brief constructor
                 ///
                 criterion_t(const string_t& configuration = string_t(),
-                            const string_t& description = string_t());
+                            const string_t& description = "average loss");
                 
                 ///
                 /// \brief destructor

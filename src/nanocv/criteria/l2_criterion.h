@@ -12,8 +12,6 @@ namespace ncv
         {
         public:
                 
-                using criterion_t::robject_t;
-                
                 NANOCV_MAKE_CLONABLE(l2_criterion_t)
 
                 ///

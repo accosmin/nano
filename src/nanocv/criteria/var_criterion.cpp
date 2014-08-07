@@ -4,7 +4,7 @@ namespace ncv
 {        
         var_criterion_t::var_criterion_t(
                 const std::string& configuration)
-                :       criterion_t(configuration, "variational (EBBoost-like) regularized loss")
+                :       criterion_t(configuration, "variational (VadaBoost-like) regularized loss")
         {
         }
 
