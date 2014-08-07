@@ -2,11 +2,28 @@
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 
+using namespace ncv;
+
+static string_t describe(const strings_t& ids)
+{
+        return text::concatenate(ids, ", ");
+}
+
+static string_t describe(const strings_t& ids, const strings_t& descriptions)
+{
+        string_t po_desc;
+        for (size_t i = 0; i < ids.size(); i ++)
+        {
+                po_desc += "  " + text::resize(ids[i], 16) +
+                           text::resize(descriptions[i], 32) + (i + 1 == ids.size() ? "" : "\n");
+        }
+
+        return po_desc;
+}
+
 int main(int argc, char *argv[])
 {
         ncv::init();
-
-        using namespace ncv;
 
         // prepare object string-based selection
         const strings_t task_ids = task_manager_t::instance().ids();
@@ -18,46 +35,36 @@ int main(int argc, char *argv[])
         const strings_t trainer_ids = trainer_manager_t::instance().ids();
         const strings_t trainer_descriptions = trainer_manager_t::instance().descriptions();
 
-        string_t po_desc_models;
-        for (size_t i = 0; i < model_ids.size(); i ++)
-        {
-                po_desc_models +=
-                        "  " + text::resize(model_ids[i], 16) +
-                        text::resize(model_descriptions[i], 32) + (i + 1 == model_ids.size() ? "" : "\n");
-        }
-
-        string_t po_desc_trainers;
-        for (size_t i = 0; i < trainer_ids.size(); i ++)
-        {
-                po_desc_trainers +=
-                        "  " + text::resize(trainer_ids[i], 16) +
-                        text::resize(trainer_descriptions[i], 32) + (i + 1 == trainer_ids.size() ? "" : "\n");
-        }
+        const strings_t criterion_ids = criterion_manager_t::instance().ids();
+        const strings_t criterion_descriptions = criterion_manager_t::instance().descriptions();
 
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
         po_desc.add_options()("help,h", "help message");
         po_desc.add_options()("task",
                 boost::program_options::value<string_t>(),
-                text::concatenate(task_ids, ", ").c_str());
+                describe(task_ids).c_str());
         po_desc.add_options()("task-dir",
                 boost::program_options::value<string_t>(),
                 "directory to load task data from");
         po_desc.add_options()("loss",
                 boost::program_options::value<string_t>(),
-                text::concatenate(loss_ids, ", ").c_str());
+                describe(loss_ids).c_str());
         po_desc.add_options()("model",
                 boost::program_options::value<string_t>(),
-                po_desc_models.c_str());
+                describe(model_ids, model_descriptions).c_str());
         po_desc.add_options()("model-params",
                 boost::program_options::value<string_t>()->default_value(""),
                 "model parameters (if any) as specified in the chosen model's description");
         po_desc.add_options()("trainer",
                 boost::program_options::value<string_t>(),
-                po_desc_trainers.c_str());
+                describe(trainer_ids, trainer_descriptions).c_str());
         po_desc.add_options()("trainer-params",
                 boost::program_options::value<string_t>()->default_value(""),
                 "trainer parameters (if any) as specified in the chosen trainer's description");
+        po_desc.add_options()("criterion",
+                boost::program_options::value<string_t>(),
+                describe(criterion_ids, criterion_descriptions).c_str());
         po_desc.add_options()("threads",
                 boost::program_options::value<size_t>()->default_value(0),
                 "number of threads to use (0 - all available)");
@@ -80,6 +87,8 @@ int main(int argc, char *argv[])
                 !po_vm.count("task-dir") ||
                 !po_vm.count("loss") ||
                 !po_vm.count("model") ||
+                !po_vm.count("trainer") ||
+                !po_vm.count("criterion") ||
                 !po_vm.count("trials") ||
                 po_vm.count("help"))
         {
@@ -94,6 +103,7 @@ int main(int argc, char *argv[])
         const string_t cmd_model_params = po_vm["model-params"].as<string_t>();
         const string_t cmd_trainer = po_vm["trainer"].as<string_t>();
         const string_t cmd_trainer_params = po_vm["trainer-params"].as<string_t>();
+        const string_t cmd_criterion = po_vm["criterion"].as<string_t>();
         const size_t cmd_threads = po_vm["threads"].as<size_t>();
         const size_t cmd_trials = po_vm["trials"].as<size_t>();
         const string_t cmd_output = po_vm["output"].as<string_t>();

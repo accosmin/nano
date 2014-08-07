@@ -8,7 +8,6 @@ namespace ncv
 {
         minibatch_trainer_t::minibatch_trainer_t(const string_t& parameters)
                 :       trainer_t(parameters,
-                                  "minibatch trainer, "\
                                   "parameters: opt=gd[,lbfgs,cgd],epoch=16[1,1024],"\
                                   "batch=1024[256,8192],iters=8[4,128],eps=1e-6[1e-8,1e-3]")
         {

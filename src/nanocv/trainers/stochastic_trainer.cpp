@@ -9,7 +9,6 @@ namespace ncv
 {
         stochastic_trainer_t::stochastic_trainer_t(const string_t& parameters)
                 :       trainer_t(parameters,
-                                  "stochastic trainer, "\
                                   "parameters: opt=sg[,sga,sia],epoch=16[1,1024]")
         {
         }
