@@ -105,7 +105,7 @@ namespace ncv
                 }
         }
 
-#if defined(NANOCV_HAVE_OPENCL) && 0
+#ifdef NANOCV_HAVE_OPENCL
         static const string_t ocl_conv_source = R"xxx(
 
         #pragma OPENCL EXTENSION cl_amd_fp64 : enable
@@ -280,7 +280,7 @@ namespace ncv
                 m_odata.resize(odims, orows, ocols);
                 m_kdata.resize(odims * idims, krows, kcols);
 
-#if defined(NANOCV_HAVE_OPENCL) && 0
+#ifdef NANOCV_HAVE_OPENCL
                 // create opencl objects (if available)
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
@@ -299,7 +299,7 @@ namespace ncv
 
                         // backward buffers
                         m_gkdata.resize(odims * idims, krows, kcols);
-                        m_ocl_gidata = theocl.make_buffer(ocl::bytesize(m_gidata), CL_MEM_WRITE_ONLY);
+                        m_ocl_gidata = theocl.make_buffer(ocl::bytesize(m_idata), CL_MEM_WRITE_ONLY);
                         m_ocl_gkdata = theocl.make_buffer(ocl::bytesize(m_gkdata), CL_MEM_WRITE_ONLY);
 
                         // setup forward kernel
@@ -361,7 +361,7 @@ namespace ncv
 
         void conv_layer_t::params_changed() const
         {
-#if defined(NANOCV_HAVE_OPENCL) && 0
+#ifdef NANOCV_HAVE_OPENCL
                 // send parameters to OpenCL device (if available)
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
@@ -379,7 +379,7 @@ namespace ncv
 
                 m_idata.copy_from(input);
 
-#if defined(NANOCV_HAVE_OPENCL) && 0
+#ifdef NANOCV_HAVE_OPENCL
                 // OpenCL version
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
@@ -413,7 +413,7 @@ namespace ncv
 
                 m_odata.copy_from(output);
 
-#if defined(NANOCV_HAVE_OPENCL) && 0
+#ifdef NANOCV_HAVE_OPENCL
                 // OpenCL version
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
@@ -424,20 +424,7 @@ namespace ncv
                                                          cl::NDRange(idims(), irows(), icols()),
                                                          cl::NDRange(1, irows(), icols()));
 
-                        if (gradient)
-                        {
-                                m_ocl_queue.enqueueNDRangeKernel(m_ocl_bkkernel, cl::NullRange,
-                                                                 cl::NDRange(odims(), krows(), kcols()),
-                                                                 cl::NDRange(1, krows(), kcols()));
-                        }
-
-                        m_ocl_queue.enqueueReadBuffer(m_ocl_gidata, CL_TRUE, 0, ocl::bytesize(m_gidata), m_gidata.data());
-
-                        if (gradient)
-                        {
-                                m_ocl_queue.enqueueReadBuffer(m_ocl_gkdata, CL_TRUE, 0, ocl::bytesize(m_gkdata), m_gkdata.data());
-                                m_gkdata.copy_to(gradient);
-                        }
+                        m_ocl_queue.enqueueReadBuffer(m_ocl_gidata, CL_TRUE, 0, ocl::bytesize(m_idata), m_idata.data());
                 }
                 else
 #endif
@@ -459,7 +446,7 @@ namespace ncv
 
                 m_odata.copy_from(output);
 
-#if defined(NANOCV_HAVE_OPENCL) && 0
+#ifdef NANOCV_HAVE_OPENCL
                 // OpenCL version
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
@@ -470,20 +457,12 @@ namespace ncv
                                                          cl::NDRange(idims(), irows(), icols()),
                                                          cl::NDRange(1, irows(), icols()));
 
-                        if (gradient)
-                        {
-                                m_ocl_queue.enqueueNDRangeKernel(m_ocl_bkkernel, cl::NullRange,
-                                                                 cl::NDRange(odims(), krows(), kcols()),
-                                                                 cl::NDRange(1, krows(), kcols()));
-                        }
+                        m_ocl_queue.enqueueNDRangeKernel(m_ocl_bkkernel, cl::NullRange,
+                                                         cl::NDRange(odims(), krows(), kcols()),
+                                                         cl::NDRange(1, krows(), kcols()));
 
-                        m_ocl_queue.enqueueReadBuffer(m_ocl_gidata, CL_TRUE, 0, ocl::bytesize(m_gidata), m_gidata.data());
-
-                        if (gradient)
-                        {
-                                m_ocl_queue.enqueueReadBuffer(m_ocl_gkdata, CL_TRUE, 0, ocl::bytesize(m_gkdata), m_gkdata.data());
-                                m_gkdata.copy_to(gradient);
-                        }
+                        m_ocl_queue.enqueueReadBuffer(m_ocl_gkdata, CL_TRUE, 0, ocl::bytesize(m_gkdata), m_gkdata.data());
+                        m_gkdata.copy_to(gradient);
                 }
                 else
 #endif
