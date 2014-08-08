@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
                         ncv::measure_critical_call(
                                 [&] ()
                                 {
-                                        result = rtrainer->train(*rtask, train_fold, *rloss, cmd_threads, *rmodel);
+                                        result = rtrainer->train(*rtask, train_fold, *rloss, cmd_threads, cmd_criterion, *rmodel);
                                         return result.valid();
                                 },
                                 "model trained",

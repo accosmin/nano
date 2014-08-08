@@ -13,7 +13,7 @@ namespace ncv
         }
 
         trainer_result_t batch_trainer_t::train(
-                const task_t& task, const fold_t& fold, const loss_t& loss, size_t nthreads,
+                const task_t& task, const fold_t& fold, const loss_t& loss, size_t nthreads, const string_t& criterion,
                 model_t& model) const
         {
                 if (fold.second != protocol::train)
@@ -49,7 +49,7 @@ namespace ncv
                 // train the model
                 trainer_result_t result(model.psize(), iterations / 8);
                 ncv::batch_train(task, tsampler, vsampler, nthreads, 
-                                 loss, optimizer, 1, iterations / 8, 8, epsilon,
+                                 loss, criterion, optimizer, 1, iterations / 8, 8, epsilon,
                                  model, result);
 
                 log_info() << "optimum [train = " << result.m_opt_state.m_tvalue << "/" << result.m_opt_state.m_terror

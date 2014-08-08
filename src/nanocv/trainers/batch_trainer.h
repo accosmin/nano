@@ -23,7 +23,9 @@ namespace ncv
                 batch_trainer_t(const string_t& parameters = string_t());
 
                 // train the model
-                virtual trainer_result_t train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const;
+                virtual trainer_result_t train(
+                        const task_t&, const fold_t&, const loss_t&, size_t nthreads, const string_t& criterion, 
+                        model_t&) const;
         };
 }
 

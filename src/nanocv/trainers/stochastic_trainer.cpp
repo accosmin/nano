@@ -14,7 +14,8 @@ namespace ncv
         }
 
         trainer_result_t stochastic_trainer_t::train(
-                const task_t& task, const fold_t& fold, const loss_t& loss, size_t nthreads, model_t& model) const
+                const task_t& task, const fold_t& fold, const loss_t& loss, size_t nthreads, const string_t& criterion,
+                model_t& model) const
         {
                 if (fold.second != protocol::train)
                 {
@@ -48,7 +49,7 @@ namespace ncv
                 // train the model
                 trainer_result_t result(model.psize(), epochs);
                 ncv::stochastic_train(task, tsampler, vsampler, nthreads,
-                                      loss, optimizer, epochs,
+                                      loss, criterion, optimizer, epochs,
                                       model, result);
 
                 log_info() << "optimum [train = " << result.m_opt_state.m_tvalue << "/" << result.m_opt_state.m_terror

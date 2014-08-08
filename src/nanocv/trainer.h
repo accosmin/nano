@@ -22,8 +22,8 @@ namespace ncv
         ///
         bool batch_train(
                 const task_t&, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
-                const loss_t&, batch_optimizer optimizer, 
-                size_t cycles, size_t epochs, size_t iterations, scalar_t epsilon,
+                const loss_t&, const string_t& criterion,
+                batch_optimizer optimizer, size_t cycles, size_t epochs, size_t iterations, scalar_t epsilon,
                 const model_t& model, trainer_result_t& result);
 
         ///
@@ -31,7 +31,8 @@ namespace ncv
         ///
         bool stochastic_train(
                 const task_t&, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
-                const loss_t&, stochastic_optimizer optimizer, size_t epochs,
+                const loss_t&, const string_t& criterion,
+                stochastic_optimizer optimizer, size_t epochs,
                 const model_t& model, trainer_result_t& result);
         
         ///
@@ -146,7 +147,9 @@ namespace ncv
                 ///
                 /// \brief train the given model
                 ///
-                virtual trainer_result_t train(const task_t&, const fold_t&, const loss_t&, size_t nthreads, model_t&) const = 0;
+                virtual trainer_result_t train(
+                        const task_t&, const fold_t&, const loss_t&, size_t nthreads, const string_t& criterion, 
+                        model_t&) const = 0;
         };
 }
 

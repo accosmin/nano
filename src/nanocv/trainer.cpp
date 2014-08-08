@@ -201,18 +201,19 @@ namespace ncv
         
         bool batch_train(
                 const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
-                const loss_t& loss, batch_optimizer optimizer, 
-                size_t cycles, size_t epochs, size_t iterations, scalar_t epsilon,
+                const loss_t& loss, const string_t& criterion, 
+                batch_optimizer optimizer, size_t cycles, size_t epochs, size_t iterations, scalar_t epsilon,
                 const model_t& model, trainer_result_t& result)
         {
                 const vector_t x0 = model.params();
                 
-                // tune the regularization factor
-                const scalars_t lambdas = { 1e-3, 1e-2, 1e-1, 1.0 };
+                // tune the regularization factor (if needed)
+                const scalars_t lambdas = accumulator_t::can_regularize(criterion) ? 
+                        scalars_t{ 0.1, 0.2, 0.5, 1.0 } : scalars_t{ 0.0 };                
                 for (scalar_t lambda : lambdas)
-                {
-                        accumulator_t ldata(model, nthreads, "l2-reg", criterion_t::type::value, lambda);
-                        accumulator_t gdata(model, nthreads, "l2-reg", criterion_t::type::vgrad, lambda);
+                {                        
+                        accumulator_t ldata(model, nthreads, criterion, criterion_t::type::value, lambda);
+                        accumulator_t gdata(model, nthreads, criterion, criterion_t::type::vgrad, lambda);                        
                         
                         vector_t x = x0;
                         for (size_t c = 0, epoch = 0; c < cycles; c ++)
@@ -354,7 +355,8 @@ namespace ncv
 
         bool stochastic_train(
                 const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
-                const loss_t& loss, stochastic_optimizer optimizer, size_t epochs,
+                const loss_t& loss, const string_t& criterion,
+                stochastic_optimizer optimizer, size_t epochs,
                 const model_t& model, trainer_result_t& result)
         {                
                 // prepare workers
@@ -366,19 +368,20 @@ namespace ncv
                 
                 const vector_t x0 = model.params();
                 
-                // tune the regularization factor
-                const scalars_t lambdas = { 1e-3, 1e-2, 1e-1, 1.0 };
+                // tune the regularization factor (if needed)
+                const scalars_t lambdas = accumulator_t::can_regularize(criterion) ? 
+                        scalars_t{ 0.1, 0.2, 0.5, 1.0 } : scalars_t{ 0.0 };
                 for (scalar_t lambda : lambdas)
-                {
+                {       
                         // tune the learning rate
                         const scalars_t alphas = { 0.001, 0.010, 0.100 };
                         for (scalar_t alpha : alphas)
                         {
                                 wpool.enqueue([=, &task, &loss, &model, &x0, &result, &mutex]()
                                 {
-                                        accumulator_t ldata(model, 1, "l2-reg", criterion_t::type::value, lambda);
-                                        accumulator_t gdata(model, 1, "l2-reg", criterion_t::type::vgrad, lambda);
-                                                                                
+                                        accumulator_t ldata(model, 1, criterion, criterion_t::type::value, lambda);
+                                        accumulator_t gdata(model, 1, criterion, criterion_t::type::vgrad, lambda);                                
+                                        
                                         const samples_t tsamples = tsampler.get();
                                         const samples_t vsamples = vsampler.get();
                                         

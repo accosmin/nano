@@ -17,13 +17,16 @@ namespace ncv
                         m_cache->reset(lambda);
                         m_cache->reset(type);
 
-                        for (size_t i = 0; i < m_pool.n_workers(); i ++)
+                        if (m_pool.n_workers() > 1)
                         {
-                                const rcriterion_t cache = criterion_manager_t::instance().get(criterion_name);
-                                cache->reset(model);
-                                cache->reset(lambda);
-                                cache->reset(type);
-                                m_caches.push_back(cache);
+                                for (size_t i = 0; i < m_pool.n_workers(); i ++)
+                                {
+                                        const rcriterion_t cache = criterion_manager_t::instance().get(criterion_name);
+                                        cache->reset(model);
+                                        cache->reset(lambda);
+                                        cache->reset(type);
+                                        m_caches.push_back(cache);
+                                }
                         }
                 }
                 
@@ -37,15 +40,6 @@ namespace ncv
                                      const string_t& criterion_name, criterion_t::type type, scalar_t lambda)
                 :       m_impl(new accumulator_impl_t(model, nthreads, criterion_name, type, lambda))
         {
-        }
-
-        void accumulator_t::reset(scalar_t lambda)
-        {
-                m_impl->m_cache->reset(lambda);
-                for (const rcriterion_t& cache : m_impl->m_caches)
-                {
-                        cache->reset(lambda);
-                }
         }
 
         void accumulator_t::reset(const vector_t& params)
@@ -183,9 +177,9 @@ namespace ncv
                 return m_impl->m_cache->lambda();
         }
 
-        bool accumulator_t::can_regularize() const
+        bool accumulator_t::can_regularize(const string_t& criterion)
         {
-                return m_impl->m_cache->can_regularize();
+                return criterion_manager_t::instance().get(criterion)->can_regularize();
         }
 }
 	

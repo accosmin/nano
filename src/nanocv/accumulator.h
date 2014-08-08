@@ -32,7 +32,6 @@ namespace ncv
                 ///
                 void reset();
                 void reset(const vector_t& params);
-                void reset(scalar_t lambda);
 
                 ///
                 /// \brief update statistics with a new sample
@@ -81,7 +80,7 @@ namespace ncv
                 ///
                 /// \brief check if the criterion has a regularization term to tune
                 ///
-                virtual bool can_regularize() const;
+                static bool can_regularize(const string_t& criterion);
 
         private:
 
