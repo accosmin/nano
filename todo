@@ -1,12 +1,9 @@
-- new option to ncv_trainer to select the criterion from command line:
-	- check at run-time if there are parameters to tune (for l2-reg & var-reg, but not for avg)
-
 - implement the input-regularized (~auto-encoder) criterion:
 	- may add another ::generate() method to use the learned parameters for generating inputs
 	- it may be interesting to compare the two methods
 
 - reduce the number of input/output buffers for layers
-                
+               
 - optimization statistics computed at the layer level: average gradient LInf-norm, number of calls
 	- to be printed when the layers are destroyed?
 	- this is to investigate why it takes many more iterations to optimize networks with more layers
@@ -25,6 +22,7 @@
 		- than train the output layer with the annotated samples
 
 - opencl:
+	- update the implementation (it relies on old data structures)
         - use this flag to create buffers CL_MEM_USE_HOST_PTR and the use clEnqueueMapBuffer() to access data
                 (http://www.khronos.org/assets/uploads/developers/library/2013-siggraph-opencl-bof/OpenCL-Intel-BOF_SIGGRAPH-2013.pdf)
 	- faster implementation: slightly slower for --forward, much slower for --backward (optimize memory accesses!)	
