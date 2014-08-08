@@ -64,7 +64,7 @@ namespace ncv
                 tensor_t                m_odata;                ///< output buffer:             odims x orows x ocols
                 tensor_t                m_kdata;                ///< convolution kernels:       odims x idims x krows x kcols
 
-#if NANOCV_HAVE_OPENCL
+#if defined(NANOCV_HAVE_OPENCL) && 0
                 cl::CommandQueue        m_ocl_queue;            ///< opencl command queue
                 cl::Program             m_ocl_program;          ///< opencl program
                 cl::Kernel              m_ocl_fkernel;          ///< opencl forward kernel

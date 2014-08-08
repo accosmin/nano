@@ -123,7 +123,7 @@ namespace ncv
                         log_error() << "OpenCL program build log:\t" << program.getBuildInfo<CL_PROGRAM_BUILD_LOG>(device);
 
                         // and re-throw the exception
-                        throw cl::Error(e.what());
+                        throw cl::Error(e.err());
                 }
 
                 return program;

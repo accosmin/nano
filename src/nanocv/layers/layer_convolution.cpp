@@ -105,7 +105,7 @@ namespace ncv
                 }
         }
 
-#if NANOCV_HAVE_OPENCL
+#if defined(NANOCV_HAVE_OPENCL) && 0
         static const string_t ocl_conv_source = R"xxx(
 
         #pragma OPENCL EXTENSION cl_amd_fp64 : enable
@@ -280,7 +280,7 @@ namespace ncv
                 m_odata.resize(odims, orows, ocols);
                 m_kdata.resize(odims * idims, krows, kcols);
 
-#if NANOCV_HAVE_OPENCL
+#if defined(NANOCV_HAVE_OPENCL) && 0
                 // create opencl objects (if available)
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
@@ -361,7 +361,7 @@ namespace ncv
 
         void conv_layer_t::params_changed() const
         {
-#if NANOCV_HAVE_OPENCL
+#if defined(NANOCV_HAVE_OPENCL) && 0
                 // send parameters to OpenCL device (if available)
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
@@ -379,7 +379,7 @@ namespace ncv
 
                 m_idata.copy_from(input);
 
-#if NANOCV_HAVE_OPENCL
+#if defined(NANOCV_HAVE_OPENCL) && 0
                 // OpenCL version
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
@@ -413,7 +413,7 @@ namespace ncv
 
                 m_odata.copy_from(output);
 
-#if NANOCV_HAVE_OPENCL
+#if defined(NANOCV_HAVE_OPENCL) && 0
                 // OpenCL version
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
@@ -459,7 +459,7 @@ namespace ncv
 
                 m_odata.copy_from(output);
 
-#if NANOCV_HAVE_OPENCL
+#if defined(NANOCV_HAVE_OPENCL) && 0
                 // OpenCL version
                 ocl::manager_t& theocl = ocl::manager_t::instance();
                 if (theocl.valid())
