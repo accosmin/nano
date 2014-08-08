@@ -22,9 +22,6 @@
 		- than train the output layer with the annotated samples
 
 - opencl:
-	- update the implementation (it relies on old data structures)
-        - use this flag to create buffers CL_MEM_USE_HOST_PTR and the use clEnqueueMapBuffer() to access data
-                (http://www.khronos.org/assets/uploads/developers/library/2013-siggraph-opencl-bof/OpenCL-Intel-BOF_SIGGRAPH-2013.pdf)
 	- faster implementation: slightly slower for --forward, much slower for --backward (optimize memory accesses!)	
 	- bug: wrong gradient for convolution networks if using multiple threads & the OpenCL mode
 
