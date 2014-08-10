@@ -1,3 +1,8 @@
+- refactor criteria:
+	- avg_criterion : public criterion
+	- l2n_avg_criterion : public criterion
+	- var_avg_criterion : public criterion
+
 - implement the input-regularized (~auto-encoder) criterion:
 	- may add another ::generate() method to use the learned parameters for generating inputs
 	- it may be interesting to compare the two methods
