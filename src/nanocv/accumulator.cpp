@@ -162,9 +162,9 @@ namespace ncv
                 return m_impl->m_cache->vgrad();
         }
 
-        size_t accumulator_t::dimensions() const
+        size_t accumulator_t::psize() const
         {
-                return m_impl->m_cache->dimensions();
+                return m_impl->m_cache->psize();
         }
 
         size_t accumulator_t::count() const

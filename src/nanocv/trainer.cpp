@@ -108,7 +108,7 @@ namespace ncv
 
                         auto fn_size = [&] ()
                         {
-                                return ldata.dimensions();
+                                return ldata.psize();
                         };
 
                         auto fn_fval = [&] (const vector_t& x)
@@ -163,7 +163,7 @@ namespace ncv
                                         log_info() << "[train = " << tvalue << "/" << terror
                                                 << ", valid = " << vvalue << "/" << verror
                                                 << ", grad = " << state.g.lpNorm<Eigen::Infinity>()
-                                                << ", dims = " << ldata.dimensions()
+                                                << ", dims = " << ldata.psize()
                                                 << ", lambda = " << ldata.lambda()
                                                 << "] done in " << timer.elapsed() << ".";
                                                 
@@ -346,7 +346,7 @@ namespace ncv
                                         << ", valid = " << vvalue << "/" << verror
                                         << ", rate = " << alpha << "/" << alpha0
                                         << ", epoch = " << e << "/" << epochs
-                                        << ", dims = " << ldata.dimensions()
+                                        << ", dims = " << ldata.psize()
                                         << ", lambda = " << ldata.lambda()
                                         << "] done in " << timer.elapsed() << ".";
                         }

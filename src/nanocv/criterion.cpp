@@ -73,7 +73,7 @@ namespace ncv
                 accumulate(output, target, loss);
         }
 
-        size_t criterion_t::dimensions() const
+        size_t criterion_t::psize() const
         {
                 return static_cast<size_t>(m_params.size());
         }

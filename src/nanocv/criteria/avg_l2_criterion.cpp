@@ -28,7 +28,7 @@ namespace ncv
         scalar_t avg_l2_criterion_t::value() const
         {
                 return  avg_criterion_t::value() +
-                        0.5 * m_lambda * m_params.squaredNorm();
+                        0.5 * m_lambda * m_params.squaredNorm() / psize();
         }
 
         scalar_t avg_l2_criterion_t::error() const
@@ -39,7 +39,7 @@ namespace ncv
         vector_t avg_l2_criterion_t::vgrad() const
         {
                 return  avg_criterion_t::vgrad() +
-                        m_lambda * m_params;
+                        m_lambda * m_params / psize();
         }
 
         bool avg_l2_criterion_t::can_regularize() const

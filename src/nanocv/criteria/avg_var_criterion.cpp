@@ -14,7 +14,7 @@ namespace ncv
 
                 m_value2 = 0.0;
 
-                m_vgrad2.resize(dimensions());
+                m_vgrad2.resize(psize());
                 m_vgrad2.setZero();
         }
 

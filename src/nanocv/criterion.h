@@ -87,9 +87,9 @@ namespace ncv
                 virtual size_t count() const = 0;
 
                 ///
-                /// \brief number of dimensions
+                /// \brief number of dimensions/parameters
                 ///
-                size_t dimensions() const;
+                size_t psize() const;
 
                 ///
                 /// \brief regularization weight (if any)
