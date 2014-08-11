@@ -47,7 +47,7 @@ namespace ncv
                 tscalar bestlog = (maxlog + minlog) / 2;
                 
                 for (   tscalar distlog = (maxlog - minlog) / 2;
-                        (distlog > epslog && epslog > tscalar(0);
+                        distlog > epslog && epslog > tscalar(0);
                         distlog /= 2)
                 {
                         const tscalar param1 = bestlog - distlog;
