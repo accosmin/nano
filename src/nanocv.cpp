@@ -27,9 +27,9 @@
 #include "trainers/minibatch_trainer.h"
 #include "trainers/stochastic_trainer.h"
 
-#include "criterion.h"
-#include "criteria/l2_criterion.h"
-#include "criteria/var_criterion.h"
+#include "criteria/avg_criterion.h"
+#include "criteria/avg_l2_criterion.h"
+#include "criteria/avg_var_criterion.h"
 
 #include <cfenv>
 
@@ -79,9 +79,9 @@ namespace ncv
                 trainer_manager_t::instance().add("stochastic", stochastic_trainer_t());
                 
                 // register criteria
-                criterion_manager_t::instance().add("avg", criterion_t());
-                criterion_manager_t::instance().add("l2-reg", l2_criterion_t());
-                criterion_manager_t::instance().add("var-reg", var_criterion_t());
+                criterion_manager_t::instance().add("avg", avg_criterion_t());
+                criterion_manager_t::instance().add("l2-reg", avg_l2_criterion_t());
+                criterion_manager_t::instance().add("var-reg", avg_var_criterion_t());
         }
 
         size_t test(const task_t& task, const fold_t& fold, const loss_t& loss, const model_t& model,

@@ -74,8 +74,8 @@ file(GLOB nanocv_sources
         )
 
 if(NANOCV_HAVE_OPENCL)
-	file(GLOB nanocv_opencl_sources
-	        src/opencl/*.*
+        file(GLOB nanocv_opencl_sources
+                src/opencl/*.*
         )
         set(nanocv_sources "${nanocv_sources};${nanocv_opencl_sources}")
 endif()

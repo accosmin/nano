@@ -1,26 +1,23 @@
-#ifndef NANOCV_VAR_CRITERION_H
-#define NANOCV_VAR_CRITERION_H
+#ifndef NANOCV_AVG_L2_CRITERION_H
+#define NANOCV_AVG_L2_CRITERION_H
 
-#include "criterion.h"
+#include "avg_criterion.h"
 
 namespace ncv
 {        
         ///
-        /// \brief variational regularized loss
-        /// (e.g. penalize high variance across training samples),
-        ///     like in EBBoost/VadaBoost: http://www.cs.columbia.edu/~jebara/papers/vadaboost.pdf
-        ///     or my PhD thesis: http://infoscience.epfl.ch/record/177356?ln=fr
+        /// \brief L2-norm regularized loss
         ///
-        class var_criterion_t : public criterion_t
+        class avg_l2_criterion_t : public avg_criterion_t
         {
         public:
                 
-                NANOCV_MAKE_CLONABLE(var_criterion_t)
+                NANOCV_MAKE_CLONABLE(avg_l2_criterion_t)
 
                 ///
                 /// \brief constructor
                 ///
-                var_criterion_t(const string_t& = string_t());
+                avg_l2_criterion_t(const string_t& = string_t());
                 
                 ///
                 /// \brief reset statistics and settings
@@ -57,14 +54,8 @@ namespace ncv
                 ///
                 /// \brief update statistics with a new sample
                 ///
-                virtual void cumulate(const vector_t& input, const vector_t& target, const loss_t& loss);
-                
-        private:
-                
-                // attributes
-                scalar_t        m_value2;        ///< cumulated squared loss value
-                vector_t        m_vgrad2;        ///< cumulated loss value multiplied with the gradient
+                virtual void accumulate(const vector_t& input, const vector_t& target, const loss_t& loss);
         };
 }
 
-#endif // NANOCV_VAR_CRITERION_H
+#endif // NANOCV_AVG_L2_CRITERION_H

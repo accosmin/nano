@@ -1,24 +1,30 @@
-#ifndef NANOCV_L2_CRITERION_H
-#define NANOCV_L2_CRITERION_H
+#ifndef NANOCV_AVG_CRITERION_H
+#define NANOCV_AVG_CRITERION_H
 
 #include "criterion.h"
 
 namespace ncv
 {        
         ///
-        /// \brief L2-norm regularized loss
+        /// \brief averate loss
         ///
-        class l2_criterion_t : public criterion_t
+        class avg_criterion_t : public criterion_t
         {
         public:
                 
-                NANOCV_MAKE_CLONABLE(l2_criterion_t)
+                NANOCV_MAKE_CLONABLE(avg_criterion_t)
 
                 ///
                 /// \brief constructor
                 ///
-                l2_criterion_t(const string_t& = string_t());
+                avg_criterion_t(const string_t& configuration = string_t(),
+                                const string_t& description = "average loss");
                 
+                ///
+                /// \brief destructor
+                ///
+                virtual ~avg_criterion_t() {}
+                                
                 ///
                 /// \brief reset statistics and settings
                 ///
@@ -43,6 +49,11 @@ namespace ncv
                 /// \brief average gradient
                 ///
                 virtual vector_t vgrad() const;
+                
+                ///
+                /// \brief total number of processed samples
+                ///
+                virtual size_t count() const;
 
                 ///
                 /// \brief check if the criterion has a regularization term to tune
@@ -54,8 +65,16 @@ namespace ncv
                 ///
                 /// \brief update statistics with a new sample
                 ///
-                virtual void cumulate(const vector_t& input, const vector_t& target, const loss_t& loss);
+                virtual void accumulate(const vector_t& output, const vector_t& target, const loss_t& loss);
+
+        protected:
+
+                // attributes
+                scalar_t                m_value;        ///< cumulated loss value
+                vector_t                m_vgrad;        ///< cumulated gradient
+                scalar_t                m_error;        ///< cumulated loss error                
+                size_t                  m_count;        ///< #processed samples
         };
 }
 
-#endif // NANOCV_L2_CRITERION_H
+#endif // NANOCV_AVG_CRITERION_H

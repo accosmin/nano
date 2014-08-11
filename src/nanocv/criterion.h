@@ -23,8 +23,6 @@ namespace ncv
         class criterion_t : public clonable_t<criterion_t>
         {
         public:
-                
-                NANOCV_MAKE_CLONABLE(criterion_t)
 
                 ///
                 /// \brief processing method
@@ -39,7 +37,7 @@ namespace ncv
                 /// \brief constructor
                 ///
                 criterion_t(const string_t& configuration = string_t(),
-                            const string_t& description = "average loss");
+                            const string_t& description = string_t());
                 
                 ///
                 /// \brief destructor
@@ -54,7 +52,7 @@ namespace ncv
                 criterion_t& reset(const vector_t& params);
                 criterion_t& reset(type t);
                 criterion_t& reset(scalar_t lambda);
-                virtual void reset();
+                virtual void reset() = 0;
 
                 ///
                 /// \brief update statistics with a new sample
@@ -66,27 +64,27 @@ namespace ncv
                 ///
                 /// \brief cumulate statistics
                 ///
-                virtual criterion_t& operator+=(const criterion_t&);
+                virtual criterion_t& operator+=(const criterion_t&) = 0;
 
                 ///
                 /// \brief average loss value
                 ///
-                virtual scalar_t value() const;
+                virtual scalar_t value() const = 0;
 
                 ///
                 /// \brief average error value
                 ///
-                virtual scalar_t error() const;
+                virtual scalar_t error() const = 0;
 
                 ///
                 /// \brief average gradient
                 ///
-                virtual vector_t vgrad() const;
+                virtual vector_t vgrad() const = 0;
                 
                 ///
                 /// \brief total number of processed samples
                 ///
-                size_t count() const;
+                virtual size_t count() const = 0;
 
                 ///
                 /// \brief number of dimensions
@@ -101,27 +99,23 @@ namespace ncv
                 ///
                 /// \brief check if the criterion has a regularization term to tune
                 ///
-                virtual bool can_regularize() const;
+                virtual bool can_regularize() const = 0;
 
         protected:
 
                 ///
                 /// \brief update statistics with a new sample
                 ///
-                virtual void cumulate(const vector_t& input, const vector_t& target, const loss_t& loss);
+                virtual void accumulate(const vector_t& output, const vector_t& target, const loss_t& loss) = 0;
 
         protected:
 
                 // attributes
                 rmodel_t                m_model;        ///< current model
                 vector_t                m_params;       ///< current model parameters
-                scalar_t                m_lambda;       ///< regularization weight (if any)
-
+                
+                scalar_t                m_lambda;       ///< regularization weight (if any)                
                 type                    m_type;         ///<
-                scalar_t                m_value;        ///< cumulated loss value
-                vector_t                m_vgrad;        ///< cumulated gradient
-                scalar_t                m_error;        ///< cumulated loss error
-                size_t                  m_count;        ///< #processed samples
         };
 }
 

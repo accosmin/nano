@@ -1,28 +1,28 @@
-#include "var_criterion.h"
+#include "avg_var_criterion.h"
 
 namespace ncv
 {        
-        var_criterion_t::var_criterion_t(
+        avg_var_criterion_t::avg_var_criterion_t(
                 const std::string& configuration)
-                :       criterion_t(configuration, "variational (VadaBoost-like) regularized loss")
+                :       avg_criterion_t(configuration, "variational (VadaBoost-like) regularized loss")
         {
         }
 
-        void var_criterion_t::reset()
+        void avg_var_criterion_t::reset()
         {
-                criterion_t::reset();
+                avg_criterion_t::reset();
 
                 m_value2 = 0.0;
 
-                m_vgrad2.resize(m_params.size());
+                m_vgrad2.resize(dimensions());
                 m_vgrad2.setZero();
         }
 
-        criterion_t& var_criterion_t::operator+=(const criterion_t& other)
+        criterion_t& avg_var_criterion_t::operator+=(const criterion_t& other)
         {
-                criterion_t::operator+=(other);
+                avg_criterion_t::operator+=(other);
                 
-                const var_criterion_t* vother = dynamic_cast<const var_criterion_t*>(&other);
+                const avg_var_criterion_t* vother = dynamic_cast<const avg_var_criterion_t*>(&other);
                 assert(vother != nullptr);
                 
                 m_value2 += vother->m_value2;
@@ -31,13 +31,13 @@ namespace ncv
                 return *this;
         }
 
-        void var_criterion_t::cumulate(
+        void avg_var_criterion_t::accumulate(
                 const vector_t& output, const vector_t& target, const loss_t& loss)
         {
                 const scalar_t old_value = m_value;
                 const vector_t old_vgrad = m_vgrad;
                 
-                criterion_t::cumulate(output, target, loss);
+                avg_criterion_t::accumulate(output, target, loss);
                 
                 const scalar_t crt_value = m_value - old_value;
                 const vector_t crt_vgrad = m_vgrad - old_vgrad;
@@ -46,24 +46,24 @@ namespace ncv
                 m_vgrad2 += crt_value * crt_vgrad;
         }
         
-        scalar_t var_criterion_t::value() const
+        scalar_t avg_var_criterion_t::value() const
         {
-                return  criterion_t::value() +
+                return  avg_criterion_t::value() +
                         m_lambda * (count() * m_value2 - m_value * m_value) / (count() * count());
         }
 
-        scalar_t var_criterion_t::error() const
+        scalar_t avg_var_criterion_t::error() const
         {
-                return  criterion_t::error();
+                return  avg_criterion_t::error();
         }
 
-        vector_t var_criterion_t::vgrad() const
+        vector_t avg_var_criterion_t::vgrad() const
         {
-                return  criterion_t::vgrad() +
+                return  avg_criterion_t::vgrad() +
                         2.0 * m_lambda * (count() * m_vgrad2 - m_value * m_vgrad) / (count() * count());
         }
 
-        bool var_criterion_t::can_regularize() const
+        bool avg_var_criterion_t::can_regularize() const
         {
                 return true;
         }
