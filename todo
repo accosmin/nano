@@ -1,13 +1,10 @@
-- refactor criteria:
-	- avg_criterion : public criterion
-	- l2n_avg_criterion : public criterion
-	- var_avg_criterion : public criterion
-
-- implement the input-regularized (~auto-encoder) criterion:
-	- may add another ::generate() method to use the learned parameters for generating inputs
-	- it may be interesting to compare the two methods
+- better tunning of the regularization factor:
+	- use a 3-point greedy approach on the algorithmic scale [1e-1, 1e+3]
 
 - reduce the number of input/output buffers for layers
+
+- faster convolution:
+	- check if any improvement if using a 3D convolution 
                
 - optimization statistics computed at the layer level: average gradient LInf-norm, number of calls
 	- to be printed when the layers are destroyed?
