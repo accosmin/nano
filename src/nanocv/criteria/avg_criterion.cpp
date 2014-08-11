@@ -16,6 +16,7 @@ namespace ncv
         {
                 m_value = 0.0;
                 m_error = 0.0;
+                m_count = 0;
                 m_vgrad.resize(dimensions());
                 m_vgrad.setZero();
         }
