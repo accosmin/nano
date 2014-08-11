@@ -120,16 +120,15 @@ namespace ncv
 
         namespace detail
         {        
-                static trainer_result_t batch_train(
+                static opt_state_t batch_train(
                         trainer_data_t& data, 
-                        batch_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon, size_t& epoch)
+                        batch_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon, size_t& epoch,
+                        trainer_result_t& result)
                 {
                         size_t iteration = 0;  
                         
                         samples_t tsamples = data.m_tsampler.get();
                         samples_t vsamples = data.m_vsampler.get();
-
-                        trainer_result_t result;
 
                         // construct the optimization problem
                         const timer_t timer;
@@ -212,24 +211,18 @@ namespace ncv
                         switch (optimizer)
                         {
                         case batch_optimizer::LBFGS:
-                                optimize::lbfgs(problem, data.m_x0, epochs * iterations, epsilon,
-                                                fn_wlog, fn_elog, fn_ulog_ref);
-                                break;
+                                return optimize::lbfgs(problem, data.m_x0, epochs * iterations, epsilon,
+                                                       fn_wlog, fn_elog, fn_ulog_ref);
 
                         case batch_optimizer::CGD:
-                                optimize::cgd_pr(problem, data.m_x0, epochs * iterations, epsilon,
-                                                 fn_wlog, fn_elog, fn_ulog_ref);
-                                break;
+                                return optimize::cgd_pr(problem, data.m_x0, epochs * iterations, epsilon,
+                                                        fn_wlog, fn_elog, fn_ulog_ref);
 
                         case batch_optimizer::GD:
                         default:
-                                optimize::gd(problem, data.m_x0, epochs * iterations, epsilon,
-                                             fn_wlog, fn_elog, fn_ulog_ref);
-                                break;
+                                return optimize::gd(problem, data.m_x0, epochs * iterations, epsilon,
+                                                    fn_wlog, fn_elog, fn_ulog_ref);
                         }
-
-                        // OK
-                        return result;
                 }
         }
         
@@ -249,17 +242,21 @@ namespace ncv
                 {                        
                         accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value, lambda);
                         accumulator_t gacc(model, nthreads, criterion, criterion_t::type::vgrad, lambda);                        
+
+                        trainer_result_t crt_result;
                         
                         vector_t x = x0;
                         for (size_t c = 0, epoch = 0; c < cycles; c ++)
                         {                        
-                                trainer_data_t data(task, tsampler, vsampler, loss, x, lacc, gacc, result);
+                                trainer_data_t data(task, tsampler, vsampler, loss, x, lacc, gacc);
                                 
                                 const opt_state_t state = detail::batch_train(
-                                        data, optimizer, epochs, iterations, epsilon, epoch);
+                                        data, optimizer, epochs, iterations, epsilon, epoch, crt_result);
                                 
                                 x = state.x;
                         }
+
+                        result.update(crt_result);
                 }
 
                 return result;
