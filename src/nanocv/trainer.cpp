@@ -88,35 +88,51 @@ namespace ncv
                 
                 return trainer_states_t();
         }
+        
+        trainer_data_t::trainer_data_t(const task_t& task,
+                       const sampler_t& tsampler,
+                       const sampler_t& vsampler,
+                       const loss_t& loss,
+                       const vector_t& x0,
+                       accumulator_t& lacc,
+                       accumulator_t& gacc, 
+                       trainer_result_t& result)
+                :       m_task(task),
+                        m_tsampler(tsampler),
+                        m_vsampler(vsampler),
+                        m_loss(loss),
+                        m_x0(x0),
+                        m_lacc(lacc),
+                        m_gacc(gacc),
+                        m_result(result)
+        {
+        }
 
         namespace detail
         {        
                 static opt_state_t batch_train(
-                        const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler,
-                        const loss_t& loss, batch_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon,
-                        const vector_t& x0, 
-                        accumulator_t& ldata, accumulator_t& gdata, 
-                        trainer_result_t& result, size_t& epoch)
+                        trainer_data_t& data, 
+                        batch_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon, size_t& epoch)
                 {
                         size_t iteration = 0;  
                         
-                        samples_t tsamples = tsampler.get();
-                        samples_t vsamples = vsampler.get();                        
+                        samples_t tsamples = data.m_tsampler.get();
+                        samples_t vsamples = data.m_vsampler.get();                        
 
                         // construct the optimization problem
                         const timer_t timer;
 
                         auto fn_size = [&] ()
                         {
-                                return ldata.psize();
+                                return data.m_lacc.psize();
                         };
 
                         auto fn_fval = [&] (const vector_t& x)
                         {
                                 // training samples: loss value
-                                ldata.reset(x);
-                                ldata.update(task, tsamples, loss);
-                                const scalar_t tvalue = ldata.value();
+                                data.m_lacc.reset(x);
+                                data.m_lacc.update(data.m_task, tsamples, data.m_loss);
+                                const scalar_t tvalue = data.m_lacc.value();
 
                                 return tvalue;
                         };
@@ -124,10 +140,10 @@ namespace ncv
                         auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
                         {
                                 // training samples: loss value & gradient
-                                gdata.reset(x);
-                                gdata.update(task, tsamples, loss);
-                                const scalar_t tvalue = gdata.value();
-                                gx = gdata.vgrad();
+                                data.m_gacc.reset(x);
+                                data.m_gacc.update(data.m_task, tsamples, data.m_loss);
+                                const scalar_t tvalue = data.m_gacc.value();
+                                gx = data.m_gacc.vgrad();
 
                                 return tvalue;
                         };
@@ -147,31 +163,31 @@ namespace ncv
                                 {
                                         ++ epoch;
                                         
-                                        const scalar_t tvalue = gdata.value();
-                                        const scalar_t terror = gdata.error();
+                                        const scalar_t tvalue = data.m_gacc.value();
+                                        const scalar_t terror = data.m_gacc.error();
 
                                         // validation samples: loss value
-                                        ldata.reset(state.x);
-                                        ldata.update(task, vsamples, loss);
-                                        const scalar_t vvalue = ldata.value();
-                                        const scalar_t verror = ldata.error();
+                                        data.m_lacc.reset(state.x);
+                                        data.m_lacc.update(data.m_task, vsamples, data.m_loss);
+                                        const scalar_t vvalue = data.m_lacc.value();
+                                        const scalar_t verror = data.m_lacc.error();
 
                                         // update the optimum state
-                                        result.update(state.x, tvalue, terror, vvalue, verror, epoch,
-                                                      scalars_t({ ldata.lambda() }));
+                                        data.m_result.update(state.x, tvalue, terror, vvalue, verror, epoch,
+                                                             scalars_t({ data.m_lacc.lambda() }));
 
                                         log_info() << "[train = " << tvalue << "/" << terror
                                                 << ", valid = " << vvalue << "/" << verror
                                                 << ", grad = " << state.g.lpNorm<Eigen::Infinity>()
-                                                << ", dims = " << ldata.psize()
-                                                << ", lambda = " << ldata.lambda()
+                                                << ", dims = " << data.m_lacc.psize()
+                                                << ", lambda = " << data.m_lacc.lambda()
                                                 << "] done in " << timer.elapsed() << ".";
                                                 
                                         // resample
                                         if (iteration < iterations)
                                         {
-                                                tsamples = tsampler.get();
-                                                vsamples = vsampler.get();  
+                                                tsamples = data.m_tsampler.get();
+                                                vsamples = data.m_vsampler.get();  
                                         }
                                 }
                         };
@@ -184,16 +200,16 @@ namespace ncv
                         switch (optimizer)
                         {
                         case batch_optimizer::LBFGS:
-                                return optimize::lbfgs(problem, x0, epochs * iterations, epsilon,
+                                return optimize::lbfgs(problem, data.m_x0, epochs * iterations, epsilon,
                                                        fn_wlog, fn_elog, fn_ulog_ref);
 
                         case batch_optimizer::CGD:
-                                return optimize::cgd_pr(problem, x0, epochs * iterations, epsilon,
+                                return optimize::cgd_pr(problem, data.m_x0, epochs * iterations, epsilon,
                                                         fn_wlog, fn_elog, fn_ulog_ref);
 
                         case batch_optimizer::GD:
                         default:
-                                return optimize::gd(problem, x0, epochs * iterations, epsilon,
+                                return optimize::gd(problem, data.m_x0, epochs * iterations, epsilon,
                                                     fn_wlog, fn_elog, fn_ulog_ref);
                         }
                 }
@@ -212,16 +228,17 @@ namespace ncv
                         scalars_t{ 0.1, 0.2, 0.5, 1.0 } : scalars_t{ 0.0 };                
                 for (scalar_t lambda : lambdas)
                 {                        
-                        accumulator_t ldata(model, nthreads, criterion, criterion_t::type::value, lambda);
-                        accumulator_t gdata(model, nthreads, criterion, criterion_t::type::vgrad, lambda);                        
+                        accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value, lambda);
+                        accumulator_t gacc(model, nthreads, criterion, criterion_t::type::vgrad, lambda);                        
                         
                         vector_t x = x0;
                         for (size_t c = 0, epoch = 0; c < cycles; c ++)
                         {                        
+                                trainer_data_t data(task, tsampler, vsampler, loss, x, lacc, gacc, result);
+                                
                                 const opt_state_t state = detail::batch_train(
-                                        task, tsampler, vsampler,  
-                                        loss, optimizer, epochs, iterations, epsilon,
-                                        x, ldata, gdata, result, epoch);
+                                        data, optimizer, epochs, iterations, epsilon, epoch);
+                                
                                 x = state.x;
                         }
                 }
@@ -248,19 +265,18 @@ namespace ncv
                 };
 
                 static void stochastic_train(
-                        const task_t& task, const samples_t& tsamples_, const samples_t& vsamples, const loss_t& loss,
-                        stochastic_optimizer type, size_t epochs, scalar_t alpha0, scalar_t beta,
-                        const vector_t& x0, accumulator_t& ldata, accumulator_t& gdata, trainer_result_t& result,
-                        thread_pool_t::mutex_t& mutex)
+                        trainer_data_t& data,
+                        stochastic_optimizer type, size_t epochs, scalar_t alpha0, scalar_t beta, thread_pool_t::mutex_t& mutex)
                 {
-                        samples_t tsamples = tsamples_;
-
+                        samples_t tsamples = data.m_tsampler.get();
+                        samples_t vsamples = data.m_vsampler.get();
+                        
                         random_t<size_t> xrng(0, tsamples.size());
                         rnd_t xrnd(xrng);
 
                         timer_t timer;
 
-                        vector_t x = x0, xparam = x, xavg = x;
+                        vector_t x = data.m_x0, xparam = x, xavg = x;
 
                         vector_t gavg(x.size());
                         gavg.setZero();
@@ -279,10 +295,10 @@ namespace ncv
                                 case stochastic_optimizer::SG:
                                         for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
                                         {
-                                                gdata.reset(x);
-                                                gdata.update(task, tsamples[i], loss);
+                                                data.m_gacc.reset(x);
+                                                data.m_gacc.update(data.m_task, tsamples[i], data.m_loss);
 
-                                                x.noalias() -= alpha * gdata.vgrad();
+                                                x.noalias() -= alpha * data.m_gacc.vgrad();
                                         }
                                         xparam = x;
                                         break;
@@ -291,10 +307,10 @@ namespace ncv
                                 case stochastic_optimizer::SGA:
                                         for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
                                         {
-                                                gdata.reset(x);
-                                                gdata.update(task, tsamples[i], loss);
+                                                data.m_gacc.reset(x);
+                                                data.m_gacc.update(data.m_task, tsamples[i], data.m_loss);
 
-                                                const vector_t g = gdata.vgrad();
+                                                const vector_t g = data.m_gacc.vgrad();
 
                                                 const scalar_t b = 1.0 / alpha;
                                                 gavg = (gavg * sumb + g * b) / (sumb + b);
@@ -310,10 +326,10 @@ namespace ncv
                                 default:
                                         for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
                                         {
-                                                gdata.reset(x);
-                                                gdata.update(task, tsamples[i], loss);
+                                                data.m_gacc.reset(x);
+                                                data.m_gacc.update(data.m_task, tsamples[i], data.m_loss);
 
-                                                x.noalias() -= alpha * gdata.vgrad();
+                                                x.noalias() -= alpha * data.m_gacc.vgrad();
 
                                                 const scalar_t b = 1.0 / alpha;
                                                 xavg = (xavg * sumb + x * b) / (sumb + b);
@@ -324,30 +340,30 @@ namespace ncv
                                 }
 
                                 // evaluate training samples
-                                ldata.reset(xparam);
-                                ldata.update(task, tsamples, loss);
-                                const scalar_t tvalue = ldata.value();
-                                const scalar_t terror = ldata.error();
+                                data.m_lacc.reset(xparam);
+                                data.m_lacc.update(data.m_task, tsamples, data.m_loss);
+                                const scalar_t tvalue = data.m_lacc.value();
+                                const scalar_t terror = data.m_lacc.error();
 
                                 // evaluate validation samples
-                                ldata.reset(xparam);
-                                ldata.update(task, vsamples, loss);
-                                const scalar_t vvalue = ldata.value();
-                                const scalar_t verror = ldata.error();
+                                data.m_lacc.reset(xparam);
+                                data.m_lacc.update(data.m_task, vsamples, data.m_loss);
+                                const scalar_t vvalue = data.m_lacc.value();
+                                const scalar_t verror = data.m_lacc.error();
 
                                 // OK, update the optimum solution
                                 const thread_pool_t::lock_t lock(mutex);
 
-                                result.update(xparam, tvalue, terror, vvalue, verror, e, 
-                                              scalars_t({ alpha0, ldata.lambda() }));
+                                data.m_result.update(xparam, tvalue, terror, vvalue, verror, e, 
+                                                     scalars_t({ alpha0, data.m_lacc.lambda() }));
 
                                 log_info()
                                         << "[train = " << tvalue << "/" << terror
                                         << ", valid = " << vvalue << "/" << verror
                                         << ", rate = " << alpha << "/" << alpha0
                                         << ", epoch = " << e << "/" << epochs
-                                        << ", dims = " << ldata.psize()
-                                        << ", lambda = " << ldata.lambda()
+                                        << ", dims = " << data.m_lacc.psize()
+                                        << ", lambda = " << data.m_lacc.lambda()
                                         << "] done in " << timer.elapsed() << ".";
                         }
                 }
@@ -379,16 +395,13 @@ namespace ncv
                         {
                                 wpool.enqueue([=, &task, &loss, &model, &x0, &result, &mutex]()
                                 {
-                                        accumulator_t ldata(model, 1, criterion, criterion_t::type::value, lambda);
-                                        accumulator_t gdata(model, 1, criterion, criterion_t::type::vgrad, lambda);                                
+                                        accumulator_t lacc(model, 1, criterion, criterion_t::type::value, lambda);
+                                        accumulator_t gacc(model, 1, criterion, criterion_t::type::vgrad, lambda);          
                                         
-                                        const samples_t tsamples = tsampler.get();
-                                        const samples_t vsamples = vsampler.get();
+                                        trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc, result);
                                         
                                         detail::stochastic_train(
-                                                task, tsamples, vsamples, loss,
-                                                optimizer, epochs, alpha, beta,
-                                                x0, ldata, gdata, result, mutex);
+                                                data, optimizer, epochs, alpha, beta, mutex);
                                 });
                         }
                 }

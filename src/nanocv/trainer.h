@@ -9,7 +9,9 @@ namespace ncv
         class loss_t;
         class sampler_t;
         class model_t;
+        class accumulator_t;
         struct trainer_result_t;
+        struct trainer_data_t;
 
         ///
         /// \brief stores registered prototypes
@@ -122,6 +124,34 @@ namespace ncv
                 size_t                  m_opt_epoch;            ///< optimum epoch
                 size_t                  m_epochs;               ///< maximum number of epochs
                 trainer_history_t       m_history;              ///< optimization history
+        };
+        
+        ///
+        /// \brief stores all required buffers to train a model
+        ///
+        struct trainer_data_t
+        {        
+                ///
+                /// \brief constructor
+                ///
+                trainer_data_t(const task_t& task,
+                               const sampler_t& tsampler,
+                               const sampler_t& vsampler,
+                               const loss_t& loss,
+                               const vector_t& x0,
+                               accumulator_t& lacc,
+                               accumulator_t& gacc, 
+                               trainer_result_t& result);
+                
+                // attributes
+                const task_t&           m_task;                 ///< 
+                const sampler_t&        m_tsampler;             ///< training samples
+                const sampler_t&        m_vsampler;             ///< validation samples
+                const loss_t&           m_loss;                 ///< 
+                const vector_t&         m_x0;                   ///< starting parameters
+                accumulator_t&          m_lacc;                 ///< criterion
+                accumulator_t&          m_gacc;                 ///< criterion's gradient
+                trainer_result_t&       m_result;               ///< optimization result
         };
                 
         ///
