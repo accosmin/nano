@@ -53,14 +53,13 @@ namespace ncv
                 vsampler.setup(sampler_t::stype::batch);                // but all validation samples
 
                 // train the model
-                trainer_result_t result(model.psize(), epochs);
-                ncv::batch_train(task, tsampler, vsampler, nthreads,
-                                 loss, criterion, optimizer, epochs, 1, iterations, epsilon,
-                                 model, result);
+                const trainer_result_t result = ncv::batch_train(
+                        model, task, tsampler, vsampler, nthreads,
+                        loss, criterion, optimizer, epochs, 1, iterations, epsilon);
 
                 log_info() << "optimum [train = " << result.m_opt_state.m_tvalue << "/" << result.m_opt_state.m_terror
                            << ", valid = " << result.m_opt_state.m_vvalue << "/" << result.m_opt_state.m_verror
-                           << ", epoch = " << result.m_opt_epoch << "/" << result.m_epochs
+                           << ", epoch = " << result.m_opt_epoch
                            << ", config = " << text::concatenate(result.m_opt_config, "/")
                            << "].";
 

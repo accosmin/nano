@@ -11,7 +11,6 @@ namespace ncv
         class model_t;
         class accumulator_t;
         struct trainer_result_t;
-        struct trainer_data_t;
 
         ///
         /// \brief stores registered prototypes
@@ -22,20 +21,18 @@ namespace ncv
         ///
         /// \brief batch-train the given model
         ///
-        bool batch_train(
-                const task_t&, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
+        trainer_result_t batch_train(
+                const model_t&, const task_t&, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t&, const string_t& criterion,
-                batch_optimizer optimizer, size_t cycles, size_t epochs, size_t iterations, scalar_t epsilon,
-                const model_t& model, trainer_result_t& result);
+                batch_optimizer optimizer, size_t cycles, size_t epochs, size_t iterations, scalar_t epsilon);
 
         ///
         /// \brief stochastic-train the given model
         ///
-        bool stochastic_train(
-                const task_t&, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
+        trainer_result_t stochastic_train(
+                const model_t&, const task_t&, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t&, const string_t& criterion,
-                stochastic_optimizer optimizer, size_t epochs,
-                const model_t& model, trainer_result_t& result);
+                stochastic_optimizer optimizer, size_t epochs);
         
         ///
         /// \brief training state
@@ -62,6 +59,14 @@ namespace ncv
                 scalar_t                m_vvalue;       ///< validation loss value
                 scalar_t                m_verror;       ///< validation error        
         };
+
+        ///
+        /// \brief compare two training states
+        ///
+        inline bool operator<(const trainer_state_t& one, const trainer_state_t& another)
+        {
+                return one.m_verror < another.m_verror;
+        }
         
         typedef std::vector
         <trainer_state_t>               trainer_states_t;
@@ -93,7 +98,7 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                trainer_result_t(size_t n_parameters = 0, size_t epochs = 0);
+                trainer_result_t();
 
                 ///
                 /// \brief update the current/optimum state with a possible better state
@@ -109,7 +114,7 @@ namespace ncv
                 ///
                 bool valid() const
                 {
-                        return m_epochs > 0 && !m_history.empty();
+                        return !m_history.empty() && m_opt_params.size() > 0;
                 }
                 
                 ///
@@ -122,9 +127,16 @@ namespace ncv
                 trainer_state_t         m_opt_state;            ///< optimum training state
                 trainer_config_t        m_opt_config;           ///< optimum configuration
                 size_t                  m_opt_epoch;            ///< optimum epoch
-                size_t                  m_epochs;               ///< maximum number of epochs
                 trainer_history_t       m_history;              ///< optimization history
         };
+
+        ///
+        /// \brief compare two trainer results
+        ///
+        inline bool operator<(const trainer_result_t& one, const trainer_result_t& other)
+        {
+                return one.m_opt_state < other.m_opt_state;
+        }
         
         ///
         /// \brief stores all required buffers to train a model
@@ -140,8 +152,7 @@ namespace ncv
                                const loss_t& loss,
                                const vector_t& x0,
                                accumulator_t& lacc,
-                               accumulator_t& gacc, 
-                               trainer_result_t& result);
+                               accumulator_t& gacc);
                 
                 // attributes
                 const task_t&           m_task;                 ///< 
@@ -151,7 +162,6 @@ namespace ncv
                 const vector_t&         m_x0;                   ///< starting parameters
                 accumulator_t&          m_lacc;                 ///< criterion
                 accumulator_t&          m_gacc;                 ///< criterion's gradient
-                trainer_result_t&       m_result;               ///< optimization result
         };
                 
         ///

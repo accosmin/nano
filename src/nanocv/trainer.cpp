@@ -43,10 +43,8 @@ namespace ncv
                 return ofs.good();
         }
 
-        trainer_result_t::trainer_result_t(size_t n_parameters, size_t epochs)
-                :       m_opt_params(n_parameters),
-                        m_opt_epoch(0),
-                        m_epochs(epochs)
+        trainer_result_t::trainer_result_t()
+                :       m_opt_epoch(0)
         {
         }
 
@@ -95,29 +93,29 @@ namespace ncv
                        const loss_t& loss,
                        const vector_t& x0,
                        accumulator_t& lacc,
-                       accumulator_t& gacc, 
-                       trainer_result_t& result)
+                       accumulator_t& gacc)
                 :       m_task(task),
                         m_tsampler(tsampler),
                         m_vsampler(vsampler),
                         m_loss(loss),
                         m_x0(x0),
                         m_lacc(lacc),
-                        m_gacc(gacc),
-                        m_result(result)
+                        m_gacc(gacc)
         {
         }
 
         namespace detail
         {        
-                static opt_state_t batch_train(
+                static std::pair<trainer_result_t, opt_state_t> batch_train(
                         trainer_data_t& data, 
                         batch_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon, size_t& epoch)
                 {
                         size_t iteration = 0;  
                         
                         samples_t tsamples = data.m_tsampler.get();
-                        samples_t vsamples = data.m_vsampler.get();                        
+                        samples_t vsamples = data.m_vsampler.get();
+
+                        trainer_result_t result;
 
                         // construct the optimization problem
                         const timer_t timer;
@@ -173,8 +171,8 @@ namespace ncv
                                         const scalar_t verror = data.m_lacc.error();
 
                                         // update the optimum state
-                                        data.m_result.update(state.x, tvalue, terror, vvalue, verror, epoch,
-                                                             scalars_t({ data.m_lacc.lambda() }));
+                                        result.update(state.x, tvalue, terror, vvalue, verror, epoch,
+                                                      scalars_t({ data.m_lacc.lambda() }));
 
                                         log_info() << "[train = " << tvalue << "/" << terror
                                                 << ", valid = " << vvalue << "/" << verror
@@ -200,28 +198,36 @@ namespace ncv
                         switch (optimizer)
                         {
                         case batch_optimizer::LBFGS:
-                                return optimize::lbfgs(problem, data.m_x0, epochs * iterations, epsilon,
-                                                       fn_wlog, fn_elog, fn_ulog_ref);
+                                return  std::make_pair(
+                                        result,
+                                        optimize::lbfgs(problem, data.m_x0, epochs * iterations, epsilon,
+                                                fn_wlog, fn_elog, fn_ulog_ref);
+                                break;
 
                         case batch_optimizer::CGD:
-                                return optimize::cgd_pr(problem, data.m_x0, epochs * iterations, epsilon,
-                                                        fn_wlog, fn_elog, fn_ulog_ref);
+                                optimize::cgd_pr(problem, data.m_x0, epochs * iterations, epsilon,
+                                                 fn_wlog, fn_elog, fn_ulog_ref);
+                                break;
 
                         case batch_optimizer::GD:
                         default:
-                                return optimize::gd(problem, data.m_x0, epochs * iterations, epsilon,
-                                                    fn_wlog, fn_elog, fn_ulog_ref);
+                                optimize::gd(problem, data.m_x0, epochs * iterations, epsilon,
+                                             fn_wlog, fn_elog, fn_ulog_ref);
+                                break;
                         }
+
+                        return result;
                 }
         }
         
-        bool batch_train(
-                const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
+        trainer_result_t batch_train(
+                const model_t& model, const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, const string_t& criterion, 
-                batch_optimizer optimizer, size_t cycles, size_t epochs, size_t iterations, scalar_t epsilon,
-                const model_t& model, trainer_result_t& result)
+                batch_optimizer optimizer, size_t cycles, size_t epochs, size_t iterations, scalar_t epsilon)
         {
                 const vector_t x0 = model.params();
+
+                trainer_result_t result;
                 
                 // tune the regularization factor (if needed)
                 const scalars_t lambdas = accumulator_t::can_regularize(criterion) ? 
@@ -242,9 +248,8 @@ namespace ncv
                                 x = state.x;
                         }
                 }
-                
-                // OK
-                return true;
+
+                return result;
         }
 
         namespace detail
@@ -264,7 +269,7 @@ namespace ncv
                         random_t<size_t>&  m_gen;
                 };
 
-                static void stochastic_train(
+                static trainer_result_t stochastic_train(
                         trainer_data_t& data,
                         stochastic_optimizer type, size_t epochs, scalar_t alpha0, scalar_t beta, thread_pool_t::mutex_t& mutex)
                 {
@@ -369,11 +374,10 @@ namespace ncv
                 }
         }
 
-        bool stochastic_train(
-                const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
+        trainer_result_t stochastic_train(
+                const model_t& model, const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, const string_t& criterion,
-                stochastic_optimizer optimizer, size_t epochs,
-                const model_t& model, trainer_result_t& result)
+                stochastic_optimizer optimizer, size_t epochs)
         {                
                 // prepare workers
                 thread_pool_t wpool(nthreads);
