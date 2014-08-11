@@ -3,6 +3,7 @@
 #include "common/logger.h"
 #include "common/thread_pool.h"
 #include "common/random.hpp"
+#include "common/search1d.hpp"
 #include "optimize/opt_gd.hpp"
 #include "optimize/opt_cgd.hpp"
 #include "optimize/opt_lbfgs.hpp"
@@ -119,6 +120,27 @@ namespace ncv
         }
 
         namespace detail
+        {
+                template
+                <
+                        typename toperator
+                >
+                static trainer_result_t tune(const string_t& criterion, const toperator& op)
+                {
+                        if (accumulator_t::can_regularize(criterion))
+                        {
+                                // todo: use search1d - do not assume the op's result is a tscalar!!!
+                                return op(0.0);
+                        }
+
+                        else
+                        {
+                                return op(0.0);
+                        }
+                }
+        }
+
+        namespace detail
         {        
                 static opt_state_t batch_train(
                         trainer_data_t& data, 
@@ -231,7 +253,26 @@ namespace ncv
                 const loss_t& loss, const string_t& criterion, 
                 batch_optimizer optimizer, size_t cycles, size_t epochs, size_t iterations, scalar_t epsilon)
         {
-                const vector_t x0 = model.params();
+                const auto op = [&] (scalar_t lambda)
+                {
+                        accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value, lambda);
+                        accumulator_t gacc(model, nthreads, criterion, criterion_t::type::vgrad, lambda);
+
+                        trainer_result_t result;
+
+                        vector_t x = model.params();
+                        for (size_t c = 0, epoch = 0; c < cycles; c ++)
+                        {
+                                trainer_data_t data(task, tsampler, vsampler, loss, x, lacc, gacc);
+
+                                const opt_state_t state = detail::batch_train(
+                                        data, optimizer, epochs, iterations, epsilon, epoch, result);
+
+                                x = state.x;
+                        }
+
+                        return result;
+                };
 
                 trainer_result_t result;
                 
@@ -245,7 +286,7 @@ namespace ncv
 
                         trainer_result_t crt_result;
                         
-                        vector_t x = x0;
+                        vector_t x = model.params();
                         for (size_t c = 0, epoch = 0; c < cycles; c ++)
                         {                        
                                 trainer_data_t data(task, tsampler, vsampler, loss, x, lacc, gacc);
