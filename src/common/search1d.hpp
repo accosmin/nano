@@ -62,13 +62,13 @@ namespace ncv
                         {
                                 bestlog = param1;
                         }
-                        else if (score1 < score2 && score1 < score3)
+                        else if (score2 < score3 && score2 < score1)
                         {
-                                bestlog = param1;
+                                bestlog = param2;
                         }
-                        else if (score1 < score2 && score1 < score3)
+                        else if (score3 < score1 && score3 < score2)
                         {
-                                bestlog = param1;
+                                bestlog = param3;
                         }
                         else
                         {
