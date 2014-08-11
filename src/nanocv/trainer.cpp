@@ -71,6 +71,20 @@ namespace ncv
                         return false;
                 }
         }
+
+        bool trainer_result_t::update(const trainer_result_t& other)
+        {
+                if (*this < other)
+                {
+                        *this = other;
+                        return true;
+                }
+
+                else
+                {
+                        return false;
+                }
+        }
         
         trainer_states_t trainer_result_t::optimum_states() const
         {
@@ -106,7 +120,7 @@ namespace ncv
 
         namespace detail
         {        
-                static std::pair<trainer_result_t, opt_state_t> batch_train(
+                static trainer_result_t batch_train(
                         trainer_data_t& data, 
                         batch_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon, size_t& epoch)
                 {
@@ -198,9 +212,7 @@ namespace ncv
                         switch (optimizer)
                         {
                         case batch_optimizer::LBFGS:
-                                return  std::make_pair(
-                                        result,
-                                        optimize::lbfgs(problem, data.m_x0, epochs * iterations, epsilon,
+                                optimize::lbfgs(problem, data.m_x0, epochs * iterations, epsilon,
                                                 fn_wlog, fn_elog, fn_ulog_ref);
                                 break;
 
@@ -216,6 +228,7 @@ namespace ncv
                                 break;
                         }
 
+                        // OK
                         return result;
                 }
         }
@@ -275,6 +288,8 @@ namespace ncv
                 {
                         samples_t tsamples = data.m_tsampler.get();
                         samples_t vsamples = data.m_vsampler.get();
+
+                        trainer_result_t result;
                         
                         random_t<size_t> xrng(0, tsamples.size());
                         rnd_t xrnd(xrng);
@@ -357,10 +372,10 @@ namespace ncv
                                 const scalar_t verror = data.m_lacc.error();
 
                                 // OK, update the optimum solution
-                                const thread_pool_t::lock_t lock(mutex);
+                                result.update(xparam, tvalue, terror, vvalue, verror, e,
+                                              scalars_t({ alpha0, data.m_lacc.lambda() }));
 
-                                data.m_result.update(xparam, tvalue, terror, vvalue, verror, e, 
-                                                     scalars_t({ alpha0, data.m_lacc.lambda() }));
+                                const thread_pool_t::lock_t lock(mutex);
 
                                 log_info()
                                         << "[train = " << tvalue << "/" << terror
@@ -371,6 +386,9 @@ namespace ncv
                                         << ", lambda = " << data.m_lacc.lambda()
                                         << "] done in " << timer.elapsed() << ".";
                         }
+
+                        // OK
+                        return result;
                 }
         }
 
@@ -387,6 +405,8 @@ namespace ncv
                 const scalar_t beta = std::pow(0.01, 1.0 / iterations);         // Learning rate decay rate
                 
                 const vector_t x0 = model.params();
+
+                trainer_result_t result;
                 
                 // tune the regularization factor (if needed)
                 const scalars_t lambdas = accumulator_t::can_regularize(criterion) ? 
@@ -402,10 +422,13 @@ namespace ncv
                                         accumulator_t lacc(model, 1, criterion, criterion_t::type::value, lambda);
                                         accumulator_t gacc(model, 1, criterion, criterion_t::type::vgrad, lambda);          
                                         
-                                        trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc, result);
+                                        trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
                                         
-                                        detail::stochastic_train(
+                                        const trainer_result_t crt_result = detail::stochastic_train(
                                                 data, optimizer, epochs, alpha, beta, mutex);
+
+                                        const thread_pool_t::lock_t lock(mutex);
+                                        result.update(crt_result);
                                 });
                         }
                 }
@@ -413,7 +436,7 @@ namespace ncv
                 wpool.wait();
 
                 // OK
-                return true;
+                return result;
         }
 }
 	

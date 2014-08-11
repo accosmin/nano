@@ -108,6 +108,7 @@ namespace ncv
                             scalar_t tvalue, scalar_t terror,
                             scalar_t vvalue, scalar_t verror,
                             size_t epoch, const scalars_t& config);
+                bool update(const trainer_result_t& other);
 
                 ///
                 /// \brief check if valid result
