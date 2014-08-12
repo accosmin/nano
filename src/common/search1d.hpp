@@ -2,9 +2,7 @@
 #define NANOCV_SEARCH1D_H
 
 #include <cmath>
-#include <limits>
 #include <map>
-#include "convolution.hpp"
 
 namespace ncv
 {
@@ -13,11 +11,12 @@ namespace ncv
                 template
                 <
                         typename toperator,
-                        typename tscalar
+                        typename tscalar,
+                        typename tmap
                 >
-                tscalar update_history(const toperator& op, tscalar param, std::map<tscalar, tscalar>& history)
+                typename tmap::mapped_type update_history(const toperator& op, tscalar param, tmap& history)
                 {
-                        typename std::map<tscalar, tscalar>::iterator it = history.find(param);
+                        typename tmap::iterator it = history.find(param);
                         if (it == history.end())
                         {
                                 return history[param] = op(std::exp(param));
@@ -31,18 +30,20 @@ namespace ncv
         
         ///
         /// \brief search for a 1D parameter that minimizes a given operator, 
-        ///     using a greedy approach on the logarithmic scale.
+        ///     using a greedy approach on the logarithmic scale in the range [minlog, maxlog].
         ///
-        /// \returns the optimum (log) parameter
+        /// \returns the result associated with the optimum (log) paramerer.
         ///
         template
         <
                 typename toperator,     ///< toperator(tscalar param) returns a tscalar score
                 typename tscalar
         >
-        tscalar min_search1d(const toperator& op, tscalar minlog, tscalar maxlog, tscalar epslog)
+        auto min_search1d(const toperator& op, tscalar minlog, tscalar maxlog, tscalar epslog) -> decltype(op(tscalar(0)))
         {
-                std::map<tscalar, tscalar> history;
+                typedef decltype(op(tscalar(0))) tresult;
+                
+                std::map<tscalar, tresult> history;
                 
                 tscalar bestlog = (maxlog + minlog) / 2;
                 
@@ -54,9 +55,9 @@ namespace ncv
                         const tscalar param2 = bestlog;
                         const tscalar param3 = bestlog + distlog;
                         
-                        const tscalar score1 = detail::update_history(op, param1, history);
-                        const tscalar score2 = detail::update_history(op, param2, history);
-                        const tscalar score3 = detail::update_history(op, param3, history);
+                        const tresult score1 = detail::update_history(op, param1, history);
+                        const tresult score2 = detail::update_history(op, param2, history);
+                        const tresult score3 = detail::update_history(op, param3, history);
                         
                         if (score1 < score2 && score1 < score3)
                         {
@@ -76,9 +77,7 @@ namespace ncv
                         }
                 }
                 
-                return  history.empty() ? 
-                        std::numeric_limits<tscalar>::max() : 
-                        history.begin()->first;
+                return history.empty() ? tresult() : history.begin()->second;
         }
 }
 

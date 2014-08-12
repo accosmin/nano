@@ -121,16 +121,18 @@ namespace ncv
 
         namespace detail
         {
+                ///
+                /// \brief tune the regularization factor for a given criterion (if needed)
+                ///
                 template
                 <
                         typename toperator
                 >
-                static trainer_result_t tune(const string_t& criterion, const toperator& op)
+                static trainer_result_t tune(const toperator& op, const string_t& criterion)
                 {
                         if (accumulator_t::can_regularize(criterion))
                         {
-                                // todo: use search1d - do not assume the op's result is a tscalar!!!
-                                return op(0.0);
+                                return min_search1d<toperator, scalar_t>(op, -1.0, +6.0, 0.2);
                         }
 
                         else
@@ -260,6 +262,7 @@ namespace ncv
 
                         trainer_result_t result;
 
+                        // optimize the model
                         vector_t x = model.params();
                         for (size_t c = 0, epoch = 0; c < cycles; c ++)
                         {
@@ -271,36 +274,12 @@ namespace ncv
                                 x = state.x;
                         }
 
+                        // OK
                         return result;
                 };
 
-                trainer_result_t result;
-                
                 // tune the regularization factor (if needed)
-                const scalars_t lambdas = accumulator_t::can_regularize(criterion) ? 
-                        scalars_t{ 0.1, 0.2, 0.5, 1.0 } : scalars_t{ 0.0 };                
-                for (scalar_t lambda : lambdas)
-                {                        
-                        accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value, lambda);
-                        accumulator_t gacc(model, nthreads, criterion, criterion_t::type::vgrad, lambda);                        
-
-                        trainer_result_t crt_result;
-                        
-                        vector_t x = model.params();
-                        for (size_t c = 0, epoch = 0; c < cycles; c ++)
-                        {                        
-                                trainer_data_t data(task, tsampler, vsampler, loss, x, lacc, gacc);
-                                
-                                const opt_state_t state = detail::batch_train(
-                                        data, optimizer, epochs, iterations, epsilon, epoch, crt_result);
-                                
-                                x = state.x;
-                        }
-
-                        result.update(crt_result);
-                }
-
-                return result;
+                return detail::tune(op, criterion);
         }
 
         namespace detail
@@ -320,14 +299,13 @@ namespace ncv
                         random_t<size_t>&  m_gen;
                 };
 
-                static trainer_result_t stochastic_train(
+                static void stochastic_train(
                         trainer_data_t& data,
-                        stochastic_optimizer type, size_t epochs, scalar_t alpha0, scalar_t beta, thread_pool_t::mutex_t& mutex)
+                        stochastic_optimizer type, size_t epochs, scalar_t alpha0, scalar_t beta, 
+                        trainer_result_t& result, thread_pool_t::mutex_t& mutex)
                 {
                         samples_t tsamples = data.m_tsampler.get();
                         samples_t vsamples = data.m_vsampler.get();
-
-                        trainer_result_t result;
                         
                         random_t<size_t> xrng(0, tsamples.size());
                         rnd_t xrnd(xrng);
@@ -410,10 +388,10 @@ namespace ncv
                                 const scalar_t verror = data.m_lacc.error();
 
                                 // OK, update the optimum solution
+                                const thread_pool_t::lock_t lock(mutex);
+                                
                                 result.update(xparam, tvalue, terror, vvalue, verror, e,
                                               scalars_t({ alpha0, data.m_lacc.lambda() }));
-
-                                const thread_pool_t::lock_t lock(mutex);
 
                                 log_info()
                                         << "[train = " << tvalue << "/" << terror
@@ -424,9 +402,6 @@ namespace ncv
                                         << ", lambda = " << data.m_lacc.lambda()
                                         << "] done in " << timer.elapsed() << ".";
                         }
-
-                        // OK
-                        return result;
                 }
         }
 
@@ -435,22 +410,19 @@ namespace ncv
                 const loss_t& loss, const string_t& criterion,
                 stochastic_optimizer optimizer, size_t epochs)
         {                
-                // prepare workers
-                thread_pool_t wpool(nthreads);
-                thread_pool_t::mutex_t mutex;
-
-                const size_t iterations = epochs * tsampler.size();             // SGD iterations
-                const scalar_t beta = std::pow(0.01, 1.0 / iterations);         // Learning rate decay rate
-                
-                const vector_t x0 = model.params();
-
-                trainer_result_t result;
-                
-                // tune the regularization factor (if needed)
-                const scalars_t lambdas = accumulator_t::can_regularize(criterion) ? 
-                        scalars_t{ 0.1, 0.2, 0.5, 1.0 } : scalars_t{ 0.0 };
-                for (scalar_t lambda : lambdas)
-                {       
+                const auto op = [&] (scalar_t lambda)
+                {
+                        // prepare workers
+                        thread_pool_t wpool(nthreads);
+                        thread_pool_t::mutex_t mutex;
+                        
+                        const size_t iterations = epochs * tsampler.size();             // SGD iterations
+                        const scalar_t beta = std::pow(0.01, 1.0 / iterations);         // Learning rate decay rate
+                        
+                        const vector_t x0 = model.params();
+                        
+                        trainer_result_t result;
+                        
                         // tune the learning rate
                         const scalars_t alphas = { 0.001, 0.010, 0.100 };
                         for (scalar_t alpha : alphas)
@@ -462,19 +434,18 @@ namespace ncv
                                         
                                         trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
                                         
-                                        const trainer_result_t crt_result = detail::stochastic_train(
-                                                data, optimizer, epochs, alpha, beta, mutex);
-
-                                        const thread_pool_t::lock_t lock(mutex);
-                                        result.update(crt_result);
+                                        detail::stochastic_train(data, optimizer, epochs, alpha, beta, result, mutex);
                                 });
                         }
-                }
-
-                wpool.wait();
-
-                // OK
-                return result;
+                        
+                        wpool.wait();
+                        
+                        // OK
+                        return result;
+                };
+                
+                // tune the regularization factor (if needed)
+                return detail::tune(op, criterion);
         }
 }
 	
