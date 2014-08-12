@@ -301,7 +301,6 @@ int main(int argc, char* argv[])
         static const int min_isize = 24;
         static const int max_isize = 48;
         static const int min_ksize = 5;
-        static const int max_ksize = 13;
         static const int n_samples = 4 * 1024;
 
 #ifdef NANOCV_HAVE_OPENCL
@@ -310,7 +309,7 @@ int main(int argc, char* argv[])
         {
                 for (int isize = min_isize; isize <= max_isize; isize += 4)
                 {
-                        for (int ksize = min_ksize; ksize <= max_ksize; ksize ++)
+                        for (int ksize = min_ksize; ksize <= isize - min_ksize; ksize += 2)
                         {
                                 test(isize, ksize, n_samples);
                         }
