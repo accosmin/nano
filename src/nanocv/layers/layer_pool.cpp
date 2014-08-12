@@ -25,14 +25,14 @@ namespace ncv
                 wmap = (imap.array() * alpha).exp();
                 
                 smap.setZero();
-		cmap.setZero();
+                cmap.setZero();
 
                 for (tsize r = 0, rr = 0; r < irows; r ++, rr = r / 2)
                 {
                         for (tsize c = 0, cc = 0; c < icols; c ++, cc = c / 2)
                         {
                                 smap(rr, cc) += wmap(r, c);
-				cmap(rr, cc) += 1;
+                                cmap(rr, cc) += 1;
                         }
                 }
                 
