@@ -104,7 +104,7 @@ scalar_t test_cpu(top op, const char* name, const matrices_t& idatas, const matr
         }
         
         const size_t milis = static_cast<size_t>(proc_stats.avg());
-        std::cout << name << "= " << text::resize(text::to_string(milis), 3, align::right) << "ms  ";
+        std::cout << name << "= " << text::resize(text::to_string(milis), 4, align::right) << "ms  ";
         
         return sum_matrices(odatas);
 }
@@ -253,10 +253,10 @@ void test(int isize, int ksize, int n_samples)
         const string_t header = (boost::format("(%1%x%2%@%3%x%4%): ") % isize % isize % ksize % ksize).str();
         std::cout << text::resize(header, 16);
         
-        const scalar_t conve1cpu  = test_1cpu(ncv::conv_eig<matrix_t>, "conve(1CPU)", idatas, kdata, odatas);
-        const scalar_t convexcpu  = test_xcpu(ncv::conv_eig<matrix_t>, "conve(xCPU)", idatas, kdata, odatas);
-        const scalar_t convd1cpu  = test_1cpu(ncv::conv_dot<matrix_t>, "convd(1CPU)", idatas, kdata, odatas);
-        const scalar_t convdxcpu  = test_xcpu(ncv::conv_dot<matrix_t>, "convd(xCPU)", idatas, kdata, odatas);
+        const scalar_t conve1cpu  = test_1cpu(ncv::conv_eig<matrix_t>, "eig(1CPU)", idatas, kdata, odatas);
+        const scalar_t convexcpu  = test_xcpu(ncv::conv_eig<matrix_t>, "eig(xCPU)", idatas, kdata, odatas);
+        const scalar_t convd1cpu  = test_1cpu(ncv::conv_dot<matrix_t>, "dot(1CPU)", idatas, kdata, odatas);
+        const scalar_t convdxcpu  = test_xcpu(ncv::conv_dot<matrix_t>, "dot(xCPU)", idatas, kdata, odatas);
 #ifdef NANOCV_HAVE_OPENCL
         const scalar_t convg8     = test_gpu("convd(8GPU)", idatas, kdata, odatas, 8);
         const scalar_t convg16    = test_gpu("convd(16GPU)", idatas, kdata, odatas, 16);
@@ -265,10 +265,10 @@ void test(int isize, int ksize, int n_samples)
         const scalar_t convg128   = test_gpu("convd(128GPU)", idatas, kdata, odatas, 128);
         const scalar_t convg256   = test_gpu("convd(256GPU)", idatas, kdata, odatas, 256);
 #endif
-        const scalar_t iconve1cpu = test_1cpu(ncv::iconv_eig<matrix_t>, "iconve(1CPU)", odatas, kdata, idatas);
-        const scalar_t iconvexcpu = test_xcpu(ncv::iconv_eig<matrix_t>, "iconve(xCPU)", odatas, kdata, idatas);
-        const scalar_t iconvm1cpu = test_1cpu(ncv::iconv_mad<matrix_t>, "iconvm(1CPU)", odatas, kdata, idatas);
-        const scalar_t iconvmxcpu = test_xcpu(ncv::iconv_mad<matrix_t>, "iconvm(xCPU)", odatas, kdata, idatas);
+        const scalar_t iconve1cpu = test_1cpu(ncv::iconv_eig<matrix_t>, "ieig(1CPU)", odatas, kdata, idatas);
+        const scalar_t iconvexcpu = test_xcpu(ncv::iconv_eig<matrix_t>, "ieig(xCPU)", odatas, kdata, idatas);
+        const scalar_t iconvm1cpu = test_1cpu(ncv::iconv_mad<matrix_t>, "imad(1CPU)", odatas, kdata, idatas);
+        const scalar_t iconvmxcpu = test_xcpu(ncv::iconv_mad<matrix_t>, "imad(xCPU)", odatas, kdata, idatas);
         std::cout << std::endl;
 
         check(conve1cpu, conve1cpu, "conve(1CPU)");
