@@ -89,7 +89,7 @@ namespace ncv
 
                                         for (auto c = 0; c < ocols; c ++)
                                         {
-                                                ppodata[c] += dotop(ppidata + c, ppkdata);
+                                                ppodata[c] += dotop(ppidata + c, ppkdata, kcols);
                                         }
                                 }
                         }
@@ -110,24 +110,24 @@ namespace ncv
                         using std::placeholders::_2;
 
                         // decode at run-time the kernel size
-                        if (kcols == 1) { conv_dot(idata, kdata, odata, dot<tscalar, 1>); }
-                        else if (kcols == 2) { conv_dot(idata, kdata, odata, dot<tscalar, 2>); }
-                        else if (kcols == 3) { conv_dot(idata, kdata, odata, dot<tscalar, 3>); }
-                        else if (kcols == 4) { conv_dot(idata, kdata, odata, dot<tscalar, 4>); }
-                        else if (kcols == 5) { conv_dot(idata, kdata, odata, dot<tscalar, 5>); }
-                        else if (kcols == 6) { conv_dot(idata, kdata, odata, dot<tscalar, 6>); }
-                        else if (kcols == 7) { conv_dot(idata, kdata, odata, dot<tscalar, 7>); }
-                        else if (kcols == 8) { conv_dot(idata, kdata, odata, dot<tscalar, 8>); }
-                        else if (kcols == 9) { conv_dot(idata, kdata, odata, dot<tscalar, 9>); }
-                        else if (kcols == 10) { conv_dot(idata, kdata, odata, dot<tscalar, 10>); }
-                        else if (kcols == 11) { conv_dot(idata, kdata, odata, dot<tscalar, 11>); }
-                        else if (kcols == 12) { conv_dot(idata, kdata, odata, dot<tscalar, 12>); }
-                        else if (kcols == 13) { conv_dot(idata, kdata, odata, dot<tscalar, 13>); }
-                        else if (kcols == 14) { conv_dot(idata, kdata, odata, dot<tscalar, 14>); }
-                        else if (kcols == 15) { conv_dot(idata, kdata, odata, dot<tscalar, 15>); }
-                        else
+                        switch (kcols)
                         {
-                                conv_dot(idata, kdata, odata, std::bind(dot<tscalar, decltype(kcols)>, _1, _2, kcols));
+                        case 1:         conv_dot(idata, kdata, odata, dot<tscalar, 1>); break;
+                        case 2:         conv_dot(idata, kdata, odata, dot<tscalar, 2>); break;
+                        case 3:         conv_dot(idata, kdata, odata, dot<tscalar, 3>); break;
+                        case 4:         conv_dot(idata, kdata, odata, dot<tscalar, 4>); break;
+                        case 5:         conv_dot(idata, kdata, odata, dot<tscalar, 5>); break;
+                        case 6:         conv_dot(idata, kdata, odata, dot<tscalar, 6>); break;
+                        case 7:         conv_dot(idata, kdata, odata, dot<tscalar, 7>); break;
+                        case 8:         conv_dot(idata, kdata, odata, dot<tscalar, 8>); break;
+                        case 9:         conv_dot(idata, kdata, odata, dot<tscalar, 9>); break;
+                        case 10:        conv_dot(idata, kdata, odata, dot<tscalar, 10>); break;
+                        case 11:        conv_dot(idata, kdata, odata, dot<tscalar, 11>); break;
+                        case 12:        conv_dot(idata, kdata, odata, dot<tscalar, 12>); break;
+                        case 13:        conv_dot(idata, kdata, odata, dot<tscalar, 13>); break;
+                        case 14:        conv_dot(idata, kdata, odata, dot<tscalar, 14>); break;
+                        case 15:        conv_dot(idata, kdata, odata, dot<tscalar, 15>); break;
+                        default:        conv_dot(idata, kdata, odata, dot<tscalar, decltype(kcols)>); break;
                         }
                 }
 
@@ -162,7 +162,7 @@ namespace ncv
 
                                         for (auto c = 0; c < ocols; c ++)
                                         {
-                                                madop(ppkdata, ppodata[c], ppidata + c);
+                                                madop(ppkdata, ppodata[c], kcols, ppidata + c);
                                         }
                                 }
                         }
@@ -184,24 +184,24 @@ namespace ncv
                         using std::placeholders::_3;
 
                         // decode at run-time the kernel size
-                        if (kcols == 1) { iconv_mad(odata, kdata, idata, mad<tscalar, 1>); }
-                        else if (kcols == 2) { iconv_mad(odata, kdata, idata, mad<tscalar, 2>); }
-                        else if (kcols == 3) { iconv_mad(odata, kdata, idata, mad<tscalar, 3>); }
-                        else if (kcols == 4) { iconv_mad(odata, kdata, idata, mad<tscalar, 4>); }
-                        else if (kcols == 5) { iconv_mad(odata, kdata, idata, mad<tscalar, 5>); }
-                        else if (kcols == 6) { iconv_mad(odata, kdata, idata, mad<tscalar, 6>); }
-                        else if (kcols == 7) { iconv_mad(odata, kdata, idata, mad<tscalar, 7>); }
-                        else if (kcols == 8) { iconv_mad(odata, kdata, idata, mad<tscalar, 8>); }
-                        else if (kcols == 9) { iconv_mad(odata, kdata, idata, mad<tscalar, 9>); }
-                        else if (kcols == 10) { iconv_mad(odata, kdata, idata, mad<tscalar, 10>); }
-                        else if (kcols == 11) { iconv_mad(odata, kdata, idata, mad<tscalar, 11>); }
-                        else if (kcols == 12) { iconv_mad(odata, kdata, idata, mad<tscalar, 12>); }
-                        else if (kcols == 13) { iconv_mad(odata, kdata, idata, mad<tscalar, 13>); }
-                        else if (kcols == 14) { iconv_mad(odata, kdata, idata, mad<tscalar, 14>); }
-                        else if (kcols == 15) { iconv_mad(odata, kdata, idata, mad<tscalar, 15>); }
-                        else
+                        switch (kcols)
                         {
-                                iconv_mad(odata, kdata, idata, std::bind(mad<tscalar, decltype(kcols)>, _1, _2, kcols, _3));
+                        case 1:         iconv_mad(odata, kdata, idata, mad<tscalar, 1>); break;
+                        case 2:         iconv_mad(odata, kdata, idata, mad<tscalar, 2>); break;
+                        case 3:         iconv_mad(odata, kdata, idata, mad<tscalar, 3>); break;
+                        case 4:         iconv_mad(odata, kdata, idata, mad<tscalar, 4>); break;
+                        case 5:         iconv_mad(odata, kdata, idata, mad<tscalar, 5>); break;
+                        case 6:         iconv_mad(odata, kdata, idata, mad<tscalar, 6>); break;
+                        case 7:         iconv_mad(odata, kdata, idata, mad<tscalar, 7>); break;
+                        case 8:         iconv_mad(odata, kdata, idata, mad<tscalar, 8>); break;
+                        case 9:         iconv_mad(odata, kdata, idata, mad<tscalar, 9>); break;
+                        case 10:        iconv_mad(odata, kdata, idata, mad<tscalar, 10>); break;
+                        case 11:        iconv_mad(odata, kdata, idata, mad<tscalar, 11>); break;
+                        case 12:        iconv_mad(odata, kdata, idata, mad<tscalar, 12>); break;
+                        case 13:        iconv_mad(odata, kdata, idata, mad<tscalar, 13>); break;
+                        case 14:        iconv_mad(odata, kdata, idata, mad<tscalar, 14>); break;
+                        case 15:        iconv_mad(odata, kdata, idata, mad<tscalar, 15>); break;
+                        default:        iconv_mad(odata, kdata, idata, mad<tscalar, decltype(kcols)>); break;
                         }
                 }
         }
