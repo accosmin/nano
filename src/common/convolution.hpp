@@ -1,7 +1,6 @@
 #ifndef NANOCV_CONVOLUTION_H
 #define NANOCV_CONVOLUTION_H
 
-#include <functional>
 #include <cassert>
 #include "dot.hpp"
 #include "mad.hpp"
@@ -106,9 +105,6 @@ namespace ncv
                 {
                         const auto kcols = kdata.cols();
 
-                        using std::placeholders::_1;
-                        using std::placeholders::_2;
-
                         // decode at run-time the kernel size
                         switch (kcols)
                         {
@@ -178,10 +174,6 @@ namespace ncv
                 void iconv_mad(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
                 {
                         const auto kcols = kdata.cols();
-
-                        using std::placeholders::_1;
-                        using std::placeholders::_2;
-                        using std::placeholders::_3;
 
                         // decode at run-time the kernel size
                         switch (kcols)
