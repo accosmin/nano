@@ -123,7 +123,8 @@ set(nanocv_test_programs
         ncv_test_network_timing)
 
 if(NANOCV_HAVE_OPENCL)
-        set(nanocv_test_programs "${nanocv_test_programs};ncv_test_opencl")
+        set(nanocv_test_programs "${nanocv_test_programs};ncv_test_opencl_add")
+        set(nanocv_test_programs "${nanocv_test_programs};ncv_test_opencl_mem")
 endif()
 
 set(nanocv_programs
