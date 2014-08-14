@@ -29,7 +29,7 @@ namespace ncv
 
         criterion_t& criterion_t::reset(const vector_t& params)
         {
-                assert(m_model->psize() == params.size());
+                assert(m_model->psize() == static_cast<size_t>(params.size()));
                 m_model->load_params(params);
                 m_params = params;
                 reset();
