@@ -61,7 +61,6 @@ int main(int argc, char *argv[])
                         for (size_t test = 0; test < tests; test ++)
                         {                                
                                 rdata.setRandom();
-                                wdata.setRandom();
 
                                 ncv::timer_t timer;
 
