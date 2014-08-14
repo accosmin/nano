@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 
                 const size_t tests = 10000;
                 const size_t minsize = 1024;
-                const size_t maxsize = 16 * 1024;
+                const size_t maxsize = 64 * 1024;
 
                 // try various data sizes
                 for (size_t size = minsize; size <= maxsize; size *= 2)
