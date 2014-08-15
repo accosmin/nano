@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 
                 const size_t tests = 10000;
                 const size_t minsize = 1024;
-                const size_t maxsize = 64 * 1024;
+                const size_t maxsize = 1024 * 1024;
 
                 // try various data sizes
                 for (size_t size = minsize; size <= maxsize; size *= 2)
@@ -104,12 +104,12 @@ int main(int argc, char *argv[])
                         const size_t time_ccpu = static_cast<size_t>(0.5 + ccpu_stats.sum() / 1000);
 
                         // results
-                        log_info() << "SIZE [" << text::resize(text::to_string(size / 1024), 2, align::right) << "K]"
-                                   << ", TIMES [" << text::resize(text::to_string(tests), 2, align::right) << "]"
-                                   << ": sendGPU= " << text::resize(text::to_string(time_send), 6, align::right) << "ms"
-                                   << ", copyGPU= " << text::resize(text::to_string(time_copy), 6, align::right) << "ms"
-                                   << ", readGPU= " << text::resize(text::to_string(time_read), 6, align::right) << "ms"
-                                   << ", copyCPU= " << text::resize(text::to_string(time_ccpu), 6, align::right) << "ms";
+                        log_info() << "SIZE [" << text::resize(text::to_string(size / 1024), 4, align::right) << "K]"
+                                   << ", TIMES [" << text::resize(text::to_string(tests), 0, align::right) << "]"
+                                   << ": sendGPU= " << text::resize(text::to_string(time_send), 8, align::right) << "ms"
+                                   << ", copyGPU= " << text::resize(text::to_string(time_copy), 8, align::right) << "ms"
+                                   << ", readGPU= " << text::resize(text::to_string(time_read), 8, align::right) << "ms"
+                                   << ", copyCPU= " << text::resize(text::to_string(time_ccpu), 8, align::right) << "ms";
                 }
         }
 
