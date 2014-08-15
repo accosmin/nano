@@ -43,6 +43,7 @@ int main(int argc, char *argv[])
                         ncv::stats_t<scalar_t, size_t> send_stats;        // send data to gpu
                         ncv::stats_t<scalar_t, size_t> copy_stats;        // copy data inside gpu
                         ncv::stats_t<scalar_t, size_t> read_stats;        // read data from gpu
+                        ncv::stats_t<scalar_t, size_t> ccpu_stats;        // cpu-based copy
 
                         ncv::tensor::vector_types_t<double>::tvector rdata; rdata.resize(size);
                         ncv::tensor::vector_types_t<double>::tvector wdata; wdata.resize(size);
@@ -88,18 +89,26 @@ int main(int argc, char *argv[])
                                         ncv::log_error() << "failed to copy data to & from GPU!";
                                         return EXIT_FAILURE;
                                 }
+                                
+                                timer.start();
+                                {
+                                        wdata = rdata;
+                                }
+                                ccpu_stats(timer.microseconds());
                         }
 
                         const size_t time_send = static_cast<size_t>(0.5 + send_stats.sum() / 1000);
                         const size_t time_copy = static_cast<size_t>(0.5 + copy_stats.sum() / 1000);
                         const size_t time_read = static_cast<size_t>(0.5 + read_stats.sum() / 1000);
+                        const size_t time_ccpu = static_cast<size_t>(0.5 + ccpu_stats.sum() / 1000);
 
                         // results
                         log_info() << "SIZE [" << text::resize(text::to_string(size / 1024), 2, align::right) << "K]"
                                    << ", TIMES [" << text::resize(text::to_string(tests), 2, align::right) << "]"
                                    << ": sendGPU= " << text::resize(text::to_string(time_send), 6, align::right) << "ms"
                                    << ", copyGPU= " << text::resize(text::to_string(time_copy), 6, align::right) << "ms"
-                                   << ", readGPU= " << text::resize(text::to_string(time_read), 6, align::right) << "ms";
+                                   << ", readGPU= " << text::resize(text::to_string(time_read), 6, align::right) << "ms"
+                                   << ", copyCPU= " << text::resize(text::to_string(time_ccpu), 6, align::right) << "ms";
                 }
         }
 
