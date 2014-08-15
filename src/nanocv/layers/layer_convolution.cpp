@@ -251,6 +251,32 @@ namespace ncv
         {
         }
 
+#ifdef NANOCV_HAVE_OPENCL
+        conv_layer_t::conv_layer_t(const conv_layer_t& other)
+                :       conv_layer_t(other.configuration())
+        {
+                if (other.krows() > 0 && other.kcols() > 0)
+                {
+                        resize(other.m_idata);
+                        m_kdata = other.m_kdata;
+                        params_changed();
+                }
+        }
+
+        conv_layer_t& conv_layer_t::operator=(const conv_layer_t& other)
+        {
+                if (this != &other && other.krows() > 0 && other.kcols() > 0)
+                {
+                        resize(other.m_idata);
+                        m_kdata = other.m_kdata;
+                        params_changed();
+                }
+
+                return *this;
+        }
+
+#endif
+
         size_t conv_layer_t::resize(const tensor_t& tensor)
         {
                 const size_t idims = tensor.dims();
@@ -286,21 +312,22 @@ namespace ncv
                 if (theocl.valid())
                 {
                         // kernels
-                        m_ocl_queue = theocl.make_command_queue();
-                        m_ocl_program = theocl.make_program_from_text(ocl_conv_source);
+                        m_ocl_context = theocl.make_context();
+                        m_ocl_queue = theocl.make_command_queue(m_ocl_context);
+                        m_ocl_program = theocl.make_program_from_text(m_ocl_context, ocl_conv_source);
                         m_ocl_fkernel = theocl.make_kernel(m_ocl_program, "conv_forward");
                         m_ocl_bikernel = theocl.make_kernel(m_ocl_program, "conv_ibackward");
                         m_ocl_bkkernel = theocl.make_kernel(m_ocl_program, "conv_kbackward");
 
                         // forward buffers
-                        m_ocl_idata = theocl.make_buffer(ocl::bytesize(m_idata), CL_MEM_READ_ONLY);
-                        m_ocl_kdata = theocl.make_buffer(ocl::bytesize(m_kdata), CL_MEM_READ_ONLY);
-                        m_ocl_odata = theocl.make_buffer(ocl::bytesize(m_odata), CL_MEM_READ_WRITE);
+                        m_ocl_idata = theocl.make_buffer(m_ocl_context, ocl::bytesize(m_idata), CL_MEM_READ_ONLY);
+                        m_ocl_kdata = theocl.make_buffer(m_ocl_context, ocl::bytesize(m_kdata), CL_MEM_READ_ONLY);
+                        m_ocl_odata = theocl.make_buffer(m_ocl_context, ocl::bytesize(m_odata), CL_MEM_READ_WRITE);
 
                         // backward buffers
                         m_gkdata.resize(odims * idims, krows, kcols);
-                        m_ocl_gidata = theocl.make_buffer(ocl::bytesize(m_idata), CL_MEM_WRITE_ONLY);
-                        m_ocl_gkdata = theocl.make_buffer(ocl::bytesize(m_gkdata), CL_MEM_WRITE_ONLY);
+                        m_ocl_gidata = theocl.make_buffer(m_ocl_context, ocl::bytesize(m_idata), CL_MEM_WRITE_ONLY);
+                        m_ocl_gkdata = theocl.make_buffer(m_ocl_context, ocl::bytesize(m_gkdata), CL_MEM_WRITE_ONLY);
 
                         // setup forward kernel
                         m_ocl_fkernel.setArg(0, m_ocl_idata);

@@ -25,6 +25,12 @@ namespace ncv
                 // constructor
                 conv_layer_t(const string_t& parameters = string_t());
 
+                // copy
+#ifdef NANOCV_HAVE_OPENCL
+                conv_layer_t(const conv_layer_t& other);
+                conv_layer_t& operator=(const conv_layer_t& other);
+#endif
+
                 // resize to process new tensors of the given type
                 virtual size_t resize(const tensor_t& tensor);
 
@@ -65,6 +71,7 @@ namespace ncv
                 tensor_t                m_kdata;                ///< convolution kernels:       odims x idims x krows x kcols
 
 #ifdef NANOCV_HAVE_OPENCL
+                cl::Context             m_ocl_context;          ///< opencl context
                 cl::CommandQueue        m_ocl_queue;            ///< opencl command queue
                 cl::Program             m_ocl_program;          ///< opencl program
                 cl::Kernel              m_ocl_fkernel;          ///< opencl forward kernel

@@ -57,18 +57,18 @@ namespace ncv
                         ///
                         /// \brief create OpenCL objects
                         ///
-                        cl::CommandQueue make_command_queue() const;
-                        cl::Program make_program_from_file(const std::string& filepath) const;
-                        cl::Program make_program_from_text(const std::string& source) const;
+                        cl::Context make_context() const;
+                        cl::CommandQueue make_command_queue(const cl::Context& context) const;
+                        cl::Program make_program_from_file(const cl::Context& context, const std::string& filepath) const;
+                        cl::Program make_program_from_text(const cl::Context& context, const std::string& source) const;
                         cl::Kernel make_kernel(const cl::Program& program, const std::string& name) const;
-                        cl::Buffer make_buffer(size_t bytesize, int flags) const;
+                        cl::Buffer make_buffer(const cl::Context& context, size_t bytesize, int flags) const;
 
                 private:
 
                         // attributes
                         std::vector<cl::Platform>       m_platforms;
                         std::vector<cl::Device>         m_devices;
-                        cl::Context                     m_context;
                 };
         }
 }

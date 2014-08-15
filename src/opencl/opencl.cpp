@@ -25,8 +25,8 @@ namespace ncv
                                 (cl_context_properties)(m_platforms[0])(),
                                 0
                         };
-                        m_context = cl::Context(CL_DEVICE_TYPE_GPU, properties);
-                        m_devices = m_context.getInfo<CL_CONTEXT_DEVICES>();
+                        const cl::Context context(CL_DEVICE_TYPE_GPU, properties);
+                        m_devices = context.getInfo<CL_CONTEXT_DEVICES>();
 
                         if (m_devices.empty())
                         {
@@ -90,25 +90,39 @@ namespace ncv
                 }
         }
 
-        cl::CommandQueue ocl::manager_t::make_command_queue() const
+        cl::Context ocl::manager_t::make_context() const
+        {
+                assert(valid());
+
+                cl_context_properties properties[] =
+                {
+                        CL_CONTEXT_PLATFORM,
+                        (cl_context_properties)(m_platforms[0])(),
+                        0
+                };
+
+                return cl::Context(CL_DEVICE_TYPE_GPU, properties);
+        }
+
+        cl::CommandQueue ocl::manager_t::make_command_queue(const cl::Context& context) const
         {
                 assert(valid());
 
                 const cl::Device& device = m_devices[0];
-                return cl::CommandQueue(m_context, device, 0);
+                return cl::CommandQueue(context, device, 0);
         }
 
-        cl::Program ocl::manager_t::make_program_from_file(const std::string& filepath) const
+        cl::Program ocl::manager_t::make_program_from_file(const cl::Context& context, const std::string& filepath) const
         {
-                return make_program_from_text(ocl::load_text_file(filepath));
+                return make_program_from_text(context, ocl::load_text_file(filepath));
         }
 
-        cl::Program ocl::manager_t::make_program_from_text(const std::string& source) const
+        cl::Program ocl::manager_t::make_program_from_text(const cl::Context& context, const std::string& source) const
         {
                 assert(valid());
 
                 cl::Program::Sources sources(1, std::make_pair(source.c_str(), source.size()));
-                cl::Program program = cl::Program(m_context, sources);
+                cl::Program program = cl::Program(context, sources);
 
                 try
                 {
@@ -136,11 +150,11 @@ namespace ncv
                 return cl::Kernel(program, name.c_str());
         }
 
-        cl::Buffer ocl::manager_t::make_buffer(size_t bytesize, int flags) const
+        cl::Buffer ocl::manager_t::make_buffer(const cl::Context& context, size_t bytesize, int flags) const
         {
                 assert(valid());
 
-                return cl::Buffer(m_context, flags, bytesize, NULL);
+                return cl::Buffer(context, flags, bytesize, NULL);
         }
 
         const char* ocl::error_string(cl_int error)

@@ -29,8 +29,9 @@ int main(int argc, char *argv[])
                         exit(EXIT_FAILURE);
                 }
 
-                const cl::CommandQueue queue = theocl.make_command_queue();
-                const cl::Program program = theocl.make_program_from_text(program_source);
+                const cl::Context context = theocl.make_context();
+                const cl::CommandQueue queue = theocl.make_command_queue(context);
+                const cl::Program program = theocl.make_program_from_text(context, program_source);
                 cl::Kernel kernel = theocl.make_kernel(program, "copy_kernel");
 
                 const size_t tests = 10000;
@@ -51,8 +52,8 @@ int main(int argc, char *argv[])
                         const size_t array_size = size * sizeof(double);
 
                         // create buffers
-                        const cl::Buffer rbuffer = theocl.make_buffer(array_size, CL_MEM_READ_ONLY);
-                        const cl::Buffer wbuffer = theocl.make_buffer(array_size, CL_MEM_WRITE_ONLY);
+                        const cl::Buffer rbuffer = theocl.make_buffer(context, array_size, CL_MEM_READ_ONLY);
+                        const cl::Buffer wbuffer = theocl.make_buffer(context, array_size, CL_MEM_WRITE_ONLY);
 
                         // setup kernel buffers
                         kernel.setArg(0, rbuffer);

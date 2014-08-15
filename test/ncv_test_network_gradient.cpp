@@ -163,11 +163,7 @@ static void test_grad(const string_t& header, const string_t& loss_id, const mod
         for (const string_t& criterion : criteria)
         {
                 random_t<size_t> rand(2, 16);
-#ifdef NANOCV_HAVE_OPENCL
-                const size_t n_threads = 1;
-#else
                 const size_t n_threads = 1 + (rand() % 2);
-#endif
 
                 accumulator_t acc_params(model, n_threads, criterion, criterion_t::type::vgrad, 1.0);
                 test_grad_params(header + "[criterion = " + criterion + "]", loss_id, model, acc_params);

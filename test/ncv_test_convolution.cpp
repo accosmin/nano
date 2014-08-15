@@ -139,8 +139,9 @@ scalar_t test_gpu(const char* name, const matrices_t& idatas, const matrix_t& kd
 {
         ocl::manager_t& theocl = ocl::manager_t::instance();
 
-        const cl::CommandQueue queue = theocl.make_command_queue();
-        const cl::Program program = theocl.make_program_from_text(conv_program_source);
+        const cl::Context context = theocl.make_context();
+        const cl::CommandQueue queue = theocl.make_command_queue(context);
+        const cl::Program program = theocl.make_program_from_text(context, conv_program_source);
         cl::Kernel kernel = theocl.make_kernel(program, "conv_kernel");
 
         const int irows = static_cast<int>(idatas[0].rows());
@@ -160,9 +161,9 @@ scalar_t test_gpu(const char* name, const matrices_t& idatas, const matrix_t& kd
         const size_t mem_odata = odatas[0].size() * sizeof(scalar_t) * tsend;
 
         // create buffers once
-        const cl::Buffer ibuffer = theocl.make_buffer(mem_idata, CL_MEM_READ_ONLY);
-        const cl::Buffer kbuffer = theocl.make_buffer(mem_kdata, CL_MEM_READ_ONLY);
-        const cl::Buffer obuffer = theocl.make_buffer(mem_odata, CL_MEM_WRITE_ONLY);
+        const cl::Buffer ibuffer = theocl.make_buffer(context, mem_idata, CL_MEM_READ_ONLY);
+        const cl::Buffer kbuffer = theocl.make_buffer(context, mem_kdata, CL_MEM_READ_ONLY);
+        const cl::Buffer obuffer = theocl.make_buffer(context, mem_odata, CL_MEM_WRITE_ONLY);
 
         // setup kernel buffers once
         kernel.setArg(0, ibuffer);
