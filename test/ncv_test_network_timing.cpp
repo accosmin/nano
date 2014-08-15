@@ -1,6 +1,52 @@
 #include "nanocv.h"
 #include "models/forward_network.h"
+#include "task.h"
 #include <boost/program_options.hpp>
+
+namespace ncv 
+{
+        class dummy_tast_t : public ncv::task_t
+        {
+        public:
+                
+                NANOCV_MAKE_CLONABLE(dummy_tast_t)
+                
+                // constructor
+                dummy_tast_t(const string_t& = string_t())
+                        :       task_t("test task")
+                {        
+                }
+                
+                // create samples
+                void resize(size_t samples)
+                {
+                        m_images.clear();
+                        m_samples.clear();
+                        
+                        for (size_t i = 0; i < samples; i ++)
+                        {                
+                                sample_t sample(m_images.size(), sample_region(0, 0));
+                                sample.m_label = "label";
+                                sample.m_target = ncv::class_target(i % n_outputs(), n_outputs());
+                                sample.m_fold = { 0, protocol::train };
+                                m_samples.push_back(sample);
+
+                                image_t image(n_rows(), n_cols(), color());
+                                m_images.push_back(image);
+                        }                        
+                }                        
+                
+                // load images from the given directory
+                virtual bool load(const string_t&) { return true; }
+                
+                // access functions
+                virtual size_t n_rows() const { return 28; }
+                virtual size_t n_cols() const { return 28; }
+                virtual size_t n_outputs() const { return 10; }
+                virtual size_t n_folds() const { return 1; }
+                virtual color_mode color() const { return color_mode::luma; }
+        };
+}
 
 int main(int argc, char *argv[])
 {
@@ -46,18 +92,18 @@ int main(int argc, char *argv[])
                 std::cout << po_desc;
                 return EXIT_FAILURE;
         }
+        
+        dummy_tast_t task;
+        task.resize(cmd_samples);
 
-        const color_mode cmd_color = color_mode::luma;
-        const size_t cmd_rows = 28;
-        const size_t cmd_cols = 28;
-        const size_t cmd_outputs = 10;
+        const size_t cmd_outputs = task.n_outputs();
 
-        const string_t lmodel0;
-        const string_t lmodel1 = lmodel0 + "linear:dims=64;act-snorm;";
-        const string_t lmodel2 = lmodel1 + "linear:dims=64;act-snorm;";
-        const string_t lmodel3 = lmodel2 + "linear:dims=64;act-snorm;";
-        const string_t lmodel4 = lmodel3 + "linear:dims=64;act-snorm;";
-        const string_t lmodel5 = lmodel4 + "linear:dims=64;act-snorm;";
+//        const string_t lmodel0;
+//        const string_t lmodel1 = lmodel0 + "linear:dims=64;act-snorm;";
+//        const string_t lmodel2 = lmodel1 + "linear:dims=64;act-snorm;";
+//        const string_t lmodel3 = lmodel2 + "linear:dims=64;act-snorm;";
+//        const string_t lmodel4 = lmodel3 + "linear:dims=64;act-snorm;";
+//        const string_t lmodel5 = lmodel4 + "linear:dims=64;act-snorm;";
         
         string_t cmodel1;
         cmodel1 = cmodel1 + "conv:dims=16,rows=7,cols=7;act-snorm;pool-max;";
@@ -78,13 +124,12 @@ int main(int argc, char *argv[])
 
         strings_t cmd_networks =
         {
-//                 lmodel0 + outlayer,
-//                 lmodel1 + outlayer,
-//                 lmodel2 + outlayer,
-//                 lmodel3 + outlayer,
-//                 lmodel4 + outlayer,
-//                 lmodel5 + outlayer
-//                 ,
+//                lmodel0 + outlayer,
+//                lmodel1 + outlayer,
+//                lmodel2 + outlayer,
+//                lmodel3 + outlayer,
+//                lmodel4 + outlayer,
+//                lmodel5 + outlayer,
                 cmodel1 + outlayer,
                 cmodel2 + outlayer,
                 cmodel3 + outlayer
@@ -100,25 +145,7 @@ int main(int argc, char *argv[])
 
                 // create feed-forward network
                 forward_network_t model(cmd_network);
-                model.resize(cmd_rows, cmd_cols, cmd_outputs, cmd_color, true);
-
-                // create random samples
-                tensors_t samples(cmd_samples, tensor_t(cmd_color == color_mode::luma ? 1 : 3, cmd_rows, cmd_cols));
-
-                random_t<scalar_t> rgen(-1.0, +1.0);
-                for (tensor_t& sample : samples)
-                {
-                        sample.random(rgen);
-                }
-
-                // create random targets
-                vectors_t targets(cmd_samples, vector_t(cmd_outputs));
-
-                random_t<size_t> tgen(0, cmd_outputs);
-                for (vector_t& target : targets)
-                {
-                        target = ncv::class_target(tgen(), cmd_outputs);
-                }
+                model.resize(task, true);
 
                 // process the samples
                 if (cmd_forward)
@@ -126,7 +153,7 @@ int main(int argc, char *argv[])
                         accumulator_t ldata(model, cmd_threads, "l2-reg", criterion_t::type::value, 0.1);
 
                         const ncv::timer_t timer;
-                        ldata.update(samples, targets, loss);
+                        ldata.update(task, task.samples(), loss);
 
                         log_info() << "<<< processed [" << ldata.count() << "] forward samples in " << timer.elapsed() << ".";
                 }
@@ -136,7 +163,7 @@ int main(int argc, char *argv[])
                         accumulator_t gdata(model, cmd_threads, "l2-reg", criterion_t::type::vgrad, 0.1);
 
                         const ncv::timer_t timer;
-                        gdata.update(samples, targets, loss);
+                        gdata.update(task, task.samples(), loss);
 
                         log_info() << "<<< processed [" << gdata.count() << "] backward samples in " << timer.elapsed() << ".";
                 }
