@@ -2,6 +2,9 @@
 #ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
 #endif
+#ifdef NANOCV_HAVE_CUDA
+#include "cuda/cuda.h"
+#endif
 
 const std::string program_source = R"xxx(
 
@@ -69,16 +72,16 @@ int main(int argc, char *argv[])
                 cl::Kernel kernel = theocl.make_kernel(program, "add_kernel");
 #endif
 
-                const size_t tests = 10000;
+                const size_t tests = 1000;
                 const size_t minsize = 1024;
-                const size_t maxsize = 4 * 1024 * 1024;
+                const size_t maxsize = 1024 * 1024;
 
                 thread_pool_t pool;
 
                 // try various data sizes
                 for (size_t size = minsize; size <= maxsize; size *= 2)
                 {
-#ifdef NANOCV_HAVE_OPENCL
+#if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
                         ncv::stats_t<double, size_t> send_stats;        // send inputs to gpu
                         ncv::stats_t<double, size_t> proc_stats;        // gpu processing
                         ncv::stats_t<double, size_t> read_stats;        // read results from gpu
@@ -104,6 +107,12 @@ int main(int argc, char *argv[])
                         kernel.setArg(2, cbuffer);
 #endif
 
+#ifdef NANOCV_HAVE_CUDA
+                        thrust::device_vector<double> d_abuffer(size);
+                        thrust::device_vector<double> d_bbuffer(size);
+                        thrust::device_vector<double> d_cbuffer(size);
+#endif
+
                         // run multiple tests
                         for (size_t test = 0; test < tests; test ++)
                         {
@@ -117,7 +126,7 @@ int main(int argc, char *argv[])
                                 }
 
 #ifdef NANOCV_HAVE_OPENCL
-                                // I - send inputs to gpu
+                                // GPU - copy to device
                                 timer.start();
                                 {
                                         queue.enqueueWriteBuffer(abuffer, CL_TRUE, 0, array_size, a.data());
@@ -125,7 +134,7 @@ int main(int argc, char *argv[])
                                 }
                                 send_stats(timer.microseconds());
 
-                                // II - gpu processing
+                                // GPU - process
                                 timer.start();
                                 {
                                         queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size), cl::NullRange);
@@ -133,10 +142,37 @@ int main(int argc, char *argv[])
                                 }
                                 proc_stats(timer.microseconds());
 
-                                // III - read results from gpu
+                                // GPU - copy from device
                                 timer.start();
                                 {
                                         queue.enqueueReadBuffer(cbuffer, CL_TRUE, 0, array_size, c.data());
+                                }
+                                read_stats(timer.microseconds());
+
+                                check(a, b, c, "GPU processing failed: incorrect result!");
+#endif
+
+#ifdef NANOCV_HAVE_CUDA
+                                // GPU - copy to device
+                                timer.start();
+                                {
+                                        thrust::copy(a.data(), a.data() + a.size(), d_abuffer.begin());
+                                        thrust::copy(b.data(), b.data() + b.size(), d_bbuffer.begin());
+                                }
+                                send_stats(timer.microseconds());
+
+                                // GPU - process
+                                timer.start();
+                                {
+//                                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size), cl::NullRange);
+//                                        queue.finish();
+                                }
+                                proc_stats(timer.microseconds());
+
+                                // GPU - copy from device
+                                timer.start();
+                                {
+                                        thrust::copy(d_cbuffer.begin(), d_cbuffer.end(), c.data());
                                 }
                                 read_stats(timer.microseconds());
 
@@ -168,7 +204,7 @@ int main(int argc, char *argv[])
                                 check(a, b, c, "mCPU processing failed: incorrect result!");
                         }
 
-#ifdef NANOCV_HAVE_OPENCL
+#if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
                         const size_t time_send = static_cast<size_t>(0.5 + send_stats.sum() / 1000);
                         const size_t time_proc = static_cast<size_t>(0.5 + proc_stats.sum() / 1000);
                         const size_t time_read = static_cast<size_t>(0.5 + read_stats.sum() / 1000);
@@ -179,7 +215,7 @@ int main(int argc, char *argv[])
                         // results
                         log_info() << "SIZE [" << text::resize(text::to_string(size / 1024), 4, align::right) << "K] x "
                                    << "TIMES [" << text::resize(text::to_string(tests), 0, align::right) << "]: "
-#ifdef NANOCV_HAVE_OPENCL
+#if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
                                    << "sendGPU= " << text::resize(text::to_string(time_send), 8, align::right) << "ms, "
                                    << "procGPU= " << text::resize(text::to_string(time_proc), 8, align::right) << "ms, "
                                    << "readGPU= " << text::resize(text::to_string(time_read), 8, align::right) << "ms, "

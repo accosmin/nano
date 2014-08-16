@@ -28,6 +28,14 @@ if(NANOCV_HAVE_OPENCL)
 	add_definitions(-DNANOCV_HAVE_OPENCL)
 endif()
 
+# CUDA
+if(NANOCV_HAVE_CUDA)
+        find_package(CUDA QUIET REQUIRED)
+        set(CUDA_PROPAGATE_HOST_FLAGS OFF)
+        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-O3 -gencode arch=compute_20,code=sm_20)
+        add_definitions(-DNANOCV_HAVE_CUDA)
+endif()
+
 # Set the compiler flags
 set(CMAKE_CXX_FLAGS                     "-Wall -std=c++11 -fno-builtin -march=native -mtune=native")
 set(CMAKE_CXX_FLAGS_DEBUG               "-g -Og")               # -fsanitize=address")
@@ -85,11 +93,6 @@ add_library(nanocv
         ${nanocv_sources})
 
 if(NANOCV_HAVE_CUDA)
-        find_package(CUDA REQUIRED)
-        list(APPEND CUDA_NVCC_FLAGS
-                        -gencode arch=compute_20,code=sm_20
-                        -gencode arch=compute_30,code=sm_30)
-
         file(GLOB nanocv_cuda_sources
                 src/cuda/*.*
         )
@@ -134,7 +137,7 @@ set(nanocv_test_programs
         ncv_test_loss
         ncv_test_convolution
         ncv_test_network_gradient
-        ncv_test_network_timing
+        ncv_test_network_timing)
         ncv_test_add)
 
 set(nanocv_programs
@@ -154,6 +157,10 @@ foreach(proj ${nanocv_programs})
         add_executable(${proj} apps/${proj}.cpp)
         target_link_libraries(${proj} ${libs})
 endforeach()
+
+if(NANOCV_HAVE_CUDA)
+        cuda_add_executable(ncv_test_add test/ncv_test_add.cpp)
+endif()
 
 ######################################################################
 # Installing
