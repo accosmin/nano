@@ -84,20 +84,6 @@ add_library(nanocv
         SHARED
         ${nanocv_sources})
 
-if(NANOCV_HAVE_CUDA)
-        find_package(CUDA REQUIRED)
-        list(APPEND CUDA_NVCC_FLAGS
-                        -gencode arch=compute_20,code=sm_20
-                        -gencode arch=compute_30,code=sm_30)
-
-        file(GLOB nanocv_cuda_sources
-                src/cuda/*.*
-        )
-
-        cuda_add_library(nanocv_cuda STATIC ${nanocv_cuda_sources})
-        target_link_libraries(nanocv nanocv_cuda)
-endif()
-
 ######################################################################
 # Build projects
 ######################################################################
