@@ -37,17 +37,17 @@ template
 >
 bool check(const tvector& a, const tvector& b, const tvector& c, const char* error_message)
 {
-        const auto eps = std::numeric_limits<typename tvector::Scalar>::epsilon();
+//        const auto eps = std::numeric_limits<typename tvector::Scalar>::epsilon();
 
-        for (auto i = 0; i < a.size(); i ++)
-        {
-                const auto diff = std::fabs(c(i) - cpu_op(a(i), b(i)));
-                if (diff > eps)
-                {
-                        ncv::log_error() << error_message << " (diff = " << diff << ")";
-                        return false;
-                }
-        }
+//        for (auto i = 0; i < a.size(); i ++)
+//        {
+//                const auto diff = std::fabs(c(i) - cpu_op(a(i), b(i)));
+//                if (diff > eps)
+//                {
+//                        ncv::log_error() << error_message << " (diff = " << diff << ")";
+//                        return false;
+//                }
+//        }
 
         return true;
 }
@@ -108,9 +108,6 @@ int main(int argc, char *argv[])
 #endif
 
 #ifdef NANOCV_HAVE_CUDA
-                        thrust::device_vector<double> d_abuffer(size);
-                        thrust::device_vector<double> d_bbuffer(size);
-                        thrust::device_vector<double> d_cbuffer(size);
 #endif
 
                         // run multiple tests
@@ -156,8 +153,8 @@ int main(int argc, char *argv[])
                                 // GPU - copy to device
                                 timer.start();
                                 {
-                                        thrust::copy(a.data(), a.data() + a.size(), d_abuffer.begin());
-                                        thrust::copy(b.data(), b.data() + b.size(), d_bbuffer.begin());
+                                        cuda::copyToDevice(a.data(), a.size());
+                                        cuda::copyToDevice(b.data(), b.size());
                                 }
                                 send_stats(timer.microseconds());
 
@@ -172,7 +169,7 @@ int main(int argc, char *argv[])
                                 // GPU - copy from device
                                 timer.start();
                                 {
-                                        thrust::copy(d_cbuffer.begin(), d_cbuffer.end(), c.data());
+//                                        thrust::copy(d_cbuffer.begin(), d_cbuffer.end(), c.data());
                                 }
                                 read_stats(timer.microseconds());
 

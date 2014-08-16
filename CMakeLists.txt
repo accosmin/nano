@@ -137,7 +137,7 @@ set(nanocv_test_programs
         ncv_test_loss
         ncv_test_convolution
         ncv_test_network_gradient
-        ncv_test_network_timing)
+        ncv_test_network_timing
         ncv_test_add)
 
 set(nanocv_programs
@@ -157,10 +157,6 @@ foreach(proj ${nanocv_programs})
         add_executable(${proj} apps/${proj}.cpp)
         target_link_libraries(${proj} ${libs})
 endforeach()
-
-if(NANOCV_HAVE_CUDA)
-        cuda_add_executable(ncv_test_add test/ncv_test_add.cpp)
-endif()
 
 ######################################################################
 # Installing
