@@ -1,12 +1,14 @@
 #include "nanocv.h"
+#ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
+#endif
 
 const std::string program_source = R"xxx(
 
 #pragma OPENCL EXTENSION cl_amd_fp64 : enable
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
 
-__kernel void test_kernel(
+__kernel void add_kernel(
        __global const double* a,
        __global const double* b,
        __global double* result)
@@ -51,6 +53,7 @@ int main(int argc, char *argv[])
 {
         using namespace ncv;
 
+#ifdef NANOCV_HAVE_OPENCL
         try
         {
                 ocl::manager_t& theocl = ocl::manager_t::instance();
@@ -63,27 +66,31 @@ int main(int argc, char *argv[])
                 const cl::Context context = theocl.make_context();
                 const cl::CommandQueue queue = theocl.make_command_queue(context);
                 const cl::Program program = theocl.make_program_from_text(context, program_source);
-                cl::Kernel kernel = theocl.make_kernel(program, "test_kernel");
+                cl::Kernel kernel = theocl.make_kernel(program, "add_kernel");
+#endif
 
-                const size_t tests = 32;
+                const size_t tests = 10000;
                 const size_t minsize = 1024;
                 const size_t maxsize = 4 * 1024 * 1024;
 
                 thread_pool_t pool;
 
                 // try various data sizes
-                for (size_t size = minsize; size <= maxsize; size *= 4)
+                for (size_t size = minsize; size <= maxsize; size *= 2)
                 {
+#ifdef NANOCV_HAVE_OPENCL
                         ncv::stats_t<double, size_t> send_stats;        // send inputs to gpu
                         ncv::stats_t<double, size_t> proc_stats;        // gpu processing
                         ncv::stats_t<double, size_t> read_stats;        // read results from gpu
-                        ncv::stats_t<double, size_t> scpu_stats;        // cpu processing (single core)
+#endif
+                        ncv::stats_t<double, size_t> scpu_stats;        // cpu processing (single core)                        
                         ncv::stats_t<double, size_t> mcpu_stats;        // cpu processing (multiple cores)
 
                         ncv::tensor::vector_types_t<double>::tvector a; a.resize(size);
                         ncv::tensor::vector_types_t<double>::tvector b; b.resize(size);
                         ncv::tensor::vector_types_t<double>::tvector c; c.resize(size);
 
+#ifdef NANOCV_HAVE_OPENCL
                         const size_t array_size = size * sizeof(double);
 
                         // create buffers once
@@ -95,6 +102,7 @@ int main(int argc, char *argv[])
                         kernel.setArg(0, abuffer);
                         kernel.setArg(1, bbuffer);
                         kernel.setArg(2, cbuffer);
+#endif
 
                         // run multiple tests
                         for (size_t test = 0; test < tests; test ++)
@@ -108,6 +116,7 @@ int main(int argc, char *argv[])
                                         c(i) = 0.0f;
                                 }
 
+#ifdef NANOCV_HAVE_OPENCL
                                 // I - send inputs to gpu
                                 timer.start();
                                 {
@@ -132,8 +141,9 @@ int main(int argc, char *argv[])
                                 read_stats(timer.microseconds());
 
                                 check(a, b, c, "GPU processing failed: incorrect result!");
+#endif
 
-                                // IV - single-threaded cpu processing
+                                // CPU - single-threaded
                                 timer.start();
                                 {
                                         for (size_t i = 0; i < size; i ++)
@@ -145,7 +155,7 @@ int main(int argc, char *argv[])
 
                                 check(a, b, c, "sCPU processing failed: incorrect result!");
 
-                                // V - multi-threaded cpu processing
+                                // CPU - multi-threaded
                                 timer.start();
                                 {
                                         ncv::thread_loopi(size, pool, [&] (size_t i)
@@ -158,20 +168,34 @@ int main(int argc, char *argv[])
                                 check(a, b, c, "mCPU processing failed: incorrect result!");
                         }
 
+#ifdef NANOCV_HAVE_OPENCL
+                        const size_t time_send = static_cast<size_t>(0.5 + send_stats.sum() / 1000);
+                        const size_t time_proc = static_cast<size_t>(0.5 + proc_stats.sum() / 1000);
+                        const size_t time_read = static_cast<size_t>(0.5 + read_stats.sum() / 1000);
+#endif
+                        const size_t time_scpu = static_cast<size_t>(0.5 + scpu_stats.sum() / 1000);
+                        const size_t time_mcpu = static_cast<size_t>(0.5 + mcpu_stats.sum() / 1000);
+
                         // results
-                        log_info() << "SIZE [" << text::resize(text::to_string(size / 1024), 4, align::right) << "K]"
-                                   << ": sendGPU= " << text::resize(text::to_string(send_stats.avg()), 14, align::right) << "us"
-                                   << ", procGPU= " << text::resize(text::to_string(proc_stats.avg()), 14, align::right) << "us"
-                                   << ", readGPU= " << text::resize(text::to_string(read_stats.avg()), 14, align::right) << "us"
-                                   << ", 1CPU= " << text::resize(text::to_string(scpu_stats.avg()), 14, align::right) << "us"
-                                   << ", xCPU= " << text::resize(text::to_string(mcpu_stats.avg()), 14, align::right) << "us";
+                        log_info() << "SIZE [" << text::resize(text::to_string(size / 1024), 4, align::right) << "K] x "
+                                   << "TIMES [" << text::resize(text::to_string(tests), 0, align::right) << "]: "
+#ifdef NANOCV_HAVE_OPENCL
+                                   << "sendGPU= " << text::resize(text::to_string(time_send), 8, align::right) << "ms, "
+                                   << "procGPU= " << text::resize(text::to_string(time_proc), 8, align::right) << "ms, "
+                                   << "readGPU= " << text::resize(text::to_string(time_read), 8, align::right) << "ms, "
+#endif
+                                   << "singCPU= " << text::resize(text::to_string(time_scpu), 8, align::right) << "ms, "
+                                   << "multCPU= " << text::resize(text::to_string(time_mcpu), 8, align::right) << "ms";
                 }
+
+#ifdef NANOCV_HAVE_OPENCL
         }
 
         catch (cl::Error& e)
         {
                 log_error() << "OpenCL fatal error: <" << e.what() << "> (" << ocl::error_string(e.err()) << ")!";
         }
+#endif
 
         // OK
         ncv::log_info() << ncv::done;

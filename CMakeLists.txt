@@ -84,6 +84,20 @@ add_library(nanocv
         SHARED
         ${nanocv_sources})
 
+if(NANOCV_HAVE_CUDA)
+        find_package(CUDA REQUIRED)
+        list(APPEND CUDA_NVCC_FLAGS
+                        -gencode arch=compute_20,code=sm_20
+                        -gencode arch=compute_30,code=sm_30)
+
+        file(GLOB nanocv_cuda_sources
+                src/cuda/*.*
+        )
+
+        cuda_add_library(nanocv_cuda STATIC ${nanocv_cuda_sources})
+        target_link_libraries(nanocv nanocv_cuda)
+endif()
+
 ######################################################################
 # Build projects
 ######################################################################
@@ -120,12 +134,8 @@ set(nanocv_test_programs
         ncv_test_loss
         ncv_test_convolution
         ncv_test_network_gradient
-        ncv_test_network_timing)
-
-if(NANOCV_HAVE_OPENCL)
-        set(nanocv_test_programs "${nanocv_test_programs};ncv_test_opencl_add")
-        set(nanocv_test_programs "${nanocv_test_programs};ncv_test_opencl_mem")
-endif()
+        ncv_test_network_timing
+        ncv_test_add)
 
 set(nanocv_programs
         ncv_max_threads
