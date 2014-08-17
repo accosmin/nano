@@ -42,9 +42,26 @@ namespace ncv
                         ///
                         /// \brief destructor
                         ///
-                        ~vector_t()
+                        virtual ~vector_t()
                         {
                                 cudaFree(m_data);
+                        }
+
+                        ///
+                        /// \brief resize to new dimensions
+                        ///
+                        bool resize(int size)
+                        {
+                                const cudaError status = cudaMalloc((void**)&m_data, size * sizeof(tscalar));
+                                if (status == cudaSuccess)
+                                {
+                                        m_size = size;
+                                        return true;
+                                }
+                                else
+                                {
+                                        return false;
+                                }
                         }
 
                         ///
@@ -72,11 +89,11 @@ namespace ncv
                         tscalar* data() { return m_data; }
                         const tscalar* data() const { return m_data; }
 
-                private:
+                protected:
 
                         // attributes
-                        tscalar*                m_data;
-                        int                     m_size;
+                        tscalar*        m_data;
+                        int             m_size;
                 };
         }
 }
