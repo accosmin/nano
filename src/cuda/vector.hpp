@@ -1,5 +1,5 @@
-#ifndef NANOCV_CUDA_TENSOR_H
-#define NANOCV_CUDA_TENSOR_H
+#ifndef NANOCV_CUDA_VECTOR_H
+#define NANOCV_CUDA_VECTOR_H
 
 #include <cuda.h>
 #include <cuda_runtime.h>
@@ -81,5 +81,5 @@ namespace ncv
         }
 }
 
-#endif // NANOCV_CUDA_TENSOR_H
+#endif // NANOCV_CUDA_VECTOR_H
 

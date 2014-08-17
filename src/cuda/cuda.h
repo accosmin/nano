@@ -3,7 +3,7 @@
 
 #include <cuda.h>
 #include <cuda_runtime.h>
-#include "tensor.hpp"
+#include "vector.hpp"
 
 namespace ncv
 {
