@@ -32,8 +32,9 @@ endif()
 if(NANOCV_HAVE_CUDA)
         find_package(CUDA QUIET REQUIRED)
         set(CUDA_PROPAGATE_HOST_FLAGS OFF)
-        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-O3 -gencode arch=compute_20,code=sm_20)
+        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-O3 -gencode arch=compute_20,code=sm_20 -arch=sm_13)
         add_definitions(-DNANOCV_HAVE_CUDA)
+
 endif()
 
 # Set the compiler flags

@@ -37,19 +37,27 @@ template
 >
 bool check(const tvector& a, const tvector& b, const tvector& c, const char* error_message)
 {
-//        const auto eps = std::numeric_limits<typename tvector::Scalar>::epsilon();
+        typedef typename tvector::Scalar scalar_t;
 
-//        for (auto i = 0; i < a.size(); i ++)
-//        {
-//                const auto diff = std::fabs(c(i) - cpu_op(a(i), b(i)));
-//                if (diff > eps)
-//                {
-//                        ncv::log_error() << error_message << " (diff = " << diff << ")";
-//                        return false;
-//                }
-//        }
+        const auto eps = std::numeric_limits<scalar_t>::epsilon();
 
-        return true;
+        ncv::stats_t<scalar_t> stats;
+        for (auto i = 0; i < a.size(); i ++)
+        {
+                stats(std::fabs(c(i) - cpu_op(a(i), b(i))));
+        }
+
+        if (stats.max() > eps)
+        {
+                ncv::log_error() << error_message << " (diff = [" << stats.min() << ", " << stats.max()
+                                 << "] ~ " << stats.avg() << ")";
+                return false;
+        }
+
+        else
+        {
+                return true;
+        }
 }
 
 int main(int argc, char *argv[])
@@ -70,6 +78,10 @@ int main(int argc, char *argv[])
                 const cl::CommandQueue queue = theocl.make_command_queue(context);
                 const cl::Program program = theocl.make_program_from_text(context, program_source);
                 cl::Kernel kernel = theocl.make_kernel(program, "add_kernel");
+#endif
+
+#ifdef NANOCV_HAVE_CUDA
+                cuda::print_info();
 #endif
 
                 const size_t tests = 1000;
@@ -108,6 +120,9 @@ int main(int argc, char *argv[])
 #endif
 
 #ifdef NANOCV_HAVE_CUDA
+                        cuda::device_buffer_t d_abuffer(size);
+                        cuda::device_buffer_t d_bbuffer(size);
+                        cuda::device_buffer_t d_cbuffer(size);
 #endif
 
                         // run multiple tests
@@ -153,23 +168,22 @@ int main(int argc, char *argv[])
                                 // GPU - copy to device
                                 timer.start();
                                 {
-                                        cuda::copyToDevice(a.data(), a.size());
-                                        cuda::copyToDevice(b.data(), b.size());
+                                        d_abuffer.copyToDevice(a.data());
+                                        d_bbuffer.copyToDevice(b.data());
                                 }
                                 send_stats(timer.microseconds());
 
                                 // GPU - process
                                 timer.start();
                                 {
-//                                        queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(size), cl::NullRange);
-//                                        queue.finish();
+                                        cuda::addbsquared(d_abuffer, d_bbuffer, d_cbuffer);
                                 }
                                 proc_stats(timer.microseconds());
 
                                 // GPU - copy from device
                                 timer.start();
                                 {
-//                                        thrust::copy(d_cbuffer.begin(), d_cbuffer.end(), c.data());
+                                        d_cbuffer.copyFromDevice(c.data());
                                 }
                                 read_stats(timer.microseconds());
 
