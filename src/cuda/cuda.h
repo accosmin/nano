@@ -3,6 +3,7 @@
 
 #include <cuda.h>
 #include <cuda_runtime.h>
+#include "tensor.hpp"
 
 namespace ncv
 {
@@ -24,57 +25,9 @@ namespace ncv
                 cudaDeviceProp get_device_properties(int device = 0);
 
                 ///
-                /// \brief allocated (array of doubles) buffer on the device.
+                /// \brief c[i] = a[i] + b[i] * b[i] (test kernel)
                 ///
-                /// NB: it would be nice to use thrust::device_vector<> directly!
-                ///
-                struct device_buffer_impl_t;
-                class device_buffer_t
-                {
-                public:
-
-                        ///
-                        /// \brief constructor (allocate the given number of doubles on the device)
-                        ///
-                        device_buffer_t(int size);
-
-                        ///
-                        /// \brief disable copying
-                        ///
-                        device_buffer_t(const device_buffer_t&);
-                        device_buffer_t& operator=(const device_buffer_t&);
-
-                        ///
-                        /// \brief destructor
-                        ///
-                        ~device_buffer_t();
-
-                        ///
-                        /// \brief to device
-                        ///
-                        bool copyToDevice(const double* h_data) const;
-
-                        ///
-                        /// \brief from device
-                        ///
-                        bool copyFromDevice(double* h_data) const;
-
-                        ///
-                        /// \brief access functions
-                        ///
-                        int size() const;
-                        bool empty() const;
-
-                        const device_buffer_impl_t& get() const;
-                        device_buffer_impl_t& get();
-
-                private:
-
-                        // attributes
-                        device_buffer_impl_t*   m_impl;
-                };
-
-                bool addbsquared(const device_buffer_t& a, const device_buffer_t& b, device_buffer_t& c);
+                bool addbsquared(const vector_t<double>& a, const vector_t<double>& b, vector_t<double>& c);
         }
 }
 

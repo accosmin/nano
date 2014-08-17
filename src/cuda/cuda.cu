@@ -84,58 +84,7 @@ namespace ncv
                 return dim3(prop.maxThreadsPerBlock, 1, 1);
         }
 
-        namespace cuda
-        {
-                struct device_buffer_impl_t
-                {
-                        thrust::device_vector<double>   m_data;
-                };
-        }
-
-        cuda::device_buffer_t::device_buffer_t(int size)
-                :       m_impl(new cuda::device_buffer_impl_t)
-        {
-                m_impl->m_data.resize(size);
-        }
-
-        cuda::device_buffer_t::~device_buffer_t()
-        {
-                delete m_impl;
-        }
-
-        int cuda::device_buffer_t::size() const
-        {
-                return static_cast<int>(m_impl->m_data.size());
-        }
-
-        bool cuda::device_buffer_t::empty() const
-        {
-                return m_impl->m_data.empty();
-        }
-
-        const cuda::device_buffer_impl_t& cuda::device_buffer_t::get() const
-        {
-                return *m_impl;
-        }
-
-        cuda::device_buffer_impl_t& cuda::device_buffer_t::get()
-        {
-                return *m_impl;
-        }
-
-        bool cuda::device_buffer_t::copyToDevice(const double* h_data) const
-        {
-                thrust::copy(h_data, h_data + size(), m_impl->m_data.begin());
-                return true;
-        }
-
-        bool cuda::device_buffer_t::copyFromDevice(double* h_data) const
-        {
-                thrust::copy(m_impl->m_data.begin(), m_impl->m_data.end(), h_data);
-                return false;
-        }
-
-        bool cuda::addbsquared(const device_buffer_t& a, const device_buffer_t& b, device_buffer_t& c)
+        bool cuda::addbsquared(const vector_t<double>& a, const vector_t<double>& b, vector_t<double>& c)
         {
                 if (    a.size() != c.size() ||
                         b.size() != c.size())
@@ -145,20 +94,12 @@ namespace ncv
 
                 else
                 {
-                        const thrust::device_vector<double>& d_a = a.get().m_data;
-                        const thrust::device_vector<double>& d_b = b.get().m_data;
-                        thrust::device_vector<double>& d_c = c.get().m_data;
-
                         const dim3 ksize = make_size(a.size());
                         const dim3 bsize = make_block_size(a.size());
 
-                        kernel_addbsquared<<<ksize, bsize>>>(
-                                thrust::raw_pointer_cast(&d_a[0]),
-                                thrust::raw_pointer_cast(&d_b[0]),
-                                d_a.size(),
-                                thrust::raw_pointer_cast(&d_c[0]));
+                        kernel_addbsquared<<<ksize, bsize>>>(a.data(), b.data(), a.size(), c.data());
 
-                        return true;
+                        return cudaGetLastError() == cudaSuccess;
                 }
         }
 }

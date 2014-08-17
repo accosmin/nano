@@ -120,9 +120,9 @@ int main(int argc, char *argv[])
 #endif
 
 #ifdef NANOCV_HAVE_CUDA
-                        cuda::device_buffer_t d_abuffer(size);
-                        cuda::device_buffer_t d_bbuffer(size);
-                        cuda::device_buffer_t d_cbuffer(size);
+                        cuda::vector_t<double> d_abuffer(size);
+                        cuda::vector_t<double> d_bbuffer(size);
+                        cuda::vector_t<double> d_cbuffer(size);
 #endif
 
                         // run multiple tests
