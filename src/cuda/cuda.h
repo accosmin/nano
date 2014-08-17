@@ -25,6 +25,18 @@ namespace ncv
                 cudaDeviceProp get_device_properties(int device = 0);
 
                 ///
+                /// \brief construct the optimal number of blocks for 1D & 2D processing
+                ///
+                dim3 make_block_count(int size, int device = 0);
+                dim3 make_block_count(int rows, int cols, int device = 0);
+
+                ///
+                /// \brief construct the optimal block size (= number of threads per block) for 1D & 2D processing
+                ///
+                dim3 make_block_size(int size, int device = 0);
+                dim3 make_block_size(int rows, int cols, int device = 0);
+
+                ///
                 /// \brief c[i] = a[i] + b[i] * b[i] (test kernel)
                 ///
                 bool addbsquared(const vector_t<double>& a, const vector_t<double>& b, vector_t<double>& c);

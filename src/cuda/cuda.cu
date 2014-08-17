@@ -72,16 +72,36 @@ namespace ncv
                 return true;
         }
 
-        dim3 make_size(int size, int device = 0)
+        dim3 cuda::make_block_count(int size, int device)
         {
                 const cudaDeviceProp prop = cuda::get_device_properties(device);
-                return dim3((size + prop.maxThreadsPerBlock - 1) / prop.maxThreadsPerBlock, 1, 1);
+                return dim3((size + prop.maxThreadsPerBlock - 1) / prop.maxThreadsPerBlock,
+                            1,
+                            1);
         }
 
-        dim3 make_block_size(int size, int device = 0)
+        dim3 cuda::make_block_count(int rows, int cols, int device)
         {
                 const cudaDeviceProp prop = cuda::get_device_properties(device);
-                return dim3(prop.maxThreadsPerBlock, 1, 1);
+                return dim3((cols + prop.maxThreadsPerBlock - 1) / prop.maxThreadsPerBlock,
+                            (rows + prop.maxThreadsPerBlock - 1) / prop.maxThreadsPerBlock,
+                            1);
+        }
+
+        dim3 cuda::make_block_size(int, int device)
+        {
+                const cudaDeviceProp prop = cuda::get_device_properties(device);
+                return dim3(prop.maxThreadsPerBlock,
+                            1,
+                            1);
+        }
+
+        dim3 cuda::make_block_size(int, int, int device)
+        {
+                const cudaDeviceProp prop = cuda::get_device_properties(device);
+                return dim3(sqrt(prop.maxThreadsPerBlock),
+                            sqrt(prop.maxThreadsPerBlock),
+                            1);
         }
 
         bool cuda::addbsquared(const vector_t<double>& a, const vector_t<double>& b, vector_t<double>& c)
@@ -94,7 +114,7 @@ namespace ncv
 
                 else
                 {
-                        const dim3 ksize = make_size(a.size());
+                        const dim3 ksize = make_block_count(a.size());
                         const dim3 bsize = make_block_size(a.size());
 
                         kernel_addbsquared<<<ksize, bsize>>>(a.data(), b.data(), a.size(), c.data());
