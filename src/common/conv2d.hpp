@@ -8,7 +8,7 @@
 namespace ncv
 {
         ///
-        /// 2D convolution: odata += idata @ kdata (using Eigen 2D blocks)
+        /// \brief 2D convolution: odata += idata @ kdata (using Eigen 2D blocks)
         ///
         template
         <
@@ -32,7 +32,7 @@ namespace ncv
         }
 
         ///
-        /// inverse 2D convolution: odata += idata @ kdata (using Eigen 2D blocks)
+        /// \brief inverse 2D convolution: idata += odata @ kdata (using Eigen 2D blocks)
         ///
         template
         <
@@ -199,7 +199,7 @@ namespace ncv
         }
 
         ///
-        /// 2D convolution: odata += idata @ kdata (using a dot operator)
+        /// \brief 2D convolution: odata += idata @ kdata (using a dot operator)
         ///
         template
         <
@@ -217,7 +217,7 @@ namespace ncv
         }
 
         ///
-        /// 2D convolution for compile-time kernel size: odata += idata @ kdata (using a dot operator)
+        /// \brief 2D convolution for compile-time kernel size: odata += idata @ kdata (using a dot operator)
         ///
         template
         <
@@ -237,7 +237,7 @@ namespace ncv
         }
         
         ///
-        /// inverse 2D convolution: odata += idata @ kdata (using a mad product)
+        /// \brief inverse 2D convolution: idata += odata @ kdata (using a mad product)
         ///
         template
         <
@@ -255,7 +255,7 @@ namespace ncv
         }
 
         ///
-        /// inverse 2D convolution for compile-time kernel size: odata += idata @ kdata (using a mad product)
+        /// \brief inverse 2D convolution for compile-time kernel size: idata += odata @ kdata (using a mad product)
         ///
         template
         <
