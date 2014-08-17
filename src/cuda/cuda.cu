@@ -72,7 +72,7 @@ namespace ncv
                 return true;
         }
 
-        dim3 cuda::make_block_count(int size, int device)
+        dim3 cuda::make_block1d_count(int size, int device)
         {
                 const cudaDeviceProp prop = cuda::get_device_properties(device);
                 return dim3((size + prop.maxThreadsPerBlock - 1) / prop.maxThreadsPerBlock,
@@ -80,7 +80,7 @@ namespace ncv
                             1);
         }
 
-        dim3 cuda::make_block_count(int rows, int cols, int device)
+        dim3 cuda::make_block2d_count(int rows, int cols, int device)
         {
                 const cudaDeviceProp prop = cuda::get_device_properties(device);
                 return dim3((cols + prop.maxThreadsPerBlock - 1) / prop.maxThreadsPerBlock,
@@ -88,7 +88,7 @@ namespace ncv
                             1);
         }
 
-        dim3 cuda::make_block_size(int, int device)
+        dim3 cuda::make_block1d_size(int, int device)
         {
                 const cudaDeviceProp prop = cuda::get_device_properties(device);
                 return dim3(prop.maxThreadsPerBlock,
@@ -96,7 +96,7 @@ namespace ncv
                             1);
         }
 
-        dim3 cuda::make_block_size(int, int, int device)
+        dim3 cuda::make_block2d_size(int, int, int device)
         {
                 const cudaDeviceProp prop = cuda::get_device_properties(device);
                 return dim3(sqrt(prop.maxThreadsPerBlock),
@@ -104,7 +104,7 @@ namespace ncv
                             1);
         }
 
-        bool cuda::addbsquared(const vector_t<double>& a, const vector_t<double>& b, vector_t<double>& c)
+        bool cuda::addbsquared(const vector_t<double>& a, const vector_t<double>& b, vector_t<double>& c, int device)
         {
                 if (    a.size() != c.size() ||
                         b.size() != c.size())
@@ -114,8 +114,8 @@ namespace ncv
 
                 else
                 {
-                        const dim3 ksize = make_block_count(a.size());
-                        const dim3 bsize = make_block_size(a.size());
+                        const dim3 ksize = make_block1d_count(a.size(), device);
+                        const dim3 bsize = make_block1d_size(a.size(), device);
 
                         kernel_addbsquared<<<ksize, bsize>>>(a.data(), b.data(), a.size(), c.data());
 
