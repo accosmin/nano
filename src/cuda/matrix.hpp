@@ -14,7 +14,7 @@ namespace ncv
                 <
                         typename tscalar
                 >
-                class matrix_t
+                class matrix_t : public vector_t<tscalar>
                 {
                 public:
 
