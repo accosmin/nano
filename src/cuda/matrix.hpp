@@ -37,14 +37,14 @@ namespace ncv
                         ///
                         /// \brief access functions
                         ///
-                        __host__ __device__ int rows() const { return m_rows; }
-                        __host__ __device__ int cols() const { return m_cols; }
+                        int rows() const { return m_rows; }
+                        int cols() const { return m_cols; }
                         
-                        __host__ __device__ tscalar operator()(int r, int c) const 
+                        tscalar operator()(int r, int c) const
                         { 
                                 return vector_t<tscalar>::operator()(r * m_cols + c);                                 
                         }
-                        __host__ __device__ tscalar& operator()(int r, int c) 
+                        tscalar& operator()(int r, int c)
                         { 
                                 return vector_t<tscalar>::operator()(r * m_cols + c);                                 
                         }

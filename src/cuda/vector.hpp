@@ -86,11 +86,11 @@ namespace ncv
                         int size() const { return m_size; }
                         bool empty() const { return m_data != NULL && m_size > 0; }
 
-                        __host__ __device__ tscalar* data() { return m_data; }
-                        __host__ __device__ const tscalar* data() const { return m_data; }
+                        tscalar* data() { return m_data; }
+                        const tscalar* data() const { return m_data; }
                         
-                        __host__ __device__ tscalar operator()(int i) const { return m_data[i]; }
-                        __host__ __device__ tscalar& operator()(int i) { return m_data[i]; }
+                        tscalar operator()(int i) const { return m_data[i]; }
+                        tscalar& operator()(int i) { return m_data[i]; }
 
                 protected:
 
