@@ -10,6 +10,9 @@
 
 using namespace ncv;
 
+ncv::thread_pool_t pool;
+const size_t tests = 16;
+
 #ifdef NANOCV_HAVE_OPENCL
 
 const std::string conv_program_source = R"xxx(
@@ -53,9 +56,6 @@ __kernel void conv_kernel(
 )xxx";
 
 #endif
-
-ncv::thread_pool_t pool;
-const size_t tests = 16;
 
 void init_matrix(int rows, int cols, matrix_t& matrix)
 {
@@ -179,8 +179,6 @@ scalar_t test_gpu(const char* name, const matrices_t& idatas, const matrix_t& kd
         {
                 zero_matrices(odatas);
 
-//                const ncv::timer_t timer;
-
                 size_t micros = 0;
                 for (size_t i = 0; i < idatas.size(); i ++)
                 {
@@ -199,8 +197,6 @@ scalar_t test_gpu(const char* name, const matrices_t& idatas, const matrix_t& kd
                 }
 
                 proc_stats(micros / 1000);
-
-//                proc_stats(timer.miliseconds());
         }
 
         const size_t milis = static_cast<size_t>(proc_stats.avg());
