@@ -16,8 +16,6 @@ __global__ void kernel_conv2d(
         {
                 const int krows = kdata.rows();
                 const int kcols = kdata.cols();
-                
-                const int icols = ocols + kcols - 1;
 
                 double sum = 0;
                 for (int kr = 0; kr < krows; kr ++)

@@ -3,7 +3,6 @@
 
 #include <cuda.h>
 #include <cuda_runtime.h>
-#include "vector.hpp"
 
 namespace ncv
 {
@@ -35,11 +34,6 @@ namespace ncv
                 ///
                 dim3 make_block1d_size(int size, int device = 0);
                 dim3 make_block2d_size(int rows, int cols, int device = 0);
-
-                ///
-                /// \brief c[i] = a[i] + b[i] * b[i] (test kernel)
-                ///
-                bool addbsquared(const vector_t<double>& a, const vector_t<double>& b, vector_t<double>& c, int device = 0);
         }
 }
 

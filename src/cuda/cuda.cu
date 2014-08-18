@@ -16,15 +16,6 @@ static void HandleError(cudaError_t err, const char*file, int line)
 
 #define CUDA_HANDLE_ERROR(err) (HandleError(err, __FILE__, __LINE__))
 
-__global__ void kernel_addbsquared(const double* a, const double* b, int size, double* c)
-{
-        const int i = threadIdx.x + blockIdx.x * blockDim.x;
-        if (i < size)
-        {
-                c[i] = a[i] + b[i] * b[i];
-        }
-}
-
 namespace ncv
 {
         int cuda::count_devices()
@@ -102,24 +93,5 @@ namespace ncv
                 return dim3(sqrt(prop.maxThreadsPerBlock),
                             sqrt(prop.maxThreadsPerBlock),
                             1);
-        }
-
-        bool cuda::addbsquared(const vector_t<double>& a, const vector_t<double>& b, vector_t<double>& c, int device)
-        {
-                if (    a.size() != c.size() ||
-                        b.size() != c.size())
-                {
-                        return false;
-                }
-
-                else
-                {
-                        const dim3 ksize = make_block1d_count(a.size(), device);
-                        const dim3 bsize = make_block1d_size(a.size(), device);
-
-                        kernel_addbsquared<<<ksize, bsize>>>(a.data(), b.data(), a.size(), c.data());
-
-                        return cudaGetLastError() == cudaSuccess;
-                }
         }
 }
