@@ -1,3 +1,6 @@
+- ncv_test_convolution:
+	- refactor to quickly switch between different scalars (e.g. float vs int vs double)
+
 - reduce the number of input/output buffers for layers
 
 - faster convolution:
