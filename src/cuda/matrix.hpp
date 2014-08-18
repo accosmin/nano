@@ -39,6 +39,15 @@ namespace ncv
                         ///
                         __host__ __device__ int rows() const { return m_rows; }
                         __host__ __device__ int cols() const { return m_cols; }
+                        
+                        __host__ __device__ tscalar operator()(int r, int c) const 
+                        { 
+                                return vector_t<tscalar>::operator()(r * m_cols + c);                                 
+                        }
+                        __host__ __device__ tscalar& operator()(int r, int c) 
+                        { 
+                                return vector_t<tscalar>::operator()(r * m_cols + c);                                 
+                        }
 
                 private:
 

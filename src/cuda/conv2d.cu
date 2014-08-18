@@ -24,11 +24,11 @@ __global__ void kernel_conv2d(
                 {
                         for (int kc = 0; kc < kcols; kc ++)
                         {
-                                sum += idata.data()[(r + kr) * icols + (c + kc)] * kdata.data()[kr * kcols + kc];
+                                sum += idata(r + kr, c + kc) * kdata(kr, kc);
                         }
                 }
 
-                odata.data()[r * ocols + c] = sum;
+                odata(r, c) = sum;
         }
 }
 
@@ -62,11 +62,11 @@ __global__ void kernel_iconv2d(
                 {
                         for (int kc = kcmin; kc < kcmax; kc ++)
                         {
-                                sum += odata.data()[(r - kr) * ocols + (c - kc)] * kdata.data()[kr * kcols + kc];
+                                sum += odata(r - kr, c - kc) * kdata(kr, kc);
                         }
                 }
 
-                idata.data()[r * icols + c] = sum;
+                idata(r, c) = sum;
         }
 }
 

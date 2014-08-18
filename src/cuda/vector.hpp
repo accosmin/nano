@@ -88,6 +88,9 @@ namespace ncv
 
                         __host__ __device__ tscalar* data() { return m_data; }
                         __host__ __device__ const tscalar* data() const { return m_data; }
+                        
+                        __host__ __device__ tscalar operator()(int i) const { return m_data[i]; }
+                        __host__ __device__ tscalar& operator()(int i) { return m_data[i]; }
 
                 protected:
 
