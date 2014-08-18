@@ -13,58 +13,22 @@ using namespace ncv;
 ncv::thread_pool_t pool;
 const size_t tests = 16;
 
-#ifdef NANOCV_HAVE_OPENCL
-
-const std::string conv_program_source = R"xxx(
-
-#pragma OPENCL EXTENSION cl_amd_fp64 : enable
-#pragma OPENCL EXTENSION cl_khr_fp64 : enable
-
-__kernel void conv_kernel(
-        __global const double* idata,
-        __constant double* kdata, int krows, int kcols,
-        __global double* odata)
-{
-        const int odims = get_global_size(0);
-        const int ocols = get_global_size(1);
-        const int orows = get_global_size(2);
-        const int osize = orows * ocols;
-
-        const int icols = ocols + kcols - 1;
-        const int irows = orows + krows - 1;
-        const int isize = irows * icols;
-
-        const int o = get_global_id(0);
-        const int x = get_global_id(1);
-        const int y = get_global_id(2);
-
-        const int iidx_base = o * isize + y * icols + x;
-
-        double sum = 0;
-        for (int r = 0, kidx = 0; r < krows; r ++)
-        {
-                int iidx = iidx_base + r * icols;
-                for (int c = 0; c < kcols; c ++, kidx ++, iidx ++)
-                {
-                        sum += kdata[kidx] * idata[iidx];
-                }
-        }
-
-        odata[o * osize + y * ocols + x] = sum;
-}
-
-)xxx";
-
-#endif
-
-void init_matrix(int rows, int cols, matrix_t& matrix)
+template
+<
+        typename tmatrix
+>
+void init_matrix(int rows, int cols, tmatrix& matrix)
 {
         matrix.resize(rows, cols);
         matrix.setRandom();
         matrix /= rows;
 }
 
-void init_matrices(int rows, int cols, int count, matrices_t& matrices)
+template
+<
+        typename tmatrix
+>
+void init_matrices(int rows, int cols, int count, std::vector<tmatrix>& matrices)
 {
 	matrices.resize(count);
 	for (int i = 0; i < count; i ++)
@@ -73,7 +37,11 @@ void init_matrices(int rows, int cols, int count, matrices_t& matrices)
 	}
 }
 
-void zero_matrices(matrices_t& matrices)
+template
+<
+        typename tmatrix
+>
+void zero_matrices(std::vector<tmatrix>& matrices)
 {
         for (size_t i = 0; i < matrices.size(); i ++)
         {
@@ -81,9 +49,14 @@ void zero_matrices(matrices_t& matrices)
         }
 }
 
-scalar_t sum_matrices(matrices_t& matrices)
+template
+<
+        typename tmatrix,
+        typename tscalar = typename tmatrix::Scalar
+>
+tscalar sum_matrices(std::vector<tmatrix>& matrices)
 {
-        scalar_t sum = 0;
+        tscalar sum = 0;
         for (size_t i = 0; i < matrices.size(); i ++)
         {
                 sum += matrices[i].sum();
@@ -91,8 +64,15 @@ scalar_t sum_matrices(matrices_t& matrices)
         return sum;
 }
 
-template <typename top>
-scalar_t test_cpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
+template
+<
+        typename top,
+        typename tmatrix,
+        typename tscalar = typename tmatrix::Scalar
+>
+tscalar test_cpu(
+        top op, const char* name,
+        const std::vector<tmatrix>&, const tmatrix&, std::vector<tmatrix>& odatas)
 {
         ncv::stats_t<double, size_t> proc_stats;
         
@@ -138,6 +118,46 @@ scalar_t test_xcpu(top op, const char* name, const matrices_t& idatas, const mat
 }
 
 #ifdef NANOCV_HAVE_OPENCL
+
+const std::string conv_program_source = R"xxx(
+
+#pragma OPENCL EXTENSION cl_amd_fp64 : enable
+#pragma OPENCL EXTENSION cl_khr_fp64 : enable
+
+__kernel void conv_kernel(
+        __global const double* idata,
+        __constant double* kdata, int krows, int kcols,
+        __global double* odata)
+{
+        const int odims = get_global_size(0);
+        const int ocols = get_global_size(1);
+        const int orows = get_global_size(2);
+        const int osize = orows * ocols;
+
+        const int icols = ocols + kcols - 1;
+        const int irows = orows + krows - 1;
+        const int isize = irows * icols;
+
+        const int o = get_global_id(0);
+        const int x = get_global_id(1);
+        const int y = get_global_id(2);
+
+        const int iidx_base = o * isize + y * icols + x;
+
+        double sum = 0;
+        for (int r = 0, kidx = 0; r < krows; r ++)
+        {
+                int iidx = iidx_base + r * icols;
+                for (int c = 0; c < kcols; c ++, kidx ++, iidx ++)
+                {
+                        sum += kdata[kidx] * idata[iidx];
+                }
+        }
+
+        odata[o * osize + y * ocols + x] = sum;
+}
+
+)xxx";
 
 scalar_t test_gpu(const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
 {
