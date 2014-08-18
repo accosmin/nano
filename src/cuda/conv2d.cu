@@ -2,15 +2,21 @@
 #include "cuda.h"
 
 __global__ void kernel_conv2d(
-        const double* idata,
-        const double* kdata, int krows, int kcols,
-        double* odata, int orows, int ocols)
+        const ncv::cuda::matrix_t<double>& idata,
+        const ncv::cuda::matrix_t<double>& kdata,
+        ncv::cuda::matrix_t<double>& odata)
 {
         const int c = threadIdx.x + blockIdx.x * blockDim.x;
         const int r = threadIdx.y + blockIdx.y * blockDim.y;
+        
+        const int orows = odata.rows();
+        const int ocols = odata.cols();
 
         if (r < orows && c < ocols)
         {
+                const int krows = kdata.rows();
+                const int kcols = kdata.cols();
+                
                 const int icols = ocols + kcols - 1;
 
                 double sum = 0;
@@ -18,24 +24,30 @@ __global__ void kernel_conv2d(
                 {
                         for (int kc = 0; kc < kcols; kc ++)
                         {
-                                sum += idata[(r + kr) * icols + (c + kc)] * kdata[kr * kcols + kc];
+                                sum += idata.data()[(r + kr) * icols + (c + kc)] * kdata.data()[kr * kcols + kc];
                         }
                 }
 
-                odata[r * ocols + c] = sum;
+                odata.data()[r * ocols + c] = sum;
         }
 }
 
 __global__ void kernel_iconv2d(
-        const double* odata,
-        const double* kdata, int krows, int kcols,
-        double* idata, int irows, int icols)
+        const ncv::cuda::matrix_t<double>& odata,
+        const ncv::cuda::matrix_t<double>& kdata,
+        ncv::cuda::matrix_t<double>& idata)
 {
         const int c = threadIdx.x + blockIdx.x * blockDim.x;
         const int r = threadIdx.y + blockIdx.y * blockDim.y;
+        
+        const int irows = idata.rows();
+        const int icols = idata.cols();
 
         if (r < irows && c < icols)
         {
+                const int krows = kdata.rows();
+                const int kcols = kdata.cols();
+                
                 const int orows = irows - krows + 1;
                 const int ocols = icols - kcols + 1;
 
@@ -50,11 +62,11 @@ __global__ void kernel_iconv2d(
                 {
                         for (int kc = kcmin; kc < kcmax; kc ++)
                         {
-                                sum += odata[(r - kr) * ocols + (c - kc)] * kdata[kr * kcols + kc];
+                                sum += odata.data()[(r - kr) * ocols + (c - kc)] * kdata.data()[kr * kcols + kc];
                         }
                 }
 
-                idata[r * icols + c] = sum;
+                idata.data()[r * icols + c] = sum;
         }
 }
 
@@ -75,10 +87,7 @@ namespace ncv
                         const dim3 ksize = cuda::make_block2d_count(odata.rows(), odata.cols(), device);
                         const dim3 bsize = cuda::make_block2d_size(odata.rows(), odata.cols(), device);
 
-                        kernel_conv2d<<<ksize, bsize>>>(
-                                idata.data(),
-                                kdata.data(), kdata.rows(), kdata.cols(),
-                                odata.data(), odata.rows(), odata.cols());
+                        kernel_conv2d<<<ksize, bsize>>>(idata, kdata, odata);
 
                         return cudaGetLastError() == cudaSuccess;
                 }
@@ -99,10 +108,7 @@ namespace ncv
                         const dim3 ksize = cuda::make_block2d_count(idata.rows(), idata.cols(), device);
                         const dim3 bsize = cuda::make_block2d_size(idata.rows(), idata.cols(), device);
 
-                        kernel_iconv2d<<<ksize, bsize>>>(
-                                odata.data(),
-                                kdata.data(), kdata.rows(), kdata.cols(),
-                                idata.data(), idata.rows(), idata.cols());
+                        kernel_iconv2d<<<ksize, bsize>>>(odata, kdata, idata);
 
                         return cudaGetLastError() == cudaSuccess;
                 }

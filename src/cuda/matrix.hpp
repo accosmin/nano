@@ -37,8 +37,8 @@ namespace ncv
                         ///
                         /// \brief access functions
                         ///
-                        int rows() const { return m_rows; }
-                        int cols() const { return m_cols; }
+                        __host__ __device__ int rows() const { return m_rows; }
+                        __host__ __device__ int cols() const { return m_cols; }
 
                 private:
 
