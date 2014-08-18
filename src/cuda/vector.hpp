@@ -95,9 +95,12 @@ namespace ncv
                 protected:
 
                         // attributes
-                        tscalar*        m_data;
-                        int             m_size;
+                        tscalar*                m_data;
+                        int                     m_size;
                 };
+
+                typedef vector_t<float>         fvector_t;
+                typedef vector_t<double>        dvector_t;
         }
 }
 

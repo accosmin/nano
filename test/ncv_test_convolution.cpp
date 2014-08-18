@@ -226,9 +226,9 @@ scalar_t test_gpu(top op, const char* name, const matrices_t& idatas, const matr
         const int orows = static_cast<int>(odatas[0].rows());
         const int ocols = static_cast<int>(odatas[0].cols());
 
-        cuda::matrix_t<double> d_idata(irows, icols);
-        cuda::matrix_t<double> d_kdata(krows, kcols);
-        cuda::matrix_t<double> d_odata(orows, ocols);
+        cuda::dmatrix_t d_idata(irows, icols);
+        cuda::dmatrix_t d_kdata(krows, kcols);
+        cuda::dmatrix_t d_odata(orows, ocols);
 
         // transfer constants
         d_kdata.copyToDevice(kdata.data());
@@ -338,7 +338,7 @@ void test_iconv2d(int isize, int ksize, int n_samples)
         check(iconvm1cpu, iconve1cpu, "iconvm(1CPU)");
         check(iconvmxcpu, iconve1cpu, "iconvm(xCPU)");
 #ifdef NANOCV_HAVE_CUDA
-        check(iconvgpu  , iconvgpu,   "iconv2d(GPU)");
+        check(iconvgpu  , iconve1cpu, "iconv2d(GPU)");
 #endif
 }
 

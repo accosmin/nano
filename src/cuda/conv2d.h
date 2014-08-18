@@ -10,14 +10,14 @@ namespace ncv
                 ///
                 /// \brief 2D convolution: odata = idata @ kdata
                 ///
-                bool conv2d(const matrix_t<double>& idata, const matrix_t<double>& kdata, matrix_t<double>& odata,
-                            int device = 0);
+                bool conv2f(const fmatrix_t& idata, const fmatrix_t& kdata, fmatrix_t& odata, int device = 0);
+                bool conv2d(const dmatrix_t& idata, const dmatrix_t& kdata, dmatrix_t& odata, int device = 0);
 
                 ///
                 /// \brief inverse 2D convolution: idata = odata @ kdata
                 ///
-                bool iconv2d(const matrix_t<double>& odata, const matrix_t<double>& kdata, matrix_t<double>& idata,
-                             int device = 0);
+                bool iconv2f(const fmatrix_t& odata, const fmatrix_t& kdata, fmatrix_t& idata, int device = 0);
+                bool iconv2d(const dmatrix_t& odata, const dmatrix_t& kdata, dmatrix_t& idata, int device = 0);
         }
 }
 

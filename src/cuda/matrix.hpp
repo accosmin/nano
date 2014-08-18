@@ -52,9 +52,12 @@ namespace ncv
                 private:
 
                         // attributes
-                        int             m_rows;
-                        int             m_cols;
+                        int                     m_rows;
+                        int                     m_cols;
                 };
+
+                typedef matrix_t<float>         fmatrix_t;
+                typedef matrix_t<double>        dmatrix_t;
         }
 }
 

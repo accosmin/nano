@@ -2,10 +2,14 @@
 #include "cuda.h"
 #include <cstdio>
 
+template
+<
+        typename tscalar
+>
 __global__ void kernel_conv2d(
-        const double* idata,
-        const double* kdata, int krows, int kcols,
-        double* odata, int orows, int ocols)
+        const tscalar* idata,
+        const tscalar* kdata, int krows, int kcols,
+        tscalar* odata, int orows, int ocols)
 {
         const int c = threadIdx.x + blockIdx.x * blockDim.x;
         const int r = threadIdx.y + blockIdx.y * blockDim.y;
@@ -14,7 +18,7 @@ __global__ void kernel_conv2d(
         {
                 const int icols = ocols + kcols - 1;
 
-                double sum = 0;
+                tscalar sum = 0;
                 for (int kr = 0; kr < krows; kr ++)
                 {
                         for (int kc = 0; kc < kcols; kc ++)
@@ -27,10 +31,14 @@ __global__ void kernel_conv2d(
         }
 }
 
+template
+<
+        typename tscalar
+>
 __global__ void kernel_iconv2d(
-        const double* odata,
-        const double* kdata, int krows, int kcols,
-        double* idata, int irows, int icols)
+        const tscalar* odata,
+        const tscalar* kdata, int krows, int kcols,
+        tscalar* idata, int irows, int icols)
 {
         const int c = threadIdx.x + blockIdx.x * blockDim.x;
         const int r = threadIdx.y + blockIdx.y * blockDim.y;
@@ -46,7 +54,7 @@ __global__ void kernel_iconv2d(
                 const int kcmin = max(0,     c - ocols + 1);
                 const int kcmax = min(kcols, c + 1);
 
-                double sum = 0;
+                tscalar sum = 0;
                 for (int kr = krmin; kr < krmax; kr ++)
                 {
                         for (int kc = kcmin; kc < kcmax; kc ++)
@@ -61,8 +69,14 @@ __global__ void kernel_iconv2d(
 
 namespace ncv
 {
-        bool cuda::conv2d(
-                const matrix_t<double>& idata, const matrix_t<double>& kdata, matrix_t<double>& odata,
+        template
+        <
+                typename tscalar
+        >
+        static bool cuda_conv2d(
+                const cuda::matrix_t<tscalar>& idata,
+                const cuda::matrix_t<tscalar>& kdata,
+                cuda::matrix_t<tscalar>& odata,
                 int device)
         {
                 if (    odata.rows() + kdata.rows() != idata.rows() + 1 ||
@@ -84,8 +98,24 @@ namespace ncv
                 }
         }
 
-        bool cuda::iconv2d(
-                const matrix_t<double>& odata, const matrix_t<double>& kdata, matrix_t<double>& idata,
+        bool cuda::conv2f(const fmatrix_t& idata, const fmatrix_t& kdata, fmatrix_t& odata, int device)
+        {
+                return cuda_conv2d(idata, kdata, odata, device);
+        }
+
+        bool cuda::conv2d(const dmatrix_t& idata, const dmatrix_t& kdata, dmatrix_t& odata, int device)
+        {
+                return cuda_conv2d(idata, kdata, odata, device);
+        }
+
+        template
+        <
+                typename tscalar
+        >
+        static bool cuda_iconv2d(
+                const cuda::matrix_t<tscalar>& odata,
+                const cuda::matrix_t<tscalar>& kdata,
+                cuda::matrix_t<tscalar>& idata,
                 int device)
         {
                 if (    odata.rows() + kdata.rows() != idata.rows() + 1 ||
@@ -105,5 +135,15 @@ namespace ncv
 
                         return cudaGetLastError() == cudaSuccess;
                 }
+        }
+
+        bool cuda::iconv2f(const fmatrix_t& odata, const fmatrix_t& kdata, fmatrix_t& idata, int device)
+        {
+                return cuda_iconv2d(odata, kdata, idata, device);
+        }
+
+        bool cuda::iconv2d(const dmatrix_t& odata, const dmatrix_t& kdata, dmatrix_t& idata, int device)
+        {
+                return cuda_iconv2d(odata, kdata, idata, device);
         }
 }
