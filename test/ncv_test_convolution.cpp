@@ -139,7 +139,7 @@ scalar_t test_xcpu(top op, const char* name, const matrices_t& idatas, const mat
 
 #ifdef NANOCV_HAVE_OPENCL
 
-scalar_t test_gpu(const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas, size_t tsend)
+scalar_t test_gpu(const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
 {
         ocl::manager_t& theocl = ocl::manager_t::instance();
 
@@ -148,21 +148,14 @@ scalar_t test_gpu(const char* name, const matrices_t& idatas, const matrix_t& kd
         const cl::Program program = theocl.make_program_from_text(context, conv_program_source);
         cl::Kernel kernel = theocl.make_kernel(program, "conv_kernel");
 
-        const int irows = static_cast<int>(idatas[0].rows());
-        const int icols = static_cast<int>(idatas[0].cols());
-        const int isize = irows * icols;
         const int krows = static_cast<int>(kdata.rows());
         const int kcols = static_cast<int>(kdata.cols());
         const int orows = static_cast<int>(odatas[0].rows());
         const int ocols = static_cast<int>(odatas[0].cols());
-        const int osize = orows * ocols;
 
-        scalars_t sidata(tsend * isize);
-        scalars_t sodata(tsend * osize);
-
-        const size_t mem_idata = idatas[0].size() * sizeof(scalar_t) * tsend;
+        const size_t mem_idata = idatas[0].size() * sizeof(scalar_t);
         const size_t mem_kdata = kdata.size() * sizeof(scalar_t);
-        const size_t mem_odata = odatas[0].size() * sizeof(scalar_t) * tsend;
+        const size_t mem_odata = odatas[0].size() * sizeof(scalar_t);
 
         // create buffers once
         const cl::Buffer ibuffer = theocl.make_buffer(context, mem_idata, CL_MEM_READ_ONLY);
@@ -189,35 +182,20 @@ scalar_t test_gpu(const char* name, const matrices_t& idatas, const matrix_t& kd
 //                const ncv::timer_t timer;
 
                 size_t micros = 0;
-                for (size_t i = 0; i < idatas.size(); i += tsend)
+                for (size_t i = 0; i < idatas.size(); i ++)
                 {
-                        for (size_t it = 0; it < tsend; it ++)
-                        {
-                                const matrix_t& idata = idatas[i + it];
-                                std::copy(idata.data(), idata.data() + idata.size(), sidata.data() + (it * isize));
-                        }
-
                         const ncv::timer_t timer;
 
-                        // I - send inputs to gpu
-                        queue.enqueueWriteBuffer(ibuffer, CL_TRUE, 0, mem_idata, sidata.data());
+                        queue.enqueueWriteBuffer(ibuffer, CL_TRUE, 0, mem_idata, idatas[i].data());
 
-                        // II - gpu processing
                         queue.enqueueNDRangeKernel(kernel, cl::NullRange,
-                                                   cl::NDRange(tsend, ocols, orows),
+                                                   cl::NDRange(1, ocols, orows),
                                                    cl::NDRange(1, ocols, orows));
                         queue.finish();
 
-                        // III - read results from gpu
-                        queue.enqueueReadBuffer(obuffer, CL_TRUE, 0, mem_odata, sodata.data());
+                        queue.enqueueReadBuffer(obuffer, CL_TRUE, 0, mem_odata, odatas[i].data());
 
                         micros += timer.microseconds();
-
-                        for (size_t it = 0; it < tsend; it ++)
-                        {
-                                matrix_t& odata = odatas[i + it];
-                                std::copy(sodata.data() + (it * osize), sodata.data() + (it * osize + osize), odata.data());
-                        }
                 }
 
                 proc_stats(micros / 1000);
@@ -316,15 +294,9 @@ void test_conv2d(int isize, int ksize, int n_samples)
         const scalar_t convexcpu  = test_xcpu(ncv::conv_eig<matrix_t>, "eig(xCPU)", idatas, kdata, odatas);
         const scalar_t convd1cpu  = test_1cpu(ncv::conv_dot<matrix_t>, "dot(1CPU)", idatas, kdata, odatas);
         const scalar_t convdxcpu  = test_xcpu(ncv::conv_dot<matrix_t>, "dot(xCPU)", idatas, kdata, odatas);
-#ifdef NANOCV_HAVE_OPENCL
-        const scalar_t convg8     = test_gpu("convd(8GPU)", idatas, kdata, odatas, 8);
-        const scalar_t convg16    = test_gpu("convd(16GPU)", idatas, kdata, odatas, 16);
-        const scalar_t convg32    = test_gpu("convd(32GPU)", idatas, kdata, odatas, 32);
-        const scalar_t convg64    = test_gpu("convd(64GPU)", idatas, kdata, odatas, 64);
-        const scalar_t convg128   = test_gpu("convd(128GPU)", idatas, kdata, odatas, 128);
-        const scalar_t convg256   = test_gpu("convd(256GPU)", idatas, kdata, odatas, 256);
-#endif
-#ifdef NANOCV_HAVE_CUDA
+#if defined(NANOCV_HAVE_OPENCL)
+        const scalar_t convgpu    = test_gpu("conv2d(GPU)", idatas, kdata, odatas);
+#elif defined(NANOCV_HAVE_CUDA)
         const scalar_t convgpu    = test_gpu(std::bind(cuda::conv2d, _1, _2, _3, 0), "conv2d(GPU)", idatas, kdata, odatas);
 #endif
         std::cout << std::endl;
@@ -333,16 +305,8 @@ void test_conv2d(int isize, int ksize, int n_samples)
         check(convexcpu, conve1cpu, "conve(xCPU)");
         check(convd1cpu, conve1cpu, "convd(1CPU)");
         check(convdxcpu, conve1cpu, "convd(xCPU)");
-#ifdef NANOCV_HAVE_OPENCL
-        check(convg8  , conve1cpu, "convd(8GPU)");
-        check(convg16 , conve1cpu, "convd(16GPU)");
-        check(convg32 , conve1cpu, "convd(32GPU)");
-        check(convg64 , conve1cpu, "convd(64GPU)");
-        check(convg128, conve1cpu, "convd(128GPU)");
-        check(convg256, conve1cpu, "convd(256GPU)");
-#endif
-#ifdef NANOCV_HAVE_CUDA
-        check(convgpu , convgpu,   "conv2d(GPU)");
+#if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
+        check(convgpu  , conve1cpu, "conv2d(GPU)");
 #endif
 }
 
