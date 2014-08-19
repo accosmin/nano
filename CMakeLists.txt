@@ -8,6 +8,7 @@ project(nanocv)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
+option(NANOCV_HAVE_CUDA         "Build nanocv with CUDA as dependency"          OFF)
 option(NANOCV_HAVE_OPENCL       "Build nanocv with OpenCL as dependency"        OFF)
 
 # Boost
@@ -24,17 +25,20 @@ find_package(TIFF REQUIRED)
 # OpenCL
 if(NANOCV_HAVE_OPENCL)
         find_package(OpenCL 1.1 REQUIRED)
-        include_directories(${OPENCL_INCLUDE_DIRS})
-	add_definitions(-DNANOCV_HAVE_OPENCL)
+        if(OPENCL_FOUND)
+                include_directories(${OPENCL_INCLUDE_DIRS})
+                add_definitions(-DNANOCV_HAVE_OPENCL)
+        endif()
 endif()
 
 # CUDA
 if(NANOCV_HAVE_CUDA)
         find_package(CUDA QUIET REQUIRED)
-        set(CUDA_PROPAGATE_HOST_FLAGS OFF)
-        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-O3 -gencode arch=compute_20,code=sm_20 -arch=sm_13)
-        add_definitions(-DNANOCV_HAVE_CUDA)
-
+        if(CUDA_FOUND)
+                set(CUDA_PROPAGATE_HOST_FLAGS OFF)
+                set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-O3 -gencode arch=compute_20,code=sm_20 -arch=sm_13)
+                add_definitions(-DNANOCV_HAVE_CUDA)
+        endif()
 endif()
 
 # Set the compiler flags
