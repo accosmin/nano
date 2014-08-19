@@ -38,7 +38,7 @@ namespace ncv
                 }
 
                 ///
-                /// \brief OpenCL instance: manages devices, command queue, kernels and buffers
+                /// \brief OpenCL instance: platform information, manages devices, command queue, kernels and buffers.
                 ///
                 class manager_t : public singleton_t<manager_t>
                 {

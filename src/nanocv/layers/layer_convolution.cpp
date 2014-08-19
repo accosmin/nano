@@ -2,7 +2,7 @@
 #include "common/logger.h"
 #include "common/math.hpp"
 #include "common/random.hpp"
-#include "common/convolution.hpp"
+#include "common/conv2d.hpp"
 #include "tensor/util.hpp"
 
 namespace ncv
@@ -479,10 +479,6 @@ namespace ncv
                 if (theocl.valid())
                 {
                         m_ocl_queue.enqueueWriteBuffer(m_ocl_odata, CL_TRUE, 0, ocl::bytesize(m_odata), m_odata.data());
-
-                        m_ocl_queue.enqueueNDRangeKernel(m_ocl_bikernel, cl::NullRange,
-                                                         cl::NDRange(idims(), irows(), icols()),
-                                                         cl::NDRange(1, irows(), icols()));
 
                         m_ocl_queue.enqueueNDRangeKernel(m_ocl_bkkernel, cl::NullRange,
                                                          cl::NDRange(odims(), krows(), kcols()),
