@@ -146,45 +146,68 @@ __kernel void conv_kernel(
         __global const double* idata,
         __constant double* kdata, int krows, int kcols,
         __global double* odata)
-{
-        const int odims = get_global_size(0);
-        const int ocols = get_global_size(1);
-        const int orows = get_global_size(2);
-        const int osize = orows * ocols;
+{        
+        const int c = get_global_id(0);
+        const int r = get_global_id(1);
+
+        const int ocols = get_global_size(0);
+        const int orows = get_global_size(1);
 
         const int icols = ocols + kcols - 1;
-        const int irows = orows + krows - 1;
-        const int isize = irows * icols;
-
-        const int o = get_global_id(0);
-        const int x = get_global_id(1);
-        const int y = get_global_id(2);
-
-        const int iidx_base = o * isize + y * icols + x;
 
         double sum = 0;
-        for (int r = 0, kidx = 0; r < krows; r ++)
+        for (int kr = 0; kr < krows; kr ++)
         {
-                int iidx = iidx_base + r * icols;
-                for (int c = 0; c < kcols; c ++, kidx ++, iidx ++)
+                for (int kc = 0; kc < kcols; kc ++)
                 {
-                        sum += kdata[kidx] * idata[iidx];
+                        sum += idata[(r + kr) * icols + (c + kc)] * kdata[kr * kcols + kc];
                 }
         }
 
-        odata[o * osize + y * ocols + x] = sum;
+        odata[r * ocols + c] = sum;
+}
+
+__kernel void iconv_kernel(
+        __global const double* odata,
+        __constant double* kdata, int krows, int kcols,
+        __global double* idata)
+{
+        const int c = get_global_id(0);
+        const int r = get_global_id(1);
+
+        const int icols = get_global_size(0);
+        const int irows = get_global_size(1);
+
+        const int orows = irows - krows + 1;
+        const int ocols = icols - kcols + 1;
+
+        const int krmin = max(0,     r - orows + 1);
+        const int krmax = min(krows, r + 1);
+
+        const int kcmin = max(0,     c - ocols + 1);
+        const int kcmax = min(kcols, c + 1);
+
+        double sum = 0;
+        for (int kr = krmin; kr < krmax; kr ++)
+        {
+                for (int kc = kcmin; kc < kcmax; kc ++)
+                {
+                        sum += odata[(r - kr) * ocols + (c - kc)] * kdata[kr * kcols + kc];
+                }
+        }
+
+        idata[r * icols + c] = sum;
 }
 
 )xxx";
 
 template
 <
-        typename top,
         typename tmatrix,
         typename tscalar = typename tmatrix::Scalar
 >
 tscalar test_gpu(
-        const char* name,
+        const char* kernel_name, const char* name,
         const std::vector<tmatrix>& idatas, const tmatrix& kdata, std::vector<tmatrix>& odatas)
 {
         ocl::manager_t& theocl = ocl::manager_t::instance();
@@ -192,7 +215,7 @@ tscalar test_gpu(
         const cl::Context context = theocl.make_context();
         const cl::CommandQueue queue = theocl.make_command_queue(context);
         const cl::Program program = theocl.make_program_from_text(context, conv_program_source);
-        cl::Kernel kernel = theocl.make_kernel(program, "conv_kernel");
+        cl::Kernel kernel = theocl.make_kernel(program, kernel_name);
 
         const int krows = static_cast<int>(kdata.rows());
         const int kcols = static_cast<int>(kdata.cols());
@@ -231,8 +254,8 @@ tscalar test_gpu(
                         queue.enqueueWriteBuffer(ibuffer, CL_TRUE, 0, mem_idata, idatas[i].data());
 
                         queue.enqueueNDRangeKernel(kernel, cl::NullRange,
-                                                   cl::NDRange(1, ocols, orows),
-                                                   cl::NDRange(1, ocols, orows));
+                                                   cl::NDRange(ocols, orows),
+                                                   cl::NDRange(ocols, orows));
                         queue.finish();
 
                         queue.enqueueReadBuffer(obuffer, CL_TRUE, 0, mem_odata, odatas[i].data());
@@ -352,7 +375,7 @@ void test_conv2d(int isize, int ksize, int n_samples)
         const test_scalar_t convd1cpu  = test_1cpu(ncv::conv_dot<test_matrix_t>, "dot(1CPU)", idatas, kdata, odatas);
         const test_scalar_t convdxcpu  = test_xcpu(ncv::conv_dot<test_matrix_t>, "dot(xCPU)", idatas, kdata, odatas);
 #if defined(NANOCV_HAVE_OPENCL)
-        const test_scalar_t convgpu    = test_gpu("conv2d(GPU)", idatas, kdata, odatas);
+        const test_scalar_t convgpu    = test_gpu("conv_kernel", "conv2d(GPU)", idatas, kdata, odatas);
 #elif defined(NANOCV_HAVE_CUDA)
         const test_scalar_t convgpu    = test_gpu(cuda::conv2d<test_scalar_t>, "conv2d(GPU)", idatas, kdata, odatas);
 #endif
@@ -385,7 +408,9 @@ void test_iconv2d(int isize, int ksize, int n_samples)
         const test_scalar_t iconvexcpu = test_xcpu(ncv::iconv_eig<test_matrix_t>, "ieig(xCPU)", odatas, kdata, idatas);
         const test_scalar_t iconvm1cpu = test_1cpu(ncv::iconv_mad<test_matrix_t>, "imad(1CPU)", odatas, kdata, idatas);
         const test_scalar_t iconvmxcpu = test_xcpu(ncv::iconv_mad<test_matrix_t>, "imad(xCPU)", odatas, kdata, idatas);
-#ifdef NANOCV_HAVE_CUDA
+#if defined(NANOCV_HAVE_OPENCL)
+        const test_scalar_t iconvgpu   = test_gpu("iconv_kernel", "iconv2d(GPU)", odatas, kdata, idatas);
+#elif NANOCV_HAVE_CUDA
         const test_scalar_t iconvgpu   = test_gpu(cuda::iconv2d<test_scalar_t>, "iconv2d(GPU)", odatas, kdata, idatas);
 #endif
         std::cout << std::endl;
@@ -394,7 +419,7 @@ void test_iconv2d(int isize, int ksize, int n_samples)
         check(iconvexcpu, iconve1cpu, "iconve(xCPU)");
         check(iconvm1cpu, iconve1cpu, "iconvm(1CPU)");
         check(iconvmxcpu, iconve1cpu, "iconvm(xCPU)");
-#ifdef NANOCV_HAVE_CUDA
+#if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
         check(iconvgpu  , iconve1cpu, "iconv2d(GPU)");
 #endif
 }
