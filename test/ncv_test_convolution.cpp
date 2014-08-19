@@ -13,6 +13,10 @@ using namespace ncv;
 ncv::thread_pool_t pool;
 const size_t tests = 16;
 
+typedef scalar_t test_scalar_t;
+typedef ncv::tensor::matrix_types_t<test_scalar_t>::tmatrix     test_matrix_t;
+typedef ncv::tensor::matrix_types_t<test_scalar_t>::tmatrices   test_matrices_t;
+
 template
 <
         typename tmatrix
@@ -195,9 +199,9 @@ tscalar test_gpu(
         const int orows = static_cast<int>(odatas[0].rows());
         const int ocols = static_cast<int>(odatas[0].cols());
 
-        const size_t mem_idata = idatas[0].size() * sizeof(scalar_t);
-        const size_t mem_kdata = kdata.size() * sizeof(scalar_t);
-        const size_t mem_odata = odatas[0].size() * sizeof(scalar_t);
+        const size_t mem_idata = idatas[0].size() * sizeof(tscalar);
+        const size_t mem_kdata = kdata.size() * sizeof(tscalar);
+        const size_t mem_odata = odatas[0].size() * sizeof(tscalar);
 
         // create buffers once
         const cl::Buffer ibuffer = theocl.make_buffer(context, mem_idata, CL_MEM_READ_ONLY);
@@ -299,10 +303,29 @@ tscalar test_gpu(
 
 #endif
 
-void check(scalar_t result, scalar_t baseline, const char* name)
+template
+<
+        typename tscalar
+>
+tscalar epsilon();
+
+template <>
+int epsilon<int>() { return 1; }
+
+template <>
+float epsilon<float>() { return 1e-6f; }
+
+template <>
+double epsilon<double>() { return 1e-10; }
+
+template
+<
+        typename tscalar
+>
+void check(tscalar result, tscalar baseline, const char* name)
 {
-        const scalar_t eps = 1e-12;//std::numeric_limits<scalar_t>::epsilon();
-        const scalar_t err = std::fabs(result - baseline);
+        const tscalar eps = ::epsilon<tscalar>();
+        const tscalar err = std::fabs(result - baseline);
 
         if (err > eps)
         {
@@ -314,8 +337,8 @@ void test_conv2d(int isize, int ksize, int n_samples)
 {
         const int osize = isize - ksize + 1;
 
-        matrices_t idatas, odatas;
-        matrix_t kdata;
+        test_matrices_t idatas, odatas;
+        test_matrix_t kdata;
 
         init_matrices(isize, isize, n_samples, idatas);
         init_matrices(osize, osize, n_samples, odatas);
@@ -324,14 +347,14 @@ void test_conv2d(int isize, int ksize, int n_samples)
         const string_t header = (boost::format("(%1%x%2%@%3%x%4%): ") % isize % isize % ksize % ksize).str();
         std::cout << text::resize(header, 16);
         
-        const scalar_t conve1cpu  = test_1cpu(ncv::conv_eig<matrix_t>, "eig(1CPU)", idatas, kdata, odatas);
-        const scalar_t convexcpu  = test_xcpu(ncv::conv_eig<matrix_t>, "eig(xCPU)", idatas, kdata, odatas);
-        const scalar_t convd1cpu  = test_1cpu(ncv::conv_dot<matrix_t>, "dot(1CPU)", idatas, kdata, odatas);
-        const scalar_t convdxcpu  = test_xcpu(ncv::conv_dot<matrix_t>, "dot(xCPU)", idatas, kdata, odatas);
+        const test_scalar_t conve1cpu  = test_1cpu(ncv::conv_eig<test_matrix_t>, "eig(1CPU)", idatas, kdata, odatas);
+        const test_scalar_t convexcpu  = test_xcpu(ncv::conv_eig<test_matrix_t>, "eig(xCPU)", idatas, kdata, odatas);
+        const test_scalar_t convd1cpu  = test_1cpu(ncv::conv_dot<test_matrix_t>, "dot(1CPU)", idatas, kdata, odatas);
+        const test_scalar_t convdxcpu  = test_xcpu(ncv::conv_dot<test_matrix_t>, "dot(xCPU)", idatas, kdata, odatas);
 #if defined(NANOCV_HAVE_OPENCL)
-        const scalar_t convgpu    = test_gpu("conv2d(GPU)", idatas, kdata, odatas);
+        const test_scalar_t convgpu    = test_gpu("conv2d(GPU)", idatas, kdata, odatas);
 #elif defined(NANOCV_HAVE_CUDA)
-        const scalar_t convgpu    = test_gpu(std::bind(cuda::conv2d, _1, _2, _3, 0), "conv2d(GPU)", idatas, kdata, odatas);
+        const test_scalar_t convgpu    = test_gpu(std::bind(cuda::conv2d, _1, _2, _3, 0), "conv2d(GPU)", idatas, kdata, odatas);
 #endif
         std::cout << std::endl;
 
@@ -348,8 +371,8 @@ void test_iconv2d(int isize, int ksize, int n_samples)
 {
         const int osize = isize - ksize + 1;
 
-        matrices_t idatas, odatas;
-        matrix_t kdata;
+        test_matrices_t idatas, odatas;
+        test_matrix_t kdata;
 
         init_matrices(isize, isize, n_samples, idatas);
         init_matrices(osize, osize, n_samples, odatas);
@@ -358,12 +381,12 @@ void test_iconv2d(int isize, int ksize, int n_samples)
         const string_t header = (boost::format("(%1%x%2%@%3%x%4%): ") % isize % isize % ksize % ksize).str();
         std::cout << text::resize(header, 16);
 
-        const scalar_t iconve1cpu = test_1cpu(ncv::iconv_eig<matrix_t>, "ieig(1CPU)", odatas, kdata, idatas);
-        const scalar_t iconvexcpu = test_xcpu(ncv::iconv_eig<matrix_t>, "ieig(xCPU)", odatas, kdata, idatas);
-        const scalar_t iconvm1cpu = test_1cpu(ncv::iconv_mad<matrix_t>, "imad(1CPU)", odatas, kdata, idatas);
-        const scalar_t iconvmxcpu = test_xcpu(ncv::iconv_mad<matrix_t>, "imad(xCPU)", odatas, kdata, idatas);
+        const test_scalar_t iconve1cpu = test_1cpu(ncv::iconv_eig<test_matrix_t>, "ieig(1CPU)", odatas, kdata, idatas);
+        const test_scalar_t iconvexcpu = test_xcpu(ncv::iconv_eig<test_matrix_t>, "ieig(xCPU)", odatas, kdata, idatas);
+        const test_scalar_t iconvm1cpu = test_1cpu(ncv::iconv_mad<test_matrix_t>, "imad(1CPU)", odatas, kdata, idatas);
+        const test_scalar_t iconvmxcpu = test_xcpu(ncv::iconv_mad<test_matrix_t>, "imad(xCPU)", odatas, kdata, idatas);
 #ifdef NANOCV_HAVE_CUDA
-        const scalar_t iconvgpu   = test_gpu(std::bind(cuda::iconv2d, _1, _2, _3, 0), "iconv2d(GPU)", odatas, kdata, idatas);
+        const test_scalar_t iconvgpu   = test_gpu(std::bind(cuda::iconv2d, _1, _2, _3, 0), "iconv2d(GPU)", odatas, kdata, idatas);
 #endif
         std::cout << std::endl;
 
