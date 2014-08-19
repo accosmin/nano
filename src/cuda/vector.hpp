@@ -22,7 +22,7 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        vector_t(int size)
+                        vector_t(int size = 0)
                                 :       m_data(NULL),
                                         m_size(0)
                         {
@@ -52,6 +52,9 @@ namespace ncv
                         ///
                         bool resize(int size)
                         {
+                                cudaFree(m_data);
+                                m_data = NULL;
+
                                 const cudaError status = cudaMalloc((void**)&m_data, size * sizeof(tscalar));
                                 if (status == cudaSuccess)
                                 {

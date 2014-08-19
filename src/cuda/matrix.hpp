@@ -21,7 +21,7 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        matrix_t(int rows, int cols)
+                        matrix_t(int rows = 0, int cols = 0)
                                 :       vector_t<tscalar>(rows * cols),
                                         m_rows(rows),
                                         m_cols(cols)
@@ -33,6 +33,23 @@ namespace ncv
                         ///
                         matrix_t(const matrix_t&);
                         matrix_t& operator=(const matrix_t&);
+
+                        ///
+                        /// \brief resize to new dimensions
+                        ///
+                        bool resize(int rows, int cols)
+                        {
+                                if (vector_t<tscalar>::resize(rows * cols))
+                                {
+                                        m_rows = rows;
+                                        m_cols = cols;
+                                        return true;
+                                }
+                                else
+                                {
+                                        return false;
+                                }
+                        }
 
                         ///
                         /// \brief access functions
