@@ -234,7 +234,7 @@ tscalar test_gpu(
                         queue.enqueueReadBuffer(obuffer, CL_TRUE, 0, mem_odata, odatas[i].data());
                 }
 
-                proc_stats((timer.miliseconds() + idatas.size() - 1) / idatas.size());
+                proc_stats(timer.miliseconds());
         }
 
         const size_t milis = static_cast<size_t>(proc_stats.avg());
@@ -288,7 +288,7 @@ tscalar test_gpu(
                         d_odata.copyFromDevice(odatas[i].data());
                 }
 
-                proc_stats((timer.miliseconds() + idatas.size() - 1) / idatas.size());
+                proc_stats(timer.miliseconds());
         }
 
         const size_t milis = static_cast<size_t>(proc_stats.avg());
