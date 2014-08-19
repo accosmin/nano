@@ -93,8 +93,15 @@ tscalar test_cpu(
         return sum_matrices(odatas);
 }
 
-template <typename top>
-scalar_t test_1cpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
+template
+<
+        typename top,
+        typename tmatrix,
+        typename tscalar = typename tmatrix::Scalar
+>
+tscalar test_1cpu(
+        top op, const char* name, 
+        const std::vector<tmatrix>& idatas, const tmatrix& kdata, std::vector<tmatrix>& odatas)
 {
         return test_cpu([&] ()
         {
@@ -105,8 +112,15 @@ scalar_t test_1cpu(top op, const char* name, const matrices_t& idatas, const mat
         }, name, idatas, kdata, odatas);
 }
 
-template <typename top>
-scalar_t test_xcpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata,  matrices_t& odatas)
+template
+<
+        typename top,
+        typename tmatrix,
+        typename tscalar = typename tmatrix::Scalar
+>
+tscalar test_xcpu(
+        top op, const char* name, 
+        const std::vector<tmatrix>& idatas, const tmatrix& kdata, std::vector<tmatrix>& odatas)
 {
         return test_cpu([&] ()
         {
@@ -159,7 +173,15 @@ __kernel void conv_kernel(
 
 )xxx";
 
-scalar_t test_gpu(const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
+template
+<
+        typename top,
+        typename tmatrix,
+        typename tscalar = typename tmatrix::Scalar
+>
+tscalar test_gpu(
+        const char* name,
+        const std::vector<tmatrix>& idatas, const tmatrix& kdata, std::vector<tmatrix>& odatas)
 {
         ocl::manager_t& theocl = ocl::manager_t::instance();
 
@@ -199,11 +221,9 @@ scalar_t test_gpu(const char* name, const matrices_t& idatas, const matrix_t& kd
         {
                 zero_matrices(odatas);
 
-                size_t micros = 0;
+                const ncv::timer_t timer;
                 for (size_t i = 0; i < idatas.size(); i ++)
                 {
-                        const ncv::timer_t timer;
-
                         queue.enqueueWriteBuffer(ibuffer, CL_TRUE, 0, mem_idata, idatas[i].data());
 
                         queue.enqueueNDRangeKernel(kernel, cl::NullRange,
@@ -212,11 +232,9 @@ scalar_t test_gpu(const char* name, const matrices_t& idatas, const matrix_t& kd
                         queue.finish();
 
                         queue.enqueueReadBuffer(obuffer, CL_TRUE, 0, mem_odata, odatas[i].data());
-
-                        micros += timer.microseconds();
                 }
 
-                proc_stats(micros / 1000);
+                proc_stats((timer.miliseconds() + idatas.size() - 1) / idatas.size());
         }
 
         const size_t milis = static_cast<size_t>(proc_stats.avg());
@@ -231,9 +249,13 @@ scalar_t test_gpu(const char* name, const matrices_t& idatas, const matrix_t& kd
 
 template
 <
-        typename top
+        typename top,        
+        typename tmatrix,        
+        typename tscalar = typename tmatrix::Scalar
 >
-scalar_t test_gpu(top op, const char* name, const matrices_t& idatas, const matrix_t& kdata, matrices_t& odatas)
+tscalar test_gpu(
+        top op, const char* name, 
+        const std::vector<tmatrix>& idatas, const tmatrix& kdata, std::vector<tmatrix>& odatas)
 {
         const int irows = static_cast<int>(idatas[0].rows());
         const int icols = static_cast<int>(idatas[0].cols());
@@ -242,9 +264,9 @@ scalar_t test_gpu(top op, const char* name, const matrices_t& idatas, const matr
         const int orows = static_cast<int>(odatas[0].rows());
         const int ocols = static_cast<int>(odatas[0].cols());
 
-        cuda::dmatrix_t d_idata(irows, icols);
-        cuda::dmatrix_t d_kdata(krows, kcols);
-        cuda::dmatrix_t d_odata(orows, ocols);
+        cuda::matrix_t<tscalar> d_idata(irows, icols);
+        cuda::matrix_t<tscalar> d_kdata(krows, kcols);
+        cuda::matrix_t<tscalar> d_odata(orows, ocols);
 
         // transfer constants
         d_kdata.copyToDevice(kdata.data());
@@ -256,21 +278,17 @@ scalar_t test_gpu(top op, const char* name, const matrices_t& idatas, const matr
         {
                 zero_matrices(odatas);
 
-                size_t micros = 0;
+                const ncv::timer_t timer;
                 for (size_t i = 0; i < idatas.size(); i ++)
                 {
-                        const ncv::timer_t timer;
-
                         d_idata.copyToDevice(idatas[i].data());
 
                         op(d_idata, d_kdata, d_odata);
 
                         d_odata.copyFromDevice(odatas[i].data());
-
-                        micros += timer.microseconds();
                 }
 
-                proc_stats(micros / 1000);
+                proc_stats((timer.miliseconds() + idatas.size() - 1) / idatas.size());
         }
 
         const size_t milis = static_cast<size_t>(proc_stats.avg());
