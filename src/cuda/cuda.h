@@ -76,14 +76,14 @@ namespace ncv
                 ///
                 /// \brief construct the optimal number of blocks for 1D & 2D processing
                 ///
-                dim3 make_block1d_count(int size, int device = 0);
-                dim3 make_block2d_count(int rows, int cols, int device = 0);
+                dim3 make_blocks1d(int size, int device = 0);
+                dim3 make_blocks2d(int rows, int cols, int device = 0);
 
                 ///
                 /// \brief construct the optimal block size (= number of threads per block) for 1D & 2D processing
                 ///
-                dim3 make_block1d_size(int size, int device = 0);
-                dim3 make_block2d_size(int rows, int cols, int device = 0);
+                dim3 make_threads1d(int size, int device = 0);
+                dim3 make_threads2d(int rows, int cols, int device = 0);
         }
 }
 

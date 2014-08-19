@@ -87,10 +87,10 @@ namespace ncv
 
                 else
                 {
-                        const dim3 ksize = cuda::make_block2d_count(odata.rows(), odata.cols(), device);
-                        const dim3 bsize = cuda::make_block2d_size(odata.rows(), odata.cols(), device);
+                        const dim3 bsize = cuda::make_blocks2d(odata.rows(), odata.cols(), device);
+                        const dim3 tsize = cuda::make_threads2d(odata.rows(), odata.cols(), device);
 
-                        kernel_conv2d<<<ksize, bsize>>>(idata.data(),
+                        kernel_conv2d<<<bsize, tsize>>>(idata.data(),
                                                         kdata.data(), kdata.rows(), kdata.cols(),
                                                         odata.data(), odata.rows(), odata.cols());
  
@@ -131,10 +131,10 @@ namespace ncv
 
                 else
                 {
-                        const dim3 ksize = cuda::make_block2d_count(idata.rows(), idata.cols(), device);
-                        const dim3 bsize = cuda::make_block2d_size(idata.rows(), idata.cols(), device);
+                        const dim3 bsize = cuda::make_blocks2d(idata.rows(), idata.cols(), device);
+                        const dim3 tsize = cuda::make_threads2d(idata.rows(), idata.cols(), device);
 
-                        kernel_iconv2d<<<ksize, bsize>>>(odata.data(),
+                        kernel_iconv2d<<<bsize, tsize>>>(odata.data(),
                                                          kdata.data(), kdata.rows(), kdata.cols(),
                                                          idata.data(), idata.rows(), idata.cols());
 

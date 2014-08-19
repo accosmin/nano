@@ -79,7 +79,7 @@ namespace ncv
                 return manager_t::instance().print_info();
         }
 
-        dim3 cuda::make_block1d_count(int size, int device)
+        dim3 cuda::make_blocks1d(int size, int device)
         {
                 const cudaDeviceProp prop = cuda::get_device_properties(device);
                 return dim3((size + prop.maxThreadsPerBlock - 1) / prop.maxThreadsPerBlock,
@@ -87,7 +87,7 @@ namespace ncv
                             1);
         }
 
-        dim3 cuda::make_block2d_count(int rows, int cols, int device)
+        dim3 cuda::make_blocks2d(int rows, int cols, int device)
         {
                 const cudaDeviceProp prop = cuda::get_device_properties(device);
                 return dim3((cols + prop.maxThreadsPerBlock - 1) / prop.maxThreadsPerBlock,
@@ -95,7 +95,7 @@ namespace ncv
                             1);
         }
 
-        dim3 cuda::make_block1d_size(int, int device)
+        dim3 cuda::make_threads1d(int, int device)
         {
                 const cudaDeviceProp prop = cuda::get_device_properties(device);
                 return dim3(prop.maxThreadsPerBlock,
@@ -103,7 +103,7 @@ namespace ncv
                             1);
         }
 
-        dim3 cuda::make_block2d_size(int, int, int device)
+        dim3 cuda::make_threads2d(int, int, int device)
         {
                 const cudaDeviceProp prop = cuda::get_device_properties(device);
                 return dim3(sqrt(prop.maxThreadsPerBlock),
