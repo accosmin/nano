@@ -97,8 +97,13 @@ namespace ncv
                          return cudaGetLastError() == cudaSuccess;
                 }
         }
+        
+        bool cuda::conv2d(const imatrix_t& idata, const imatrix_t& kdata, imatrix_t& odata, int device)
+        {
+                return cuda_conv2d(idata, kdata, odata, device);
+        }
 
-        bool cuda::conv2f(const fmatrix_t& idata, const fmatrix_t& kdata, fmatrix_t& odata, int device)
+        bool cuda::conv2d(const fmatrix_t& idata, const fmatrix_t& kdata, fmatrix_t& odata, int device)
         {
                 return cuda_conv2d(idata, kdata, odata, device);
         }
@@ -136,8 +141,13 @@ namespace ncv
                         return cudaGetLastError() == cudaSuccess;
                 }
         }
+        
+        bool cuda::iconv2d(const imatrix_t& odata, const imatrix_t& kdata, imatrix_t& idata, int device)
+        {
+                return cuda_iconv2d(odata, kdata, idata, device);
+        }
 
-        bool cuda::iconv2f(const fmatrix_t& odata, const fmatrix_t& kdata, fmatrix_t& idata, int device)
+        bool cuda::iconv2d(const fmatrix_t& odata, const fmatrix_t& kdata, fmatrix_t& idata, int device)
         {
                 return cuda_iconv2d(odata, kdata, idata, device);
         }

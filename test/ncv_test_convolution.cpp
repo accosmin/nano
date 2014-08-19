@@ -13,7 +13,7 @@ using namespace ncv;
 ncv::thread_pool_t pool;
 const size_t tests = 16;
 
-typedef scalar_t test_scalar_t;
+typedef double test_scalar_t;
 typedef ncv::tensor::matrix_types_t<test_scalar_t>::tmatrix     test_matrix_t;
 typedef ncv::tensor::matrix_types_t<test_scalar_t>::tmatrices   test_matrices_t;
 
@@ -287,7 +287,7 @@ tscalar test_gpu(
                 {
                         d_idata.copyToDevice(idatas[i].data());
 
-                        op(d_idata, d_kdata, d_odata);
+                        op(d_idata, d_kdata, d_odata, 0);
 
                         d_odata.copyFromDevice(odatas[i].data());
                 }
@@ -313,7 +313,7 @@ template <>
 int epsilon<int>() { return 1; }
 
 template <>
-float epsilon<float>() { return 1e-6f; }
+float epsilon<float>() { return 1e-5f; }
 
 template <>
 double epsilon<double>() { return 1e-10; }
@@ -354,7 +354,7 @@ void test_conv2d(int isize, int ksize, int n_samples)
 #if defined(NANOCV_HAVE_OPENCL)
         const test_scalar_t convgpu    = test_gpu("conv2d(GPU)", idatas, kdata, odatas);
 #elif defined(NANOCV_HAVE_CUDA)
-        const test_scalar_t convgpu    = test_gpu(std::bind(cuda::conv2d, _1, _2, _3, 0), "conv2d(GPU)", idatas, kdata, odatas);
+        const test_scalar_t convgpu    = test_gpu(cuda::conv2d<test_scalar_t>, "conv2d(GPU)", idatas, kdata, odatas);
 #endif
         std::cout << std::endl;
 
@@ -386,7 +386,7 @@ void test_iconv2d(int isize, int ksize, int n_samples)
         const test_scalar_t iconvm1cpu = test_1cpu(ncv::iconv_mad<test_matrix_t>, "imad(1CPU)", odatas, kdata, idatas);
         const test_scalar_t iconvmxcpu = test_xcpu(ncv::iconv_mad<test_matrix_t>, "imad(xCPU)", odatas, kdata, idatas);
 #ifdef NANOCV_HAVE_CUDA
-        const test_scalar_t iconvgpu   = test_gpu(std::bind(cuda::iconv2d, _1, _2, _3, 0), "iconv2d(GPU)", odatas, kdata, idatas);
+        const test_scalar_t iconvgpu   = test_gpu(cuda::iconv2d<test_scalar_t>, "iconv2d(GPU)", odatas, kdata, idatas);
 #endif
         std::cout << std::endl;
 

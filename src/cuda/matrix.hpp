@@ -56,6 +56,7 @@ namespace ncv
                         int                     m_cols;
                 };
 
+                typedef matrix_t<int>           imatrix_t;
                 typedef matrix_t<float>         fmatrix_t;
                 typedef matrix_t<double>        dmatrix_t;
         }

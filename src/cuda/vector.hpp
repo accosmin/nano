@@ -99,6 +99,7 @@ namespace ncv
                         int                     m_size;
                 };
 
+                typedef vector_t<int>           ivector_t;
                 typedef vector_t<float>         fvector_t;
                 typedef vector_t<double>        dvector_t;
         }
