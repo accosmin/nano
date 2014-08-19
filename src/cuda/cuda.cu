@@ -18,29 +18,30 @@ static void HandleError(cudaError_t err, const char*file, int line)
 
 namespace ncv
 {
-        int cuda::count_devices()
+        const cuda::manager_t& cuda::manager_t::instance()
         {
-                int count = 0;
-                CUDA_HANDLE_ERROR(cudaGetDeviceCount(&count));
-
-                return count;
+                static const cuda::manager_t the_instance;
+                return the_instance;
         }
-
-        cudaDeviceProp cuda::get_device_properties(int device)
+        
+        cuda::manager_t::manager_t()
+                :       m_devices(0)
         {
-                cudaDeviceProp prop;
-                CUDA_HANDLE_ERROR(cudaGetDeviceProperties(&prop, device));
-
-                return prop;
-        }
-
-        bool cuda::print_info()
+                CUDA_HANDLE_ERROR(cudaGetDeviceCount(&m_devices));                
+                
+                for (int device = 0; device < m_devices; device ++)
+                {
+                        CUDA_HANDLE_ERROR(cudaGetDeviceProperties(&m_properties[device], device));
+                }
+        }   
+        
+        bool cuda::manager_t::print_info() const
         {
-                const int count = cuda::count_devices();
+                const int count = count_devices();
                 for (int i = 0; i < count; i ++)
                 {
                         const cudaDeviceProp prop = get_device_properties(i);
-
+                        
                         printf("CUDA device [%d/%d]: name = %s\n", i + 1, count, prop.name);
                         printf("CUDA device [%d/%d]: compute capability = %d.%d\n", i + 1, count, prop.major, prop.minor);
                         printf("CUDA device [%d/%d]: clock rate = %d\n", i + 1, count, prop.clockRate);
@@ -59,8 +60,23 @@ namespace ncv
                                prop.maxGridSize[0], prop.maxGridSize[1], prop.maxGridSize[2]);
                         printf("\n");
                 }
-
+                
                 return true;
+        }
+        
+        int cuda::count_devices()
+        {
+                return manager_t::instance().count_devices();
+        }
+
+        cudaDeviceProp cuda::get_device_properties(int device)
+        {
+                return manager_t::instance().get_device_properties(device);
+        }
+
+        bool cuda::print_info()
+        {
+                return manager_t::instance().print_info();
         }
 
         dim3 cuda::make_block1d_count(int size, int device)

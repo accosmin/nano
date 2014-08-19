@@ -93,8 +93,8 @@ namespace ncv
                         kernel_conv2d<<<ksize, bsize>>>(idata.data(),
                                                         kdata.data(), kdata.rows(), kdata.cols(),
                                                         odata.data(), odata.rows(), odata.cols());
-
-                        return cudaGetLastError() == cudaSuccess;
+ 
+                         return cudaGetLastError() == cudaSuccess;
                 }
         }
 
