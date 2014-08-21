@@ -1,3 +1,6 @@
+- BUG: the cuda-based convolution kernels fail for larger matrices (e.g. 36x36)
+- BUG: the opencl-based convolution kernels fail aswell
+
 - ncv_test_convolution:
 	- refactor to quickly switch between different scalars (e.g. float vs int vs double)
 
