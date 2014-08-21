@@ -82,7 +82,9 @@ namespace ncv
         dim3 cuda::make_blocks1d(int size, int device)
         {
                 const cudaDeviceProp prop = cuda::get_device_properties(device);
-                return dim3((size + prop.maxThreadsPerBlock - 1) / prop.maxThreadsPerBlock,
+                const int threads = prop.maxThreadsPerBlock;
+
+                return dim3((size + threads - 1) / threads,
                             1,
                             1);
         }
@@ -90,15 +92,19 @@ namespace ncv
         dim3 cuda::make_blocks2d(int rows, int cols, int device)
         {
                 const cudaDeviceProp prop = cuda::get_device_properties(device);
-                return dim3((cols + prop.maxThreadsPerBlock - 1) / prop.maxThreadsPerBlock,
-                            (rows + prop.maxThreadsPerBlock - 1) / prop.maxThreadsPerBlock,
+                const int threads = int(sqrt(prop.maxThreadsPerBlock));
+
+                return dim3((cols + threads - 1) / threads,
+                            (rows + threads - 1) / threads,
                             1);
         }
 
         dim3 cuda::make_threads1d(int, int device)
         {
                 const cudaDeviceProp prop = cuda::get_device_properties(device);
-                return dim3(prop.maxThreadsPerBlock,
+                const int threads = prop.maxThreadsPerBlock;
+
+                return dim3(threads,
                             1,
                             1);
         }
@@ -106,8 +112,10 @@ namespace ncv
         dim3 cuda::make_threads2d(int, int, int device)
         {
                 const cudaDeviceProp prop = cuda::get_device_properties(device);
-                return dim3(sqrt(prop.maxThreadsPerBlock),
-                            sqrt(prop.maxThreadsPerBlock),
+                const int threads = int(sqrt(prop.maxThreadsPerBlock));
+
+                return dim3(threads,
+                            threads,
                             1);
         }
 }
