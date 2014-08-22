@@ -296,7 +296,11 @@ tscalar test_gpu(
         cuda::matrix_t<tscalar> d_odata(orows, ocols);
 
         // transfer constants
-        d_kdata.to_device(kdata.data());
+        if (d_kdata.to_device(kdata.data()) != cudaSuccess)
+        {
+                log_error() << "failed to copy the kernel to CUDA device!";
+                return 0.0;
+        }
 
         ncv::stats_t<double, size_t> proc_stats;
 
@@ -308,11 +312,23 @@ tscalar test_gpu(
                 const ncv::timer_t timer;
                 for (size_t i = 0; i < idatas.size(); i ++)
                 {
-                        d_idata.to_device(idatas[i].data());
+                        if (d_idata.to_device(idatas[i].data()) != cudaSuccess)
+                        {
+                                log_error() << "failed to copy the input to CUDA device!";
+                                return 0.0;
+                        }
 
-                        op(d_idata, d_kdata, d_odata, 0);
+                        if (!op(d_idata, d_kdata, d_odata, 0))
+                        {
+                                log_error() << "failed to run the CUDA kernel!";
+                                return 0.0;
+                        }
 
-                        d_odata.from_device(odatas[i].data());
+                        if (d_odata.from_device(odatas[i].data()) != cudaSuccess)
+                        {
+                                log_error() << "failed to copy the output from CUDA device!";
+                                return 0.0;
+                        }
                 }
 
                 proc_stats(timer.miliseconds());
@@ -440,7 +456,7 @@ int main(int argc, char* argv[])
         static const int min_isize = 24;
         static const int max_isize = 48;
         static const int min_ksize = 5;
-        static const int n_samples = 4 * 1024;
+        static const int n_samples = 1024;
 
 #ifdef NANOCV_HAVE_OPENCL
         try
