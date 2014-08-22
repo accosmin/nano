@@ -78,15 +78,26 @@ namespace ncv
         {
                 return manager_t::instance().print_info();
         }
+        
+        static int round_divide(int size, int divisor)
+        {
+                return (size + divisor - 1) / divisor;
+        }
 
         dim3 cuda::make_blocks1d(int size, int device)
         {
                 const cudaDeviceProp prop = cuda::get_device_properties(device);
                 const int threads = prop.maxThreadsPerBlock;
 
-                return dim3((size + threads - 1) / threads,
-                            1,
-                            1);
+                return dim3(round_divide(size, threads));
+        }
+        
+        dim3 cuda::make_threads1d(int, int device)
+        {
+                const cudaDeviceProp prop = cuda::get_device_properties(device);
+                const int threads = prop.maxThreadsPerBlock;
+                
+                return dim3(threads);
         }
 
         dim3 cuda::make_blocks2d(int rows, int cols, int device)
@@ -94,19 +105,8 @@ namespace ncv
                 const cudaDeviceProp prop = cuda::get_device_properties(device);
                 const int threads = int(sqrt(prop.maxThreadsPerBlock));
 
-                return dim3((cols + threads - 1) / threads,
-                            (rows + threads - 1) / threads,
-                            1);
-        }
-
-        dim3 cuda::make_threads1d(int, int device)
-        {
-                const cudaDeviceProp prop = cuda::get_device_properties(device);
-                const int threads = prop.maxThreadsPerBlock;
-
-                return dim3(threads,
-                            1,
-                            1);
+                return dim3(round_divide(cols, threads),
+                            round_divide(rows, threads));
         }
 
         dim3 cuda::make_threads2d(int, int, int device)
@@ -115,7 +115,6 @@ namespace ncv
                 const int threads = int(sqrt(prop.maxThreadsPerBlock));
 
                 return dim3(threads,
-                            threads,
-                            1);
+                            threads);
         }
 }
