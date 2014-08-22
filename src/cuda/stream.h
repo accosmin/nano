@@ -49,6 +49,14 @@ namespace ncv
                         }
 
                         ///
+                        /// \brief synchronize the associated stream
+                        ///
+                        cudaError synchronize() const
+                        {
+                                return valid() ? cudaStreamSynchronize(m_stream) : cudaErrorNotReady;
+                        }
+
+                        ///
                         /// \brief access functions
                         ///
                         bool valid() const { return m_stream != NULL; }

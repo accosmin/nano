@@ -1,8 +1,7 @@
 #ifndef NANOCV_CUDA_VECTOR_H
 #define NANOCV_CUDA_VECTOR_H
 
-#include <cuda.h>
-#include <cuda_runtime.h>
+#include "stream.h"
 
 namespace ncv
 {
@@ -72,7 +71,17 @@ namespace ncv
                         ///
                         cudaError to_device(const tscalar* h_data) const
                         {
-                                return cudaMemcpy(m_data, h_data, size() * sizeof(tscalar), cudaMemcpyHostToDevice);
+                                return cudaMemcpy(m_data, h_data, size() * sizeof(tscalar),
+                                                  cudaMemcpyHostToDevice);
+                        }
+
+                        ///
+                        /// \brief to device (using a stream)
+                        ///
+                        cudaError to_device(const tscalar* h_data, const stream_t& stream) const
+                        {
+                                return cudaMemcpyAsync(m_data, h_data, size() * sizeof(tscalar),
+                                                       cudaMemcpyHostToDevice, stream.data());
                         }
 
                         ///
@@ -80,7 +89,17 @@ namespace ncv
                         ///
                         cudaError from_device(tscalar* h_data) const
                         {
-                                return cudaMemcpy(h_data, m_data, size() * sizeof(tscalar), cudaMemcpyDeviceToHost);
+                                return cudaMemcpy(h_data, m_data, size() * sizeof(tscalar),
+                                                  cudaMemcpyDeviceToHost);
+                        }
+
+                        ///
+                        /// \brief from device (using a stream)
+                        ///
+                        cudaError from_device(tscalar* h_data, const stream_t& stream) const
+                        {
+                                return cudaMemcpyAsync(h_data, m_data, size() * sizeof(tscalar),
+                                                       cudaMemcpyDeviceToHost, stream.data());
                         }
 
                         ///
