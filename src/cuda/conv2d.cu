@@ -77,7 +77,7 @@ namespace ncv
                 const cuda::matrix_t<tscalar>& idata,
                 const cuda::matrix_t<tscalar>& kdata,
                 cuda::matrix_t<tscalar>& odata,
-                int device)
+                int device, const cuda::stream_t* stream)
         {
                 if (    odata.rows() + kdata.rows() != idata.rows() + 1 ||
                         odata.cols() + kdata.cols() != idata.cols() + 1)
@@ -90,27 +90,38 @@ namespace ncv
                         const dim3 bsize = cuda::make_blocks2d(odata.rows(), odata.cols(), device);
                         const dim3 tsize = cuda::make_threads2d(odata.rows(), odata.cols(), device);
 
-                        kernel_conv2d<<<bsize, tsize>>>(idata.data(),
-                                                        kdata.data(), kdata.rows(), kdata.cols(),
-                                                        odata.data(), odata.rows(), odata.cols());
+                        if (stream && stream->valid())
+                        {
+                                kernel_conv2d<<<bsize, tsize, 0, stream->data()>>>(
+                                        idata.data(),
+                                        kdata.data(), kdata.rows(), kdata.cols(),
+                                        odata.data(), odata.rows(), odata.cols());
+                        }
+                        else
+                        {
+                                kernel_conv2d<<<bsize, tsize>>>(
+                                        idata.data(),
+                                        kdata.data(), kdata.rows(), kdata.cols(),
+                                        odata.data(), odata.rows(), odata.cols());
+                        }
  
-                         return cudaGetLastError() == cudaSuccess;
+                        return cudaGetLastError() == cudaSuccess;
                 }
         }
         
-        bool cuda::conv2d(const imatrix_t& idata, const imatrix_t& kdata, imatrix_t& odata, int device)
+        bool cuda::conv2d(const imatrix_t& idata, const imatrix_t& kdata, imatrix_t& odata, int device, const stream_t* stream)
         {
-                return cuda_conv2d(idata, kdata, odata, device);
+                return cuda_conv2d(idata, kdata, odata, device, stream);
         }
 
-        bool cuda::conv2d(const fmatrix_t& idata, const fmatrix_t& kdata, fmatrix_t& odata, int device)
+        bool cuda::conv2d(const fmatrix_t& idata, const fmatrix_t& kdata, fmatrix_t& odata, int device, const stream_t* stream)
         {
-                return cuda_conv2d(idata, kdata, odata, device);
+                return cuda_conv2d(idata, kdata, odata, device, stream);
         }
 
-        bool cuda::conv2d(const dmatrix_t& idata, const dmatrix_t& kdata, dmatrix_t& odata, int device)
+        bool cuda::conv2d(const dmatrix_t& idata, const dmatrix_t& kdata, dmatrix_t& odata, int device, const stream_t* stream)
         {
-                return cuda_conv2d(idata, kdata, odata, device);
+                return cuda_conv2d(idata, kdata, odata, device, stream);
         }
 
         template
@@ -121,7 +132,7 @@ namespace ncv
                 const cuda::matrix_t<tscalar>& odata,
                 const cuda::matrix_t<tscalar>& kdata,
                 cuda::matrix_t<tscalar>& idata,
-                int device)
+                int device, const cuda::stream_t* stream)
         {
                 if (    odata.rows() + kdata.rows() != idata.rows() + 1 ||
                         odata.cols() + kdata.cols() != idata.cols() + 1)
@@ -134,26 +145,37 @@ namespace ncv
                         const dim3 bsize = cuda::make_blocks2d(idata.rows(), idata.cols(), device);
                         const dim3 tsize = cuda::make_threads2d(idata.rows(), idata.cols(), device);
 
-                        kernel_iconv2d<<<bsize, tsize>>>(odata.data(),
-                                                         kdata.data(), kdata.rows(), kdata.cols(),
-                                                         idata.data(), idata.rows(), idata.cols());
+                        if (stream && stream->valid())
+                        {
+                                kernel_iconv2d<<<bsize, tsize, 0, stream->data()>>>(
+                                        odata.data(),
+                                        kdata.data(), kdata.rows(), kdata.cols(),
+                                        idata.data(), idata.rows(), idata.cols());
+                        }
+                        else
+                        {
+                                kernel_iconv2d<<<bsize, tsize>>>(
+                                        odata.data(),
+                                        kdata.data(), kdata.rows(), kdata.cols(),
+                                        idata.data(), idata.rows(), idata.cols());
+                        }
 
                         return cudaGetLastError() == cudaSuccess;
                 }
         }
         
-        bool cuda::iconv2d(const imatrix_t& odata, const imatrix_t& kdata, imatrix_t& idata, int device)
+        bool cuda::iconv2d(const imatrix_t& odata, const imatrix_t& kdata, imatrix_t& idata, int device, const stream_t* stream)
         {
-                return cuda_iconv2d(odata, kdata, idata, device);
+                return cuda_iconv2d(odata, kdata, idata, device, stream);
         }
 
-        bool cuda::iconv2d(const fmatrix_t& odata, const fmatrix_t& kdata, fmatrix_t& idata, int device)
+        bool cuda::iconv2d(const fmatrix_t& odata, const fmatrix_t& kdata, fmatrix_t& idata, int device, const stream_t* stream)
         {
-                return cuda_iconv2d(odata, kdata, idata, device);
+                return cuda_iconv2d(odata, kdata, idata, device, stream);
         }
 
-        bool cuda::iconv2d(const dmatrix_t& odata, const dmatrix_t& kdata, dmatrix_t& idata, int device)
+        bool cuda::iconv2d(const dmatrix_t& odata, const dmatrix_t& kdata, dmatrix_t& idata, int device, const stream_t* stream)
         {
-                return cuda_iconv2d(odata, kdata, idata, device);
+                return cuda_iconv2d(odata, kdata, idata, device, stream);
         }
 }

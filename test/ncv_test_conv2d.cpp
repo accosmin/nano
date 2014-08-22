@@ -291,15 +291,20 @@ tscalar test_gpu(
         const int orows = static_cast<int>(odatas[0].rows());
         const int ocols = static_cast<int>(odatas[0].cols());
 
-        cuda::matrix_t<tscalar> d_idata(irows, icols);
-        cuda::matrix_t<tscalar> d_kdata(krows, kcols);
-        cuda::matrix_t<tscalar> d_odata(orows, ocols);
+        const size_t n_streams = 2;
 
-        // transfer constants
-        if (d_kdata.to_device(kdata.data()) != cudaSuccess)
+        cuda::stream_t streams[n_streams];
+        cuda::matrix_t<tscalar> d_idatas[n_streams];
+        cuda::matrix_t<tscalar> d_kdatas[n_streams];
+        cuda::matrix_t<tscalar> d_odatas[n_streams];
+
+        for (size_t s = 0; s < n_streams; s ++)
         {
-                log_error() << "failed to copy the kernel to CUDA device!";
-                return 0.0;
+                streams[s].make();
+
+                d_idatas[s].resize(irows, icols);
+                d_kdatas[s].resize(krows, kcols);
+                d_odatas[s].resize(orows, ocols);
         }
 
         ncv::stats_t<double, size_t> proc_stats;
@@ -310,25 +315,26 @@ tscalar test_gpu(
                 zero_matrices(odatas);
 
                 const ncv::timer_t timer;
-                for (size_t i = 0; i < idatas.size(); i ++)
+
+                for (size_t s = 0; s < n_streams; s ++)
                 {
-                        if (d_idata.to_device(idatas[i].data()) != cudaSuccess)
+                        d_kdatas[s].to_device(kdata.data(), streams[s]);
+                }
+
+                for (size_t k = 0; k < idatas.size() / n_streams; k ++)
+                {
+                        for (size_t s = 0; s < n_streams; s ++)
                         {
-                                log_error() << "failed to copy the input to CUDA device!";
-                                return 0.0;
+                                const size_t i = k * n_streams + s;
+
+                                d_idatas[s].to_device(idatas[i].data(), streams[s]);
+
+                                op(d_idatas[s], d_kdatas[s], d_odatas[s], 0, &streams[s]);
+
+                                d_odatas[s].from_device(odatas[i].data(), streams[s]);
                         }
 
-                        if (!op(d_idata, d_kdata, d_odata, 0))
-                        {
-                                log_error() << "failed to run the CUDA kernel!";
-                                return 0.0;
-                        }
-
-                        if (d_odata.from_device(odatas[i].data()) != cudaSuccess)
-                        {
-                                log_error() << "failed to copy the output from CUDA device!";
-                                return 0.0;
-                        }
+                        cudaDeviceSynchronize();
                 }
 
                 proc_stats(timer.miliseconds());
@@ -386,10 +392,10 @@ void test_conv2d(int isize, int ksize, int n_samples)
         const string_t header = (boost::format("(%1%x%2%@%3%x%4%): ") % isize % isize % ksize % ksize).str();
         std::cout << text::resize(header, 16);
         
-        const test_scalar_t conve1cpu  = test_1cpu(ncv::conv_eig<test_matrix_t>, "eig(1CPU)", idatas, kdata, odatas);
-        const test_scalar_t convexcpu  = test_xcpu(ncv::conv_eig<test_matrix_t>, "eig(xCPU)", idatas, kdata, odatas);
-        const test_scalar_t convd1cpu  = test_1cpu(ncv::conv_dot<test_matrix_t>, "dot(1CPU)", idatas, kdata, odatas);
-        const test_scalar_t convdxcpu  = test_xcpu(ncv::conv_dot<test_matrix_t>, "dot(xCPU)", idatas, kdata, odatas);
+        const test_scalar_t conve1cpu  = test_1cpu(ncv::conv2d_eig<test_matrix_t>, "eig(1CPU)", idatas, kdata, odatas);
+        const test_scalar_t convexcpu  = test_xcpu(ncv::conv2d_eig<test_matrix_t>, "eig(xCPU)", idatas, kdata, odatas);
+        const test_scalar_t convd1cpu  = test_1cpu(ncv::conv2d_dot<test_matrix_t>, "dot(1CPU)", idatas, kdata, odatas);
+        const test_scalar_t convdxcpu  = test_xcpu(ncv::conv2d_dot<test_matrix_t>, "dot(xCPU)", idatas, kdata, odatas);
 #if defined(NANOCV_HAVE_OPENCL)
         const test_scalar_t convgpu    = test_gpu("conv_kernel", "conv2d(GPU)", idatas, kdata, odatas);
 #elif defined(NANOCV_HAVE_CUDA)
@@ -420,10 +426,10 @@ void test_iconv2d(int isize, int ksize, int n_samples)
         const string_t header = (boost::format("(%1%x%2%@%3%x%4%): ") % isize % isize % ksize % ksize).str();
         std::cout << text::resize(header, 16);
 
-        const test_scalar_t iconve1cpu = test_1cpu(ncv::iconv_eig<test_matrix_t>, "ieig(1CPU)", odatas, kdata, idatas);
-        const test_scalar_t iconvexcpu = test_xcpu(ncv::iconv_eig<test_matrix_t>, "ieig(xCPU)", odatas, kdata, idatas);
-        const test_scalar_t iconvm1cpu = test_1cpu(ncv::iconv_mad<test_matrix_t>, "imad(1CPU)", odatas, kdata, idatas);
-        const test_scalar_t iconvmxcpu = test_xcpu(ncv::iconv_mad<test_matrix_t>, "imad(xCPU)", odatas, kdata, idatas);
+        const test_scalar_t iconve1cpu = test_1cpu(ncv::iconv2d_eig<test_matrix_t>, "ieig(1CPU)", odatas, kdata, idatas);
+        const test_scalar_t iconvexcpu = test_xcpu(ncv::iconv2d_eig<test_matrix_t>, "ieig(xCPU)", odatas, kdata, idatas);
+        const test_scalar_t iconvm1cpu = test_1cpu(ncv::iconv2d_mad<test_matrix_t>, "imad(1CPU)", odatas, kdata, idatas);
+        const test_scalar_t iconvmxcpu = test_xcpu(ncv::iconv2d_mad<test_matrix_t>, "imad(xCPU)", odatas, kdata, idatas);
 #if defined(NANOCV_HAVE_OPENCL)
         const test_scalar_t iconvgpu   = test_gpu("iconv_kernel", "iconv2d(GPU)", odatas, kdata, idatas);
 #elif NANOCV_HAVE_CUDA

@@ -1,9 +1,7 @@
-#ifndef NANOCV_CONV2D_H
-#define NANOCV_CONV2D_H
+#ifndef NANOCV_CONV3D_H
+#define NANOCV_CONV3D_H
 
-#include <cassert>
-#include "dot.hpp"
-#include "mad.hpp"
+#include "conv2d.hpp"
 
 namespace ncv
 {
@@ -17,7 +15,7 @@ namespace ncv
                 typename tmatrixo = tmatrixi,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void conv2d_eig(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+        void conv3d_eig(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
         {
                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
@@ -41,7 +39,7 @@ namespace ncv
                 typename tmatrixi = tmatrixo,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void iconv2d_eig(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
+        void iconv3d_eig(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
         {
                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
@@ -65,7 +63,7 @@ namespace ncv
                         typename tdotop,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                static void conv_dot(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata, const tdotop& dotop)
+                void conv_dot(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata, const tdotop& dotop)
                 {
                         const auto orows = odata.rows();
                         const auto ocols = odata.cols();
@@ -101,7 +99,7 @@ namespace ncv
                         typename tmatrixo = tmatrixi,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                static void conv_dot(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                void conv_dot(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
                 {
                         const auto kcols = kdata.cols();
 
@@ -135,7 +133,7 @@ namespace ncv
                         typename tmadop,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                static void iconv_mad(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata, const tmadop& madop)
+                void iconv_mad(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata, const tmadop& madop)
                 {
                         const auto orows = odata.rows();
                         const auto ocols = odata.cols();
@@ -171,7 +169,7 @@ namespace ncv
                         typename tmatrixi = tmatrixo,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                static void iconv_mad(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
+                void iconv_mad(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
                 {
                         const auto kcols = kdata.cols();
 
@@ -208,7 +206,7 @@ namespace ncv
                 typename tmatrixo = tmatrixi,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void conv2d_dot(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+        void conv3d_dot(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
         {
                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
@@ -227,7 +225,7 @@ namespace ncv
                 typename tmatrixo = tmatrixi,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void conv2d_dot(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+        void conv3d_dot(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
         {
                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
@@ -246,7 +244,7 @@ namespace ncv
                 typename tmatrixi = tmatrixo,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void iconv2d_mad(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
+        void iconv3d_mad(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
         {
                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
@@ -265,7 +263,7 @@ namespace ncv
                 typename tmatrixi = tmatrixo,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void iconv2d_mad(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
+        void iconv3d_mad(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
         {
                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
@@ -274,5 +272,5 @@ namespace ncv
         }
 }
 
-#endif // NANOCV_CONV2D_H
+#endif // NANOCV_CONV3D_H
 

@@ -35,7 +35,7 @@ namespace ncv
                                 auto imap = tensor::make_matrix(idata + i * isize, irows, icols);
                                 auto kmap = tensor::make_matrix(kdata + (o * idims + i) * ksize, krows, kcols);
                                 
-                                ncv::conv_dot(imap, kmap, omap);
+                                ncv::conv2d_dot(imap, kmap, omap);
                         }
                 }
         }
@@ -68,7 +68,7 @@ namespace ncv
                                 auto gimap = tensor::make_matrix(gidata + i * isize, irows, icols);
                                 auto kmap = tensor::make_matrix(kdata + (o * idims + i) * ksize, krows, kcols);                                     
 
-                                ncv::iconv_mad(omap, kmap, gimap);
+                                ncv::iconv2d_mad(omap, kmap, gimap);
                         }
                 }
         }
@@ -100,7 +100,7 @@ namespace ncv
                                 auto gkmap = tensor::make_matrix(gkdata + (o * idims + i) * ksize, krows, kcols);
 
                                 gkmap.setZero();
-                                ncv::conv_dot(imap, omap, gkmap);
+                                ncv::conv2d_dot(imap, omap, gkmap);
                         }
                 }
         }
