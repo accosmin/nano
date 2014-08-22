@@ -46,7 +46,7 @@ namespace ncv
                         printf("CUDA device [%d/%d]: compute capability = %d.%d\n", i + 1, count, prop.major, prop.minor);
                         printf("CUDA device [%d/%d]: clock rate = %d\n", i + 1, count, prop.clockRate);
                         printf("CUDA device [%d/%d]: global mem = %ld\n", i + 1, count, prop.totalGlobalMem);
-                        printf("CUDA device [%d/%d]: constant Mem = %ld\n", i + 1, count, prop.totalConstMem);
+                        printf("CUDA device [%d/%d]: constant mem = %ld\n", i + 1, count, prop.totalConstMem);
                         printf("CUDA device [%d/%d]: mem pitch = %ld\n", i + 1, count, prop.memPitch);
                         printf("CUDA device [%d/%d]: texture alignment = %ld\n", i + 1, count, prop.textureAlignment);
                         printf("CUDA device [%d/%d]: multiprocessor count = %d\n", i + 1, count, prop.multiProcessorCount);
@@ -58,6 +58,7 @@ namespace ncv
                                prop.maxThreadsDim[0], prop.maxThreadsDim[1], prop.maxThreadsDim[2]);
                         printf("CUDA device [%d/%d]: max grid dimensions = (%d, %d, %d)\n", i + 1, count,
                                prop.maxGridSize[0], prop.maxGridSize[1], prop.maxGridSize[2]);
+                        printf("CUDA device [%d/%d]: asynchronous engines = %d\n", i + 1, count, prop.asyncEngineCount);
                         printf("\n");
                 }
                 
