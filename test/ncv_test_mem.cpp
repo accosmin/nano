@@ -118,14 +118,14 @@ int main(int argc, char *argv[])
                                 // GPU - copy to device
                                 timer.start();
                                 {
-                                        d_abuffer.copyToDevice(a.data());
+                                        d_abuffer.to_device(a.data());
                                 }
                                 send_stats(timer.microseconds());
 
                                 // GPU - copy from device
                                 timer.start();
                                 {
-                                        d_abuffer.copyFromDevice(b.data());
+                                        d_abuffer.from_device(b.data());
                                 }
                                 read_stats(timer.microseconds());
 

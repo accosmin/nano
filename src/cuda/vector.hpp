@@ -70,7 +70,7 @@ namespace ncv
                         ///
                         /// \brief to device
                         ///
-                        cudaError copyToDevice(const tscalar* h_data) const
+                        cudaError to_device(const tscalar* h_data) const
                         {
                                 return cudaMemcpy(m_data, h_data, size() * sizeof(tscalar), cudaMemcpyHostToDevice);
                         }
@@ -78,7 +78,7 @@ namespace ncv
                         ///
                         /// \brief from device
                         ///
-                        cudaError copyFromDevice(tscalar* h_data) const
+                        cudaError from_device(tscalar* h_data) const
                         {
                                 return cudaMemcpy(h_data, m_data, size() * sizeof(tscalar), cudaMemcpyDeviceToHost);
                         }

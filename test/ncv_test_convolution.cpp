@@ -296,7 +296,7 @@ tscalar test_gpu(
         cuda::matrix_t<tscalar> d_odata(orows, ocols);
 
         // transfer constants
-        d_kdata.copyToDevice(kdata.data());
+        d_kdata.to_device(kdata.data());
 
         ncv::stats_t<double, size_t> proc_stats;
 
@@ -308,11 +308,11 @@ tscalar test_gpu(
                 const ncv::timer_t timer;
                 for (size_t i = 0; i < idatas.size(); i ++)
                 {
-                        d_idata.copyToDevice(idatas[i].data());
+                        d_idata.to_device(idatas[i].data());
 
                         op(d_idata, d_kdata, d_odata, 0);
 
-                        d_odata.copyFromDevice(odatas[i].data());
+                        d_odata.from_device(odatas[i].data());
                 }
 
                 proc_stats(timer.miliseconds());
