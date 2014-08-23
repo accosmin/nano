@@ -291,21 +291,9 @@ tscalar test_gpu(
         const int orows = static_cast<int>(odatas[0].rows());
         const int ocols = static_cast<int>(odatas[0].cols());
 
-        const size_t n_streams = 2;
-
-        cuda::stream_t streams[n_streams];
-        cuda::matrix_t<tscalar> d_idatas[n_streams];
-        cuda::matrix_t<tscalar> d_kdatas[n_streams];
-        cuda::matrix_t<tscalar> d_odatas[n_streams];
-
-        for (size_t s = 0; s < n_streams; s ++)
-        {
-                streams[s].make();
-
-                d_idatas[s].resize(irows, icols);
-                d_kdatas[s].resize(krows, kcols);
-                d_odatas[s].resize(orows, ocols);
-        }
+        cuda::matrix_t<tscalar> d_idata(irows, icols);
+        cuda::matrix_t<tscalar> d_kdata(krows, kcols);
+        cuda::matrix_t<tscalar> d_odata(orows, ocols);
 
         ncv::stats_t<double, size_t> proc_stats;
 
@@ -316,25 +304,15 @@ tscalar test_gpu(
 
                 const ncv::timer_t timer;
 
-                for (size_t s = 0; s < n_streams; s ++)
+                d_kdata.to_device(kdata.data());
+
+                for (size_t i = 0; i < idatas.size(); i ++)
                 {
-                        d_kdatas[s].to_device(kdata.data(), streams[s]);
-                }
+                        d_idata.to_device(idatas[i].data());
 
-                for (size_t k = 0; k < idatas.size() / n_streams; k ++)
-                {
-                        for (size_t s = 0; s < n_streams; s ++)
-                        {
-                                const size_t i = k * n_streams + s;
+                        op(d_idata, d_kdata, d_odata, 0);
 
-                                d_idatas[s].to_device(idatas[i].data(), streams[s]);
-
-                                op(d_idatas[s], d_kdatas[s], d_odatas[s], 0, &streams[s]);
-
-                                d_odatas[s].from_device(odatas[i].data(), streams[s]);
-                        }
-
-                        cudaDeviceSynchronize();
+                        d_odata.from_device(odatas[i].data());
                 }
 
                 proc_stats(timer.miliseconds());
