@@ -91,7 +91,7 @@ tscalar test_cpu(
                 proc_stats(timer.miliseconds());
         }
         
-        const size_t milis = static_cast<size_t>(proc_stats.avg());
+        const size_t milis = static_cast<size_t>(proc_stats.min());
         std::cout << name << "= " << text::resize(text::to_string(milis), 4, align::right) << "ms  ";
         
         return sum_matrices(odatas);
@@ -264,7 +264,7 @@ tscalar test_gpu(
                 proc_stats(timer.miliseconds());
         }
 
-        const size_t milis = static_cast<size_t>(proc_stats.avg());
+        const size_t milis = static_cast<size_t>(proc_stats.min());
         std::cout << name << "= " << text::resize(text::to_string(milis), 4, align::right) << "ms  ";
 
         return sum_matrices(odatas);
@@ -318,7 +318,7 @@ tscalar test_gpu(
                 proc_stats(timer.miliseconds());
         }
 
-        const size_t milis = static_cast<size_t>(proc_stats.avg());
+        const size_t milis = static_cast<size_t>(proc_stats.min());
         std::cout << name << "= " << text::resize(text::to_string(milis), 4, align::right) << "ms  ";
 
         return sum_matrices(odatas);
@@ -440,7 +440,7 @@ int main(int argc, char* argv[])
         static const int min_isize = 24;
         static const int max_isize = 48;
         static const int min_ksize = 5;
-        static const int n_samples = 1024;
+        static const int n_samples = 4 * 1024;
 
 #ifdef NANOCV_HAVE_OPENCL
         try

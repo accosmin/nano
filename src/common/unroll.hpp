@@ -22,12 +22,9 @@ namespace ncv
                         op(i + 3);
                 }
                 
-                if (size > size4)
+                for (int i = size4; i < size; i ++)
                 {
-                        for (int i = size4; i < size; i ++)
-                        {
-                                op(i);
-                        }
+                        op(i);
                 }
         }
         
@@ -51,12 +48,9 @@ namespace ncv
                         op(i + 3);
                 }
                 
-                if (tsize > tsize4)
+                for (int i = tsize4; i < tsize; i ++)
                 {
-                        for (int i = tsize4; i < tsize; i ++)
-                        {
-                                op(i);
-                        }
+                        op(i);
                 }
         }
 }
