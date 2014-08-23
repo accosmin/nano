@@ -2,9 +2,6 @@
 #define NANOCV_CONV_LAYER_H
 
 #include "layer.h"
-#ifdef NANOCV_HAVE_OPENCL
-#include "opencl/opencl.h"
-#endif
 
 namespace ncv
 {
@@ -24,12 +21,6 @@ namespace ncv
 
                 // constructor
                 conv_layer_t(const string_t& parameters = string_t());
-
-                // copy
-#ifdef NANOCV_HAVE_OPENCL
-                conv_layer_t(const conv_layer_t& other);
-                conv_layer_t& operator=(const conv_layer_t& other);
-#endif
 
                 // resize to process new tensors of the given type
                 virtual size_t resize(const tensor_t& tensor);
@@ -61,32 +52,12 @@ namespace ncv
                 size_t krows() const { return m_kdata.rows(); }
                 size_t kcols() const { return m_kdata.cols(); }
 
-                void params_changed() const;
-
         private:
 
                 // attributes
                 tensor_t                m_idata;                ///< input buffer:              idims x irows x icols
                 tensor_t                m_odata;                ///< output buffer:             odims x orows x ocols
                 tensor_t                m_kdata;                ///< convolution kernels:       odims x idims x krows x kcols
-
-#ifdef NANOCV_HAVE_OPENCL
-                cl::Context             m_ocl_context;          ///< opencl context
-                cl::CommandQueue        m_ocl_queue;            ///< opencl command queue
-                cl::Program             m_ocl_program;          ///< opencl program
-                cl::Kernel              m_ocl_fkernel;          ///< opencl forward kernel
-                cl::Kernel              m_ocl_bikernel;         ///< opencl backward (inputs gradient) kernel
-                cl::Kernel              m_ocl_bkkernel;         ///< opencl backward (convolution gradient) kernel
-
-                cl::Buffer              m_ocl_idata;            ///< opencl buffers for various tensors
-                cl::Buffer              m_ocl_kdata;
-
-                cl::Buffer              m_ocl_gidata;
-                cl::Buffer              m_ocl_gkdata;
-                tensor_t                m_gkdata;
-
-                cl::Buffer              m_ocl_odata;
-#endif
         };
 }
 
