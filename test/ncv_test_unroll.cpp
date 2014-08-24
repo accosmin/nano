@@ -12,6 +12,26 @@ typedef ncv::tensor::vector_types_t<test_scalar_t>::tvectors    test_vectors_t;
 
 template
 <
+        typename tscalar,
+        typename tsize
+>
+tscalar dot_eig(const tscalar* vec1, const tscalar* vec2, tsize size)
+{
+        return tensor::make_vector(vec1, size).dot(tensor::make_vector(vec2, size));
+}
+
+template
+<
+        typename tscalar,
+        typename tsize
+>
+void mad_eig(const tscalar* idata, tscalar weight, tsize size, tscalar* odata)
+{
+        tensor::make_vector(odata, size).array() += weight * tensor::make_vector(idata, size).array();
+}
+
+template
+<
         typename tvector
 >
 void rand_vector(size_t size, tvector& vector)
@@ -124,11 +144,13 @@ void test_dot(size_t size, size_t n_tests)
         const test_scalar_t dot  = test_dot(ncv::dot<test_scalar_t, decltype(vec1.size())>, "dot", n_tests, vec1, vec2);
         const test_scalar_t dot4 = test_dot(ncv::dot<test_scalar_t, decltype(vec1.size())>, "dot4", n_tests, vec1, vec2);
         const test_scalar_t dot8 = test_dot(ncv::dot<test_scalar_t, decltype(vec1.size())>, "dot8", n_tests, vec1, vec2);
+        const test_scalar_t dote = test_dot(dot_eig<test_scalar_t, decltype(vec1.size())>, "dote", n_tests, vec1, vec2);
         std::cout << std::endl;
 
         check(dot,      dot, "dot");
         check(dot4,     dot, "dot4");
         check(dot8,     dot, "dot8");
+        check(dote,     dot, "dote");
 }
 
 void test_mad(size_t size, size_t n_tests)
@@ -148,11 +170,13 @@ void test_mad(size_t size, size_t n_tests)
         const test_scalar_t mad  = test_mad(ncv::mad<test_scalar_t, decltype(vec1.size())>, "mad", n_tests, vec1, vec2, wei);
         const test_scalar_t mad4 = test_mad(ncv::mad<test_scalar_t, decltype(vec1.size())>, "mad4", n_tests, vec1, vec2, wei);
         const test_scalar_t mad8 = test_mad(ncv::mad<test_scalar_t, decltype(vec1.size())>, "mad8", n_tests, vec1, vec2, wei);
+        const test_scalar_t made = test_mad(mad_eig<test_scalar_t, decltype(vec1.size())>, "made", n_tests, vec1, vec2, wei);
         std::cout << std::endl;
 
         check(mad,      mad, "mad");
         check(mad4,     mad, "mad4");
         check(mad8,     mad, "mad8");
+        check(made,     mad, "made");
 }
 
 int main(int argc, char* argv[])
