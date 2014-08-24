@@ -141,6 +141,7 @@ set(nanocv_test_programs
         ncv_test_color
         ncv_test_loss
         ncv_test_conv2d
+        ncv_test_unroll
         ncv_test_network_gradient
         ncv_test_network_timing
         ncv_test_mem)

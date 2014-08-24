@@ -29,7 +29,7 @@ namespace ncv
         >
         void mad_unroll4(const tscalar* idata, tscalar weight, tsize size, tscalar* odata)
         {
-                const tsize size4 = size - (size & 3);
+                const tsize size4 = size & (~3);
 
                 for (auto i = 0; i < size4; i += 4)
                 {
@@ -54,8 +54,8 @@ namespace ncv
         >
         void mad_unroll8(const tscalar* idata, tscalar weight, tsize size, tscalar* odata)
         {
-                const tsize size8 = size - (size & 7);
-                const tsize size4 = size - (size & 3);
+                const tsize size8 = size & (~7);
+                const tsize size4 = size & (~3);
 
                 for (auto i = 0; i < size8; i += 8)
                 {

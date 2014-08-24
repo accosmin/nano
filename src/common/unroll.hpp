@@ -12,7 +12,7 @@ namespace ncv
         >
         void unroll(int size, const toperator& op)
         {
-                const int size4 = size - (size & 3);
+                const int size4 = size & (~3);
                 
                 for (int i = 0; i < size4; i += 4)
                 {
@@ -20,8 +20,7 @@ namespace ncv
                         op(i + 1);
                         op(i + 2);
                         op(i + 3);
-                }
-                
+                }                
                 for (int i = size4; i < size; i ++)
                 {
                         op(i);
@@ -38,7 +37,7 @@ namespace ncv
         >
         void unroll(const toperator& op)
         {
-                const int tsize4 = tsize - (tsize & 3);
+                const int tsize4 = tsize & (~3);
                 
                 for (int i = 0; i < tsize4; i += 4)
                 {
@@ -46,8 +45,7 @@ namespace ncv
                         op(i + 1);
                         op(i + 2);
                         op(i + 3);
-                }
-                
+                }                
                 for (int i = tsize4; i < tsize; i ++)
                 {
                         op(i);

@@ -339,7 +339,7 @@ template <>
 float epsilon<float>() { return 1e-5f; }
 
 template <>
-double epsilon<double>() { return 1e-10; }
+double epsilon<double>() { return 1e-12; }
 
 template
 <
