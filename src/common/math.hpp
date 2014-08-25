@@ -2,6 +2,8 @@
 #define NANOCV_CAST_H
 
 #include <type_traits>
+#include <algorithm>
+#include <limits>
 #include <boost/algorithm/clamp.hpp>
 
 namespace ncv
@@ -11,6 +13,43 @@ namespace ncv
                 // forward boost functions
                 using boost::algorithm::clamp;
                 using boost::algorithm::clamp_range;
+                
+                ///
+                /// \brief units in the last place (for precision comparison)
+                ///
+                template <typename tscalar> 
+                inline int ulp()                { return 0; }                
+                template <> 
+                inline int ulp<float>()         { return 2; }                
+                template <> 
+                inline int ulp<double>()        { return 6; }
+                template <> 
+                inline int ulp<long double>()   { return 6; }
+                
+                ///
+                /// \brief precision comparison criteria for scalars
+                ///
+                /// NB: shamelessly copied from http://en.cppreference.com/w/cpp/types/numeric_limits/epsilon!
+                ///
+                template
+                <
+                        typename tscalar
+                >
+                typename std::enable_if<!std::numeric_limits<tscalar>::is_integer, bool>::type
+                almost_equal(tscalar x, tscalar y)
+                {
+                        return std::abs(x - y) <= std::numeric_limits<tscalar>::epsilon() * std::abs(x + y) * ulp<tscalar>();
+                }
+                
+                template
+                <
+                        typename tscalar
+                >
+                typename std::enable_if<std::numeric_limits<tscalar>::is_integer, bool>::type
+                almost_equal(tscalar x, tscalar y)
+                {
+                        return x == y;
+                }                
 
                 // implementation detail
                 namespace detail

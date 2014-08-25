@@ -75,11 +75,11 @@ static void test_grad_params(
                 problem_aproxdif_params(params, aproxdif_params_grad);
 
                 const scalar_t dg_params = (analytic_params_grad - aproxdif_params_grad).lpNorm<Eigen::Infinity>();
-                const scalar_t eps = 1e-6;
+                const bool ok = math::almost_equal(dg_params, scalar_t(0));
 
                 log_info() << header << " [" << (t + 1) << "/" << n_tests
                            << "]: samples = " << n_samples
-                           << ", dg_params = " << dg_params << " (" << (dg_params > eps ? "ERROR" : "OK") << ").";
+                           << ", dg_params = " << dg_params << " (" << (ok ? "ERROR" : "OK") << ").";
         }
 }
 

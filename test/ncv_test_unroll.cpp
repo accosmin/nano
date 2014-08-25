@@ -105,27 +105,11 @@ template
 <
         typename tscalar
 >
-tscalar epsilon();
-
-template <>
-int epsilon<int>() { return 1; }
-
-template <>
-float epsilon<float>() { return 1e-5f; }
-
-template <>
-double epsilon<double>() { return 1e-12; }
-
-template
-<
-        typename tscalar
->
 void check(tscalar result, tscalar baseline, const char* name)
 {
-        const tscalar eps = ::epsilon<tscalar>();
         const tscalar err = std::fabs(result - baseline);
 
-        if (err > eps)
+        if (!math::almost_equal(err, tscalar(0)))
         {
                 std::cout << name << " FAILED (diff = " << err << ")!" << std::endl;
         }
