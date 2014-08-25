@@ -15,40 +15,33 @@ namespace ncv
                 using boost::algorithm::clamp_range;
                 
                 ///
-                /// \brief units in the last place (for precision comparison)
-                ///
-                template <typename tscalar> 
-                inline int ulp()                { return 0; }                
-                template <> 
-                inline int ulp<float>()         { return 2; }                
-                template <> 
-                inline int ulp<double>()        { return 6; }
-                template <> 
-                inline int ulp<long double>()   { return 6; }
-                
-                ///
                 /// \brief precision comparison criteria for scalars
                 ///
-                /// NB: shamelessly copied from http://en.cppreference.com/w/cpp/types/numeric_limits/epsilon!
-                ///
                 template
                 <
                         typename tscalar
                 >
-                typename std::enable_if<!std::numeric_limits<tscalar>::is_integer, bool>::type
-                almost_equal(tscalar x, tscalar y)
-                {
-                        return std::abs(x - y) <= std::numeric_limits<tscalar>::epsilon() * std::abs(x + y) * ulp<tscalar>();
-                }
-                
-                template
-                <
-                        typename tscalar
-                >
-                typename std::enable_if<std::numeric_limits<tscalar>::is_integer, bool>::type
-                almost_equal(tscalar x, tscalar y)
+                bool almost_equal(tscalar x, tscalar y)
                 {
                         return x == y;
+                }
+                
+                template <>
+                inline bool almost_equal(float x, float y)
+                {
+                        return std::abs(x - y) <= (1 + std::abs(x) + std::abs(y)) * 1e-6f;//std::numeric_limits<float>::epsilon();
+                }
+                
+                template <>
+                inline bool almost_equal(double x, double y)
+                {
+                        return std::abs(x - y) <= (1 + std::abs(x) + std::abs(y)) * 1e-10;//std::numeric_limits<double>::epsilon();
+                }
+                
+                template <>
+                inline bool almost_equal(long double x, long double y)
+                {
+                        return std::abs(x - y) <= (1 + std::abs(x) + std::abs(y)) * 1e-10;//std::numeric_limits<long double>::epsilon();
                 }                
 
                 // implementation detail
