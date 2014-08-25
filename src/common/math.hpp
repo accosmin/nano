@@ -29,19 +29,19 @@ namespace ncv
                 template <>
                 inline bool almost_equal(float x, float y)
                 {
-                        return std::abs(x - y) <= (1 + std::abs(x) + std::abs(y)) * 1e-6f;//std::numeric_limits<float>::epsilon();
+                        return std::abs(x - y) <= (1 + std::abs(x) + std::abs(y)) * 1e-6f;
                 }
                 
                 template <>
                 inline bool almost_equal(double x, double y)
                 {
-                        return std::abs(x - y) <= (1 + std::abs(x) + std::abs(y)) * 1e-10;//std::numeric_limits<double>::epsilon();
+                        return std::abs(x - y) <= (1 + std::abs(x) + std::abs(y)) * 1e-8;
                 }
                 
                 template <>
                 inline bool almost_equal(long double x, long double y)
                 {
-                        return std::abs(x - y) <= (1 + std::abs(x) + std::abs(y)) * 1e-10;//std::numeric_limits<long double>::epsilon();
+                        return std::abs(x - y) <= (1 + std::abs(x) + std::abs(y)) * 1e-10;
                 }                
 
                 // implementation detail
