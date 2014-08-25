@@ -142,8 +142,8 @@ void test_dot(size_t size, size_t n_tests)
         std::cout << text::resize(header, 16);
         
         const test_scalar_t dot  = test_dot(ncv::dot<test_scalar_t, decltype(vec1.size())>, "dot", n_tests, vec1, vec2);
-        const test_scalar_t dot4 = test_dot(ncv::dot<test_scalar_t, decltype(vec1.size())>, "dot4", n_tests, vec1, vec2);
-        const test_scalar_t dot8 = test_dot(ncv::dot<test_scalar_t, decltype(vec1.size())>, "dot8", n_tests, vec1, vec2);
+        const test_scalar_t dot4 = test_dot(ncv::dot_unroll4<test_scalar_t, decltype(vec1.size())>, "dot4", n_tests, vec1, vec2);
+        const test_scalar_t dot8 = test_dot(ncv::dot_unroll8<test_scalar_t, decltype(vec1.size())>, "dot8", n_tests, vec1, vec2);
         const test_scalar_t dote = test_dot(dot_eig<test_scalar_t, decltype(vec1.size())>, "dote", n_tests, vec1, vec2);
         std::cout << std::endl;
 
@@ -168,8 +168,8 @@ void test_mad(size_t size, size_t n_tests)
         std::cout << text::resize(header, 16);
 
         const test_scalar_t mad  = test_mad(ncv::mad<test_scalar_t, decltype(vec1.size())>, "mad", n_tests, vec1, vec2, wei);
-        const test_scalar_t mad4 = test_mad(ncv::mad<test_scalar_t, decltype(vec1.size())>, "mad4", n_tests, vec1, vec2, wei);
-        const test_scalar_t mad8 = test_mad(ncv::mad<test_scalar_t, decltype(vec1.size())>, "mad8", n_tests, vec1, vec2, wei);
+        const test_scalar_t mad4 = test_mad(ncv::mad_unroll4<test_scalar_t, decltype(vec1.size())>, "mad4", n_tests, vec1, vec2, wei);
+        const test_scalar_t mad8 = test_mad(ncv::mad_unroll8<test_scalar_t, decltype(vec1.size())>, "mad8", n_tests, vec1, vec2, wei);
         const test_scalar_t made = test_mad(mad_eig<test_scalar_t, decltype(vec1.size())>, "made", n_tests, vec1, vec2, wei);
         std::cout << std::endl;
 
