@@ -32,7 +32,7 @@ namespace ncv
         >
         tscalar dot_unroll4(const tscalar* vec1, const tscalar* vec2, tsize size)
         {
-                const tsize size4 = size & (~3);
+                const tsize size4 = size & tsize(~3);
 
                 tscalar sum = 0;
                 for (auto i = 0; i < size4; i += 4)
@@ -60,8 +60,8 @@ namespace ncv
         >
         tscalar dot_unroll8(const tscalar* vec1, const tscalar* vec2, tsize size)
         {
-                const tsize size8 = size & (~7);
-                const tsize size4 = size & (~4);
+                const tsize size8 = size & tsize(~7);
+                const tsize size4 = size & tsize(~4);
 
                 tscalar sum = 0;
                 for (auto i = 0; i < size8; i += 8)
