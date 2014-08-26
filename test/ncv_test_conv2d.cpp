@@ -340,19 +340,19 @@ void check(tscalar result, tscalar baseline, const char* name)
         }
 }
 
-void test_conv2d(int isize, int ksize, int n_samples)
+void test_conv2d(int isize, int ksize, int tsize)
 {
         const int osize = isize - ksize + 1;
 
         test_matrices_t idatas, odatas;
         test_matrix_t kdata;
 
-        init_matrices(isize, isize, n_samples, idatas);
-        init_matrices(osize, osize, n_samples, odatas);
+        init_matrices(isize, isize, tsize, idatas);
+        init_matrices(osize, osize, tsize, odatas);
         init_matrix(ksize, ksize, kdata);
         
-        const string_t header = (boost::format("(%1%x%2%@%3%x%4%): ") % isize % isize % ksize % ksize).str();
-        std::cout << text::resize(header, 16);
+        const string_t header = (boost::format("%5% x (%1%x%2%@%3%x%4%): ") % isize % isize % ksize % ksize % tsize).str();
+        std::cout << text::resize(header, 24);
         
         const test_scalar_t conve1cpu  = test_1cpu(ncv::conv2d_eig<test_matrix_t>, "eig(1CPU)", idatas, kdata, odatas);
         const test_scalar_t convexcpu  = test_xcpu(ncv::conv2d_eig<test_matrix_t>, "eig(xCPU)", idatas, kdata, odatas);
@@ -374,19 +374,19 @@ void test_conv2d(int isize, int ksize, int n_samples)
 #endif
 }
 
-void test_iconv2d(int isize, int ksize, int n_samples)
+void test_iconv2d(int isize, int ksize, int tsize)
 {
         const int osize = isize - ksize + 1;
 
         test_matrices_t idatas, odatas;
         test_matrix_t kdata;
 
-        init_matrices(isize, isize, n_samples, idatas);
-        init_matrices(osize, osize, n_samples, odatas);
+        init_matrices(isize, isize, tsize, idatas);
+        init_matrices(osize, osize, tsize, odatas);
         init_matrix(ksize, ksize, kdata);
 
-        const string_t header = (boost::format("(%1%x%2%@%3%x%4%): ") % isize % isize % ksize % ksize).str();
-        std::cout << text::resize(header, 16);
+        const string_t header = (boost::format("%5% x (%1%x%2%@%3%x%4%): ") % isize % isize % ksize % ksize % tsize).str();
+        std::cout << text::resize(header, 24);
 
         const test_scalar_t iconve1cpu = test_1cpu(ncv::iconv2d_eig<test_matrix_t>, "ieig(1CPU)", odatas, kdata, idatas);
         const test_scalar_t iconvexcpu = test_xcpu(ncv::iconv2d_eig<test_matrix_t>, "ieig(xCPU)", odatas, kdata, idatas);
@@ -424,13 +424,14 @@ int main(int argc, char* argv[])
         static const int min_isize = 24;
         static const int max_isize = 48;
         static const int min_ksize = 5;
-        static const int n_samples = 4 * 1024;
+        static const int max_n_samples = 4000;
+        static const int var_samples = 500;
 
 #ifdef NANOCV_HAVE_OPENCL
         try
 #endif
         {
-                for (int isize = min_isize; isize <= max_isize; isize += 4)
+                for (int isize = min_isize, n_samples = max_n_samples; isize <= max_isize; isize += 4, n_samples -= var_samples)
                 {
                         for (int ksize = min_ksize; ksize <= isize - min_ksize; ksize += 2)
                         {
