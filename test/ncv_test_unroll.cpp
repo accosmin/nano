@@ -124,11 +124,13 @@ void test_dot(size_t size, size_t n_tests)
 
         const string_t header = (boost::format("(%1%x%2%): ") % size % n_tests).str();
         std::cout << text::resize(header, 16);
+
+        typedef decltype(vec1.size()) test_size_t;
         
-        const test_scalar_t dot    = test_dot(ncv::dot<test_scalar_t, decltype(vec1.size())>, "dot", n_tests, vec1, vec2);
-        const test_scalar_t dotul4 = test_dot(ncv::dot_unroll4<test_scalar_t, decltype(vec1.size())>, "dotul4", n_tests, vec1, vec2);
-        const test_scalar_t dotul8 = test_dot(ncv::dot_unroll8<test_scalar_t, decltype(vec1.size())>, "dotul8", n_tests, vec1, vec2);
-        const test_scalar_t doteig = test_dot(dot_eig<test_scalar_t, decltype(vec1.size())>, "doteig", n_tests, vec1, vec2);
+        const test_scalar_t dot    = test_dot(ncv::dot<test_scalar_t, test_size_t>, "dot", n_tests, vec1, vec2);
+        const test_scalar_t dotul4 = test_dot(ncv::dot_unroll4<test_scalar_t, test_size_t>, "dotul4", n_tests, vec1, vec2);
+        const test_scalar_t dotul8 = test_dot(ncv::dot_unroll8<test_scalar_t, test_size_t>, "dotul8", n_tests, vec1, vec2);
+        const test_scalar_t doteig = test_dot(dot_eig<test_scalar_t, test_size_t>, "doteig", n_tests, vec1, vec2);
         std::cout << std::endl;
 
         check(dot,      dot, "dot");
@@ -151,10 +153,12 @@ void test_mad(size_t size, size_t n_tests)
         const string_t header = (boost::format("(%1%x%2%): ") % size % n_tests).str();
         std::cout << text::resize(header, 16);
 
-        const test_scalar_t mad    = test_mad(ncv::mad<test_scalar_t, decltype(vec1.size())>, "mad", n_tests, vec1, vec2, wei);
-        const test_scalar_t madul4 = test_mad(ncv::mad_unroll4<test_scalar_t, decltype(vec1.size())>, "madul4", n_tests, vec1, vec2, wei);
-        const test_scalar_t madul8 = test_mad(ncv::mad_unroll8<test_scalar_t, decltype(vec1.size())>, "madul8", n_tests, vec1, vec2, wei);
-        const test_scalar_t madeig = test_mad(mad_eig<test_scalar_t, decltype(vec1.size())>, "madeig", n_tests, vec1, vec2, wei);
+        typedef decltype(vec1.size()) test_size_t;
+
+        const test_scalar_t mad    = test_mad(ncv::mad<test_scalar_t, test_size_t>, "mad", n_tests, vec1, vec2, wei);
+        const test_scalar_t madul4 = test_mad(ncv::mad_unroll4<test_scalar_t, test_size_t>, "madul4", n_tests, vec1, vec2, wei);
+        const test_scalar_t madul8 = test_mad(ncv::mad_unroll8<test_scalar_t, test_size_t>, "madul8", n_tests, vec1, vec2, wei);
+        const test_scalar_t madeig = test_mad(mad_eig<test_scalar_t, test_size_t>, "madeig", n_tests, vec1, vec2, wei);
         std::cout << std::endl;
 
         check(mad,      mad, "mad");
