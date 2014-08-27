@@ -122,7 +122,7 @@ void test_dot(size_t size, size_t n_tests)
         rand_vector(size, vec1);
         rand_vector(size, vec2);
 
-        const string_t header = (boost::format("(%1%x%2%): ") % size % n_tests).str();
+        const string_t header = (boost::format("%1% x (%2%): ") % n_tests % size).str();
         std::cout << text::resize(header, 16);
 
         typedef decltype(vec1.size()) test_size_t;
@@ -150,7 +150,7 @@ void test_mad(size_t size, size_t n_tests)
 
         wei = vec1(0) + vec2(3);
 
-        const string_t header = (boost::format("(%1%x%2%): ") % size % n_tests).str();
+        const string_t header = (boost::format("%1% x (%2%): ") % n_tests % size).str();
         std::cout << text::resize(header, 16);
 
         typedef decltype(vec1.size()) test_size_t;
