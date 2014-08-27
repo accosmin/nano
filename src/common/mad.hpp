@@ -20,6 +20,29 @@ namespace ncv
         }
 
         ///
+        /// \brief general mad-product (unroll by 2)
+        ///
+        template
+        <
+                typename tscalar,
+                typename tsize
+        >
+        void mad_unroll2(const tscalar* idata, tscalar weight, tsize size, tscalar* odata)
+        {
+                const tsize size2 = size & tsize(~1);
+
+                for (auto i = 0; i < size2; i += 2)
+                {
+                        odata[i + 0] += idata[i + 0] * weight;
+                        odata[i + 1] += idata[i + 1] * weight;
+                }
+                for (auto i = size2; i < size; i ++)
+                {
+                        odata[i] += idata[i] * weight;
+                }
+        }
+
+        ///
         /// \brief general mad-product (unroll by 4)
         ///
         template

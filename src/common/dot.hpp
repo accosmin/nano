@@ -23,6 +23,32 @@ namespace ncv
         }
 
         ///
+        /// \brief general dot-product (unrolled by 2)
+        ///
+        template
+        <
+                typename tscalar,
+                typename tsize
+        >
+        tscalar dot_unroll2(const tscalar* vec1, const tscalar* vec2, tsize size)
+        {
+                const tsize size2 = size & tsize(~1);
+
+                tscalar sum0 = 0, sum1 = 0;
+                for (auto i = 0; i < size2; i += 2)
+                {
+                        sum0 += vec1[i + 0] * vec2[i + 0];
+                        sum1 += vec1[i + 1] * vec2[i + 1];
+                }
+                for (auto i = size2; i < size; i ++)
+                {
+                        sum0 += vec1[i] * vec2[i];
+                }
+
+                return (sum0 + sum1);
+        }
+
+        ///
         /// \brief general dot-product (unrolled by 4)
         ///
         template
