@@ -170,20 +170,17 @@ void test_mad(size_t size, size_t n_tests)
 int main(int argc, char* argv[])
 {
         static const size_t min_size = 4;
-        static const size_t max_size = 1024 * 1024;
+        static const size_t max_size = 64;
+        static const size_t n_tests = 1024 * 1024;
 
-        for (size_t size = min_size; size <= max_size; size *= 2)
+        for (size_t size = min_size; size <= max_size; size ++)
         {
-                const size_t n_tests = max_size / size * 128;
-
                 test_dot(size, n_tests);
         }
         std::cout << std::endl;
 
-        for (size_t size = min_size; size <= max_size; size *= 2)
+        for (size_t size = min_size; size <= max_size; size ++)
         {
-                const size_t n_tests = max_size / size * 128;
-
                 test_mad(size, n_tests);
         }
 
