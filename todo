@@ -1,9 +1,3 @@
-- BUG: the cuda-based convolution kernels fail for larger matrices (e.g. 36x36)
-- BUG: the opencl-based convolution kernels fail aswell
-
-- ncv_test_convolution:
-	- refactor to quickly switch between different scalars (e.g. float vs int vs double)
-
 - reduce the number of input/output buffers for layers
 
 - faster convolution:
@@ -25,9 +19,5 @@
 		- new loss (without the output layer): a single output should have a much larger value magnitude than the others 
 			(e.g. learn to disintangle the variation modes)
 		- than train the output layer with the annotated samples
-
-- opencl:
-	- faster implementation: slightly slower for --forward, much slower for --backward (optimize memory accesses!)	
-	- bug: wrong gradient for convolution networks if using multiple threads & the OpenCL mode
 
 

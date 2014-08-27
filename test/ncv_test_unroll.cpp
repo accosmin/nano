@@ -171,7 +171,7 @@ int main(int argc, char* argv[])
 {
         static const size_t min_size = 4;
         static const size_t max_size = 64;
-        static const size_t n_tests = 1024 * 1024;
+        static const size_t n_tests = 1024 * 1024 * 8;
 
         for (size_t size = min_size; size <= max_size; size ++)
         {
