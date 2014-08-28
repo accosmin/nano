@@ -28,52 +28,46 @@ var_crit="--criterion var-reg"
 # models
 conv1_max="--model forward-network --model-params "
 conv1_max=${conv1_max}"conv:dims=16,rows=7,cols=7;act-snorm;pool-max;"
-conv1_max=${conv1_max}"conv:dims=16,rows=4,cols=4;act-snorm;pool-max;"
-conv1_max=${conv1_max}"conv:dims=16,rows=4,cols=4;act-snorm;"
+conv1_max=${conv1_max}"conv:dims=32,rows=4,cols=4;act-snorm;pool-max;"
+conv1_max=${conv1_max}"conv:dims=64,rows=4,cols=4;act-snorm;"
 
 conv1_min=${conv1_max//pool-max/pool-min}
 conv1_avg=${conv1_max//pool-max/pool-avg}
         
 conv2_max="--model forward-network --model-params "
 conv2_max=${conv2_max}"conv:dims=16,rows=7,cols=7;act-snorm;pool-max;"
-conv2_max=${conv2_max}"conv:dims=16,rows=6,cols=6;act-snorm;pool-max;"
-conv2_max=${conv2_max}"conv:dims=16,rows=3,cols=3;act-snorm;"
+conv2_max=${conv2_max}"conv:dims=32,rows=6,cols=6;act-snorm;pool-max;"
+conv2_max=${conv2_max}"conv:dims=64,rows=3,cols=3;act-snorm;"
 
 conv2_min=${conv2_max//pool-max/pool-min}
 conv2_avg=${conv2_max//pool-max/pool-avg}
        
 conv3_max="--model forward-network --model-params "
 conv3_max=${conv3_max}"conv:dims=16,rows=5,cols=5;act-snorm;pool-max;"
-conv3_max=${conv3_max}"conv:dims=16,rows=5,cols=5;act-snorm;pool-max;"
-conv3_max=${conv3_max}"conv:dims=16,rows=4,cols=4;act-snorm;"
+conv3_max=${conv3_max}"conv:dims=32,rows=5,cols=5;act-snorm;pool-max;"
+conv3_max=${conv3_max}"conv:dims=64,rows=4,cols=4;act-snorm;"
 
 conv3_min=${conv3_max//pool-max/pool-min}
 conv3_avg=${conv3_max//pool-max/pool-avg}
 
 mlp0="--model forward-network --model-params "
-mlp1=${mlp0}"linear:dims=64;act-snorm;"
+mlp1=${mlp0}"linear:dims=128;act-snorm;"
 mlp2=${mlp1}"linear:dims=64;act-snorm;"
-mlp3=${mlp2}"linear:dims=64;act-snorm;"
-mlp4=${mlp3}"linear:dims=64;act-snorm;"
-mlp5=${mlp4}"linear:dims=64;act-snorm;"
-mlp6=${mlp5}"linear:dims=64;act-snorm;"
+mlp3=${mlp2}"linear:dims=32;act-snorm;"
+mlp4=${mlp3}"linear:dims=16;act-snorm;"
+mlp5=${mlp4}"linear:dims=8;act-snorm;"
 
 outlayer=";linear:dims=10;softmax:type=global;"
 
 # train models
-for trainer in `echo "mbatch_gd"` #"stoch_sg stoch_sga stoch_sia mbatch_gd mbatch_cgd mbatch_lbfgs batch_gd batch_cgd batch_lbfgs"`
+for model in `echo "conv1_max conv1_avg conv1_min conv2_max conv2_avg conv2_min conv3_max conv3_avg conv3_min mlp0 mlp1 mlp2 mlp3 mlp4 mlp5"`
 do
-        fn_train ${dir_exp_mnist} conv1_max_${trainer} ${params} ${!trainer} ${avg_crit} ${conv1_max}${outlayer}
-        fn_train ${dir_exp_mnist} conv1_min_${trainer} ${params} ${!trainer} ${avg_crit} ${conv1_min}${outlayer}
-        fn_train ${dir_exp_mnist} conv1_avg_${trainer} ${params} ${!trainer} ${avg_crit} ${conv1_avg}${outlayer}
-
-        fn_train ${dir_exp_mnist} conv1_max_l2n_${trainer} ${params} ${!trainer} ${l2n_crit} ${conv1_max}${outlayer}
-        fn_train ${dir_exp_mnist} conv1_min_l2n_${trainer} ${params} ${!trainer} ${l2n_crit} ${conv1_min}${outlayer}
-        fn_train ${dir_exp_mnist} conv1_avg_l2n_${trainer} ${params} ${!trainer} ${l2n_crit} ${conv1_avg}${outlayer}
-
-        fn_train ${dir_exp_mnist} conv1_max_var_${trainer} ${params} ${!trainer} ${var_crit} ${conv1_max}${outlayer}
-        fn_train ${dir_exp_mnist} conv1_min_var_${trainer} ${params} ${!trainer} ${var_crit} ${conv1_min}${outlayer}
-        fn_train ${dir_exp_mnist} conv1_avg_var_${trainer} ${params} ${!trainer} ${var_crit} ${conv1_avg}${outlayer}
+        for trainer in `echo "mbatch_gd"` #"stoch_sg stoch_sga stoch_sia mbatch_gd mbatch_cgd mbatch_lbfgs batch_gd batch_cgd batch_lbfgs"`
+        do
+                fn_train ${dir_exp_mnist} ${model} ${params} ${!trainer} ${avg_crit} ${!model}${outlayer}
+                fn_train ${dir_exp_mnist} ${model}_l2n ${params} ${!trainer} ${l2n_crit} ${!model}${outlayer}
+                fn_train ${dir_exp_mnist} ${model}_var ${params} ${!trainer} ${var_crit} ${!model}${outlayer}
+        done
 done
 
 # compare models
@@ -82,3 +76,15 @@ bash plot_models.sh ${dir_exp_mnist}/models.pdf ${dir_exp_mnist}/*.state
 bash plot_models.sh ${dir_exp_mnist}/conv1_max_models.pdf ${dir_exp_mnist}/conv1_max_*.state
 bash plot_models.sh ${dir_exp_mnist}/conv1_min_models.pdf ${dir_exp_mnist}/conv1_min_*.state
 bash plot_models.sh ${dir_exp_mnist}/conv1_avg_models.pdf ${dir_exp_mnist}/conv1_avg_*.state
+
+bash plot_models.sh ${dir_exp_mnist}/conv2_max_models.pdf ${dir_exp_mnist}/conv2_max_*.state
+bash plot_models.sh ${dir_exp_mnist}/conv2_min_models.pdf ${dir_exp_mnist}/conv2_min_*.state
+bash plot_models.sh ${dir_exp_mnist}/conv2_avg_models.pdf ${dir_exp_mnist}/conv2_avg_*.state
+
+bash plot_models.sh ${dir_exp_mnist}/conv3_max_models.pdf ${dir_exp_mnist}/conv3_max_*.state
+bash plot_models.sh ${dir_exp_mnist}/conv3_min_models.pdf ${dir_exp_mnist}/conv3_min_*.state
+bash plot_models.sh ${dir_exp_mnist}/conv3_avg_models.pdf ${dir_exp_mnist}/conv3_avg_*.state
+
+bash plot_models.sh ${dir_exp_mnist}/mlp_models.pdf ${dir_exp_mnist}/mlp*.state
+bash plot_models.sh ${dir_exp_mnist}/mlp_l2n_models.pdf ${dir_exp_mnist}/mlp*_l2n.state
+bash plot_models.sh ${dir_exp_mnist}/mlp_var_models.pdf ${dir_exp_mnist}/mlp*_var.state
