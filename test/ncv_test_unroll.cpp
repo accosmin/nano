@@ -10,24 +10,27 @@ typedef double test_scalar_t;
 typedef ncv::tensor::vector_types_t<test_scalar_t>::tvector     test_vector_t;
 typedef ncv::tensor::vector_types_t<test_scalar_t>::tvectors    test_vectors_t;
 
-template
-<
-        typename tscalar,
-        typename tsize
->
-tscalar dot_eig(const tscalar* vec1, const tscalar* vec2, tsize size)
+namespace ncv
 {
-        return tensor::make_vector(vec1, size).dot(tensor::make_vector(vec2, size));
-}
+        template
+        <
+                typename tscalar,
+                typename tsize
+        >
+        tscalar dot_eig(const tscalar* vec1, const tscalar* vec2, tsize size)
+        {
+                return tensor::make_vector(vec1, size).dot(tensor::make_vector(vec2, size));
+        }
 
-template
-<
-        typename tscalar,
-        typename tsize
->
-void mad_eig(const tscalar* idata, tscalar weight, tsize size, tscalar* odata)
-{
-        tensor::make_vector(odata, size).array() += weight * tensor::make_vector(idata, size).array();
+        template
+        <
+                typename tscalar,
+                typename tsize
+        >
+        void mad_eig(const tscalar* idata, tscalar weight, tsize size, tscalar* odata)
+        {
+                tensor::make_vector(odata, size).array() += weight * tensor::make_vector(idata, size).array();
+        }
 }
 
 template
@@ -123,7 +126,7 @@ void test_dot(size_t size, size_t n_tests)
         rand_vector(size, vec2);
 
         const string_t header = (boost::format("%1% x (%2%): ") % n_tests % size).str();
-        std::cout << text::resize(header, 16);
+        std::cout << text::resize(header, 20);
 
         typedef decltype(vec1.size()) test_size_t;
         
@@ -131,7 +134,7 @@ void test_dot(size_t size, size_t n_tests)
         const test_scalar_t dotul2 = test_dot(ncv::dot_unroll2<test_scalar_t, test_size_t>, "dotul2", n_tests, vec1, vec2);
         const test_scalar_t dotul4 = test_dot(ncv::dot_unroll4<test_scalar_t, test_size_t>, "dotul4", n_tests, vec1, vec2);
         const test_scalar_t dotul8 = test_dot(ncv::dot_unroll8<test_scalar_t, test_size_t>, "dotul8", n_tests, vec1, vec2);
-        const test_scalar_t doteig = test_dot(dot_eig<test_scalar_t, test_size_t>, "doteig", n_tests, vec1, vec2);
+        const test_scalar_t doteig = test_dot(ncv::dot_eig<test_scalar_t, test_size_t>, "doteig", n_tests, vec1, vec2);
         std::cout << std::endl;
 
         check(dot,      dot, "dot");
@@ -153,7 +156,7 @@ void test_mad(size_t size, size_t n_tests)
         wei = vec1(0) + vec2(3);
 
         const string_t header = (boost::format("%1% x (%2%): ") % n_tests % size).str();
-        std::cout << text::resize(header, 16);
+        std::cout << text::resize(header, 20);
 
         typedef decltype(vec1.size()) test_size_t;
 
@@ -161,7 +164,7 @@ void test_mad(size_t size, size_t n_tests)
         const test_scalar_t madul2 = test_mad(ncv::mad_unroll2<test_scalar_t, test_size_t>, "madul2", n_tests, vec1, vec2, wei);
         const test_scalar_t madul4 = test_mad(ncv::mad_unroll4<test_scalar_t, test_size_t>, "madul4", n_tests, vec1, vec2, wei);
         const test_scalar_t madul8 = test_mad(ncv::mad_unroll8<test_scalar_t, test_size_t>, "madul8", n_tests, vec1, vec2, wei);
-        const test_scalar_t madeig = test_mad(mad_eig<test_scalar_t, test_size_t>, "madeig", n_tests, vec1, vec2, wei);
+        const test_scalar_t madeig = test_mad(ncv::mad_eig<test_scalar_t, test_size_t>, "madeig", n_tests, vec1, vec2, wei);
         std::cout << std::endl;
 
         check(mad,      mad, "mad");
@@ -177,13 +180,13 @@ int main(int argc, char* argv[])
         static const size_t max_size = 64;
         static const size_t n_tests = 1024 * 1024 * 8;
 
-        for (size_t size = min_size; size <= max_size; size ++)
+        for (size_t size = min_size; size <= max_size; size *= 2)
         {
                 test_dot(size, n_tests);
         }
         std::cout << std::endl;
 
-        for (size_t size = min_size; size <= max_size; size ++)
+        for (size_t size = min_size; size <= max_size; size *= 2)
         {
                 test_mad(size, n_tests);
         }
