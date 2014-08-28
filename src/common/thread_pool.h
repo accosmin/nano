@@ -20,6 +20,8 @@ namespace ncv
         /// \brief asynchronously runs multiple workers/jobs/threads
         /// by enqueing and distribute them on all available threads
         ///
+        /// NB: this is heavily copied/inspired by http://progsch.net/wordpress/?p=81
+        ///
         class thread_pool_t
         {
         public:
