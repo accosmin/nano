@@ -54,7 +54,7 @@ mlp3=${mlp2}"linear:dims=32;act-snorm;"
 mlp4=${mlp3}"linear:dims=16;act-snorm;"
 mlp5=${mlp4}"linear:dims=8;act-snorm;"
 
-outlayer=";linear:dims=10;softmax:type=global;"
+outlayer=";linear:dims=2;softmax:type=global;"
 
 # train models
 for model in `echo "conv1_max conv1_avg conv1_min conv2_max conv2_avg conv2_min conv3_max conv3_avg conv3_min"`
