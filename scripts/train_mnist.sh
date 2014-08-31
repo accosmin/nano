@@ -29,7 +29,7 @@ var_crit="--criterion var-reg"
 conv_max="--model forward-network --model-params "
 conv_max=${conv_max}"conv:dims=16,rows=7,cols=7;act-snorm;pool-max;"
 conv_max=${conv_max}"conv:dims=32,rows=5,cols=5;act-snorm;pool-max;"
-conv_max=${conv_max}"conv:dims=64,rows=3,cols=3;act-snorm;"
+conv_max=${conv_max}"conv:dims=64,rows=3,cols=3;act-snorm;pool-max;"
 
 conv_min=${conv_max//pool-max/pool-min}
 conv_avg=${conv_max//pool-max/pool-avg}
@@ -41,7 +41,7 @@ mlp3=${mlp2}"linear:dims=32;act-snorm;"
 mlp4=${mlp3}"linear:dims=16;act-snorm;"
 mlp5=${mlp4}"linear:dims=8;act-snorm;"
 
-outlayer=";linear:dims=10;softmax:type=global;"
+outlayer="linear:dims=10;softmax:type=global;"
 
 # train models
 for model in `echo "conv_max conv_avg conv_min"`
