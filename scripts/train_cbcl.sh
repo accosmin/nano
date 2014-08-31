@@ -26,13 +26,26 @@ l2n_crit="--criterion l2-reg"
 var_crit="--criterion var-reg"
 
 # models
-conv_max="--model forward-network --model-params "
-conv_max=${conv_max}"conv:dims=16,rows=7,cols=7;act-snorm;pool-max;"
-conv_max=${conv_max}"conv:dims=32,rows=5,cols=5;act-snorm;pool-max;"
-conv_max=${conv_max}"conv:dims=64,rows=3,cols=3;act-snorm;"
+conv1_max="--model forward-network --model-params "
+conv1_max=${conv1_max}"conv:dims=16,rows=7,cols=7;act-snorm;pool-max;"
+conv1_max=${conv1_max}"conv:dims=32,rows=5,cols=5;act-snorm;"
 
-conv_min=${conv_max//pool-max/pool-min}
-conv_avg=${conv_max//pool-max/pool-avg}
+conv1_min=${conv1_max//pool-max/pool-min}
+conv1_avg=${conv1_max//pool-max/pool-avg}
+
+conv2_max="--model forward-network --model-params "
+conv2_max=${conv2_max}"conv:dims=16,rows=5,cols=5;act-snorm;pool-max;"
+conv2_max=${conv2_max}"conv:dims=32,rows=5,cols=5;act-snorm;"
+
+conv2_min=${conv2_max//pool-max/pool-min}
+conv2_avg=${conv2_max//pool-max/pool-avg}
+
+conv3_max="--model forward-network --model-params "
+conv3_max=${conv3_max}"conv:dims=16,rows=5,cols=5;act-snorm;pool-max;"
+conv3_max=${conv3_max}"conv:dims=32,rows=3,cols=3;act-snorm;"
+
+conv3_min=${conv3_max//pool-max/pool-min}
+conv3_avg=${conv3_max//pool-max/pool-avg}
         
 mlp0="--model forward-network --model-params "
 mlp1=${mlp0}"linear:dims=128;act-snorm;"
@@ -44,7 +57,7 @@ mlp5=${mlp4}"linear:dims=8;act-snorm;"
 outlayer=";linear:dims=10;softmax:type=global;"
 
 # train models
-for model in `echo "conv_max conv_avg conv_min"`
+for model in `echo "conv1_max conv1_avg conv1_min conv2_max conv2_avg conv2_min conv3_max conv3_avg conv3_min"`
 do
         for trainer in `echo "mbatch_lbfgs"` #"stoch_sg stoch_sga stoch_sia mbatch_gd mbatch_cgd mbatch_lbfgs batch_gd batch_cgd batch_lbfgs"`
         do
@@ -60,4 +73,3 @@ bash plot_models.sh ${dir_exp_mnist}/models.pdf ${dir_exp_mnist}/*.state
 bash plot_models.sh ${dir_exp_mnist}/conv_max_models.pdf ${dir_exp_mnist}/conv_max_*.state
 bash plot_models.sh ${dir_exp_mnist}/conv_min_models.pdf ${dir_exp_mnist}/conv_min_*.state
 bash plot_models.sh ${dir_exp_mnist}/conv_avg_models.pdf ${dir_exp_mnist}/conv_avg_*.state
-
