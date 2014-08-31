@@ -57,7 +57,7 @@ namespace ncv
                 const trainer_state_t state(tvalue, terror, vvalue, verror);
                 m_history[config].push_back(state);
                 
-                if (verror < m_opt_state.m_verror)
+                if (state < m_opt_state)
                 {
                         m_opt_params = params;
                         m_opt_state = state;

@@ -42,6 +42,7 @@ namespace ncv
         auto min_search1d(const toperator& op, tscalar minlog, tscalar maxlog, tscalar epslog) -> decltype(op(tscalar(0)))
         {
                 typedef decltype(op(tscalar(0))) tresult;
+                typedef typename std::map<tscalar, tresult>::value_type tvalue;
                 
                 std::map<tscalar, tresult> history;
                 
@@ -77,7 +78,12 @@ namespace ncv
                         }
                 }
                 
-                return history.empty() ? tresult() : history.begin()->second;
+                return  history.empty() ?
+                        tresult() :
+                        std::min_element(history.begin(), history.end(), [] (const tvalue& res1, const tvalue& res2)
+                        {
+                                return res1.second < res2.second;
+                        })->second;
         }
 }
 
