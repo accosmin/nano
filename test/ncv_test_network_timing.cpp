@@ -98,41 +98,29 @@ int main(int argc, char *argv[])
 
         const size_t cmd_outputs = task.n_outputs();
 
-//        const string_t lmodel0;
-//        const string_t lmodel1 = lmodel0 + "linear:dims=64;act-snorm;";
-//        const string_t lmodel2 = lmodel1 + "linear:dims=64;act-snorm;";
-//        const string_t lmodel3 = lmodel2 + "linear:dims=64;act-snorm;";
-//        const string_t lmodel4 = lmodel3 + "linear:dims=64;act-snorm;";
-//        const string_t lmodel5 = lmodel4 + "linear:dims=64;act-snorm;";
+        const string_t lmodel0;
+        const string_t lmodel1 = lmodel0 + "linear:dims=128;act-snorm;";
+        const string_t lmodel2 = lmodel1 + "linear:dims=64;act-snorm;";
+        const string_t lmodel3 = lmodel2 + "linear:dims=32;act-snorm;";
+        const string_t lmodel4 = lmodel3 + "linear:dims=16;act-snorm;";
+        const string_t lmodel5 = lmodel4 + "linear:dims=8;act-snorm;";
         
-        string_t cmodel1;
-        cmodel1 = cmodel1 + "conv:dims=16,rows=7,cols=7;act-snorm;pool-max;";
-        cmodel1 = cmodel1 + "conv:dims=16,rows=4,cols=4;act-snorm;pool-max;";
-        cmodel1 = cmodel1 + "conv:dims=16,rows=4,cols=4;act-snorm;";
-        
-        string_t cmodel2;
-        cmodel2 = cmodel2 + "conv:dims=16,rows=7,cols=7;act-snorm;pool-max;";
-        cmodel2 = cmodel2 + "conv:dims=16,rows=6,cols=6;act-snorm;pool-max;";
-        cmodel2 = cmodel2 + "conv:dims=16,rows=3,cols=3;act-snorm;";
-        
-        string_t cmodel3;
-        cmodel3 = cmodel3 + "conv:dims=16,rows=5,cols=5;act-snorm;pool-max;";
-        cmodel3 = cmodel3 + "conv:dims=16,rows=5,cols=5;act-snorm;pool-max;";
-        cmodel3 = cmodel3 + "conv:dims=16,rows=4,cols=4;act-snorm;";
+        string_t cmodel;
+        cmodel = cmodel + "conv:dims=16,rows=7,cols=7;act-snorm;pool-max;";
+        cmodel = cmodel + "conv:dims=32,rows=5,cols=5;act-snorm;pool-max;";
+        cmodel = cmodel + "conv:dims=64,rows=3,cols=3;act-snorm;";
         
         const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";softmax:type=global;";
 
         strings_t cmd_networks =
         {
-//                lmodel0 + outlayer,
-//                lmodel1 + outlayer,
-//                lmodel2 + outlayer,
-//                lmodel3 + outlayer,
-//                lmodel4 + outlayer,
-//                lmodel5 + outlayer,
-                cmodel1 + outlayer,
-                cmodel2 + outlayer,
-                cmodel3 + outlayer
+                lmodel0 + outlayer,
+                lmodel1 + outlayer,
+                lmodel2 + outlayer,
+                lmodel3 + outlayer,
+                lmodel4 + outlayer,
+                lmodel5 + outlayer,
+                cmodel + outlayer
         };
 
         const rloss_t rloss = loss_manager_t::instance().get("class-ratio");
