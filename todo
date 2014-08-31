@@ -1,3 +1,6 @@
+- BUG: the optimum state for the variational-regularized loss is not correctly computed
+- BUG: line-search failed for LBFGS
+
 - reduce the number of input/output buffers for layers
 
 - faster convolution:
