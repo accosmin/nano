@@ -14,7 +14,7 @@ task_mnist="--task mnist --task-dir ${dir_db}/mnist/"
 task_stl10="--task stl10 --task-dir ${dir_db}/stl10/"
 task_cifar10="--task cifar10 --task-dir ${dir_db}/cifar10/"
 task_cifar100="--task cifar100 --task-dir ${dir_db}/cifar100/"
-task_clbclfaces="--task cbcl-faces --task-dir ${dir_db}/cbcl-faces/"
+task_cbclfaces="--task cbcl-faces --task-dir ${dir_db}/cbcl-faces/"
 
 # results
 dir_exp_svhn=${dir_exp}/svhn/

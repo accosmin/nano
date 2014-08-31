@@ -4,7 +4,7 @@ source common.sh
 
 # common parameters
 params=""
-params=${params}${task_mnist}
+params=${params}${task_cbclfaces}
 params=${params}" --loss class-ratio --trials 10 --threads 8"
 
 # trainers 
@@ -61,15 +61,15 @@ for model in `echo "conv1_max conv1_avg conv1_min conv2_max conv2_avg conv2_min 
 do
         for trainer in `echo "mbatch_lbfgs"` #"stoch_sg stoch_sga stoch_sia mbatch_gd mbatch_cgd mbatch_lbfgs batch_gd batch_cgd batch_lbfgs"`
         do
-                fn_train ${dir_exp_mnist} ${model} ${params} ${!trainer} ${avg_crit} ${!model}${outlayer}
-                fn_train ${dir_exp_mnist} ${model}_l2n ${params} ${!trainer} ${l2n_crit} ${!model}${outlayer}
-                fn_train ${dir_exp_mnist} ${model}_var ${params} ${!trainer} ${var_crit} ${!model}${outlayer}
+                fn_train ${dir_exp_cbclfaces} ${model} ${params} ${!trainer} ${avg_crit} ${!model}${outlayer}
+                fn_train ${dir_exp_cbclfaces} ${model}_l2n ${params} ${!trainer} ${l2n_crit} ${!model}${outlayer}
+                fn_train ${dir_exp_cbclfaces} ${model}_var ${params} ${!trainer} ${var_crit} ${!model}${outlayer}
         done
 done
 
 # compare models
-bash plot_models.sh ${dir_exp_mnist}/models.pdf ${dir_exp_mnist}/*.state
+bash plot_models.sh ${dir_exp_cbclfaces}/models.pdf ${dir_exp_cbcl}/*.state
 
-bash plot_models.sh ${dir_exp_mnist}/conv_max_models.pdf ${dir_exp_mnist}/conv_max_*.state
-bash plot_models.sh ${dir_exp_mnist}/conv_min_models.pdf ${dir_exp_mnist}/conv_min_*.state
-bash plot_models.sh ${dir_exp_mnist}/conv_avg_models.pdf ${dir_exp_mnist}/conv_avg_*.state
+bash plot_models.sh ${dir_exp_cbclfaces}/conv_max_models.pdf ${dir_exp_cbclfaces}/conv_max_*.state
+bash plot_models.sh ${dir_exp_cbclfaces}/conv_min_models.pdf ${dir_exp_cbclfaces}/conv_min_*.state
+bash plot_models.sh ${dir_exp_cbclfaces}/conv_avg_models.pdf ${dir_exp_cbclfaces}/conv_avg_*.state
