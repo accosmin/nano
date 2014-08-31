@@ -28,21 +28,21 @@ var_crit="--criterion var-reg"
 # models
 conv1_max="--model forward-network --model-params "
 conv1_max=${conv1_max}"conv:dims=16,rows=7,cols=7;act-snorm;pool-max;"
-conv1_max=${conv1_max}"conv:dims=32,rows=5,cols=5;act-snorm;pool-max;"
+conv1_max=${conv1_max}"conv:dims=32,rows=5,cols=5;act-snorm;"
 
 conv1_min=${conv1_max//pool-max/pool-min}
 conv1_avg=${conv1_max//pool-max/pool-avg}
 
 conv2_max="--model forward-network --model-params "
 conv2_max=${conv2_max}"conv:dims=16,rows=5,cols=5;act-snorm;pool-max;"
-conv2_max=${conv2_max}"conv:dims=32,rows=5,cols=5;act-snorm;pool-max;"
+conv2_max=${conv2_max}"conv:dims=32,rows=5,cols=5;act-snorm;"
 
 conv2_min=${conv2_max//pool-max/pool-min}
 conv2_avg=${conv2_max//pool-max/pool-avg}
 
 conv3_max="--model forward-network --model-params "
 conv3_max=${conv3_max}"conv:dims=16,rows=5,cols=5;act-snorm;pool-max;"
-conv3_max=${conv3_max}"conv:dims=32,rows=3,cols=3;act-snorm;pool-max;"
+conv3_max=${conv3_max}"conv:dims=32,rows=3,cols=3;act-snorm;"
 
 conv3_min=${conv3_max//pool-max/pool-min}
 conv3_avg=${conv3_max//pool-max/pool-avg}

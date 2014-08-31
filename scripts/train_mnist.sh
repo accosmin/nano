@@ -29,7 +29,7 @@ var_crit="--criterion var-reg"
 conv_max="--model forward-network --model-params "
 conv_max=${conv_max}"conv:dims=16,rows=7,cols=7;act-snorm;pool-max;"
 conv_max=${conv_max}"conv:dims=32,rows=5,cols=5;act-snorm;pool-max;"
-conv_max=${conv_max}"conv:dims=64,rows=3,cols=3;act-snorm;pool-max;"
+conv_max=${conv_max}"conv:dims=64,rows=3,cols=3;act-snorm;"
 
 conv_min=${conv_max//pool-max/pool-min}
 conv_avg=${conv_max//pool-max/pool-avg}
