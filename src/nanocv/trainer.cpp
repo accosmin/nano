@@ -211,9 +211,11 @@ namespace ncv
                                         result.update(state.x, tvalue, terror, vvalue, verror, epoch,
                                                       scalars_t({ data.m_lacc.lambda() }));
 
-                                        log_info() << "[train = " << tvalue << "/" << terror
+                                        log_info()
+                                                << "[train = " << tvalue << "/" << terror
                                                 << ", valid = " << vvalue << "/" << verror
                                                 << ", grad = " << state.g.lpNorm<Eigen::Infinity>()
+                                                << ", eval = " << state.n_fval_calls() << "/" << state.n_grad_calls()
                                                 << ", dims = " << data.m_lacc.psize()
                                                 << ", lambda = " << data.m_lacc.lambda()
                                                 << "] done in " << timer.elapsed() << ".";
