@@ -135,8 +135,18 @@ int main(int argc, char *argv[])
                 forward_network_t model(cmd_network);
                 model.resize(task, true);
 
-                sampler_t sampler(task);
-                sampler.setup(sampler_t::stype::uniform, cmd_samples).setup(sampler_t::atype::annotated);
+                // select random samples
+                samples_t samples;
+                {
+                        const ncv::timer_t timer;
+
+                        sampler_t sampler(task);
+                        sampler.setup(sampler_t::stype::uniform, cmd_samples).setup(sampler_t::atype::annotated);
+
+                        samples = sampler.get();
+
+                        log_info() << "<<< selected [" << samples.size() << "] random samples in " << timer.elapsed() << ".";
+                }
 
                 // process the samples
                 if (cmd_forward)
@@ -144,7 +154,7 @@ int main(int argc, char *argv[])
                         accumulator_t ldata(model, cmd_threads, "l2-reg", criterion_t::type::value, 0.1);
 
                         const ncv::timer_t timer;
-                        ldata.update(task, sampler.get(), loss);
+                        ldata.update(task, samples, loss);
 
                         log_info() << "<<< processed [" << ldata.count() << "] forward samples in " << timer.elapsed() << ".";
                 }
@@ -154,7 +164,7 @@ int main(int argc, char *argv[])
                         accumulator_t gdata(model, cmd_threads, "l2-reg", criterion_t::type::vgrad, 0.1);
 
                         const ncv::timer_t timer;
-                        gdata.update(task, sampler.get(), loss);
+                        gdata.update(task, samples, loss);
 
                         log_info() << "<<< processed [" << gdata.count() << "] backward samples in " << timer.elapsed() << ".";
                 }
