@@ -148,6 +148,23 @@ int main(int argc, char *argv[])
                         log_info() << "<<< selected [" << samples.size() << "] random samples in " << timer.elapsed() << ".";
                 }
 
+                // simulate parameter loading & saving
+                {
+                        const ncv::timer_t timer;
+
+                        vector_t params(model.psize());
+
+                        const size_t tests = 1024;
+                        for (size_t t = 0; t < tests; t ++)
+                        {
+                                params = model.params();
+                                model.load_params(params);
+                        }
+
+                        log_info() << "<<< loaded & saved " << tests << "x " << model.psize()
+                                   << " parameters in " << timer.elapsed() << ".";
+                }
+
                 // process the samples
                 if (cmd_forward)
                 {

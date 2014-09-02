@@ -30,7 +30,7 @@ conv_max="--model forward-network --model-params "
 conv_max=${conv_max}"conv:dims=16,rows=6,cols=6;act-snorm;pool-max;"
 conv_max=${conv_max}"conv:dims=32,rows=5,cols=5;act-snorm;pool-max;"
 conv_max=${conv_max}"conv:dims=64,rows=3,cols=3;act-snorm;pool-max;"
-conv_max=${conv_max}"conv:dims=64,rows=2,cols=2;act-snorm;"
+conv_max=${conv_max}"conv:dims=128,rows=2,cols=2;act-snorm;"
 
 conv_min=${conv_max//pool-max/pool-min}
 conv_avg=${conv_max//pool-max/pool-avg}
