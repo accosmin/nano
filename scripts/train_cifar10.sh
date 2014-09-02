@@ -4,7 +4,7 @@ source common.sh
 
 # common parameters
 params=""
-params=${params}${task_cbclfaces}
+params=${params}${task_cifar10}
 params=${params}" --loss class-ratio --trials 10 --threads 8"
 
 # trainers 
@@ -27,9 +27,10 @@ var_crit="--criterion var-reg"
 
 # models
 conv_max="--model forward-network --model-params "
-conv_max=${conv_max}"conv:dims=16,rows=5,cols=5;act-snorm;pool-max;"
-conv_max=${conv_max}"conv:dims=32,rows=4,cols=4;act-snorm;pool-max;"
-conv_max=${conv_max}"conv:dims=64,rows=3,cols=3;act-snorm;"
+conv_max=${conv_max}"conv:dims=16,rows=6,cols=6;act-snorm;pool-max;"
+conv_max=${conv_max}"conv:dims=32,rows=5,cols=5;act-snorm;pool-max;"
+conv_max=${conv_max}"conv:dims=64,rows=3,cols=3;act-snorm;pool-max;"
+conv_max=${conv_max}"conv:dims=64,rows=2,cols=2;act-snorm;"
 
 conv_min=${conv_max//pool-max/pool-min}
 conv_avg=${conv_max//pool-max/pool-avg}
@@ -41,22 +42,23 @@ mlp3=${mlp2}"linear:dims=32;act-snorm;"
 mlp4=${mlp3}"linear:dims=16;act-snorm;"
 mlp5=${mlp4}"linear:dims=8;act-snorm;"
 
-outlayer="linear:dims=2;softmax:type=global;"
+outlayer="linear:dims=10;softmax:type=global;"
 
 # train models
 for model in `echo "conv_max conv_avg conv_min"`
 do
         for trainer in `echo "mbatch_lbfgs"` #"stoch_sg stoch_sga stoch_sia mbatch_gd mbatch_cgd mbatch_lbfgs batch_gd batch_cgd batch_lbfgs"`
         do
-                fn_train ${dir_exp_cbclfaces} ${model} ${params} ${!trainer} ${avg_crit} ${!model}${outlayer}
-                fn_train ${dir_exp_cbclfaces} ${model}_l2n ${params} ${!trainer} ${l2n_crit} ${!model}${outlayer}
-                fn_train ${dir_exp_cbclfaces} ${model}_var ${params} ${!trainer} ${var_crit} ${!model}${outlayer}
+                fn_train ${dir_exp_cifar10} ${model} ${params} ${!trainer} ${avg_crit} ${!model}${outlayer}
+                fn_train ${dir_exp_cifar10} ${model}_l2n ${params} ${!trainer} ${l2n_crit} ${!model}${outlayer}
+                fn_train ${dir_exp_cifar10} ${model}_var ${params} ${!trainer} ${var_crit} ${!model}${outlayer}
         done
 done
 
 # compare models
-bash plot_models.sh ${dir_exp_cbclfaces}/models.pdf ${dir_exp_cbclfaces}/*.state
+bash plot_models.sh ${dir_exp_cifar10}/models.pdf ${dir_exp_cifar10}/*.state
 
-bash plot_models.sh ${dir_exp_cbclfaces}/conv_max_models.pdf ${dir_exp_cbclfaces}/conv_max_*.state
-bash plot_models.sh ${dir_exp_cbclfaces}/conv_min_models.pdf ${dir_exp_cbclfaces}/conv_min_*.state
-bash plot_models.sh ${dir_exp_cbclfaces}/conv_avg_models.pdf ${dir_exp_cbclfaces}/conv_avg_*.state
+bash plot_models.sh ${dir_exp_cifar10}/conv_max_models.pdf ${dir_exp_cifar10}/conv_max_*.state
+bash plot_models.sh ${dir_exp_cifar10}/conv_min_models.pdf ${dir_exp_cifar10}/conv_min_*.state
+bash plot_models.sh ${dir_exp_cifar10}/conv_avg_models.pdf ${dir_exp_cifar10}/conv_avg_*.state
+
