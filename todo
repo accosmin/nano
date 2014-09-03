@@ -1,7 +1,9 @@
 - double check the variance computation in ::stats:
 	- it looks too small
 
-- BUG: line-search failed for LBFGS
+- improve the speed of the linear layers: the gradient takes too much to compute!
+
+- finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
 
 - reduce the number of input/output buffers for layers
 
