@@ -1,3 +1,6 @@
+- double check the variance computation in ::stats:
+	- it looks too small
+
 - BUG: line-search failed for LBFGS
 
 - reduce the number of input/output buffers for layers
