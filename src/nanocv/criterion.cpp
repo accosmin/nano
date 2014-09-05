@@ -22,7 +22,7 @@ namespace ncv
         criterion_t& criterion_t::reset(const model_t& model)
         {
                 m_model = model.clone();
-                m_params = model.params();
+                m_model->save_params(m_params);
                 reset();
                 return *this;
         }

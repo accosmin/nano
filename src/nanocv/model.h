@@ -73,6 +73,11 @@ namespace ncv
                 virtual bool load_params(const vector_t& x) = 0;
 
                 ///
+                /// \brief save its parameters to vector
+                ///
+                virtual bool save_params(vector_t& x) const = 0;
+
+                ///
                 /// \brief set parameters to zero
                 ///
                 virtual void zero_params() = 0;
@@ -81,11 +86,6 @@ namespace ncv
                 /// \brief set parameters to random values
                 ///
                 virtual void random_params() = 0;
-
-                ///
-                /// \brief current parameters
-                ///
-                virtual vector_t params() const = 0;
 
                 ///
                 /// \brief compute the model's gradient wrt parameters

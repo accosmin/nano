@@ -51,13 +51,9 @@ namespace ncv
                 /// \brief save/load/initialize parameters
                 ///
                 virtual bool load_params(const vector_t& x);
+                virtual bool save_params(vector_t& x) const;
                 virtual void zero_params();
                 virtual void random_params();
-
-                ///
-                /// \brief current parameters
-                ///
-                virtual vector_t params() const;
 
                 ///
                 /// \brief number of parameters

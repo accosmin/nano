@@ -145,7 +145,8 @@ int main(int argc, char *argv[])
 
                         samples = sampler.get();
 
-                        log_info() << "<<< selected [" << samples.size() << "] random samples in " << timer.elapsed() << ".";
+                        log_info() << "<<< selected [" << samples.size()
+                                   << "] random samples in " << timer.elapsed() << ".";
                 }
 
                 // simulate parameter loading & saving
@@ -157,7 +158,7 @@ int main(int argc, char *argv[])
                         const size_t tests = 1024;
                         for (size_t t = 0; t < tests; t ++)
                         {
-                                params = model.params();
+                                model.save_params(params);
                                 model.load_params(params);
                         }
 

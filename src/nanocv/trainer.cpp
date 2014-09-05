@@ -265,7 +265,8 @@ namespace ncv
                         trainer_result_t result;
 
                         // optimize the model
-                        vector_t x = model.params();
+                        vector_t x;
+                        model.save_params(x);
                         for (size_t c = 0, epoch = 0; c < cycles; c ++)
                         {
                                 trainer_data_t data(task, tsampler, vsampler, loss, x, lacc, gacc);
@@ -421,7 +422,8 @@ namespace ncv
                         const size_t iterations = epochs * tsampler.size();             // SGD iterations
                         const scalar_t beta = std::pow(0.01, 1.0 / iterations);         // Learning rate decay rate
                         
-                        const vector_t x0 = model.params();
+                        vector_t x0;
+                        model.save_params(x0);
                         
                         trainer_result_t result;
                         

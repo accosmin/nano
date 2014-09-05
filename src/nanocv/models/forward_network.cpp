@@ -99,9 +99,13 @@ namespace ncv
                 return gradient;
         }
 
-        vector_t forward_network_t::params() const
+        bool forward_network_t::save_params(vector_t& x) const
         {
-                vector_t x(psize());
+                const size_t psize = this->psize();
+                if (psize != static_cast<size_t>(x.size()))
+                {
+                        x.resize(psize);
+                }
 
                 scalar_t* px = x.data() + x.size();
                 for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
@@ -111,8 +115,8 @@ namespace ncv
                         px -= layer->psize();
                         layer->save_params(px);
                 }
-                
-                return x;
+
+                return true;
         }
 
         bool forward_network_t::load_params(const vector_t& x)
@@ -160,7 +164,8 @@ namespace ncv
 
         bool forward_network_t::save(boost::archive::binary_oarchive& oa) const
         {
-                const vector_t p = this->params();
+                vector_t p;
+                save_params(p);
 
                 oa << m_configuration;
                 oa << p;
