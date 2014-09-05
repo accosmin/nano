@@ -155,15 +155,15 @@ namespace ncv
                         >
                         void copy_from(const ttscalar* d)
                         {
-                                std::copy(d, d + size(), data());
+                                m_data = tensor::make_vector(d, size());
                         }
                         template
                         <
                                 typename ttscalar
                         >
                         void copy_to(ttscalar* d) const
-                        {
-                                std::copy(data(), data() + size(), d);
+                        {                                
+                                tensor::make_vector(d, size()) = m_data;
                         }
 
                         ///
@@ -196,7 +196,7 @@ namespace ncv
                         >
                         void copy_plane_from(tsize i, const ttscalar* d)
                         {
-                                std::copy(d, d + plane_size(), plane_data(i));
+                                tensor::make_vector(plane_data(i), plane_size()) = tensor::make_vector(d, plane_size());
                         }
                         template
                         <
@@ -204,7 +204,7 @@ namespace ncv
                         >
                         void copy_plane_to(tsize i, ttscalar* d) const
                         {
-                                std::copy(plane_data(i), plane_data(i) + plane_size(), d);
+                                tensor::make_vector(d, plane_size()) = tensor::make_vector(plane_data(i), plane_size());
                         }
 
                 private:

@@ -1,10 +1,9 @@
 #ifndef NANOCV_TENSOR_UTIL_HPP
 #define NANOCV_TENSOR_UTIL_HPP
 
-#include <eigen3/Eigen/Core>
 #include <boost/serialization/vector.hpp>
-#include <type_traits>
 #include <algorithm>
+#include "vector.hpp"
 
 namespace ncv
 {
@@ -19,7 +18,7 @@ namespace ncv
                 >
                 typename ttensor::Scalar* save(const ttensor& t, typename ttensor::Scalar* data)
                 {
-                        std::copy(t.data(), t.data() + t.size(), data);
+                        tensor::make_vector(data, t.size()) = tensor::make_vector(t.data(), t.size());
                         return data + t.size();
                 }
 
@@ -32,7 +31,7 @@ namespace ncv
                 >
                 const typename ttensor::Scalar* load(ttensor& t, const typename ttensor::Scalar* data)
                 {
-                        std::copy(data, data + t.size(), t.data());
+                        tensor::make_vector(t.data(), t.size()) = tensor::make_vector(data, t.size());
                         return data + t.size();
                 }
 
