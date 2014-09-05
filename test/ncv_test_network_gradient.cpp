@@ -79,7 +79,7 @@ static void test_grad_params(
 
                 log_info() << header << " [" << (t + 1) << "/" << n_tests
                            << "]: samples = " << n_samples
-                           << ", dg_params = " << dg_params << " (" << (ok ? "ERROR" : "OK") << ").";
+                           << ", dg_params = " << dg_params << " (" << (ok ? "OK" : "ERROR") << ").";
         }
 }
 
