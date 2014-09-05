@@ -1,7 +1,6 @@
-- double check the variance computation in ::stats:
-	- it looks too small
-
-- improve the speed of the linear layers: the gradient takes too much to compute!
+- improve the speed of the linear layers: 
+	- the gradient takes too much to compute!
+	- the gradient does not scale with the number of threads
 
 - finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
 
