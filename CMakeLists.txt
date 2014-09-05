@@ -144,7 +144,8 @@ set(nanocv_test_programs
         ncv_test_unroll
         ncv_test_network_gradient
         ncv_test_network_timing
-        ncv_test_mem)
+        ncv_test_mem
+        ncv_test_stats)
 
 set(nanocv_programs
         ncv_max_threads

@@ -72,7 +72,7 @@ namespace ncv
                 tscalar max() const { return m_max; }
                 tscalar avg() const { return sum() / count(); }
                 tscalar var() const { return (m_sumsq - m_sum * m_sum / m_count) / m_count; }
-                tscalar stdev() const { return std::sqrt(var()); }
+                tscalar stdev() const { return std::sqrt((m_sumsq - m_sum * m_sum / m_count) / (m_count - 1)); }
                 tscalar sum() const { return m_sum; }
                 
         private:
