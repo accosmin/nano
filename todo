@@ -1,3 +1,6 @@
+- modify ncv_tester to save correctly classified and miss-classified images:
+	- --save-dir <dir> (similarly to ncv_info_task!)
+
 - improve the speed of the linear layers: 
 	- the gradient takes too much to compute!
 	- the gradient does not scale with the number of threads
