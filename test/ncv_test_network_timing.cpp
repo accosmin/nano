@@ -185,6 +185,8 @@ int main(int argc, char *argv[])
 
                         log_info() << "<<< processed [" << gdata.count() << "] backward samples in " << timer.elapsed() << ".";
                 }
+
+                log_info();
         }
 
         // OK
