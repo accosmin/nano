@@ -99,11 +99,11 @@ int main(int argc, char *argv[])
         const size_t cmd_outputs = task.n_outputs();
 
         const string_t lmodel0;
-        const string_t lmodel1 = lmodel0 + "linear:dims=128;act-snorm;";
-        const string_t lmodel2 = lmodel1 + "linear:dims=64;act-snorm;";
-        const string_t lmodel3 = lmodel2 + "linear:dims=32;act-snorm;";
-        const string_t lmodel4 = lmodel3 + "linear:dims=16;act-snorm;";
-        const string_t lmodel5 = lmodel4 + "linear:dims=8;act-snorm;";
+        const string_t lmodel1 = lmodel0 + "linear:dims=100;act-snorm;";
+        const string_t lmodel2 = lmodel1 + "linear:dims=100;act-snorm;";
+        const string_t lmodel3 = lmodel2 + "linear:dims=100;act-snorm;";
+        const string_t lmodel4 = lmodel3 + "linear:dims=100;act-snorm;";
+        const string_t lmodel5 = lmodel4 + "linear:dims=100;act-snorm;";
         
         string_t cmodel;
         cmodel = cmodel + "conv:dims=16,rows=6,cols=6;act-snorm;pool-max;";
