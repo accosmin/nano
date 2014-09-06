@@ -3,6 +3,8 @@
 
 	- or modify the task to duplicate the less frequent classes
 
+	- or store for each training sample a weight: modify the loss value & error, sample based on this weight
+
 - finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
 
 - reduce the number of input/output buffers for layers:
