@@ -23,7 +23,7 @@ namespace ncv
                 return (targets - scores).array().abs().sum();
         }
 
-        scalar_t multi_class_error(const vector_t& targets, const vector_t& scores)
+        scalar_t mclass_error(const vector_t& targets, const vector_t& scores)
         {
                 assert(targets.size() == scores.size());
                 
@@ -38,6 +38,22 @@ namespace ncv
                         }
                 }
                 
+                return ret;
+        }
+
+        indices_t classes(const vector_t& scores)
+        {
+                const scalar_t thres = 1.0 / scores.size();
+
+                indices_t ret;
+                for (auto i = 0; i < scores.size(); i ++)
+                {
+                        if (scores(i) >= thres)
+                        {
+                                ret.push_back(i);
+                        }
+                }
+
                 return ret;
         }
 }
