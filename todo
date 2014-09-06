@@ -1,7 +1,3 @@
-- improve the speed of the linear layers: 
-	- the gradient takes too much to compute!
-	- the gradient does not scale with the number of threads
-
 - finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
 
 - reduce the number of input/output buffers for layers:
@@ -10,21 +6,21 @@
 - faster convolution:
         - check if any improvement if using a 3D convolution    
                
-- optimization statistics computed at the layer level: average gradient LInf-norm, number of calls
-	- to be printed when the layers are destroyed?
-	- this is to investigate why it takes many more iterations to optimize networks with more layers
-		(diminishing gradient)
+- improve the speed of the linear layers: 
+	- the gradient takes too much to compute!
+	- the gradient does not scale with the number of threads
 
-- more efficient way to store & select samples for large datasets:
-	- allocate xGB of RAM to store some samples in memory and load the others from the disk
-	- e.g. NORB or ImageNet
-
-- thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
-	
-- implement other training methods for the convolution network:
+- unsupervised learning (after 0.1 release): 
 	- unsupervised training:
 		- new loss (without the output layer): a single output should have a much larger value magnitude than the others 
 			(e.g. learn to disintangle the variation modes)
 		- than train the output layer with the annotated samples
 
+- reconstruction regularization (after 0.1 release):
+	- for linear & convolution layers -> reuse parameters to easily reconstruct the input
+
+- feature visualization & image generation (after 0.1 release)
+
+- thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
+	
 
