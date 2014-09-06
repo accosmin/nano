@@ -3,7 +3,7 @@
 #include "common/logger.h"
 #include "common/thread_pool.h"
 #include "common/random.hpp"
-#include "common/search1d.hpp"
+#include "common/log_search.hpp"
 #include "optimize/opt_gd.hpp"
 #include "optimize/opt_cgd.hpp"
 #include "optimize/opt_lbfgs.hpp"
@@ -132,7 +132,7 @@ namespace ncv
                 {
                         if (accumulator_t::can_regularize(criterion))
                         {
-                                return min_search1d<toperator, scalar_t>(op, -1.0, +6.0, 0.2);
+                                return log_min_search<toperator, scalar_t>(op, -1.0, +6.0, 0.2);
                         }
 
                         else

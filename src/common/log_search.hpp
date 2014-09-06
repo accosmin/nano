@@ -1,5 +1,5 @@
-#ifndef NANOCV_SEARCH1D_H
-#define NANOCV_SEARCH1D_H
+#ifndef NANOCV_LOG_SEARCH_H
+#define NANOCV_LOG_SEARCH_H
 
 #include <cmath>
 #include <map>
@@ -39,7 +39,8 @@ namespace ncv
                 typename toperator,     ///< toperator(tscalar param) returns a tscalar score
                 typename tscalar
         >
-        auto min_search1d(const toperator& op, tscalar minlog, tscalar maxlog, tscalar epslog) -> decltype(op(tscalar(0)))
+        auto log_min_search(const toperator& op, tscalar minlog, tscalar maxlog, tscalar epslog)
+                -> decltype(op(tscalar(0)))
         {
                 typedef decltype(op(tscalar(0))) tresult;
                 typedef typename std::map<tscalar, tresult>::value_type tvalue;
@@ -87,5 +88,5 @@ namespace ncv
         }
 }
 
-#endif // NANOCV_SEARCH1D_H
+#endif // NANOCV_LOG_SEARCH_H
 
