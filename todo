@@ -1,6 +1,8 @@
 - assymetric loss:
 	- e.g. the non-face samples dominate the face samples (use a similar weighting as in the phd thesis)
 
+	- or modify the task to duplicate the less frequent classes
+
 - finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
 
 - reduce the number of input/output buffers for layers:
