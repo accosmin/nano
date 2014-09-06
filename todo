@@ -10,6 +10,9 @@
 	- the gradient takes too much to compute!
 	- the gradient does not scale with the number of threads
 
+- implement this network type:
+	- http://arxiv.org/pdf/1312.4400v3.pdf
+
 - unsupervised learning (after 0.1 release): 
 	- unsupervised training:
 		- new loss (without the output layer): a single output should have a much larger value magnitude than the others 
