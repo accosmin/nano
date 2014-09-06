@@ -5,6 +5,8 @@
 
 	- or store for each training sample a weight: modify the loss value & error, sample based on this weight
 
+- Lp norm regularization
+
 - finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
 
 - reduce the number of input/output buffers for layers:
@@ -30,6 +32,8 @@
 	- for linear & convolution layers -> reuse parameters to easily reconstruct the input
 
 - feature visualization & image generation (after 0.1 release)
+
+- random forests (after 0.1 release)
 
 - thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
 	
