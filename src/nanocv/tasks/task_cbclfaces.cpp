@@ -19,13 +19,13 @@ namespace ncv
 
                 clear_memory(n_train_samples + n_test_samples);
 
-                return  load(train_face_dir, true, protocol::train) +
-                        load(train_nonface_dir, false, protocol::train) == n_train_samples &&
-                        load(test_face_dir, true, protocol::test) +
-                        load(test_nonface_dir, false, protocol::test) == n_test_samples;
+                return  load(train_face_dir, true, protocol::train, 2.0) +
+                        load(train_nonface_dir, false, protocol::train, 1.0) == n_train_samples &&
+                        load(test_face_dir, true, protocol::test, 50.0) +
+                        load(test_nonface_dir, false, protocol::test, 1.0) == n_test_samples;
         }
 
-        size_t cbclfaces_task_t::load(const string_t& dir, bool is_face, protocol p)
+        size_t cbclfaces_task_t::load(const string_t& dir, bool is_face, protocol p, scalar_t weight)
         {
                 log_info() << "CBCL-faces: loading directory <" << dir << "> ...";
 
@@ -43,7 +43,7 @@ namespace ncv
                                         image_t image;
                                         if (image.load_luma(path.string()))
                                         {
-                                                sample_t sample(m_images.size(), sample_region(0, 0));
+                                                sample_t sample(m_images.size(), sample_region(0, 0), weight);
                                                 sample.m_label = is_face ? "face" : "nonface";
                                                 sample.m_target = ncv::class_target(is_face ? 0 : 1, n_outputs());
                                                 sample.m_fold = { 0, p };

@@ -17,13 +17,15 @@ namespace ncv
         struct sample_t
         {
                 // constructor
-                sample_t(size_t index = 0, coord_t x = 0, coord_t y = 0, coord_t w = 0, coord_t h = 0)
-                        :       sample_t(index, geom::make_rect(x, y, w, h))
+                sample_t(size_t index = 0, coord_t x = 0, coord_t y = 0, coord_t w = 0, coord_t h = 0,
+                         scalar_t weight = 1.0)
+                        :       sample_t(index, geom::make_rect(x, y, w, h), weight)
                 {
                 }
-                sample_t(size_t index, const rect_t& region)
+                sample_t(size_t index, const rect_t& region, scalar_t weight = 1.0)
                         :       m_index(index), m_region(region),
-                                m_fold{0, protocol::test}
+                                m_fold{0, protocol::test},
+                                m_weight(weight)
                 {
                 }
 
@@ -36,6 +38,7 @@ namespace ncv
                 string_t        m_label;        ///< label (e.g. classification)
                 vector_t        m_target;       ///< target vector to predict
                 fold_t          m_fold;
+                scalar_t        m_weight;       ///< sampling weight (useful for unbalanced datasets)
         };
 
         typedef std::vector<sample_t>   samples_t;

@@ -38,7 +38,7 @@ namespace ncv
         private:
 
                 // load files from the given directory
-                size_t load(const string_t& dir, bool is_face, protocol p);
+                size_t load(const string_t& dir, bool is_face, protocol p, scalar_t weight);
         };
 }
 

@@ -7,7 +7,7 @@
 namespace ncv
 {
         ///
-        /// create a random subset of given size by uniformly sampling the set
+        /// \brief create a random subset of given size by uniformly sampling the set
         ///
         template
         <
@@ -32,7 +32,7 @@ namespace ncv
         }
 
         ///
-        /// run a functor for a random subset of given size by uniformly sampling the set
+        /// \brief run a functor for a random subset of given size by uniformly sampling the set
         ///
         template
         <
@@ -54,7 +54,7 @@ namespace ncv
         }
 
         ///
-        /// split the given samples in two subsets of (percentage1)% and (100 - percentage1)% proportion
+        /// \brief split the given samples in two subsets of (percentage1)% and (100 - percentage1)% proportion
         ///
         template
         <
