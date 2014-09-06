@@ -33,11 +33,10 @@ namespace ncv
                 return result;
         }
 
-        void task_t::save_as_images(const fold_t& fold, const string_t& basepath, size_t grows, size_t gcols) const
+        void task_t::save_as_images(
+                const fold_t& fold, const string_t& basepath, size_t grows, size_t gcols,
+                size_t border, rgba_t bkcolor) const
         {
-                const size_t border = 8;
-                const rgba_t back_color = color::make_rgba(225, 225, 0);
-
                 // process each label ...
                 const strings_t labels = this->labels();
                 for (size_t l = 0; l <= labels.size(); l ++)    // labels + non-annotated
@@ -48,38 +47,41 @@ namespace ncv
                         sampler.setup(fold).setup(label);
                         const samples_t samples = sampler.get();
 
-                        // process all samples with this label ...
-                        for (size_t i = 0, g = 1; i < samples.size(); g ++)
+                        save_as_images(samples, basepath + (label.empty() ? "" : ("_" + label)),
+                                       grows, gcols, border, bkcolor);
+                }
+        }
+
+        void task_t::save_as_images(
+                const samples_t& samples, const string_t& basepath, size_t grows, size_t gcols,
+                size_t border, rgba_t bkcolor) const
+        {
+                for (size_t i = 0, g = 1; i < samples.size(); g ++)
+                {
+                        grid_image_t grid_image(n_rows(), n_cols(), grows, gcols, border, bkcolor);
+
+                        // select samples
+                        samples_t gsamples;
+                        for ( ; i < samples.size() && gsamples.size() < grows * gcols; i ++)
                         {
-                                grid_image_t grid_image(n_rows(), n_cols(), grows, gcols, border, back_color);
-
-                                // select samples
-                                samples_t gsamples;
-                                for ( ; i < samples.size() && gsamples.size() < grows * gcols; i ++)
-                                {
-                                        gsamples.push_back(samples[i]);
-                                }
-
-                                // ... compose the image block
-                                for (size_t k = 0, r = 0; r < grows; r ++)
-                                {
-                                        for (size_t c = 0; c < gcols && k < gsamples.size(); c ++, k ++)
-                                        {
-                                                const sample_t& sample = gsamples[k];
-                                                const image_t& image = this->image(sample.m_index);
-                                                const rect_t& region = sample.m_region;
-
-                                                grid_image.set(r, c, image, region);
-                                        }
-                                }
-
-                                // ... and save it
-                                const string_t path = basepath
-                                                + (label.empty() ? "" : ("_" + label))
-                                                + "_group" + text::to_string(g) + ".png";
-                                log_info() << "saving images to <" << path << "> ...";
-                                grid_image.image().save(path);
+                                gsamples.push_back(samples[i]);
                         }
+
+                        // ... compose the image block
+                        for (size_t k = 0, r = 0; r < grows; r ++)
+                        {
+                                for (size_t c = 0; c < gcols && k < gsamples.size(); c ++, k ++)
+                                {
+                                        const sample_t& sample = gsamples[k];
+
+                                        grid_image.set(r, c, image(sample.m_index), sample.m_region);
+                                }
+                        }
+
+                        // ... and save it
+                        const string_t path = basepath + "_group" + text::to_string(g) + ".png";
+                        log_info() << "saving images to <" << path << "> ...";
+                        grid_image.image().save(path);
                 }
         }
 }

@@ -41,7 +41,12 @@ namespace ncv
                 rect_t sample_region(coord_t x, coord_t y) const;               
 
                 // save the task images to file (by grouping sample patchs into (grows, gcols) grids)
-                void save_as_images(const fold_t& fold, const string_t& basepath, size_t grows, size_t gcols) const;
+                void save_as_images(
+                        const fold_t&, const string_t& basepath, size_t grows, size_t gcols,
+                        size_t border = 8, rgba_t bkcolor = color::make_rgba(225, 225, 0)) const;
+                void save_as_images(
+                        const samples_t&, const string_t& basepath, size_t grows, size_t gcols,
+                        size_t border = 8, rgba_t bkcolor = color::make_rgba(225, 225, 0)) const;
 
                 // distinct labels
                 strings_t labels() const;
