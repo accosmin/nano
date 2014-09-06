@@ -34,6 +34,11 @@ namespace ncv
                 sampler_t(const task_t& task);
 
                 ///
+                /// \brief constructor
+                ///
+                sampler_t(const samples_t& samples);
+
+                ///
                 /// \brief restrict by fold
                 ///
                 sampler_t& setup(fold_t fold);
@@ -84,11 +89,6 @@ namespace ncv
                 size_t size() const { return m_samples.size(); }
 
                 ///
-                /// \brief return the associate task
-                ///
-                const task_t& task() const { return m_task; }
-
-                ///
                 /// \brief return if the samples are selected randomly
                 ///
                 bool is_random() const { return m_stype != stype::batch; }
@@ -103,7 +103,7 @@ namespace ncv
         private:
 
                 // attributes
-                const task_t&           m_task;                 ///< source task
+                samples_t               m_osamples;             ///< original sample pool
                 samples_t               m_samples;              ///< current pool of samples
 
                 stype                   m_stype;

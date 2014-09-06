@@ -7,17 +7,22 @@
 namespace ncv
 {
         sampler_t::sampler_t(const task_t& task)
-                :       m_task(task),
+                :       sampler_t(task.samples())
+        {
+        }
+
+        sampler_t::sampler_t(const samples_t& samples)
+                :       m_osamples(samples),
+                        m_samples(samples),
                         m_stype(stype::batch),
                         m_ssize(0)
         {
-                reset();
         }
 
         void sampler_t::reset()
         {
                 // collect all available samples (no restriction)
-                m_samples = m_task.samples();
+                m_samples = m_osamples;
         }
 
         sampler_t& sampler_t::setup(fold_t fold)
@@ -68,8 +73,6 @@ namespace ncv
 
         sampler_t& sampler_t::split(size_t percentage, sampler_t& other)
         {
-                assert(&other.m_task == &m_task);
-
                 samples_t tsamples, vsamples;
                 ncv::uniform_split(m_samples, percentage, random_t<size_t>(0, m_samples.size()), tsamples, vsamples);
 
