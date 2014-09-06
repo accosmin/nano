@@ -183,9 +183,17 @@ int main(int argc, char *argv[])
 
                                 sampler_t ok_sampler(ok_samples); ok_sampler.setup(label);
                                 sampler_t nk_sampler(nk_samples); nk_sampler.setup(label);
+                                sampler_t ll_sampler(samples); ll_sampler.setup(label);
 
-                                rtask->save_as_images(ok_sampler.get(), lbasepath + "_ok", grows, gcols, 8, ok_bkcolor);
-                                rtask->save_as_images(nk_sampler.get(), lbasepath + "_nk", grows, gcols, 8, nk_bkcolor);
+                                const samples_t ok_samples = ok_sampler.get();
+                                const samples_t nk_samples = nk_sampler.get();
+                                const sampler_t ll_samples = ll_sampler.get();
+
+                                log_info() << "miss-classified " << nk_samples.size()
+                                           << "/" << ll_samples.size() << " [" << label << "] samples.";
+
+                                rtask->save_as_images(ok_samples, lbasepath + "_ok", grows, gcols, 8, ok_bkcolor);
+                                rtask->save_as_images(nk_samples, lbasepath + "_nk", grows, gcols, 8, nk_bkcolor);
                         }
                 }
         }
