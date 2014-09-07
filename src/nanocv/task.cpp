@@ -6,6 +6,25 @@
 
 namespace ncv
 {
+        void print(const string_t& header, const samples_t& samples)
+        {
+                const strings_t labels = ncv::labels(samples);
+
+                for (const string_t& label : labels)
+                {
+                        sampler_t sampler(samples);
+                        sampler.setup(sampler_t::stype::batch);
+                        sampler.setup(label);
+
+                        const samples_t lsamples = sampler.get();
+                        log_info() << header << " [" << label
+                                   << "]: count = " << lsamples.size()
+                                   << "/" << samples.size()
+                                   << ", weights = " << ncv::accumulate(lsamples)
+                                   << "/" << ncv::accumulate(samples) << ".";
+                }
+        }
+
         rect_t task_t::sample_size() const
         {
                 return geom::make_size(n_cols(), n_rows());
@@ -18,19 +37,7 @@ namespace ncv
 
         strings_t task_t::labels() const
         {
-                // distinct labels
-                std::set<string_t> slabels;
-                for (const sample_t& sample : m_samples)
-                {
-                        if (sample.annotated())
-                        {
-                                slabels.insert(sample.m_label);
-                        }
-                }
-
-                strings_t result;
-                std::copy(slabels.begin(), slabels.end(), std::back_inserter(result));
-                return result;
+                return ncv::labels(m_samples);
         }
 
         void task_t::save_as_images(

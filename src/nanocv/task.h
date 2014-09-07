@@ -15,6 +15,11 @@ namespace ncv
         typedef task_manager_t::robject_t               rtask_t;
 
         ///
+        /// \brief display a short description of the samples
+        ///
+        void print(const string_t& header, const samples_t& samples);
+
+        ///
         /// \brief generic computer vision task consisting of a set of (annotated) images
         /// and a protocol (training + testing).
         /// samples for training & testing models can be drawn from these image.

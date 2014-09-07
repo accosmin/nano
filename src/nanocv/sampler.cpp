@@ -1,7 +1,6 @@
 #include "sampler.h"
 #include "task.h"
 #include "common/usampling.hpp"
-#include "common/wsampling.hpp"
 #include <algorithm>
 
 namespace ncv
@@ -96,12 +95,6 @@ namespace ncv
                 case stype::uniform:
                         samples = ncv::uniform_sample(m_samples, m_ssize);
                         std::sort(samples.begin(), samples.end());
-                        break;
-
-                case stype::weighted:
-                        samples = ncv::weighted_sample(m_samples, m_ssize);
-                        std::sort(samples.begin(), samples.end());
-                        normalize(samples.begin(), samples.end());
                         break;
                 }
 

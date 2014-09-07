@@ -9,22 +9,6 @@ bool check_samples(const samples_t& samples, ncv::fold_t fold)
                [&] (const sample_t& sample) { return sample.m_fold != fold; }) == samples.end();
 }
 
-void print_samples(const string_t& name, const samples_t& samples, size_t n_labels)
-{
-        for (size_t ilabel = 0; ilabel < n_labels; ilabel ++)
-        {
-                const string_t label = "label" + text::to_string(ilabel);
-
-                sampler_t sampler(samples);
-                sampler.setup(sampler_t::stype::batch);
-                sampler.setup(label);
-
-                const samples_t lsamples = sampler.get();
-                log_info() << name << " [" << label << "]: count = " << lsamples.size() << "/" << samples.size()
-                           << ", weights = " << ncv::accumulate(lsamples) << ".";
-        }
-}
-
 namespace ncv
 {
         class dummy_tast_t : public ncv::task_t
@@ -53,7 +37,7 @@ namespace ncv
                                 {
                                         for (size_t i = 0; i < size / 2; i ++)
                                         {
-                                                const size_t ilabel = (rng() < 50) ? 0 : (rng() % n_outputs());
+                                                const size_t ilabel = (rng() < 90) ? 0 : (rng() % n_outputs());
 
                                                 sample_t sample(m_images.size(), sample_region(0, 0), ilabel == 0 ? 50.0 : 1.0);
                                                 sample.m_label = "label" + text::to_string(ilabel);
@@ -73,10 +57,10 @@ namespace ncv
                                         idx += size / 2;
 
                                         // debug
-                                        print_samples("fold [" + text::to_string(f + 1) + "/" +
-                                                      text::to_string(n_folds()) + "] " +
-                                                      "protocol [" + text::to_string(p) + "]",
-                                                      samples_t(begin, end), n_outputs());
+                                        ncv::print("fold [" + text::to_string(f + 1) + "/" +
+                                                   text::to_string(n_folds()) + "] " +
+                                                   "protocol [" + text::to_string(p) + "]",
+                                                   samples_t(begin, end));
                                 }
                         }
                 }
@@ -110,6 +94,10 @@ int main(int argc, char *argv[])
                 const fold_t train_fold = {f, protocol::train};
                 const fold_t test_fold = {f, protocol::test};
 
+                const string_t header = "fold [" + text::to_string(f + 1) + "/" + text::to_string(task.n_folds()) + "]";
+                const string_t train_header = header + " protocol [" + text::to_string(protocol::train) + "]";
+                const string_t test_header = header + " protocol [" + text::to_string(protocol::test) + "]";
+
                 // batch training samples
                 sampler_t sampler(task);
                 sampler.reset();
@@ -125,13 +113,6 @@ int main(int argc, char *argv[])
 
                 const samples_t train_urand_samples = sampler.get();
 
-                // random weight-based training samples
-                sampler.reset();
-                sampler.setup(train_fold);
-                sampler.setup(sampler_t::stype::weighted, n_rand_samples);
-
-                const samples_t train_wrand_samples = sampler.get();
-
                 // batch testing samples
                 sampler.reset();
                 sampler.setup(test_fold);
@@ -145,13 +126,6 @@ int main(int argc, char *argv[])
                 sampler.setup(sampler_t::stype::uniform, n_rand_samples);
 
                 const samples_t test_urand_samples = sampler.get();
-
-                // random weight-based testing samples
-                sampler.reset();
-                sampler.setup(test_fold);
-                sampler.setup(sampler_t::stype::weighted, n_rand_samples);
-
-                const samples_t test_wrand_samples = sampler.get();
 
                 log_info() << "fold [" << (f + 1) << "/" << task.n_folds() << "]: sampled in " << timer.elapsed() << ".";
 
@@ -171,14 +145,9 @@ int main(int argc, char *argv[])
                 {
                         log_error() << "invalid random uniform training samples!";
                 }
-                if (!check_samples(train_wrand_samples, {f, protocol::train}))
-                {
-                        log_error() << "invalid random weighted training samples!";
-                }
 
-                print_samples("train batch", train_batch_samples, task.n_outputs());
-                print_samples("train urand", train_urand_samples, task.n_outputs());
-                print_samples("train wrand", train_wrand_samples, task.n_outputs());
+                ncv::print(train_header + " batch", train_batch_samples);
+                ncv::print(train_header + " urand", train_urand_samples);
 
                 if (!check_samples(test_batch_samples, {f, protocol::test}))
                 {
@@ -188,14 +157,9 @@ int main(int argc, char *argv[])
                 {
                         log_error() << "invalid random uniform testing samples!";
                 }
-                if (!check_samples(test_wrand_samples, {f, protocol::test}))
-                {
-                        log_error() << "invalid random weighted testing samples!";
-                }
 
-                print_samples("test batch", test_batch_samples, task.n_outputs());
-                print_samples("test urand", test_urand_samples, task.n_outputs());
-                print_samples("test wrand", test_wrand_samples, task.n_outputs());
+                ncv::print(test_header + " batch", test_batch_samples);
+                ncv::print(test_header + " urand", test_urand_samples);
         }
 
         // OK

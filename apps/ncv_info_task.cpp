@@ -68,13 +68,15 @@ int main(int argc, char *argv[])
 
         for (size_t f = 0; f < rtask->n_folds(); f ++)
         {
-                sampler_t trsampler(*rtask), tesampler(*rtask);
-                trsampler.setup(fold_t{f, protocol::train});
-                tesampler.setup(fold_t{f, protocol::test});
+                for (protocol p : {protocol::train, protocol::test})
+                {
+                        sampler_t sampler(*rtask);
+                        sampler.setup({f, p});
 
-                log_info() << "fold [" << (f + 1) << "/" << rtask->n_folds()
-                           << "]: #train samples = " << trsampler.size()
-                           << ", #test samples = " << tesampler.size() << ".";
+                        ncv::print("fold [" + text::to_string(f + 1) + "/" +
+                                   text::to_string(rtask->n_folds()) + "] " +
+                                   "protocol [" + text::to_string(p) + "]", sampler.get());
+                }
         }
 
         // save samples as images

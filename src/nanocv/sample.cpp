@@ -16,7 +16,10 @@ namespace ncv
                 for (auto it = begin; it != end; ++ it)
                 {
                         const sample_t& sample = *it;
-                        label_ids.insert(sample.m_label);
+//                        if (sample.annotated() &&  !sample.m_label.empty())
+                        {
+                                label_ids.insert(sample.m_label);
+                        }
                 }
 
                 return strings_t(label_ids.begin(), label_ids.end());
