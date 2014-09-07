@@ -49,6 +49,12 @@ namespace ncv
         typedef samples_t::const_iterator       samples_const_it_t;
 
         ///
+        /// \brief collect the distinct labels of the given samples
+        ///
+        strings_t labels(const samples_t& samples);
+        strings_t labels(samples_const_it_t begin, samples_const_it_t end);
+
+        ///
         /// \brief normalize samples' weights (such that the weights sum = #samples) based on the associated
         ///
         bool label_normalize(samples_t& samples);

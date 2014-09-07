@@ -24,8 +24,8 @@ namespace ncv
                         load(test_face_dir, true, protocol::test, 50.0) +
                         load(test_nonface_dir, false, protocol::test, 1.0) == n_test_samples &&
 
-                        normalize(m_samples.begin(), m_samples.begin() + n_train_samples) &&
-                        normalize(m_samples.begin() + n_train_samples, m_samples.end());
+                        label_normalize(m_samples.begin(), m_samples.begin() + n_train_samples) &&
+                        label_normalize(m_samples.begin() + n_train_samples, m_samples.end());
         }
 
         size_t cbclfaces_task_t::load(const string_t& dir, bool is_face, protocol p, scalar_t weight)
