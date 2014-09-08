@@ -1,8 +1,8 @@
 #include "nanocv.h"
 
-#include "losses/loss_classnll.hpp"
-#include "losses/loss_classratio.hpp"
 #include "losses/loss_square.hpp"
+#include "losses/loss_classnll.hpp"
+#include "losses/loss_logistic.hpp"
 
 #include "tasks/task_mnist.h"
 #include "tasks/task_cifar10.h"
@@ -19,7 +19,6 @@
 #include "layers/layer_convolution.h"
 #include "layers/layer_linear.h"
 #include "layers/layer_pool.h"
-#include "layers/layer_softmax.h"
 
 #include "models/forward_network.h"
 
@@ -44,10 +43,9 @@ namespace ncv
                 Eigen::initParallel();
 
                 // register losses
-                loss_manager_t::instance().add("classnll", classnll_loss_t());
-                loss_manager_t::instance().add("class-ratio", classratio_loss_t<true>());
-                loss_manager_t::instance().add("class-ratio-norm", classratio_loss_t<false>());
                 loss_manager_t::instance().add("square", square_loss_t());
+                loss_manager_t::instance().add("classnll", classnll_loss_t());
+                loss_manager_t::instance().add("logistic", logistic_loss_t());                
 
                 // register tasks
                 task_manager_t::instance().add("mnist", mnist_task_t());
@@ -68,7 +66,6 @@ namespace ncv
                 layer_manager_t::instance().add("pool-max", pool_max_layer_t());
                 layer_manager_t::instance().add("pool-min", pool_min_layer_t());
                 layer_manager_t::instance().add("pool-avg", pool_avg_layer_t());
-                layer_manager_t::instance().add("softmax", softmax_layer_t());
 
                 // register models
                 model_manager_t::instance().add("forward-network", forward_network_t());
@@ -80,7 +77,7 @@ namespace ncv
                 
                 // register criteria
                 criterion_manager_t::instance().add("avg", avg_criterion_t());
-                criterion_manager_t::instance().add("l2-reg", avg_l2_criterion_t());
+                criterion_manager_t::instance().add("l2n-reg", avg_l2_criterion_t());
                 criterion_manager_t::instance().add("var-reg", avg_var_criterion_t());
         }
 

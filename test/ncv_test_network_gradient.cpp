@@ -234,7 +234,6 @@ int main(int argc, char *argv[])
                                                 }
 
                                                 desc += "linear:dims=" + text::to_string(cmd_outputs) + ";";
-                                                desc += "softmax:type=global;";
 
                                                 descs.insert(desc);
                                         }

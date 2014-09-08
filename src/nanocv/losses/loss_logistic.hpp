@@ -1,30 +1,31 @@
-#ifndef NANOCV_LOSS_CLASS_NLL_HPP
-#define NANOCV_LOSS_CLASS_NLL_HPP
+#ifndef NANOCV_LOSS_LOGISTIC_HPP
+#define NANOCV_LOSS_LOGISTIC_HPP
 
 #include "loss.h"
+#include "common/math.hpp"
 #include <cassert>
 
 namespace ncv
 {
         ///
-        /// \brief multi-class negative log-likelihood loss
+        /// \brief multi-class logistic loss
         ///
-        class classnll_loss_t : public loss_t
+        class logistic_loss_t : public loss_t
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(classnll_loss_t)
+                NANOCV_MAKE_CLONABLE(logistic_loss_t)
 
                 // constructor
-                classnll_loss_t(const string_t& = string_t())
-                        :       loss_t(string_t(), "class negative-log-likelihood loss")
+                logistic_loss_t(const string_t& = string_t())
+                        :       loss_t(string_t(), "multi-class logistic loss")
                 {
                 }
 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const
                 {
-                        return mclass_argmax_error(targets, scores);
+                        return mclass_edge_error(targets, scores);
                 }
 
                 // compute the loss value & derivatives
@@ -42,21 +43,22 @@ namespace ncv
                 scalar_t _value(const vector_t& targets, const vector_t& scores) const
                 {
                         assert(targets.size() == scores.size());
-
-                        const vector_t escores = scores.array().exp();
                         
-                        return std::log(escores.array().sum()) - 0.5 * (1.0 + targets.array()).matrix().dot(scores);
+                        const vector_t edges = (- targets.array() * scores.array()).exp();
+                        
+                        return std::log(1.0 + edges.sum());
                 }
 
                 vector_t _vgrad(const vector_t& targets, const vector_t& scores) const
                 {
                         assert(targets.size() == scores.size());
                         
-                        const vector_t escores = scores.array().exp();
+                        const vector_t edges = (- targets.array() * scores.array()).exp();
+                        const scalar_t norm = 1.0 / (1.0 + edges.sum());
                         
-                        return escores.array() / escores.sum() - 0.5 * (1.0 + targets.array());
+                        return - targets.array() * edges.array() * norm;
                 }
         };
 }
 
-#endif // NANOCV_LOSS_CLASS_NLL_HPP
+#endif // NANOCV_LOSS_LOGISTIC_HPP

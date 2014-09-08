@@ -22,7 +22,7 @@ namespace ncv
         ///
         /// \brief target value of the negative class
         ///
-        inline scalar_t neg_target() { return +0.0; }
+        inline scalar_t neg_target() { return -1.0; }
         
         ///
         /// \brief check if a target value maps to a positive class
@@ -40,9 +40,14 @@ namespace ncv
         scalar_t l1_error(const vector_t& targets, const vector_t& scores);
 
         ///
-        /// \brief multi-class classification error
+        /// \brief multi-class edge-based classification error (multi-label as well)
         ///
-        scalar_t mclass_error(const vector_t& targets, const vector_t& scores);
+        scalar_t mclass_edge_error(const vector_t& targets, const vector_t& scores);
+
+        ///
+        /// \brief multi-class argmax-based classification error (single-label)
+        ///
+        scalar_t mclass_argmax_error(const vector_t& targets, const vector_t& scores);
 
         ///
         /// \brief retrieve the predicted class indices

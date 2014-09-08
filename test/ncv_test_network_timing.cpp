@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
         cmodel = cmodel + "conv:dims=32,rows=5,cols=5;act-snorm;pool-max;";
         cmodel = cmodel + "conv:dims=64,rows=4,cols=4;act-snorm;";
         
-        const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";softmax:type=global;";
+        const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
 
         strings_t cmd_networks =
         {
@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
                 cmodel + outlayer
         };
 
-        const rloss_t rloss = loss_manager_t::instance().get("class-ratio");
+        const rloss_t rloss = loss_manager_t::instance().get("classnll");
         assert(rloss);
         const loss_t& loss = *rloss;
 
@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
                 // process the samples
                 if (cmd_forward)
                 {
-                        accumulator_t ldata(model, cmd_threads, "l2-reg", criterion_t::type::value, 0.1);
+                        accumulator_t ldata(model, cmd_threads, "l2n-reg", criterion_t::type::value, 0.1);
 
                         const ncv::timer_t timer;
                         ldata.update(task, samples, loss);
@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
 
                 if (cmd_backward)
                 {
-                        accumulator_t gdata(model, cmd_threads, "l2-reg", criterion_t::type::vgrad, 0.1);
+                        accumulator_t gdata(model, cmd_threads, "l2n-reg", criterion_t::type::vgrad, 0.1);
 
                         const ncv::timer_t timer;
                         gdata.update(task, samples, loss);

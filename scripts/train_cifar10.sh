@@ -5,7 +5,7 @@ source common.sh
 # common parameters
 params=""
 params=${params}${task_cifar10}
-params=${params}" --loss class-ratio --trials 10 --threads 8"
+params=${params}" --loss classnll --trials 10 --threads 8"
 
 # trainers 
 stoch_sg="--trainer stochastic --trainer-params opt=sg,epoch=8"
@@ -22,7 +22,7 @@ batch_gd="--trainer batch --trainer-params opt=gd,iters=2048,eps=1e-6"
 
 # criteria
 avg_crit="--criterion avg"
-l2n_crit="--criterion l2-reg"
+l2n_crit="--criterion l2n-reg"
 var_crit="--criterion var-reg"
 
 # models
@@ -42,7 +42,7 @@ mlp3=${mlp2}"linear:dims=32;act-snorm;"
 mlp4=${mlp3}"linear:dims=16;act-snorm;"
 mlp5=${mlp4}"linear:dims=8;act-snorm;"
 
-outlayer="linear:dims=10;softmax:type=global;"
+outlayer="linear:dims=10;"
 
 # train models
 for model in `echo "conv_max conv_avg conv_min"`
