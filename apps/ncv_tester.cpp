@@ -115,6 +115,7 @@ int main(int argc, char *argv[])
         {
                 const fold_t test_fold = std::make_pair(f, protocol::test);
 
+		// error rate
                 const ncv::timer_t timer;
                 scalar_t lvalue, lerror;
                 ncv::test(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror);
@@ -122,51 +123,44 @@ int main(int argc, char *argv[])
 
                 lstats(lvalue);
                 estats(lerror);
-        }
 
-        // performance statistics
-        log_info() << ">>> performance: loss value = " << lstats.avg() << " +/- " << lstats.stdev()
-                   << " in [" << lstats.min() << ", " << lstats.max() << "].";
-        log_info() << ">>> performance: loss error = " << estats.avg() << " +/- " << estats.stdev()
-                   << " in [" << estats.min() << ", " << estats.max() << "].";
+		// per-label error rates
+		sampler_t sampler(*rtask);
+                sampler.setup(test_fold);
+                sampler.setup(sampler_t::atype::annotated);
+                sampler.setup(sampler_t::stype::batch);
 
-        // save classification results
-        if (!cmd_save_dir.empty())
-        {
-                for (size_t f = 0; f < rtask->n_folds(); f ++)
+                const samples_t samples = sampler.get();
+
+                // split test samples into correctly classified & miss-classified
+                samples_t ok_samples;
+                samples_t nk_samples;
+
+                for (size_t s = 0; s < samples.size(); s ++)
                 {
-                        const fold_t test_fold = std::make_pair(f, protocol::test);
+                        const sample_t& sample = samples[s];
+                        const image_t& image = rtask->image(sample.m_index);
 
-                        sampler_t sampler(*rtask);
-                        sampler.setup(test_fold);
-                        sampler.setup(sampler_t::atype::annotated);
-                        sampler.setup(sampler_t::stype::batch);
+                        const vector_t target = sample.m_target;
+                        const vector_t output = rmodel->output(image, sample.m_region).vector();
 
-                        const samples_t samples = sampler.get();
+                        const indices_t tclasses = ncv::classes(target);
+                        const indices_t oclasses = ncv::classes(output);
 
-                        // split test samples into correctly classified & miss-classified
-                        samples_t ok_samples;
-                        samples_t nk_samples;
+                        const bool ok =
+                                        tclasses.size() == oclasses.size() &&
+                                        std::mismatch(tclasses.begin(), tclasses.end(),
+                                                oclasses.begin()).first == tclasses.end();
 
-                        for (size_t s = 0; s < samples.size(); s ++)
-                        {
-                                const sample_t& sample = samples[s];
-                                const image_t& image = rtask->image(sample.m_index);
+                        (ok ? ok_samples : nk_samples).push_back(sample);
+                }
 
-                                const vector_t target = sample.m_target;
-                                const vector_t output = rmodel->output(image, sample.m_region).vector();
+                log_info() << "miss-classified " << nk_samples.size() << "/" << (samples.size()) 
+                           << " = " << ((0.0 + nk_samples.size()) / (0.0 + samples.size())) << ".";
 
-                                const indices_t tclasses = ncv::classes(target);
-                                const indices_t oclasses = ncv::classes(output);
-
-                                const bool ok =
-                                         tclasses.size() == oclasses.size() &&
-                                         std::mismatch(tclasses.begin(), tclasses.end(),
-                                                       oclasses.begin()).first == tclasses.end();
-
-                                (ok ? ok_samples : nk_samples).push_back(sample);
-                        }
-
+                // save classification results
+                if (!cmd_save_dir.empty())
+                {
                         const string_t basepath = cmd_save_dir + "/" + cmd_task + "_test_fold" + text::to_string(f + 1);
 
                         const size_t grows = cmd_save_group_rows;
@@ -190,13 +184,21 @@ int main(int argc, char *argv[])
                                 const sampler_t ll_samples = ll_sampler.get();
 
                                 log_info() << "miss-classified " << nk_samples.size()
-                                           << "/" << ll_samples.size() << " [" << label << "] samples.";
+                                           << "/" << ll_samples.size() 
+                                           << " = " << ((100.0 * nk_samples.size()) / (0.0 + ll_samples.size()))
+                                           << " [" << label << "] samples.";
 
                                 rtask->save_as_images(ok_samples, lbasepath + "_ok", grows, gcols, 8, ok_bkcolor);
                                 rtask->save_as_images(nk_samples, lbasepath + "_nk", grows, gcols, 8, nk_bkcolor);
                         }
                 }
-        }
+        }            
+
+        // performance statistics
+        log_info() << ">>> performance: loss value = " << lstats.avg() << " +/- " << lstats.stdev()
+                   << " in [" << lstats.min() << ", " << lstats.max() << "].";
+        log_info() << ">>> performance: loss error = " << estats.avg() << " +/- " << estats.stdev()
+                   << " in [" << estats.min() << ", " << estats.max() << "].";
 
         // OK
         log_info() << done;
