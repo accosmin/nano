@@ -40,7 +40,7 @@ namespace ncv
         scalar_t l1_error(const vector_t& targets, const vector_t& scores);
 
         ///
-        /// \brief multivariate classification error: highest score corresponds to the target class
+        /// \brief multi-class classification error
         ///
         scalar_t mclass_error(const vector_t& targets, const vector_t& scores);
 

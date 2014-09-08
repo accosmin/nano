@@ -29,16 +29,19 @@ namespace ncv
                 
                 const scalar_t thres = 1.0 / scores.size();
                 
-                scalar_t ret = 0;                
+                size_t errors = 0;                
                 for (auto i = 0; i < scores.size(); i ++)
                 {
-                        if (is_pos_target(targets(i)) && scores(i) < thres)
-                        {
-                                ret ++;
+			const bool target_pos = is_pos_target(targets(i));
+			const bool scores_pos = scores(i) > thres;
+
+			if (target_pos != scores_pos)
+			{
+				errors ++;
                         }
                 }
                 
-                return ret;
+                return errors;
         }
 
         indices_t classes(const vector_t& scores)
@@ -48,7 +51,7 @@ namespace ncv
                 indices_t ret;
                 for (auto i = 0; i < scores.size(); i ++)
                 {
-                        if (scores(i) >= thres)
+                        if (scores(i) > thres)
                         {
                                 ret.push_back(i);
                         }

@@ -12,7 +12,7 @@ stoch_sg="--trainer stochastic --trainer-params opt=sg,epoch=8"
 stoch_sga="--trainer stochastic --trainer-params opt=sga,epoch=256"
 stoch_sia="--trainer stochastic --trainer-params opt=sia,epoch=256"
 
-mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=64,batch=1024,iters=8,eps=1e-6"
+mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=256,batch=1024,iters=8,eps=1e-6"
 mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=2048,batch=1024,iters=16,eps=1e-6"
 mbatch_gd="--trainer minibatch --trainer-params opt=gd,epoch=2048,batch=64,iters=4,eps=1e-6"
 
