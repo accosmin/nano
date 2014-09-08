@@ -1,7 +1,6 @@
 #include "nanocv.h"
 
 #include "losses/loss_square.hpp"
-#include "losses/loss_classnll.hpp"
 #include "losses/loss_logistic.hpp"
 
 #include "tasks/task_mnist.h"
@@ -44,8 +43,8 @@ namespace ncv
 
                 // register losses
                 loss_manager_t::instance().add("square", square_loss_t());
-                loss_manager_t::instance().add("classnll", classnll_loss_t());
-                loss_manager_t::instance().add("logistic", logistic_loss_t());                
+                loss_manager_t::instance().add("logistic-sum", logistic_loss_t("alpha=1.0"));
+                loss_manager_t::instance().add("logistic-max", logistic_loss_t("alpha=10.0"));
 
                 // register tasks
                 task_manager_t::instance().add("mnist", mnist_task_t());

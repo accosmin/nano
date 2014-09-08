@@ -40,14 +40,9 @@ namespace ncv
         scalar_t l1_error(const vector_t& targets, const vector_t& scores);
 
         ///
-        /// \brief multi-class edge-based classification error (multi-label as well)
+        /// \brief multi-class edge-based multi-label classification error
         ///
-        scalar_t mclass_edge_error(const vector_t& targets, const vector_t& scores);
-
-        ///
-        /// \brief multi-class argmax-based classification error (single-label)
-        ///
-        scalar_t mclass_argmax_error(const vector_t& targets, const vector_t& scores);
+        scalar_t mclass_error(const vector_t& targets, const vector_t& scores);
 
         ///
         /// \brief retrieve the predicted class indices

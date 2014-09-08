@@ -23,7 +23,7 @@ namespace ncv
                 return (targets - scores).array().abs().sum();
         }
 
-        scalar_t mclass_edge_error(const vector_t& targets, const vector_t& scores)
+        scalar_t mclass_error(const vector_t& targets, const vector_t& scores)
         {
                 assert(targets.size() == scores.size());
                 
@@ -37,17 +37,7 @@ namespace ncv
                         }
                 }
                 
-                return (errors > 0) ? 1.0 : 0.0;
-        }
-
-        scalar_t mclass_argmax_error(const vector_t& targets, const vector_t& scores)
-        {
-                assert(targets.size() == scores.size());
-
-                vector_t::Index idx;
-                scores.maxCoeff(&idx);
-
-                return is_pos_target(targets(idx)) ? 0.0 : 1.0;
+                return errors;
         }
 
         indices_t classes(const vector_t& scores)

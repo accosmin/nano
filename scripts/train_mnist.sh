@@ -5,7 +5,7 @@ source common.sh
 # common parameters
 params=""
 params=${params}${task_mnist}
-params=${params}" --loss classnll --trials 10 --threads 8"
+params=${params}" --loss logistic-max --trials 10 --threads 8"
 
 # trainers 
 stoch_sg="--trainer stochastic --trainer-params opt=sg,epoch=8"
