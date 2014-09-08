@@ -1,3 +1,7 @@
+- use two error functions (one for training, one for testing): 
+	- e.g. classnll - mclass_argmax (train), mclass_edge (test)
+	- e.g. logistic - mclass_edge (train), mclass_edge (test)
+
 - assymetric loss:
 	- e.g. the non-face samples dominate the face samples (use a similar weighting as in the phd thesis)
 
