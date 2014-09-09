@@ -84,33 +84,16 @@ namespace ncv
         size_t test(const task_t& task, const fold_t& fold, const loss_t& loss, const model_t& model,
                 scalar_t& lvalue, scalar_t& lerror)
         {
-                lvalue = lerror = 0.0;
-                size_t count = 0;
-
                 sampler_t sampler(task);
                 sampler.setup(fold).setup(sampler_t::atype::annotated);
 
-                const samples_t samples = sampler.get();
-                for (size_t i = 0; i < samples.size(); i ++)
-                {
-                        const sample_t& sample = samples[i];
-                        const image_t& image = task.image(sample.m_index);
+                accumulator_t accumulator(model, 1, "avg", criterion_t::type::value, 0.0);
+                accumulator.update(task, sampler.get(), loss);
 
-                        const vector_t& target = sample.m_target;
-                        const vector_t& output = model.output(image, sample.m_region).vector();
+                lvalue = accumulator.value();
+                lerror = accumulator.error();
 
-                        lvalue += loss.value(target, output);
-                        lerror += loss.error(target, output);
-                        ++ count;
-                }
-
-                if (count > 0)
-                {
-                        lvalue /= count;
-                        lerror /= count;
-                }
-
-                return count;
+                return accumulator.count();
         }
 }
 	
