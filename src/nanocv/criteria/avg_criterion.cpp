@@ -41,7 +41,7 @@ namespace ncv
                 
                 // loss value
                 m_value += weight * loss.value(target, output);
-                m_error += loss.error(target, output);
+                m_error += weight * loss.error(target, output);
                 m_count ++;
                 
                 // loss gradient
