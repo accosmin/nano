@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
 
                                 log_info() << "miss-classified " << nk_samples.size()
                                            << "/" << ll_samples.size() 
-                                           << " = " << ((0.0 * nk_samples.size()) / (0.0 + ll_samples.size()))
+                                           << " = " << ((0.0 + nk_samples.size()) / (0.0 + ll_samples.size()))
                                            << " [" << label << "] samples.";
 
                                 rtask->save_as_images(ok_samples, lbasepath + "_ok", grows, gcols, 8, ok_bkcolor);
