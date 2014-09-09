@@ -34,13 +34,13 @@ namespace ncv
         }
 
         void avg_criterion_t::accumulate(
-                const vector_t& output, const vector_t& target, const loss_t& loss)
+                const vector_t& output, const vector_t& target, const loss_t& loss, scalar_t weight)
         {
                 assert(static_cast<size_t>(output.size()) == m_model->osize());
                 assert(static_cast<size_t>(target.size()) == m_model->osize());
                 
                 // loss value
-                m_value += loss.value(target, output);
+                m_value += weight * loss.value(target, output);
                 m_error += loss.error(target, output);
                 m_count ++;
                 
@@ -51,7 +51,7 @@ namespace ncv
                         break;
 
                 case type::vgrad:
-                        m_vgrad += m_model->pgrad(loss.vgrad(target, output));
+                        m_vgrad += weight * m_model->pgrad(loss.vgrad(target, output));
                         break;
                 }
         }

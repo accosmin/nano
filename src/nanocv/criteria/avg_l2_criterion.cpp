@@ -20,9 +20,9 @@ namespace ncv
         }
 
         void avg_l2_criterion_t::accumulate(
-                const vector_t& output, const vector_t& target, const loss_t& loss)
+                const vector_t& output, const vector_t& target, const loss_t& loss, scalar_t weight)
         {
-                avg_criterion_t::accumulate(output, target, loss);
+                avg_criterion_t::accumulate(output, target, loss, weight);
         }
         
         scalar_t avg_l2_criterion_t::value() const

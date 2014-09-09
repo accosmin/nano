@@ -56,21 +56,21 @@ namespace ncv
                 const vector_t& target = sample.m_target;                
                 const vector_t& output = m_model->output(image, sample.m_region).vector();
                 
-                accumulate(output, target, loss);
+                accumulate(output, target, loss, sample.m_weight);
         }
         
-        void criterion_t::update(const tensor_t& input, const vector_t& target, const loss_t& loss)
+        void criterion_t::update(const tensor_t& input, const vector_t& target, const loss_t& loss, scalar_t weight)
         {
                 const vector_t& output = m_model->output(input).vector();
                 
-                accumulate(output, target, loss);
+                accumulate(output, target, loss, weight);
         }
         
-        void criterion_t::update(const vector_t& input, const vector_t& target, const loss_t& loss)
+        void criterion_t::update(const vector_t& input, const vector_t& target, const loss_t& loss, scalar_t weight)
         {
                 const vector_t& output = m_model->output(input).vector();
                 
-                accumulate(output, target, loss);
+                accumulate(output, target, loss, weight);
         }
 
         size_t criterion_t::psize() const

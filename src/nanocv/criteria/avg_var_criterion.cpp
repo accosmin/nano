@@ -32,12 +32,12 @@ namespace ncv
         }
 
         void avg_var_criterion_t::accumulate(
-                const vector_t& output, const vector_t& target, const loss_t& loss)
+                const vector_t& output, const vector_t& target, const loss_t& loss, scalar_t weight)
         {
                 const scalar_t old_value = m_value;
                 const vector_t old_vgrad = m_vgrad;
                 
-                avg_criterion_t::accumulate(output, target, loss);
+                avg_criterion_t::accumulate(output, target, loss, weight);
                 
                 const scalar_t crt_value = m_value - old_value;
                 const vector_t crt_vgrad = m_vgrad - old_vgrad;

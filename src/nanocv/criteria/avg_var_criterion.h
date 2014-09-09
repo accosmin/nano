@@ -57,7 +57,7 @@ namespace ncv
                 ///
                 /// \brief update statistics with a new sample
                 ///
-                virtual void accumulate(const vector_t& input, const vector_t& target, const loss_t& loss);
+                virtual void accumulate(const vector_t& input, const vector_t& target, const loss_t&, scalar_t weight);
                 
         private:
                 
