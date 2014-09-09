@@ -1,5 +1,5 @@
-#ifndef NANOCV_LOSS_LOGISTIC_HPP
-#define NANOCV_LOSS_LOGISTIC_HPP
+#ifndef NANOCV_LOSS_CLASSNLL_HPP
+#define NANOCV_LOSS_CLASSNLL_HPP
 
 #include "loss.h"
 #include "common/math.hpp"
@@ -8,17 +8,17 @@
 namespace ncv
 {
         ///
-        /// \brief multi-class logistic loss (multi-label)
+        /// \brief multi-class negative log-likelihood loss (single-label)
         ///
-        class logistic_loss_t : public loss_t
+        class classnll_loss_t : public loss_t
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(logistic_loss_t)
+                NANOCV_MAKE_CLONABLE(classnll_loss_t)
 
                 // constructor
-                logistic_loss_t(const string_t& parameters = string_t())
-                        :       loss_t(string_t(), "multi-class logistic loss")
+                classnll_loss_t(const string_t& parameters = string_t())
+                        :       loss_t(string_t(), "multi-class negative log-likelihood loss")
                 {
                 }
 
@@ -50,51 +50,38 @@ namespace ncv
                 {
                         assert(targets.size() == scores.size());
 
-                        size_t errors = 0;
-                        for (auto i = 0; i < scores.size(); i ++)
-                        {
-                                const scalar_t edge = targets(i) * scores(i);
-                                if (edge <= 0.0)
-                                {
-                                        errors ++;
-                                }
-                        }
+                        vector_t::Index idx;
+                        scores.maxCoeff(&idx);
 
-                        return errors;
+                        return is_pos_target(targets(idx)) ? 0.0 : 1.0;
                 }
 
                 scalar_t _value(const vector_t& targets, const vector_t& scores) const
                 {
                         assert(targets.size() == scores.size());
 
-                        const vector_t edges = (- targets.array() * scores.array()).exp();
+                        const vector_t escores = scores.array().exp();
 
-                        return std::log(1.0 + edges.sum());
+                        return std::log(escores.array().sum()) - 0.5 * (1.0 + targets.array()).matrix().dot(scores);
                 }
 
                 vector_t _vgrad(const vector_t& targets, const vector_t& scores) const
                 {
                         assert(targets.size() == scores.size());
-                        
-                        const vector_t edges = (- targets.array() * scores.array()).exp();
-                        
-                        return - targets.array() * edges.array() / (1.0 + edges.sum());
+
+                        const vector_t escores = scores.array().exp();
+
+                        return escores.array() / escores.sum() - 0.5 * (1.0 + targets.array());
                 }
 
                 indices_t _labels(const vector_t& scores) const
                 {
-                        indices_t ret;
-                        for (auto i = 0; i < scores.size(); i ++)
-                        {
-                                if (scores(i) > 0.0)
-                                {
-                                        ret.push_back(i);
-                                }
-                        }
+                        vector_t::Index idx;
+                        scores.maxCoeff(&idx);
 
-                        return ret;
+                        return indices_t(1, size_t(idx));
                 }
         };
 }
 
-#endif // NANOCV_LOSS_LOGISTIC_HPP
+#endif // NANOCV_LOSS_CLASSNLL_HPP

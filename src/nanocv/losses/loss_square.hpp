@@ -24,7 +24,7 @@ namespace ncv
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const
                 {
-                        return l1_error(targets, scores);
+                        return _error(targets, scores);
                 }
 
                 // compute the loss value & derivatives
@@ -37,7 +37,20 @@ namespace ncv
                         return _vgrad(targets, scores);
                 }
 
+                // predict label indices
+                virtual indices_t labels(const vector_t& scores) const
+                {
+                        return _labels(scores);
+                }
+
         private:
+
+                scalar_t _error(const vector_t& targets, const vector_t& scores) const
+                {
+                        assert(targets.size() == scores.size());
+
+                        return (targets - scores).array().abs().sum();
+                }
 
                 scalar_t _value(const vector_t& targets, const vector_t& scores) const
                 {
@@ -51,6 +64,11 @@ namespace ncv
                         assert(targets.size() == scores.size());
 
                         return scores - targets;
+                }
+
+                indices_t _labels(const vector_t& scores) const
+                {
+                        return indices_t();
                 }
 	};
 }

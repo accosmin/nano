@@ -15,43 +15,5 @@ namespace ncv
                 }
                 return target;
         }
-
-        scalar_t l1_error(const vector_t& targets, const vector_t& scores)
-        {
-                assert(targets.size() == scores.size());
-                
-                return (targets - scores).array().abs().sum();
-        }
-
-        scalar_t mclass_error(const vector_t& targets, const vector_t& scores)
-        {
-                assert(targets.size() == scores.size());
-                
-                size_t errors = 0;                
-                for (auto i = 0; i < scores.size(); i ++)
-                {
-                        const scalar_t edge = targets(i) * scores(i);
-                        if (edge <= 0.0)
-                        {
-                                errors ++;
-                        }
-                }
-                
-                return errors;
-        }
-
-        indices_t classes(const vector_t& scores)
-        {
-                indices_t ret;
-                for (auto i = 0; i < scores.size(); i ++)
-                {
-                        if (scores(i) > 0.0)
-                        {
-                                ret.push_back(i);
-                        }
-                }
-
-                return ret;
-        }
 }
 	

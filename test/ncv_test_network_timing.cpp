@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
                 cmodel + outlayer
         };
 
-        const rloss_t rloss = loss_manager_t::instance().get("logistic-max");
+        const rloss_t rloss = loss_manager_t::instance().get("logistic");
         assert(rloss);
         const loss_t& loss = *rloss;
 

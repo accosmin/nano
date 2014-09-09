@@ -144,8 +144,8 @@ int main(int argc, char *argv[])
                         const vector_t target = sample.m_target;
                         const vector_t output = rmodel->output(image, sample.m_region).vector();
 
-                        const indices_t tclasses = ncv::classes(target);
-                        const indices_t oclasses = ncv::classes(output);
+                        const indices_t tclasses = rloss->labels(target);
+                        const indices_t oclasses = rloss->labels(output);
 
                         const bool ok = tclasses.size() == oclasses.size() &&
                                         std::mismatch(tclasses.begin(), tclasses.end(),

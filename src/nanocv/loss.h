@@ -30,24 +30,9 @@ namespace ncv
         inline bool is_pos_target(scalar_t target) { return target > 0.5; }
 
         ///
-        /// \brief target value for multi-class classification problems with [n_labels] classes
+        /// \brief target value for multi-class single-label classification problems with [n_labels] classes
         ///
         vector_t class_target(size_t ilabel, size_t n_labels);
-
-        ///
-        /// \brief multivariate L1 regression error
-        ///
-        scalar_t l1_error(const vector_t& targets, const vector_t& scores);
-
-        ///
-        /// \brief multi-class edge-based multi-label classification error
-        ///
-        scalar_t mclass_error(const vector_t& targets, const vector_t& scores);
-
-        ///
-        /// \brief retrieve the predicted class indices
-        ///
-        indices_t classes(const vector_t& scores);
 
         ///
         /// \brief generic multivariate loss function of two parameters:
@@ -86,6 +71,11 @@ namespace ncv
                 /// \brief compute the loss gradient
                 ///
                 virtual vector_t vgrad(const vector_t& targets, const vector_t& scores) const = 0;
+
+                ///
+                /// \brief predicted label indices (if classification problem)
+                ///
+                virtual indices_t labels(const vector_t& scores) const = 0;
         };
 }
 
