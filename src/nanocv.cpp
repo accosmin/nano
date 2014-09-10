@@ -87,7 +87,7 @@ namespace ncv
                 sampler_t sampler(task);
                 sampler.setup(fold).setup(sampler_t::atype::annotated);
 
-                accumulator_t accumulator(model, 1, "avg", criterion_t::type::value, 0.0);
+                accumulator_t accumulator(model, 0, "avg", criterion_t::type::value, 0.0);
                 accumulator.update(task, sampler.get(), loss);
 
                 lvalue = accumulator.value();

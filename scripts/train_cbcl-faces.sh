@@ -5,7 +5,7 @@ source common.sh
 # common parameters
 params=""
 params=${params}${task_cbclfaces}
-params=${params}" --loss classnll --trials 10 --threads 8"
+params=${params}" --loss logistic --trials 1 --threads 8"
 
 # trainers 
 stoch_sg="--trainer stochastic --trainer-params opt=sg,epoch=8"
@@ -41,7 +41,7 @@ mlp3=${mlp2}"linear:dims=32;act-snorm;"
 mlp4=${mlp3}"linear:dims=16;act-snorm;"
 mlp5=${mlp4}"linear:dims=8;act-snorm;"
 
-outlayer="linear:dims=2;"
+outlayer="linear:dims=1;"
 
 # train models
 for model in `echo "conv_max conv_avg conv_min"`

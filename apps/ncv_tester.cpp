@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
 
                         const bool ok = tclasses.size() == oclasses.size() &&
                                         std::mismatch(tclasses.begin(), tclasses.end(),
-                                                oclasses.begin()).first == tclasses.end();
+                                                      oclasses.begin()).first == tclasses.end();
 
                         (ok ? ok_samples : nk_samples).push_back(sample);
                 }
