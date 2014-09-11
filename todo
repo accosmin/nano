@@ -1,12 +1,8 @@
-- check the weighted-loss implementation for cbcl-faces:
-	- the test errors should be much smaller
-	- the miss-classified samples should be more evenly distributed
-
-- check the miss-classified samples on mnist
-
 - Lp norm regularization
 
 - finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
+
+- GTSD dataset support
 
 - reduce the number of input/output buffers for layers:
 	- especially for the pooling layer (although it is very fast)
