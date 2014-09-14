@@ -1,4 +1,10 @@
-- Lp norm regularization
+- faster stochastic trainer:
+	- tune the learning rate in a single epoch (as many trials as the number of threads)
+	- use this learning rate to run the epochs
+	- move the stochastic optimization code to stochastic trainer
+
+- move the batch optimization code to the mini-batch trainer
+- make the batch trainer derive from the mini-batch trainer
 
 - finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
 
