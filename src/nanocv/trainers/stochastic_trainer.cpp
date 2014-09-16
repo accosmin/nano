@@ -160,20 +160,27 @@ namespace ncv
         {
                 const auto op = [&] (scalar_t lambda)
                 {
-                        // prepare workers
-                        thread_pool_t wpool(nthreads);
-                        thread_pool_t::mutex_t mutex;
-
                         const size_t iterations = epochs * tsampler.size();             // SGD iterations
                         const scalar_t beta = std::pow(0.01, 1.0 / iterations);         // Learning rate decay rate
+                        
+                        const scalar_t min_log_alpha = -3;
+                        const scalar_t max_log_alpha = +0;
+                        const scalar_t dif_log_alpha = (max_log_alpha - min_log_alpha) / std::min(size_t(8), nthreads);
+                        
+                        scalars_t alphas;
+                        for (scalar_t log_alpha = min_log_alpha; log_alpha < max_log_alpha + 1e-6; log_alpha += dif_log_alpha)
+                        {
+                                alphas.push_back(std::exp(log_alpha));
+                        }
 
+                        // tune the learning rate (single epoch)
                         vector_t x0;
                         model.save_params(x0);
-
+                        
+                        thread_pool_t wpool(nthreads);
+                        thread_pool_t::mutex_t mutex;
+                        
                         trainer_result_t result;
-
-                        // tune the learning rate
-                        const scalars_t alphas = { 0.001, 0.010, 0.100 };
                         for (scalar_t alpha : alphas)
                         {
                                 wpool.enqueue([=, &task, &loss, &model, &x0, &result, &mutex]()
@@ -183,11 +190,24 @@ namespace ncv
 
                                         trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
 
-                                        detail::stochastic_train(data, optimizer, epochs, alpha, beta, result, mutex);
+                                        detail::stochastic_train(data, optimizer, 1, alpha, beta, result, mutex);
                                 });
                         }
 
                         wpool.wait();
+                        
+                        // train with the optimum learning rate (multiple epochs)
+                        const scalar_t opt_alpha = result.m_opt_config[0];
+                        log_info() << "optimum learning rate = " << opt_alpha << ".";
+                        
+                        result = trainer_result_t();
+                        
+                        accumulator_t lacc(model, 1, criterion, criterion_t::type::value, lambda);
+                        accumulator_t gacc(model, 1, criterion, criterion_t::type::vgrad, lambda);
+                        
+                        trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
+                        
+                        detail::stochastic_train(data, optimizer, epochs, opt_alpha, beta, result, mutex);
 
                         // OK
                         return result;
