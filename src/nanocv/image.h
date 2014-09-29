@@ -1,5 +1,4 @@
-#ifndef NANOCV_IMAGE_H
-#define NANOCV_IMAGE_H
+#pragma once
 
 #include "color.h"
 #include "geom.h"
@@ -132,5 +131,3 @@ namespace ncv
 
         typedef std::vector<image_t>    images_t;
 }
-
-#endif //  NANOCV_IMAGE_H

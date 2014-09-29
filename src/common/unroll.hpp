@@ -1,5 +1,4 @@
-#ifndef NANOCV_UNROLL_H
-#define NANOCV_UNROLL_H
+#pragma once
 
 namespace ncv
 {        
@@ -52,6 +51,3 @@ namespace ncv
                 }
         }
 }
-
-#endif // NANOCV_UNROLL_H
-

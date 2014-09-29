@@ -1,5 +1,4 @@
-#ifndef BATCH_TRAINER_H
-#define BATCH_TRAINER_H
+#pragma once
 
 #include "trainer.h"
 
@@ -28,5 +27,3 @@ namespace ncv
                         model_t&) const;
         };
 }
-
-#endif // BATCH_TRAINER_H

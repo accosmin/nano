@@ -1,5 +1,4 @@
-#ifndef NANOCV_BILINEAR_H
-#define NANOCV_BILINEAR_H
+#pragma once
 
 #include <algorithm>
 #include "math.hpp"
@@ -56,6 +55,4 @@ namespace ncv
                 }
         }
 }
-
-#endif // NANOCV_BILINEAR_H
 

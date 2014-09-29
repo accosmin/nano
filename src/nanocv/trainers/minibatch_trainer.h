@@ -1,5 +1,4 @@
-#ifndef MINIBATCH_TRAINER_H
-#define MINIBATCH_TRAINER_H
+#pragma once
 
 #include "trainer.h"
 
@@ -31,4 +30,3 @@ namespace ncv
         };
 }
 
-#endif // MINIBATCH_TRAINER_H

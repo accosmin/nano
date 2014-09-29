@@ -1,5 +1,4 @@
-#ifndef NANOCV_DOT_H
-#define NANOCV_DOT_H
+#pragma once
 
 namespace ncv
 {        
@@ -135,6 +134,3 @@ namespace ncv
                 return sum;
         }
 }
-
-#endif // NANOCV_DOT_H
-

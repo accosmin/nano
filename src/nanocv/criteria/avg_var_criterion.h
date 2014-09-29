@@ -1,5 +1,4 @@
-#ifndef NANOCV_AVG_VAR_CRITERION_H
-#define NANOCV_AVG_VAR_CRITERION_H
+#pragma once
 
 #include "avg_criterion.h"
 
@@ -66,5 +65,3 @@ namespace ncv
                 vector_t        m_vgrad2;        ///< cumulated loss value multiplied with the gradient
         };
 }
-
-#endif // NANOCV_AVG_VAR_CRITERION_H

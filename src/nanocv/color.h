@@ -1,5 +1,4 @@
-#ifndef  NANOCV_COLOR_H
-#define  NANOCV_COLOR_H
+#pragma once
 
 #include "types.h"
 
@@ -82,4 +81,3 @@ namespace ncv
         }
 }
 
-#endif //  NANOCV_COLOR_H

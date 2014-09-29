@@ -1,5 +1,4 @@
-#ifndef NANOCV_CRITERION_H
-#define NANOCV_CRITERION_H
+#pragma once
 
 #include "model.h"
 #include "sample.h"
@@ -119,4 +118,3 @@ namespace ncv
         };
 }
 
-#endif // NANOCV_CRITERION_H

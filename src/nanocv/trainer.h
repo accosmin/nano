@@ -1,5 +1,4 @@
-#ifndef NANOCV_TRAINER_H
-#define NANOCV_TRAINER_H
+#pragma once
 
 #include "task.h"
 
@@ -178,4 +177,3 @@ namespace ncv
         };
 }
 
-#endif // NANOCV_TRAINER_H

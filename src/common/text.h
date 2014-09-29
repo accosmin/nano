@@ -1,5 +1,4 @@
-#ifndef NANOCV_TEXT_H
-#define NANOCV_TEXT_H
+#pragma once
 
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
@@ -100,6 +99,4 @@ namespace ncv
                 }
         }
 }
-
-#endif // NANOCV_TEXT_H
 

@@ -1,5 +1,4 @@
-#ifndef NANOCV_SNORM_ACTIVATION_LAYER_H
-#define NANOCV_SNORM_ACTIVATION_LAYER_H
+#pragma once
 
 #include "layer_activation.h"
 
@@ -45,5 +44,3 @@ namespace ncv
                 }
         };
 }
-
-#endif // NANOCV_SNORM_ACTIVATION_LAYER_H

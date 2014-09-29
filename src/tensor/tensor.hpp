@@ -1,5 +1,4 @@
-#ifndef NANOCV_TENSOR_HPP
-#define NANOCV_TENSOR_HPP
+#pragma once
 
 #include "vector.hpp"
 #include "matrix.hpp"
@@ -235,5 +234,3 @@ namespace ncv
                 };
         }
 }
-
-#endif // NANOCV_TENSOR_HPP

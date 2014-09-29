@@ -1,5 +1,4 @@
-#ifndef NANOCV_SAMPLE_H
-#define NANOCV_SAMPLE_H
+#pragma once
 
 #include "geom.h"
 
@@ -81,4 +80,3 @@ namespace ncv
         }
 }
 
-#endif //  NANOCV_SAMPLE_H

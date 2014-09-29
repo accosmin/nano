@@ -1,5 +1,4 @@
-#ifndef NANOCV_MANAGER_H
-#define NANOCV_MANAGER_H
+#pragma once
 
 #include "clonable.hpp"
 #include "singleton.hpp"
@@ -128,6 +127,3 @@ namespace ncv
                 }
         };
 }
-
-#endif // NANOCV_MANAGER_H
-

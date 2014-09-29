@@ -1,5 +1,4 @@
-#ifndef STOCHASTIC_TRAINER_H
-#define STOCHASTIC_TRAINER_H
+#pragma once
 
 #include "trainer.h"
 
@@ -32,4 +31,3 @@ namespace ncv
         };
 }
 
-#endif // STOCHASTIC_TRAINER_H

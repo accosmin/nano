@@ -1,5 +1,4 @@
-#ifndef NANOCV_IO_MAT5_H
-#define NANOCV_IO_MAT5_H
+#pragma once
 
 #include <vector>
 #include <string>
@@ -173,6 +172,3 @@ namespace ncv
                 };
         }
 }
-
-#endif // NANOCV_IO_MAT5_H
-

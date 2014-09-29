@@ -1,5 +1,4 @@
-#ifndef NANOCV_OPTIMIZE_PROBLEM_HPP
-#define NANOCV_OPTIMIZE_PROBLEM_HPP
+#pragma once
 
 #include "state.hpp"
 #include <type_traits>
@@ -167,4 +166,3 @@ namespace ncv
         }
 }
 
-#endif // NANOCV_OPTIMIZE_PROBLEM_HPP

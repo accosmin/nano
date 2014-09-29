@@ -1,5 +1,4 @@
-#ifndef NANOCV_OPTIMIZE_LINESEARCH_ARMIJO_HPP
-#define NANOCV_OPTIMIZE_LINESEARCH_ARMIJO_HPP
+#pragma once
 
 #include "descent.hpp"
 
@@ -45,4 +44,3 @@ namespace ncv
         }
 }
 
-#endif // NANOCV_OPTIMIZE_LINESEARCH_ARMIJO_HPP

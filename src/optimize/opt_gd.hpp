@@ -1,5 +1,4 @@
-#ifndef NANOCV_OPTIMIZE_OPTIMIZER_GD_HPP
-#define NANOCV_OPTIMIZE_OPTIMIZER_GD_HPP
+#pragma once
 
 #include "ls_armijo.hpp"
 #include <cassert>
@@ -73,4 +72,3 @@ namespace ncv
         }
 }
 
-#endif // NANOCV_OPTIMIZE_OPTIMIZER_GD_HPP

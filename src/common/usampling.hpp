@@ -1,5 +1,4 @@
-#ifndef NANOCV_UNIFORM_SAMPLING_H
-#define NANOCV_UNIFORM_SAMPLING_H
+#pragma once
 
 #include <vector>
 #include "math.hpp"
@@ -96,6 +95,3 @@ namespace ncv
                 }
         }
 }
-
-#endif // NANOCV_UNIFORM_SAMPLING_H
-

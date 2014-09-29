@@ -1,5 +1,4 @@
-#ifndef NANOCV_CONV_LAYER_H
-#define NANOCV_CONV_LAYER_H
+#pragma once
 
 #include "layer.h"
 
@@ -60,6 +59,3 @@ namespace ncv
                 tensor_t                m_kdata;                ///< convolution kernels:       odims x idims x krows x kcols
         };
 }
-
-#endif // NANOCV_CONV_LAYER_H
-

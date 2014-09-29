@@ -1,5 +1,4 @@
-#ifndef NANOCV_CLONABLE_H
-#define NANOCV_CLONABLE_H
+#pragma once
 
 #include <string>
 #include <memory>
@@ -62,6 +61,3 @@ namespace ncv
                         return robject_t(new base_class(*this)); \
                 }
 }
-
-#endif // NANOCV_CLONABLE_H
-

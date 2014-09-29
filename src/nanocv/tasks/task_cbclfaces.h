@@ -1,5 +1,4 @@
-#ifndef NANOCV_TASK_CBCLFACES_H
-#define NANOCV_TASK_CBCLFACES_H
+#pragma once
 
 #include "task.h"
 
@@ -41,5 +40,3 @@ namespace ncv
                 size_t load(const string_t& dir, bool is_face, protocol p);
         };
 }
-
-#endif // NANOCV_TASK_CBCLFACES_H

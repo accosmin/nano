@@ -1,5 +1,4 @@
-#ifndef NANOCV_GRID_IMAGE_H
-#define NANOCV_GRID_IMAGE_H
+#pragma once
 
 #include "image.h"
 
@@ -40,4 +39,3 @@ namespace ncv
         };
 }
 
-#endif //  NANOCV_GRID_IMAGE_H

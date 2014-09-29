@@ -1,5 +1,4 @@
-#ifndef NANOCV_TIMER_H
-#define NANOCV_TIMER_H
+#pragma once
 
 #include <chrono>
 #include <ratio>
@@ -112,6 +111,3 @@ namespace ncv
                 time_t          m_start;        ///< starting time point
         };
 }
-
-#endif // NANOCV_TIMER_H
-

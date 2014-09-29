@@ -1,5 +1,4 @@
-#ifndef NANOCV_CONV2D_H
-#define NANOCV_CONV2D_H
+#pragma once
 
 #include <cassert>
 #include "dot.hpp"
@@ -336,6 +335,4 @@ namespace ncv
                 detail::iconv_mad(odata, kdata, idata, mad<tscalar, tsize>);
         }
 }
-
-#endif // NANOCV_CONV2D_H
 

@@ -1,5 +1,4 @@
-#ifndef NANOCV_THREAD_LOOP_H
-#define NANOCV_THREAD_LOOP_H
+#pragma once
 
 #include "thread_pool.h"
 
@@ -115,6 +114,3 @@ namespace ncv
                 thread_loopit(N, 0, op);
         }
 }
-
-#endif // NANOCV_THREAD_LOOP_H
-

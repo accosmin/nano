@@ -1,5 +1,4 @@
-#ifndef NANOCV_THREAD_POOL_H
-#define NANOCV_THREAD_POOL_H
+#pragma once
 
 #include <thread>
 #include <vector>
@@ -142,6 +141,3 @@ namespace ncv
                 data_t                          m_data;                 ///< tasks to execute + synchronization
         };
 }
-
-#endif // NANOCV_THREAD_POOL_H
-

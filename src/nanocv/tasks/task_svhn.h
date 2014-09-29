@@ -1,5 +1,4 @@
-#ifndef NANOCV_TASK_SVHN_H
-#define NANOCV_TASK_SVHN_H
+#pragma once
 
 #include "task.h"
 
@@ -47,4 +46,3 @@ namespace ncv
         };
 }
 
-#endif // NANOCV_TASK_SVHN_H

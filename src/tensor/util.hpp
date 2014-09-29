@@ -1,5 +1,4 @@
-#ifndef NANOCV_TENSOR_UTIL_HPP
-#define NANOCV_TENSOR_UTIL_HPP
+#pragma once
 
 #include <boost/serialization/vector.hpp>
 #include <algorithm>
@@ -133,6 +132,4 @@ namespace boost
                 }                
         }
 }
-
-#endif // NANOCV_TENSOR_UTIL_HPP
 

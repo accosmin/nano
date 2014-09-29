@@ -1,5 +1,4 @@
-#ifndef NANOCV_TASK_NORB_H
-#define NANOCV_TASK_NORB_H
+#pragma once
 
 #include "task.h"
 
@@ -43,4 +42,3 @@ namespace ncv
         };
 }
 
-#endif // NANOCV_TASK_NORB_H

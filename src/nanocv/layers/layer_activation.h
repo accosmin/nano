@@ -1,5 +1,4 @@
-#ifndef NANOCV_ACTIVATION_LAYER_H
-#define NANOCV_ACTIVATION_LAYER_H
+#pragma once
 
 #include "layer.h"
 #include "tensor/util.hpp"
@@ -108,4 +107,3 @@ namespace ncv
         };
 }
 
-#endif // NANOCV_ACTIVATION_LAYER_H

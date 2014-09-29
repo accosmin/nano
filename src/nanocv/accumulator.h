@@ -1,5 +1,4 @@
-#ifndef NANOCV_ACCUMULATOR_H
-#define NANOCV_ACCUMULATOR_H
+#pragma once
 
 #include "criterion.h"
 
@@ -88,5 +87,3 @@ namespace ncv
                 raccumulator_impl_t     m_impl;
         };
 }
-
-#endif // NANOCV_ACCUMULATOR_H

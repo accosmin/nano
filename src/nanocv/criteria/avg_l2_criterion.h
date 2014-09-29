@@ -1,5 +1,4 @@
-#ifndef NANOCV_AVG_L2_CRITERION_H
-#define NANOCV_AVG_L2_CRITERION_H
+#pragma once
 
 #include "avg_criterion.h"
 
@@ -57,5 +56,3 @@ namespace ncv
                 virtual void accumulate(const vector_t& input, const vector_t& target, const loss_t&, scalar_t weight);
         };
 }
-
-#endif // NANOCV_AVG_L2_CRITERION_H

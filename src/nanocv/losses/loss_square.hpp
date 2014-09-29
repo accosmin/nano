@@ -1,5 +1,4 @@
-#ifndef NANOCV_LOSS_SQUARE_HPP
-#define NANOCV_LOSS_SQUARE_HPP
+#pragma once
 
 #include "loss.h"
 #include <cassert>
@@ -73,4 +72,3 @@ namespace ncv
 	};
 }
 
-#endif // NANOCV_LOSS_SQUARE_HPP

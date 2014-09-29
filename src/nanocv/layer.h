@@ -1,5 +1,4 @@
-#ifndef NANOCV_LAYER_H
-#define NANOCV_LAYER_H
+#pragma once
 
 #include "common/manager.hpp"
 #include "types.h"
@@ -89,4 +88,3 @@ namespace ncv
         };
 }
 
-#endif // NANOCV_LAYER_H

@@ -1,5 +1,4 @@
-#ifndef NANOCV_TENSOR_MATRIX_HPP
-#define NANOCV_TENSOR_MATRIX_HPP
+#pragma once
 
 #include <eigen3/Eigen/Core>
 #include <type_traits>
@@ -89,6 +88,3 @@ namespace ncv
                 }
         }
 }
-
-#endif // NANOCV_TENSOR_MATRIX_HPP
-

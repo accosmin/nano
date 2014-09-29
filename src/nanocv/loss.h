@@ -1,5 +1,4 @@
-#ifndef NANOCV_LOSS_H
-#define NANOCV_LOSS_H
+#pragma once
 
 #include "common/manager.hpp"
 #include "types.h"
@@ -78,5 +77,3 @@ namespace ncv
                 virtual indices_t labels(const vector_t& scores) const = 0;
         };
 }
-
-#endif // NANOCV_LOSS_H

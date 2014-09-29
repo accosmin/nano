@@ -1,5 +1,4 @@
-#ifndef NANOCV_STATS_H
-#define NANOCV_STATS_H
+#pragma once
 
 #include <limits>
 #include <cmath>
@@ -90,5 +89,3 @@ namespace ncv
                 tscalar         m_min, m_max;
 	};
 }
-
-#endif // NANOCV_STATS_H

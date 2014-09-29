@@ -1,5 +1,4 @@
-#ifndef NANOCV_LOSS_CLASSNLL_HPP
-#define NANOCV_LOSS_CLASSNLL_HPP
+#pragma once
 
 #include "loss.h"
 #include "common/math.hpp"
@@ -84,4 +83,3 @@ namespace ncv
         };
 }
 
-#endif // NANOCV_LOSS_CLASSNLL_HPP

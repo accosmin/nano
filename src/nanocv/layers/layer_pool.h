@@ -1,5 +1,4 @@
-#ifndef NANOCV_POOL_LAYER_H
-#define NANOCV_POOL_LAYER_H
+#pragma once
 
 #include "layer.h"
 
@@ -98,6 +97,3 @@ namespace ncv
                 }                
         };
 }
-
-#endif // NANOCV_POOL_LAYER_H
-

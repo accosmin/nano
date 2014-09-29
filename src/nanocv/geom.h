@@ -1,5 +1,4 @@
-#ifndef NANOCV_GEOM_H
-#define NANOCV_GEOM_H
+#pragma once
 
 #include "types.h"
 #include <boost/geometry/geometries/point_xy.hpp>
@@ -49,5 +48,4 @@ namespace ncv
         }
 }
 
-#endif // NANOCV_GEOM_H
 

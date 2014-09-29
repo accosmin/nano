@@ -1,5 +1,4 @@
-#ifndef NANOCV_TYPES_H
-#define NANOCV_TYPES_H
+#pragma once
 
 #include "tensor/tensor.hpp"
 #include "optimize/problem.hpp"
@@ -257,5 +256,4 @@ namespace ncv
         typedef opt_problem_t::tulog                                    opt_opulog_t;
 }
 
-#endif // NANOCV_TYPES_H
 

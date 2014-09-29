@@ -1,5 +1,4 @@
-#ifndef NANOCV_SINGLETON_H
-#define NANOCV_SINGLETON_H
+#pragma once
 
 #include <memory>
 #include <mutex>
@@ -72,6 +71,3 @@ namespace ncv
         template <class tobject>
         typename singleton_t<tobject>::this_mutex_t       singleton_t<tobject>::m_once_flag;
 }
-
-#endif // NANOCV_SINGLETON_H
-

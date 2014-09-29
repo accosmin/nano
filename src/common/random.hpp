@@ -1,5 +1,4 @@
-#ifndef NANOCV_RANDOM_H
-#define NANOCV_RANDOM_H
+#pragma once
 
 #include <random>
 #include <type_traits>
@@ -67,6 +66,3 @@ namespace ncv
                 die_t           m_die;
         };
 }
-
-#endif // NANOCV_RANDOM_H
-

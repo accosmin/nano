@@ -1,5 +1,4 @@
-#ifndef NANOCV_MAD_H
-#define NANOCV_MAD_H
+#pragma once
 
 namespace ncv
 {        
@@ -120,6 +119,3 @@ namespace ncv
                 }
         }
 }
-
-#endif // NANOCV_MAD_H
-

@@ -1,5 +1,4 @@
-#ifndef NANOCV_LAYER_LINEAR_H
-#define NANOCV_LAYER_LINEAR_H
+#pragma once
 
 #include "layer.h"
 
@@ -60,5 +59,3 @@ namespace ncv
                 tensor_t                m_bdata;        ///< bias:              osize x 1 x 1
         };
 }
-
-#endif // NANOCV_LAYER_LINEAR_H

@@ -1,5 +1,4 @@
-#ifndef NANOCV_SAMPLER_H
-#define NANOCV_SAMPLER_H
+#pragma once
 
 #include "sample.h"
 
@@ -111,4 +110,3 @@ namespace ncv
         };
 }
 
-#endif // NANOCV_SAMPLER_H

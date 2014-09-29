@@ -1,5 +1,4 @@
-#ifndef NANOCV_CAST_H
-#define NANOCV_CAST_H
+#pragma once
 
 #include <type_traits>
 #include <algorithm>
@@ -109,6 +108,4 @@ namespace ncv
                 }
         }
 }
-
-#endif // NANOCV_CAST_H
 

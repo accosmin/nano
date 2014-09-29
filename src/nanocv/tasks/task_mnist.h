@@ -1,5 +1,4 @@
-#ifndef NANOCV_TASK_MNIST_H
-#define NANOCV_TASK_MNIST_H
+#pragma once
 
 #include "task.h"
 
@@ -41,5 +40,3 @@ namespace ncv
                 size_t load(const string_t& ifile, const string_t& gfile, protocol p);
         };
 }
-
-#endif // NANOCV_TASK_MNIST_H

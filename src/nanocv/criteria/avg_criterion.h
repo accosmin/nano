@@ -1,5 +1,4 @@
-#ifndef NANOCV_AVG_CRITERION_H
-#define NANOCV_AVG_CRITERION_H
+#pragma once
 
 #include "criterion.h"
 
@@ -77,4 +76,3 @@ namespace ncv
         };
 }
 
-#endif // NANOCV_AVG_CRITERION_H

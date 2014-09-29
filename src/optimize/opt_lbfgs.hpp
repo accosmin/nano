@@ -1,5 +1,4 @@
-#ifndef NANOCV_OPTIMIZE_OPTIMIZER_LBFGS_HPP
-#define NANOCV_OPTIMIZE_OPTIMIZER_LBFGS_HPP
+#pragma once
 
 #include "ls_wolfe.hpp"
 #include <deque>
@@ -130,4 +129,3 @@ namespace ncv
         }
 }
 
-#endif // NANOCV_OPTIMIZE_OPTIMIZER_LBFGS_HPP

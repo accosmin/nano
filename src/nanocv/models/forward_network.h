@@ -1,5 +1,4 @@
-#ifndef NANOCV_FORWARD_NETWORK_H
-#define NANOCV_FORWARD_NETWORK_H
+#pragma once
 
 #include "model.h"
 #include "layer.h"
@@ -88,4 +87,3 @@ namespace ncv
         };
 }
 
-#endif // NANOCV_FORWARD_NETWORK_H

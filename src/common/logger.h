@@ -1,5 +1,4 @@
-#ifndef NANOCV_LOGGER_H
-#define NANOCV_LOGGER_H
+#pragma once
 
 #include <iostream>
 #include <iomanip>
@@ -120,6 +119,3 @@ namespace ncv
                 return logger_t(os, "error", flush_at_destruction);
         }
 }
-
-#endif // NANOCV_LOGGER_H
-

@@ -1,5 +1,4 @@
-#ifndef NANOCV_OPTIMIZE_DESCENT_HPP
-#define NANOCV_OPTIMIZE_DESCENT_HPP
+#pragma once
 
 #include <limits>
 
@@ -35,4 +34,3 @@ namespace ncv
         }
 }
 
-#endif // NANOCV_OPTIMIZE_DESCENT_HPP

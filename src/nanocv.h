@@ -1,5 +1,4 @@
-#ifndef NANOCV_H
-#define NANOCV_H
+#pragma once
 
 #include "loss.h"
 #include "layer.h"
@@ -77,5 +76,3 @@ namespace ncv
         size_t test(const task_t& task, const fold_t& fold, const loss_t& loss, const model_t& model,
                 scalar_t& lvalue, scalar_t& lerror);
 }
-
-#endif // NANOCV_H

@@ -1,5 +1,4 @@
-#ifndef NANOCV_OPTIMIZE_LINESEARCH_WOLFE_HPP
-#define NANOCV_OPTIMIZE_LINESEARCH_WOLFE_HPP
+#pragma once
 
 #include "descent.hpp"
 
@@ -129,4 +128,3 @@ namespace ncv
         }
 }
 
-#endif // NANOCV_OPTIMIZE_LINESEARCH_WOLFE_HPP

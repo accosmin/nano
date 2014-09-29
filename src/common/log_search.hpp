@@ -1,5 +1,4 @@
-#ifndef NANOCV_LOG_SEARCH_H
-#define NANOCV_LOG_SEARCH_H
+#pragma once
 
 #include <cmath>
 #include <set>
@@ -97,6 +96,3 @@ namespace ncv
                 return history.empty() ? tresult() : history.begin()->first;
         }
 }
-
-#endif // NANOCV_LOG_SEARCH_H
-

@@ -1,5 +1,4 @@
-#ifndef NANOCV_MODEL_H
-#define NANOCV_MODEL_H
+#pragma once
 
 #include "common/manager.hpp"
 #include "image.h"
@@ -135,4 +134,3 @@ namespace ncv
         };
 }
 
-#endif // NANOCV_MODEL_H

@@ -1,5 +1,4 @@
-#ifndef NANOCV_TASK_H
-#define NANOCV_TASK_H
+#pragma once
 
 #include "common/manager.hpp"
 #include "image.h"
@@ -95,5 +94,3 @@ namespace ncv
                 samples_t               m_samples;
         };
 }
-
-#endif // NANOCV_TASK_H

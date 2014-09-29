@@ -1,5 +1,4 @@
-#ifndef NANOCV_LOSS_LOGISTIC_HPP
-#define NANOCV_LOSS_LOGISTIC_HPP
+#pragma once
 
 #include "loss.h"
 #include "common/math.hpp"
@@ -96,5 +95,3 @@ namespace ncv
                 }
         };
 }
-
-#endif // NANOCV_LOSS_LOGISTIC_HPP
