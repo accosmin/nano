@@ -1,8 +1,10 @@
 #include "minibatch_trainer.h"
-#include "common/math.hpp"
 #include "common/logger.h"
+#include "common/math.hpp"
+#include "batch.h"
+#include "model.h"
 #include "sampler.h"
-#include "accumulator.h"
+#include "loss.h"
 
 namespace ncv
 {
