@@ -2,32 +2,11 @@
 #define NANOCV_LOG_SEARCH_H
 
 #include <cmath>
-#include <map>
+#include <set>
+#include <algorithm>
 
 namespace ncv
 {
-        namespace detail 
-        {
-                template
-                <
-                        typename toperator,
-                        typename tscalar,
-                        typename tmap
-                >
-                typename tmap::mapped_type update_history(const toperator& op, tscalar param, tmap& history)
-                {
-                        typename tmap::iterator it = history.find(param);
-                        if (it == history.end())
-                        {
-                                return history[param] = op(std::exp(param));
-                        }
-                        else
-                        {
-                                return it->second;
-                        }
-                }
-        }
-        
         ///
         /// \brief search for a 1D parameter that minimizes a given operator, 
         ///     using a greedy approach on the logarithmic scale in the range [minlog, maxlog].
@@ -36,55 +15,36 @@ namespace ncv
         ///
         template
         <
-                typename toperator,     ///< toperator(tscalar param) returns a tscalar score
-                typename tscalar
+                typename toperator,     ///< toperator(tscalar param) returns the optimal result for that parameter
+                typename tscalar,
+                typename tsize
         >
-        auto log_min_search(const toperator& op, tscalar minlog, tscalar maxlog, tscalar epslog)
+        auto log_min_search(const toperator& op, tscalar minlog, tscalar maxlog, tscalar epslog, tsize splits)
                 -> decltype(op(tscalar(0)))
         {
                 typedef decltype(op(tscalar(0))) tresult;
-                typedef typename std::map<tscalar, tresult>::value_type tvalue;
                 
-                std::map<tscalar, tresult> history;
+                typedef std::pair<tresult, tscalar> tvalue;
+                std::set<tvalue> history;
+
+                splits = std::max(tsize(4), splits);
                 
-                tscalar bestlog = (maxlog + minlog) / 2;
-                
-                for (   tscalar distlog = (maxlog - minlog) / 2;
-                        distlog > epslog && epslog > tscalar(0);
-                        distlog /= 2)
+                for (   tscalar varlog = (maxlog - minlog) / tscalar(splits - 1);
+                        (maxlog - minlog) > epslog && epslog > tscalar(0); 
+                        varlog = varlog / splits)
                 {
-                        const tscalar param1 = bestlog - distlog;
-                        const tscalar param2 = bestlog;
-                        const tscalar param3 = bestlog + distlog;
+                        for (tsize i = 0; i < splits; i ++)
+                        {
+                                const tscalar log = minlog + i * varlog;
+                                history.insert(std::make_pair(op(std::exp(log)), log));
+                        }
                         
-                        const tresult score1 = detail::update_history(op, param1, history);
-                        const tresult score2 = detail::update_history(op, param2, history);
-                        const tresult score3 = detail::update_history(op, param3, history);
-                        
-                        if (score1 < score2 && score1 < score3)
-                        {
-                                bestlog = param1;
-                        }
-                        else if (score2 < score3 && score2 < score1)
-                        {
-                                bestlog = param2;
-                        }
-                        else if (score3 < score1 && score3 < score2)
-                        {
-                                bestlog = param3;
-                        }
-                        else
-                        {
-                                break;
-                        }
+                        const tvalue& optimum = *history.begin();
+                        minlog = optimum.second - varlog * tscalar(splits - 1) / tscalar(splits);
+                        maxlog = optimum.second + varlog * tscalar(splits - 1) / tscalar(splits);
                 }
                 
-                return  history.empty() ?
-                        tresult() :
-                        std::min_element(history.begin(), history.end(), [] (const tvalue& res1, const tvalue& res2)
-                        {
-                                return res1.second < res2.second;
-                        })->second;
+                return history.empty() ? tresult() : history.begin()->first;
         }
 }
 

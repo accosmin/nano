@@ -23,7 +23,7 @@ namespace ncv
                 {
                         if (accumulator_t::can_regularize(criterion))
                         {
-                                return log_min_search<toperator, scalar_t>(op, -1.0, +6.0, 0.2);
+                                return log_min_search<toperator, scalar_t>(op, -1.0, +6.0, 0.2, 4);
                         }
 
                         else
