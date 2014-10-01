@@ -8,9 +8,9 @@ params=${params}${task_mnist}
 params=${params}" --loss classnll --trials 10 --threads 8"
 
 # trainers 
-stoch_sg="--trainer stochastic --trainer-params opt=sg,epoch=8"
-stoch_sga="--trainer stochastic --trainer-params opt=sga,epoch=256"
-stoch_sia="--trainer stochastic --trainer-params opt=sia,epoch=256"
+stoch_sg="--trainer stochastic --trainer-params opt=sg,epoch=16"
+stoch_sga="--trainer stochastic --trainer-params opt=sga,epoch=16"
+stoch_sia="--trainer stochastic --trainer-params opt=sia,epoch=16"
 
 mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=256,batch=1024,iters=8,eps=1e-6"
 mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=2048,batch=1024,iters=16,eps=1e-6"
@@ -46,13 +46,15 @@ outlayer="linear:dims=10;"
 # train models
 for model in `echo "conv_max conv_avg conv_min"`
 do
-        for trainer in `echo "mbatch_lbfgs"` #"stoch_sg stoch_sga stoch_sia mbatch_gd mbatch_cgd mbatch_lbfgs batch_gd batch_cgd batch_lbfgs"`
+        for trainer in `echo "stoch_sg stoch_sga stoch_sia"` # mbatch_gd mbatch_cgd mbatch_lbfgs batch_gd batch_cgd batch_lbfgs"`
         do
                 fn_train ${dir_exp_mnist} ${model} ${params} ${!trainer} ${avg_crit} ${!model}${outlayer}
                 fn_train ${dir_exp_mnist} ${model}_l2n ${params} ${!trainer} ${l2n_crit} ${!model}${outlayer}
                 fn_train ${dir_exp_mnist} ${model}_var ${params} ${!trainer} ${var_crit} ${!model}${outlayer}
         done
 done
+
+exit
 
 # compare models
 bash plot_models.sh ${dir_exp_mnist}/models.pdf ${dir_exp_mnist}/*.state

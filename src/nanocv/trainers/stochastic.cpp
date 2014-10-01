@@ -11,26 +11,6 @@ namespace ncv
 {
         namespace detail
         {
-                ///
-                /// \brief tune the regularization factor for a given criterion (if needed)
-                ///
-                template
-                <
-                        typename toperator
-                >
-                static trainer_result_t tune(const toperator& op, const string_t& criterion)
-                {
-                        if (accumulator_t::can_regularize(criterion))
-                        {
-                                return log_min_search<toperator, scalar_t>(op, -1.0, +6.0, 0.2, 4);
-                        }
-
-                        else
-                        {
-                                return op(0.0);
-                        }
-                }
-
                 struct rnd_t
                 {
                         rnd_t(random_t<size_t>& gen)
@@ -46,13 +26,15 @@ namespace ncv
                         random_t<size_t>&  m_gen;
                 };
 
-                static void stochastic_train(
+                static trainer_result_t stochastic_train(
                         trainer_data_t& data,
                         stochastic_optimizer type, size_t epochs, scalar_t alpha0, scalar_t beta,
-                        trainer_result_t& result, thread_pool_t::mutex_t& mutex)
+                        thread_pool_t::mutex_t& mutex)
                 {
                         samples_t tsamples = data.m_tsampler.get();
                         samples_t vsamples = data.m_vsampler.get();
+
+                        trainer_result_t result;
 
                         random_t<size_t> xrng(0, tsamples.size());
                         rnd_t xrnd(xrng);
@@ -149,6 +131,9 @@ namespace ncv
                                         << ", lambda = " << data.m_lacc.lambda()
                                         << "] done in " << timer.elapsed() << ".";
                         }
+
+                        // OK
+                        return result;
                 }
         }
 
@@ -157,62 +142,53 @@ namespace ncv
                 const loss_t& loss, const string_t& criterion,
                 stochastic_optimizer optimizer, size_t epochs)
         {
+                thread_pool_t::mutex_t mutex;
+
+                // operator to train for a given regularization factor
                 const auto op = [&] (scalar_t lambda)
                 {
                         const size_t iterations = epochs * tsampler.size();             // SGD iterations
                         const scalar_t beta = std::pow(0.01, 1.0 / iterations);         // Learning rate decay rate
-                        
-                        const scalar_t min_log_alpha = -3;
-                        const scalar_t max_log_alpha = +0;
-                        const scalar_t dif_log_alpha = (max_log_alpha - min_log_alpha) / std::min(size_t(8), nthreads);
-                        
-                        scalars_t alphas;
-                        for (scalar_t log_alpha = min_log_alpha; log_alpha < max_log_alpha + 1e-6; log_alpha += dif_log_alpha)
-                        {
-                                alphas.push_back(std::exp(log_alpha));
-                        }
 
-                        // tune the learning rate (single epoch)
                         vector_t x0;
                         model.save_params(x0);
-                        
-                        thread_pool_t wpool(nthreads);
-                        thread_pool_t::mutex_t mutex;
-                        
-                        trainer_result_t result;
-                        for (scalar_t alpha : alphas)
+
+                        // operator to tune the learning rate (single epoch)
+                        const auto op_lrate = [&] (scalar_t alpha)
                         {
-                                wpool.enqueue([=, &task, &loss, &model, &x0, &result, &mutex]()
-                                {
-                                        accumulator_t lacc(model, 1, criterion, criterion_t::type::value, lambda);
-                                        accumulator_t gacc(model, 1, criterion, criterion_t::type::vgrad, lambda);
+                                accumulator_t lacc(model, 1, criterion, criterion_t::type::value, lambda);
+                                accumulator_t gacc(model, 1, criterion, criterion_t::type::vgrad, lambda);
 
-                                        trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
+                                trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
 
-                                        detail::stochastic_train(data, optimizer, 1, alpha, beta, result, mutex);
-                                });
-                        }
+                                return detail::stochastic_train(data, optimizer, 1, alpha, beta, mutex);
+                        };
 
-                        wpool.wait();
-                        
+                        const trainer_result_t result_lrate = log_min_search(op_lrate, -6.0, -1.0, 0.5, 4);
+
                         // train with the optimum learning rate (multiple epochs)
-                        const scalar_t opt_alpha = result.m_opt_config[0];
+                        const scalar_t opt_alpha = result_lrate.m_opt_config[0];
                         log_info() << "optimum learning rate = " << opt_alpha << ".";
-                        
-                        result = trainer_result_t();
                         
                         accumulator_t lacc(model, 1, criterion, criterion_t::type::value, lambda);
                         accumulator_t gacc(model, 1, criterion, criterion_t::type::vgrad, lambda);
                         
                         trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
                         
-                        detail::stochastic_train(data, optimizer, epochs, opt_alpha, beta, result, mutex);
-
-                        // OK
-                        return result;
+                        return detail::stochastic_train(data, optimizer, epochs, opt_alpha, beta, mutex);
                 };
 
                 // tune the regularization factor (if needed)
-                return detail::tune(op, criterion);
+                if (accumulator_t::can_regularize(criterion))
+                {
+                        thread_pool_t wpool(nthreads);
+
+                        return log_min_search_mt(op, wpool, -2.0, +6.0, 0.1, nthreads);
+                }
+
+                else
+                {
+                        return op(0.0);
+                }
         }
 }
