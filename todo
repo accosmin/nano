@@ -1,16 +1,4 @@
-- change log_min_search to equally split the current search interval iteratively:
-        - e.g. Dk+1 = Dk / n_threads
-        
-- multi-threaded version of log_min_search:
-        - pool.wait() after each iteration
-
-- faster stochastic trainer:
-	- tune the learning rate in a single epoch (as many trials as the number of threads)
-	- use this learning rate to run the epochs
-	- move the stochastic optimization code to stochastic trainer
-
-- move the batch optimization code to the mini-batch trainer
-- make the batch trainer derive from the mini-batch trainer
+- redesign the L2 and the VAR regularized criteria to be usable for stochastic methods too
 
 - finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
 
