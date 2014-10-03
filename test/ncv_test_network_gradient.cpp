@@ -11,7 +11,7 @@ static void test_grad_params(
         random_t<size_t> rand(2, 16);
 
         const size_t n_tests = 64;
-        const size_t n_samples = rand();
+        const size_t n_samples = rand() % 16;
 
         const rloss_t rloss = loss_manager_t::instance().get(loss_id);
         const loss_t& loss = *rloss;
