@@ -5,20 +5,20 @@ source common.sh
 # common parameters
 params=""
 params=${params}${task_mnist}
-params=${params}" --loss classnll --trials 10 --threads 8"
+params=${params}" --loss classnll --trials 10 --threads 12"
 
 # trainers 
 stoch_sg="--trainer stochastic --trainer-params opt=sg,epoch=16"
 stoch_sga="--trainer stochastic --trainer-params opt=sga,epoch=16"
 stoch_sia="--trainer stochastic --trainer-params opt=sia,epoch=16"
 
-mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=256,batch=1024,iters=8,eps=1e-6"
-mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=2048,batch=256,iters=16,eps=1e-6"
-mbatch_gd="--trainer minibatch --trainer-params opt=gd,epoch=2048,batch=64,iters=4,eps=1e-6"
+mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=1024,batch=1024,iters=4,eps=1e-6"
+mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=1024,batch=1024,iters=4,eps=1e-6"
+mbatch_gd="--trainer minibatch --trainer-params opt=gd,epoch=1024,batch=1024,iters=4,eps=1e-6"
 
-batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,iters=2048,eps=1e-6"
-batch_cgd="--trainer batch --trainer-params opt=cgd,iters=2048,eps=1e-6"
-batch_gd="--trainer batch --trainer-params opt=gd,iters=2048,eps=1e-6"
+batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,iters=1024,eps=1e-6"
+batch_cgd="--trainer batch --trainer-params opt=cgd,iters=1024,eps=1e-6"
+batch_gd="--trainer batch --trainer-params opt=gd,iters=1024,eps=1e-6"
 
 # criteria
 avg_crit="--criterion avg"
