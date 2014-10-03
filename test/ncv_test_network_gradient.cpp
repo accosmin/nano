@@ -11,7 +11,7 @@ static void test_grad_params(
         random_t<size_t> rand(2, 16);
 
         const size_t n_tests = 64;
-        const size_t n_samples = rand() % 16;
+        const size_t n_samples = rand();
 
         const rloss_t rloss = loss_manager_t::instance().get(loss_id);
         const loss_t& loss = *rloss;
@@ -86,6 +86,8 @@ static void test_grad_params(
 static void test_grad_inputs(const string_t& header, const string_t& loss_id, const model_t& model)
 {
         rmodel_t rmodel_inputs = model.clone();
+        
+        random_t<size_t> rand(2, 16);
         
         const size_t n_tests = 64;
         const size_t n_samples = rand();
