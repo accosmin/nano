@@ -8,7 +8,7 @@ using namespace ncv;
 static void test_grad_params(
         const string_t& header, const string_t& loss_id, const model_t& model, accumulator_t& acc_params)
 {
-        random_t<size_t> rand(2, 16);
+        random_t<size_t> rand(8, 16);
 
         const size_t n_tests = 64;
         const size_t n_samples = rand();
@@ -87,7 +87,7 @@ static void test_grad_inputs(const string_t& header, const string_t& loss_id, co
 {
         rmodel_t rmodel_inputs = model.clone();
         
-        random_t<size_t> rand(2, 16);
+        random_t<size_t> rand(8, 16);
         
         const size_t n_tests = 64;
         const size_t n_samples = rand();
@@ -150,11 +150,11 @@ static void test_grad_inputs(const string_t& header, const string_t& loss_id, co
                 problem_aproxdif_inputs(input.vector(), aproxdif_inputs_grad);
                 
                 const scalar_t dg_inputs = (analytic_inputs_grad - aproxdif_inputs_grad).lpNorm<Eigen::Infinity>();                
-                const scalar_t eps = 1e-6;
+                const bool ok = math::almost_equal(dg_inputs, scalar_t(0));;
                 
                 log_info() << header << " [" << (t + 1) << "/" << n_tests
                            << "]: samples = " << n_samples
-                           << ", dg_inputs = " << dg_inputs << " (" << (dg_inputs > eps ? "ERROR" : "OK") << ").";
+                           << ", dg_inputs = " << dg_inputs << " (" << (ok ? "ERROR" : "OK") << ").";
         }
 }
 
