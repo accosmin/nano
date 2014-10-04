@@ -11,7 +11,6 @@ namespace ncv
         {
                 // forward boost functions
                 using boost::algorithm::clamp;
-                using boost::algorithm::clamp_range;
                 
                 ///
                 /// \brief precision comparison criteria for scalars
