@@ -5,7 +5,7 @@ This small (nano) library is used as a sandbox for training and testing models, 
 ## Concepts
 
 The library is built around several key concepts mapped to C++ object interfaces. Each object instantation is registered with an **ID** and thus it can be selected 
-from command line arguments. 
+from command line arguments.
 
 #### Task
 
@@ -32,8 +32,8 @@ and **stochastic**.
 
 ### Compilation
 
-To compile (and install) CMake, a C++11 compiler, Boost, Eigen, libTIFF, libPNG and libJPEG are required. The library is tested so far only on ArchLinux x64, but the 
-code is written to be cross-platform.
+To compile (and install) use a C++11 compiler, CMake, Boost, Eigen, libTIFF, libPNG and libJPEG. The library is tested so far only on ArchLinux x64 using gcc, 
+but the code is written to be cross-platform.
 
 The easiest way of compiling is to run the `build_release.sh` bash script. The test programs and utilities will be found in the created `build-release` directory.
 
