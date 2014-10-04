@@ -153,7 +153,7 @@ namespace ncv
                         vector_t x0;
                         model.save_params(x0);
 
-                        // operator to tune the learning rate (single epoch)
+                        // operator to tune the learning rate
                         const auto op_lrate = [&] (scalar_t alpha)
                         {
                                 accumulator_t lacc(model, 1, criterion, criterion_t::type::value, lambda);
@@ -161,21 +161,12 @@ namespace ncv
 
                                 trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
 
-                                return detail::stochastic_train(data, optimizer, 1, alpha, beta, mutex);
+                                return detail::stochastic_train(data, optimizer, epochs, alpha, beta, mutex);
                         };
 
-                        const trainer_result_t result_lrate = log_min_search(op_lrate, -6.0, -1.0, 0.5, 4);
+                        thread_pool_t wpool(nthreads);
 
-                        // train with the optimum learning rate (multiple epochs)
-                        const scalar_t opt_alpha = result_lrate.m_opt_config[0];
-                        log_info() << "optimum learning rate = " << opt_alpha << ".";
-                        
-                        accumulator_t lacc(model, 1, criterion, criterion_t::type::value, lambda);
-                        accumulator_t gacc(model, 1, criterion, criterion_t::type::vgrad, lambda);
-                        
-                        trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
-                        
-                        return detail::stochastic_train(data, optimizer, epochs, opt_alpha, beta, mutex);
+                        return log_min_search_mt(op_lrate, wpool, -6.0, -1.0, 0.5, nthreads);
                 };
 
                 // tune the regularization factor (if needed)
@@ -183,7 +174,7 @@ namespace ncv
                 {
                         thread_pool_t wpool(nthreads);
 
-                        return log_min_search_mt(op, wpool, -2.0, +6.0, 0.1, nthreads);
+                        return log_min_search_mt(op, wpool, -2.0, +6.0, 0.2, nthreads);
                 }
 
                 else

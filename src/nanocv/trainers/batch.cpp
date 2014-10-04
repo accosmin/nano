@@ -11,29 +11,6 @@
 namespace ncv
 {
         namespace detail
-        {
-                ///
-                /// \brief tune the regularization factor for a given criterion (if needed)
-                ///
-                template
-                <
-                        typename toperator
-                >
-                static trainer_result_t tune(const toperator& op, const string_t& criterion)
-                {
-                        if (accumulator_t::can_regularize(criterion))
-                        {
-                                return log_min_search<toperator, scalar_t>(op, -1.0, +6.0, 0.2, 4);
-                        }
-
-                        else
-                        {
-                                return op(0.0);
-                        }
-                }
-        }
-
-        namespace detail
         {        
                 static opt_state_t batch_train(
                         trainer_data_t& data, 
@@ -148,6 +125,7 @@ namespace ncv
                 const loss_t& loss, const string_t& criterion, 
                 batch_optimizer optimizer, size_t cycles, size_t epochs, size_t iterations, scalar_t epsilon)
         {
+                // operator to train for a given regularization factor
                 const auto op = [&] (scalar_t lambda)
                 {
                         accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value, lambda);
@@ -173,7 +151,15 @@ namespace ncv
                 };
 
                 // tune the regularization factor (if needed)
-                return detail::tune(op, criterion);
+                if (accumulator_t::can_regularize(criterion))
+                {
+                        return log_min_search(op, -2.0, +6.0, 0.2, 4);
+                }
+
+                else
+                {
+                        return op(0.0);
+                }
         }
 }
 	
