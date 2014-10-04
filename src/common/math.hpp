@@ -33,13 +33,13 @@ namespace ncv
                 template <>
                 inline bool almost_equal(double x, double y)
                 {
-                        return std::abs(x - y) <= (1 + std::abs(x) + std::abs(y)) * std::sqrt(std::numeric_limits<float>::epsilon());
+                        return std::abs(x - y) <= (1 + std::abs(x) + std::abs(y)) * std::sqrt(std::numeric_limits<double>::epsilon());
                 }
                 
                 template <>
                 inline bool almost_equal(long double x, long double y)
                 {
-                        return std::abs(x - y) <= (1 + std::abs(x) + std::abs(y)) * std::sqrt(std::numeric_limits<float>::epsilon());
+                        return std::abs(x - y) <= (1 + std::abs(x) + std::abs(y)) * std::sqrt(std::numeric_limits<long double>::epsilon());
                 }                
 
                 // implementation detail
