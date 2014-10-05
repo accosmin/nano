@@ -75,7 +75,7 @@ static void test_grad_params(
                 problem_aproxdif_params(params, aproxdif_params_grad);
 
                 const scalar_t dg_params = (analytic_params_grad - aproxdif_params_grad).lpNorm<Eigen::Infinity>();
-                const bool ok = math::almost_equal(dg_params, scalar_t(0));
+                const bool ok = dg_params < 1e-6;//math::almost_equal(dg_params, scalar_t(0));
 
                 log_info() << header << " [" << (t + 1) << "/" << n_tests
                            << "]: samples = " << n_samples
@@ -150,11 +150,11 @@ static void test_grad_inputs(const string_t& header, const string_t& loss_id, co
                 problem_aproxdif_inputs(input.vector(), aproxdif_inputs_grad);
                 
                 const scalar_t dg_inputs = (analytic_inputs_grad - aproxdif_inputs_grad).lpNorm<Eigen::Infinity>();                
-                const bool ok = math::almost_equal(dg_inputs, scalar_t(0));;
+                const bool ok = dg_inputs < 1e-6;//math::almost_equal(dg_inputs, scalar_t(0));
                 
                 log_info() << header << " [" << (t + 1) << "/" << n_tests
                            << "]: samples = " << n_samples
-                           << ", dg_inputs = " << dg_inputs << " (" << (ok ? "ERROR" : "OK") << ").";
+                           << ", dg_inputs = " << dg_inputs << " (" << (ok ? "OK" : "ERROR") << ").";
         }
 }
 
