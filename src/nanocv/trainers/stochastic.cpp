@@ -166,13 +166,13 @@ namespace ncv
 
                         thread_pool_t wpool(nthreads);
 
-                        return log_min_search_mt(op_lrate, wpool, -6.0, -1.0, 0.5, 4);
+                        return log_min_search_mt(op_lrate, wpool, -6.0, -1.0, 0.5, nthreads);
                 };
 
                 // tune the regularization factor (if needed)
                 if (accumulator_t::can_regularize(criterion))
                 {
-                        return log_min_search(op, -2.0, +6.0, 0.2, nthreads);
+                        return log_min_search(op, -2.0, +6.0, 0.2, 4);
                 }
 
                 else
