@@ -34,6 +34,13 @@
 
 namespace ncv
 {
+        string_t version()
+        {
+                return  text::to_string(NANOCV_MAJOR_VERSION) + "." +
+                        text::to_string(NANOCV_MINOR_VERSION) + "." +
+                        text::to_string(NANOCV_REVISION_VERSION);
+        }
+
         void init()
         {
                 // round to nearest integer

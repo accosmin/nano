@@ -1,5 +1,6 @@
 #pragma once
 
+#include "version.h"
 #include "loss.h"
 #include "layer.h"
 #include "trainer.h"
@@ -21,14 +22,12 @@ namespace ncv
         ///
         /// \brief current version
         ///
-        static const size_t MAJOR_VERSION = 0;
-        static const size_t MINOR_VERSION = 1;
+        string_t version();
 
-        inline string_t version()
-        {
-                return text::to_string(MAJOR_VERSION) + "." +
-                       text::to_string(MINOR_VERSION);
-        }
+        ///
+        /// \brief initialize library (register objects, start worker pool, initialize OpenCL ...)
+        ///
+        void init();
 
         ///
         /// measure function call
@@ -64,11 +63,6 @@ namespace ncv
                         exit(EXIT_FAILURE);
                 }
         }
-
-        ///
-        /// \brief initialize library (register objects, start worker pool, initialize OpenCL ...)
-        ///
-        void init();
 
         ///
         /// \brief evaluate a model (compute the average loss value & error)
