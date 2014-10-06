@@ -153,7 +153,7 @@ namespace ncv
                 // tune the regularization factor (if needed)
                 if (accumulator_t::can_regularize(criterion))
                 {
-                        return log_min_search(op, -2.0, +6.0, 0.2, 4);
+                        return log_min_search(op, -2.0, +6.0, 0.5, 4);
                 }
 
                 else
