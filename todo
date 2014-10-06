@@ -4,9 +4,6 @@
 
 - GTSD dataset support
 
-- reduce the number of input/output buffers for layers:
-	- especially for the pooling layer (although it is very fast)
-
 - faster convolution:
         - check if any improvement if using a 3D convolution    
                
