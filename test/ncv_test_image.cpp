@@ -1,6 +1,4 @@
 #include "nanocv.h"
-#include "common/bilinear.hpp"
-#include "tensor/util.hpp"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])

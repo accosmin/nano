@@ -1,7 +1,7 @@
 #include "forward_network.h"
 #include "common/logger.h"
 #include "common/math.hpp"
-#include "tensor/util.hpp"
+#include "tensor/serialize.hpp"
 
 namespace ncv
 {

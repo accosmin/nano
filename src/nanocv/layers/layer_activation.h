@@ -1,7 +1,7 @@
 #pragma once
 
 #include "layer.h"
-#include "tensor/util.hpp"
+#include "tensor/transform.hpp"
 
 namespace ncv
 {

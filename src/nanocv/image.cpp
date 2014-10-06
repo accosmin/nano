@@ -1,6 +1,6 @@
 #include "image.h"
 #include "common/bilinear.hpp"
-#include "tensor/util.hpp"
+#include "tensor/transform.hpp"
 #include <fstream>
 #include <boost/algorithm/string.hpp>
 
