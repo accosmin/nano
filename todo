@@ -1,3 +1,7 @@
+- implement several robust losses for regression:
+	- http://ceres-solver.org/modeling.html#LossFunction
+	- s = x^2
+
 - redesign the L2 and the VAR regularized criteria to be usable for stochastic methods too
 
 - finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
