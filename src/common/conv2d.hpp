@@ -1,6 +1,6 @@
 #pragma once
 
-#include "conv2d_impl.hpp"
+#include "detail/conv2d_impl.hpp"
 #include <cassert>
 
 namespace ncv

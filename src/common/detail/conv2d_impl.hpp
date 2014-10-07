@@ -1,7 +1,7 @@
 #pragma once
 
-#include "dot.hpp"
-#include "mad.hpp"
+#include "common/dot.hpp"
+#include "common/mad.hpp"
 
 namespace ncv
 {

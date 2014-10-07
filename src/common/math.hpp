@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math_impl.hpp"
+#include "detail/math_impl.hpp"
 #include <type_traits>
 #include <limits>
 #include <boost/algorithm/clamp.hpp>
