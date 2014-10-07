@@ -1,7 +1,7 @@
 #pragma once
 
+#include "math_impl.hpp"
 #include <type_traits>
-#include <algorithm>
 #include <limits>
 #include <boost/algorithm/clamp.hpp>
 
@@ -40,38 +40,6 @@ namespace ncv
                 inline bool almost_equal(long double x, long double y)
                 {
                         return std::abs(x - y) <= (1 + std::abs(x) + std::abs(y)) * std::sqrt(std::numeric_limits<long double>::epsilon());
-                }                
-
-                // implementation detail
-                namespace detail
-                {
-                        template
-                        <
-                                typename tround,
-                                bool tround_integral,
-                                typename tvalue,
-                                bool tvalue_integral
-                        >
-                        struct cast
-                        {
-                                static tround dispatch(tvalue value)
-                                {
-                                        return static_cast<tround>(value);
-                                }
-                        };
-
-                        template
-                        <
-                                typename tround,
-                                typename tvalue
-                        >
-                        struct cast<tround, true, tvalue, false>
-                        {
-                                static tround dispatch(tvalue value)
-                                {
-                                        return static_cast<tround>(std::nearbyint(value));
-                                }
-                        };
                 }
 
                 // cast a value to another type (with rounding to the closest if necessary)
