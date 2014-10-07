@@ -1,6 +1,7 @@
 #include "nanocv.h"
 
 #include "losses/loss_square.h"
+#include "losses/loss_cauchy.h"
 #include "losses/loss_logistic.h"
 #include "losses/loss_classnll.h"
 
@@ -51,6 +52,7 @@ namespace ncv
 
                 // register losses
                 loss_manager_t::instance().add("square", square_loss_t());
+                loss_manager_t::instance().add("cauchy", cauchy_loss_t());
                 loss_manager_t::instance().add("logistic", logistic_loss_t());
                 loss_manager_t::instance().add("classnll", classnll_loss_t());
 

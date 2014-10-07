@@ -5,7 +5,7 @@
 namespace ncv
 {
         ///
-        /// \brief multi-class logistic loss (multi-label)
+        /// \brief multi-class logistic loss (single & multi-class classification)
         ///
         class logistic_loss_t : public loss_t
         {

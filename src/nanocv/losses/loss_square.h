@@ -5,7 +5,9 @@
 namespace ncv
 {
         ///
-        /// \brief square loss
+        /// \brief square loss (single & multivariate regression)
+        ///
+        /// NB: sensitive to noise
         ///
         class square_loss_t : public loss_t
 	{
@@ -24,7 +26,7 @@ namespace ncv
                 virtual vector_t vgrad(const vector_t& targets, const vector_t& scores) const;
 
                 // predict label indices
-                virtual indices_t labels(const vector_t& scores) const;;
+                virtual indices_t labels(const vector_t& scores) const;
 	};
 }
 

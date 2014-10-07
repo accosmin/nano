@@ -5,16 +5,18 @@
 namespace ncv
 {
         ///
-        /// \brief multi-class negative log-likelihood loss (single-class classification)
+        /// \brief Cauchy loss (single & multivariate regression)
         ///
-        class classnll_loss_t : public loss_t
-        {
-        public:
+        /// NB: robust to noise
+        ///
+        class cauchy_loss_t : public loss_t
+	{
+	public:
 
-                NANOCV_MAKE_CLONABLE(classnll_loss_t)
+                NANOCV_MAKE_CLONABLE(cauchy_loss_t)
 
                 // constructor
-                classnll_loss_t(const string_t& parameters = string_t());
+                cauchy_loss_t(const string_t& = string_t());
 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const;
@@ -25,6 +27,6 @@ namespace ncv
 
                 // predict label indices
                 virtual indices_t labels(const vector_t& scores) const;
-        };
+	};
 }
 
