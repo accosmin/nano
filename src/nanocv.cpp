@@ -1,8 +1,8 @@
 #include "nanocv.h"
 
-#include "losses/loss_square.hpp"
-#include "losses/loss_logistic.hpp"
-#include "losses/loss_classnll.hpp"
+#include "losses/loss_square.h"
+#include "losses/loss_logistic.h"
+#include "losses/loss_classnll.h"
 
 #include "tasks/task_mnist.h"
 #include "tasks/task_cifar10.h"

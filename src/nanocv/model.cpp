@@ -2,7 +2,7 @@
 #include "common/logger.h"
 #include "common/timer.h"
 #include "common/random.hpp"
-#include "losses/loss_square.hpp"
+#include "losses/loss_square.h"
 #include "optimize/opt_lbfgs.hpp"
 #include "task.h"
 #include <fstream>
