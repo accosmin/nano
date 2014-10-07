@@ -37,6 +37,21 @@ namespace ncv
                                 }
                         };
                 }
+
+                ///
+                /// \brief cast a value to another type (with rounding to the closest if necessary)
+                ///
+                template
+                <
+                        typename tround,
+                        typename tvalue
+                >
+                tround cast(tvalue value)
+                {
+                        return  detail::cast<
+                                tround, std::is_integral<tround>::value,
+                                tvalue, std::is_integral<tvalue>::value>::dispatch(value);
+                }
         }
 }
 

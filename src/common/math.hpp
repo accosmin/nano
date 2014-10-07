@@ -1,6 +1,5 @@
 #pragma once
 
-#include "detail/math_impl.hpp"
 #include <type_traits>
 #include <limits>
 #include <boost/algorithm/clamp.hpp>
@@ -42,20 +41,9 @@ namespace ncv
                         return std::abs(x - y) <= (1 + std::abs(x) + std::abs(y)) * std::sqrt(std::numeric_limits<long double>::epsilon());
                 }
 
-                // cast a value to another type (with rounding to the closest if necessary)
-                template
-                <
-                        typename tround,
-                        typename tvalue
-                >
-                tround cast(tvalue value)
-                {
-                        return  detail::cast<
-                                tround, std::is_integral<tround>::value,
-                                tvalue, std::is_integral<tvalue>::value>::dispatch(value);
-                }
-
-                // square a value
+                ///
+                /// \brief square
+                ///
                 template
                 <
                         typename tvalue
@@ -65,6 +53,9 @@ namespace ncv
                         return value * value;
                 }
 
+                ///
+                /// \brief cube
+                ///
                 template
                 <
                         typename tvalue
