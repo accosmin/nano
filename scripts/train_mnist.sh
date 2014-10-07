@@ -5,25 +5,7 @@ source common.sh
 # common parameters
 params=""
 params=${params}${task_mnist}
-params=${params}" --loss classnll --trials 10 --threads 12"
-
-# trainers 
-stoch_sg="--trainer stochastic --trainer-params opt=sg,epoch=16"
-stoch_sga="--trainer stochastic --trainer-params opt=sga,epoch=16"
-stoch_sia="--trainer stochastic --trainer-params opt=sia,epoch=16"
-
-mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=1024,batch=1024,iters=4,eps=1e-6"
-mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=1024,batch=1024,iters=4,eps=1e-6"
-mbatch_gd="--trainer minibatch --trainer-params opt=gd,epoch=1024,batch=1024,iters=4,eps=1e-6"
-
-batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,iters=1024,eps=1e-6"
-batch_cgd="--trainer batch --trainer-params opt=cgd,iters=1024,eps=1e-6"
-batch_gd="--trainer batch --trainer-params opt=gd,iters=1024,eps=1e-6"
-
-# criteria
-avg_crit="--criterion avg"
-l2n_crit="--criterion l2n-reg"
-var_crit="--criterion var-reg"
+params=${params}" --loss classnll --trials 10 --threads ${max_threads}"
 
 # models
 conv_max="--model forward-network --model-params "
@@ -38,13 +20,11 @@ mlp0="--model forward-network --model-params "
 mlp1=${mlp0}"linear:dims=128;act-snorm;"
 mlp2=${mlp1}"linear:dims=64;act-snorm;"
 mlp3=${mlp2}"linear:dims=32;act-snorm;"
-mlp4=${mlp3}"linear:dims=16;act-snorm;"
-mlp5=${mlp4}"linear:dims=8;act-snorm;"
 
 outlayer="linear:dims=10;"
 
 # train models
-for model in `echo "conv_max conv_avg conv_min"`
+for model in `echo "conv_max conv_avg conv_min mlp0 mlp1 mlp2 mlp3"`
 do
         for trainer in `echo "mbatch_gd mbatch_cgd mbatch_lbfgs"` # batch_gd batch_cgd batch_lbfgs"`
         do
@@ -52,11 +32,11 @@ do
                 fn_train ${dir_exp_mnist} ${trainer}_${model}_l2n ${params} ${!trainer} ${l2n_crit} ${!model}${outlayer}
                 fn_train ${dir_exp_mnist} ${trainer}_${model}_var ${params} ${!trainer} ${var_crit} ${!model}${outlayer}
         done
-#         for trainer in `echo "stoch_sg stoch_sga stoch_sia"`
-#         do
-#                 fn_train ${dir_exp_mnist} ${trainer}_${model} ${params} ${!trainer} ${avg_crit} ${!model}${outlayer}
-#                 fn_train ${dir_exp_mnist} ${trainer}_${model}_l2n ${params} ${!trainer} ${l2n_crit} ${!model}${outlayer}
-#         done
+        for trainer in `echo "stoch_sg stoch_sga stoch_sia"`
+        do
+                fn_train ${dir_exp_mnist} ${trainer}_${model} ${params} ${!trainer} ${avg_crit} ${!model}${outlayer}
+                fn_train ${dir_exp_mnist} ${trainer}_${model}_l2n ${params} ${!trainer} ${l2n_crit} ${!model}${outlayer}
+        done
 done
 
 exit

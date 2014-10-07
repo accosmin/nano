@@ -31,12 +31,26 @@ mkdir -p ${dir_exp_cifar10}
 mkdir -p ${dir_exp_cifar100}
 mkdir -p ${dir_exp_cbclfaces}
 
-#batch="--trainer batch --trainer-params opt=lbfgs,iters=1024,eps=1e-6"
-#stochastic="--trainer stochastic --trainer-params opt=sgd,epoch=64"
-#minibatch="--trainer minibatch --trainer-params batch=1024,iters=4096,eps=1e-6"
-
 # number of available threads
 max_threads=`less /proc/cpuinfo | grep -i processor | wc -l`
+
+# trainers 
+stoch_sg="--trainer stochastic --trainer-params opt=sg,epoch=16"
+stoch_sga="--trainer stochastic --trainer-params opt=sga,epoch=16"
+stoch_sia="--trainer stochastic --trainer-params opt=sia,epoch=16"
+
+mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=1024,batch=1024,iters=4,eps=1e-6"
+mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=1024,batch=1024,iters=4,eps=1e-6"
+mbatch_gd="--trainer minibatch --trainer-params opt=gd,epoch=1024,batch=1024,iters=4,eps=1e-6"
+
+batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,iters=1024,eps=1e-6"
+batch_cgd="--trainer batch --trainer-params opt=cgd,iters=1024,eps=1e-6"
+batch_gd="--trainer batch --trainer-params opt=gd,iters=1024,eps=1e-6"
+
+# criteria
+avg_crit="--criterion avg"
+l2n_crit="--criterion l2n-reg"
+var_crit="--criterion var-reg"
 
 # train a model (results directory, name, parameters)
 function fn_train
