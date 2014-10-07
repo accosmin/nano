@@ -84,7 +84,6 @@ namespace ncv
                                                 << ", valid = " << vvalue << "/" << verror
                                                 << ", grad = " << state.g.lpNorm<Eigen::Infinity>()
                                                 << ", eval = " << state.n_fval_calls() << "/" << state.n_grad_calls()
-                                                << ", dims = " << data.m_lacc.psize()
                                                 << ", lambda = " << data.m_lacc.lambda()
                                                 << "] done in " << timer.elapsed() << ".";
                                                 

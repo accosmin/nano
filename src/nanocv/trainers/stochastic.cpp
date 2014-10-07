@@ -127,7 +127,6 @@ namespace ncv
                                         << ", valid = " << vvalue << "/" << verror
                                         << ", rate = " << alpha << "/" << alpha0
                                         << ", epoch = " << e << "/" << epochs
-                                        << ", dims = " << data.m_lacc.psize()
                                         << ", lambda = " << data.m_lacc.lambda()
                                         << "] done in " << timer.elapsed() << ".";
                         }
