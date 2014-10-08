@@ -67,7 +67,8 @@ namespace ncv
         size_t linear_layer_t::resize(const tensor_t& tensor)
         {
                 const size_t idims = tensor.size();
-                const size_t odims = math::clamp(text::from_params<size_t>(configuration(), "dims", 10), 1, 4096);
+                const size_t odims = math::clamp(text::from_params<size_t>(configuration(), "dims", 10),
+                                                 size_t(1), size_t(4096));
 
                 // resize buffers
                 m_idata.resize(tensor.dims(), tensor.rows(), tensor.cols());

@@ -137,9 +137,9 @@ namespace ncv
                         const scalar_t var_g = (xyz_x * -0.9689 + xyz_y *  1.8758 + xyz_z *  0.0415) / 100.0;
                         const scalar_t var_b = (xyz_x *  0.0557 + xyz_y * -0.2040 + xyz_z *  1.0570) / 100.0;
 
-                        rgb_r = math::clamp(math::cast<rgba_t>(255.0 * fn_xyz2rgb(var_r)), 0, 255);
-                        rgb_g = math::clamp(math::cast<rgba_t>(255.0 * fn_xyz2rgb(var_g)), 0, 255);
-                        rgb_b = math::clamp(math::cast<rgba_t>(255.0 * fn_xyz2rgb(var_b)), 0, 255);
+                        rgb_r = math::clamp(math::cast<rgba_t>(255.0 * fn_xyz2rgb(var_r)), rgba_t(0), rgba_t(255));
+                        rgb_g = math::clamp(math::cast<rgba_t>(255.0 * fn_xyz2rgb(var_g)), rgba_t(0), rgba_t(255));
+                        rgb_b = math::clamp(math::cast<rgba_t>(255.0 * fn_xyz2rgb(var_b)), rgba_t(0), rgba_t(255));
                 }
 
                 void xyz2lab(scalar_t xyz_x, scalar_t xyz_y, scalar_t xyz_z,

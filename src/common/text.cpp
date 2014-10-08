@@ -1,5 +1,4 @@
 #include "text.h"
-#include <boost/algorithm/string.hpp>
 
 namespace ncv
 {

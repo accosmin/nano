@@ -1,5 +1,5 @@
 #include "geom.h"
-#include <boost/geometry.hpp>
+#include <boost/geometry/algorithms/intersection.hpp>
 
 namespace ncv
 {

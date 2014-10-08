@@ -2,7 +2,6 @@
 #include "common/bilinear.hpp"
 #include "tensor/transform.hpp"
 #include <fstream>
-#include <boost/algorithm/string.hpp>
 
 #define png_infopp_NULL (png_infopp)NULL
 #define int_p_NULL (int*)NULL
