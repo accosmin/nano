@@ -2,6 +2,7 @@
 
 #include "common/logger.h"
 #include "common/timer.h"
+#include <cstdlib>
 
 namespace ncv
 {
