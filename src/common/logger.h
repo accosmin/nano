@@ -1,9 +1,6 @@
 #pragma once
 
 #include <iostream>
-#include <iomanip>
-#include <ctime>
-#include <string>
 
 namespace ncv
 {
@@ -15,18 +12,10 @@ namespace ncv
         public:
 
                 // constructor
-                logger_t(std::ostream& stream, const char* header, bool flush = true)
-                        :       m_stream(stream), m_flush(flush)
-                {
-                        log_time();
-                        m_stream << "[" << header << "] ";
-                }
+                logger_t(std::ostream& stream, const char* header, bool flush = true);
 
                 // destructor
-                ~logger_t()
-                {
-                        m_flush ? endl() : newl();
-                }
+                ~logger_t();
 
                 // stream data
                 template <typename T>
@@ -35,62 +24,20 @@ namespace ncv
                         m_stream << data;
                         return *this;
                 }
-                logger_t& operator<<(const char* str)
-                {
-                        m_stream << str;
-                        return *this;
-                }
-                logger_t& operator<<(std::ostream& (*pf)(std::ostream&))
-                {
-                        (*pf)(m_stream);
-                        return *this;
-                }
-
-                logger_t& operator<<(logger_t& (*pf)(logger_t&))
-                {
-                        return (*pf)(*this);
-                }
+                logger_t& operator<<(const char* str);
+                logger_t& operator<<(std::ostream& (*pf)(std::ostream&));
+                logger_t& operator<<(logger_t& (*pf)(logger_t&));
 
                 // stream tags
-                logger_t& newl()
-                {
-                        m_stream << "\n";
-                        return *this;
-                }
-                logger_t& endl()
-                {
-                        m_stream << std::endl;
-                        return *this;
-                }
-
-                logger_t& done()
-                {
-                        m_stream << "<<< program finished correctly >>>";
-                        return *this;
-                }
-
-                logger_t& flush()
-                {
-                        m_stream.flush();
-                        return *this;
-                }
+                logger_t& newl();
+                logger_t& endl();
+                logger_t& done();
+                logger_t& flush();
 
         private:
 
                 // log current time
-                void log_time()
-                {
-                        std::time_t t = std::time(nullptr);
-                        {
-                                //m_stream << "[" << std::put_time(std::localtime(&t), "%c %Z") << "] ";
-                        }
-                        {
-                                char buffer[128];
-                                strftime(buffer, 128, "%Y:%m:%d %H:%M:%S", localtime(&t));
-                                m_stream << "[" << buffer << "] ";
-                        }
-                }
-
+                void log_time();
 
         private:
 
@@ -99,7 +46,7 @@ namespace ncv
                 bool            m_flush;
         };
 
-        // streaming particular tags
+        // stream particular tags
         inline logger_t& newl(logger_t& logger_t)         { return logger_t.newl(); }
         inline logger_t& endl(logger_t& logger_t)         { return logger_t.endl(); }
         inline logger_t& done(logger_t& logger_t)         { return logger_t.done(); }
