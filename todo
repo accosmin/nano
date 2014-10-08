@@ -1,18 +1,16 @@
-- redesign the L2 and the VAR regularized criteria to be usable for stochastic methods too
-
-- finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
-
-- GTSD dataset support
-
 - faster convolution:
         - check if any improvement if using a 3D convolution    
                
+- new convolution-based layer:
+	- keep the convolution random and only learn their weights
+
+- finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
+
 - improve the speed of the linear layers: 
 	- the gradient takes too much to compute!
 	- the gradient does not scale with the number of threads
 
-- implement this network type:
-	- http://arxiv.org/pdf/1312.4400v3.pdf
+- GTSD dataset support (after 0.1 release)
 
 - unsupervised learning (after 0.1 release): 
 	- unsupervised training:
