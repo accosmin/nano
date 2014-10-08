@@ -1,5 +1,6 @@
 #include "nanocv.h"
 #include "common/conv2d.hpp"
+#include "common/iconv2d.hpp"
 #ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
 #endif

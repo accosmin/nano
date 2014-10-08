@@ -1,9 +1,33 @@
 #pragma once
 
-#include "detail/sampling_impl.hpp"
+#include <vector>
+#include <algorithm>
+#include "common/random.hpp"
 
 namespace ncv
 {
+        ///
+        /// \brief create a random subset of indices
+        ///
+        template
+        <
+                typename tsize
+        >
+        std::vector<tsize> uniform_indices(tsize capacity, tsize size)
+        {
+                random_t<tsize> rng(tsize(1), capacity);
+
+                std::vector<tsize> indices(size);
+                for (tsize i = 0; i < size; i ++)
+                {
+                        indices[i] = rng() - tsize(1);
+                }
+
+                std::sort(indices.begin(), indices.end());
+
+                return indices;
+        }
+
         ///
         /// \brief create a random subset of given size by uniformly sampling the set
         ///
@@ -17,7 +41,7 @@ namespace ncv
 
                 if (!samples.empty())
                 {
-                        const std::vector<std::size_t> indices = detail::uniform_indices(samples.size(), size);
+                        const std::vector<std::size_t> indices = uniform_indices(samples.size(), size);
 
                         for (std::size_t i = 0; i < indices.size(); i ++)
                         {
@@ -41,7 +65,7 @@ namespace ncv
         {
                 if (!samples.empty())
                 {
-                        const std::vector<std::size_t> indices = detail::uniform_indices(samples.size(), size);
+                        const std::vector<std::size_t> indices = uniform_indices(samples.size(), size);
 
                         for (std::size_t i = 0; i < indices.size(); i ++)
                         {

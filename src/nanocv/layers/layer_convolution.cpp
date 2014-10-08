@@ -3,6 +3,7 @@
 #include "common/math.hpp"
 #include "common/random.hpp"
 #include "common/conv2d.hpp"
+#include "common/iconv2d.hpp"
 #include "tensor/serialize.hpp"
 
 namespace ncv
