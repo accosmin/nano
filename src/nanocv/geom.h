@@ -13,8 +13,10 @@ namespace ncv
         ///
         /// \brief 2D point
         ///
-        struct point_t
+        class point_t
         {
+        public:
+
                 ///
                 /// \brief constructor
                 ///
@@ -29,8 +31,7 @@ namespace ncv
                 coord_t x() const { return m_x; }
                 coord_t y() const { return m_y; }
 
-                coord_t& x() { return m_x; }
-                coord_t& y() { return m_y; }
+        private:
 
                 // attributes
                 coord_t         m_x;
@@ -40,14 +41,12 @@ namespace ncv
         ///
         /// \brief 2D rectangle
         ///
-        struct rect_t
+        class rect_t
         {
+        public:
+
                 ///
-                /// \brief rect_t
-                /// \param x
-                /// \param y
-                /// \param w
-                /// \param h
+                /// \brief constructor
                 ///
                 rect_t(coord_t x = 0, coord_t y = 0, coord_t w = 0, coord_t h = 0)
                         :       m_x(x), m_y(y), m_w(w), m_h(h)
@@ -69,21 +68,10 @@ namespace ncv
                 coord_t cols() const { return width(); }
 
                 area_t area() const { return area_t(width()) * area_t(height()); }
+                bool empty() const { return area() == 0; }
+                bool valid() const { return m_w >= 0 && m_h >= 0; }
 
-                ///
-                /// \brief intersection rectangle
-                ///
-                rect_t intersection(const rect_t& other) const;
-
-                ///
-                /// \brief union with another rectangle
-                ///
-                rect_t union_(const rect_t& other) const;
-
-                ///
-                /// \brief [0, 1] overlap between two rectangle (aka Jaccard distance)
-                ///
-                scalar_t overlap(const rect_t& other) const;
+        private:
 
                 // attributes
                 coord_t         m_x;            ///< left
@@ -91,6 +79,21 @@ namespace ncv
                 coord_t         m_w;            ///< width
                 coord_t         m_h;            ///< height
         };
+
+        ///
+        /// \brief intersect two rectangles
+        ///
+        rect_t operator&(const rect_t& rect1, const rect_t& rect2);
+
+        ///
+        /// \brief union with another rectangle
+        ///
+        rect_t operator|(const rect_t& rect1, const rect_t& rect2);
+
+        ///
+        /// \brief [0, 1] overlap between two rectangle (aka Jaccard distance)
+        ///
+        scalar_t overlap(const rect_t& rect1, const rect_t& rect2);
 }
 
 
