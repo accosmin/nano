@@ -1,10 +1,13 @@
-- new convolution-based layer:
+- new convolution-based layers:
 	- (1) - keep the convolution random and only learn their weights
-	- (2) - O(o) = sum(i, m(o,i) * I(i) @ C(o)), where m(o,i) is a discrete {0, 1} random mask,
-		and we have as many convolutions as outputs -> to learn the convolutions, the masks are fixed
+	- (2) - O(o) = sum(i, m(o,i) * I(i) @ C(o, i)), where m(o,i) is a discrete {0, 1} random mask,
+		the masks are fixed, only learn the convolutions
 
 - faster convolution:
         - check if any improvement if using a 3D convolution    
+
+- documentation using:
+	- https://docs.readthedocs.org/en/latest/getting_started.html
                
 - finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
 
