@@ -1,10 +1,12 @@
 - new convolution-based layers:
-	- (1) - keep the convolution random and only learn their weights
-	- (2) - O(o) = sum(i, m(o,i) * I(i) @ C(o, i)), where m(o,i) is a discrete {0, 1} random mask,
-		the masks are fixed, only learn the convolutions
+	- (1) - keep the convolution random -> learn their weights
+	- (2) - O(o) = sum(i, m(o,i) * I(i) @ C(o, i)), where m(o,i) is a fixed discrete {0, 1} random mask -> learn the convolutions
+	- (3) - fixed random convolutions -> learn only the output linear layers
 
 - faster convolution:
         - check if any improvement if using a 3D convolution    
+
+- ctest-based unit tests
 
 - documentation using:
 	- https://docs.readthedocs.org/en/latest/getting_started.html
