@@ -19,7 +19,10 @@ namespace ncv
                 NANOCV_MAKE_CLONABLE(conv_layer_t)
 
                 // constructor
-                conv_layer_t(const string_t& parameters = string_t());
+                conv_layer_t(const string_t& parameters = string_t(), const string_t& description = string_t());
+
+                // destructor
+                virtual ~conv_layer_t();
 
                 // resize to process new tensors of the given type
                 virtual size_t resize(const tensor_t& tensor);

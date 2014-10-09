@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
 {
         ncv::init();
 
-        const strings_t conv_layer_ids { "", "conv" };
+        const strings_t conv_layer_ids { "", "conv", "kconv" };
         const strings_t pool_layer_ids { "", "pool-max", "pool-min", "pool-avg" };
         const strings_t full_layer_ids { "", "linear" };
         const strings_t actv_layer_ids { "", "act-unit", "act-tanh", "act-snorm", "act-splus" };

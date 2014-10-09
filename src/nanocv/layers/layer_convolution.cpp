@@ -106,8 +106,13 @@ namespace ncv
                 }
         }
 
-        conv_layer_t::conv_layer_t(const string_t& parameters)
-                :       layer_t(parameters, "convolution layer, parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
+        conv_layer_t::conv_layer_t(const string_t& parameters, const string_t& description)
+                :       layer_t(parameters, !description.empty() ? description :
+                                "convolution layer, parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
+        {
+        }
+
+        conv_layer_t::~conv_layer_t()
         {
         }
 
