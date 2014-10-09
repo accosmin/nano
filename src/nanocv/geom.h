@@ -73,6 +73,19 @@ namespace ncv
 
                 point_t center() const { return point_t((left() + right()) / 2, (top() + bottom()) / 2); }
 
+                ///
+                /// \brief stream rectangle
+                ///
+                template
+                <
+                        typename tstreamer
+                >
+                tstreamer& operator<<(tstreamer& s) const
+                {
+                        return s << "{RECT: top-left = (" << left() << ", " << top()
+                                 << "), size = " << width() << "x" << height() << "}";
+                }
+
         private:
 
                 // attributes
@@ -96,19 +109,6 @@ namespace ncv
         /// \brief [0, 1] overlap between two rectangle (aka Jaccard distance)
         ///
         scalar_t overlap(const rect_t& rect1, const rect_t& rect2);
-
-        ///
-        /// \brief stream rectangle
-        ///
-        template
-        <
-                typename tstreamer
-        >
-        tstreamer& operator<<(tstreamer& s, const rect_t& rect)
-        {
-                return s << "{RECT: top-left = (" << rect.left() << ", " << rect.top()
-                         << "), size = " << rect.width() << "x" << rect.height() << "}";
-        }
 }
 
 
