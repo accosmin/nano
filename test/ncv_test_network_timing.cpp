@@ -109,6 +109,11 @@ int main(int argc, char *argv[])
         cmodel = cmodel + "conv:dims=16,rows=6,cols=6;act-snorm;pool-max;";
         cmodel = cmodel + "conv:dims=32,rows=5,cols=5;act-snorm;pool-max;";
         cmodel = cmodel + "conv:dims=64,rows=4,cols=4;act-snorm;";
+
+        string_t kcmodel;
+        kcmodel = kcmodel + "kconv:dims=16,rows=6,cols=6;act-snorm;pool-max;";
+        kcmodel = kcmodel + "kconv:dims=32,rows=5,cols=5;act-snorm;pool-max;";
+        kcmodel = kcmodel + "kconv:dims=64,rows=4,cols=4;act-snorm;";
         
         const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
 
@@ -120,7 +125,9 @@ int main(int argc, char *argv[])
                 lmodel3 + outlayer,
                 lmodel4 + outlayer,
                 lmodel5 + outlayer,
-                cmodel + outlayer
+
+                cmodel + outlayer,
+                kcmodel + outlayer
         };
 
         const rloss_t rloss = loss_manager_t::instance().get("logistic");
