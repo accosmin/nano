@@ -48,8 +48,8 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                rect_t(coord_t x = 0, coord_t y = 0, coord_t w = 0, coord_t h = 0)
-                        :       m_x(x), m_y(y), m_w(w), m_h(h)
+                rect_t(coord_t left = 0, coord_t top = 0, coord_t width = 0, coord_t height = 0)
+                        :       m_x(left), m_y(top), m_w(width), m_h(height)
                 {
                 }
 
@@ -70,6 +70,8 @@ namespace ncv
                 area_t area() const { return area_t(width()) * area_t(height()); }
                 bool empty() const { return area() == 0; }
                 bool valid() const { return m_w >= 0 && m_h >= 0; }
+
+                point_t center() const { return point_t((left() + right()) / 2, (top() + bottom()) / 2); }
 
         private:
 
@@ -94,6 +96,19 @@ namespace ncv
         /// \brief [0, 1] overlap between two rectangle (aka Jaccard distance)
         ///
         scalar_t overlap(const rect_t& rect1, const rect_t& rect2);
+
+        ///
+        /// \brief stream rectangle
+        ///
+        template
+        <
+                typename tstreamer
+        >
+        tstreamer& operator<<(tstreamer& s, const rect_t& rect)
+        {
+                return s << "{RECT: top-left = (" << rect.left() << ", " << rect.top()
+                         << "), size = " << rect.width() << "x" << rect.height() << "}";
+        }
 }
 
 
