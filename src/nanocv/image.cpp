@@ -448,15 +448,15 @@ namespace ncv
 
         tensor_t image_t::to_tensor() const
         {
-                return to_tensor(geom::make_rect(0, 0, cols(), rows()));
+                return to_tensor(rect_t(0, 0, cols(), rows()));
         }
 
         tensor_t image_t::to_tensor(const rect_t& region) const
         {
-                const coord_t top = geom::top(region);
-                const coord_t left = geom::top(region);
-                const coord_t rows = geom::rows(region);
-                const coord_t cols = geom::cols(region);
+                const coord_t top = region.top();
+                const coord_t left = region.left();
+                const coord_t rows = region.rows();
+                const coord_t cols = region.cols();
 
                 const scalar_t scale = 1.0 / 255.0;
 
@@ -637,11 +637,11 @@ namespace ncv
                 {
                 case color_mode::luma:
                         return  copy(top, left, luma_matrix_t(image.m_luma.block(
-                                geom::top(region), geom::left(region), geom::rows(region), geom::cols(region))));
+                                region.top(), region.left(), region.rows(), region.cols())));
 
                 case color_mode::rgba:
                         return  copy(top, left, rgba_matrix_t(image.m_rgba.block(
-                                geom::top(region), geom::left(region), geom::rows(region), geom::cols(region))));
+                                region.top(), region.left(), region.rows(), region.cols())));
 
                 default:
                         return false;

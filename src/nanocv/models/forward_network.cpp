@@ -3,6 +3,7 @@
 #include "common/math.hpp"
 #include "common/cast.hpp"
 #include "tensor/serialize.hpp"
+#include <boost/format.hpp>
 
 namespace ncv
 {

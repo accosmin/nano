@@ -8,6 +8,7 @@
 #include "cuda/cuda.h"
 #include "cuda/conv2d.h"
 #endif
+#include <boost/format.hpp>
 
 using namespace ncv;
 

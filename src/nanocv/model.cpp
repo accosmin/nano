@@ -46,7 +46,7 @@ namespace ncv
 
         const tensor_t& model_t::output(const image_t& image, const rect_t& region) const
         {
-                return output(image, geom::left(region), geom::top(region));
+                return output(image, region.left(), region.top());
         }
 
         const tensor_t& model_t::output(const image_t& image, coord_t x, coord_t y) const
@@ -66,13 +66,13 @@ namespace ncv
 
         tensor_t model_t::make_input(const image_t& image, coord_t x, coord_t y) const
         {
-                const rect_t region = geom::make_rect(x, y, icols(), irows());
+                const rect_t region = rect_t(x, y, icols(), irows());
                 return image.to_tensor(region);
         }
 
         tensor_t model_t::make_input(const image_t& image, const rect_t& region) const
         {
-                return make_input(image, geom::left(region), geom::top(region));
+                return make_input(image, region.left(), region.top());
         }
 
         size_t model_t::idims() const

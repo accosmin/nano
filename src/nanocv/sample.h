@@ -18,7 +18,7 @@ namespace ncv
                 // constructor
                 sample_t(size_t index = 0, coord_t x = 0, coord_t y = 0, coord_t w = 0, coord_t h = 0,
                          scalar_t weight = 1.0)
-                        :       sample_t(index, geom::make_rect(x, y, w, h), weight)
+                        :       sample_t(index, rect_t(x, y, w, h), weight)
                 {
                 }
                 sample_t(size_t index, const rect_t& region, scalar_t weight = 1.0)

@@ -27,12 +27,12 @@ namespace ncv
 
         rect_t task_t::sample_size() const
         {
-                return geom::make_size(n_cols(), n_rows());
+                return sample_region(0, 0);
         }
 
         rect_t task_t::sample_region(coord_t x, coord_t y) const
         {
-                return geom::make_rect(x, y, n_cols(), n_rows());
+                return rect_t(x, y, n_cols(), n_rows());
         }
 
         strings_t task_t::labels() const

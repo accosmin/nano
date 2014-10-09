@@ -23,15 +23,15 @@ namespace ncv
 
         bool grid_image_t::set(size_t grow, size_t gcol, const image_t& image)
         {
-                return set(grow, gcol, image, geom::make_rect(0, 0, image.cols(), image.rows()));
+                return set(grow, gcol, image, rect_t(0, 0, image.cols(), image.rows()));
         }
 
         bool grid_image_t::set(size_t grow, size_t gcol, const image_t& image, const rect_t& region)
         {
                 if (    grow < m_grows &&
                         gcol < m_gcols &&
-                        static_cast<size_t>(geom::rows(region)) == m_prows &&
-                        static_cast<size_t>(geom::cols(region)) == m_pcols)
+                        static_cast<size_t>(region.rows()) == m_prows &&
+                        static_cast<size_t>(region.cols()) == m_pcols)
                 {
                         const size_t iy = m_prows * grow + m_border * (grow + 1);
                         const size_t ix = m_pcols * gcol + m_border * (gcol + 1);

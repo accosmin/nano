@@ -1,51 +1,96 @@
 #pragma once
 
 #include "types.h"
-#include <boost/geometry/geometries/point_xy.hpp>
-#include <boost/geometry/geometries/box.hpp>
 
 namespace ncv
 {
-        // pixel geometry
-        namespace bgm = boost::geometry::model;
-        typedef int                             coord_t;
-        typedef bgm::d2::point_xy<coord_t>      point_t;
-        typedef bgm::box<point_t>               rect_t;
+        ///
+        /// \brief image coordinate
+        ///
+        typedef int16_t                 coord_t;
+        typedef int32_t                 area_t;
 
-        namespace geom
+        ///
+        /// \brief 2D point
+        ///
+        struct point_t
         {
-                // create geometric objects
-                inline point_t make_point(coord_t x = 0, coord_t y = 0)
+                ///
+                /// \brief constructor
+                ///
+                point_t(coord_t x = 0, coord_t y = 0)
+                        :       m_x(x), m_y(y)
                 {
-                        return point_t(x, y);
-                }
-                inline rect_t make_rect(coord_t x = 0, coord_t y = 0, coord_t w = 0, coord_t h = 0)
-                {
-                        return rect_t(make_point(x, y), make_point(x + w, y + h));
-                }
-                inline rect_t make_size(coord_t w = 0, coord_t h = 0)
-                {
-                        return make_rect(0, 0, w, h);
                 }
 
-                // access geometric objects
-                inline coord_t left(const rect_t& rect)     { return rect.min_corner().x(); }
-                inline coord_t right(const rect_t& rect)    { return rect.max_corner().x(); }
-                inline coord_t top(const rect_t& rect)      { return rect.min_corner().y(); }
-                inline coord_t bottom(const rect_t& rect)   { return rect.max_corner().y(); }
+                ///
+                /// \brief access functions
+                ///
+                coord_t x() const { return m_x; }
+                coord_t y() const { return m_y; }
 
-                inline coord_t width(const rect_t& rect)    { return right(rect) - left(rect); }
-                inline coord_t height(const rect_t& rect)   { return bottom(rect) - top(rect); }
-                inline coord_t rows(const rect_t& rect)     { return height(rect); }
-                inline coord_t cols(const rect_t& rect)     { return width(rect); }
+                coord_t& x() { return m_x; }
+                coord_t& y() { return m_y; }
 
-                inline coord_t area(const rect_t& rect)     { return width(rect) * height(rect); }
+                // attributes
+                coord_t         m_x;
+                coord_t         m_y;
+        };
 
-                // compute the overlap between two regions
-                rect_t intersection(const rect_t& rect1, const rect_t& rect2);
-                rect_t union_(const rect_t& rect1, const rect_t& rect2);
-                scalar_t overlap(const rect_t& rect1, const rect_t& rect2);
-        }
+        ///
+        /// \brief 2D rectangle
+        ///
+        struct rect_t
+        {
+                ///
+                /// \brief rect_t
+                /// \param x
+                /// \param y
+                /// \param w
+                /// \param h
+                ///
+                rect_t(coord_t x = 0, coord_t y = 0, coord_t w = 0, coord_t h = 0)
+                        :       m_x(x), m_y(y), m_w(w), m_h(h)
+                {
+                }
+
+                ///
+                /// \brief access functions
+                ///
+                coord_t top() const { return m_y; }
+                coord_t left() const { return m_x; }
+                coord_t right() const { return left() + width(); }
+                coord_t bottom() const { return top() + height(); }
+
+                coord_t width() const { return m_w; }
+                coord_t height() const { return m_h; }
+
+                coord_t rows() const { return height(); }
+                coord_t cols() const { return width(); }
+
+                area_t area() const { return area_t(width()) * area_t(height()); }
+
+                ///
+                /// \brief intersection rectangle
+                ///
+                rect_t intersection(const rect_t& other) const;
+
+                ///
+                /// \brief union with another rectangle
+                ///
+                rect_t union_(const rect_t& other) const;
+
+                ///
+                /// \brief [0, 1] overlap between two rectangle (aka Jaccard distance)
+                ///
+                scalar_t overlap(const rect_t& other) const;
+
+                // attributes
+                coord_t         m_x;            ///< left
+                coord_t         m_y;            ///< top
+                coord_t         m_w;            ///< width
+                coord_t         m_h;            ///< height
+        };
 }
 
 
