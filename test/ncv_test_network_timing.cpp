@@ -9,11 +9,11 @@ namespace ncv
         {
         public:
                 
-                NANOCV_MAKE_CLONABLE(dummy_tast_t)
+                NANOCV_MAKE_CLONABLE(dummy_tast_t, "test task")
                 
                 // constructor
-                dummy_tast_t(const string_t& = string_t())
-                        :       task_t("test task")
+                dummy_tast_t(const string_t& configuration = string_t())
+                        :       task_t(configuration)
                 {        
                 }
                 
