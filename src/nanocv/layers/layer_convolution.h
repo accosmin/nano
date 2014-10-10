@@ -16,6 +16,13 @@ namespace ncv
         {
         public:
 
+                enum class type : int
+                {
+                        full = 0,       ///< outputs connected to all inputs, to learn convolutions
+                        full_rand,      ///< outputs connected to all inputs, fixed convolutions
+                        masked          ///< outputs connected to some (masked) inputs, to learn convolutions
+                };
+
                 NANOCV_MAKE_CLONABLE(conv_layer_t)
 
                 // constructor

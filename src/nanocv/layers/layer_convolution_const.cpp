@@ -3,7 +3,8 @@
 namespace ncv
 {
         kconv_layer_t::kconv_layer_t(const string_t& parameters)
-                :       conv_layer_t(parameters, "c(k)onstant convolution layer, parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
+                :       conv_layer_t(parameters,
+                                     "c(k)onstant convolution layer, parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
         {
         }
 
