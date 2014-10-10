@@ -7,7 +7,7 @@
 namespace ncv
 {
         ///
-        /// \brief create a random subset of indices
+        /// \brief create a random subset of [size] indices in the range [0, capacity - 1]
         ///
         template
         <

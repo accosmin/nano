@@ -18,7 +18,6 @@
 #include "layers/layer_activation_snorm.h"
 #include "layers/layer_activation_splus.h"
 #include "layers/layer_convolution.h"
-#include "layers/layer_convolution_const.h"
 #include "layers/layer_linear.h"
 #include "layers/layer_pool.h"
 
@@ -72,8 +71,9 @@ namespace ncv
                 layer_manager_t::instance().add("act-snorm", snorm_activation_layer_t());
                 layer_manager_t::instance().add("act-splus", softplus_activation_layer_t());
                 layer_manager_t::instance().add("linear", linear_layer_t());                
-                layer_manager_t::instance().add("conv", conv_layer_t());
-                layer_manager_t::instance().add("kconv", kconv_layer_t());
+                layer_manager_t::instance().add("conv", conv_layer_t(string_t(), conv_layer_t::type::full));
+                layer_manager_t::instance().add("rconv", conv_layer_t(string_t(), conv_layer_t::type::rand));
+                layer_manager_t::instance().add("mconv", conv_layer_t(string_t(), conv_layer_t::type::mask));
                 layer_manager_t::instance().add("pool-max", pool_max_layer_t());
                 layer_manager_t::instance().add("pool-min", pool_min_layer_t());
                 layer_manager_t::instance().add("pool-avg", pool_avg_layer_t());

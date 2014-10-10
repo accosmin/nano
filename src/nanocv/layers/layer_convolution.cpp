@@ -4,6 +4,7 @@
 #include "common/random.hpp"
 #include "common/conv2d.hpp"
 #include "common/iconv2d.hpp"
+#include "common/sampling.hpp"
 #include "tensor/serialize.hpp"
 
 namespace ncv
@@ -106,9 +107,9 @@ namespace ncv
                 }
         }
 
-        conv_layer_t::conv_layer_t(const string_t& parameters, const string_t& description)
-                :       layer_t(parameters, !description.empty() ? description :
-                                "convolution layer, parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
+        conv_layer_t::conv_layer_t(const string_t& parameters, type t)
+                :       layer_t(parameters, "convolution layer, parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32]"),
+                        m_type(t)
         {
         }
 
@@ -144,6 +145,32 @@ namespace ncv
                 m_idata.resize(idims, irows, icols);
                 m_odata.resize(odims, orows, ocols);
                 m_kdata.resize(odims * idims, krows, kcols);
+                m_mdata.resize(odims, idims);
+
+                // generate mask
+                switch (m_type)
+                {
+                case type::full:
+                        m_mdata.setOnes();
+                        break;
+
+                case type::rand:
+                        m_mdata.setOnes();
+                        break;
+
+                case type::mask:
+                default:
+                        m_mdata.setZero();
+                        for (size_t o = 0; o < odims; o ++)
+                        {
+                                const indices_t indices = uniform_indices(idims, std::max(size_t(1), idims / 2));
+                                for (size_t i : indices)
+                                {
+                                        m_mdata(o, i) = 1.0;
+                                }
+                        }
+                        break;
+                }
 
                 return psize();
         }

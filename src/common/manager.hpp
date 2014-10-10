@@ -9,7 +9,7 @@
 namespace ncv
 {
         ///
-        /// manager: used to manage different object types associated with ID strings.
+        /// \brief manager: used to manage different object types associated with ID strings.
         /// hint: use register_object<base, derived> to register objects to the manager.
         ///
         template

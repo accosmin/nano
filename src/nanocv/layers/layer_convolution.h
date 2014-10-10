@@ -19,14 +19,14 @@ namespace ncv
                 enum class type : int
                 {
                         full = 0,       ///< outputs connected to all inputs, to learn convolutions
-                        full_rand,      ///< outputs connected to all inputs, fixed convolutions
-                        masked          ///< outputs connected to some (masked) inputs, to learn convolutions
+                        rand,           ///< outputs connected to all inputs, fixed convolutions
+                        mask            ///< outputs connected to some (masked) inputs, to learn convolutions
                 };
 
                 NANOCV_MAKE_CLONABLE(conv_layer_t)
 
                 // constructor
-                conv_layer_t(const string_t& parameters = string_t(), const string_t& description = string_t());
+                conv_layer_t(const string_t& parameters = string_t(), type = type::full);
 
                 // destructor
                 virtual ~conv_layer_t();
@@ -64,8 +64,12 @@ namespace ncv
         private:
 
                 // attributes
+                type                    m_type;
+
                 tensor_t                m_idata;                ///< input buffer:              idims x irows x icols
                 tensor_t                m_odata;                ///< output buffer:             odims x orows x ocols
                 tensor_t                m_kdata;                ///< convolution kernels:       odims x idims x krows x kcols
+
+                matrix_t                m_mdata;                ///< {0, 1} mask buffer:        odims x idims
         };
 }
