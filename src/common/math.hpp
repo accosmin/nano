@@ -35,19 +35,19 @@ namespace ncv
                 }
 
                 template <>
-                float abs(float v)
+                inline float abs(float v)
                 {
                         return std::fabs(v);
                 }
 
                 template <>
-                double abs(double v)
+                inline double abs(double v)
                 {
                         return std::fabs(v);
                 }
 
                 template <>
-                long double abs(long double v)
+                inline long double abs(long double v)
                 {
                         return std::fabs(v);
                 }
