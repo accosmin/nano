@@ -116,9 +116,9 @@ int main(int argc, char *argv[])
         rcmodel = rcmodel + "rconv:dims=64,rows=4,cols=4;act-snorm;";
 
         string_t mcmodel;
-        mcmodel = mcmodel + "rconv:dims=16,rows=6,cols=6;act-snorm;pool-max;";
-        mcmodel = mcmodel + "rconv:dims=32,rows=5,cols=5;act-snorm;pool-max;";
-        mcmodel = mcmodel + "rconv:dims=64,rows=4,cols=4;act-snorm;";
+        mcmodel = mcmodel + "mconv:dims=16,rows=6,cols=6;act-snorm;pool-max;";
+        mcmodel = mcmodel + "mconv:dims=32,rows=5,cols=5;act-snorm;pool-max;";
+        mcmodel = mcmodel + "mconv:dims=64,rows=4,cols=4;act-snorm;";
         
         const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
 

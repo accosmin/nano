@@ -168,6 +168,18 @@ namespace ncv
                                 {
                                         m_mdata(o, i) = 1.0;
                                 }
+
+                                string_t mask;
+                                for (size_t i = 0; i < idims; i ++)
+                                {
+                                        mask.append(m_mdata(o, i) > 0.5 ? "1" : "0");
+                                        if (i + 1 < idims)
+                                        {
+                                                mask.append(", ");
+                                        }
+                                }
+
+                                log_info() << "mask [" << (o + 1) << "/" << odims << "]: " << mask;
                         }
                         break;
                 }
