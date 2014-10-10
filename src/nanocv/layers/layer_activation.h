@@ -22,8 +22,8 @@ namespace ncv
         public:
 
                 // constructor
-                activation_layer_t(const string_t& parameters, const string_t& description)
-                        :       layer_t(parameters, description)
+                activation_layer_t(const string_t& parameters)
+                        :       layer_t(parameters)
                 {
                 }
 

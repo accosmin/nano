@@ -198,8 +198,10 @@ namespace ncv
                 strings_t layer_ids;
 
                 // create layers
+                const string_t config = this->configuration();
+
                 strings_t net_params;
-                text::split(net_params, configuration(), text::is_any_of(";"));
+                text::split(net_params, config, text::is_any_of(";"));
                 for (size_t l = 0; l < net_params.size(); l ++)
                 {
                         if (net_params[l].empty())

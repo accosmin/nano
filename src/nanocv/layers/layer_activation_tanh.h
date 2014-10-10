@@ -35,11 +35,11 @@ namespace ncv
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(tanh_activation_layer_t)
+                NANOCV_MAKE_CLONABLE(tanh_activation_layer_t, "hyperbolic tangent activation layer")
 
                 // constructor
                 tanh_activation_layer_t(const string_t& parameters = string_t())
-                        :       activation_layer_t(parameters, "hyperbolic tangent activation layer")
+                        :       activation_layer_t(parameters)
                 {
                 }
         };

@@ -34,11 +34,11 @@ namespace ncv
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(softplus_activation_layer_t)
+                NANOCV_MAKE_CLONABLE(softplus_activation_layer_t, "soft-plus activation layer")
 
                 // constructor
                 softplus_activation_layer_t(const string_t& parameters = string_t())
-                        :       activation_layer_t(parameters, "soft-plus activation layer")
+                        :       activation_layer_t(parameters)
                 {
                 }
         };

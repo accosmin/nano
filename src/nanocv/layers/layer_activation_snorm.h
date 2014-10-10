@@ -35,11 +35,11 @@ namespace ncv
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(snorm_activation_layer_t)
+                NANOCV_MAKE_CLONABLE(snorm_activation_layer_t, "x/sqrt(1+x^2) activation layer")
 
                 // constructor
                 snorm_activation_layer_t(const string_t& parameters = string_t())
-                        :       activation_layer_t(parameters, "x/sqrt(1+x^2) activation layer")
+                        :       activation_layer_t(parameters)
                 {
                 }
         };
