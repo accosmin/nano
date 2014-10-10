@@ -2,9 +2,8 @@
 
 namespace ncv
 {        
-        avg_var_criterion_t::avg_var_criterion_t(
-                const std::string& configuration)
-                :       avg_criterion_t(configuration, "variational (VadaBoost-like) regularized loss")
+        avg_var_criterion_t::avg_var_criterion_t(const std::string& configuration)
+                :       avg_criterion_t(configuration)
         {
         }
 

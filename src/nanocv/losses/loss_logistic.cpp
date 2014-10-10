@@ -4,8 +4,8 @@
 
 namespace ncv
 {
-        logistic_loss_t::logistic_loss_t(const string_t&)
-                :       loss_t(string_t(), "multi-class logistic loss")
+        logistic_loss_t::logistic_loss_t(const string_t& configuration)
+                :       loss_t(configuration)
         {
         }
 

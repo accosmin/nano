@@ -4,8 +4,8 @@
 
 namespace ncv
 {
-        classnll_loss_t::classnll_loss_t(const string_t&)
-                :       loss_t(string_t(), "multi-class negative log-likelihood loss")
+        classnll_loss_t::classnll_loss_t(const string_t& configuration)
+                :       loss_t(configuration)
         {
         }
 

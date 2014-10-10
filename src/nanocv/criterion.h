@@ -35,8 +35,7 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                criterion_t(const string_t& configuration = string_t(),
-                            const string_t& description = string_t());
+                criterion_t(const string_t& configuration = string_t());
                 
                 ///
                 /// \brief destructor

@@ -13,7 +13,7 @@ namespace ncv
 	{
 	public:
 
-                NANOCV_MAKE_CLONABLE(square_loss_t)
+                NANOCV_MAKE_CLONABLE(square_loss_t, "square loss")
 
                 // constructor
                 square_loss_t(const string_t& = string_t());

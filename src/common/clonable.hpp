@@ -25,10 +25,8 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                clonable_t(const std::string& configuration,
-                           const std::string& description)
-                        :       m_configuration(configuration),
-                                m_description(description)
+                clonable_t(const std::string& configuration)
+                        :       m_configuration(configuration)
                 {
                 }
 
@@ -41,17 +39,15 @@ namespace ncv
                 ///
                 /// \brief describe the object
                 ///
-                const std::string& configuration() const { return m_configuration; }
-                const std::string& description() const { return m_description; }
+                std::string configuration() const { return m_configuration; }
 
         protected:
 
                 // attributes
                 std::string     m_configuration;
-                std::string     m_description;
         };
 
-        #define NANOCV_MAKE_CLONABLE(base_class) \
+        #define NANOCV_MAKE_CLONABLE(base_class, description_text) \
                 virtual robject_t make(const std::string& configuration) const \
                 { \
                         return robject_t(new base_class(configuration)); \
@@ -59,5 +55,7 @@ namespace ncv
                 virtual robject_t clone() const \
                 { \
                         return robject_t(new base_class(*this)); \
-                }
+                } \
+                virtual std::string description() const \
+                        return #description_text; \
 }

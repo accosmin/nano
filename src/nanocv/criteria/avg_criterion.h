@@ -11,13 +11,12 @@ namespace ncv
         {
         public:
                 
-                NANOCV_MAKE_CLONABLE(avg_criterion_t)
+                NANOCV_MAKE_CLONABLE(avg_criterion_t, "average loss")
 
                 ///
                 /// \brief constructor
                 ///
-                avg_criterion_t(const string_t& configuration = string_t(),
-                                const string_t& description = "average loss");
+                avg_criterion_t(const string_t& configuration = string_t());
                 
                 ///
                 /// \brief destructor

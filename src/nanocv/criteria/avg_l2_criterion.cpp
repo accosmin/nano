@@ -2,9 +2,8 @@
 
 namespace ncv
 {        
-        avg_l2_criterion_t::avg_l2_criterion_t(
-                const std::string& configuration)
-                :       avg_criterion_t(configuration, "L2-norm regularized loss")
+        avg_l2_criterion_t::avg_l2_criterion_t(const std::string& configuration)
+                :       avg_criterion_t(configuration)
         {
         }
 

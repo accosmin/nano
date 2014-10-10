@@ -3,8 +3,8 @@
 
 namespace ncv
 {
-        cauchy_loss_t::cauchy_loss_t(const string_t&)
-                :       loss_t(string_t(), "Cauchy loss")
+        cauchy_loss_t::cauchy_loss_t(const string_t& configuration)
+                :       loss_t(configuration)
         {
         }
 

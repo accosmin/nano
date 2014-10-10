@@ -13,7 +13,7 @@ namespace ncv
 	{
 	public:
 
-                NANOCV_MAKE_CLONABLE(cauchy_loss_t)
+                NANOCV_MAKE_CLONABLE(cauchy_loss_t, "Cauchy loss")
 
                 // constructor
                 cauchy_loss_t(const string_t& = string_t());

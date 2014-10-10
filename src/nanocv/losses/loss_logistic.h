@@ -11,10 +11,10 @@ namespace ncv
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(logistic_loss_t)
+                NANOCV_MAKE_CLONABLE(logistic_loss_t, "multi-class logistic loss")
 
                 // constructor
-                logistic_loss_t(const string_t& parameters = string_t());
+                logistic_loss_t(const string_t& = string_t());
 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const;

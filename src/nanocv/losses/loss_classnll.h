@@ -11,10 +11,10 @@ namespace ncv
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(classnll_loss_t)
+                NANOCV_MAKE_CLONABLE(classnll_loss_t, "multi-class negative log-likelihood loss")
 
                 // constructor
-                classnll_loss_t(const string_t& parameters = string_t());
+                classnll_loss_t(const string_t& = string_t());
 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const;

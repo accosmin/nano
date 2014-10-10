@@ -14,7 +14,7 @@ namespace ncv
         {
         public:
                 
-                NANOCV_MAKE_CLONABLE(avg_var_criterion_t)
+                NANOCV_MAKE_CLONABLE(avg_var_criterion_t, "variational (VadaBoost-like) regularized loss")
 
                 ///
                 /// \brief constructor

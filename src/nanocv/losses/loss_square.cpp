@@ -3,8 +3,8 @@
 
 namespace ncv
 {
-        square_loss_t::square_loss_t(const string_t&)
-                :       loss_t(string_t(), "square loss")
+        square_loss_t::square_loss_t(const string_t& configuration)
+                :       loss_t(configuration)
         {
         }
 
