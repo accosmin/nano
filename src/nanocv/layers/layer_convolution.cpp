@@ -108,7 +108,7 @@ namespace ncv
         }
 
         conv_layer_t::conv_layer_t(const string_t& parameters, type t)
-                :       layer_t(parameters, "convolution layer, parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32]"),
+                :       layer_t(parameters),
                         m_type(t)
         {
         }

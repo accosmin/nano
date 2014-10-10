@@ -14,7 +14,7 @@ namespace ncv
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(linear_layer_t)
+                NANOCV_MAKE_CLONABLE(linear_layer_t, "fully-connected linear layer, parameters: dims=10[1,4096]")
 
                 // constructor
                 linear_layer_t(const string_t& parameters = string_t());

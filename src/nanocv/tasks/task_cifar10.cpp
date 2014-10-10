@@ -21,6 +21,11 @@ namespace ncv
                 "truck"
         };
 
+        cifar10_task_t::cifar10_task_t(const string_t& configuration)
+                :       task_t(configuration)
+        {
+        }
+
         bool cifar10_task_t::load(const string_t& dir)
         {
                 const string_t train_bfile1 = dir + "/data_batch_1.bin";

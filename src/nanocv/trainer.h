@@ -158,8 +158,8 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                trainer_t(const string_t& parameters, const string_t& description)
-                        :       clonable_t<trainer_t>(parameters, description)
+                trainer_t(const string_t& configuration)
+                        :       clonable_t<trainer_t>(configuration)
                 {
                 }
 

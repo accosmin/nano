@@ -4,10 +4,8 @@
 
 namespace ncv
 {        
-        criterion_t::criterion_t(
-                const string_t& configuration,
-                const string_t& description)
-                :       clonable_t<criterion_t>(configuration, description),
+        criterion_t::criterion_t(const string_t& configuration)
+                :       clonable_t<criterion_t>(configuration),
                         m_lambda(0.0),
                         m_type(type::value)
         {

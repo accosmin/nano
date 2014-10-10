@@ -23,7 +23,7 @@ namespace ncv
                         mask            ///< outputs connected to some (masked) inputs, to learn convolutions
                 };
 
-                NANOCV_MAKE_CLONABLE(conv_layer_t)
+                NANOCV_MAKE_CLONABLE(conv_layer_t, "convolution layer, parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
 
                 // constructor
                 conv_layer_t(const string_t& parameters = string_t(), type = type::full);

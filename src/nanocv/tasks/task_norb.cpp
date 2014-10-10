@@ -16,6 +16,11 @@ namespace ncv
                 "blank"
         };
 
+        norb_task_t::norb_task_t(const string_t& configuration)
+                :       task_t(configuration)
+        {
+        }
+
         bool norb_task_t::load(const string_t& dir)
         {
                 const size_t n_train_samples = 29160 * 10;

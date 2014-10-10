@@ -40,6 +40,7 @@ namespace ncv
                 /// \brief describe the object
                 ///
                 std::string configuration() const { return m_configuration; }
+                virtual std::string description() const = 0;
 
         protected:
 
@@ -57,5 +58,7 @@ namespace ncv
                         return robject_t(new base_class(*this)); \
                 } \
                 virtual std::string description() const \
-                        return #description_text; \
+                { \
+                        return description_text; \
+                }
 }

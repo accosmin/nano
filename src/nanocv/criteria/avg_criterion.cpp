@@ -4,8 +4,8 @@
 
 namespace ncv
 {        
-        avg_criterion_t::avg_criterion_t(const string_t& configuration, const string_t& description)
-                :       criterion_t(configuration, description),
+        avg_criterion_t::avg_criterion_t(const string_t& configuration)
+                :       criterion_t(configuration),
                         m_value(0.0),
                         m_error(0.0),
                         m_count(0)

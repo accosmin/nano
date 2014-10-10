@@ -7,6 +7,11 @@
 
 namespace ncv
 {
+        mnist_task_t::mnist_task_t(const string_t& configuration)
+                :       task_t(configuration)
+        {
+        }
+
         bool mnist_task_t::load(const string_t& dir)
         {
                 const string_t test_ifile = dir + "/t10k-images-idx3-ubyte";

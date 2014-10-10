@@ -16,7 +16,7 @@ namespace ncv
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(pool_layer_t)
+                NANOCV_MAKE_CLONABLE(pool_layer_t, "pooling layer, parameters: alpha=[-100.0,+100.0]")
 
                 // constructor
                 pool_layer_t(const string_t& parameters = string_t());
@@ -62,7 +62,7 @@ namespace ncv
         {
         public:
                 
-                NANOCV_MAKE_CLONABLE(pool_max_layer_t)
+                NANOCV_MAKE_CLONABLE(pool_max_layer_t, "pooling layer, parameters: alpha=[-100.0,+100.0]")
                 
                 // constructor
                 pool_max_layer_t(const string_t& = string_t())
@@ -75,7 +75,7 @@ namespace ncv
         {
         public:
                 
-                NANOCV_MAKE_CLONABLE(pool_min_layer_t)
+                NANOCV_MAKE_CLONABLE(pool_min_layer_t, "pooling layer, parameters: alpha=[-100.0,+100.0]")
                 
                 // constructor
                 pool_min_layer_t(const string_t& = string_t())
@@ -88,7 +88,7 @@ namespace ncv
         {
         public:
                 
-                NANOCV_MAKE_CLONABLE(pool_avg_layer_t)
+                NANOCV_MAKE_CLONABLE(pool_avg_layer_t, "pooling layer, parameters: alpha=[-100.0,+100.0]")
                 
                 // constructor
                 pool_avg_layer_t(const string_t& = string_t())

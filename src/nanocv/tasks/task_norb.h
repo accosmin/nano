@@ -16,13 +16,10 @@ namespace ncv
         {
         public:
                 
-                NANOCV_MAKE_CLONABLE(norb_task_t)
-                
+                NANOCV_MAKE_CLONABLE(norb_task_t, "NORB (3D object recognition)")
+
                 // constructor
-                norb_task_t(const string_t& = string_t())
-                        :       task_t("NORB (3D object recognition)")
-                {
-                }
+                norb_task_t(const string_t& configuration = string_t());
 
                 // load images from the given directory
                 virtual bool load(const string_t& dir);

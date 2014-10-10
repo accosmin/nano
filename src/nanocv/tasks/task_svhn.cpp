@@ -10,6 +10,11 @@
 
 namespace ncv
 {
+        svhn_task_t::svhn_task_t(const string_t& configuration)
+                :       task_t(configuration)
+        {
+        }
+
         bool svhn_task_t::load(const string_t& dir)
         {
                 const string_t train_file = dir + "/train_32x32.mat";

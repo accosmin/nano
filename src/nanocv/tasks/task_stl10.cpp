@@ -21,6 +21,11 @@ namespace ncv
                 "truck"
         };
 
+        stl10_task_t::stl10_task_t(const string_t& configuration)
+                :       task_t(configuration)
+        {
+        }
+
         bool stl10_task_t::load(const string_t& dir)
         {
                 const string_t train_ifile = dir + "/train_X.bin";

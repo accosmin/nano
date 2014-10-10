@@ -60,7 +60,7 @@ namespace ncv
         }
 
         linear_layer_t::linear_layer_t(const string_t& parameters)
-                :       layer_t(parameters, "fully-connected linear layer, parameters: dims=10[1,4096]")
+                :       layer_t(parameters)
         {
         }
 

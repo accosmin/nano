@@ -111,6 +111,11 @@ namespace ncv
                 "worm"
         };
 
+        cifar100_task_t::cifar100_task_t(const string_t& configuration)
+                :       task_t(configuration)
+        {
+        }
+
         bool cifar100_task_t::load(const string_t& dir)
         {
                 const string_t train_bfile = dir + "/train.bin";

@@ -7,6 +7,11 @@
 
 namespace ncv
 {
+        cbclfaces_task_t::cbclfaces_task_t(const string_t& configuration)
+                :       task_t(configuration)
+        {
+        }
+
         bool cbclfaces_task_t::load(const string_t& dir)
         {
                 const string_t train_face_dir = dir + "/train/face/";

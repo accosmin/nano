@@ -66,7 +66,7 @@ namespace ncv
         }
         
         pool_layer_t::pool_layer_t(const string_t& parameters)
-                :       layer_t(parameters, "pooling layer, parameters: alpha=[-100.0,+100.0]"),
+                :       layer_t(parameters),
                         m_alpha(math::clamp(text::from_params<scalar_t>(parameters, "dims", 0.1), -100.0, +100.0))
         {
         }
