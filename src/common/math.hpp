@@ -21,6 +21,36 @@ namespace ncv
                         return  value < static_cast<tscalar>(min_value) ? static_cast<tscalar>(min_value) :
                                 (value > static_cast<tscalar>(max_value) ? static_cast<tscalar>(max_value) : value);
                 }
+
+                ///
+                /// \brief absolute value
+                ///
+                template
+                <
+                        typename tscalar
+                >
+                tscalar abs(tscalar v)
+                {
+                        return std::abs(v);
+                }
+
+                template <>
+                float abs(float v)
+                {
+                        return std::fabs(v);
+                }
+
+                template <>
+                double abs(double v)
+                {
+                        return std::fabs(v);
+                }
+
+                template <>
+                long double abs(long double v)
+                {
+                        return std::fabs(v);
+                }
                 
                 ///
                 /// \brief precision comparison criteria for scalars
@@ -37,19 +67,22 @@ namespace ncv
                 template <>
                 inline bool almost_equal(float x, float y)
                 {
-                        return std::abs(x - y) <= (1 + std::abs(x) + std::abs(y)) * std::sqrt(std::numeric_limits<float>::epsilon());
+                        return  math::abs(x - y) <=
+                                (1 + math::abs(x) + math::abs(y)) * std::sqrt(std::numeric_limits<float>::epsilon());
                 }
                 
                 template <>
                 inline bool almost_equal(double x, double y)
                 {
-                        return std::abs(x - y) <= (1 + std::abs(x) + std::abs(y)) * std::sqrt(std::numeric_limits<double>::epsilon());
+                        return  math::abs(x - y) <=
+                                (1 + math::abs(x) + math::abs(y)) * std::sqrt(std::numeric_limits<double>::epsilon());
                 }
                 
                 template <>
                 inline bool almost_equal(long double x, long double y)
                 {
-                        return std::abs(x - y) <= (1 + std::abs(x) + std::abs(y)) * std::sqrt(std::numeric_limits<long double>::epsilon());
+                        return  math::abs(x - y) <=
+                                (1 + math::abs(x) + math::abs(y)) * std::sqrt(std::numeric_limits<long double>::epsilon());
                 }
 
                 ///

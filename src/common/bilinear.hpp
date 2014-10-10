@@ -19,7 +19,7 @@ namespace ncv
                 static const tscalar eps = math::cast<tscalar>(1e-2);
                 static const tscalar one = math::cast<tscalar>(1.0);
 
-                if (factor < eps || std::abs(factor - one) < eps)
+                if (factor < eps || math::abs(factor - one) < eps)
                 {
                         dst = src;
                 }
