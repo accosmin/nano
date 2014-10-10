@@ -19,7 +19,8 @@ namespace ncv
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(stochastic_trainer_t)
+                NANOCV_MAKE_CLONABLE(stochastic_trainer_t,
+                                     "parameters: opt=sg[,sga,sia],epoch=16[1,1024]")
 
                 // constructor
                 stochastic_trainer_t(const string_t& parameters = string_t());

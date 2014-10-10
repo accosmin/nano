@@ -18,7 +18,9 @@ namespace ncv
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(minibatch_trainer_t)
+                NANOCV_MAKE_CLONABLE(minibatch_trainer_t,
+                                     "parameters: opt=gd[,lbfgs,cgd],epoch=16[1,1024],"\
+                                     "batch=1024[32,8192],iters=8[4,128],eps=1e-6[1e-8,1e-3]")
 
                 // constructor
                 minibatch_trainer_t(const string_t& parameters = string_t());

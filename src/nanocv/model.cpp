@@ -9,8 +9,8 @@
 
 namespace ncv
 {
-        model_t::model_t(const string_t& parameters, const string_t& description)
-                :       clonable_t<model_t>(parameters, description),
+        model_t::model_t(const string_t& parameters)
+                :       clonable_t<model_t>(parameters),
                         m_rows(0),
                         m_cols(0),
                         m_outputs(0),

@@ -34,11 +34,11 @@ namespace ncv
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(unit_activation_layer_t)
+                NANOCV_MAKE_CLONABLE(unit_activation_layer_t, "identity activation layer")
 
                 // constructor
                 unit_activation_layer_t(const string_t& parameters = string_t())
-                        :       activation_layer_t(parameters, "identity activation layer")
+                        :       activation_layer_t(parameters)
                 {
                 }
         };

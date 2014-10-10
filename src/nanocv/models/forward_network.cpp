@@ -8,7 +8,7 @@
 namespace ncv
 {
         forward_network_t::forward_network_t(const string_t& parameters)
-                :       model_t(parameters, "parameters: [layer_id[:layer_parameters][;]]*")
+                :       model_t(parameters)
         {                
         }
 

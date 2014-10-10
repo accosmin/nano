@@ -12,7 +12,7 @@ namespace ncv
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(forward_network_t)
+                NANOCV_MAKE_CLONABLE(forward_network_t, "parameters: [layer_id[:layer_parameters][;]]*")
 
                 using model_t::resize;
                 
