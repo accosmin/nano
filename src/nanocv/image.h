@@ -99,6 +99,11 @@ namespace ncv
                 ///
                 bool scale(scalar_t factor);
 
+                ///
+                /// \brief set pixels to random values
+                ///
+                bool random();
+
                 // access functions
                 coord_t rows() const { return m_rows; }
                 coord_t cols() const { return m_cols; }

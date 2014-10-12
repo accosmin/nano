@@ -720,4 +720,21 @@ namespace ncv
                         return false;
                 }
         }
+
+        bool image_t::random()
+        {
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        m_luma.setRandom();
+                        return true;
+
+                case color_mode::rgba:
+                        m_rgba.setRandom();
+                        return true;
+
+                default:
+                        return false;
+                }
+        }
 }
