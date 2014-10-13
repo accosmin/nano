@@ -1,10 +1,5 @@
-- new convolution-based layers:
-	- (1) - keep the convolution random -> learn their weights
-	- (2) - O(o) = sum(i, m(o,i) * I(i) @ C(o, i)), where m(o,i) is a fixed discrete {0, 1} random mask -> learn the convolutions
-	- (3) - fixed random convolutions -> learn only the output linear layers
-
-- BUG: cannot correctly save & load the constant & the masked convolution layers
-	- need to redesign this to be able to also save parameters that are not to be optimized
+- cleanup convolution layer:
+	- too much duplicated & complicated code
 
 - faster convolution:
         - check if any improvement if using a 3D convolution    
