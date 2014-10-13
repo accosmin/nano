@@ -9,7 +9,7 @@ static void test_grad_params(
 {
         random_t<size_t> rand(8, 16);
 
-        const size_t n_tests = 4;
+        const size_t n_tests = 64;
         const size_t n_samples = rand();
 
         const rloss_t rloss = loss_manager_t::instance().get(loss_id);
@@ -88,7 +88,7 @@ static void test_grad_inputs(const string_t& header, const string_t& loss_id, co
         
         random_t<size_t> rand(8, 16);
         
-        const size_t n_tests = 4;
+        const size_t n_tests = 64;
         const size_t n_samples = rand();
         
         const rloss_t rloss = loss_manager_t::instance().get(loss_id);

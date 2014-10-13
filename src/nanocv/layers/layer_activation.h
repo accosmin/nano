@@ -44,6 +44,10 @@ namespace ncv
                 virtual scalar_t* save_params(scalar_t* params) const { return params; }
                 virtual const scalar_t* load_params(const scalar_t* params) { return params; }
 
+                // serialize parameters (to disk)
+                virtual boost::archive::binary_oarchive& save(boost::archive::binary_oarchive& oa) const { return oa; }
+                virtual boost::archive::binary_iarchive& load(boost::archive::binary_iarchive& ia) { return ia; }
+
                 // process inputs (compute outputs & gradients)
                 virtual const tensor_t& output(const tensor_t& input) { return _output(input); }
                 virtual const tensor_t& igrad(const tensor_t& output) { return _igrad(output); }

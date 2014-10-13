@@ -1,5 +1,6 @@
 #include "nanocv.h"
 #include "tasks/task_dummy.h"
+#include <cstdio>
 
 int main(int argc, char *argv[])
 {
@@ -103,11 +104,13 @@ int main(int argc, char *argv[])
                                 lerror_before == lerror_before;
 
                         (ok ? log_info() : log_error())
-                                << header << "IO " << (ok ? "passed" : "failed")
+                                << header << "io " << (ok ? "PASSED" : "FAILED")
                                 << ": count = " << lcount_before << "/" << lcount_after
                                 << ", value = " << lvalue_before << "/" << lvalue_after
                                 << ", error = " << lerror_before << "/" << lerror_after
                                 << (ok ? "." : "!");
+
+                        std::remove(path.c_str());
                 }
 
                 log_info();

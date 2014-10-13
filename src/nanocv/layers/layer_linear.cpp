@@ -106,6 +106,16 @@ namespace ncv
                 return params;
         }
 
+        boost::archive::binary_oarchive& linear_layer_t::save(boost::archive::binary_oarchive& oa) const
+        {
+                return oa << m_wdata << m_bdata;
+        }
+
+        boost::archive::binary_iarchive& linear_layer_t::load(boost::archive::binary_iarchive& ia)
+        {
+                return ia >> m_wdata >> m_bdata;
+        }
+
         const tensor_t& linear_layer_t::output(const tensor_t& input)
         {
                 assert(idims() == input.dims());
