@@ -171,7 +171,25 @@ namespace ncv
                 m_kdata.resize(odims * idims, krows, kcols);
                 m_mdata.resize(odims, idims);
 
-                // generate mask
+                return psize();
+        }
+
+        void conv_layer_t::zero_params()
+        {
+                m_kdata.zero();
+
+                generate_mask();
+        }
+
+        void conv_layer_t::random_params(scalar_t min, scalar_t max)
+        {
+                m_kdata.random(random_t<scalar_t>(min, max));
+
+                generate_mask();
+        }
+
+        void conv_layer_t::generate_mask()
+        {
                 switch (m_type)
                 {
                 case type::full:
@@ -183,54 +201,75 @@ namespace ncv
                         break;
 
                 case type::mask:
-                default:
                         m_mdata.setZero();
-                        for (size_t o = 0; o < odims; o ++)
+                        for (size_t o = 0; o < odims(); o ++)
                         {
-                                const indices_t indices = uniform_indices(idims, std::max(size_t(1), idims / 2));
+                                const indices_t indices = uniform_indices(idims(), std::max(size_t(1), idims() / 2));
                                 for (size_t i : indices)
                                 {
                                         m_mdata(o, i) = 1.0;
                                 }
 
                                 string_t mask;
-                                for (size_t i = 0; i < idims; i ++)
+                                for (size_t i = 0; i < idims(); i ++)
                                 {
                                         mask.append(m_mdata(o, i) > 0.5 ? "1" : "0");
-                                        if (i + 1 < idims)
+                                        if (i + 1 < idims())
                                         {
                                                 mask.append(", ");
                                         }
                                 }
 
-                                log_info() << "mask [" << (o + 1) << "/" << odims << "]: " << mask;
+                                log_info() << "mask [" << (o + 1) << "/" << odims() << "]: " << mask;
                         }
                         break;
                 }
-
-                return psize();
-        }
-
-        void conv_layer_t::zero_params()
-        {
-                m_kdata.zero();
-        }
-
-        void conv_layer_t::random_params(scalar_t min, scalar_t max)
-        {
-                m_kdata.random(random_t<scalar_t>(min, max));
         }
 
         scalar_t* conv_layer_t::save_params(scalar_t* params) const
         {
-                params = tensor::save(m_kdata, params);
+                switch (m_type)
+                {
+                case type::full:
+                case type::mask:
+                        params = tensor::save(m_kdata, params);
+                        break;
+
+                case type::rand:
+                        break;
+                }
+
                 return params;
         }
 
         const scalar_t* conv_layer_t::load_params(const scalar_t* params)
         {
-                params = tensor::load(m_kdata, params);
+                switch (m_type)
+                {
+                case type::full:
+                case type::mask:
+                        params = tensor::load(m_kdata, params);
+                        break;
+
+                case type::rand:
+                        break;
+                }
+
                 return params;
+        }
+
+        size_t conv_layer_t::psize() const
+        {
+                switch (m_type)
+                {
+                case type::full:
+                case type::mask:
+                        return m_kdata.size();
+
+                case type::rand:
+                default:
+                        return 0;
+                }
         }
 
         const tensor_t& conv_layer_t::output(const tensor_t& input)
@@ -271,9 +310,18 @@ namespace ncv
 
                 m_odata.copy_from(output);
 
-                _pgrad(m_idata.data(), idims(),
-                       gradient, krows(), kcols(),
-                       m_odata.data(), odims(), orows(), ocols());
+                switch (m_type)
+                {
+                case type::full:
+                case type::mask:
+                        _pgrad(m_idata.data(), idims(),
+                               gradient, krows(), kcols(),
+                               m_odata.data(), odims(), orows(), ocols());
+                        break;
+
+                case type::rand:
+                        break;
+                }
         }
 }
 

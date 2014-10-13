@@ -57,22 +57,24 @@ namespace ncv
                 virtual size_t odims() const { return m_odata.dims(); }
                 virtual size_t orows() const { return m_odata.rows(); }
                 virtual size_t ocols() const { return m_odata.cols(); }
-                virtual size_t psize() const { return m_kdata.size(); }
+                virtual size_t psize() const;
 
         private:
 
                 size_t krows() const { return m_kdata.rows(); }
                 size_t kcols() const { return m_kdata.cols(); }
 
+                void generate_mask();
+
         private:
 
                 // attributes
                 type                    m_type;
 
-                tensor_t                m_idata;                ///< input buffer:              idims x irows x icols
-                tensor_t                m_odata;                ///< output buffer:             odims x orows x ocols
-                tensor_t                m_kdata;                ///< convolution kernels:       odims x idims x krows x kcols
+                tensor_t                m_idata;        ///< input buffer:              idims x irows x icols
+                tensor_t                m_odata;        ///< output buffer:             odims x orows x ocols
+                tensor_t                m_kdata;        ///< convolution kernels:       odims x idims x krows x kcols
 
-                matrix_t                m_mdata;                ///< {0, 1} mask buffer:        odims x idims
+                matrix_t                m_mdata;        ///< {0, 1} mask buffer:        odims x idims
         };
 }
