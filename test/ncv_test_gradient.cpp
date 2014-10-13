@@ -9,7 +9,7 @@ static void test_grad_params(
 {
         random_t<size_t> rand(8, 16);
 
-        const size_t n_tests = 64;
+        const size_t n_tests = 4;
         const size_t n_samples = rand();
 
         const rloss_t rloss = loss_manager_t::instance().get(loss_id);
@@ -88,7 +88,7 @@ static void test_grad_inputs(const string_t& header, const string_t& loss_id, co
         
         random_t<size_t> rand(8, 16);
         
-        const size_t n_tests = 64;
+        const size_t n_tests = 4;
         const size_t n_samples = rand();
         
         const rloss_t rloss = loss_manager_t::instance().get(loss_id);
@@ -219,7 +219,7 @@ int main(int argc, char *argv[])
 
                                                                 string_t params;
                                                                 params += "dims=" + text::to_string(rgen());
-                                                                params += (rgen() % 2 == 0) ? ",rows=3,cols=3" : ",rows=4,cols=4";
+                                                                params += (rgen() % 2 == 0) ? ",rows=3,cols=3," : ",rows=4,cols=4,";
                                                                 params += "type=" + conv_con_type;
 
                                                                 desc += conv_layer_id + ":" + params + ";";

@@ -64,7 +64,7 @@ namespace ncv
                 size_t krows() const { return m_kdata.rows(); }
                 size_t kcols() const { return m_kdata.cols(); }
 
-                void generate_mask();
+                void make_mask();
 
         private:
 

@@ -15,6 +15,7 @@ namespace ncv
                 typename tsize
         >
         static void _output(
+                const tscalar* mdata,
                 const tscalar* idata, tsize idims,
                 const tscalar* kdata, tsize krows, tsize kcols,
                 tscalar* odata, tsize odims, tsize orows, tsize ocols)
@@ -26,6 +27,8 @@ namespace ncv
                 const tsize osize = orows * ocols;                
                 const tsize ksize = krows * kcols;
 
+                auto mmap = tensor::make_matrix(mdata, odims, idims);
+
                 // output
                 for (tsize o = 0; o < odims; o ++)
                 {
@@ -36,8 +39,11 @@ namespace ncv
                         {
                                 auto imap = tensor::make_matrix(idata + i * isize, irows, icols);
                                 auto kmap = tensor::make_matrix(kdata + (o * idims + i) * ksize, krows, kcols);
-                                
-                                ncv::conv2d_dot(imap, kmap, omap);
+
+                                if (mmap(o, i) > 0.5)
+                                {
+                                        ncv::conv2d_dot(imap, kmap, omap);
+                                }
                         }
                 }
         }
@@ -48,6 +54,7 @@ namespace ncv
                 typename tsize
         >
         static void _igrad(
+                const tscalar* mdata,
                 tscalar* gidata, tsize idims,
                 const tscalar* kdata, tsize krows, tsize kcols,
                 const tscalar* odata, tsize odims, tsize orows, tsize ocols)
@@ -58,6 +65,8 @@ namespace ncv
 
                 const tsize osize = orows * ocols;
                 const tsize ksize = krows * kcols;
+
+                auto mmap = tensor::make_matrix(mdata, odims, idims);
                 
                 // input gradient
                 tensor::make_vector(gidata, idims * isize).setZero();
@@ -68,9 +77,12 @@ namespace ncv
                         for (tsize i = 0; i < idims; i ++)
                         {
                                 auto gimap = tensor::make_matrix(gidata + i * isize, irows, icols);
-                                auto kmap = tensor::make_matrix(kdata + (o * idims + i) * ksize, krows, kcols);                                     
+                                auto kmap = tensor::make_matrix(kdata + (o * idims + i) * ksize, krows, kcols);
 
-                                ncv::iconv2d_mad(omap, kmap, gimap);
+                                if (mmap(o, i) > 0.5)
+                                {
+                                        ncv::iconv2d_mad(omap, kmap, gimap);
+                                }
                         }
                 }
         }
@@ -81,6 +93,7 @@ namespace ncv
                 typename tsize
         >
         static void _pgrad(
+                const tscalar* mdata,
                 const tscalar* idata, tsize idims,
                 tscalar* gkdata, tsize krows, tsize kcols,
                 const tscalar* odata, tsize odims, tsize orows, tsize ocols)
@@ -92,17 +105,25 @@ namespace ncv
                 const tsize osize = orows * ocols;
                 const tsize ksize = krows * kcols;
 
-                for (tsize o = 0; o < odims; o ++)
+                auto mmap = tensor::make_matrix(mdata, odims, idims);
+
+                for (tsize o = 0, k = 0; o < odims; o ++)
                 {
                         auto omap = tensor::make_matrix(odata + o * osize, orows, ocols);
 
                         for (tsize i = 0; i < idims; i ++)
                         {
                                 auto imap = tensor::make_matrix(idata + i * isize, irows, icols);
-                                auto gkmap = tensor::make_matrix(gkdata + (o * idims + i) * ksize, krows, kcols);
 
-                                gkmap.setZero();
-                                ncv::conv2d_dot(imap, omap, gkmap);
+                                if (mmap(o, i) > 0.5)
+                                {
+                                        auto gkmap = tensor::make_matrix(gkdata + k * ksize, krows, kcols);
+
+                                        gkmap.setZero();
+                                        ncv::conv2d_dot(imap, omap, gkmap);
+
+                                        k ++;
+                                }
                         }
                 }
         }
@@ -171,6 +192,8 @@ namespace ncv
                 m_kdata.resize(odims * idims, krows, kcols);
                 m_mdata.resize(odims, idims);
 
+                make_mask();
+
                 return psize();
         }
 
@@ -178,17 +201,17 @@ namespace ncv
         {
                 m_kdata.zero();
 
-                generate_mask();
+                make_mask();
         }
 
         void conv_layer_t::random_params(scalar_t min, scalar_t max)
         {
                 m_kdata.random(random_t<scalar_t>(min, max));
 
-                generate_mask();
+                make_mask();
         }
 
-        void conv_layer_t::generate_mask()
+        void conv_layer_t::make_mask()
         {
                 switch (m_type)
                 {
@@ -209,20 +232,19 @@ namespace ncv
                                 {
                                         m_mdata(o, i) = 1.0;
                                 }
-
-                                string_t mask;
-                                for (size_t i = 0; i < idims(); i ++)
-                                {
-                                        mask.append(m_mdata(o, i) > 0.5 ? "1" : "0");
-                                        if (i + 1 < idims())
-                                        {
-                                                mask.append(", ");
-                                        }
-                                }
-
-                                log_info() << "mask [" << (o + 1) << "/" << odims() << "]: " << mask;
                         }
                         break;
+                }
+
+                for (size_t o = 0; o < odims(); o ++)
+                {
+                        string_t mask;
+                        for (size_t i = 0; i < idims(); i ++)
+                        {
+                                mask.append(m_mdata(o, i) > 0.5 ? "1" : "0");
+                        }
+
+                        log_info() << "mask [" << (o + 1) << "/" << odims() << "]: " << mask;
                 }
         }
 
@@ -230,9 +252,22 @@ namespace ncv
         {
                 switch (m_type)
                 {
-                case type::full:
-                case type::mask:
+                case type::full:                        
                         params = tensor::save(m_kdata, params);
+                        break;
+
+                case type::mask:
+                        for (size_t o = 0; o < odims(); o ++)
+                        {
+                                for (size_t i = 0; i < idims(); i ++)
+                                {
+                                        if (m_mdata(o, i) > 0.5)
+                                        {
+                                                auto kmap = tensor::make_vector(m_kdata.plane_data(o * idims() + i), m_kdata.plane_size());
+                                                params = tensor::save(kmap, params);
+                                        }
+                                }
+                        }
                         break;
 
                 case type::rand:
@@ -247,8 +282,21 @@ namespace ncv
                 switch (m_type)
                 {
                 case type::full:
-                case type::mask:
                         params = tensor::load(m_kdata, params);
+                        break;
+
+                case type::mask:
+                        for (size_t o = 0; o < odims(); o ++)
+                        {
+                                for (size_t i = 0; i < idims(); i ++)
+                                {
+                                        if (m_mdata(o, i) > 0.5)
+                                        {
+                                                auto kmap = tensor::make_vector(m_kdata.plane_data(o * idims() + i), m_kdata.plane_size());
+                                                params = tensor::load(kmap, params);
+                                        }
+                                }
+                        }
                         break;
 
                 case type::rand:
@@ -263,8 +311,10 @@ namespace ncv
                 switch (m_type)
                 {
                 case type::full:
-                case type::mask:
                         return m_kdata.size();
+
+                case type::mask:
+                        return static_cast<size_t>(m_mdata.sum()) * m_kdata.plane_size();
 
                 case type::rand:
                 default:
@@ -280,7 +330,8 @@ namespace ncv
 
                 m_idata.copy_from(input);
 
-                _output(m_idata.data(), idims(),
+                _output(m_mdata.data(),
+                        m_idata.data(), idims(),
                         m_kdata.data(), krows(), kcols(),
                         m_odata.data(), odims(), orows(), ocols());
 
@@ -295,7 +346,8 @@ namespace ncv
 
                 m_odata.copy_from(output);
 
-                _igrad(m_idata.data(), idims(),
+                _igrad(m_mdata.data(),
+                       m_idata.data(), idims(),
                        m_kdata.data(), krows(), kcols(),
                        m_odata.data(), odims(), orows(), ocols());
 
@@ -314,7 +366,8 @@ namespace ncv
                 {
                 case type::full:
                 case type::mask:
-                        _pgrad(m_idata.data(), idims(),
+                        _pgrad(m_mdata.data(),
+                               m_idata.data(), idims(),
                                gradient, krows(), kcols(),
                                m_odata.data(), odims(), orows(), ocols());
                         break;
