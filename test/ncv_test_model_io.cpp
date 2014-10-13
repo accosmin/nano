@@ -26,19 +26,19 @@ int main(int argc, char *argv[])
         const string_t lmodel5 = lmodel4 + "linear:dims=100;act-snorm;";
         
         string_t cmodel;
-        cmodel = cmodel + "conv:dims=16,rows=6,cols=6;act-snorm;pool-max;";
-        cmodel = cmodel + "conv:dims=32,rows=5,cols=5;act-snorm;pool-max;";
-        cmodel = cmodel + "conv:dims=64,rows=4,cols=4;act-snorm;";
+        cmodel = cmodel + "conv:dims=16,rows=6,cols=6,type=full;act-snorm;pool-max;";
+        cmodel = cmodel + "conv:dims=32,rows=5,cols=5,type=full;act-snorm;pool-max;";
+        cmodel = cmodel + "conv:dims=64,rows=4,cols=4,type=full;act-snorm;";
 
-        string_t rcmodel;
-        rcmodel = rcmodel + "rconv:dims=16,rows=6,cols=6;act-snorm;pool-max;";
-        rcmodel = rcmodel + "rconv:dims=32,rows=5,cols=5;act-snorm;pool-max;";
-        rcmodel = rcmodel + "rconv:dims=64,rows=4,cols=4;act-snorm;";
+        string_t rmodel;
+        rmodel = rmodel + "conv:dims=16,rows=6,cols=6,type=rand;act-snorm;pool-max;";
+        rmodel = rmodel + "conv:dims=32,rows=5,cols=5,type=rand;act-snorm;pool-max;";
+        rmodel = rmodel + "conv:dims=64,rows=4,cols=4,type=rand;act-snorm;";
 
-        string_t mcmodel;
-        mcmodel = mcmodel + "mconv:dims=16,rows=6,cols=6;act-snorm;pool-max;";
-        mcmodel = mcmodel + "mconv:dims=32,rows=5,cols=5;act-snorm;pool-max;";
-        mcmodel = mcmodel + "mconv:dims=64,rows=4,cols=4;act-snorm;";
+        string_t mmodel;
+        mmodel = mmodel + "conv:dims=16,rows=6,cols=6,type=mask;act-snorm;pool-max;";
+        mmodel = mmodel + "conv:dims=32,rows=5,cols=5,type=mask;act-snorm;pool-max;";
+        mmodel = mmodel + "conv:dims=64,rows=4,cols=4,type=mask;act-snorm;";
         
         const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
 
@@ -52,8 +52,8 @@ int main(int argc, char *argv[])
                 lmodel5 + outlayer,
 
                 cmodel + outlayer,
-                rcmodel + outlayer,
-                mcmodel + outlayer
+                rmodel + outlayer,
+                mmodel + outlayer
         };
 
         const rloss_t loss = loss_manager_t::instance().get("logistic");

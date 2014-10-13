@@ -11,6 +11,7 @@ namespace ncv
         ///     dims=16[1,256]          - number of convolutions (output dimension)
         ///     rows=8[1,32]            - convolution size
         ///     cols=8[1,32]            - convolution size
+        ///     type=full[,rand,mask]   - connection type
         ///
         class conv_layer_t : public layer_t
         {
@@ -23,10 +24,12 @@ namespace ncv
                         mask            ///< outputs connected to some (masked) inputs, to learn convolutions
                 };
 
-                NANOCV_MAKE_CLONABLE(conv_layer_t, "convolution layer, parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
+                NANOCV_MAKE_CLONABLE(conv_layer_t,
+                                     "convolution layer, "\
+                                     "parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32],type=full[,rand,mask]")
 
                 // constructor
-                conv_layer_t(const string_t& parameters = string_t(), type = type::full);
+                conv_layer_t(const string_t& parameters = string_t());
 
                 // destructor
                 virtual ~conv_layer_t();

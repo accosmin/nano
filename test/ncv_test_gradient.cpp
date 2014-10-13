@@ -178,7 +178,8 @@ int main(int argc, char *argv[])
 {
         ncv::init();
 
-        const strings_t conv_layer_ids { "", "conv", "rconv", "mconv" };
+        const strings_t conv_layer_ids { "", "conv" };
+        const strings_t conv_con_types { "full", "rand", "mask" };
         const strings_t pool_layer_ids { "", "pool-max", "pool-min", "pool-avg" };
         const strings_t full_layer_ids { "", "linear" };
         const strings_t actv_layer_ids { "", "act-unit", "act-tanh", "act-snorm", "act-splus" };
@@ -192,6 +193,7 @@ int main(int argc, char *argv[])
 
         // evaluate the analytical gradient vs. the finite difference approximation for various:
         //      * convolution layers
+        //      * convolution connection types
         //      * pooling layers
         //      * fully connected layers
         //      * activation layers
@@ -204,39 +206,43 @@ int main(int argc, char *argv[])
                         {
                                 for (const string_t& conv_layer_id : conv_layer_ids)
                                 {
-                                        for (const string_t& full_layer_id : full_layer_ids)
+                                        for (const string_t& conv_con_type : conv_con_types)
                                         {
-                                                string_t desc;
-
-                                                // convolution part
-                                                for (size_t l = 0; l < n_layers && !conv_layer_id.empty(); l ++)
+                                                for (const string_t& full_layer_id : full_layer_ids)
                                                 {
-                                                        random_t<size_t> rgen(2, 3);
+                                                        string_t desc;
 
-                                                        string_t params;
-                                                        params += "dims=" + text::to_string(rgen());
-                                                        params += (rgen() % 2 == 0) ? ",rows=3,cols=3" : ",rows=4,cols=4";
+                                                        // convolution part
+                                                        for (size_t l = 0; l < n_layers && !conv_layer_id.empty(); l ++)
+                                                        {
+                                                                random_t<size_t> rgen(2, 3);
 
-                                                        desc += conv_layer_id + ":" + params + ";";
-                                                        desc += pool_layer_id + ";";
-                                                        desc += actv_layer_id + ";";
+                                                                string_t params;
+                                                                params += "dims=" + text::to_string(rgen());
+                                                                params += (rgen() % 2 == 0) ? ",rows=3,cols=3" : ",rows=4,cols=4";
+                                                                params += "type=" + conv_con_type;
+
+                                                                desc += conv_layer_id + ":" + params + ";";
+                                                                desc += pool_layer_id + ";";
+                                                                desc += actv_layer_id + ";";
+                                                        }
+
+                                                        // fully-connected part
+                                                        for (size_t l = 0; l < n_layers && !full_layer_id.empty(); l ++)
+                                                        {
+                                                                random_t<size_t> rgen(1, 8);
+
+                                                                string_t params;
+                                                                params += "dims=" + text::to_string(rgen());
+
+                                                                desc += full_layer_id + ":" + params + ";";
+                                                                desc += actv_layer_id + ";";
+                                                        }
+
+                                                        desc += "linear:dims=" + text::to_string(cmd_outputs) + ";";
+
+                                                        descs.insert(desc);
                                                 }
-
-                                                // fully-connected part
-                                                for (size_t l = 0; l < n_layers && !full_layer_id.empty(); l ++)
-                                                {
-                                                        random_t<size_t> rgen(1, 8);
-
-                                                        string_t params;
-                                                        params += "dims=" + text::to_string(rgen());
-
-                                                        desc += full_layer_id + ":" + params + ";";
-                                                        desc += actv_layer_id + ";";
-                                                }
-
-                                                desc += "linear:dims=" + text::to_string(cmd_outputs) + ";";
-
-                                                descs.insert(desc);
                                         }
                                 }
                         }

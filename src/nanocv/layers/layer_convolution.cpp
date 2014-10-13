@@ -107,9 +107,9 @@ namespace ncv
                 }
         }
 
-        conv_layer_t::conv_layer_t(const string_t& parameters, type t)
+        conv_layer_t::conv_layer_t(const string_t& parameters)
                 :       layer_t(parameters),
-                        m_type(t)
+                        m_type(type::full)
         {
         }
 
@@ -127,6 +127,30 @@ namespace ncv
                 const size_t krows = math::clamp(text::from_params<size_t>(configuration(), "rows", 8), 1, 32);
                 const size_t kcols = math::clamp(text::from_params<size_t>(configuration(), "cols", 8), 1, 32);
 
+                // check connection type
+                const string_t t = text::from_params<string_t>(configuration(), "type", "full");
+                if (t == "full")
+                {
+                        m_type = type::full;
+                }
+                else if (t == "rand")
+                {
+                        m_type = type::rand;
+                }
+                else if (t == "mask")
+                {
+                        m_type = type::mask;
+                }
+                else
+                {
+                        const string_t message =
+                                "invalid connection type (" + t + ")! expecting [full, rand, mask].";
+
+                        log_error() << "convolution layer: " << message;
+                        throw std::runtime_error("convolution layer: " + message);
+                }
+
+                // check convolution size
                 if (irows < krows || icols < kcols)
                 {
                         const string_t message =
