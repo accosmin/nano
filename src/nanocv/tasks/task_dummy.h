@@ -8,7 +8,8 @@ namespace ncv
         /// dummy task used for testing various components:
         ///     - fully resizable
         ///     - random image patches
-        ///     - random training & test data (1/3 - test, 2/3 - train)
+        ///     - random training & test data
+        ///     - random sample weights
         ///
         class dummy_task_t : public task_t
         {
