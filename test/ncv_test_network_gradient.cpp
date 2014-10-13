@@ -1,5 +1,4 @@
 #include "nanocv.h"
-#include "models/forward_network.h"
 #include <boost/program_options.hpp>
 #include <set>
 
@@ -247,13 +246,14 @@ int main(int argc, char *argv[])
         for (const string_t& desc : descs)
         {
                 // create network
-                forward_network_t network(desc);
-                network.resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color, true);
+                const rmodel_t model = model_manager_t::instance().get("forward-network", desc);
+                assert(model);
+                model->resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color, true);
 
                 // test network
                 for (const string_t& loss_id : loss_ids)
                 {
-                        test_grad("[loss = " + loss_id + "]", loss_id, network);
+                        test_grad("[loss = " + loss_id + "]", loss_id, *model);
                 }
         }
 

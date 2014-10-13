@@ -4,7 +4,7 @@
 
 namespace ncv
 {
-        dummy_task_t::dummy_task_t(const string_t& configuration )
+        dummy_task_t::dummy_task_t(const string_t& configuration)
                 :       task_t(configuration),
                         m_rows(28),
                         m_cols(28),

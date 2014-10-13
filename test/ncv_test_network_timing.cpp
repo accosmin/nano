@@ -1,52 +1,6 @@
 #include "nanocv.h"
-#include "models/forward_network.h"
-#include "task.h"
+#include "tasks/task_dummy.h"
 #include <boost/program_options.hpp>
-
-namespace ncv 
-{
-        class dummy_tast_t : public ncv::task_t
-        {
-        public:
-                
-                NANOCV_MAKE_CLONABLE(dummy_tast_t, "test task")
-                
-                // constructor
-                dummy_tast_t(const string_t& configuration = string_t())
-                        :       task_t(configuration)
-                {        
-                }
-                
-                // create samples
-                void resize(size_t samples)
-                {
-                        m_images.clear();
-                        m_samples.clear();
-                        
-                        for (size_t i = 0; i < samples; i ++)
-                        {                
-                                sample_t sample(m_images.size(), sample_region(0, 0));
-                                sample.m_label = "label";
-                                sample.m_target = ncv::class_target(i % n_outputs(), n_outputs());
-                                sample.m_fold = { 0, protocol::train };
-                                m_samples.push_back(sample);
-
-                                image_t image(n_rows(), n_cols(), color());
-                                m_images.push_back(image);
-                        }                        
-                }                        
-                
-                // load images from the given directory
-                virtual bool load(const string_t&) { return true; }
-                
-                // access functions
-                virtual size_t n_rows() const { return 28; }
-                virtual size_t n_cols() const { return 28; }
-                virtual size_t n_outputs() const { return 10; }
-                virtual size_t n_folds() const { return 1; }
-                virtual color_mode color() const { return color_mode::luma; }
-        };
-}
 
 int main(int argc, char *argv[])
 {
@@ -59,7 +13,7 @@ int main(int argc, char *argv[])
         po_desc.add_options()("help,h", "test program");
         po_desc.add_options()("threads,t",
                 boost::program_options::value<size_t>()->default_value(1),
-                "number of threads to use [1, 16], 0 - use all available threads");
+                "number of threads to use [1, 64], 0 - use all available threads");
         po_desc.add_options()("samples,s",
                 boost::program_options::value<size_t>()->default_value(100000),
                 "number of samples to use [1000, 100000]");
@@ -82,7 +36,7 @@ int main(int argc, char *argv[])
                 return EXIT_FAILURE;
         }
 
-        const size_t cmd_threads = math::clamp(po_vm["threads"].as<size_t>(), 0, 16);
+        const size_t cmd_threads = math::clamp(po_vm["threads"].as<size_t>(), 0, 64);
         const size_t cmd_samples = math::clamp(po_vm["samples"].as<size_t>(), 1000, 100 * 1000);
         const bool cmd_forward = po_vm.count("forward");
         const bool cmd_backward = po_vm.count("backward");
@@ -92,9 +46,15 @@ int main(int argc, char *argv[])
                 std::cout << po_desc;
                 return EXIT_FAILURE;
         }
-        
-        dummy_tast_t task;
-        task.resize(cmd_samples * 100);
+
+        dummy_task_t task;
+        task.set_rows(28);
+        task.set_cols(28);
+        task.set_color(color_mode::luma);
+        task.set_outputs(10);
+        task.set_folds(1);
+        task.set_size(cmd_samples * 100);
+        task.setup();
 
         const size_t cmd_outputs = task.n_outputs();
 
@@ -136,17 +96,17 @@ int main(int argc, char *argv[])
                 mcmodel + outlayer
         };
 
-        const rloss_t rloss = loss_manager_t::instance().get("logistic");
-        assert(rloss);
-        const loss_t& loss = *rloss;
+        const rloss_t loss = loss_manager_t::instance().get("logistic");
+        assert(loss);
 
         for (const string_t& cmd_network : cmd_networks)
         {
                 log_info() << "<<< running network [" << cmd_network << "] ...";
 
                 // create feed-forward network
-                forward_network_t model(cmd_network);
-                model.resize(task, true);
+                const rmodel_t model = model_manager_t::instance().get("forward-network", cmd_network);
+                assert(model);
+                model->resize(task, true);
 
                 // select random samples
                 samples_t samples;
@@ -166,36 +126,36 @@ int main(int argc, char *argv[])
                 {
                         const ncv::timer_t timer;
 
-                        vector_t params(model.psize());
+                        vector_t params(model->psize());
 
                         const size_t tests = 1024;
                         for (size_t t = 0; t < tests; t ++)
                         {
-                                model.save_params(params);
-                                model.load_params(params);
+                                model->save_params(params);
+                                model->load_params(params);
                         }
 
-                        log_info() << "<<< loaded & saved " << tests << "x " << model.psize()
+                        log_info() << "<<< loaded & saved " << tests << "x " << model->psize()
                                    << " parameters in " << timer.elapsed() << ".";
                 }
 
                 // process the samples
                 if (cmd_forward)
                 {
-                        accumulator_t ldata(model, cmd_threads, "l2n-reg", criterion_t::type::value, 0.1);
+                        accumulator_t ldata(*model, cmd_threads, "l2n-reg", criterion_t::type::value, 0.1);
 
                         const ncv::timer_t timer;
-                        ldata.update(task, samples, loss);
+                        ldata.update(task, samples, *loss);
 
                         log_info() << "<<< processed [" << ldata.count() << "] forward samples in " << timer.elapsed() << ".";
                 }
 
                 if (cmd_backward)
                 {
-                        accumulator_t gdata(model, cmd_threads, "l2n-reg", criterion_t::type::vgrad, 0.1);
+                        accumulator_t gdata(*model, cmd_threads, "l2n-reg", criterion_t::type::vgrad, 0.1);
 
                         const ncv::timer_t timer;
-                        gdata.update(task, samples, loss);
+                        gdata.update(task, samples, *loss);
 
                         log_info() << "<<< processed [" << gdata.count() << "] backward samples in " << timer.elapsed() << ".";
                 }
