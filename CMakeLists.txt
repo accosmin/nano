@@ -146,7 +146,8 @@ set(nanocv_test_programs
         ncv_test_timing
         ncv_test_mem
         ncv_test_stats
-        ncv_test_sampler)
+        ncv_test_sampler
+        ncv_test_model_io)
 
 set(nanocv_programs
         ncv_max_threads

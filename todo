@@ -3,10 +3,6 @@
 	- (2) - O(o) = sum(i, m(o,i) * I(i) @ C(o, i)), where m(o,i) is a fixed discrete {0, 1} random mask -> learn the convolutions
 	- (3) - fixed random convolutions -> learn only the output linear layers
 
-- new test program to check that the loading & saving works perfectly:
-	- create random models (like in the gradient test program)
-	- for each one, use ::zero_params() & ::random_params() multiple times and compare loading & saving results
-
 - BUG: cannot correctly save & load the constant & the masked convolution layers
 	- need to redesign this to be able to also save parameters that are not to be optimized
 
