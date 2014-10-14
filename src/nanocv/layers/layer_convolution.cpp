@@ -40,7 +40,7 @@ namespace ncv
                         auto omap = tensor::make_matrix(odata + o * osize, orows, ocols);
 
                         omap.setZero();
-                        for (tsize i = 0; i < idims; i ++)
+                        for (tsize i = 0; i < idims; i ++, k ++)
                         {
                                 auto imap = tensor::make_matrix(idata + i * isize, irows, icols);
                                 auto kmap = tensor::make_matrix(kdata + k * ksize, krows, kcols);
@@ -48,7 +48,6 @@ namespace ncv
                                 if (is_masked(mmap(o, i)))
                                 {
                                         ncv::conv2d_dot(imap, kmap, omap);
-                                        k ++;
                                 }
                         }
                 }
@@ -80,7 +79,7 @@ namespace ncv
                 {
                         auto omap = tensor::make_matrix(odata + o * osize, orows, ocols);
                         
-                        for (tsize i = 0; i < idims; i ++)
+                        for (tsize i = 0; i < idims; i ++, k ++)
                         {
                                 auto gimap = tensor::make_matrix(gidata + i * isize, irows, icols);
                                 auto kmap = tensor::make_matrix(kdata + k * ksize, krows, kcols);
@@ -88,7 +87,6 @@ namespace ncv
                                 if (is_masked(mmap(o, i)))
                                 {
                                         ncv::iconv2d_mad(omap, kmap, gimap);
-                                        k ++;
                                 }
                         }
                 }
@@ -114,6 +112,7 @@ namespace ncv
 
                 auto mmap = tensor::make_matrix(mdata, odims, idims);
 
+                // convolution kernel gradient
                 for (tsize o = 0, k = 0; o < odims; o ++)
                 {
                         auto omap = tensor::make_matrix(odata + o * osize, orows, ocols);
@@ -246,7 +245,7 @@ namespace ncv
                         string_t mask;
                         for (size_t i = 0; i < idims(); i ++)
                         {
-                                mask.append(m_mdata(o, i) > 0.5 ? "1" : "0");
+                                mask.append(is_masked(m_mdata(o, i)) ? "1" : "0");
                         }
 
                         log_info() << "mask [" << (o + 1) << "/" << odims() << "]: " << mask;
