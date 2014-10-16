@@ -1,3 +1,8 @@
+- reduce the number of training configurations for mnist:
+	- always use max pooling (better results)
+	- don't use random convolution models (very bad results, at most as a weak baseline)
+	- try various stochastic methods (use only two epochs)
+
 - cleanup convolution layer:
 	- too much duplicated & complicated code
 
