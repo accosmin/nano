@@ -8,6 +8,10 @@
 	- the gradient takes too much to compute!
 	- the gradient does not scale with the number of threads
 
+- second-order stochastic methods:
+	- apparently generalizes as well as the empirical optimum in a SINGLE pass
+	- Leon-Bottou - one pass ...
+
 - stochastic methods using adaptive learning rates for each dimensions:
 	- if gradient becomes smaller, than decrease the learning rate ...
 
