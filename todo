@@ -4,16 +4,19 @@
 - faster convolution:
         - check if any improvement if using a 3D convolution    
 
+- improve the speed of the linear layers: 
+	- the gradient takes too much to compute!
+	- the gradient does not scale with the number of threads
+
+- stochastic methods using adaptive learning rates for each dimensions:
+	- if gradient becomes smaller, than decrease the learning rate ...
+
 - ctest-based unit tests
 
 - documentation using:
 	- https://docs.readthedocs.org/en/latest/getting_started.html
                
 - finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
-
-- improve the speed of the linear layers: 
-	- the gradient takes too much to compute!
-	- the gradient does not scale with the number of threads
 
 - GTSD dataset support (after 0.1 release)
 
