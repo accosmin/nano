@@ -1,3 +1,7 @@
+- load tasks directly from the archive:
+	- save some disk space
+	- faster loading
+
 - reduce the number of training configurations for mnist:
 	- always use max pooling (better results)
 	- don't use random convolution models (very bad results, at most as a weak baseline)

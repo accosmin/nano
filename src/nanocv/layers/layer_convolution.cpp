@@ -240,16 +240,16 @@ namespace ncv
                         break;
                 }
 
-                for (size_t o = 0; o < odims(); o ++)
-                {
-                        string_t mask;
-                        for (size_t i = 0; i < idims(); i ++)
-                        {
-                                mask.append(is_masked(m_mdata(o, i)) ? "1" : "0");
-                        }
+//                for (size_t o = 0; o < odims(); o ++)
+//                {
+//                        string_t mask;
+//                        for (size_t i = 0; i < idims(); i ++)
+//                        {
+//                                mask.append(is_masked(m_mdata(o, i)) ? "1" : "0");
+//                        }
 
-                        log_info() << "mask [" << (o + 1) << "/" << odims() << "]: " << mask;
-                }
+//                        log_info() << "mask [" << (o + 1) << "/" << odims() << "]: " << mask;
+//                }
         }
 
         scalar_t* conv_layer_t::save_params(scalar_t* params) const
