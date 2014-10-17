@@ -29,7 +29,7 @@ namespace ncv
                 const tsize icols = ocols + kcols - 1;
                 const tsize isize = irows * icols;
 
-                const tsize osize = orows * ocols;                
+                const tsize osize = orows * ocols;
                 const tsize ksize = krows * kcols;
 
                 auto mmap = tensor::make_matrix(mdata, odims, idims);

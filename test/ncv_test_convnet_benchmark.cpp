@@ -17,6 +17,10 @@ int main(int argc, char *argv[])
         po_desc.add_options()("samples,s",
                 boost::program_options::value<size_t>()->default_value(128),
                 "number of samples to use [16, 2048]");
+        po_desc.add_options()("forward",
+                "evaluate the \'forward\' pass (output)");
+        po_desc.add_options()("backward",
+                "evaluate the \'backward' pass (gradient)");
 
         boost::program_options::variables_map po_vm;
         boost::program_options::store(
@@ -34,8 +38,8 @@ int main(int argc, char *argv[])
 
         const size_t cmd_threads = math::clamp(po_vm["threads"].as<size_t>(), 0, 64);
         const size_t cmd_samples = math::clamp(po_vm["samples"].as<size_t>(), 16, 2048);
-        const bool cmd_forward = true;
-        const bool cmd_backward = true;
+        const bool cmd_forward = po_vm.count("forward");
+        const bool cmd_backward = po_vm.count("backward");
 
         if (!cmd_forward && !cmd_backward)
         {
