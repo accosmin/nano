@@ -1,5 +1,5 @@
 #include "nanocv.h"
-#include "common/io_utar.h"
+#include "common/io_decode.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
         po_desc.add_options()("help,h", "test program");
         po_desc.add_options()("input,i",
                 boost::program_options::value<ncv::string_t>(),
-                "input tar archive path (.tar, .gz, .bz2)");
+                "input archive path (.tar, .gz, .bz2, .tar.gz, .tar.bz2)");
 	
         boost::program_options::variables_map po_vm;
         boost::program_options::store(
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 
         // decode archive
         ncv::timer_t timer;
-        if (!io::untar(cmd_input, callback, "untar: ", "untar: "))
+        if (!io::decode(cmd_input, callback, "untar: ", "untar: "))
         {
                 return EXIT_FAILURE;
         }

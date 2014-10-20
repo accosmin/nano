@@ -1,4 +1,4 @@
-#include "io_utar.h"
+#include "io_decode.h"
 #include "logger.h"
 #include <fstream>
 #include <cmath>
@@ -85,7 +85,7 @@ namespace ncv
         namespace
         {
                 bool io_ungzip(
-                        boost::iostreams::filtering_istream& in, const io::untar_callback_t& callback,
+                        boost::iostreams::filtering_istream& in, const io::decode_callback_t& callback,
                         const std::string& filename)
                 {
                         std::vector<char> filedata;
@@ -104,7 +104,7 @@ namespace ncv
                 }
 
                 bool io_untar(
-                        boost::iostreams::filtering_istream& in, const io::untar_callback_t& callback,
+                        boost::iostreams::filtering_istream& in, const io::decode_callback_t& callback,
                         const std::string& info_header, const std::string& error_header)
                 {
                         char zeroBlock[512];
@@ -146,53 +146,48 @@ namespace ncv
                                         log_info() << info_header << "found file <" << filename << "> (" << size << " bytes).";
 
                                         // read the file into memory
-                                        //  This won't work for very large files -- use streaming methods there!
+                                        std::vector<char> filedata(size);
+                                        in.read(filedata.data(), size);
+
+                                        // decode archive type
+                                        if (    boost::algorithm::iends_with(filename, ".tar.gz") ||
+                                                boost::algorithm::iends_with(filename, ".tgz"))
                                         {
-                                                std::vector<char> filedata(size);
-                                                in.read(filedata.data(), size);
-
-                                                // decode archive type
                                                 boost::iostreams::filtering_istream in_;
+                                                in_.push(boost::iostreams::gzip_decompressor());
+                                                in_.push(boost::iostreams::basic_array_source<char>(filedata.data(), filedata.size()));
 
-                                                if (    boost::algorithm::iends_with(filename, ".tar.gz") ||
-                                                        boost::algorithm::iends_with(filename, ".tgz"))
+                                                if (!io_untar(in_, callback, info_header, error_header))
                                                 {
-                                                        boost::iostreams::filtering_istream in_;
-                                                        in_.push(boost::iostreams::gzip_decompressor());
-                                                        in_.push(boost::iostreams::basic_array_source<char>(filedata.data(), filedata.size()));
+                                                        return false;
+                                                }
+                                        }
+                                        else if (boost::algorithm::iends_with(filename, ".tar.bz2") ||
+                                                 boost::algorithm::iends_with(filename, ".tbz"))
+                                        {
+                                                boost::iostreams::filtering_istream in_;
+                                                in_.push(boost::iostreams::bzip2_decompressor());
+                                                in_.push(boost::iostreams::basic_array_source<char>(filedata.data(), filedata.size()));
 
-                                                        if (!io_untar(in_, callback, info_header, error_header))
-                                                        {
-                                                                return false;
-                                                        }
-                                                }
-                                                else if (boost::algorithm::iends_with(filename, ".tar.bz2") ||
-                                                         boost::algorithm::iends_with(filename, ".tbz"))
+                                                if (!io_untar(in_, callback, info_header, error_header))
                                                 {
-                                                        boost::iostreams::filtering_istream in_;
-                                                        in_.push(boost::iostreams::bzip2_decompressor());
-                                                        in_.push(boost::iostreams::basic_array_source<char>(filedata.data(), filedata.size()));
+                                                        return false;
+                                                }
+                                        }
+                                        else if (boost::algorithm::iends_with(filename, ".tar"))
+                                        {
+                                                // no decompression filter needed
+                                                boost::iostreams::filtering_istream in_;
+                                                in_.push(boost::iostreams::basic_array_source<char>(filedata.data(), filedata.size()));
 
-                                                        if (!io_untar(in_, callback, info_header, error_header))
-                                                        {
-                                                                return false;
-                                                        }
-                                                }
-                                                else if (boost::algorithm::iends_with(filename, ".tar"))
+                                                if (!io_untar(in_, callback, info_header, error_header))
                                                 {
-                                                        // no decompression filter needed
-                                                        boost::iostreams::filtering_istream in_;
-                                                        in_.push(boost::iostreams::basic_array_source<char>(filedata.data(), filedata.size()));
-
-                                                        if (!io_untar(in_, callback, info_header, error_header))
-                                                        {
-                                                                return false;
-                                                        }
+                                                        return false;
                                                 }
-                                                else
-                                                {
-                                                        callback(filename, filedata);
-                                                }
+                                        }
+                                        else
+                                        {
+                                                callback(filename, filedata);
                                         }
 
                                         // ignore padding
@@ -221,8 +216,8 @@ namespace ncv
                 }
         }
 
-        bool io::untar(
-                const std::string& path, const untar_callback_t& callback,
+        bool io::decode(
+                const std::string& path, const decode_callback_t& callback,
                 const std::string& info_header, const std::string& error_header)
         {
                 std::ifstream fin(path.c_str(), std::ios_base::in | std::ios_base::binary);
