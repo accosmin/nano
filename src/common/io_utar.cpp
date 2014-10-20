@@ -146,7 +146,8 @@ namespace ncv
                                                                 return false;
                                                         }
                                                 }
-                                                else if (boost::algorithm::iends_with(filename, ".tar.bz2"))
+                                                else if (boost::algorithm::iends_with(filename, ".tar.bz2") ||
+                                                         boost::algorithm::iends_with(filename, ".tbz"))
                                                 {
                                                         boost::iostreams::filtering_istream in_;
                                                         in_.push(boost::iostreams::bzip2_decompressor());
@@ -217,7 +218,8 @@ namespace ncv
                 {
                         in.push(boost::iostreams::gzip_decompressor());
                 }
-                else if (boost::algorithm::iends_with(path, ".tar.bz2"))
+                else if (boost::algorithm::iends_with(path, ".tar.bz2") ||
+                         boost::algorithm::iends_with(path, ".tbz"))
                 {
                         in.push(boost::iostreams::bzip2_decompressor());
                 }
