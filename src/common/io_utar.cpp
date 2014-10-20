@@ -211,17 +211,38 @@ namespace ncv
                 boost::iostreams::filtering_istream in;
 
                 // decode archive type
-                if (boost::algorithm::iends_with(path, ".gz"))
+                if (boost::algorithm::iends_with(path, ".tar.gz"))
                 {
                         in.push(boost::iostreams::gzip_decompressor());
                 }
-                else if (boost::algorithm::iends_with(path, ".bz2"))
+                else if (boost::algorithm::iends_with(path, ".tar.bz2"))
                 {
                         in.push(boost::iostreams::bzip2_decompressor());
                 }
                 else if (boost::algorithm::iends_with(path, ".tar"))
                 {
                         // no decompression filter needed
+                }
+                else if (boost::algorithm::iends_with(path, ".gz"))
+                {
+                        in.push(boost::iostreams::gzip_decompressor());
+                        in.push(fin);
+
+                        std::vector<unsigned char> filedata;
+
+                        const size_t chunk = 4096;
+                        char data[chunk];
+
+                        std::streamsize read_size;
+                        while ((read_size = boost::iostreams::read(in, data, chunk)) > 0)
+                        {
+                                filedata.insert(filedata.end(),
+                                                reinterpret_cast<const unsigned char*>(data),
+                                                reinterpret_cast<const unsigned char*>(data) + read_size);
+                        }
+
+                        callback(path, filedata);
+                        return true;
                 }
                 else
                 {
