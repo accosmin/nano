@@ -84,6 +84,25 @@ namespace ncv
 
         namespace
         {
+                bool io_ungzip(
+                        boost::iostreams::filtering_istream& in, const io::untar_callback_t& callback,
+                        const std::string& filename)
+                {
+                        std::vector<char> filedata;
+
+                        const size_t chunk = 4096;
+                        char data[chunk];
+
+                        std::streamsize read_size;
+                        while ((read_size = boost::iostreams::read(in, data, chunk)) > 0)
+                        {
+                                filedata.insert(filedata.end(), data, data + read_size);
+                        }
+
+                        callback(filename, filedata);
+                        return true;
+                }
+
                 bool io_untar(
                         boost::iostreams::filtering_istream& in, const io::untar_callback_t& callback,
                         const std::string& info_header, const std::string& error_header)
@@ -126,21 +145,22 @@ namespace ncv
                                         const size_t size = header.filesize();
                                         log_info() << info_header << "found file <" << filename << "> (" << size << " bytes).";
 
-                                        //Read the file into memory
+                                        // read the file into memory
                                         //  This won't work for very large files -- use streaming methods there!
                                         {
-                                                std::vector<unsigned char> filedata(size);
-
-                                                char* const pdata = reinterpret_cast<char*>(filedata.data());
-                                                in.read(pdata, size);
+                                                std::vector<char> filedata(size);
+                                                in.read(filedata.data(), size);
 
                                                 // decode archive type
+                                                boost::iostreams::filtering_istream in_;
+
                                                 if (    boost::algorithm::iends_with(filename, ".tar.gz") ||
                                                         boost::algorithm::iends_with(filename, ".tgz"))
                                                 {
                                                         boost::iostreams::filtering_istream in_;
                                                         in_.push(boost::iostreams::gzip_decompressor());
-                                                        in_.push(boost::iostreams::basic_array_source<char>(pdata, filedata.size()));
+                                                        in_.push(boost::iostreams::basic_array_source<char>(filedata.data(), filedata.size()));
+
                                                         if (!io_untar(in_, callback, info_header, error_header))
                                                         {
                                                                 return false;
@@ -151,7 +171,8 @@ namespace ncv
                                                 {
                                                         boost::iostreams::filtering_istream in_;
                                                         in_.push(boost::iostreams::bzip2_decompressor());
-                                                        in_.push(boost::iostreams::basic_array_source<char>(pdata, filedata.size()));
+                                                        in_.push(boost::iostreams::basic_array_source<char>(filedata.data(), filedata.size()));
+
                                                         if (!io_untar(in_, callback, info_header, error_header))
                                                         {
                                                                 return false;
@@ -161,7 +182,8 @@ namespace ncv
                                                 {
                                                         // no decompression filter needed
                                                         boost::iostreams::filtering_istream in_;
-                                                        in_.push(boost::iostreams::basic_array_source<char>(pdata, filedata.size()));
+                                                        in_.push(boost::iostreams::basic_array_source<char>(filedata.data(), filedata.size()));
+
                                                         if (!io_untar(in_, callback, info_header, error_header))
                                                         {
                                                                 return false;
@@ -232,21 +254,7 @@ namespace ncv
                         in.push(boost::iostreams::gzip_decompressor());
                         in.push(fin);
 
-                        std::vector<unsigned char> filedata;
-
-                        const size_t chunk = 4096;
-                        char data[chunk];
-
-                        std::streamsize read_size;
-                        while ((read_size = boost::iostreams::read(in, data, chunk)) > 0)
-                        {
-                                filedata.insert(filedata.end(),
-                                                reinterpret_cast<const unsigned char*>(data),
-                                                reinterpret_cast<const unsigned char*>(data) + read_size);
-                        }
-
-                        callback(path, filedata);
-                        return true;
+                        return io_ungzip(in, callback, path);
                 }
                 else
                 {

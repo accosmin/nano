@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
         const string_t cmd_input = po_vm["input"].as<string_t>();
 
         // callback
-        const auto callback = [](const string_t& filename, const std::vector<unsigned char>& data)
+        const auto callback = [](const string_t& filename, const std::vector<char>& data)
         {
                 log_info() << "untar: callback(" << filename << ", " << data.size() << " bytes)";
         };

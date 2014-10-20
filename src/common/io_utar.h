@@ -12,7 +12,7 @@ namespace ncv
                 /// \brief callback to execute when a file was decompressed from a tar archive
                 ///     - (filename, file content loaded in memory)
                 ///
-                typedef std::function<void(const std::string&, const std::vector<unsigned char>&)>
+                typedef std::function<void(const std::string&, const std::vector<char>&)>
                         untar_callback_t;
 
                 ///
