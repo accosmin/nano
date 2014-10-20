@@ -11,6 +11,9 @@
 	- too much duplicated & complicated code
 
 - faster convolution:
+ 	- build a toeplitz matrix, then the convolution becomes a matrix multiplication:
+		- http://en.wikipedia.org/wiki/Toeplitz_matrix
+
         - check if any improvement if using a 3D convolution    
 
 - improve the speed of the linear layers: 
