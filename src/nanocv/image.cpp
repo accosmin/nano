@@ -135,7 +135,7 @@ namespace ncv
                                 }
 
                                 // read pixels
-                                std::vector<u_int8_t> grays(rows * cols);
+                                std::vector<uint8_t> grays(rows * cols);
                                 if (!is.read((char*)(grays.data()), grays.size()))
                                 {
                                         return false;

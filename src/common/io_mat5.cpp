@@ -5,9 +5,9 @@
 
 namespace ncv
 {
-        static u_int32_t make_uint32(const unsigned char* data)
+        static uint32_t make_uint32(const unsigned char* data)
         {
-                return *reinterpret_cast<const u_int32_t*>(data);
+                return *reinterpret_cast<const uint32_t*>(data);
         }
 
         mat5::section_t::section_t(size_t begin)
@@ -17,7 +17,7 @@ namespace ncv
         {
         }
 
-        bool mat5::section_t::load(size_t offset, size_t end, u_int32_t dtype, u_int32_t bytes)
+        bool mat5::section_t::load(size_t offset, size_t end, uint32_t dtype, uint32_t bytes)
         {
                 // small data format
                 if ((dtype >> 16) != 0)
@@ -50,20 +50,19 @@ namespace ncv
 
         bool mat5::section_t::load(std::ifstream& istream)
         {
-                u_int32_t dtype, bytes;
-                return  istream.read(reinterpret_cast<char*>(&dtype), sizeof(u_int32_t)) &&
-                        istream.read(reinterpret_cast<char*>(&bytes), sizeof(u_int32_t)) &&
+                uint32_t dtype, bytes;
+                return  istream.read(reinterpret_cast<char*>(&dtype), sizeof(uint32_t)) &&
+                        istream.read(reinterpret_cast<char*>(&bytes), sizeof(uint32_t)) &&
                         load(0, std::numeric_limits<size_t>::max(), dtype, bytes);
         }
 
-        bool mat5::section_t::load(const std::vector<u_int8_t>& data, size_t offset)
+        bool mat5::section_t::load(const std::vector<uint8_t>& data, size_t offset)
         {
                 return  offset + 8 <= data.size() &&
-                        load(offset, data.size(),
-                             make_uint32(&data[offset + 0]), make_uint32(&data[offset + 4]));
+                        load(offset, data.size(), make_uint32(&data[offset + 0]), make_uint32(&data[offset + 4]));
         }
 
-        bool mat5::section_t::load(const std::vector<u_int8_t>& data, const section_t& prv)
+        bool mat5::section_t::load(const std::vector<uint8_t>& data, const section_t& prv)
         {
                 return load(data, prv.m_end);
         }
@@ -72,7 +71,7 @@ namespace ncv
         {
         }
 
-        bool mat5::array_t::load(const std::vector<u_int8_t>& data)
+        bool mat5::array_t::load(const std::vector<uint8_t>& data)
         {
                 // read & check header
                 section_t header;

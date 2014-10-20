@@ -121,7 +121,7 @@ namespace ncv
                         ///
                         section_t(size_t begin = 0);
 
-                        bool load(size_t offset, size_t end, u_int32_t dtype, u_int32_t bytes);
+                        bool load(size_t offset, size_t end, uint32_t dtype, uint32_t bytes);
                         bool load(std::ifstream& istream);
                         bool load(const std::vector<unsigned char>& data, size_t offset = 0);
                         bool load(const std::vector<unsigned char>& data, const section_t& prv);

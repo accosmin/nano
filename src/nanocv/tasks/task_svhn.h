@@ -37,8 +37,8 @@ namespace ncv
                 size_t load(const string_t& bfile, protocol p);
 
                 // decode the uncompressed bytes (images + labels)
-                size_t decode(const std::vector<u_int8_t>& image_data,
-                              const std::vector<u_int8_t>& label_data,
+                size_t decode(const std::vector<uint8_t>& image_data,
+                              const std::vector<uint8_t>& label_data,
                               protocol p);
         };
 }

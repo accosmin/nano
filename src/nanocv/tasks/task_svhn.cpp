@@ -60,8 +60,8 @@ namespace ncv
                 }
 
                 // data sections (image rgb + labels)
-                std::vector<u_int8_t> image_data;
-                std::vector<u_int8_t> label_data;
+                std::vector<uint8_t> image_data;
+                std::vector<uint8_t> label_data;
                 for (int isection = 0; isection < 2; isection ++)
                 {
                         // section header
@@ -81,7 +81,7 @@ namespace ncv
 
                         log_info() << "SVHN: uncompressing " << section.dsize() << " bytes ...";
 
-                        std::vector<u_int8_t>& data = (isection == 0) ? image_data : label_data;
+                        std::vector<uint8_t>& data = (isection == 0) ? image_data : label_data;
                         if (!io::zuncompress(istream, section.dsize(), data))
                         {
                                 log_error() << "SVHN: failed to read compressed data!";
@@ -96,8 +96,8 @@ namespace ncv
         }
 
         size_t svhn_task_t::decode(
-                const std::vector<u_int8_t>& idata,
-                const std::vector<u_int8_t>& ldata,
+                const std::vector<uint8_t>& idata,
+                const std::vector<uint8_t>& ldata,
                 protocol p)
         {
                 // decode image & label arrays
