@@ -135,7 +135,8 @@ namespace ncv
                                                 in.read(pdata, size);
 
                                                 // decode archive type
-                                                if (boost::algorithm::iends_with(filename, ".gz"))
+                                                if (    boost::algorithm::iends_with(filename, ".tar.gz") ||
+                                                        boost::algorithm::iends_with(filename, ".tgz"))
                                                 {
                                                         boost::iostreams::filtering_istream in_;
                                                         in_.push(boost::iostreams::gzip_decompressor());
@@ -145,7 +146,7 @@ namespace ncv
                                                                 return false;
                                                         }
                                                 }
-                                                else if (boost::algorithm::iends_with(filename, ".bz2"))
+                                                else if (boost::algorithm::iends_with(filename, ".tar.bz2"))
                                                 {
                                                         boost::iostreams::filtering_istream in_;
                                                         in_.push(boost::iostreams::bzip2_decompressor());
@@ -211,7 +212,8 @@ namespace ncv
                 boost::iostreams::filtering_istream in;
 
                 // decode archive type
-                if (boost::algorithm::iends_with(path, ".tar.gz"))
+                if (    boost::algorithm::iends_with(path, ".tar.gz") ||
+                        boost::algorithm::iends_with(path, ".tgz"))
                 {
                         in.push(boost::iostreams::gzip_decompressor());
                 }
