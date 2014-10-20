@@ -7,6 +7,8 @@
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 #include <boost/iostreams/filter/bzip2.hpp>
+#include <boost/iostreams/stream.hpp>
+#include <boost/iostreams/device/array.hpp>
 #include <boost/algorithm/string.hpp>
 
 namespace ncv
@@ -103,6 +105,143 @@ namespace ncv
                 };
         }
 
+        namespace
+        {
+                bool io_untar(
+                        boost::iostreams::filtering_istream& in, const io::untar_callback_t& callback,
+                        const std::string& info_header, const std::string& error_header)
+                {
+                        // initialize a zero-filled block we can compare against (zero-filled header block --> end of TAR archive)
+                        char zeroBlock[512];
+                        memset(zeroBlock, 0, 512);
+
+                        // read file
+                        bool nextEntryHasLongName = false;
+                        while (in)
+                        {
+                                TARFileHeader currentFileHeader;
+                                in.read((char*)&currentFileHeader, 512);
+                                //When a block with zeroes-only is found, the TAR archive ends here
+                                if (memcmp(&currentFileHeader, zeroBlock, 512) == 0)
+                                {
+                                        log_info() << info_header << "found TAR end";
+                                        break;
+                                }
+
+                                //Uncomment this to check all header checksums
+                                //There seem to be TARs on the internet which include single headers that do not match the checksum even if most headers do.
+                                //This might indicate a code error.
+                                //assert(currentFileHeader.checkChecksum());
+
+                                //Uncomment this to check for USTAR if you need USTAR features
+                                //assert(currentFileHeader.isUSTAR());
+
+                                //Convert the filename to a std::string to make handling easier
+                                //Filenames of length 100+ need special handling
+                                // (only USTAR supports 101+-character filenames, but in non-USTAR archives the prefix is 0 and therefore ignored)
+                                std::string filename(currentFileHeader.filename, std::min((size_t)100, strlen(currentFileHeader.filename)));
+                                //---Remove the next block if you don't want to support long filenames---
+                                size_t prefixLength = strlen(currentFileHeader.filenamePrefix);
+                                if (prefixLength > 0)
+                                {
+                                        //If there is a filename prefix, add it to the string. See `man ustar`LON
+                                        filename = std::string(currentFileHeader.filenamePrefix, std::min((size_t)155, prefixLength)) + "/" + filename; //min limit: Not needed by spec, but we want to be safe
+                                }
+
+                                //Ignore directories, only handle normal files (symlinks are currently ignored completely and might cause errors)
+                                if (currentFileHeader.typeFlag == '0' || currentFileHeader.typeFlag == 0)
+                                {
+                                        //Normal file
+                                        //Handle GNU TAR long filenames -- the current block contains the filename only whilst the next block contains metadata
+                                        if (nextEntryHasLongName)
+                                        {
+                                                //Set the filename from the current header
+                                                filename = std::string(currentFileHeader.filename);
+                                                //The next header contains the metadata, so replace the header before reading the metadata
+                                                in.read((char*) &currentFileHeader, 512);
+                                                //Reset the long name flag
+                                                nextEntryHasLongName = false;
+                                        }
+
+                                        //Now the metadata in the current file header is valie -- we can read the values.
+                                        size_t size = currentFileHeader.getFileSize();
+                                        //Log that we found a file
+                                        log_info() << info_header << "found file <" << filename << "> (" << size << " bytes).";
+
+                                        //Read the file into memory
+                                        //  This won't work for very large files -- use streaming methods there!
+                                        {
+                                                std::vector<unsigned char> fileData(size + 1); //+1: Place a terminal NUL to allow interpreting the file as cstring (you can remove this if unused)
+
+                                                char* const pdata = reinterpret_cast<char*>(fileData.data());
+                                                in.read(pdata, size);
+
+                                                // decode archive type
+                                                if (boost::algorithm::iends_with(filename, ".gz"))
+                                                {
+                                                        boost::iostreams::filtering_istream in_;
+                                                        in_.push(boost::iostreams::gzip_decompressor());
+                                                        in_.push(boost::iostreams::basic_array_source<char>(pdata, fileData.size()));
+                                                        if (!io_untar(in_, callback, info_header, error_header))
+                                                        {
+                                                                return false;
+                                                        }
+                                                }
+                                                else if (boost::algorithm::iends_with(filename, ".bz2"))
+                                                {
+                                                        boost::iostreams::filtering_istream in_;
+                                                        in_.push(boost::iostreams::bzip2_decompressor());
+                                                        in_.push(boost::iostreams::basic_array_source<char>(pdata, fileData.size()));
+                                                        if (!io_untar(in_, callback, info_header, error_header))
+                                                        {
+                                                                return false;
+                                                        }
+                                                }
+                                                else if (boost::algorithm::iends_with(filename, ".tar"))
+                                                {
+                                                        // no decompression filter needed
+                                                        boost::iostreams::filtering_istream in_;
+                                                        in_.push(boost::iostreams::basic_array_source<char>(pdata, fileData.size()));
+                                                        if (!io_untar(in_, callback, info_header, error_header))
+                                                        {
+                                                                return false;
+                                                        }
+                                                }
+                                                else
+                                                {
+                                                        callback(filename, fileData);
+                                                }
+                                        }
+
+                                        //In the tar archive, entire 512-byte-blocks are used for each file
+                                        //Therefore we now have to skip the padded bytes.
+                                        size_t paddingBytes = (512 - (size % 512)) % 512; //How long the padding to 512 bytes needs to be
+                                        //Simply ignore the padding
+                                        in.ignore(paddingBytes);
+                                        //----Remove the else if and else branches if you want to handle normal files only---
+                                }
+                                else if (currentFileHeader.typeFlag == '5')
+                                {
+                                        //A directory
+                                        //Currently long directory names are not handled correctly
+                                        log_info() << info_header << "found directory <" << filename << ">.";
+                                }
+                                else if(currentFileHeader.typeFlag == 'L')
+                                {
+                                        nextEntryHasLongName = true;
+                                }
+                                else
+                                {
+                                        //Neither normal file nor directory (symlink etc.) -- currently ignored silently
+                                        log_info() << info_header << "found unhandled TAR Entry type <" << currentFileHeader.typeFlag << ">.";
+                                }
+                        }
+
+                        // OK
+                        return true;
+                }
+        }
+
         bool io::untar(
                 const std::string& path, const untar_callback_t& callback,
                 const std::string& info_header, const std::string& error_header)
@@ -136,94 +275,6 @@ namespace ncv
                 }
                 in.push(fin);
 
-                // initialize a zero-filled block we can compare against (zero-filled header block --> end of TAR archive)
-                char zeroBlock[512];
-                memset(zeroBlock, 0, 512);
-
-                // read file
-                bool nextEntryHasLongName = false;
-                while (in)
-                {
-                        TARFileHeader currentFileHeader;
-                        in.read((char*)&currentFileHeader, 512);
-                        //When a block with zeroes-only is found, the TAR archive ends here
-                        if (memcmp(&currentFileHeader, zeroBlock, 512) == 0)
-                        {
-                                log_info() << info_header << "found TAR end";
-                                break;
-                        }
-
-                        //Uncomment this to check all header checksums
-                        //There seem to be TARs on the internet which include single headers that do not match the checksum even if most headers do.
-                        //This might indicate a code error.
-                        //assert(currentFileHeader.checkChecksum());
-
-                        //Uncomment this to check for USTAR if you need USTAR features
-                        //assert(currentFileHeader.isUSTAR());
-
-                        //Convert the filename to a std::string to make handling easier
-                        //Filenames of length 100+ need special handling
-                        // (only USTAR supports 101+-character filenames, but in non-USTAR archives the prefix is 0 and therefore ignored)
-                        std::string filename(currentFileHeader.filename, std::min((size_t)100, strlen(currentFileHeader.filename)));
-                        //---Remove the next block if you don't want to support long filenames---
-                        size_t prefixLength = strlen(currentFileHeader.filenamePrefix);
-                        if (prefixLength > 0)
-                        {
-                                //If there is a filename prefix, add it to the string. See `man ustar`LON
-                                filename = std::string(currentFileHeader.filenamePrefix, std::min((size_t)155, prefixLength)) + "/" + filename; //min limit: Not needed by spec, but we want to be safe
-                        }
-
-                        //Ignore directories, only handle normal files (symlinks are currently ignored completely and might cause errors)
-                        if (currentFileHeader.typeFlag == '0' || currentFileHeader.typeFlag == 0)
-                        {
-                                //Normal file
-                                //Handle GNU TAR long filenames -- the current block contains the filename only whilst the next block contains metadata
-                                if (nextEntryHasLongName)
-                                {
-                                        //Set the filename from the current header
-                                        filename = std::string(currentFileHeader.filename);
-                                        //The next header contains the metadata, so replace the header before reading the metadata
-                                        in.read((char*) &currentFileHeader, 512);
-                                        //Reset the long name flag
-                                        nextEntryHasLongName = false;
-                                }
-
-                                //Now the metadata in the current file header is valie -- we can read the values.
-                                size_t size = currentFileHeader.getFileSize();
-                                //Log that we found a file
-                                log_info() << info_header << "found file <" << filename << "> (" << size << " bytes).";
-
-                                //Read the file into memory
-                                //  This won't work for very large files -- use streaming methods there!
-                                std::vector<unsigned char> fileData(size + 1); //+1: Place a terminal NUL to allow interpreting the file as cstring (you can remove this if unused)
-                                in.read(reinterpret_cast<char*>(fileData.data()), size);
-                                callback(filename, fileData);
-
-                                //In the tar archive, entire 512-byte-blocks are used for each file
-                                //Therefore we now have to skip the padded bytes.
-                                size_t paddingBytes = (512 - (size % 512)) % 512; //How long the padding to 512 bytes needs to be
-                                //Simply ignore the padding
-                                in.ignore(paddingBytes);
-                                //----Remove the else if and else branches if you want to handle normal files only---
-                        }
-                        else if (currentFileHeader.typeFlag == '5')
-                        {
-                                //A directory
-                                //Currently long directory names are not handled correctly
-                                log_info() << info_header << "found directory <" << filename << ">.";
-                        }
-                        else if(currentFileHeader.typeFlag == 'L')
-                        {
-                                nextEntryHasLongName = true;
-                        }
-                        else
-                        {
-                                //Neither normal file nor directory (symlink etc.) -- currently ignored silently
-                                log_info() << info_header << "found unhandled TAR Entry type <" << currentFileHeader.typeFlag << ">.";
-                        }
-                }
-
-                // OK
-                return true;
+                return io_untar(in, callback, info_header, error_header);
         }
 }
