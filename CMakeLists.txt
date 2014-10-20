@@ -14,7 +14,7 @@ option(NANOCV_HAVE_OPENCL       "Build nanocv with OpenCL as dependency"        
 # Boost
 include(FindBoost)
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost COMPONENTS serialization program_options filesystem system)
+find_package(Boost COMPONENTS serialization program_options filesystem system iostreams)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 # Image formats
@@ -120,11 +120,11 @@ include_directories(
         ${nanocv_includes})
 
 set(libs "nanocv;")
-set(libs "${libs};${Boost_THREAD_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_SERIALIZATION_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_SYSTEM_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_FILESYSTEM_LIBRARY_RELEASE}")
+set(libs "${libs};${Boost_IOSTREAMS_LIBRARY_RELEASE}")
 set(libs "${libs};${JPEG_LIBRARIES}")
 set(libs "${libs};${TIFF_LIBRARIES}")
 set(libs "${libs};${PNG_LIBRARIES}")
@@ -148,7 +148,8 @@ set(nanocv_test_programs
         ncv_test_stats
         ncv_test_sampler
         ncv_test_model_io
-        ncv_test_convnet_benchmark)
+        ncv_test_convnet_benchmark
+        ncv_test_uncompress)
 
 set(nanocv_programs
         ncv_max_threads
