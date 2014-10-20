@@ -105,11 +105,12 @@ namespace ncv
 
         bool io::untar(
                 const std::string& path, const untar_callback_t& callback,
-                logger_t& logger_info, logger_t& logger_error)
+                const std::string& info_header, const std::string& error_header)
         {
                 std::ifstream fin(path.c_str(), std::ios_base::in | std::ios_base::binary);
                 if (!fin.is_open())
                 {
+                        log_error() << error_header << "failed to open file <" << path << ">!";
                         return false;
                 }
 
@@ -130,7 +131,7 @@ namespace ncv
                 }
                 else
                 {
-                        logger_error << "unknown file suffix <" << path << ">!";
+                        log_error() << error_header << "unknown file suffix <" << path << ">!";
                         return false;
                 }
                 in.push(fin);
@@ -148,7 +149,7 @@ namespace ncv
                         //When a block with zeroes-only is found, the TAR archive ends here
                         if (memcmp(&currentFileHeader, zeroBlock, 512) == 0)
                         {
-                                logger_info << "found TAR end";
+                                log_info() << info_header << "found TAR end";
                                 break;
                         }
 
@@ -190,7 +191,7 @@ namespace ncv
                                 //Now the metadata in the current file header is valie -- we can read the values.
                                 size_t size = currentFileHeader.getFileSize();
                                 //Log that we found a file
-                                logger_info << "Found file '" << filename << "' (" << size << " bytes)";
+                                log_info() << info_header << "found file <" << filename << "> (" << size << " bytes).";
 
                                 //Read the file into memory
                                 //  This won't work for very large files -- use streaming methods there!
@@ -209,7 +210,7 @@ namespace ncv
                         {
                                 //A directory
                                 //Currently long directory names are not handled correctly
-                                logger_info << "found directory '" << filename << "'";
+                                log_info() << info_header << "found directory <" << filename << ">.";
                         }
                         else if(currentFileHeader.typeFlag == 'L')
                         {
@@ -218,7 +219,7 @@ namespace ncv
                         else
                         {
                                 //Neither normal file nor directory (symlink etc.) -- currently ignored silently
-                                logger_info << "found unhandled TAR Entry type " << currentFileHeader.typeFlag << ".";
+                                log_info() << info_header << "found unhandled TAR Entry type <" << currentFileHeader.typeFlag << ">.";
                         }
                 }
 

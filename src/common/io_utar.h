@@ -6,8 +6,6 @@
 
 namespace ncv
 {
-        class logger_t;
-
         namespace io
         {
                 ///
@@ -21,6 +19,6 @@ namespace ncv
                 /// \brief uncompress a tar archive
                 ///
                 bool untar(const std::string& path, const untar_callback_t& callback,
-                           logger_t& logger_info, logger_t& logger_error);
+                           const std::string& info_header, const std::string& error_header);
         }
 }
