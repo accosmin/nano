@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tensor/matrix.hpp"
+#include "tensor/vector.hpp"
 
 namespace ncv
 {
