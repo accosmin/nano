@@ -10,7 +10,7 @@ namespace ncv
         {
                 ///
                 /// \brief callback to execute when a file was decompressed from an archive
-                ///     - (filename, file content loaded in memory)
+                ///     - (filename, uncompressed file content loaded in memory)
                 ///
                 typedef std::function<void(const std::string&, const std::vector<char>&)>
                         decode_callback_t;

@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
         // callback
         const auto callback = [](const string_t& filename, const std::vector<char>& data)
         {
-                log_info() << "untar: callback(" << filename << ", " << data.size() << " bytes)";
+                log_info() << "decode: callback(" << filename << ", " << data.size() << " bytes)";
         };
 
         // decode archive

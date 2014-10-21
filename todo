@@ -1,3 +1,8 @@
+- use zlib & bzip2 libraries to decompress tar,gz,bz2 instead of boost::iostreams:
+	- io::load_binary(filepath, vector<char>), io::save_binary(filepath, vector<char>)
+	- io::decode_gz(istream, size, vector<char>)
+	- io::decode_bz2(istream, size, vector<char>)
+
 - load tasks directly from the archive:
 	- save some disk space
 	- faster loading
