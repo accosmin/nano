@@ -38,8 +38,9 @@ namespace ncv
                 ///
                 /// \brief load binary file in memory
                 ///
-                bool load_binary(std::istream& istream, size_t bytes, data_t& data);
-                bool load_binary(std::istream& istream, data_t& data);
+                bool load_binary(std::istream& in, size_t bytes, data_t& data);
+                bool load_binary(std::istream& in, data_t& data);
+                bool load_binary(const std::string& path, data_t& data);
 
                 ///
                 /// \brief save memory buffer to binary file
