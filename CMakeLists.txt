@@ -13,8 +13,10 @@ option(NANOCV_HAVE_OPENCL       "Build nanocv with OpenCL as dependency"        
 
 # Zlib & BZip2
 find_package(ZLIB REQUIRED)
+find_package(BZip2 REQUIRED)
 
 include_directories(${ZLIB_INCLUDE_DIR})
+include_directories(${BZIP_INCLUDE_DIRS})
 
 # Boost
 include(FindBoost)
@@ -134,6 +136,7 @@ set(libs "${libs};${JPEG_LIBRARIES}")
 set(libs "${libs};${TIFF_LIBRARIES}")
 set(libs "${libs};${PNG_LIBRARIES}")
 set(libs "${libs};${ZLIB_LIBRARIES}")
+set(libs "${libs};${BZIP_LIBRARIES}")
 if(NANOCV_HAVE_OPENCL)
         set(libs "${libs};${OPENCL_LIBRARIES}")
 endif()
