@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 
         // decode archive
         ncv::timer_t timer;
-        if (!io::decode(cmd_input, callback, "untar: ", "untar: "))
+        if (!io::decode(cmd_input, "decode: ", callback))
         {
                 return EXIT_FAILURE;
         }

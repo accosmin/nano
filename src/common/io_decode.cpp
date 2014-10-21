@@ -85,8 +85,8 @@ namespace ncv
         namespace
         {
                 bool io_ungzip(
-                        boost::iostreams::filtering_istream& in, const io::decode_callback_t& callback,
-                        const std::string& filename)
+                        boost::iostreams::filtering_istream& in, const std::string& filename,
+                        const io::decode_callback_t& callback)
                 {
                         std::vector<char> filedata;
 
@@ -104,8 +104,8 @@ namespace ncv
                 }
 
                 bool io_untar(
-                        boost::iostreams::filtering_istream& in, const io::decode_callback_t& callback,
-                        const std::string& info_header, const std::string& error_header)
+                        boost::iostreams::filtering_istream& in, const std::string& log_header,
+                        const io::decode_callback_t& callback)
                 {
                         char zeroBlock[512];
                         memset(zeroBlock, 0, 512);
@@ -117,7 +117,7 @@ namespace ncv
                                 in.read((char*)&header, 512);
                                 if (memcmp(&header, zeroBlock, 512) == 0)
                                 {
-                                        log_info() << info_header << "found TAR end.";
+                                        log_info() << log_header << "found TAR end.";
                                         break;
                                 }
 
@@ -143,7 +143,7 @@ namespace ncv
                                         }
 
                                         const size_t size = header.filesize();
-                                        log_info() << info_header << "found file <" << filename << "> (" << size << " bytes).";
+                                        log_info() << log_header << "found file <" << filename << "> (" << size << " bytes).";
 
                                         // read the file into memory
                                         std::vector<char> filedata(size);
@@ -157,7 +157,7 @@ namespace ncv
                                                 in_.push(boost::iostreams::gzip_decompressor());
                                                 in_.push(boost::iostreams::basic_array_source<char>(filedata.data(), filedata.size()));
 
-                                                if (!io_untar(in_, callback, info_header, error_header))
+                                                if (!io_untar(in_, log_header, callback))
                                                 {
                                                         return false;
                                                 }
@@ -169,7 +169,7 @@ namespace ncv
                                                 in_.push(boost::iostreams::bzip2_decompressor());
                                                 in_.push(boost::iostreams::basic_array_source<char>(filedata.data(), filedata.size()));
 
-                                                if (!io_untar(in_, callback, info_header, error_header))
+                                                if (!io_untar(in_, log_header, callback))
                                                 {
                                                         return false;
                                                 }
@@ -180,7 +180,7 @@ namespace ncv
                                                 boost::iostreams::filtering_istream in_;
                                                 in_.push(boost::iostreams::basic_array_source<char>(filedata.data(), filedata.size()));
 
-                                                if (!io_untar(in_, callback, info_header, error_header))
+                                                if (!io_untar(in_, log_header, callback))
                                                 {
                                                         return false;
                                                 }
@@ -197,7 +197,7 @@ namespace ncv
 
                                 else if (header.typeFlag == '5')
                                 {
-                                        log_info() << info_header << "found directory <" << filename << ">.";
+                                        log_info() << log_header << "found directory <" << filename << ">.";
                                 }
 
                                 else if(header.typeFlag == 'L')
@@ -207,7 +207,7 @@ namespace ncv
 
                                 else
                                 {
-                                        log_info() << info_header << "found unhandled TAR entry type <" << header.typeFlag << ">.";
+                                        log_info() << log_header << "found unhandled TAR entry type <" << header.typeFlag << ">.";
                                 }
                         }
 
@@ -217,13 +217,12 @@ namespace ncv
         }
 
         bool io::decode(
-                const std::string& path, const decode_callback_t& callback,
-                const std::string& info_header, const std::string& error_header)
+                const std::string& path, const std::string& log_header, const decode_callback_t& callback)
         {
                 std::ifstream fin(path.c_str(), std::ios_base::in | std::ios_base::binary);
                 if (!fin.is_open())
                 {
-                        log_error() << error_header << "failed to open file <" << path << ">!";
+                        log_error() << log_header << "failed to open file <" << path << ">!";
                         return false;
                 }
 
@@ -249,16 +248,16 @@ namespace ncv
                         in.push(boost::iostreams::gzip_decompressor());
                         in.push(fin);
 
-                        return io_ungzip(in, callback, path);
+                        return io_ungzip(in, path, callback);
                 }
                 else
                 {
-                        log_error() << error_header << "unknown file suffix <" << path << ">!";
+                        log_error() << log_header << "unknown file suffix <" << path << ">!";
                         return false;
                 }
 
                 in.push(fin);
 
-                return io_untar(in, callback, info_header, error_header);
+                return io_untar(in, log_header, callback);
         }
 }

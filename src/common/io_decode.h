@@ -18,7 +18,6 @@ namespace ncv
                 ///
                 /// \brief decode an archive file (.tar, .gz, .tar.gz, .tar.bz2 etc.)
                 ///
-                bool decode(const std::string& path, const decode_callback_t& callback,
-                            const std::string& info_header, const std::string& error_header);
+                bool decode(const std::string& path, const std::string& log_header, const decode_callback_t& callback);
         }
 }
