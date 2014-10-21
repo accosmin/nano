@@ -123,8 +123,8 @@ namespace ncv
 
                         bool load(size_t offset, size_t end, uint32_t dtype, uint32_t bytes);
                         bool load(std::ifstream& istream);
-                        bool load(const std::vector<unsigned char>& data, size_t offset = 0);
-                        bool load(const std::vector<unsigned char>& data, const section_t& prv);
+                        bool load(const std::vector<char>& data, size_t offset = 0);
+                        bool load(const std::vector<char>& data, const section_t& prv);
 
                         // full section range
                         size_t begin() const { return m_begin; }
@@ -157,7 +157,7 @@ namespace ncv
                         ///
                         /// \brief parse the array
                         ///
-                        bool load(const std::vector<unsigned char>& data);
+                        bool load(const std::vector<char>& data);
 
                         ///
                         /// \brief describe the array

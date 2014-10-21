@@ -4,7 +4,7 @@
 
 namespace ncv
 {
-        bool io::uncompress_bzip2(std::istream& istream, std::size_t bytes, std::vector<char>& data)
+        bool io::uncompress_bzip2(std::istream& istream, std::size_t bytes, data_t& data)
         {
                 // zlib decompression buffers
                 static const std::size_t CHUNK = 64 * 1024;
