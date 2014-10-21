@@ -82,7 +82,7 @@ namespace ncv
                         log_info() << "SVHN: uncompressing " << section.dsize() << " bytes ...";
 
                         std::vector<uint8_t>& data = (isection == 0) ? image_data : label_data;
-                        if (!io::zuncompress(istream, section.dsize(), data))
+                        if (!io::uncompress_zlib(istream, section.dsize(), data))
                         {
                                 log_error() << "SVHN: failed to read compressed data!";
                                 return 0;

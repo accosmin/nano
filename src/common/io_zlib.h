@@ -10,6 +10,6 @@ namespace ncv
                 ///
                 /// \brief uncompress a stream of bytes (using zlib)
                 ///
-                bool zuncompress(std::istream& istream, std::size_t bytes, std::vector<unsigned char>& data);
+                bool uncompress_zlib(std::istream& istream, std::size_t bytes, std::vector<unsigned char>& data);
         }
 }

@@ -1,24 +1,24 @@
-#include "io_zlib.h"
-#include <zlib.h>
+#include "io_bzip.h"
+#include <bzlib.h>
 #include <fstream>
 
 namespace ncv
 {
-        bool io::uncompress_zlib(std::istream& istream, std::size_t bytes, std::vector<unsigned char>& data)
+        bool io::uncompress_bzip2(std::istream& istream, std::size_t bytes, std::vector<char>& data)
         {
                 // zlib decompression buffers
                 static const std::size_t CHUNK = 64 * 1024;
 
-                z_stream strm;
-                unsigned char in[CHUNK];
-                unsigned char out[CHUNK];
+                bz_stream strm;
+                char in[CHUNK];
+                char out[CHUNK];
 
-                strm.zalloc = Z_NULL;
-                strm.zfree = Z_NULL;
-                strm.opaque = Z_NULL;
+                strm.bzalloc = NULL;
+                strm.bzfree = NULL;
+                strm.opaque = NULL;
                 strm.avail_in = 0;
-                strm.next_in = Z_NULL;
-                if (inflateInit(&strm) != Z_OK)
+                strm.next_in = NULL;
+                if (BZ2_bzDecompressInit(&strm, 0, 0) != BZ_OK)
                 {
                         return false;
                 }
@@ -30,9 +30,9 @@ namespace ncv
                         const std::size_t to_read = num_bytes >= CHUNK ? CHUNK : num_bytes;
                         num_bytes -= to_read;
 
-                        if (!istream.read(reinterpret_cast<char*>(in), to_read))
+                        if (!istream.read(in, to_read))
                         {
-                                inflateEnd(&strm);
+                                BZ2_bzDecompressEnd(&strm);
                                 return false;
                         }
 
@@ -44,10 +44,10 @@ namespace ncv
                                 strm.avail_out = CHUNK;
                                 strm.next_out = out;
 
-                                const int ret = inflate(&strm, Z_NO_FLUSH);
-                                if (ret != Z_OK && ret != Z_STREAM_END)
+                                const int ret = BZ2_bzDecompress(&strm);
+                                if (ret != BZ_OK && ret != BZ_STREAM_END)
                                 {
-                                        inflateEnd(&strm);
+                                        BZ2_bzDecompressEnd(&strm);
                                         return false;
                                 }
 
@@ -57,7 +57,7 @@ namespace ncv
                         while (strm.avail_out == 0);
                 }
 
-                inflateEnd(&strm);
+                BZ2_bzDecompressEnd(&strm);
 
                 // OK
                 return num_bytes == 0;
