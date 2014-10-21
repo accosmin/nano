@@ -5,40 +5,36 @@ namespace ncv
 {
         bool io::load_binary(std::istream& in, size_t bytes, data_t& data)
         {
-                static const size_t chunk_size = 16 * 1024;
+                static const size_t chunk_size = 64 * 1024;
                 char chunk[chunk_size];
 
-                while (bytes > 0)
+                while (bytes > 0 && in)
                 {
                         const std::streamsize to_read = bytes >= chunk_size ? chunk_size : bytes;
                         bytes -= to_read;
 
-                        const std::streamsize count = in.readsome(chunk, to_read);
-                        if (count > 0)
+                        if (!in.read(chunk, to_read))
+                        {
+                                return false;
+                        }
+
+                        const std::streamsize count = in.gcount();
+                        if (count == to_read)
                         {
                                 data.insert(data.end(), chunk, chunk + count);
                         }
                         else
                         {
-                                return false;
+                                break;
                         }
                 }
 
-                return true;
+                return (bytes == std::string::npos) ? true : (bytes == data.size());
         }
 
         bool io::load_binary(std::istream& in, data_t& data)
         {
-                static const std::streamsize chunk_size = 16 * 1024;
-                char chunk[chunk_size];
-
-                std::streamsize count;
-                while ((count = in.readsome(chunk, chunk_size)) > 0)
-                {
-                        data.insert(data.end(), chunk, chunk + count);
-                }
-
-                return true;
+                return io::load_binary(in, std::string::npos, data);
         }
 
         bool io::load_binary(const std::string& path, data_t& data)

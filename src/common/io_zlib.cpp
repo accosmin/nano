@@ -7,11 +7,11 @@ namespace ncv
         bool io::uncompress_zlib(std::istream& istream, std::size_t bytes, data_t& data)
         {
                 // zlib decompression buffers
-                static const std::size_t CHUNK = 64 * 1024;
+                static const std::streamsize chunk_size = 64 * 1024;
 
                 z_stream strm;
-                unsigned char in[CHUNK];
-                unsigned char out[CHUNK];
+                unsigned char in[chunk_size];
+                unsigned char out[chunk_size];
 
                 strm.zalloc = Z_NULL;
                 strm.zfree = Z_NULL;
@@ -24,11 +24,10 @@ namespace ncv
                 }
 
                 // decompress the data chunk
-                std::size_t num_bytes = bytes;
-                for ( ; num_bytes > 0; )
+                while (bytes > 0 && istream)
                 {
-                        const std::size_t to_read = num_bytes >= CHUNK ? CHUNK : num_bytes;
-                        num_bytes -= to_read;
+                        const std::streamsize to_read = bytes >= chunk_size ? chunk_size : bytes;
+                        bytes -= to_read;
 
                         if (!istream.read(reinterpret_cast<char*>(in), to_read))
                         {
@@ -36,12 +35,12 @@ namespace ncv
                                 return false;
                         }
 
-                        strm.avail_in = to_read;
+                        strm.avail_in = istream.gcount();
                         strm.next_in = in;
 
                         do
                         {
-                                strm.avail_out = CHUNK;
+                                strm.avail_out = chunk_size;
                                 strm.next_out = out;
 
                                 const int ret = inflate(&strm, Z_NO_FLUSH);
@@ -51,7 +50,7 @@ namespace ncv
                                         return false;
                                 }
 
-                                const std::size_t have = CHUNK - strm.avail_out;
+                                const std::streamsize have = chunk_size - strm.avail_out;
                                 data.insert(data.end(), out, out + have);
                         }
                         while (strm.avail_out == 0);
@@ -60,6 +59,19 @@ namespace ncv
                 inflateEnd(&strm);
 
                 // OK
-                return num_bytes == 0;
+                return (bytes == std::string::npos) ? true : (bytes == 0);
+        }
+
+        bool io::uncompress_zlib(std::istream& istream, data_t& data)
+        {
+                return uncompress_zlib(istream, std::string::npos, data);
+        }
+
+        bool io::uncompress_zlib(const std::string& path, data_t& data)
+        {
+                std::ifstream in(path.c_str(), std::ios_base::binary | std::ios_base::in);
+
+                return  in.is_open() &&
+                        uncompress_zlib(in, data);
         }
 }

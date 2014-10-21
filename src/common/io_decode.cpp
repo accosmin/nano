@@ -284,10 +284,32 @@ namespace ncv
                         return io_untar(in, type, log_header, callback);
 
                 case archive_type::gz:
-                        return io::uncompress_zlib(in, callback);
+                        {
+                                data_t data;
+                                if (!io::uncompress_zlib(in, data))
+                                {
+                                        return false;
+                                }
+                                else
+                                {
+                                        callback(path, data);
+                                        return true;
+                                }
+                        }
 
                 case archive_type::bz2:
-                        return io::uncompress_bzip2(in, callback);
+                        {
+                                data_t data;
+                                if (!io::uncompress_bzip2(in, data))
+                                {
+                                        return false;
+                                }
+                                else
+                                {
+                                        callback(path, data);
+                                        return true;
+                                }
+                        }
 
                 case archive_type::unknown:
                 default:
