@@ -11,6 +11,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 option(NANOCV_HAVE_CUDA         "Build nanocv with CUDA as dependency"          OFF)
 option(NANOCV_HAVE_OPENCL       "Build nanocv with OpenCL as dependency"        OFF)
 
+# Zlib & BZip2
+find_package(ZLIB REQUIRED)
+
+include_directories(${ZLIB_INCLUDE_DIR})
+
 # Boost
 include(FindBoost)
 set(Boost_USE_MULTITHREADED ON)
@@ -128,6 +133,7 @@ set(libs "${libs};${Boost_IOSTREAMS_LIBRARY_RELEASE}")
 set(libs "${libs};${JPEG_LIBRARIES}")
 set(libs "${libs};${TIFF_LIBRARIES}")
 set(libs "${libs};${PNG_LIBRARIES}")
+set(libs "${libs};${ZLIB_LIBRARIES}")
 if(NANOCV_HAVE_OPENCL)
         set(libs "${libs};${OPENCL_LIBRARIES}")
 endif()
