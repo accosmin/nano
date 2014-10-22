@@ -16,7 +16,12 @@ find_package(ZLIB REQUIRED)
 find_package(BZip2 REQUIRED)
 
 include_directories(${ZLIB_INCLUDE_DIR})
-include_directories(${BZIP_INCLUDE_DIRS})
+include_directories(${BZIP2_INCLUDE_DIR})
+
+# LibArchive
+find_package(LibArchive REQUIRED)
+
+include_directories(${LibArchive_INCLUDE_DIRS})
 
 # Boost
 include(FindBoost)
@@ -136,7 +141,8 @@ set(libs "${libs};${JPEG_LIBRARIES}")
 set(libs "${libs};${TIFF_LIBRARIES}")
 set(libs "${libs};${PNG_LIBRARIES}")
 set(libs "${libs};${ZLIB_LIBRARIES}")
-set(libs "${libs};${BZIP_LIBRARIES}")
+set(libs "${libs};${BZIP2_LIBRARIES}")
+set(libs "${libs};${LibArchive_LIBRARIES}")
 if(NANOCV_HAVE_OPENCL)
         set(libs "${libs};${OPENCL_LIBRARIES}")
 endif()
