@@ -1,7 +1,7 @@
 #include "task_svhn.h"
 #include "common/math.hpp"
 #include "common/logger.h"
-#include "common/io_zlib.h"
+#include "common/io_gzip.h"
 #include "common/io_mat5.h"
 #include "loss.h"
 #include "color.h"
@@ -82,7 +82,7 @@ namespace ncv
                         log_info() << "SVHN: uncompressing " << section.dsize() << " bytes ...";
 
                         std::vector<char>& data = (isection == 0) ? image_data : label_data;
-                        if (!io::uncompress_zlib(istream, section.dsize(), data))
+                        if (!io::uncompress_gzip(istream, section.dsize(), data))
                         {
                                 log_error() << "SVHN: failed to read compressed data!";
                                 return 0;

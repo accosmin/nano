@@ -1,10 +1,17 @@
 #include "io_bzip.h"
+#include "io_stream.h"
 #include <bzlib.h>
 #include <fstream>
 
 namespace ncv
 {
-        bool io::uncompress_bzip2(std::istream& istream, std::size_t bytes, data_t& data)
+        using io::size_t;
+
+        template
+        <
+                typename tstream
+        >
+        bool io_uncompress_bzip2(tstream& istream, size_t num_bytes, io::data_t& data)
         {
                 // zlib decompression buffers
                 static const std::streamsize chunk_size = 64 * 1024;
@@ -24,10 +31,10 @@ namespace ncv
                 }
 
                 // decompress the data chunk
-                while (bytes > 0 && istream)
+                while (num_bytes > 0 && istream)
                 {
-                        const std::streamsize to_read = bytes >= chunk_size ? chunk_size : bytes;
-                        bytes -= to_read;
+                        const std::streamsize to_read = (num_bytes >= chunk_size) ? chunk_size : num_bytes;
+                        num_bytes -= to_read;
 
                         if (!istream.read(in, to_read))
                         {
@@ -50,7 +57,7 @@ namespace ncv
                                         return false;
                                 }
 
-                                const std::size_t have = chunk_size - strm.avail_out;
+                                const size_t have = chunk_size - strm.avail_out;
                                 data.insert(data.end(), out, out + have);
                         }
                         while (strm.avail_out == 0);
@@ -59,7 +66,12 @@ namespace ncv
                 BZ2_bzDecompressEnd(&strm);
 
                 // OK
-                return (bytes == std::string::npos) ? true : (bytes == 0);
+                return (num_bytes == std::string::npos) ? true : (num_bytes == 0);
+        }
+
+        bool io::uncompress_bzip2(std::istream& istream, size_t num_bytes, data_t& data)
+        {
+                return io_uncompress_bzip2(istream, num_bytes, data);
         }
 
         bool io::uncompress_bzip2(std::istream& istream, data_t& data)
@@ -70,8 +82,12 @@ namespace ncv
         bool io::uncompress_bzip2(const std::string& path, data_t& data)
         {
                 std::ifstream in(path.c_str(), std::ios_base::binary | std::ios_base::in);
+                return in.is_open() && uncompress_bzip2(in, data);
+        }
 
-                return  in.is_open() &&
-                        uncompress_bzip2(in, data);
+        bool io::uncompress_bzip2(const data_t& istream, data_t& data)
+        {
+                stream_t stream(istream);
+                return io_uncompress_bzip2(stream, stream.size(), data);
         }
 }

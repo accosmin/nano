@@ -1,8 +1,36 @@
-#include "io.h"
+#include "io_base.h"
 #include <fstream>
 
 namespace ncv
 {
+        bool io::load_skip(const data_t& data, size_t bytes, size_t& pos)
+        {
+                if (pos + bytes <= data.size())
+                {
+                        pos += bytes;
+                        return true;
+                }
+                else
+                {
+                        return false;
+                }
+        }
+
+        bool io::load_data(const data_t& data, size_t bytes, data_t& ldata, size_t& pos)
+        {
+                if (pos + bytes <= data.size())
+                {
+                        ldata.resize(bytes);
+                        std::copy(data.data() + pos, data.data() + (pos + bytes), ldata.begin());
+                        pos += bytes;
+                        return true;
+                }
+                else
+                {
+                        return false;
+                }
+        }
+
         bool io::load_binary(std::istream& in, size_t bytes, data_t& data)
         {
                 static const size_t chunk_size = 64 * 1024;

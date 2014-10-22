@@ -1,11 +1,22 @@
-#include "io_zlib.h"
+#include "io_gzip.h"
+#include "io_stream.h"
 #include <zlib.h>
 #include <fstream>
 
+#include <iostream>
+
 namespace ncv
 {
-        bool io::uncompress_zlib(std::istream& istream, std::size_t bytes, data_t& data)
+        using io::size_t;
+
+        template
+        <
+                typename tstream
+        >
+        bool io_uncompress_gzip(tstream& istream, size_t num_bytes, io::data_t& data)
         {
+                std::cout << "io_uncompress_gzip, tellg = " << istream.tellg() << "\n";
+
                 // zlib decompression buffers
                 static const std::streamsize chunk_size = 64 * 1024;
 
@@ -24,10 +35,12 @@ namespace ncv
                 }
 
                 // decompress the data chunk
-                while (bytes > 0 && istream)
+                while (num_bytes > 0 && istream)
                 {
-                        const std::streamsize to_read = bytes >= chunk_size ? chunk_size : bytes;
-                        bytes -= to_read;
+                        const std::streamsize to_read = (num_bytes >= chunk_size) ? chunk_size : num_bytes;
+                        num_bytes -= to_read;
+
+                        std::cout << "num_bytes = " << num_bytes << ", to_read = " << to_read << "\n";
 
                         if (!istream.read(reinterpret_cast<char*>(in), to_read))
                         {
@@ -38,6 +51,8 @@ namespace ncv
                         strm.avail_in = istream.gcount();
                         strm.next_in = in;
 
+                        std::cout << "num_bytes = " << num_bytes << ", to_read = " << to_read << ", read = " << istream.gcount() << "\n";
+
                         do
                         {
                                 strm.avail_out = chunk_size;
@@ -46,6 +61,7 @@ namespace ncv
                                 const int ret = inflate(&strm, Z_NO_FLUSH);
                                 if (ret != Z_OK && ret != Z_STREAM_END)
                                 {
+                                        std::cout << "ret = " << ret << std::endl;
                                         inflateEnd(&strm);
                                         return false;
                                 }
@@ -58,20 +74,31 @@ namespace ncv
 
                 inflateEnd(&strm);
 
+                std::cout << "num_bytes = " << num_bytes << ", data.size() = " << data.size() << "\n";
+
                 // OK
-                return (bytes == std::string::npos) ? true : (bytes == 0);
+                return (num_bytes == std::string::npos) ? true : (num_bytes == 0);
         }
 
-        bool io::uncompress_zlib(std::istream& istream, data_t& data)
+        bool io::uncompress_gzip(std::istream& istream, size_t num_bytes, data_t& data)
         {
-                return uncompress_zlib(istream, std::string::npos, data);
+                return io_uncompress_gzip(istream, num_bytes, data);
         }
 
-        bool io::uncompress_zlib(const std::string& path, data_t& data)
+        bool io::uncompress_gzip(std::istream& istream, data_t& data)
         {
-                std::ifstream in(path.c_str(), std::ios_base::binary | std::ios_base::in);
+                return uncompress_gzip(istream, std::string::npos, data);
+        }
 
-                return  in.is_open() &&
-                        uncompress_zlib(in, data);
+        bool io::uncompress_gzip(const std::string& path, data_t& data)
+        {
+                std::ifstream istream(path.c_str(), std::ios_base::binary | std::ios_base::in);
+                return istream.is_open() && uncompress_gzip(istream, data);
+        }
+
+        bool io::uncompress_gzip(const data_t& istream, data_t& data)
+        {
+                stream_t stream(istream);
+                return io_uncompress_gzip(stream, stream.size(), data);
         }
 }

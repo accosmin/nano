@@ -23,7 +23,7 @@ namespace ncv
                 bool load_struct(const data_t& data, tstruct& pod, size_t& pos)
                 {
                         const size_t sizeof_pod = sizeof(pod);
-                        if (pos + sizeof_pod < data.size())
+                        if (pos + sizeof_pod <= data.size())
                         {
                                 memcpy((void*)&pod, (const void*)(data.data() + pos), sizeof_pod);
                                 pos += sizeof_pod;
@@ -34,6 +34,16 @@ namespace ncv
                                 return false;
                         }
                 }
+
+                ///
+                /// \brief skip given number of bytes
+                ///
+                bool load_skip(const data_t& data, size_t bytes, size_t& pos);
+
+                ///
+                /// \brief load buffer given number of bytes
+                ///
+                bool load_data(const data_t& data, size_t bytes, data_t& ldata, size_t& pos);
 
                 ///
                 /// \brief load binary file in memory

@@ -1,5 +1,5 @@
 #include "nanocv.h"
-#include "common/io_decode.h"
+#include "common/io_arch.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])

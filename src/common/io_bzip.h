@@ -1,6 +1,6 @@
 #pragma once
 
-#include "io.h"
+#include "io_base.h"
 
 namespace ncv
 {
@@ -9,8 +9,10 @@ namespace ncv
                 ///
                 /// \brief uncompress a stream of bytes (using bzip2)
                 ///
-                bool uncompress_bzip2(std::istream& istream, std::size_t bytes, data_t& data);
+                bool uncompress_bzip2(std::istream& istream, size_t num_bytes, data_t& data);
                 bool uncompress_bzip2(std::istream& istream, data_t& data);
                 bool uncompress_bzip2(const std::string& path, data_t& data);
+
+                bool uncompress_bzip2(const data_t& istream, data_t& data);
         }
 }
