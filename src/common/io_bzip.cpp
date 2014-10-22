@@ -42,12 +42,12 @@ namespace ncv
                                 return false;
                         }
 
-                        strm.avail_in = istream.gcount();
+                        strm.avail_in = static_cast<unsigned int>(istream.gcount());
                         strm.next_in = in;
 
                         do
                         {
-                                strm.avail_out = chunk_size;
+                                strm.avail_out = static_cast<unsigned int>(chunk_size);
                                 strm.next_out = out;
 
                                 const int ret = BZ2_bzDecompress(&strm);

@@ -24,12 +24,15 @@ namespace ncv
                 unsigned char in[chunk_size];
                 unsigned char out[chunk_size];
 
+                static const int windowBits = 15;
+                static const int ENABLE_ZLIB_GZIP = 32;
+
                 strm.zalloc = Z_NULL;
                 strm.zfree = Z_NULL;
                 strm.opaque = Z_NULL;
                 strm.avail_in = 0;
                 strm.next_in = Z_NULL;
-                if (inflateInit(&strm) != Z_OK)
+                if (inflateInit2(&strm, windowBits | ENABLE_ZLIB_GZIP) != Z_OK)
                 {
                         return false;
                 }
@@ -48,17 +51,20 @@ namespace ncv
                                 return false;
                         }
 
-                        strm.avail_in = istream.gcount();
+                        strm.avail_in = static_cast<uInt>(istream.gcount());
                         strm.next_in = in;
 
-                        std::cout << "num_bytes = " << num_bytes << ", to_read = " << to_read << ", read = " << istream.gcount() << "\n";
+                        std::cout << "num_bytes = " << num_bytes
+                                  << ", to_read = " << to_read
+                                  << ", read = " << istream.gcount() << "\n";
 
                         do
                         {
-                                strm.avail_out = chunk_size;
+                                strm.avail_out = static_cast<uInt>(chunk_size);
                                 strm.next_out = out;
 
                                 const int ret = inflate(&strm, Z_NO_FLUSH);
+                                std::cout << "strm: ret = " << ret << ", avail_out = " << strm.avail_out << std::endl;
                                 if (ret != Z_OK && ret != Z_STREAM_END)
                                 {
                                         std::cout << "ret = " << ret << std::endl;
