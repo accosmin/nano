@@ -1,3 +1,7 @@
+- may actually use libarchive instead of zlib & bzip2 directly:
+	- https://github.com/libarchive/libarchive/wiki/Examples
+	- it supports tar archives aswell
+
 - use zlib & bzip2 libraries to decompress tar,gz,bz2 instead of boost::iostreams:
 	- io::load_binary(filepath, vector<char>), io::save_binary(filepath, vector<char>)
 	- io::decode_gz(istream, size, vector<char>)

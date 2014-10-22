@@ -15,8 +15,6 @@ namespace ncv
         >
         bool io_uncompress_gzip(tstream& istream, size_t num_bytes, io::data_t& data)
         {
-                std::cout << "io_uncompress_gzip, tellg = " << istream.tellg() << "\n";
-
                 // zlib decompression buffers
                 static const std::streamsize chunk_size = 64 * 1024;
 
@@ -47,6 +45,7 @@ namespace ncv
 
                         if (!istream.read(reinterpret_cast<char*>(in), to_read))
                         {
+                                std::cout << "eof = " << ", data.size() = " << data.size() << std::endl;
                                 inflateEnd(&strm);
                                 return false;
                         }
@@ -54,9 +53,7 @@ namespace ncv
                         strm.avail_in = static_cast<uInt>(istream.gcount());
                         strm.next_in = in;
 
-                        std::cout << "num_bytes = " << num_bytes
-                                  << ", to_read = " << to_read
-                                  << ", read = " << istream.gcount() << "\n";
+                        std::cout << "num_bytes = " << num_bytes << ", to_read = " << to_read << ", read = " << istream.gcount() << "\n";
 
                         do
                         {
@@ -64,7 +61,6 @@ namespace ncv
                                 strm.next_out = out;
 
                                 const int ret = inflate(&strm, Z_NO_FLUSH);
-                                std::cout << "strm: ret = " << ret << ", avail_out = " << strm.avail_out << std::endl;
                                 if (ret != Z_OK && ret != Z_STREAM_END)
                                 {
                                         std::cout << "ret = " << ret << std::endl;
