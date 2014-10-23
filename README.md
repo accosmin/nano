@@ -32,8 +32,7 @@ and **stochastic**.
 
 ### Compilation
 
-To compile (and install) use a C++11 compiler, CMake, Boost, Eigen3, libTIFF, libPNG and libJPEG. The library is tested so far only on ArchLinux x64 using gcc, 
-but the code is written to be cross-platform.
+To compile (and install) use a C++11 compiler, CMake, Boost, Eigen3, LibArchive and DevIL. The library is tested so far only on ArchLinux x64 using gcc, but the code is written to be cross-platform.
 
 The easiest way of compiling is to run the `build_release.sh` bash script. The test programs and utilities will be found in the `build-release` directory.
 
