@@ -1,6 +1,5 @@
 #include "task_mnist.h"
 #include "common/logger.h"
-#include "common/math.hpp"
 #include "common/cast.hpp"
 #include "common/io_arch.h"
 #include "common/io_stream.h"

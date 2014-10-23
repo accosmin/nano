@@ -1,9 +1,10 @@
 #include "task_cifar10.h"
 #include "common/logger.h"
-#include "common/math.hpp"
 #include "common/cast.hpp"
+#include "common/io_arch.h"
+#include "common/io_stream.h"
 #include "loss.h"
-#include <fstream>
+#include <boost/algorithm/string.hpp>
 
 namespace ncv
 {
@@ -28,51 +29,61 @@ namespace ncv
 
         bool cifar10_task_t::load(const string_t& dir)
         {
-                const string_t train_bfile1 = dir + "/data_batch_1.bin";
-                const string_t train_bfile2 = dir + "/data_batch_2.bin";
-                const string_t train_bfile3 = dir + "/data_batch_3.bin";
-                const string_t train_bfile4 = dir + "/data_batch_4.bin";
-                const string_t train_bfile5 = dir + "/data_batch_5.bin";
+                const string_t bfile = dir + "/cifar-10-binary.tar.gz";
+
+                const string_t train_bfile1 = "data_batch_1.bin";
+                const string_t train_bfile2 = "data_batch_2.bin";
+                const string_t train_bfile3 = "data_batch_3.bin";
+                const string_t train_bfile4 = "data_batch_4.bin";
+                const string_t train_bfile5 = "data_batch_5.bin";
                 const size_t n_train_samples = 50000;
 
-                const string_t test_bfile = dir + "/test_batch.bin";
+                const string_t test_bfile = "test_batch.bin";
                 const size_t n_test_samples = 10000;
 
                 clear_memory(n_train_samples + n_test_samples);
 
-                return  load(train_bfile1, protocol::train) +
-                        load(train_bfile2, protocol::train) +
-                        load(train_bfile3, protocol::train) +
-                        load(train_bfile4, protocol::train) +
-                        load(train_bfile5, protocol::train) == n_train_samples &&
-                        load(test_bfile, protocol::test) == n_test_samples;
-        }
+                const auto op = [&] (const string_t& filename, const io::data_t& data)
+                {
+                        if (    boost::algorithm::iends_with(filename, train_bfile1) ||
+                                boost::algorithm::iends_with(filename, train_bfile2) ||
+                                boost::algorithm::iends_with(filename, train_bfile3) ||
+                                boost::algorithm::iends_with(filename, train_bfile4) ||
+                                boost::algorithm::iends_with(filename, train_bfile5))
+                        {
+                                log_info() << "CIFAR-10: loading file <" << filename << "> ...";
 
-        size_t cifar10_task_t::load(const string_t& bfile, protocol p)
-        {
+                                load(data, protocol::train);
+                        }
+
+                        else if (boost::algorithm::iends_with(filename, test_bfile))
+                        {
+                                log_info() << "CIFAR-10: loading file <" << filename << "> ...";
+
+                                load(data, protocol::test);
+                        }
+                };
+
                 log_info() << "CIFAR-10: loading file <" << bfile << "> ...";
 
-                std::ifstream istream(bfile.c_str(), std::ios::in | std::ios::binary);
-                if (!istream.is_open())
-                {
-                        log_error() << "CIFAR-10: failed to open file!";
-                        return 0;
-                }
+                return  io::decode(bfile, "CIFAR-10: ", op) &&
+                        m_samples.size() == n_train_samples + n_test_samples &&
+                        m_images.size() == n_train_samples + n_test_samples;
+        }
 
+        size_t cifar10_task_t::load(const io::data_t& data, protocol p)
+        {
                 std::vector<char> vbuffer(n_rows() * n_cols() * 3);
                 char* buffer = vbuffer.data();
                 char label[1];
 
-                // load images and annotations
+                io::stream_t stream(data);
+
                 size_t cnt = 0;
-                while ( istream.read(label, 1) &&
-                        istream.read(buffer, vbuffer.size()))
+                while ( stream.read(label, 1) &&
+                        stream.read(buffer, vbuffer.size()))
                 {
                         const size_t ilabel = math::cast<size_t>(label[0]);
-                        if (ilabel >= n_outputs())
-                        {
-                                continue;
-                        }
 
                         sample_t sample(m_images.size(), sample_region(0, 0));
                         sample.m_label = tlabels[ilabel];
