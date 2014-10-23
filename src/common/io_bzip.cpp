@@ -79,12 +79,6 @@ namespace ncv
                 return uncompress_bzip2(istream, std::string::npos, data);
         }
 
-        bool io::uncompress_bzip2(const std::string& path, data_t& data)
-        {
-                std::ifstream in(path.c_str(), std::ios_base::binary | std::ios_base::in);
-                return in.is_open() && uncompress_bzip2(in, data);
-        }
-
         bool io::uncompress_bzip2(const data_t& istream, data_t& data)
         {
                 stream_t stream(istream);
