@@ -73,27 +73,15 @@ namespace ncv
                         return true;
                 }
 
-                bool decode(const io::data_t& mem_data, const std::string& log_header, const io::data_callback_t& callback)
+                bool decode(const io::data_t& mem_data, const std::string& log_header, const io::data_callback_t& callback);
+
+                bool decode(archive* ar, const std::string& log_header, const io::data_callback_t& callback)
                 {
-                        archive* ar = archive_read_new();
-
-                        archive_read_support_filter_all(ar);
-                        archive_read_support_format_all(ar);
-                        archive_read_support_format_raw(ar);
-
-                        int r;
-                        if ((r = archive_read_open_memory(ar, (void*)mem_data.data(), mem_data.size())))
-                        {
-                                log_error() << log_header << "failed to open archive!";
-                                log_error() << log_header << "error <" << archive_error_string(ar) << ">!";
-                                return false;
-                        }
-
                         bool ok = true;
                         while (ok)
                         {
                                 archive_entry* entry;
-                                r = archive_read_next_header(ar, &entry);
+                                const int r = archive_read_next_header(ar, &entry);
 
                                 if (r == ARCHIVE_EOF)
                                         break;
@@ -143,6 +131,25 @@ namespace ncv
                         // OK
                         return ok;
                 }
+
+                bool decode(const io::data_t& mem_data, const std::string& log_header, const io::data_callback_t& callback)
+                {
+                        archive* ar = archive_read_new();
+
+                        archive_read_support_filter_all(ar);
+                        archive_read_support_format_all(ar);
+                        archive_read_support_format_raw(ar);
+
+                        int r;
+                        if ((r = archive_read_open_memory(ar, (void*)mem_data.data(), mem_data.size())))
+                        {
+                                log_error() << log_header << "failed to open archive!";
+                                log_error() << log_header << "error <" << archive_error_string(ar) << ">!";
+                                return false;
+                        }
+
+                        return decode(ar, log_header, callback);
+                }
         }
 
         bool io::decode(const std::string& path, const std::string& log_header, const data_callback_t& callback)
@@ -161,58 +168,6 @@ namespace ncv
                         return false;
                 }
 
-                bool ok = true;
-                while (ok)
-                {
-                        archive_entry* entry;
-                        r = archive_read_next_header(ar, &entry);
-
-                        if (r == ARCHIVE_EOF)
-                                break;
-                        if (r != ARCHIVE_OK)
-                        {
-                                log_error() << log_header << "failed to read header!";
-                                log_error() << log_header << "error <" << archive_error_string(ar) << ">!";
-                                ok = false;
-                                break;
-                        }
-
-                        const std::string filename = archive_entry_pathname(entry);
-                        const detail::archive_type filetype = detail::decode_archive_type(filename);
-                        const int64_t filesize = archive_entry_size(entry);
-
-                        io::data_t data;
-                        if (!detail::copy(ar, data))
-                        {
-                                log_error() << log_header << "failed to read archive!";
-                                log_error() << log_header << "error <" << archive_error_string(ar) << ">!";
-                                ok = false;
-                                break;
-                        }
-
-                        log_info() << log_header << "filename = <" << filename
-                                   << ">, filesize = <" << data.size() << "/" << filesize << ">";
-
-                        switch (filetype)
-                        {
-                        case detail::archive_type::tar:
-                        case detail::archive_type::tar_gz:
-                        case detail::archive_type::tar_bz2:
-                        case detail::archive_type::gz:
-                        case detail::archive_type::bz2:
-                                ok = detail::decode(data, log_header, callback);
-                                break;
-
-                        default:
-                                callback(filename, data);
-                                break;
-                        }
-                }
-
-                archive_read_close(ar);
-                archive_read_free(ar);
-
-                // OK
-                return ok;
+                return detail::decode(ar, log_header, callback);
         }
 }
