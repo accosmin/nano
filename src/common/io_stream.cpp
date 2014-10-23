@@ -10,22 +10,27 @@ namespace ncv
         {
         }
 
-        bool io::stream_t::read(char* bytes, size_t max_num_bytes)
+        bool io::stream_t::read(char* bytes, size_t num_bytes)
         {
-                const size_t rem_bytes = size() - tellg();
-                const size_t num_bytes = (rem_bytes >= max_num_bytes) ? max_num_bytes : (rem_bytes - max_num_bytes);
+                const size_t rem_bytes = remg();
 
-                std::copy(m_data.data() + m_tellg, m_data.data() + (m_tellg + num_bytes), bytes);
+                if (rem_bytes >= num_bytes)
+                {
+                        std::copy(m_data.data() + m_tellg, m_data.data() + (m_tellg + num_bytes), bytes);
 
-                m_tellg += num_bytes;
-                m_gcount = num_bytes;
-
-                return num_bytes > 0;
+                        m_tellg += num_bytes;
+                        m_gcount = num_bytes;
+                        return true;
+                }
+                else
+                {
+                        return false;
+                }
         }
 
         bool io::stream_t::skip(size_t num_bytes)
         {
-                const size_t rem_bytes = size() - tellg();
+                const size_t rem_bytes = remg();
 
                 if (rem_bytes >= num_bytes)
                 {
@@ -46,7 +51,12 @@ namespace ncv
 
         size_t io::stream_t::tellg() const
         {
-                return m_tellg;
+                return m_tellg;        
+        }
+
+        size_t io::stream_t::remg() const
+        {
+                return (tellg() >= size()) ? 0 : (size() - tellg());
         }
 
         size_t io::stream_t::size() const

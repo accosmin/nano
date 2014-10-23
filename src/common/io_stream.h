@@ -51,6 +51,11 @@ namespace ncv
                         size_t tellg() const;
 
                         ///
+                        /// \brief number of bytes to end
+                        ///
+                        size_t remg() const;
+
+                        ///
                         /// \brief buffer size
                         ///
                         size_t size() const;
