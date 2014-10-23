@@ -1,9 +1,9 @@
 #include "task_cifar100.h"
 #include "common/logger.h"
-#include "common/math.hpp"
 #include "common/cast.hpp"
+#include "common/io_arch.h"
+#include "common/io_stream.h"
 #include "loss.h"
-#include <fstream>
 
 namespace ncv
 {
@@ -118,43 +118,53 @@ namespace ncv
 
         bool cifar100_task_t::load(const string_t& dir)
         {
-                const string_t train_bfile = dir + "/train.bin";
+                const string_t bfile = dir + "/cifar-100-binary.tar.gz";
+
+                const string_t train_bfile = "train.bin";
                 const size_t n_train_samples = 50000;
 
-                const string_t test_bfile = dir + "/test.bin";
+                const string_t test_bfile = "test.bin";
                 const size_t n_test_samples = 10000;
 
                 clear_memory(n_train_samples + n_test_samples);
 
-                return  load(train_bfile, protocol::train) == n_train_samples &&
-                        load(test_bfile, protocol::test) == n_test_samples;
-        }
-        
-        size_t cifar100_task_t::load(const string_t& bfile, protocol p)
-        {
+                const auto op = [&] (const string_t& filename, const io::data_t& data)
+                {
+                        if (boost::algorithm::iends_with(filename, train_bfile))
+                        {
+                                log_info() << "CIFAR-100: loading file <" << filename << "> ...";
+
+                                load(data, protocol::train);
+                        }
+
+                        else if (boost::algorithm::iends_with(filename, test_bfile))
+                        {
+                                log_info() << "CIFAR-100: loading file <" << filename << "> ...";
+
+                                load(data, protocol::test);
+                        }
+                };
+
                 log_info() << "CIFAR-100: loading file <" << bfile << "> ...";
 
-                std::ifstream istream(bfile.c_str(), std::ios::in | std::ios::binary);
-                if (!istream.is_open())
-                {
-                        log_error() << "CIFAR-100: failed to open file!";
-                        return 0;
-                }
-
+                return  io::decode(bfile, "CIFAR-100: ", op) &&
+                        m_samples.size() == n_train_samples + n_test_samples &&
+                        m_images.size() == n_train_samples + n_test_samples;
+        }
+        
+        size_t cifar100_task_t::load(const io::data_t& data, protocol p)
+        {
                 std::vector<char> vbuffer(n_rows() * n_cols() * 3);
                 char* buffer = vbuffer.data();
                 char label[2];
 
-                // load images and annotations
+                io::stream_t stream(data);
+
                 size_t cnt = 0;
-                while ( istream.read(label, 2) &&       // coarse & fine labels!
-                        istream.read(buffer, vbuffer.size()))
+                while ( stream.read(label, 2) &&       // coarse & fine labels!
+                        stream.read(buffer, vbuffer.size()))
                 {
                         const size_t ilabel = math::cast<size_t>(label[1]);
-                        if (ilabel >= n_outputs())
-                        {
-                                continue;
-                        }
 
                         sample_t sample(m_images.size(), sample_region(0, 0));
                         sample.m_label = tlabels[ilabel];
