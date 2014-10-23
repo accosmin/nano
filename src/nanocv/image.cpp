@@ -72,21 +72,36 @@ namespace ncv
                 switch (mode)
                 {
                 case color_mode::luma:
-                        ret = ilTexImage(cols, rows, 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, (void*)luma.data());
+                        {
+                                luma_matrix_t temp(rows, cols);
+                                for (int r = 0; r < rows; r ++)
+                                {
+                                        for (int c = 0; c < cols; c ++)
+                                        {
+                                                const luma_t val = luma(rows - 1 - r, c);
+
+                                                temp(r, c) = val;
+                                        }
+                                }
+                                ret = ilTexImage(cols, rows, 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, (void*)temp.data());
+                        }
                         break;
 
                 case color_mode::rgba:
                         {
                                 rgba_matrix_t temp(rows, cols);
-                                for (auto i = 0; i < temp.size(); i ++)
+                                for (int r = 0; r < rows; r ++)
                                 {
-                                        const rgba_t val = rgba(i);
-                                        const rgba_t cr = color::make_red(val);
-                                        const rgba_t cg = color::make_green(val);
-                                        const rgba_t cb = color::make_blue(val);
-                                        const rgba_t ca = color::make_alpha(val);
+                                        for (int c = 0; c < cols; c ++)
+                                        {
+                                                const rgba_t val = rgba(rows - 1 - r, c);
+                                                const rgba_t cr = color::make_red(val);
+                                                const rgba_t cg = color::make_green(val);
+                                                const rgba_t cb = color::make_blue(val);
+                                                const rgba_t ca = color::make_alpha(val);
 
-                                        temp(i) = color::make_rgba(ca, cb, cg, cr);
+                                                temp(r, c) = color::make_rgba(ca, cb, cg, cr);
+                                        }
                                 }
                                 ret = ilTexImage(cols, rows, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, (void*)temp.data());
                         }
