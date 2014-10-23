@@ -20,19 +20,17 @@ include_directories(${BZIP2_INCLUDE_DIR})
 
 # LibArchive
 find_package(LibArchive REQUIRED)
-
 include_directories(${LibArchive_INCLUDE_DIRS})
 
 # Boost
 include(FindBoost)
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost COMPONENTS serialization program_options filesystem system iostreams)
+find_package(Boost COMPONENTS serialization program_options filesystem system)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
-# Image formats
-find_package(PNG REQUIRED)
-find_package(JPEG REQUIRED)
-find_package(TIFF REQUIRED)
+# DevIL
+find_package(DevIL REQUIRED)
+include_directories(${IL_INCLUDE_DIR})
 
 # OpenCL
 if(NANOCV_HAVE_OPENCL)
@@ -137,12 +135,10 @@ set(libs "${libs};${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_SYSTEM_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_FILESYSTEM_LIBRARY_RELEASE}")
 set(libs "${libs};${Boost_IOSTREAMS_LIBRARY_RELEASE}")
-set(libs "${libs};${JPEG_LIBRARIES}")
-set(libs "${libs};${TIFF_LIBRARIES}")
-set(libs "${libs};${PNG_LIBRARIES}")
 set(libs "${libs};${ZLIB_LIBRARIES}")
 set(libs "${libs};${BZIP2_LIBRARIES}")
 set(libs "${libs};${LibArchive_LIBRARIES}")
+set(libs "${libs};${IL_LIBRARIES}")
 if(NANOCV_HAVE_OPENCL)
         set(libs "${libs};${OPENCL_LIBRARIES}")
 endif()

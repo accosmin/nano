@@ -12,6 +12,12 @@
 
 namespace ncv
 {
+        // use Magick++ (cmake support) instead of GIL
+        //      supports more formats, can read from memory buffers
+
+        // or DevIL (cmake support):
+        //      https://github.com/DentonW/DevIL/tree/master/DevIL-docs
+
         enum class imagetype : int
         {
                 jpeg,
