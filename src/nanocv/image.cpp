@@ -1,173 +1,59 @@
 #include "image.h"
 #include "common/bilinear.hpp"
 #include "tensor/transform.hpp"
-#include <fstream>
-
-#define png_infopp_NULL (png_infopp)NULL
-#define int_p_NULL (int*)NULL
-
-#include <boost/gil/extension/io/jpeg_io.hpp>
-#include <boost/gil/extension/io/tiff_io.hpp>
-#include <boost/gil/extension/io/png_io.hpp>
+#include <IL/il.h>
 
 namespace ncv
 {
-        // use Magick++ (cmake support) instead of GIL
-        //      supports more formats, can read from memory buffers
-
-        // or DevIL (cmake support):
-        //      https://github.com/DentonW/DevIL/tree/master/DevIL-docs
-
-        enum class imagetype : int
+        static bool load_image(const string_t& path, color_mode mode, rgba_matrix_t& rgba, luma_matrix_t& luma)
         {
-                jpeg,
-                png,
-                tif,
-                pgm,
-                unknown
-        };
+                ilInit();
 
-        static imagetype decode_image_type(const string_t& path)
-        {
-                if (text::iends_with(path, ".jpg") || text::iends_with(path, ".jpeg"))
-                {
-                        return imagetype::jpeg;
-                }
+                const ILuint id = ilGenImage();
+                ilBindImage(id);
 
-                else if (text::iends_with(path, ".png"))
-                {
-                        return imagetype::png;
-                }
+                bool ret = false;
 
-                else if (text::iends_with(path, ".tif") || text::iends_with(path, ".tiff"))
+                if (    ilLoadImage((const ILstring)path.c_str()) &&
+                        ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
                 {
-                        return imagetype::tif;
-                }
+                        const ILint cols = ilGetInteger(IL_IMAGE_WIDTH);
+                        const ILint rows = ilGetInteger(IL_IMAGE_HEIGHT);
+                        const ILubyte* data = ilGetData();
 
-                else if (text::iends_with(path, ".pgm"))
-                {
-                        return imagetype::pgm;
-                }
-
-                else
-                {
-                        return imagetype::unknown;
-                }
-        }
-
-        static bool load_image(const string_t& path,
-                color_mode mode, rgba_matrix_t& rgba, luma_matrix_t& luma)
-        {
-                const imagetype itype = decode_image_type(path);
-                switch (itype)
-                {
-                case imagetype::png:    // boost::gil decoding
-                case imagetype::jpeg:
-                case imagetype::tif:
+                        switch (mode)
                         {
-                                boost::gil::argb8_image_t image;
-
-                                if (itype == imagetype::png)
+                        case color_mode::luma:
+                                luma.resize(rows, cols);
+                                for (int r = 0; r < rows; r ++)
                                 {
-                                        boost::gil::png_read_and_convert_image(path, image);
-                                }
-                                else if (itype == imagetype::jpeg)
-                                {
-                                        boost::gil::jpeg_read_and_convert_image(path, image);
-                                }
-                                else
-                                {
-                                        boost::gil::tiff_read_and_convert_image(path, image);
-                                }
-
-                                const int rows = static_cast<int>(image.height());
-                                const int cols = static_cast<int>(image.width());
-
-                                const boost::gil::argb8_image_t::const_view_t view = boost::gil::const_view(image);
-                                switch (mode)
-                                {
-                                case color_mode::luma:
-                                        luma.resize(rows, cols);
-                                        for (int r = 0; r < rows; r ++)
+                                        for (int c = 0; c < cols; c ++)
                                         {
-                                                for (int c = 0; c < cols; c ++)
-                                                {
-                                                        const boost::gil::argb8_pixel_t pix = view(c, r);
-                                                        luma(r, c) = color::make_luma(pix[1], pix[2], pix[3]);
-                                                }
+                                                const ILubyte* pix = data + 4 * ((rows - 1 - r) * cols + c);
+                                                luma(r, c) = color::make_luma(pix[0], pix[1], pix[2]);
                                         }
-                                        break;
+                                }
+                                break;
 
-                                case color_mode::rgba:
-                                        rgba.resize(rows, cols);
-                                        for (int r = 0; r < rows; r ++)
+                        case color_mode::rgba:
+                                rgba.resize(rows, cols);
+                                for (int r = 0; r < rows; r ++)
+                                {
+                                        for (int c = 0; c < cols; c ++)
                                         {
-                                                for (int c = 0; c < cols; c ++)
-                                                {
-                                                        const boost::gil::argb8_pixel_t pix = view(c, r);
-                                                        rgba(r, c) = color::make_rgba(pix[1], pix[2], pix[3], pix[0]);
-                                                }
+                                                const ILubyte* pix = data + 4 * ((rows - 1 - r) * cols + c);
+                                                rgba(r, c) = color::make_rgba(pix[0], pix[1], pix[2], pix[3]);
                                         }
-                                        break;
                                 }
+                                break;
                         }
-                        return true;
 
-                case imagetype::pgm:    // PGM binary decoding
-                        {
-                                std::ifstream is(path);
-
-                                // read header
-                                string_t line_type, line_size, line_maxv;
-                                if (    !is.is_open() ||
-                                        !std::getline(is, line_type) ||
-                                        !std::getline(is, line_size) ||
-                                        !std::getline(is, line_maxv) ||
-                                        line_type != "P5" ||
-                                        line_maxv != "255")
-                                {
-                                        return false;
-                                }
-
-                                strings_t tokens;
-                                text::split(tokens, line_size, text::is_any_of(" "));
-
-                                int rows = -1, cols = -1;
-                                if (    tokens.size() != 2 ||
-                                        (cols = text::from_string<int>(tokens[0])) < 1 ||
-                                        (rows = text::from_string<int>(tokens[1])) < 1)
-                                {
-                                        return false;
-                                }
-
-                                // read pixels
-                                std::vector<uint8_t> grays(rows * cols);
-                                if (!is.read((char*)(grays.data()), grays.size()))
-                                {
-                                        return false;
-                                }
-
-                                switch (mode)
-                                {
-                                case color_mode::luma:
-                                        luma.resize(rows, cols);
-                                        tensor::transform(tensor::make_matrix(grays.data(), rows, cols),
-                                                          luma, [] (luma_t g) { return g; });
-                                        break;
-
-                                case color_mode::rgba:
-                                        rgba.resize(rows, cols);
-                                        tensor::transform(tensor::make_matrix(grays.data(), rows, cols),
-                                                          rgba, [] (luma_t g) { return color::make_rgba(g, g, g); });
-                                        break;
-                                }
-                        }
-                        return true;
-
-                case imagetype::unknown:
-                default:
-                        return false;
+                        ret = true;
                 }
+
+                ilDeleteImage(id);
+
+                return ret;
         }
 
         static bool save_image(const string_t& path,
@@ -176,129 +62,44 @@ namespace ncv
                 const int rows = static_cast<int>(mode == color_mode::rgba ? rgba.rows() : luma.rows());
                 const int cols = static_cast<int>(mode == color_mode::rgba ? rgba.cols() : luma.cols());
 
-                const imagetype itype = decode_image_type(path);
-                switch (itype)
+                ilInit();
+
+                const ILuint id = ilGenImage();
+                ilBindImage(id);
+
+                bool ret = true;
+
+                switch (mode)
                 {
-                case imagetype::png: // boost::gil RGBA encoding
+                case color_mode::luma:
+                        ret = ilTexImage(cols, rows, 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, (void*)luma.data());
+                        break;
+
+                case color_mode::rgba:
                         {
-                                boost::gil::argb8_image_t image(cols, rows);
-
-                                boost::gil::argb8_image_t::view_t view = boost::gil::view(image);
-                                switch (mode)
+                                rgba_matrix_t temp(rows, cols);
+                                for (auto i = 0; i < temp.size(); i ++)
                                 {
-                                case color_mode::luma:
-                                        for (int r = 0; r < rows; r ++)
-                                        {
-                                                for (int c = 0; c < cols; c ++)
-                                                {
-                                                        boost::gil::argb8_pixel_t& pixel = view(c, r);
-                                                        pixel[0] = 255;
-                                                        pixel[1] = luma(r, c);
-                                                        pixel[2] = luma(r, c);
-                                                        pixel[3] = luma(r, c);
-                                                }
-                                        }
-                                        break;
+                                        const rgba_t val = rgba(i);
+                                        const rgba_t cr = color::make_red(val);
+                                        const rgba_t cg = color::make_green(val);
+                                        const rgba_t cb = color::make_blue(val);
+                                        const rgba_t ca = color::make_alpha(val);
 
-                                case color_mode::rgba:
-                                        for (int r = 0; r < rows; r ++)
-                                        {
-                                                for (int c = 0; c < cols; c ++)
-                                                {
-                                                        boost::gil::argb8_pixel_t& pixel = view(c, r);
-                                                        pixel[0] = color::make_alpha(rgba(r, c));
-                                                        pixel[1] = color::make_red(rgba(r, c));
-                                                        pixel[2] = color::make_green(rgba(r, c));
-                                                        pixel[3] = color::make_blue(rgba(r, c));
-                                                }
-                                        }
+                                        temp(i) = color::make_rgba(ca, cb, cg, cr);
                                 }
-
-                                boost::gil::png_write_view(path, view);
+                                ret = ilTexImage(cols, rows, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, (void*)temp.data());
                         }
-                        return true;
-
-                case imagetype::jpeg: // boost::gil RGB encoding
-                case imagetype::tif:
-                        {
-                                boost::gil::rgb8_image_t image(cols, rows);
-
-                                boost::gil::rgb8_image_t::view_t view = boost::gil::view(image);
-                                switch (mode)
-                                {
-                                case color_mode::luma:
-                                        for (int r = 0; r < rows; r ++)
-                                        {
-                                                for (int c = 0; c < cols; c ++)
-                                                {
-                                                        boost::gil::rgb8_pixel_t& pixel = view(c, r);
-                                                        pixel[0] = luma(r, c);
-                                                        pixel[1] = luma(r, c);
-                                                        pixel[2] = luma(r, c);
-                                                }
-                                        }
-                                        break;
-
-                                case color_mode::rgba:
-                                        for (int r = 0; r < rows; r ++)
-                                        {
-                                                for (int c = 0; c < cols; c ++)
-                                                {
-                                                        boost::gil::rgb8_pixel_t& pixel = view(c, r);
-                                                        pixel[0] = color::make_red(rgba(r, c));
-                                                        pixel[1] = color::make_green(rgba(r, c));
-                                                        pixel[2] = color::make_blue(rgba(r, c));
-                                                }
-                                        }
-                                        break;
-                                }
-
-                                if (itype == imagetype::jpeg)
-                                {
-                                        boost::gil::jpeg_write_view(path, view);
-                                }
-                                else
-                                {
-                                        boost::gil::tiff_write_view(path, view);
-                                }
-                        }
-                        return true;
-
-                case imagetype::pgm:    // PGM binary encoding
-                        {
-                                std::ofstream os(path);
-
-                                // write header
-                                if (    !os.is_open() ||
-                                        !(os << "P5" << std::endl) ||
-                                        !(os << cols << " " << rows << std::endl) ||
-                                        !(os << "255" << std::endl))
-                                {
-                                        return false;
-                                }
-
-                                // write pixels
-                                luma_matrix_t grays(rows, cols);
-                                switch (mode)
-                                {
-                                case color_mode::luma:
-                                        grays = luma;
-                                        break;
-
-                                case color_mode::rgba:
-                                        tensor::transform(rgba, grays, [] (rgba_t c) { return color::make_luma(c); });
-                                        break;
-                                }
-
-                                return os.write(reinterpret_cast<const char*>(grays.data()),
-                                                static_cast<std::streamsize>(grays.size()));
-                        }
-                        return true;
-
-                case imagetype::unknown:
-                default:
-                        return false;
+                        break;
                 }
+
+                ret =   ret &&
+                        ilEnable(IL_FILE_OVERWRITE) &&
+                        ilSaveImage((const ILstring)path.c_str());
+
+                ilDeleteImage(id);
+
+                return ret;
         }
 
         image_t::image_t(coord_t rows, coord_t cols, color_mode mode)
