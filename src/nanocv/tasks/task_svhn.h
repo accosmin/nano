@@ -1,6 +1,7 @@
 #pragma once
 
 #include "task.h"
+#include "common/io_base.h"
 
 namespace ncv
 {
@@ -37,9 +38,7 @@ namespace ncv
                 size_t load(const string_t& bfile, protocol p);
 
                 // decode the uncompressed bytes (images + labels)
-                size_t decode(const std::vector<char>& image_data,
-                              const std::vector<char>& label_data,
-                              protocol p);
+                size_t decode(const io::data_t& image_data, const io::data_t& label_data, protocol p);
         };
 }
 

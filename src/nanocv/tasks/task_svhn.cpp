@@ -60,8 +60,8 @@ namespace ncv
                 }
 
                 // data sections (image rgb + labels)
-                std::vector<char> image_data;
-                std::vector<char> label_data;
+                io::data_t image_data;
+                io::data_t label_data;
                 for (int isection = 0; isection < 2; isection ++)
                 {
                         // section header
@@ -81,7 +81,7 @@ namespace ncv
 
                         log_info() << "SVHN: uncompressing " << section.dsize() << " bytes ...";
 
-                        std::vector<char>& data = (isection == 0) ? image_data : label_data;
+                        io::data_t& data = (isection == 0) ? image_data : label_data;
                         if (!io::uncompress_gzip(istream, section.dsize(), data))
                         {
                                 log_error() << "SVHN: failed to read compressed data!";
@@ -95,10 +95,7 @@ namespace ncv
                 return decode(image_data, label_data, p);
         }
 
-        size_t svhn_task_t::decode(
-                const std::vector<char>& idata,
-                const std::vector<char>& ldata,
-                protocol p)
+        size_t svhn_task_t::decode(const io::data_t& idata, const io::data_t& ldata, protocol p)
         {
                 // decode image & label arrays
                 mat5::array_t iarray, larray;

@@ -59,13 +59,13 @@ namespace ncv
                         load(0, std::numeric_limits<size_t>::max(), dtype, bytes);
         }
 
-        bool mat5::section_t::load(const std::vector<char>& data, size_t offset)
+        bool mat5::section_t::load(const io::data_t& data, size_t offset)
         {
                 return  offset + 8 <= data.size() &&
                         load(offset, data.size(), make_uint32(&data[offset + 0]), make_uint32(&data[offset + 4]));
         }
 
-        bool mat5::section_t::load(const std::vector<char>& data, const section_t& prv)
+        bool mat5::section_t::load(const io::data_t& data, const section_t& prv)
         {
                 return  load(data, prv.m_end);
         }
@@ -74,7 +74,7 @@ namespace ncv
         {
         }
 
-        bool mat5::array_t::load(const std::vector<char>& data)
+        bool mat5::array_t::load(const io::data_t& data)
         {
                 // read & check header
                 section_t header;
