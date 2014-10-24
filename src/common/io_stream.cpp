@@ -3,8 +3,9 @@
 
 namespace ncv
 {
-        io::stream_t::stream_t(const data_t& data)
+        io::stream_t::stream_t(const char* data, size_t size)
                 :       m_data(data),
+                        m_size(size),
                         m_tellg(0),
                         m_gcount(0)
         {
@@ -16,7 +17,7 @@ namespace ncv
 
                 if (rem_bytes >= num_bytes)
                 {
-                        std::copy(m_data.data() + m_tellg, m_data.data() + (m_tellg + num_bytes), bytes);
+                        std::copy(m_data + m_tellg, m_data + (m_tellg + num_bytes), bytes);
 
                         m_tellg += num_bytes;
                         m_gcount = num_bytes;
@@ -61,7 +62,7 @@ namespace ncv
 
         size_t io::stream_t::size() const
         {
-                return m_data.size();
+                return m_size;
         }
 
         io::stream_t::operator bool() const

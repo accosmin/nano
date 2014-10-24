@@ -132,33 +132,36 @@ namespace ncv
                 {
                         if (boost::algorithm::iends_with(filename, train_bfile))
                         {
-                                log_info() << "CIFAR-100: loading file <" << filename << "> ...";
-                                load(data, protocol::train);
+                                return load(filename, data.data(), data.size(), protocol::train, n_train_samples);
                         }
 
                         else if (boost::algorithm::iends_with(filename, test_bfile))
                         {
-                                log_info() << "CIFAR-100: loading file <" << filename << "> ...";
-                                load(data, protocol::test);
+                                return load(filename, data.data(), data.size(), protocol::test, n_test_samples);
+                        }
+                        
+                        else
+                        {
+                                return true;
                         }
                 };
 
                 log_info() << "CIFAR-100: loading file <" << bfile << "> ...";
 
-                return  io::decode(bfile, "CIFAR-100: ", op) &&
-                        m_samples.size() == n_train_samples + n_test_samples &&
-                        m_images.size() == n_train_samples + n_test_samples;
+                return io::decode(bfile, "CIFAR-100: ", op);
         }
         
-        size_t cifar100_task_t::load(const io::data_t& data, protocol p)
+        bool cifar100_task_t::load(const string_t& filename, const char* bdata, size_t bdata_size, protocol p, size_t count)
         {
+                log_info() << "CIFAR-100: loading file <" << filename << "> ...";                
+                
                 std::vector<char> vbuffer(n_rows() * n_cols() * 3);
                 char* buffer = vbuffer.data();
                 char label[2];
 
-                io::stream_t stream(data);
+                io::stream_t stream(bdata, bdata_size);
 
-                size_t cnt = 0;
+                size_t actual_count = 0;
                 while ( stream.read(label, 2) &&       // coarse & fine labels!
                         stream.read(buffer, vbuffer.size()))
                 {
@@ -174,11 +177,11 @@ namespace ncv
                         image.load_rgba(buffer, n_rows(), n_cols(), n_rows() * n_cols());
                         m_images.push_back(image);
 
-                        ++ cnt;
+                        actual_count ++;
                 }
 
-                log_info() << "CIFAR-100: loaded " << cnt << " samples.";
+                log_info() << "CIFAR-100: loaded " << actual_count << " samples.";
 
-                return cnt;
+                return (count == actual_count);
         }
 }

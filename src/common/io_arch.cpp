@@ -117,7 +117,7 @@ namespace ncv
                                         break;
 
                                 default:
-                                        callback(filename, data);
+                                        ok = callback(filename, data);
                                         break;
                                 }
                         }

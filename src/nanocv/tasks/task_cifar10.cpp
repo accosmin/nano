@@ -4,7 +4,6 @@
 #include "common/io_arch.h"
 #include "common/io_stream.h"
 #include "loss.h"
-#include <boost/algorithm/string.hpp>
 
 namespace ncv
 {
@@ -36,7 +35,7 @@ namespace ncv
                 const string_t train_bfile3 = "data_batch_3.bin";
                 const string_t train_bfile4 = "data_batch_4.bin";
                 const string_t train_bfile5 = "data_batch_5.bin";
-                const size_t n_train_samples = 50000;
+                const size_t n_train_samples = 10000;// * 5
 
                 const string_t test_bfile = "test_batch.bin";
                 const size_t n_test_samples = 10000;
@@ -51,33 +50,36 @@ namespace ncv
                                 boost::algorithm::iends_with(filename, train_bfile4) ||
                                 boost::algorithm::iends_with(filename, train_bfile5))
                         {
-                                log_info() << "CIFAR-10: loading file <" << filename << "> ...";
-                                load(data, protocol::train);
+                                return load(filename, data.data(), data.size(), protocol::train, n_train_samples);
                         }
 
                         else if (boost::algorithm::iends_with(filename, test_bfile))
+                        {                                
+                                return load(filename, data.data(), data.size(), protocol::test, n_test_samples);
+                        }
+                        
+                        else
                         {
-                                log_info() << "CIFAR-10: loading file <" << filename << "> ...";
-                                load(data, protocol::test);
+                                return true;
                         }
                 };
 
                 log_info() << "CIFAR-10: loading file <" << bfile << "> ...";
 
-                return  io::decode(bfile, "CIFAR-10: ", op) &&
-                        m_samples.size() == n_train_samples + n_test_samples &&
-                        m_images.size() == n_train_samples + n_test_samples;
+                return io::decode(bfile, "CIFAR-10: ", op);
         }
 
-        size_t cifar10_task_t::load(const io::data_t& data, protocol p)
+        bool cifar10_task_t::load(const string_t& filename, const char* bdata, size_t bdata_size, protocol p, size_t count)
         {
+                log_info() << "CIFAR-10: loading file <" << filename << "> ...";
+                
                 std::vector<char> vbuffer(n_rows() * n_cols() * 3);
                 char* buffer = vbuffer.data();
                 char label[1];
 
-                io::stream_t stream(data);
+                io::stream_t stream(bdata, bdata_size);
 
-                size_t cnt = 0;
+                size_t actual_count = 0;
                 while ( stream.read(label, 1) &&
                         stream.read(buffer, vbuffer.size()))
                 {
@@ -93,11 +95,11 @@ namespace ncv
                         image.load_rgba(buffer, n_rows(), n_cols(), n_rows() * n_cols());
                         m_images.push_back(image);
 
-                        ++ cnt;
+                        actual_count ++;
                 }
 
-                log_info() << "CIFAR-10: loaded " << cnt << " samples.";
+                log_info() << "CIFAR-10: loaded " << actual_count << " samples.";
 
-                return cnt;
+                return (count == actual_count);
         }
 }

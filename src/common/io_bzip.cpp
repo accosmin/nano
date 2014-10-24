@@ -81,7 +81,7 @@ namespace ncv
 
         bool io::uncompress_bzip2(const data_t& istream, data_t& data)
         {
-                stream_t stream(istream);
+                stream_t stream(istream.data(), istream.size());
                 return io_uncompress_bzip2(stream, stream.size(), data);
         }
 }

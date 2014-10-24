@@ -1,11 +1,13 @@
 #pragma once
 
-#include "io_base.h"
+#include <utility>
 
 namespace ncv
 {
         namespace io
         {
+                using std::size_t;
+                
                 ///
                 /// \brief map the std::istream's interface over an in-memory buffer
                 ///
@@ -16,7 +18,11 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        stream_t(const data_t& data);
+                        stream_t(const char* data, size_t size);
+                        
+                        // disable copying
+                        stream_t(const stream_t&) = delete;
+                        stream_t& operator=(const stream_t&) = delete;
 
                         ///
                         /// \brief read given number of bytes
@@ -67,7 +73,8 @@ namespace ncv
 
                 private:
 
-                        const data_t&           m_data;
+                        const char* const       m_data;
+                        size_t                  m_size;
                         size_t                  m_tellg;
                         size_t                  m_gcount;
                 };

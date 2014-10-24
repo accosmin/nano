@@ -34,6 +34,6 @@ namespace ncv
         private:
 
                 // load binary file
-                size_t load(const string_t& ifile, const string_t& gfile, protocol p);
+                bool load(const string_t& ifile, const string_t& gfile, protocol p, size_t count);
         };
 }

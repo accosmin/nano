@@ -24,14 +24,14 @@ namespace ncv
 
                 clear_memory(n_train_samples + n_test_samples);
 
-                return  load(train_ifile, train_gfile, protocol::train) == n_train_samples &&
-                        load(test_ifile, test_gfile, protocol::test) == n_test_samples;
+                return  load(train_ifile, train_gfile, protocol::train, n_train_samples) &&
+                        load(test_ifile, test_gfile, protocol::test, n_test_samples);
         }
 
-        size_t mnist_task_t::load(const string_t& ifile, const string_t& gfile, protocol p)
+        bool mnist_task_t::load(const string_t& ifile, const string_t& gfile, protocol p, size_t count)
         {
-                size_t icnt = 0, isize = m_images.size();
-                size_t gcnt = 0;
+                size_t icount = 0;
+                size_t gcount = 0;
 
                 std::vector<char> vbuffer(n_rows() * n_cols());
                 char* buffer = vbuffer.data();
@@ -40,7 +40,7 @@ namespace ncv
                 // load image file
                 const auto iop = [&] (const string_t&, const io::data_t& data)
                 {
-                        io::stream_t stream(data);
+                        io::stream_t stream(data.data(), data.size());
 
                         stream.read(buffer, 16);
                         while (stream.read(buffer, vbuffer.size()) && stream.gcount() == vbuffer.size())
@@ -49,8 +49,10 @@ namespace ncv
                                 image.load_luma(buffer, n_rows(), n_cols());
                                 m_images.push_back(image);
 
-                                ++ icnt;
-                        }
+                                ++ icount;
+                        }                        
+                        
+                        return true;
                 };
 
                 log_info() << "MNIST: loading file <" << ifile << "> ...";
@@ -63,22 +65,23 @@ namespace ncv
                 // load ground truth file
                 const auto gop = [&] (const string_t&, const io::data_t& data)
                 {
-                        io::stream_t stream(data);
+                        io::stream_t stream(data.data(), data.size());
 
                         stream.read(buffer, 8);
                         while (stream.read(label, 1) && stream.gcount() == 1)
                         {
                                 const size_t ilabel = math::cast<size_t>(label[0]);
 
-                                sample_t sample(isize, sample_region(0, 0));
+                                sample_t sample(m_samples.size(), sample_region(0, 0));
                                 sample.m_label = "digit" + text::to_string(ilabel);
                                 sample.m_target = ncv::class_target(ilabel, n_outputs());
                                 sample.m_fold = { 0, p };
                                 m_samples.push_back(sample);
 
-                                ++ gcnt;
-                                ++ isize;
+                                ++ gcount;
                         }
+                        
+                        return true;
                 };
 
                 log_info() << "MNIST: loading file <" << gfile << "> ...";
@@ -89,7 +92,7 @@ namespace ncv
                 }
 
                 // OK
-                log_info() << "MNIST: loaded " << icnt << "/" << gcnt << " samples.";
-                return std::max(icnt, gcnt);
+                log_info() << "MNIST: loaded " << icount << "/" << gcount << " samples.";
+                return (icount == gcount == count) > 0;
         }
 }

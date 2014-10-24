@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
         const auto callback = [](const string_t& filename, const std::vector<char>& data)
         {
                 log_info() << "decode: callback(" << filename << ", " << data.size() << " bytes)";
+                return true;
         };
 
         // decode archive

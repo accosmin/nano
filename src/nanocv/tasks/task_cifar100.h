@@ -1,7 +1,6 @@
 #pragma once
 
 #include "task.h"
-#include "common/io_base.h"
 
 namespace ncv
 {
@@ -35,7 +34,7 @@ namespace ncv
         private:
 
                 // load binary file
-                size_t load(const io::data_t& data, protocol p);
+                bool load(const string_t& filename, const char* bdata, size_t bdata_size, protocol p, size_t count);
         };
 }
 
