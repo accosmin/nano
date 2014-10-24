@@ -52,14 +52,12 @@ namespace ncv
                                 boost::algorithm::iends_with(filename, train_bfile5))
                         {
                                 log_info() << "CIFAR-10: loading file <" << filename << "> ...";
-
                                 load(data, protocol::train);
                         }
 
                         else if (boost::algorithm::iends_with(filename, test_bfile))
                         {
                                 log_info() << "CIFAR-10: loading file <" << filename << "> ...";
-
                                 load(data, protocol::test);
                         }
                 };

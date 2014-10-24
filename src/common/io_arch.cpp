@@ -95,7 +95,7 @@ namespace ncv
 
                                 const std::string filename = archive_entry_pathname(entry);
                                 const detail::archive_type filetype = detail::decode_archive_type(filename);
-                                const int64_t filesize = archive_entry_size(entry);
+//                                const int64_t filesize = archive_entry_size(entry);
 
                                 io::data_t data;
                                 if (!detail::copy(ar, data))
@@ -105,9 +105,6 @@ namespace ncv
                                         ok = false;
                                         break;
                                 }
-
-                                log_info() << log_header << "filename = <" << filename
-                                           << ">, filesize = <" << data.size() << "/" << filesize << ">";
 
                                 switch (filetype)
                                 {

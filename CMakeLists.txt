@@ -160,7 +160,7 @@ set(nanocv_test_programs
         ncv_test_sampler
         ncv_test_model_io
         ncv_test_convnet_benchmark
-        ncv_test_decode)
+        ncv_test_archive)
 
 set(nanocv_programs
         ncv_max_threads

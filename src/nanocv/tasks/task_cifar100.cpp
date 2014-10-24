@@ -133,14 +133,12 @@ namespace ncv
                         if (boost::algorithm::iends_with(filename, train_bfile))
                         {
                                 log_info() << "CIFAR-100: loading file <" << filename << "> ...";
-
                                 load(data, protocol::train);
                         }
 
                         else if (boost::algorithm::iends_with(filename, test_bfile))
                         {
                                 log_info() << "CIFAR-100: loading file <" << filename << "> ...";
-
                                 load(data, protocol::test);
                         }
                 };
