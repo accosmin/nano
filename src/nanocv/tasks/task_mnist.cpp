@@ -59,7 +59,7 @@ namespace ncv
                 if (!io::decode(ifile, "MNIST: ", iop))
                 {
                         log_error() << "MNIST: failed to load file <" << ifile << ">!";
-                        return 0;
+                        return false;
                 }
 
                 // load ground truth file
@@ -88,11 +88,11 @@ namespace ncv
                 if (!io::decode(gfile, "MNIST: ", gop))
                 {
                         log_error() << "MNIST: failed to load file <" << gfile << ">!";
-                        return 0;
+                        return false;
                 }
 
                 // OK
                 log_info() << "MNIST: loaded " << icount << "/" << gcount << " samples.";
-                return (icount == gcount == count) > 0;
+                return (count == gcount) && (count == icount);
         }
 }
