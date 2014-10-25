@@ -46,7 +46,7 @@ namespace ncv
         {
                 // process each label ...
                 const strings_t labels = this->labels();
-                for (size_t l = 0; l <= labels.size(); l ++)    // labels + non-annotated
+                for (size_t l = 0; l < labels.size(); l ++)
                 {
                         const string_t label = l < labels.size() ? labels[l] : string_t();
 
