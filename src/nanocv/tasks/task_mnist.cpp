@@ -30,6 +30,7 @@ namespace ncv
 
         bool mnist_task_t::load(const string_t& ifile, const string_t& gfile, protocol p, size_t count)
         {
+                size_t isize = m_images.size();
                 size_t icount = 0;
                 size_t gcount = 0;
 
@@ -37,7 +38,7 @@ namespace ncv
                 char* buffer = vbuffer.data();
                 char label[2];
 
-                // load image file
+                // load images
                 const auto iop = [&] (const string_t&, const io::data_t& data)
                 {
                         io::stream_t stream(data.data(), data.size());
@@ -62,7 +63,7 @@ namespace ncv
                         return false;
                 }
 
-                // load ground truth file
+                // load ground truth
                 const auto gop = [&] (const string_t&, const io::data_t& data)
                 {
                         io::stream_t stream(data.data(), data.size());
@@ -71,14 +72,19 @@ namespace ncv
                         while (stream.read(label, 1) && stream.gcount() == 1)
                         {
                                 const size_t ilabel = math::cast<size_t>(label[0]);
+                                if (ilabel >= n_outputs())
+                                {
+                                        continue;
+                                }
 
-                                sample_t sample(m_samples.size(), sample_region(0, 0));
+                                sample_t sample(isize, sample_region(0, 0));
                                 sample.m_label = "digit" + text::to_string(ilabel);
                                 sample.m_target = ncv::class_target(ilabel, n_outputs());
                                 sample.m_fold = { 0, p };
                                 m_samples.push_back(sample);
 
                                 ++ gcount;
+                                ++ isize;
                         }
                         
                         return true;

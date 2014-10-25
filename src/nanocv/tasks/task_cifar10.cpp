@@ -84,6 +84,10 @@ namespace ncv
                         stream.read(buffer, vbuffer.size()))
                 {
                         const size_t ilabel = math::cast<size_t>(label[0]);
+                        if (ilabel >= n_outputs())
+                        {
+                                continue;
+                        }
 
                         sample_t sample(m_images.size(), sample_region(0, 0));
                         sample.m_label = tlabels[ilabel];
@@ -98,8 +102,8 @@ namespace ncv
                         actual_count ++;
                 }
 
+                // OK
                 log_info() << "CIFAR-10: loaded " << actual_count << " samples.";
-
                 return (count == actual_count);
         }
 }
