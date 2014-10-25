@@ -10,7 +10,7 @@ from command line arguments.
 #### Task
 
 A task describes a classification or regression problem consisting of separate training and test image patches with associated target outputs if any. Supported benchmark 
-datasets: **MNIST**, **CIFAR-10**, **CIFAR-100**, **CMU-FACES**, **STL-10**, **SVHN**, **NORB**.
+datasets: **MNIST**, **CIFAR-10**, **CIFAR-100**, **CBCL-FACES**, **STL-10**, **SVHN**, **NORB**. These datasets are loaded directly from the original (compressed) files.
 
 #### Model
 
