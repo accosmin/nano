@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include <string>
 
 namespace ncv
 {
@@ -42,6 +43,11 @@ namespace ncv
                         }
 
                         ///
+                        /// \brief read next line
+                        ///
+                        bool getline(std::string& line);
+
+                        ///
                         /// \brief skip the given number of bytes
                         ///
                         bool skip(size_t num_bytes);
@@ -55,11 +61,6 @@ namespace ncv
                         /// \brief current position in the buffer
                         ///
                         size_t tellg() const;
-
-                        ///
-                        /// \brief number of bytes to end
-                        ///
-                        size_t remg() const;
 
                         ///
                         /// \brief buffer size

@@ -34,11 +34,12 @@ namespace ncv
         private:
                                                    
                 // load binary files
-                size_t load_binary(const string_t& ifile, const string_t& gfile);
-                size_t load_binary(const string_t& ifile);
+                bool load_ifile(const string_t& filename, const char* bdata, size_t bdata_size, bool unlabed, size_t count);
+                bool load_gfile(const string_t& filename, const char* bdata, size_t bdata_size, size_t count);
 
                 // build folds
-                bool load_folds(const string_t& ifile, size_t n_train, size_t n_unlabeled, size_t n_test);
+                bool load_folds(const string_t& filename, const char* bdata, size_t bdata_size, 
+                                size_t n_test, size_t n_train, size_t n_unlabeled);
         };
 }
 

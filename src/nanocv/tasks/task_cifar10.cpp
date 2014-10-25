@@ -52,12 +52,10 @@ namespace ncv
                         {
                                 return load(filename, data.data(), data.size(), protocol::train, n_train_samples);
                         }
-
                         else if (boost::algorithm::iends_with(filename, test_bfile))
                         {                                
                                 return load(filename, data.data(), data.size(), protocol::test, n_test_samples);
-                        }
-                        
+                        }                        
                         else
                         {
                                 return true;
@@ -73,15 +71,14 @@ namespace ncv
         {
                 log_info() << "CIFAR-10: loading file <" << filename << "> ...";
                 
-                std::vector<char> vbuffer(n_rows() * n_cols() * 3);
-                char* buffer = vbuffer.data();
+                std::vector<char> buffer(n_rows() * n_cols() * 3);
                 char label[1];
 
                 io::stream_t stream(bdata, bdata_size);
 
-                size_t actual_count = 0;
+                size_t icount = 0;
                 while ( stream.read(label, 1) &&
-                        stream.read(buffer, vbuffer.size()))
+                        stream.read(buffer.data(), buffer.size()))
                 {
                         const size_t ilabel = math::cast<size_t>(label[0]);
                         if (ilabel >= n_outputs())
@@ -96,14 +93,14 @@ namespace ncv
                         m_samples.push_back(sample);
 
                         image_t image;
-                        image.load_rgba(buffer, n_rows(), n_cols(), n_rows() * n_cols());
+                        image.load_rgba(buffer.data(), n_rows(), n_cols(), n_rows() * n_cols());
                         m_images.push_back(image);
 
-                        actual_count ++;
+                        ++ icount;
                 }
 
                 // OK
-                log_info() << "CIFAR-10: loaded " << actual_count << " samples.";
-                return (count == actual_count);
+                log_info() << "CIFAR-10: loaded " << icount << " samples.";
+                return (count == icount);
         }
 }

@@ -13,7 +13,7 @@ namespace ncv
 
         bool cbclfaces_task_t::load(const string_t& dir)
         {
-                const string_t file = dir + "/faces.tar.gz";
+                const string_t bfile = dir + "/faces.tar.gz";
                 
                 const size_t n_train_samples = 2429 + 4548;
                 const size_t n_test_samples = 472 + 23573;
@@ -37,15 +37,22 @@ namespace ncv
                                         m_samples.push_back(sample);
                                         
                                         m_images.push_back(image);
+                                        return true;
                                 }
+                                else
+                                {
+                                        return false;
+                                }
+                        }                        
+                        else
+                        {                        
+                                return true;
                         }
-                        
-                        return true;
                 };
                 
-                log_info() << "CBCL-faces: loading file <" << file << "> ...";
+                log_info() << "CBCL-faces: loading file <" << bfile << "> ...";
 
-                return  io::decode(file, "CBCL-faces: ", op) &&
+                return  io::decode(bfile, "CBCL-faces: ", op) &&
                         
                         m_samples.size() == n_train_samples + n_test_samples &&
                         m_images.size() == n_train_samples + n_test_samples &&

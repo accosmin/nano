@@ -30,12 +30,11 @@ namespace ncv
 
         bool mnist_task_t::load(const string_t& ifile, const string_t& gfile, protocol p, size_t count)
         {
-                size_t isize = m_images.size();
+                size_t iindex = m_images.size();
                 size_t icount = 0;
                 size_t gcount = 0;
 
-                std::vector<char> vbuffer(n_rows() * n_cols());
-                char* buffer = vbuffer.data();
+                std::vector<char> buffer(n_rows() * n_cols());
                 char label[2];
 
                 // load images
@@ -43,11 +42,11 @@ namespace ncv
                 {
                         io::stream_t stream(data.data(), data.size());
 
-                        stream.read(buffer, 16);
-                        while (stream.read(buffer, vbuffer.size()) && stream.gcount() == vbuffer.size())
+                        stream.read(buffer.data(), 16);
+                        while (stream.read(buffer.data(), buffer.size()))
                         {
                                 image_t image;
-                                image.load_luma(buffer, n_rows(), n_cols());
+                                image.load_luma(buffer.data(), n_rows(), n_cols());
                                 m_images.push_back(image);
 
                                 ++ icount;
@@ -68,7 +67,7 @@ namespace ncv
                 {
                         io::stream_t stream(data.data(), data.size());
 
-                        stream.read(buffer, 8);
+                        stream.read(buffer.data(), 8);
                         while (stream.read(label, 1) && stream.gcount() == 1)
                         {
                                 const size_t ilabel = math::cast<size_t>(label[0]);
@@ -77,14 +76,14 @@ namespace ncv
                                         continue;
                                 }
 
-                                sample_t sample(isize, sample_region(0, 0));
+                                sample_t sample(iindex, sample_region(0, 0));
                                 sample.m_label = "digit" + text::to_string(ilabel);
                                 sample.m_target = ncv::class_target(ilabel, n_outputs());
                                 sample.m_fold = { 0, p };
                                 m_samples.push_back(sample);
 
                                 ++ gcount;
-                                ++ isize;
+                                ++ iindex;
                         }
                         
                         return true;

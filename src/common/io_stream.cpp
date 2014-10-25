@@ -3,6 +3,11 @@
 
 namespace ncv
 {
+        static bool isendl(char c)
+        {
+                return (c == '\n') || (c == '\r');
+        }
+
         io::stream_t::stream_t(const char* data, size_t size)
                 :       m_data(data),
                         m_size(size),
@@ -13,9 +18,7 @@ namespace ncv
 
         bool io::stream_t::read(char* bytes, size_t num_bytes)
         {
-                const size_t rem_bytes = remg();
-
-                if (rem_bytes >= num_bytes)
+                if (tellg() + num_bytes <= size())
                 {
                         std::copy(m_data + m_tellg, m_data + (m_tellg + num_bytes), bytes);
 
@@ -29,11 +32,26 @@ namespace ncv
                 }
         }
 
+        bool io::stream_t::getline(std::string& line)
+        {
+                char c;
+
+                for ( ; m_tellg < m_size && isendl(c = m_data[tellg()]); m_tellg ++)
+                {
+                }
+
+                line.clear();
+                for ( ; m_tellg < m_size && !isendl(c = m_data[tellg()]); m_tellg ++)
+                {
+                        line.push_back(c);
+                }
+
+                return !line.empty();
+        }
+
         bool io::stream_t::skip(size_t num_bytes)
         {
-                const size_t rem_bytes = remg();
-
-                if (rem_bytes >= num_bytes)
+                if (tellg() + num_bytes <= size())
                 {
                         m_tellg += num_bytes;
                         m_gcount = 0;
@@ -53,11 +71,6 @@ namespace ncv
         size_t io::stream_t::tellg() const
         {
                 return m_tellg;        
-        }
-
-        size_t io::stream_t::remg() const
-        {
-                return (tellg() >= size()) ? 0 : (size() - tellg());
         }
 
         size_t io::stream_t::size() const

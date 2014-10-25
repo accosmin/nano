@@ -88,7 +88,7 @@ namespace ncv
                 static const int magic_i08 = 0x1E3D4C55;
 //                 static const int magic_i16 = 0x1E3D4C56;
                 
-                size_t isize = m_images.size();
+                size_t iindex = m_images.size();
                 size_t icount = 0;
                 size_t gcount = 0;
                 
@@ -132,7 +132,7 @@ namespace ncv
                                         m_images.push_back(image);
                                 }
                                 
-                                icount ++;
+                                ++ icount;
                         }
                         
                         return stream.tellg() == stream.size();
@@ -178,7 +178,7 @@ namespace ncv
                                 const size_t ilabel = label;                                
                                 for (size_t cam = 0; cam < n_cameras; cam ++)
                                 {
-                                        sample_t sample(isize, sample_region(0, 0));
+                                        sample_t sample(iindex, sample_region(0, 0));
                                         if (ilabel < n_outputs())
                                         {
                                                 sample.m_label = tlabels[ilabel];
@@ -187,10 +187,10 @@ namespace ncv
                                         sample.m_fold = { 0, p };
                                         m_samples.push_back(sample);
                                         
-                                        isize ++;
+                                        ++ iindex;
                                 }
                                 
-                                gcount ++;
+                                ++ gcount;
                         }
                         
                         return stream.tellg() == stream.size();
