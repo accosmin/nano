@@ -1,21 +1,3 @@
-- may actually use libarchive instead of zlib & bzip2 directly:
-	- https://github.com/libarchive/libarchive/wiki/Examples
-	- it supports tar archives aswell
-
-- use zlib & bzip2 libraries to decompress tar,gz,bz2 instead of boost::iostreams:
-	- io::load_binary(filepath, vector<char>), io::save_binary(filepath, vector<char>)
-	- io::decode_gz(istream, size, vector<char>)
-	- io::decode_bz2(istream, size, vector<char>)
-
-- load tasks directly from the archive:
-	- save some disk space
-	- faster loading
-
-- reduce the number of training configurations for mnist:
-	- always use max pooling (better results)
-	- don't use random convolution models (very bad results, at most as a weak baseline)
-	- try various stochastic methods (use only two epochs)
-
 - cleanup convolution layer:
 	- too much duplicated & complicated code
 
@@ -24,6 +6,11 @@
 		- http://en.wikipedia.org/wiki/Toeplitz_matrix
 
         - check if any improvement if using a 3D convolution    
+
+- reduce the number of training configurations for mnist:
+	- always use max pooling (better results)
+	- don't use random convolution models (very bad results, at most as a weak baseline)
+	- try various stochastic methods (use only two epochs)
 
 - improve the speed of the linear layers: 
 	- the gradient takes too much to compute!
