@@ -30,10 +30,5 @@ namespace ncv
                 virtual size_t n_outputs() const { return 1; }
                 virtual size_t n_folds() const { return 1; }
                 virtual color_mode color() const { return color_mode::luma; }
-
-        private:
-
-                // load files from the given directory
-                size_t load(const string_t& dir, bool is_face, protocol p);
         };
 }

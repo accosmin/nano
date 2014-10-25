@@ -33,9 +33,15 @@ namespace ncv
                 ///
                 bool load_rgba(const string_t& path);
                 bool load_luma(const string_t& path);
+                
+                ///
+                /// \brief load image from encoded buffer, using the filename's extension as a hint to the image type
+                ///
+                bool load_rgba(const string_t& name, const char* buffer, size_t buffer_size);
+                bool load_luma(const string_t& name, const char* buffer, size_t buffer_size);
 
                 ///
-                /// \brief load image from buffer
+                /// \brief load image from decoded buffer
                 ///
                 bool load_luma(const char* buffer, coord_t rows, coord_t cols);
                 bool load_rgba(const char* buffer, coord_t rows, coord_t cols);
