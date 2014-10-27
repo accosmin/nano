@@ -1,6 +1,7 @@
 #include "nanocv.h"
 #include "common/dot.hpp"
 #include "common/mad.hpp"
+#include "common/unroll.hpp"
 #include <boost/format.hpp>
 
 using namespace ncv;
@@ -30,7 +31,7 @@ namespace ncv
         >
         void mad_eig(const tscalar* idata, tscalar weight, tsize size, tscalar* odata)
         {
-                tensor::make_vector(odata, size).array() += weight * tensor::make_vector(idata, size).array();
+                tensor::make_vector(odata, size) += weight * tensor::make_vector(idata, size);
         }
 }
 

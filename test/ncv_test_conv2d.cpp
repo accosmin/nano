@@ -1,6 +1,6 @@
 #include "nanocv.h"
 #include "common/conv2d.hpp"
-#include "common/iconv2d.hpp"
+#include "common/corr2d.hpp"
 #ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
 #endif
@@ -169,7 +169,7 @@ __kernel void conv_kernel(
         odata[r * ocols + c] = sum;
 }
 
-__kernel void iconv_kernel(
+__kernel void corr_kernel(
         __global const double* odata,
         __constant double* kdata, int krows, int kcols,
         __global double* idata)
@@ -376,7 +376,7 @@ void test_conv2d(int isize, int ksize, int tsize)
 #endif
 }
 
-void test_iconv2d(int isize, int ksize, int tsize)
+void test_corr2d(int isize, int ksize, int tsize)
 {
         const int osize = isize - ksize + 1;
 
@@ -390,23 +390,23 @@ void test_iconv2d(int isize, int ksize, int tsize)
         const string_t header = (boost::format("%5% x (%1%x%2%@%3%x%4%): ") % isize % isize % ksize % ksize % tsize).str();
         std::cout << text::resize(header, 24);
 
-        const test_scalar_t iconve1cpu = test_1cpu(ncv::iconv2d_eig<test_matrix_t>, "ieig(1CPU)", odatas, kdata, idatas);
-        const test_scalar_t iconvexcpu = test_xcpu(ncv::iconv2d_eig<test_matrix_t>, "ieig(xCPU)", odatas, kdata, idatas);
-        const test_scalar_t iconvm1cpu = test_1cpu(ncv::iconv2d_mad<test_matrix_t>, "imad(1CPU)", odatas, kdata, idatas);
-        const test_scalar_t iconvmxcpu = test_xcpu(ncv::iconv2d_mad<test_matrix_t>, "imad(xCPU)", odatas, kdata, idatas);
+        const test_scalar_t corre1cpu = test_1cpu(ncv::corr2d_eig<test_matrix_t>, "ieig(1CPU)", odatas, kdata, idatas);
+        const test_scalar_t correxcpu = test_xcpu(ncv::corr2d_eig<test_matrix_t>, "ieig(xCPU)", odatas, kdata, idatas);
+        const test_scalar_t corrm1cpu = test_1cpu(ncv::corr2d_mad<test_matrix_t>, "imad(1CPU)", odatas, kdata, idatas);
+        const test_scalar_t corrmxcpu = test_xcpu(ncv::corr2d_mad<test_matrix_t>, "imad(xCPU)", odatas, kdata, idatas);
 #if defined(NANOCV_HAVE_OPENCL)
-        const test_scalar_t iconvgpu   = test_gpu("iconv_kernel", "iconv2d(GPU)", odatas, kdata, idatas);
+        const test_scalar_t corrgpu   = test_gpu("corr_kernel", "corr2d(GPU)", odatas, kdata, idatas);
 #elif NANOCV_HAVE_CUDA
-        const test_scalar_t iconvgpu   = test_gpu(cuda::iconv2d<test_scalar_t>, "iconv2d(GPU)", odatas, kdata, idatas);
+        const test_scalar_t corrgpu   = test_gpu(cuda::corr2d<test_scalar_t>, "corr2d(GPU)", odatas, kdata, idatas);
 #endif
         std::cout << std::endl;
 
-        check(iconve1cpu, iconve1cpu, "iconve(1CPU)");
-        check(iconvexcpu, iconve1cpu, "iconve(xCPU)");
-        check(iconvm1cpu, iconve1cpu, "iconvm(1CPU)");
-        check(iconvmxcpu, iconve1cpu, "iconvm(xCPU)");
+        check(corre1cpu, corre1cpu, "corre(1CPU)");
+        check(correxcpu, corre1cpu, "corre(xCPU)");
+        check(corrm1cpu, corre1cpu, "corrm(1CPU)");
+        check(corrmxcpu, corre1cpu, "corrm(xCPU)");
 #if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
-        check(iconvgpu  , iconve1cpu, "iconv2d(GPU)");
+        check(corrgpu  , corre1cpu, "corr2d(GPU)");
 #endif
 }
 
@@ -443,7 +443,7 @@ int main(int argc, char* argv[])
 
                         for (int ksize = min_ksize; ksize <= isize - min_ksize; ksize += 2)
                         {
-                                test_iconv2d(isize, ksize, n_samples);
+                                test_corr2d(isize, ksize, n_samples);
                         }
                         std::cout << std::endl;
                 }

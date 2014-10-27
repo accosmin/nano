@@ -116,7 +116,7 @@ namespace ncv
                 static void conv_dot(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
                 {
                         const auto kcols = kdata.cols();
-                        const auto ocols = odata.cols();
+                        const auto ocols = odata.cols();                        
 
                         // decode at run-time the kernel size
                         if (kcols < ocols)
@@ -138,7 +138,7 @@ namespace ncv
                                 case 13:        conv_dot(idata, kdata, odata, dot<tscalar, 13>); break;
                                 case 14:        conv_dot(idata, kdata, odata, dot<tscalar, 14>); break;
                                 case 15:        conv_dot(idata, kdata, odata, dot<tscalar, 15>); break;
-                                default:        conv_dot(idata, kdata, odata, dot<tscalar, decltype(kcols)>); break;
+                                default:        conv_dot(idata, kdata, odata, dot<tscalar, int>); break;
                                 }
                         }
                         else
@@ -160,7 +160,7 @@ namespace ncv
                                 case 13:        conv_mad(idata, kdata, odata, mad<tscalar, 13>); break;
                                 case 14:        conv_mad(idata, kdata, odata, mad<tscalar, 14>); break;
                                 case 15:        conv_mad(idata, kdata, odata, mad<tscalar, 15>); break;
-                                default:        conv_mad(idata, kdata, odata, mad<tscalar, decltype(ocols)>); break;
+                                default:        conv_mad(idata, kdata, odata, mad<tscalar, int>); break;
                                 }
                         }
                 }

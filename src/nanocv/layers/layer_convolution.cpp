@@ -3,7 +3,7 @@
 #include "common/math.hpp"
 #include "common/random.hpp"
 #include "common/conv2d.hpp"
-#include "common/iconv2d.hpp"
+#include "common/corr2d.hpp"
 #include "common/sampling.hpp"
 #include "tensor/serialize.hpp"
 
@@ -86,7 +86,7 @@ namespace ncv
 
                                 if (is_masked(mmap(o, i)))
                                 {
-                                        ncv::iconv2d_mad(omap, kmap, gimap);
+                                        ncv::corr2d_mad(omap, kmap, gimap);
                                 }
                         }
                 }

@@ -12,7 +12,7 @@ namespace ncv
         >
         void mad(const tscalar* idata, tscalar weight, tsize size, tscalar* odata)
         {
-                for (auto i = 0; i < size; i ++)
+                for (tsize i = 0; i < size; i ++)
                 {
                         odata[i] += idata[i] * weight;
                 }
@@ -30,12 +30,12 @@ namespace ncv
         {
                 const tsize size2 = size & tsize(~1);
 
-                for (auto i = 0; i < size2; i += 2)
+                for (tsize i = 0; i < size2; i += 2)
                 {
                         odata[i + 0] += idata[i + 0] * weight;
                         odata[i + 1] += idata[i + 1] * weight;
                 }
-                for (auto i = size2; i < size; i ++)
+                for (tsize i = size2; i < size; i ++)
                 {
                         odata[i] += idata[i] * weight;
                 }
@@ -53,14 +53,14 @@ namespace ncv
         {
                 const tsize size4 = size & tsize(~3);
 
-                for (auto i = 0; i < size4; i += 4)
+                for (tsize i = 0; i < size4; i += 4)
                 {
                         odata[i + 0] += idata[i + 0] * weight;
                         odata[i + 1] += idata[i + 1] * weight;
                         odata[i + 2] += idata[i + 2] * weight;
                         odata[i + 3] += idata[i + 3] * weight;
                 }
-                for (auto i = size4; i < size; i ++)
+                for (tsize i = size4; i < size; i ++)
                 {
                         odata[i] += idata[i] * weight;
                 }
@@ -79,7 +79,7 @@ namespace ncv
                 const tsize size8 = size & tsize(~7);
                 const tsize size4 = size & tsize(~3);
 
-                for (auto i = 0; i < size8; i += 8)
+                for (tsize i = 0; i < size8; i += 8)
                 {
                         odata[i + 0] += idata[i + 0] * weight;
                         odata[i + 1] += idata[i + 1] * weight;
@@ -90,14 +90,14 @@ namespace ncv
                         odata[i + 6] += idata[i + 6] * weight;
                         odata[i + 7] += idata[i + 7] * weight;
                 }
-                for (auto i = size8; i < size4; i += 4)
+                for (tsize i = size8; i < size4; i += 4)
                 {
                         odata[i + 0] += idata[i + 0] * weight;
                         odata[i + 1] += idata[i + 1] * weight;
                         odata[i + 2] += idata[i + 2] * weight;
                         odata[i + 3] += idata[i + 3] * weight;
                 }
-                for (auto i = size4; i < size; i ++)
+                for (tsize i = size4; i < size; i ++)
                 {
                         odata[i] += idata[i] * weight;
                 }
@@ -113,7 +113,7 @@ namespace ncv
         >
         void mad(const tscalar* idata, tscalar weight, int, tscalar* odata)
         {
-                for (auto i = 0; i < tsize; i ++)
+                for (int i = 0; i < tsize; i ++)
                 {
                         odata[i] += idata[i] * weight;
                 }

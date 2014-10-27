@@ -6,7 +6,7 @@
 namespace ncv
 {
         ///
-        /// \brief inverse 2D convolution: idata += odata @ kdata (using Eigen 2D blocks)
+        /// \brief 2D correlation: idata += odata @ kdata (using Eigen 2D blocks)
         ///
         template
         <
@@ -15,7 +15,7 @@ namespace ncv
                 typename tmatrixi = tmatrixo,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void iconv2d_eig(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
+        void corr2d_eig(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
         {
                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
@@ -39,7 +39,7 @@ namespace ncv
                         typename tmadop,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                static void iconv_mad(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata, const tmadop& madop)
+                static void corr_mad(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata, const tmadop& madop)
                 {
                         const auto orows = odata.rows();
                         const auto ocols = odata.cols();
@@ -75,35 +75,35 @@ namespace ncv
                         typename tmatrixi = tmatrixo,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                static void iconv_mad(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
+                static void corr_mad(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
                 {
                         const auto kcols = kdata.cols();
 
                         // decode at run-time the kernel size
                         switch (kcols)
                         {
-                        case 1:         iconv_mad(odata, kdata, idata, mad<tscalar, 1>); break;
-                        case 2:         iconv_mad(odata, kdata, idata, mad<tscalar, 2>); break;
-                        case 3:         iconv_mad(odata, kdata, idata, mad<tscalar, 3>); break;
-                        case 4:         iconv_mad(odata, kdata, idata, mad<tscalar, 4>); break;
-                        case 5:         iconv_mad(odata, kdata, idata, mad<tscalar, 5>); break;
-                        case 6:         iconv_mad(odata, kdata, idata, mad<tscalar, 6>); break;
-                        case 7:         iconv_mad(odata, kdata, idata, mad<tscalar, 7>); break;
-                        case 8:         iconv_mad(odata, kdata, idata, mad<tscalar, 8>); break;
-                        case 9:         iconv_mad(odata, kdata, idata, mad<tscalar, 9>); break;
-                        case 10:        iconv_mad(odata, kdata, idata, mad<tscalar, 10>); break;
-                        case 11:        iconv_mad(odata, kdata, idata, mad<tscalar, 11>); break;
-                        case 12:        iconv_mad(odata, kdata, idata, mad<tscalar, 12>); break;
-                        case 13:        iconv_mad(odata, kdata, idata, mad<tscalar, 13>); break;
-                        case 14:        iconv_mad(odata, kdata, idata, mad<tscalar, 14>); break;
-                        case 15:        iconv_mad(odata, kdata, idata, mad<tscalar, 15>); break;
-                        default:        iconv_mad(odata, kdata, idata, mad<tscalar, decltype(kcols)>); break;
+                        case 1:         corr_mad(odata, kdata, idata, mad<tscalar, 1>); break;
+                        case 2:         corr_mad(odata, kdata, idata, mad<tscalar, 2>); break;
+                        case 3:         corr_mad(odata, kdata, idata, mad<tscalar, 3>); break;
+                        case 4:         corr_mad(odata, kdata, idata, mad<tscalar, 4>); break;
+                        case 5:         corr_mad(odata, kdata, idata, mad<tscalar, 5>); break;
+                        case 6:         corr_mad(odata, kdata, idata, mad<tscalar, 6>); break;
+                        case 7:         corr_mad(odata, kdata, idata, mad<tscalar, 7>); break;
+                        case 8:         corr_mad(odata, kdata, idata, mad<tscalar, 8>); break;
+                        case 9:         corr_mad(odata, kdata, idata, mad<tscalar, 9>); break;
+                        case 10:        corr_mad(odata, kdata, idata, mad<tscalar, 10>); break;
+                        case 11:        corr_mad(odata, kdata, idata, mad<tscalar, 11>); break;
+                        case 12:        corr_mad(odata, kdata, idata, mad<tscalar, 12>); break;
+                        case 13:        corr_mad(odata, kdata, idata, mad<tscalar, 13>); break;
+                        case 14:        corr_mad(odata, kdata, idata, mad<tscalar, 14>); break;
+                        case 15:        corr_mad(odata, kdata, idata, mad<tscalar, 15>); break;
+                        default:        corr_mad(odata, kdata, idata, mad<tscalar, int>); break;
                         }
                 }
         }
         
         ///
-        /// \brief inverse 2D convolution: idata += odata @ kdata (using a mad product)
+        /// \brief 2D correlation: idata += odata @ kdata (using a mad product)
         ///
         template
         <
@@ -112,16 +112,16 @@ namespace ncv
                 typename tmatrixi = tmatrixo,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void iconv2d_mad(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
+        void corr2d_mad(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
         {
                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                detail::iconv_mad(odata, kdata, idata);
+                detail::corr_mad(odata, kdata, idata);
         }
 
         ///
-        /// \brief inverse 2D convolution for compile-time kernel size: idata += odata @ kdata (using a mad product)
+        /// \brief 2D correlation for compile-time kernel size: idata += odata @ kdata (using a mad product)
         ///
         template
         <
@@ -131,12 +131,12 @@ namespace ncv
                 typename tmatrixi = tmatrixo,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void iconv2d_mad(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
+        void corr2d_mad(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
         {
                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                detail::iconv_mad(odata, kdata, idata, mad<tscalar, tsize>);
+                detail::corr_mad(odata, kdata, idata, mad<tscalar, tsize>);
         }
 }
 
