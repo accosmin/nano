@@ -19,6 +19,22 @@ namespace ncv
         }
 
         ///
+        /// \brief fixed-size mad-product
+        ///
+        template
+        <
+                typename tscalar,
+                int tsize
+        >
+        void mad(const tscalar* idata, tscalar weight, int, tscalar* odata)
+        {
+                for (int i = 0; i < tsize; i ++)
+                {
+                        odata[i] += idata[i] * weight;
+                }
+        }
+
+        ///
         /// \brief general mad-product (unroll by 2)
         ///
         template
@@ -98,22 +114,6 @@ namespace ncv
                         odata[i + 3] += idata[i + 3] * weight;
                 }
                 for (tsize i = size4; i < size; i ++)
-                {
-                        odata[i] += idata[i] * weight;
-                }
-        }
-
-        ///
-        /// \brief fixed-size mad-product
-        ///
-        template
-        <
-                typename tscalar,
-                int tsize
-        >
-        void mad(const tscalar* idata, tscalar weight, int, tscalar* odata)
-        {
-                for (int i = 0; i < tsize; i ++)
                 {
                         odata[i] += idata[i] * weight;
                 }

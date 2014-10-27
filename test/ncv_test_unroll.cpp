@@ -64,13 +64,17 @@ tscalar test_dot(
         top op, const char* name, size_t n_tests,
         const tvector& vec1, const tvector& vec2)
 {
+        const size_t vsize = vec1.size() / n_tests;
+
         const ncv::timer_t timer;
 
         // run multiple tests
         tscalar ret = 0;
-        for (size_t t = 0; t < n_tests; t ++)
+        const tscalar* pvec1 = vec1.data();
+        const tscalar* pvec2 = vec2.data();
+        for (size_t t = 0; t < n_tests; t ++, pvec1 += vsize, pvec2 += vsize)
         {
-                ret += op(vec1.data(), vec2.data(), vec1.size());
+                ret += op(pvec1, pvec2, vsize);
         }
         
         const size_t milis = static_cast<size_t>(timer.miliseconds());
@@ -92,12 +96,16 @@ tscalar test_mad(
         vector_t cvec1 = vec1;
         vector_t cvec2 = vec2;
 
+        const size_t vsize = vec1.size() / n_tests;
+
         const ncv::timer_t timer;
 
         // run multiple tests
-        for (size_t t = 0; t < n_tests; t ++)
+        const tscalar* pvec1 = cvec1.data();
+        tscalar* pvec2 = cvec2.data();
+        for (size_t t = 0; t < n_tests; t ++, pvec1 += vsize, pvec2 += vsize)
         {
-                op(cvec1.data(), wei, cvec1.size(), cvec2.data());
+                op(pvec1, wei, vsize, pvec2);
         }
 
         const size_t milis = static_cast<size_t>(timer.miliseconds());
@@ -112,8 +120,7 @@ template
 >
 void check(tscalar result, tscalar baseline, const char* name)
 {
-        const tscalar err = std::fabs(result - baseline);
-
+        const tscalar err = math::abs(result - baseline);
         if (!math::almost_equal(err, tscalar(0)))
         {
                 std::cout << name << " FAILED (diff = " << err << ")!" << std::endl;
@@ -123,9 +130,8 @@ void check(tscalar result, tscalar baseline, const char* name)
 void test_dot(size_t size, size_t n_tests)
 {
         test_vector_t vec1, vec2;
-
-        rand_vector(size, vec1);
-        rand_vector(size, vec2);
+        rand_vector(size * n_tests, vec1);
+        rand_vector(size * n_tests, vec2);
 
         const string_t header = (boost::format("%1% x (%2%): ") % n_tests % size).str();
         std::cout << text::resize(header, 20);
@@ -149,9 +155,8 @@ void test_dot(size_t size, size_t n_tests)
 void test_mad(size_t size, size_t n_tests)
 {
         test_vector_t vec1, vec2;
-
-        rand_vector(size, vec1);
-        rand_vector(size, vec2);
+        rand_vector(size * n_tests, vec1);
+        rand_vector(size * n_tests, vec2);
 
         test_scalar_t wei;
 
@@ -180,7 +185,7 @@ int main(int argc, char* argv[])
 {
         static const size_t min_size = 4;
         static const size_t max_size = 64;
-        static const size_t n_tests = 1024 * 1024 * 8;
+        static const size_t n_tests = 1023 * 991 * 7;
 
         for (size_t size = min_size; size <= max_size; size *= 2)
         {
