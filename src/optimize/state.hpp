@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tensor/vector.hpp"
+#include <eigen3/Eigen/Core>
 
 namespace ncv
 {
@@ -22,7 +22,13 @@ namespace ncv
                 struct state_t
                 {
                         typedef tscalar_                                                tscalar;
-                        typedef typename tensor::vector_types_t<tscalar>::tvector       tvector;
+                        typedef Eigen::Matrix
+                        <
+                                tscalar,
+                                Eigen::Dynamic,
+                                1,
+                                Eigen::ColMajor
+                        >                                                               tvector;
 
                         ///
                         /// \brief constructor
