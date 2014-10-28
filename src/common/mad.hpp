@@ -1,5 +1,7 @@
 #pragma once
 
+#include "arch.h"
+
 namespace ncv
 {        
         ///
@@ -9,7 +11,7 @@ namespace ncv
         <
                 typename tscalar
         >
-        void mad(const tscalar* idata, tscalar weight, int n, tscalar* odata)
+        void mad(const tscalar* NANOCV_RESTRICT idata, tscalar weight, int n, tscalar* NANOCV_RESTRICT odata)
         {
                 for (int i = 0; i < n; i ++)
                 {
@@ -25,7 +27,7 @@ namespace ncv
                 typename tscalar,
                 int tsize
         >
-        void mad(const tscalar* idata, tscalar weight, int, tscalar* odata)
+        void mad(const tscalar* NANOCV_RESTRICT idata, tscalar weight, int, tscalar* NANOCV_RESTRICT odata)
         {
                 for (int i = 0; i < tsize; i ++)
                 {
@@ -41,7 +43,7 @@ namespace ncv
                 typename tscalar,
                 int tunrollsize
         >
-        void mad_unroll(const tscalar* idata, tscalar weight, int n, tscalar* odata)
+        void mad_unroll(const tscalar* NANOCV_RESTRICT idata, tscalar weight, int n, tscalar* NANOCV_RESTRICT odata)
         {
                 int i = 0;
                 for ( ; i + tunrollsize < n; i += tunrollsize)
