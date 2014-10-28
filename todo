@@ -1,6 +1,10 @@
 - cleanup convolution layer:
 	- too much duplicated & complicated code
 
+	- should split it into layer_rconv, layer_mconv & layer_conv ?!
+
+- test program to assess the speed of the 3D convolution/correlation operations
+
 - faster convolution:
  	- build a toeplitz matrix, then the convolution becomes a matrix multiplication:
 		- http://en.wikipedia.org/wiki/Toeplitz_matrix
