@@ -36,6 +36,45 @@ namespace ncv
                         typename tmatrixo,
                         typename tmatrixk = tmatrixo,
                         typename tmatrixi = tmatrixo,
+                        typename tscalar = typename tmatrixi::Scalar
+                >
+                static void corr(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
+                {
+                        const auto orows = odata.rows();
+                        const auto ocols = odata.cols();
+                        const auto krows = kdata.rows();
+                        const auto kcols = kdata.cols();
+                        const auto icols = idata.cols();
+
+                        const tscalar* pkdata = kdata.data();
+                        const tscalar* podata = odata.data();
+                        tscalar* pidata = idata.data();
+
+                        for (auto r = 0; r < orows; r ++)
+                        {
+                                const tscalar* ppodata = podata + r * ocols;
+
+                                for (auto kr = 0; kr < krows; kr ++)
+                                {
+                                        tscalar* ppidata = pidata + (r + kr) * icols;
+                                        const tscalar* ppkdata = pkdata + kr * kcols;
+
+                                        for (auto c = 0; c < ocols; c ++)
+                                        {
+                                                for (auto kc = 0; kc < kcols; kc ++)
+                                                {
+                                                        ppidata[c + kc] += ppkdata[kc] * ppodata[c];
+                                                }
+                                        }
+                                }
+                        }
+                }
+
+                template
+                <
+                        typename tmatrixo,
+                        typename tmatrixk = tmatrixo,
+                        typename tmatrixi = tmatrixo,
                         typename tmadop,
                         typename tscalar = typename tmatrixi::Scalar
                 >
@@ -100,6 +139,24 @@ namespace ncv
                         default:        corr_mad(odata, kdata, idata, mad<tscalar, int>); break;
                         }
                 }
+        }
+
+        ///
+        /// \brief 2D correlation: idata += odata @ kdata
+        ///
+        template
+        <
+                typename tmatrixo,
+                typename tmatrixk = tmatrixo,
+                typename tmatrixi = tmatrixo,
+                typename tscalar = typename tmatrixi::Scalar
+        >
+        void corr2d(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
+        {
+                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+
+                detail::corr(odata, kdata, idata);
         }
         
         ///

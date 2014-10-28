@@ -37,6 +37,47 @@ namespace ncv
                         typename tmatrixi,
                         typename tmatrixk = tmatrixi,
                         typename tmatrixo = tmatrixi,
+                        typename tscalar = typename tmatrixi::Scalar
+                >
+                static void conv(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                {
+                        const auto orows = odata.rows();
+                        const auto ocols = odata.cols();
+                        const auto krows = kdata.rows();
+                        const auto kcols = kdata.cols();
+                        const auto icols = idata.cols();
+
+                        const tscalar* pidata = idata.data();
+                        const tscalar* pkdata = kdata.data();
+                        tscalar* podata = odata.data();
+
+                        for (auto r = 0; r < orows; r ++)
+                        {
+                                tscalar* ppodata = podata + r * ocols;
+
+                                for (auto kr = 0; kr < krows; kr ++)
+                                {
+                                        const tscalar* ppidata = pidata + (r + kr) * icols;
+                                        const tscalar* ppkdata = pkdata + kr * kcols;
+
+                                        for (auto c = 0; c < ocols; c ++)
+                                        {
+                                                tscalar sum = 0;
+                                                for (auto kc = 0; kc < kcols; kc ++)
+                                                {
+                                                        sum += ppidata[c + kc] * ppkdata[kc];
+                                                }
+                                                ppodata[c] += sum;
+                                        }
+                                }
+                        }
+                }
+
+                template
+                <
+                        typename tmatrixi,
+                        typename tmatrixk = tmatrixi,
+                        typename tmatrixo = tmatrixi,
                         typename tdotop,
                         typename tscalar = typename tmatrixi::Scalar
                 >
@@ -164,6 +205,24 @@ namespace ncv
                                 }
                         }
                 }
+        }
+
+        ///
+        /// \brief 2D convolution: odata += idata @ kdata
+        ///
+        template
+        <
+                typename tmatrixi,
+                typename tmatrixk = tmatrixi,
+                typename tmatrixo = tmatrixi,
+                typename tscalar = typename tmatrixi::Scalar
+        >
+        void conv2d(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+        {
+                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+
+                detail::conv(idata, kdata, odata);
         }
 
         ///
