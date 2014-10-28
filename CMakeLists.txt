@@ -52,9 +52,11 @@ if(NANOCV_HAVE_CUDA)
 endif()
 
 # Set the compiler flags
-set(CMAKE_CXX_FLAGS                     "-Wall -std=c++11 -fno-builtin -march=native -mtune=native")
+#set(CMAKE_C_COMPILER                    "/usr/bin/clang")
+#set(CMAKE_CXX_COMPILER                  "/usr/bin/clang++")
+set(CMAKE_CXX_FLAGS                     "-Wall -std=c++11 -march=native -mtune=native")
 set(CMAKE_CXX_FLAGS_DEBUG               "-g -Og")               # -fsanitize=address")
-set(CMAKE_CXX_FLAGS_RELEASE             "-O4 -DNDEBUG")         # -DEIGEN_NO_DEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE             "-Ofast -DNDEBUG")      # -DEIGEN_NO_DEBUG")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O2 -g")               # -DEIGEN_NO_DEBUG")
 set(CMAKE_CXX_FLAGS_MINSIZEREL          "-Os -DNDEBUG")         # -DEIGEN_NO_DEBUG")
 set(CMAKE_EXE_LINKER_FLAGS              "-ffunction-sections -flto")
