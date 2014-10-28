@@ -136,7 +136,7 @@ namespace ncv
                         case 13:        corr_mad(odata, kdata, idata, mad<tscalar, 13>); break;
                         case 14:        corr_mad(odata, kdata, idata, mad<tscalar, 14>); break;
                         case 15:        corr_mad(odata, kdata, idata, mad<tscalar, 15>); break;
-                        default:        corr_mad(odata, kdata, idata, mad<tscalar, int>); break;
+                        default:        corr_mad(odata, kdata, idata, mad<tscalar>); break;
                         }
                 }
         }

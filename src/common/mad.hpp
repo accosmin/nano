@@ -7,12 +7,11 @@ namespace ncv
         ///
         template
         <
-                typename tscalar,
-                typename tsize
+                typename tscalar
         >
-        void mad(const tscalar* idata, tscalar weight, tsize size, tscalar* odata)
+        void mad(const tscalar* idata, tscalar weight, int n, tscalar* odata)
         {
-                for (tsize i = 0; i < size; i ++)
+                for (int i = 0; i < n; i ++)
                 {
                         odata[i] += idata[i] * weight;
                 }
@@ -35,85 +34,24 @@ namespace ncv
         }
 
         ///
-        /// \brief general mad-product (unroll by 2)
+        /// \brief unrolled mad-product
         ///
         template
         <
                 typename tscalar,
-                typename tsize
+                int tunrollsize
         >
-        void mad_unroll2(const tscalar* idata, tscalar weight, tsize size, tscalar* odata)
+        void mad_unroll(const tscalar* idata, tscalar weight, int n, tscalar* odata)
         {
-                const tsize size2 = size & tsize(~1);
-
-                for (tsize i = 0; i < size2; i += 2)
+                int i = 0;
+                for ( ; i + tunrollsize < n; i += tunrollsize)
                 {
-                        odata[i + 0] += idata[i + 0] * weight;
-                        odata[i + 1] += idata[i + 1] * weight;
+                        for (int t = 0; t < tunrollsize; t ++)
+                        {
+                                odata[i + t] += idata[i + t] * weight;
+                        }
                 }
-                for (tsize i = size2; i < size; i ++)
-                {
-                        odata[i] += idata[i] * weight;
-                }
-        }
-
-        ///
-        /// \brief general mad-product (unroll by 4)
-        ///
-        template
-        <
-                typename tscalar,
-                typename tsize
-        >
-        void mad_unroll4(const tscalar* idata, tscalar weight, tsize size, tscalar* odata)
-        {
-                const tsize size4 = size & tsize(~3);
-
-                for (tsize i = 0; i < size4; i += 4)
-                {
-                        odata[i + 0] += idata[i + 0] * weight;
-                        odata[i + 1] += idata[i + 1] * weight;
-                        odata[i + 2] += idata[i + 2] * weight;
-                        odata[i + 3] += idata[i + 3] * weight;
-                }
-                for (tsize i = size4; i < size; i ++)
-                {
-                        odata[i] += idata[i] * weight;
-                }
-        }
-
-        ///
-        /// \brief general mad-product (unroll by 8)
-        ///
-        template
-        <
-                typename tscalar,
-                typename tsize
-        >
-        void mad_unroll8(const tscalar* idata, tscalar weight, tsize size, tscalar* odata)
-        {
-                const tsize size8 = size & tsize(~7);
-                const tsize size4 = size & tsize(~3);
-
-                for (tsize i = 0; i < size8; i += 8)
-                {
-                        odata[i + 0] += idata[i + 0] * weight;
-                        odata[i + 1] += idata[i + 1] * weight;
-                        odata[i + 2] += idata[i + 2] * weight;
-                        odata[i + 3] += idata[i + 3] * weight;
-                        odata[i + 4] += idata[i + 4] * weight;
-                        odata[i + 5] += idata[i + 5] * weight;
-                        odata[i + 6] += idata[i + 6] * weight;
-                        odata[i + 7] += idata[i + 7] * weight;
-                }
-                for (tsize i = size8; i < size4; i += 4)
-                {
-                        odata[i + 0] += idata[i + 0] * weight;
-                        odata[i + 1] += idata[i + 1] * weight;
-                        odata[i + 2] += idata[i + 2] * weight;
-                        odata[i + 3] += idata[i + 3] * weight;
-                }
-                for (tsize i = size4; i < size; i ++)
+                for ( ; i < n; i ++)
                 {
                         odata[i] += idata[i] * weight;
                 }

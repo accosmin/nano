@@ -179,7 +179,7 @@ namespace ncv
                                 case 13:        conv_dot(idata, kdata, odata, dot<tscalar, 13>); break;
                                 case 14:        conv_dot(idata, kdata, odata, dot<tscalar, 14>); break;
                                 case 15:        conv_dot(idata, kdata, odata, dot<tscalar, 15>); break;
-                                default:        conv_dot(idata, kdata, odata, dot<tscalar, int>); break;
+                                default:        conv_dot(idata, kdata, odata, dot<tscalar>); break;
                                 }
                         }
                         else
@@ -201,7 +201,7 @@ namespace ncv
                                 case 13:        conv_mad(idata, kdata, odata, mad<tscalar, 13>); break;
                                 case 14:        conv_mad(idata, kdata, odata, mad<tscalar, 14>); break;
                                 case 15:        conv_mad(idata, kdata, odata, mad<tscalar, 15>); break;
-                                default:        conv_mad(idata, kdata, odata, mad<tscalar, int>); break;
+                                default:        conv_mad(idata, kdata, odata, mad<tscalar>); break;
                                 }
                         }
                 }
