@@ -64,17 +64,16 @@ tscalar test_dot(
         top op, const char* name, size_t n_tests,
         const tvector& vec1, const tvector& vec2)
 {
-        const size_t vsize = vec1.size() / n_tests;
+        const size_t size = vec1.size();
+        const size_t vsize = size / n_tests;
 
         const ncv::timer_t timer;
 
         // run multiple tests
         tscalar ret = 0;
-        const tscalar* pvec1 = vec1.data();
-        const tscalar* pvec2 = vec2.data();
-        for (size_t t = 0; t < n_tests; t ++, pvec1 += vsize, pvec2 += vsize)
+        for (size_t t = 0; t < size; t += vsize)
         {
-                ret += op(pvec1, pvec2, vsize);
+                ret += op(vec1.data() + t, vec2.data() + t, vsize);
         }
         
         const size_t milis = static_cast<size_t>(timer.miliseconds());
@@ -96,16 +95,15 @@ tscalar test_mad(
         vector_t cvec1 = vec1;
         vector_t cvec2 = vec2;
 
-        const size_t vsize = vec1.size() / n_tests;
+        const size_t size = vec1.size();
+        const size_t vsize = size / n_tests;
 
         const ncv::timer_t timer;
 
         // run multiple tests
-        const tscalar* pvec1 = cvec1.data();
-        tscalar* pvec2 = cvec2.data();
-        for (size_t t = 0; t < n_tests; t ++, pvec1 += vsize, pvec2 += vsize)
+        for (size_t t = 0; t < size; t += vsize)
         {
-                op(pvec1, wei, vsize, pvec2);
+                op(cvec1.data() + t, wei, vsize, cvec2.data() + t);
         }
 
         const size_t milis = static_cast<size_t>(timer.miliseconds());
