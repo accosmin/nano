@@ -1,7 +1,6 @@
 #include "nanocv.h"
 #include "common/dot.hpp"
 #include "common/mad.hpp"
-#include "common/unroll.hpp"
 #include <boost/format.hpp>
 
 using namespace ncv;
