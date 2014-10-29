@@ -47,7 +47,7 @@ namespace ncv
 
                                 if (is_masked(mmap(o, i)))
                                 {
-                                        ncv::conv2d_dot(imap, kmap, omap);
+                                        ncv::conv2d_dyn(imap, kmap, omap);
                                 }
                         }
                 }
@@ -86,7 +86,7 @@ namespace ncv
 
                                 if (is_masked(mmap(o, i)))
                                 {
-                                        ncv::corr2d_mad(omap, kmap, gimap);
+                                        ncv::corr2d_dyn(omap, kmap, gimap);
                                 }
                         }
                 }
@@ -125,7 +125,7 @@ namespace ncv
                                 if (is_masked(mmap(o, i)))
                                 {
                                         gkmap.setZero();
-                                        ncv::conv2d_dot(imap, omap, gkmap);
+                                        ncv::conv2d_dyn(imap, omap, gkmap);
                                         k ++;
                                 }
                         }

@@ -39,7 +39,7 @@ namespace ncv
                         typename tmatrixo = tmatrixi,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                static void conv(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                static void conv_cpp(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
                 {
                         const auto orows = odata.rows();
                         const auto ocols = odata.cols();
@@ -154,7 +154,7 @@ namespace ncv
                         typename tmatrixo = tmatrixi,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                static void conv_dot(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                static void conv_dyn(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
                 {
                         const auto kcols = kdata.cols();
                         const auto ocols = odata.cols();                        
@@ -208,7 +208,7 @@ namespace ncv
         }
 
         ///
-        /// \brief 2D convolution: odata += idata @ kdata
+        /// \brief 2D convolution: odata += idata @ kdata (using plain array indexing)
         ///
         template
         <
@@ -217,12 +217,12 @@ namespace ncv
                 typename tmatrixo = tmatrixi,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void conv2d(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+        void conv2d_cpp(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
         {
                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                detail::conv(idata, kdata, odata);
+                detail::conv_cpp(idata, kdata, odata);
         }
 
         ///
@@ -240,27 +240,44 @@ namespace ncv
                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                detail::conv_dot(idata, kdata, odata);
+                detail::conv_dot(idata, kdata, odata, dot<tscalar>);
         }
 
         ///
-        /// \brief 2D convolution for compile-time kernel size: odata += idata @ kdata (using a dot operator)
+        /// \brief 2D convolution: odata += idata @ kdata (using a mad operator)
         ///
         template
         <
-                int tsize,
                 typename tmatrixi,
                 typename tmatrixk = tmatrixi,
                 typename tmatrixo = tmatrixi,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void conv2d_dot(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+        void conv2d_mad(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+        {
+                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+
+                detail::conv_mad(idata, kdata, odata, mad<tscalar>);
+        }
+
+        ///
+        /// \brief 2D convolution: odata += idata @ kdata (by decoding the kernel size at runtime)
+        ///
+        template
+        <
+                typename tmatrixi,
+                typename tmatrixk = tmatrixi,
+                typename tmatrixo = tmatrixi,
+                typename tscalar = typename tmatrixi::Scalar
+        >
+        void conv2d_dyn(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
         {
                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
                 assert(tsize == kdata.cols());
 
-                detail::conv_dot(idata, kdata, odata, dot<tscalar, tsize>);
+                detail::conv_dyn(idata, kdata, odata);
         }
 }
 

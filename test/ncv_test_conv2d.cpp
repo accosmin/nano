@@ -1,4 +1,5 @@
 #include "nanocv.h"
+#include "common/cast.hpp"
 #include "common/conv2d.hpp"
 #include "common/corr2d.hpp"
 #ifdef NANOCV_HAVE_OPENCL
@@ -78,63 +79,55 @@ template
 >
 tscalar test_cpu(
         top op, const char* name,
-        const std::vector<tmatrix>&, const tmatrix&, std::vector<tmatrix>& odatas)
+        const std::vector<tmatrix>& idatas, const tmatrix& kdata, std::vector<tmatrix>& odatas)
 {
-        ncv::stats_t<double, size_t> proc_stats;
+        ncv::stats_t<double, size_t> proc1;
+        ncv::stats_t<double, size_t> procx;
         
-        // run multiple tests
+        // run multiple tests (single threaded)
         for (size_t t = 0; t < tests; t ++)
         {
                 zero_matrices(odatas);
                 
                 const ncv::timer_t timer;
-                op();
-                
-                proc_stats(timer.miliseconds());
-        }
-        
-        const size_t milis = static_cast<size_t>(proc_stats.min());
-        std::cout << name << "= " << text::resize(text::to_string(milis), 4, align::right) << "ms  ";
-        
-        return sum_matrices(odatas);
-}
-
-template
-<
-        typename top,
-        typename tmatrix,
-        typename tscalar = typename tmatrix::Scalar
->
-tscalar test_1cpu(
-        top op, const char* name, 
-        const std::vector<tmatrix>& idatas, const tmatrix& kdata, std::vector<tmatrix>& odatas)
-{
-        return test_cpu([&] ()
-        {
                 for (size_t i = 0; i < idatas.size(); i ++)
                 {
                         op(idatas[i], kdata, odatas[i]);
                 }
-        }, name, idatas, kdata, odatas);
-}
+                
+                proc1(timer.miliseconds());
+        }
 
-template
-<
-        typename top,
-        typename tmatrix,
-        typename tscalar = typename tmatrix::Scalar
->
-tscalar test_xcpu(
-        top op, const char* name, 
-        const std::vector<tmatrix>& idatas, const tmatrix& kdata, std::vector<tmatrix>& odatas)
-{
-        return test_cpu([&] ()
+        const tscalar ret1 = sum_matrices(odatas);
+
+        // run multiple tests (multi threaded)
+        for (size_t t = 0; t < tests; t ++)
         {
+                zero_matrices(odatas);
+
+                const ncv::timer_t timer;
                 ncv::thread_loopi(idatas.size(), pool, [&] (size_t i)
                 {
                         op(idatas[i], kdata, odatas[i]);
                 });
-        }, name, idatas, kdata, odatas);
+
+                procx(timer.miliseconds());
+        }
+
+        const tscalar retx = sum_matrices(odatas);
+
+        const string_t time_str = (boost::format("%1%/%2%") %
+                math::cast<size_t>(proc1.min()) %
+                math::cast<size_t>(procx.min())).str();
+        
+        std::cout << name << "= " << text::resize(time_str, 6, align::right) << "ms     ";
+
+        if (ret1 != retx)
+        {
+                throw std::runtime_error(string_t("missmatch between single & multi-threaded version of ") + name);
+        }
+        
+        return ret1;
 }
 
 #ifdef NANOCV_HAVE_OPENCL
@@ -355,27 +348,25 @@ void test_conv2d(int isize, int ksize, int tsize)
         const string_t header = (boost::format("%5% x (%1%x%2%@%3%x%4%): ") % isize % isize % ksize % ksize % tsize).str();
         std::cout << text::resize(header, 24);
         
-        const test_scalar_t conve1cpu  = test_1cpu(ncv::conv2d_eig<test_matrix_t>, "eig(1CPU)", idatas, kdata, odatas);
-        const test_scalar_t convexcpu  = test_xcpu(ncv::conv2d_eig<test_matrix_t>, "eig(xCPU)", idatas, kdata, odatas);
-        const test_scalar_t convd1cpu  = test_1cpu(ncv::conv2d_dot<test_matrix_t>, "dot(1CPU)", idatas, kdata, odatas);
-        const test_scalar_t convdxcpu  = test_xcpu(ncv::conv2d_dot<test_matrix_t>, "dot(xCPU)", idatas, kdata, odatas);
-        const test_scalar_t convb1cpu  = test_1cpu(ncv::conv2d<test_matrix_t>, "ccc(1CPU)", idatas, kdata, odatas);
-        const test_scalar_t convbxcpu  = test_xcpu(ncv::conv2d<test_matrix_t>, "ccc(xCPU)", idatas, kdata, odatas);
+        const test_scalar_t convcpu_eig = test_cpu(ncv::conv2d_eig<test_matrix_t>, "conv-eig", idatas, kdata, odatas);
+        const test_scalar_t convcpu_cpp = test_cpu(ncv::conv2d_cpp<test_matrix_t>, "conv-cpp", idatas, kdata, odatas);
+        const test_scalar_t convcpu_dot = test_cpu(ncv::conv2d_dot<test_matrix_t>, "conv-dot", idatas, kdata, odatas);
+        const test_scalar_t convcpu_mad = test_cpu(ncv::conv2d_mad<test_matrix_t>, "conv-mad", idatas, kdata, odatas);
+        const test_scalar_t convcpu_dyn = test_cpu(ncv::conv2d_dyn<test_matrix_t>, "conv-dyn", idatas, kdata, odatas);
 #if defined(NANOCV_HAVE_OPENCL)
-        const test_scalar_t convgpu    = test_gpu("conv_kernel", "conv2d(GPU)", idatas, kdata, odatas);
+        const test_scalar_t convgpu    = test_gpu("conv_kernel", "conv-gpu", idatas, kdata, odatas);
 #elif defined(NANOCV_HAVE_CUDA)
-        const test_scalar_t convgpu    = test_gpu(cuda::conv2d<test_scalar_t>, "conv2d(GPU)", idatas, kdata, odatas);
+        const test_scalar_t convgpu    = test_gpu(cuda::conv2d<test_scalar_t>, "conv-gpu", idatas, kdata, odatas);
 #endif
         std::cout << std::endl;
 
-        check(conve1cpu, conve1cpu, "conve(1CPU)");
-        check(convexcpu, conve1cpu, "conve(xCPU)");
-        check(convd1cpu, conve1cpu, "convd(1CPU)");
-        check(convdxcpu, conve1cpu, "convd(xCPU)");
-        check(convb1cpu, conve1cpu, "convb(1CPU)");
-        check(convbxcpu, conve1cpu, "convb(xCPU)");
+        check(convcpu_eig, convcpu_eig, "conv-eig");
+        check(convcpu_cpp, convcpu_eig, "conv-cpp");
+        check(convcpu_dot, convcpu_eig, "conv-dot");
+        check(convcpu_mad, convcpu_eig, "conv-mad");
+        check(convcpu_dyn, convcpu_eig, "conv-dyn");
 #if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
-        check(convgpu  , conve1cpu, "conv2d(GPU)");
+        check(convgpu    , convcpu_eig, "conv-gpu");
 #endif
 }
 
@@ -393,27 +384,23 @@ void test_corr2d(int isize, int ksize, int tsize)
         const string_t header = (boost::format("%5% x (%1%x%2%@%3%x%4%): ") % isize % isize % ksize % ksize % tsize).str();
         std::cout << text::resize(header, 24);
 
-        const test_scalar_t corre1cpu = test_1cpu(ncv::corr2d_eig<test_matrix_t>, "eig(1CPU)", odatas, kdata, idatas);
-        const test_scalar_t correxcpu = test_xcpu(ncv::corr2d_eig<test_matrix_t>, "eig(xCPU)", odatas, kdata, idatas);
-        const test_scalar_t corrm1cpu = test_1cpu(ncv::corr2d_mad<test_matrix_t>, "mad(1CPU)", odatas, kdata, idatas);
-        const test_scalar_t corrmxcpu = test_xcpu(ncv::corr2d_mad<test_matrix_t>, "mad(xCPU)", odatas, kdata, idatas);
-        const test_scalar_t corrb1cpu = test_1cpu(ncv::corr2d_mad<test_matrix_t>, "ccc(1CPU)", odatas, kdata, idatas);
-        const test_scalar_t corrbxcpu = test_xcpu(ncv::corr2d_mad<test_matrix_t>, "ccc(xCPU)", odatas, kdata, idatas);
+        const test_scalar_t corrcpu_eig = test_cpu(ncv::corr2d_eig<test_matrix_t>, "corr-eig", odatas, kdata, idatas);
+        const test_scalar_t corrcpu_cpp = test_cpu(ncv::corr2d_cpp<test_matrix_t>, "corr-cpp", odatas, kdata, idatas);
+        const test_scalar_t corrcpu_mad = test_cpu(ncv::corr2d_mad<test_matrix_t>, "corr-mad", odatas, kdata, idatas);
+        const test_scalar_t corrcpu_dyn = test_cpu(ncv::corr2d_dyn<test_matrix_t>, "corr-dyn", odatas, kdata, idatas);
 #if defined(NANOCV_HAVE_OPENCL)
-        const test_scalar_t corrgpu   = test_gpu("corr_kernel", "corr2d(GPU)", odatas, kdata, idatas);
+        const test_scalar_t corrgpu   = test_gpu("corr_kernel", "corr-gpu", odatas, kdata, idatas);
 #elif NANOCV_HAVE_CUDA
-        const test_scalar_t corrgpu   = test_gpu(cuda::corr2d<test_scalar_t>, "corr2d(GPU)", odatas, kdata, idatas);
+        const test_scalar_t corrgpu   = test_gpu(cuda::corr2d<test_scalar_t>, "corr-gpu", odatas, kdata, idatas);
 #endif
         std::cout << std::endl;
 
-        check(corre1cpu, corre1cpu, "corre(1CPU)");
-        check(correxcpu, corre1cpu, "corre(xCPU)");
-        check(corrm1cpu, corre1cpu, "corrm(1CPU)");
-        check(corrmxcpu, corre1cpu, "corrm(xCPU)");
-        check(corrb1cpu, corre1cpu, "corrb(1CPU)");
-        check(corrbxcpu, corre1cpu, "corrb(xCPU)");
+        check(corrcpu_eig, corrcpu_eig, "corr-eig");
+        check(corrcpu_cpp, corrcpu_eig, "corr-cpp");
+        check(corrcpu_mad, corrcpu_eig, "corr-mad");
+        check(corrcpu_dyn, corrcpu_eig, "corr-dyn");
 #if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
-        check(corrgpu  , corre1cpu, "corr2d(GPU)");
+        check(corrgpu    , corrcpu_eig, "corr-gpu");
 #endif
 }
 

@@ -38,7 +38,7 @@ namespace ncv
                         typename tmatrixi = tmatrixo,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                static void corr(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
+                static void corr_cpp(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
                 {
                         const auto orows = odata.rows();
                         const auto ocols = odata.cols();
@@ -114,7 +114,7 @@ namespace ncv
                         typename tmatrixi = tmatrixo,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                static void corr_mad(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
+                static void corr_dyn(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
                 {
                         const auto kcols = kdata.cols();
 
@@ -142,7 +142,7 @@ namespace ncv
         }
 
         ///
-        /// \brief 2D correlation: idata += odata @ kdata
+        /// \brief 2D correlation: idata += odata @ kdata (using plain array indexing)
         ///
         template
         <
@@ -151,12 +151,12 @@ namespace ncv
                 typename tmatrixi = tmatrixo,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void corr2d(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
+        void corr2d_cpp(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
         {
                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                detail::corr(odata, kdata, idata);
+                detail::corr_cpp(odata, kdata, idata);
         }
         
         ///
@@ -174,26 +174,25 @@ namespace ncv
                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                detail::corr_mad(odata, kdata, idata);
+                detail::corr_mad(odata, kdata, idata, mad<tscalar>);
         }
 
         ///
-        /// \brief 2D correlation for compile-time kernel size: idata += odata @ kdata (using a mad product)
+        /// \brief 2D correlation: idata += odata @ kdata (by decoding the kernel size at runtime)
         ///
         template
         <
-                int tsize,
                 typename tmatrixo,
                 typename tmatrixk = tmatrixo,
                 typename tmatrixi = tmatrixo,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void corr2d_mad(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
+        void corr2d_dyn(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
         {
                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                detail::corr_mad(odata, kdata, idata, mad<tscalar, tsize>);
+                detail::corr_dyn(odata, kdata, idata);
         }
 }
 
