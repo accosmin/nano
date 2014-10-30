@@ -1,4 +1,4 @@
-#include "io_base.h"
+#include "base.h"
 #include <fstream>
 
 namespace ncv

@@ -4,8 +4,8 @@
 #include "common/log_search.hpp"
 #include "common/random.hpp"
 #include "common/thread_pool.h"
-#include "common/logger.h"
 #include "common/timer.h"
+#include "io/logger.h"
 
 namespace ncv
 {

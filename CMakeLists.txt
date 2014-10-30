@@ -86,6 +86,7 @@ include_directories(./)
 
 file(GLOB nanocv_sources
         src/*.*
+        src/io/*.*
         src/common/*.*
         src/tensor/*.*
         src/optimize/*.*

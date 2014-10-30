@@ -1,6 +1,6 @@
-#include "io_archive.h"
-#include "io_bzip.h"
-#include "io_gzip.h"
+#include "archive.h"
+#include "bzip.h"
+#include "gzip.h"
 #include "logger.h"
 #include <archive.h>
 #include <archive_entry.h>

@@ -1,4 +1,4 @@
-#include "io_stream.h"
+#include "stream.h"
 #include <algorithm>
 
 namespace ncv

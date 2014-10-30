@@ -1,7 +1,7 @@
 #include "batch.h"
 #include "accumulator.h"
 #include "sampler.h"
-#include "common/logger.h"
+#include "io/logger.h"
 #include "common/log_search.hpp"
 #include "common/timer.h"
 #include "optimize/opt_gd.hpp"

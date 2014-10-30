@@ -1,5 +1,5 @@
 #include "task.h"
-#include "common/logger.h"
+#include "io/logger.h"
 #include "sampler.h"
 #include "grid_image.h"
 #include <set>

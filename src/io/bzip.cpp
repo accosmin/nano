@@ -1,5 +1,5 @@
-#include "io_bzip.h"
-#include "io_stream.h"
+#include "bzip.h"
+#include "stream.h"
 #include <bzlib.h>
 #include <fstream>
 

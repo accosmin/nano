@@ -1,6 +1,6 @@
 #pragma once
 
-#include "io_base.h"
+#include "base.h"
 
 namespace ncv
 {

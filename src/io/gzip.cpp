@@ -1,5 +1,5 @@
-#include "io_gzip.h"
-#include "io_stream.h"
+#include "gzip.h"
+#include "stream.h"
 #include <zlib.h>
 #include <fstream>
 

@@ -1,5 +1,5 @@
 #include "model.h"
-#include "common/logger.h"
+#include "io/logger.h"
 #include "common/timer.h"
 #include "common/random.hpp"
 #include "losses/loss_square.h"

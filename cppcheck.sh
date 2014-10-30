@@ -2,6 +2,7 @@
 
 dirs=""
 dirs=${dirs}" ./src/"
+dirs=${dirs}" ./src/io"
 dirs=${dirs}" ./src/common"
 dirs=${dirs}" ./src/tensor"
 dirs=${dirs}" ./src/optimize"

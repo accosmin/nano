@@ -1,5 +1,5 @@
 #include "layer_convolution.h"
-#include "common/logger.h"
+#include "io/logger.h"
 #include "common/math.hpp"
 #include "common/random.hpp"
 #include "common/conv2d.hpp"
