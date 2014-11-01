@@ -1,6 +1,6 @@
 #include "nanocv.h"
 #include "common/cast.hpp"
-#include "common/conv2d.hpp"
+#include "common/corr2d.hpp"
 #ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
 #endif
@@ -135,31 +135,6 @@ const std::string conv_program_source = R"xxx(
 
 #pragma OPENCL EXTENSION cl_amd_fp64 : enable
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
-
-__kernel void conv_kernel(
-        __global const double* idata,
-        __constant double* kdata, int krows, int kcols,
-        __global double* odata)
-{        
-        const int c = get_global_id(0);
-        const int r = get_global_id(1);
-
-        const int ocols = get_global_size(0);
-        const int orows = get_global_size(1);
-
-        const int icols = ocols + kcols - 1;
-
-        double sum = 0;
-        for (int kr = 0; kr < krows; kr ++)
-        {
-                for (int kc = 0; kc < kcols; kc ++)
-                {
-                        sum += idata[(r + kr) * icols + (c + kc)] * kdata[kr * kcols + kc];
-                }
-        }
-
-        odata[r * ocols + c] = sum;
-}
 
 __kernel void corr_kernel(
         __global const double* odata,
@@ -333,7 +308,7 @@ void check(tscalar result, tscalar baseline, const char* name)
         }
 }
 
-void test_conv2d(int isize, int ksize, int tsize)
+void test_corr2d(int isize, int ksize, int tsize)
 {
         const int osize = isize - ksize + 1;
 
@@ -343,29 +318,27 @@ void test_conv2d(int isize, int ksize, int tsize)
         init_matrices(isize, isize, tsize, idatas);
         init_matrices(osize, osize, tsize, odatas);
         init_matrix(ksize, ksize, kdata);
-        
+
         const string_t header = (boost::format("%5% x (%1%x%2%@%3%x%4%): ") % isize % isize % ksize % ksize % tsize).str();
         std::cout << text::resize(header, 24);
-        
-        const test_scalar_t convcpu_eig = test_cpu(ncv::conv2d_eig<test_matrix_t>, "conv-eig", idatas, kdata, odatas);
-        const test_scalar_t convcpu_cpp = test_cpu(ncv::conv2d_cpp<test_matrix_t>, "conv-cpp", idatas, kdata, odatas);
-        const test_scalar_t convcpu_dot = test_cpu(ncv::conv2d_dot<test_matrix_t>, "conv-dot", idatas, kdata, odatas);
-        const test_scalar_t convcpu_mad = test_cpu(ncv::conv2d_mad<test_matrix_t>, "conv-mad", idatas, kdata, odatas);
-        const test_scalar_t convcpu_dyn = test_cpu(ncv::conv2d_dyn<test_matrix_t>, "conv-dyn", idatas, kdata, odatas);
+
+        const test_scalar_t corrcpu_eig = test_cpu(ncv::corr2d_eig<test_matrix_t>, "corr-eig", odatas, kdata, idatas);
+        const test_scalar_t corrcpu_cpp = test_cpu(ncv::corr2d_cpp<test_matrix_t>, "corr-cpp", odatas, kdata, idatas);
+        const test_scalar_t corrcpu_mad = test_cpu(ncv::corr2d_mad<test_matrix_t>, "corr-mad", odatas, kdata, idatas);
+        const test_scalar_t corrcpu_dyn = test_cpu(ncv::corr2d_dyn<test_matrix_t>, "corr-dyn", odatas, kdata, idatas);
 #if defined(NANOCV_HAVE_OPENCL)
-        const test_scalar_t convgpu    = test_gpu("conv_kernel", "conv-gpu", idatas, kdata, odatas);
-#elif defined(NANOCV_HAVE_CUDA)
-        const test_scalar_t convgpu    = test_gpu(cuda::conv2d<test_scalar_t>, "conv-gpu", idatas, kdata, odatas);
+        const test_scalar_t corrgpu   = test_gpu("corr_kernel", "corr-gpu", odatas, kdata, idatas);
+#elif NANOCV_HAVE_CUDA
+        const test_scalar_t corrgpu   = test_gpu(cuda::corr2d<test_scalar_t>, "corr-gpu", odatas, kdata, idatas);
 #endif
         std::cout << std::endl;
 
-        check(convcpu_eig, convcpu_eig, "conv-eig");
-        check(convcpu_cpp, convcpu_eig, "conv-cpp");
-        check(convcpu_dot, convcpu_eig, "conv-dot");
-        check(convcpu_mad, convcpu_eig, "conv-mad");
-        check(convcpu_dyn, convcpu_eig, "conv-dyn");
+        check(corrcpu_eig, corrcpu_eig, "corr-eig");
+        check(corrcpu_cpp, corrcpu_eig, "corr-cpp");
+        check(corrcpu_mad, corrcpu_eig, "corr-mad");
+        check(corrcpu_dyn, corrcpu_eig, "corr-dyn");
 #if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
-        check(convgpu    , convcpu_eig, "conv-gpu");
+        check(corrgpu    , corrcpu_eig, "corr-gpu");
 #endif
 }
 
@@ -396,7 +369,7 @@ int main(int argc, char* argv[])
                 {
                         for (int ksize = min_ksize; ksize <= isize - min_ksize; ksize += 2)
                         {
-                                test_conv2d(isize, ksize, n_samples);
+                                test_corr2d(isize, ksize, n_samples);
                         }
                         std::cout << std::endl;
                 }
