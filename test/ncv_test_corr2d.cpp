@@ -119,7 +119,7 @@ tscalar test_cpu(
                 math::cast<size_t>(proc1.min()) %
                 math::cast<size_t>(procx.min())).str();
         
-        std::cout << name << "= " << text::resize(time_str, 6, align::right) << "ms     ";
+        std::cout << name << "= " << text::resize(time_str, 6, align::right) << "ms   ";
 
         if (ret1 != retx)
         {
@@ -322,7 +322,8 @@ void test_corr2d(int isize, int ksize, int tsize)
         const string_t header = (boost::format("%5% x (%1%x%2%@%3%x%4%): ") % isize % isize % ksize % ksize % tsize).str();
         std::cout << text::resize(header, 24);
 
-        const test_scalar_t corrcpu_eig = test_cpu(ncv::corr2d_eig<test_matrix_t>, "corr-eig", odatas, kdata, idatas);
+        const test_scalar_t corrcpu_egb = test_cpu(ncv::corr2d_egb<test_matrix_t>, "corr-egb", odatas, kdata, idatas);
+        const test_scalar_t corrcpu_egr = test_cpu(ncv::corr2d_egr<test_matrix_t>, "corr-egr", odatas, kdata, idatas);
         const test_scalar_t corrcpu_cpp = test_cpu(ncv::corr2d_cpp<test_matrix_t>, "corr-cpp", odatas, kdata, idatas);
         const test_scalar_t corrcpu_mdk = test_cpu(ncv::corr2d_mdk<test_matrix_t>, "corr-mkd", odatas, kdata, idatas);
         const test_scalar_t corrcpu_mdo = test_cpu(ncv::corr2d_mdo<test_matrix_t>, "corr-mko", odatas, kdata, idatas);
@@ -334,13 +335,14 @@ void test_corr2d(int isize, int ksize, int tsize)
 #endif
         std::cout << std::endl;
 
-        check(corrcpu_eig, corrcpu_eig, "corr-eig");
-        check(corrcpu_cpp, corrcpu_eig, "corr-cpp");
-        check(corrcpu_mdk, corrcpu_eig, "corr-mdk");
-        check(corrcpu_mdo, corrcpu_eig, "corr-mdo");
-        check(corrcpu_dyn, corrcpu_eig, "corr-dyn");
+        check(corrcpu_egb, corrcpu_egb, "corr-egb");
+        check(corrcpu_egr, corrcpu_egb, "corr-egb");
+        check(corrcpu_cpp, corrcpu_egb, "corr-cpp");
+        check(corrcpu_mdk, corrcpu_egb, "corr-mdk");
+        check(corrcpu_mdo, corrcpu_egb, "corr-mdo");
+        check(corrcpu_dyn, corrcpu_egb, "corr-dyn");
 #if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
-        check(corrgpu    , corrcpu_eig, "corr-gpu");
+        check(corrgpu    , corrcpu_egb, "corr-gpu");
 #endif
 }
 

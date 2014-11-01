@@ -119,7 +119,7 @@ tscalar test_cpu(
                 math::cast<size_t>(proc1.min()) %
                 math::cast<size_t>(procx.min())).str();
         
-        std::cout << name << "= " << text::resize(time_str, 6, align::right) << "ms     ";
+        std::cout << name << "= " << text::resize(time_str, 6, align::right) << "ms   ";
 
         if (ret1 != retx)
         {
