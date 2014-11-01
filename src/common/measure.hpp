@@ -1,7 +1,7 @@
 #pragma once
 
 #include "io/logger.h"
-#include "common/timer.h"
+#include "timer.h"
 #include <cstdlib>
 
 namespace ncv
