@@ -324,7 +324,8 @@ void test_corr2d(int isize, int ksize, int tsize)
 
         const test_scalar_t corrcpu_eig = test_cpu(ncv::corr2d_eig<test_matrix_t>, "corr-eig", odatas, kdata, idatas);
         const test_scalar_t corrcpu_cpp = test_cpu(ncv::corr2d_cpp<test_matrix_t>, "corr-cpp", odatas, kdata, idatas);
-        const test_scalar_t corrcpu_mad = test_cpu(ncv::corr2d_mad<test_matrix_t>, "corr-mad", odatas, kdata, idatas);
+        const test_scalar_t corrcpu_mdk = test_cpu(ncv::corr2d_mdk<test_matrix_t>, "corr-mkd", odatas, kdata, idatas);
+        const test_scalar_t corrcpu_mdo = test_cpu(ncv::corr2d_mdo<test_matrix_t>, "corr-mko", odatas, kdata, idatas);
         const test_scalar_t corrcpu_dyn = test_cpu(ncv::corr2d_dyn<test_matrix_t>, "corr-dyn", odatas, kdata, idatas);
 #if defined(NANOCV_HAVE_OPENCL)
         const test_scalar_t corrgpu   = test_gpu("corr_kernel", "corr-gpu", odatas, kdata, idatas);
@@ -335,7 +336,8 @@ void test_corr2d(int isize, int ksize, int tsize)
 
         check(corrcpu_eig, corrcpu_eig, "corr-eig");
         check(corrcpu_cpp, corrcpu_eig, "corr-cpp");
-        check(corrcpu_mad, corrcpu_eig, "corr-mad");
+        check(corrcpu_mdk, corrcpu_eig, "corr-mdk");
+        check(corrcpu_mdo, corrcpu_eig, "corr-mdo");
         check(corrcpu_dyn, corrcpu_eig, "corr-dyn");
 #if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
         check(corrgpu    , corrcpu_eig, "corr-gpu");

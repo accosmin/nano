@@ -48,7 +48,7 @@ namespace ncv
         }
         
         ///
-        /// \brief 2D correlation: idata += odata @ kdata (using a mad product)
+        /// \brief 2D correlation: idata += odata @ kdata (using a mad product by kdata columns)
         ///
         template
         <
@@ -57,12 +57,30 @@ namespace ncv
                 typename tmatrixi = tmatrixo,
                 typename tscalar = typename tmatrixi::Scalar
         >
-        void corr2d_mad(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
+        void corr2d_mdk(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
         {
                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                detail::corr_mad(odata, kdata, idata, mad<tscalar>);
+                detail::corr_madk(odata, kdata, idata, mad<tscalar>);
+        }
+
+        ///
+        /// \brief 2D correlation: idata += odata @ kdata (using a mad product by odata columns)
+        ///
+        template
+        <
+                typename tmatrixo,
+                typename tmatrixk = tmatrixo,
+                typename tmatrixi = tmatrixo,
+                typename tscalar = typename tmatrixi::Scalar
+        >
+        void corr2d_mdo(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
+        {
+                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+
+                detail::corr_mado(odata, kdata, idata, mad<tscalar>);
         }
 
         ///

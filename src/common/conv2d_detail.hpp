@@ -22,27 +22,23 @@ namespace ncv
                         const auto kcols = kdata.cols();
                         const auto icols = idata.cols();
 
-                        const tscalar* pidata = idata.data();
-                        const tscalar* pkdata = kdata.data();
-                        tscalar* podata = odata.data();
-
                         for (auto r = 0; r < orows; r ++)
                         {
-                                tscalar* ppodata = podata + r * ocols;
+                                tscalar* podata = odata.data() + r * ocols;
 
                                 for (auto kr = 0; kr < krows; kr ++)
                                 {
-                                        const tscalar* ppidata = pidata + (r + kr) * icols;
-                                        const tscalar* ppkdata = pkdata + kr * kcols;
+                                        const tscalar* pidata = idata.data() + (r + kr) * icols;
+                                        const tscalar* pkdata = kdata.data() + kr * kcols;
 
                                         for (auto c = 0; c < ocols; c ++)
                                         {
                                                 tscalar sum = 0;
                                                 for (auto kc = 0; kc < kcols; kc ++)
                                                 {
-                                                        sum += ppidata[c + kc] * ppkdata[kc];
+                                                        sum += pidata[c + kc] * pkdata[kc];
                                                 }
-                                                ppodata[c] += sum;
+                                                podata[c] += sum;
                                         }
                                 }
                         }
@@ -64,22 +60,18 @@ namespace ncv
                         const auto kcols = kdata.cols();
                         const auto icols = idata.cols();
 
-                        const tscalar* pidata = idata.data();
-                        const tscalar* pkdata = kdata.data();
-                        tscalar* podata = odata.data();
-
                         for (auto r = 0; r < orows; r ++)
                         {
-                                tscalar* ppodata = podata + r * ocols;
+                                tscalar* podata = odata.data() + r * ocols;
 
                                 for (auto kr = 0; kr < krows; kr ++)
                                 {
-                                        const tscalar* ppidata = pidata + (r + kr) * icols;
-                                        const tscalar* ppkdata = pkdata + kr * kcols;
+                                        const tscalar* pidata = idata.data() + (r + kr) * icols;
+                                        const tscalar* pkdata = kdata.data() + kr * kcols;
 
                                         for (auto c = 0; c < ocols; c ++)
                                         {
-                                                ppodata[c] += dotop(ppidata + c, ppkdata, kcols);
+                                                podata[c] += dotop(pidata + c, pkdata, kcols);
                                         }
                                 }
                         }
@@ -101,22 +93,18 @@ namespace ncv
                         const auto kcols = kdata.cols();
                         const auto icols = idata.cols();
 
-                        const tscalar* pidata = idata.data();
-                        const tscalar* pkdata = kdata.data();
-                        tscalar* podata = odata.data();
-
                         for (auto r = 0; r < orows; r ++)
                         {
-                                tscalar* ppodata = podata + r * ocols;
+                                tscalar* podata = odata.data() + r * ocols;
 
                                 for (auto kr = 0; kr < krows; kr ++)
                                 {
-                                        const tscalar* ppidata = pidata + (r + kr) * icols;
-                                        const tscalar* ppkdata = pkdata + kr * kcols;
+                                        const tscalar* pidata = idata.data() + (r + kr) * icols;
+                                        const tscalar* pkdata = kdata.data() + kr * kcols;
 
                                         for (auto kc = 0; kc < kcols; kc ++)
                                         {
-                                                madop(ppidata + kc, ppkdata[kc], ocols, ppodata);
+                                                madop(pidata + kc, pkdata[kc], ocols, podata);
                                         }
                                 }
                         }
