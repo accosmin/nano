@@ -20,11 +20,22 @@ namespace ncv
                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
+//                for (auto r = 0; r < odata.rows(); r ++)
+//                {
+//                        for (auto c = 0; c < odata.cols(); c ++)
+//                        {
+//                                idata.block(r, c, kdata.rows(), kdata.cols()) += kdata * odata(r, c);
+//                        }
+//                }
+
                 for (auto r = 0; r < odata.rows(); r ++)
                 {
-                        for (auto c = 0; c < odata.cols(); c ++)
+                        for (auto kr = 0; kr < kdata.rows(); kr ++)
                         {
-                                idata.block(r, c, kdata.rows(), kdata.cols()) += kdata * odata(r, c);
+                                for (auto kc = 0; kc < kdata.cols(); kc ++)
+                                {
+                                        idata.block(r + kr, kc, 1, odata.cols()) += odata.row(r) * kdata(kr, kc);
+                                }
                         }
                 }
         }
