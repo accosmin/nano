@@ -322,27 +322,27 @@ void test_corr2d(int isize, int ksize, int tsize)
         const string_t header = (boost::format("%5% x (%1%x%2%@%3%x%4%): ") % isize % isize % ksize % ksize % tsize).str();
         std::cout << text::resize(header, 24);
 
-        const test_scalar_t corrcpu_egb = test_cpu(ncv::corr2d_egb<test_matrix_t>, "corr-egb", odatas, kdata, idatas);
-        const test_scalar_t corrcpu_egr = test_cpu(ncv::corr2d_egr<test_matrix_t>, "corr-egr", odatas, kdata, idatas);
-        const test_scalar_t corrcpu_cpp = test_cpu(ncv::corr2d_cpp<test_matrix_t>, "corr-cpp", odatas, kdata, idatas);
-        const test_scalar_t corrcpu_mdk = test_cpu(ncv::corr2d_mdk<test_matrix_t>, "corr-mkd", odatas, kdata, idatas);
-        const test_scalar_t corrcpu_mdo = test_cpu(ncv::corr2d_mdo<test_matrix_t>, "corr-mko", odatas, kdata, idatas);
-        const test_scalar_t corrcpu_dyn = test_cpu(ncv::corr2d_dyn<test_matrix_t>, "corr-dyn", odatas, kdata, idatas);
+        const test_scalar_t corrcpu_egb = test_cpu(ncv::corr2d_egb<test_matrix_t>, "egb", odatas, kdata, idatas);
+        const test_scalar_t corrcpu_egr = test_cpu(ncv::corr2d_egr<test_matrix_t>, "egr", odatas, kdata, idatas);
+        const test_scalar_t corrcpu_cpp = test_cpu(ncv::corr2d_cpp<test_matrix_t>, "cpp", odatas, kdata, idatas);
+        const test_scalar_t corrcpu_mdk = test_cpu(ncv::corr2d_mdk<test_matrix_t>, "mkd", odatas, kdata, idatas);
+        const test_scalar_t corrcpu_mdo = test_cpu(ncv::corr2d_mdo<test_matrix_t>, "mko", odatas, kdata, idatas);
+        const test_scalar_t corrcpu_dyn = test_cpu(ncv::corr2d_dyn<test_matrix_t>, "dyn", odatas, kdata, idatas);
 #if defined(NANOCV_HAVE_OPENCL)
-        const test_scalar_t corrgpu   = test_gpu("corr_kernel", "corr-gpu", odatas, kdata, idatas);
+        const test_scalar_t corrgpu   = test_gpu("corr_kernel", "gpu", odatas, kdata, idatas);
 #elif NANOCV_HAVE_CUDA
-        const test_scalar_t corrgpu   = test_gpu(cuda::corr2d<test_scalar_t>, "corr-gpu", odatas, kdata, idatas);
+        const test_scalar_t corrgpu   = test_gpu(cuda::corr2d<test_scalar_t>, "gpu", odatas, kdata, idatas);
 #endif
         std::cout << std::endl;
 
-        check(corrcpu_egb, corrcpu_egb, "corr-egb");
-        check(corrcpu_egr, corrcpu_egb, "corr-egb");
-        check(corrcpu_cpp, corrcpu_egb, "corr-cpp");
-        check(corrcpu_mdk, corrcpu_egb, "corr-mdk");
-        check(corrcpu_mdo, corrcpu_egb, "corr-mdo");
-        check(corrcpu_dyn, corrcpu_egb, "corr-dyn");
+        check(corrcpu_egb, corrcpu_egb, "egb");
+        check(corrcpu_egr, corrcpu_egb, "egb");
+        check(corrcpu_cpp, corrcpu_egb, "cpp");
+        check(corrcpu_mdk, corrcpu_egb, "mdk");
+        check(corrcpu_mdo, corrcpu_egb, "mdo");
+        check(corrcpu_dyn, corrcpu_egb, "dyn");
 #if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
-        check(corrgpu    , corrcpu_egb, "corr-gpu");
+        check(corrgpu    , corrcpu_egb, "gpu");
 #endif
 }
 

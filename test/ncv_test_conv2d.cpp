@@ -347,25 +347,25 @@ void test_conv2d(int isize, int ksize, int tsize)
         const string_t header = (boost::format("%5% x (%1%x%2%@%3%x%4%): ") % isize % isize % ksize % ksize % tsize).str();
         std::cout << text::resize(header, 24);
         
-        const test_scalar_t convcpu_eig = test_cpu(ncv::conv2d_eig<test_matrix_t>, "conv-eig", idatas, kdata, odatas);
-        const test_scalar_t convcpu_cpp = test_cpu(ncv::conv2d_cpp<test_matrix_t>, "conv-cpp", idatas, kdata, odatas);
-        const test_scalar_t convcpu_dot = test_cpu(ncv::conv2d_dot<test_matrix_t>, "conv-dot", idatas, kdata, odatas);
-        const test_scalar_t convcpu_mad = test_cpu(ncv::conv2d_mad<test_matrix_t>, "conv-mad", idatas, kdata, odatas);
-        const test_scalar_t convcpu_dyn = test_cpu(ncv::conv2d_dyn<test_matrix_t>, "conv-dyn", idatas, kdata, odatas);
+        const test_scalar_t convcpu_eig = test_cpu(ncv::conv2d_eig<test_matrix_t>, "eig", idatas, kdata, odatas);
+        const test_scalar_t convcpu_cpp = test_cpu(ncv::conv2d_cpp<test_matrix_t>, "cpp", idatas, kdata, odatas);
+        const test_scalar_t convcpu_dot = test_cpu(ncv::conv2d_dot<test_matrix_t>, "dot", idatas, kdata, odatas);
+        const test_scalar_t convcpu_mad = test_cpu(ncv::conv2d_mad<test_matrix_t>, "mad", idatas, kdata, odatas);
+        const test_scalar_t convcpu_dyn = test_cpu(ncv::conv2d_dyn<test_matrix_t>, "dyn", idatas, kdata, odatas);
 #if defined(NANOCV_HAVE_OPENCL)
-        const test_scalar_t convgpu    = test_gpu("conv_kernel", "conv-gpu", idatas, kdata, odatas);
+        const test_scalar_t convgpu    = test_gpu("conv_kernel", "gpu", idatas, kdata, odatas);
 #elif defined(NANOCV_HAVE_CUDA)
-        const test_scalar_t convgpu    = test_gpu(cuda::conv2d<test_scalar_t>, "conv-gpu", idatas, kdata, odatas);
+        const test_scalar_t convgpu    = test_gpu(cuda::conv2d<test_scalar_t>, "gpu", idatas, kdata, odatas);
 #endif
         std::cout << std::endl;
 
-        check(convcpu_eig, convcpu_eig, "conv-eig");
-        check(convcpu_cpp, convcpu_eig, "conv-cpp");
-        check(convcpu_dot, convcpu_eig, "conv-dot");
-        check(convcpu_mad, convcpu_eig, "conv-mad");
-        check(convcpu_dyn, convcpu_eig, "conv-dyn");
+        check(convcpu_eig, convcpu_eig, "eig");
+        check(convcpu_cpp, convcpu_eig, "cpp");
+        check(convcpu_dot, convcpu_eig, "dot");
+        check(convcpu_mad, convcpu_eig, "mad");
+        check(convcpu_dyn, convcpu_eig, "dyn");
 #if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
-        check(convgpu    , convcpu_eig, "conv-gpu");
+        check(convgpu    , convcpu_eig, "gpu");
 #endif
 }
 
