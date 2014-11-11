@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
                 boost::program_options::value<size_t>()->default_value(1),
                 "number of threads to use [1, 64], 0 - use all available threads");
         po_desc.add_options()("samples,s",
-                boost::program_options::value<size_t>()->default_value(100000),
+                boost::program_options::value<size_t>()->default_value(10000),
                 "number of samples to use [1000, 100000]");
         po_desc.add_options()("forward",
                 "evaluate the \'forward\' pass (output)");
