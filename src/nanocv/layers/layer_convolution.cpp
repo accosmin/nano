@@ -133,8 +133,7 @@ namespace ncv
         }
 
         conv_layer_t::conv_layer_t(const string_t& parameters)
-                :       layer_t(parameters),
-                        m_type(type::full)
+                :       layer_t(parameters)
         {
         }
 
@@ -151,29 +150,6 @@ namespace ncv
                 const size_t odims = math::clamp(text::from_params<size_t>(configuration(), "dims", 16), 1, 256);
                 const size_t krows = math::clamp(text::from_params<size_t>(configuration(), "rows", 8), 1, 32);
                 const size_t kcols = math::clamp(text::from_params<size_t>(configuration(), "cols", 8), 1, 32);
-
-                // check connection type
-                const string_t t = text::from_params<string_t>(configuration(), "type", "full");
-                if (t == "full")
-                {
-                        m_type = type::full;
-                }
-                else if (t == "rand")
-                {
-                        m_type = type::rand;
-                }
-                else if (t == "mask")
-                {
-                        m_type = type::mask;
-                }
-                else
-                {
-                        const string_t message =
-                                "invalid connection type (" + t + ")! expecting [full, rand, mask].";
-
-                        log_error() << "convolution layer: " << message;
-                        throw std::runtime_error("convolution layer: " + message);
-                }
 
                 // check convolution size
                 if (irows < krows || icols < kcols)
@@ -217,27 +193,26 @@ namespace ncv
 
         void conv_layer_t::make_mask()
         {
-                switch (m_type)
+                const size_t mask = math::clamp(text::from_params<size_t>(configuration(), "mask", 100), 1, 100);
+
+                if (mask >= 100)
                 {
-                case type::full:
+                        // full connection
                         m_mdata.setOnes();
-                        break;
+                }
 
-                case type::rand:
-                        m_mdata.setOnes();
-                        break;
-
-                case type::mask:
+                else
+                {
+                        // connect with the given probability
                         m_mdata.setZero();
                         for (size_t o = 0; o < odims(); o ++)
                         {
-                                const indices_t indices = uniform_indices(idims(), std::max(size_t(1), idims() / 2));
+                                const indices_t indices = uniform_indices(idims(), std::max(size_t(1), idims() * mask / 100));
                                 for (size_t i : indices)
                                 {
                                         m_mdata(o, i) = 1.0;
                                 }
                         }
-                        break;
                 }
 
 //                for (size_t o = 0; o < odims(); o ++)
@@ -254,28 +229,16 @@ namespace ncv
 
         scalar_t* conv_layer_t::save_params(scalar_t* params) const
         {
-                switch (m_type)
+                for (size_t o = 0, k = 0; o < odims(); o ++)
                 {
-                case type::full:                        
-                        params = tensor::save(m_kdata, params);
-                        break;
-
-                case type::mask:
-                        for (size_t o = 0, k = 0; o < odims(); o ++)
+                        for (size_t i = 0; i < idims(); i ++, k ++)
                         {
-                                for (size_t i = 0; i < idims(); i ++, k ++)
+                                if (is_masked(m_mdata(o, i)))
                                 {
-                                        if (is_masked(m_mdata(o, i)))
-                                        {
-                                                auto kmap = tensor::make_vector(m_kdata.plane_data(k), m_kdata.plane_size());
-                                                params = tensor::save(kmap, params);
-                                        }
+                                        auto kmap = tensor::make_vector(m_kdata.plane_data(k), m_kdata.plane_size());
+                                        params = tensor::save(kmap, params);
                                 }
                         }
-                        break;
-
-                case type::rand:
-                        break;
                 }
 
                 return params;
@@ -283,28 +246,16 @@ namespace ncv
 
         const scalar_t* conv_layer_t::load_params(const scalar_t* params)
         {
-                switch (m_type)
+                for (size_t o = 0, k = 0; o < odims(); o ++)
                 {
-                case type::full:
-                        params = tensor::load(m_kdata, params);
-                        break;
-
-                case type::mask:
-                        for (size_t o = 0, k = 0; o < odims(); o ++)
+                        for (size_t i = 0; i < idims(); i ++, k ++)
                         {
-                                for (size_t i = 0; i < idims(); i ++, k ++)
+                                if (is_masked(m_mdata(o, i)))
                                 {
-                                        if (is_masked(m_mdata(o, i)))
-                                        {
-                                                auto kmap = tensor::make_vector(m_kdata.plane_data(k), m_kdata.plane_size());
-                                                params = tensor::load(kmap, params);
-                                        }
+                                        auto kmap = tensor::make_vector(m_kdata.plane_data(k), m_kdata.plane_size());
+                                        params = tensor::load(kmap, params);
                                 }
                         }
-                        break;
-
-                case type::rand:
-                        break;
                 }
 
                 return params;
@@ -322,18 +273,7 @@ namespace ncv
 
         size_t conv_layer_t::psize() const
         {
-                switch (m_type)
-                {
-                case type::full:
-                        return m_kdata.size();
-
-                case type::mask:
-                        return static_cast<size_t>(m_mdata.sum()) * m_kdata.plane_size();
-
-                case type::rand:
-                default:
-                        return 0;
-                }
+                return static_cast<size_t>(m_mdata.sum()) * m_kdata.plane_size();
         }
 
         const tensor_t& conv_layer_t::output(const tensor_t& input)
@@ -376,19 +316,10 @@ namespace ncv
 
                 m_odata.copy_from(output);
 
-                switch (m_type)
-                {
-                case type::full:
-                case type::mask:
-                        _pgrad(m_mdata.data(),
-                               m_idata.data(), idims(),
-                               gradient, krows(), kcols(),
-                               m_odata.data(), odims(), orows(), ocols());
-                        break;
-
-                case type::rand:
-                        break;
-                }
+                _pgrad(m_mdata.data(),
+                       m_idata.data(), idims(),
+                       gradient, krows(), kcols(),
+                       m_odata.data(), odims(), orows(), ocols());
         }
 }
 

@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
         ncv::init();
 
         const strings_t conv_layer_ids { "", "conv" };
-        const strings_t conv_con_types { "full", "rand", "mask" };
+        const strings_t conv_masks { "25", "50", "100" };
         const strings_t pool_layer_ids { "", "pool-max", "pool-min", "pool-avg" };
         const strings_t full_layer_ids { "", "linear" };
         const strings_t actv_layer_ids { "", "act-unit", "act-tanh", "act-snorm", "act-splus" };
@@ -206,7 +206,7 @@ int main(int argc, char *argv[])
                         {
                                 for (const string_t& conv_layer_id : conv_layer_ids)
                                 {
-                                        for (const string_t& conv_con_type : conv_con_types)
+                                        for (const string_t& conv_mask : conv_masks)
                                         {
                                                 for (const string_t& full_layer_id : full_layer_ids)
                                                 {
@@ -220,7 +220,7 @@ int main(int argc, char *argv[])
                                                                 string_t params;
                                                                 params += "dims=" + text::to_string(rgen());
                                                                 params += (rgen() % 2 == 0) ? ",rows=3,cols=3," : ",rows=4,cols=4,";
-                                                                params += "type=" + conv_con_type;
+                                                                params += "mask=" + conv_mask;
 
                                                                 desc += conv_layer_id + ":" + params + ";";
                                                                 desc += pool_layer_id + ";";

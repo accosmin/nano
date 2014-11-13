@@ -11,22 +11,15 @@ namespace ncv
         ///     dims=16[1,256]          - number of convolutions (output dimension)
         ///     rows=8[1,32]            - convolution size
         ///     cols=8[1,32]            - convolution size
-        ///     type=full[,rand,mask]   - connection type
+        ///     mask=1[0,100]           - random masking percentage (number of input planes connected per output plane)
         ///
         class conv_layer_t : public layer_t
         {
         public:
 
-                enum class type : int
-                {
-                        full = 0,       ///< outputs connected to all inputs, to learn convolutions
-                        rand,           ///< outputs connected to all inputs, fixed convolutions
-                        mask            ///< outputs connected to some (masked) inputs, to learn convolutions
-                };
-
                 NANOCV_MAKE_CLONABLE(conv_layer_t,
                                      "convolution layer, "\
-                                     "parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32],type=full[,rand,mask]")
+                                     "parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32],mask=100[1,100]")
 
                 // constructor
                 conv_layer_t(const string_t& parameters = string_t());
@@ -73,8 +66,6 @@ namespace ncv
         private:
 
                 // attributes
-                type                    m_type;
-
                 tensor_t                m_idata;        ///< input buffer:              idims x irows x icols
                 tensor_t                m_odata;        ///< output buffer:             odims x orows x ocols
                 tensor_t                m_kdata;        ///< convolution kernels:       odims x idims x krows x kcols

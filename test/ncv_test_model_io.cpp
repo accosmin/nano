@@ -26,21 +26,21 @@ int main(int argc, char *argv[])
         const string_t lmodel4 = lmodel3 + "linear:dims=100;act-snorm;";
         const string_t lmodel5 = lmodel4 + "linear:dims=100;act-snorm;";
         
-        string_t cmodel;
-        cmodel = cmodel + "conv:dims=16,rows=6,cols=6,type=full;act-snorm;pool-max;";
-        cmodel = cmodel + "conv:dims=32,rows=5,cols=5,type=full;act-snorm;pool-max;";
-        cmodel = cmodel + "conv:dims=64,rows=4,cols=4,type=full;act-snorm;";
+        string_t cmodel100;
+        cmodel100 = cmodel100 + "conv:dims=16,rows=9,cols=9,mask=100;act-snorm;pool-max;";
+        cmodel100 = cmodel100 + "conv:dims=32,rows=5,cols=5,mask=100;act-snorm;pool-max;";
+        cmodel100 = cmodel100 + "conv:dims=64,rows=3,cols=3,mask=100;act-snorm;";
 
-        string_t rmodel;
-        rmodel = rmodel + "conv:dims=16,rows=6,cols=6,type=rand;act-snorm;pool-max;";
-        rmodel = rmodel + "conv:dims=32,rows=5,cols=5,type=rand;act-snorm;pool-max;";
-        rmodel = rmodel + "conv:dims=64,rows=4,cols=4,type=rand;act-snorm;";
+        string_t cmodel50;
+        cmodel50 = cmodel50 + "conv:dims=16,rows=9,cols=9,mask=50;act-snorm;pool-max;";
+        cmodel50 = cmodel50 + "conv:dims=32,rows=5,cols=5,mask=50;act-snorm;pool-max;";
+        cmodel50 = cmodel50 + "conv:dims=64,rows=3,cols=3,mask=50;act-snorm;";
 
-        string_t mmodel;
-        mmodel = mmodel + "conv:dims=16,rows=6,cols=6,type=mask;act-snorm;pool-max;";
-        mmodel = mmodel + "conv:dims=32,rows=5,cols=5,type=mask;act-snorm;pool-max;";
-        mmodel = mmodel + "conv:dims=64,rows=4,cols=4,type=mask;act-snorm;";
-        
+        string_t cmodel25;
+        cmodel25 = cmodel25 + "conv:dims=16,rows=9,cols=9,mask=25;act-snorm;pool-max;";
+        cmodel25 = cmodel25 + "conv:dims=32,rows=5,cols=5,mask=25;act-snorm;pool-max;";
+        cmodel25 = cmodel25 + "conv:dims=64,rows=3,cols=3,mask=25;act-snorm;";
+
         const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
 
         strings_t cmd_networks =
@@ -52,9 +52,9 @@ int main(int argc, char *argv[])
                 lmodel4 + outlayer,
                 lmodel5 + outlayer,
 
-                cmodel + outlayer,
-                rmodel + outlayer,
-                mmodel + outlayer
+                cmodel100 + outlayer,
+                cmodel50 + outlayer,
+                cmodel25 + outlayer
         };
 
         const rloss_t loss = loss_manager_t::instance().get("logistic");
