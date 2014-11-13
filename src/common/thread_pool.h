@@ -16,6 +16,14 @@ namespace ncv
         }
 
         ///
+        /// \brief maximum number of supported threads
+        ///
+        inline size_t max_n_threads()
+        {
+                return n_threads() * 8;
+        }
+
+        ///
         /// \brief asynchronously runs multiple workers/jobs/threads
         /// by enqueing and distribute them on all available threads
         ///

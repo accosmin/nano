@@ -45,7 +45,9 @@ namespace ncv
 
         thread_pool_t::thread_pool_t(size_t nthreads)
         {
-                nthreads = (nthreads == 0) ? ncv::n_threads() : std::min(nthreads, ncv::n_threads());
+                nthreads = (nthreads == 0) ? ncv::n_threads() :
+                                             std::max(size_t(1), std::min(nthreads, ncv::max_n_threads()));
+
                 for (size_t i = 0; i < nthreads; i ++)
                 {
                         m_workers.push_back(std::thread(thread_pool_t::worker_t(m_data)));
