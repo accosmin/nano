@@ -1,7 +1,6 @@
 #pragma once
 
 #include <algorithm>
-#include "vector.hpp"
 
 namespace ncv
 {
