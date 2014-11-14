@@ -119,11 +119,11 @@ namespace ncv
 
                         Eigen::Map<tmatrix> plane_matrix(tsize i = 0)
                         {
-                                return Eigen::Map<tmatrix>(plane_data(i), rows(), cols());
+                                return tensor::make_matrix(plane_data(i), rows(), cols());
                         }
                         Eigen::Map<const tmatrix> plane_matrix(tsize i = 0) const
                         {
-                                return Eigen::Map<const tmatrix>(plane_data(i), rows(), cols());
+                                return tensor::make_matrix(plane_data(i), rows(), cols());
                         }
 
                         ///
