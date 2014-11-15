@@ -1,8 +1,3 @@
-- cleanup convolution layer:
-	- too much duplicated & complicated code
-
-	- should split it into layer_rconv, layer_mconv & layer_conv ?!
-
 - test program to assess the speed of the 3D convolution/correlation operations
 
 - faster convolution:
@@ -11,15 +6,6 @@
 
         - check if any improvement if using a 3D convolution    
 
-- reduce the number of training configurations for mnist:
-	- always use max pooling (better results)
-	- don't use random convolution models (very bad results, at most as a weak baseline)
-	- try various stochastic methods (use only two epochs)
-
-- improve the speed of the linear layers: 
-	- the gradient takes too much to compute!
-	- the gradient does not scale with the number of threads
-
 - second-order stochastic methods:
 	- apparently generalizes as well as the empirical optimum in a SINGLE pass
 	- Leon-Bottou - one pass ...
@@ -27,11 +13,6 @@
 - stochastic methods using adaptive learning rates for each dimensions:
 	- if gradient becomes smaller, than decrease the learning rate ...
 
-- ctest-based unit tests
-
-- documentation using:
-	- https://docs.readthedocs.org/en/latest/getting_started.html
-               
 - finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
 
 - GTSD dataset support (after 0.1 release)
