@@ -3,7 +3,8 @@
 namespace ncv
 {        
         avg_var_criterion_t::avg_var_criterion_t(const std::string& configuration)
-                :       avg_criterion_t(configuration)
+                :       avg_criterion_t(configuration),
+                        m_value2(0.0)
         {
         }
 
