@@ -83,7 +83,6 @@ namespace ncv
                                                 << "[train = " << tvalue << "/" << terror
                                                 << ", valid = " << vvalue << "/" << verror
                                                 << ", param = " << state.x.lpNorm<Eigen::Infinity>()
-                                                << ", grad = " << state.g.lpNorm<Eigen::Infinity>()
                                                 << ", calls = " << state.n_fval_calls() << "/" << state.n_grad_calls()
                                                 << ", lambda = " << data.m_lacc.lambda()
                                                 << "] done in " << timer.elapsed() << ".";
