@@ -8,7 +8,7 @@
 namespace ncv
 {
         ///
-        /// computes statistics: average, standard deviation etc.
+        /// \brief computes statistics: average, standard deviation etc.
         ///
         template
         <
@@ -23,17 +23,17 @@ namespace ncv
 	{
         public:
 
-                // constructor
+                ///
+                /// \brief constructor
+                ///
                 stats_t()
-                        :       m_count(0),
-                                m_sum(0),
-                                m_sumsq(0),
-                                m_min(+std::numeric_limits<tscalar>::max()),
-                                m_max(-std::numeric_limits<tscalar>::max())
                 {
+                        clear();
                 }
 
-                // add new values
+                ///
+                /// \brief update statistics with a new value
+                ///
                 void operator()(tscalar value)
                 {
                         m_count ++;
@@ -43,6 +43,9 @@ namespace ncv
                         m_max = std::max(m_max, value);
                 }
 
+                ///
+                /// \brief merge statistics
+                ///
                 void operator()(const stats_t& other)
                 {
                         m_count += other.m_count;
@@ -52,6 +55,9 @@ namespace ncv
                         m_max = std::max(m_max, other.m_max);
                 }
                 
+                ///
+                /// \brief update statistics with the given [begin, end) range
+                ///
                 template
                 <
                         class titerator
@@ -63,6 +69,18 @@ namespace ncv
                                 operator()(*begin);
                         }
 		}
+
+                ///
+                /// \brief reset statistics
+                ///
+                void clear()
+                {
+                        m_count = 0;
+                        m_sum = 0;
+                        m_sumsq = 0;
+                        m_min = +std::numeric_limits<tscalar>::max();
+                        m_max = -std::numeric_limits<tscalar>::max();
+                }
 		
                 // access functions
                 bool valid() const { return count() != 0; }
