@@ -34,17 +34,17 @@ namespace ncv
                 virtual criterion_t& operator+=(const criterion_t&);
 
                 ///
-                /// \brief average loss value
+                /// \brief cumulated loss value
                 ///
                 virtual scalar_t value() const;
 
                 ///
-                /// \brief average error value
+                /// \brief cumulated error value
                 ///
                 virtual scalar_t error() const;
 
                 ///
-                /// \brief average gradient
+                /// \brief cumulated gradient
                 ///
                 virtual vector_t vgrad() const;
                 
