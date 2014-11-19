@@ -18,10 +18,14 @@ namespace ncv
                 return *this;
         }
 
-        void avg_l2_criterion_t::accumulate(
-                const vector_t& output, const vector_t& target, const loss_t& loss, scalar_t weight)
+        void avg_l2_criterion_t::accumulate(scalar_t value, scalar_t error)
         {
-                avg_criterion_t::accumulate(output, target, loss, weight);
+                avg_criterion_t::accumulate(value, error);
+        }
+
+        void avg_l2_criterion_t::accumulate(const vector_t& vgrad, scalar_t value, scalar_t error)
+        {
+                avg_criterion_t::accumulate(vgrad, value, error);
         }
         
         scalar_t avg_l2_criterion_t::value() const

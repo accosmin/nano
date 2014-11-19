@@ -1,5 +1,4 @@
 #include "avg_criterion.h"
-#include "loss.h"
 #include <cassert>
 
 namespace ncv
@@ -33,27 +32,20 @@ namespace ncv
                 return *this;
         }
 
-        void avg_criterion_t::accumulate(
-                const vector_t& output, const vector_t& target, const loss_t& loss, scalar_t weight)
+        void avg_criterion_t::accumulate(scalar_t value, scalar_t error)
         {
-                assert(static_cast<size_t>(output.size()) == m_model->osize());
-                assert(static_cast<size_t>(target.size()) == m_model->osize());
-                
-                // loss value
-                m_value += weight * loss.value(target, output);
-                m_error += weight * loss.error(target, output);
+                m_value += value;
+                m_error += error;
                 m_count ++;
-                
-                // loss gradient
-                switch (m_type)
-                {
-                case type::value:
-                        break;
+        }
 
-                case type::vgrad:
-                        m_vgrad += weight * m_model->pgrad(loss.vgrad(target, output));
-                        break;
-                }
+        void avg_criterion_t::accumulate(const vector_t& vgrad, scalar_t value, scalar_t error)
+        {
+                m_value += value;
+                m_error += error;
+                m_count ++;
+
+                m_vgrad += vgrad;
         }
         
         scalar_t avg_criterion_t::value() const

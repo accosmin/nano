@@ -54,9 +54,10 @@ namespace ncv
         protected:
 
                 ///
-                /// \brief update statistics with a new sample
+                /// \brief update statistics with the loss value/error/gradient for a sample
                 ///
-                virtual void accumulate(const vector_t& input, const vector_t& target, const loss_t&, scalar_t weight);
+                virtual void accumulate(scalar_t value, scalar_t error);
+                virtual void accumulate(const vector_t& vgrad, scalar_t value, scalar_t error);
                 
         private:
                 

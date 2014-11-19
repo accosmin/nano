@@ -1,5 +1,6 @@
 #include "criterion.h"
 #include "task.h"
+#include "loss.h"
 #include <cassert>
 
 namespace ncv
@@ -53,6 +54,9 @@ namespace ncv
                 const image_t& image = task.image(sample.m_index);
                 const vector_t& target = sample.m_target;                
                 const vector_t& output = m_model->output(image, sample.m_region).vector();
+
+                assert(static_cast<size_t>(output.size()) == m_model->osize());
+                assert(static_cast<size_t>(target.size()) == m_model->osize());
                 
                 accumulate(output, target, loss, sample.m_weight);
         }
@@ -60,6 +64,9 @@ namespace ncv
         void criterion_t::update(const tensor_t& input, const vector_t& target, const loss_t& loss, scalar_t weight)
         {
                 const vector_t& output = m_model->output(input).vector();
+
+                assert(static_cast<size_t>(output.size()) == m_model->osize());
+                assert(static_cast<size_t>(target.size()) == m_model->osize());
                 
                 accumulate(output, target, loss, weight);
         }
@@ -67,8 +74,29 @@ namespace ncv
         void criterion_t::update(const vector_t& input, const vector_t& target, const loss_t& loss, scalar_t weight)
         {
                 const vector_t& output = m_model->output(input).vector();
+
+                assert(static_cast<size_t>(output.size()) == m_model->osize());
+                assert(static_cast<size_t>(target.size()) == m_model->osize());
                 
                 accumulate(output, target, loss, weight);
+        }
+
+        void criterion_t::accumulate(
+                const vector_t& output, const vector_t& target, const loss_t& loss, scalar_t weight)
+        {
+                switch (m_type)
+                {
+                case type::value:
+                        accumulate(weight * loss.value(target, output),
+                                   weight * loss.error(target, output));
+                        break;
+
+                case type::vgrad:
+                        accumulate(weight * m_model->pgrad(loss.vgrad(target, output)),
+                                   weight * loss.value(target, output),
+                                   weight * loss.error(target, output));
+                        break;
+                }
         }
 
         size_t criterion_t::psize() const

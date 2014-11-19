@@ -1,4 +1,5 @@
 #include "avg_var_criterion.h"
+#include <cassert>
 
 namespace ncv
 {        
@@ -31,19 +32,19 @@ namespace ncv
                 return *this;
         }
 
-        void avg_var_criterion_t::accumulate(
-                const vector_t& output, const vector_t& target, const loss_t& loss, scalar_t weight)
+        void avg_var_criterion_t::accumulate(scalar_t value, scalar_t error)
         {
-                const scalar_t old_value = m_value;
-                const vector_t old_vgrad = m_vgrad;
+                avg_criterion_t::accumulate(value, error);
                 
-                avg_criterion_t::accumulate(output, target, loss, weight);
-                
-                const scalar_t crt_value = m_value - old_value;
-                const vector_t crt_vgrad = m_vgrad - old_vgrad;
-                
-                m_value2 += crt_value * crt_value;
-                m_vgrad2 += crt_value * crt_vgrad;
+                m_value2 += value * value;
+        }
+
+        void avg_var_criterion_t::accumulate(const vector_t& vgrad, scalar_t value, scalar_t error)
+        {
+                avg_criterion_t::accumulate(vgrad, value, error);
+
+                m_value2 += value * value;
+                m_vgrad2 += value * vgrad;
         }
         
         scalar_t avg_var_criterion_t::value() const
