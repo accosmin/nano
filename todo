@@ -13,6 +13,8 @@
 - stochastic methods using adaptive learning rates for each dimensions:
 	- if gradient becomes smaller, than decrease the learning rate ...
 
+- Tikhonov regularizer	
+
 - finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
 
 - GTSD dataset support (after 0.1 release):
