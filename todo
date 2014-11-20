@@ -15,7 +15,9 @@
 
 - finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
 
-- GTSD dataset support (after 0.1 release)
+- GTSD dataset support (after 0.1 release):
+	- create both classification and detection tasks
+	- build an object detector
 
 - unsupervised learning (after 0.1 release): 
 	- unsupervised training:
