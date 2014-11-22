@@ -32,7 +32,7 @@ namespace ncv
                 tsampler.setup(fold).setup(sampler_t::atype::annotated);
 
                 sampler_t vsampler(task);
-                tsampler.split(90, vsampler);
+                tsampler.split(80, vsampler);
 
                 if (tsampler.empty() || vsampler.empty())
                 {
