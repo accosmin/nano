@@ -1,3 +1,17 @@
+- other stochastic methods:
+	- accelerated gradient (Nesterov): http://blogs.princeton.edu/imabandit/2013/04/01/acceleratedgradientdescent/
+	- http://www.cs.berkeley.edu/~jduchi/projects/DuchiHaSi11.pdf
+	
+	- second-order: apparently generalizes as well as the empirical optimum in a SINGLE pass
+	- Leon-Bottou - one pass ...
+
+- stochastic methods using adaptive learning rates for each dimensions:
+	- if gradient becomes smaller, than decrease the learning rate ...
+
+- update the optimization test program with generic implementation of stochastic methods
+
+- MAD with index shifts (may speed-up corr2d)
+
 - test program to assess the speed of the 3D convolution/correlation operations
 
 - faster convolution:
@@ -5,13 +19,6 @@
 		- http://en.wikipedia.org/wiki/Toeplitz_matrix
 
         - check if any improvement if using a 3D convolution    
-
-- second-order stochastic methods:
-	- apparently generalizes as well as the empirical optimum in a SINGLE pass
-	- Leon-Bottou - one pass ...
-
-- stochastic methods using adaptive learning rates for each dimensions:
-	- if gradient becomes smaller, than decrease the learning rate ...
 
 - Tikhonov regularizer	
 
