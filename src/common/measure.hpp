@@ -11,9 +11,10 @@ namespace ncv
         ///
         template
         <
-                typename toperator
+                typename toperator,
+                typename tstring
         >
-        void measure_call(const toperator& op, const std::string& msg)
+        void measure_call(const toperator& op, const tstring& msg)
         {
                 const timer_t timer;
                 op();
@@ -25,9 +26,11 @@ namespace ncv
         ///
         template
         <
-                typename toperator
+                typename toperator,
+                typename tstring_success,
+                typename tstring_failure
         >
-        void measure_critical_call(const toperator& op, const std::string& msg_success, const std::string& msg_failure)
+        void measure_critical_call(const toperator& op, const tstring_success& msg_success, const tstring_failure& msg_failure)
         {
                 const timer_t timer;
                 if (op())
