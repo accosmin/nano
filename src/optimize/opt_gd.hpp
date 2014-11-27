@@ -27,8 +27,8 @@ namespace ncv
                 tstate gd(
                         const tproblem& problem,
                         const tvector& x0,
-                        tsize max_iterations,
-                        tscalar epsilon,
+                        tsize max_iterations,           ///< maximum number of iterations
+                        tscalar epsilon,                ///< convergence precision
                         const twlog& op_wlog = twlog(),
                         const telog& op_elog = telog(),
                         const tulog& op_ulog = tulog())
