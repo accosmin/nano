@@ -1,3 +1,6 @@
+- refactor criteria:
+	- L2-norm: update the gradient per sample with L2/N to be usable with different stochastic methods
+
 - other stochastic methods:
 	- accelerated gradient (Nesterov): http://blogs.princeton.edu/imabandit/2013/04/01/acceleratedgradientdescent/
 	- http://www.cs.berkeley.edu/~jduchi/projects/DuchiHaSi11.pdf
