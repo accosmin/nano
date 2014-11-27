@@ -99,7 +99,7 @@ namespace ncv
         namespace text
         {
                 template <>
-                inline std::string to_string(color_mode mode)
+                inline string_t to_string(color_mode mode)
                 {
                         switch (mode)
                         {
@@ -110,7 +110,7 @@ namespace ncv
                 }
 
                 template <>
-                inline color_mode from_string<color_mode>(const std::string& string)
+                inline color_mode from_string<color_mode>(const string_t& string)
                 {
                         if (string == "luma")           return color_mode::luma;
                         if (string == "rgba")           return color_mode::rgba;
@@ -119,7 +119,7 @@ namespace ncv
                 }
 
                 template <>
-                inline std::string to_string(color_channel dtype)
+                inline string_t to_string(color_channel dtype)
                 {
                         switch (dtype)
                         {
@@ -135,7 +135,7 @@ namespace ncv
                 }
 
                 template <>
-                inline color_channel from_string<color_channel>(const std::string& string)
+                inline color_channel from_string<color_channel>(const string_t& string)
                 {
                         if (string == "red")            return color_channel::red;
                         if (string == "green")          return color_channel::green;
@@ -149,7 +149,7 @@ namespace ncv
                 }
 
                 template <>
-                inline std::string to_string(protocol type)
+                inline string_t to_string(protocol type)
                 {
                         switch (type)
                         {
@@ -160,7 +160,7 @@ namespace ncv
                 }
 
                 template <>
-                inline protocol from_string<protocol>(const std::string& string)
+                inline protocol from_string<protocol>(const string_t& string)
                 {
                         if (string == "train")          return protocol::train;
                         if (string == "test")           return protocol::test;
@@ -169,7 +169,7 @@ namespace ncv
                 }
 
                 template <>
-                inline std::string to_string(stochastic_optimizer type)
+                inline string_t to_string(stochastic_optimizer type)
                 {
                         switch (type)
                         {
@@ -181,7 +181,7 @@ namespace ncv
                 }
 
                 template <>
-                inline stochastic_optimizer from_string<stochastic_optimizer>(const std::string& string)
+                inline stochastic_optimizer from_string<stochastic_optimizer>(const string_t& string)
                 {
                         if (string == "sg")             return stochastic_optimizer::SG;
                         if (string == "sga")            return stochastic_optimizer::SGA;
@@ -191,7 +191,7 @@ namespace ncv
                 }
 
                 template <>
-                inline std::string to_string(batch_optimizer type)
+                inline string_t to_string(batch_optimizer type)
                 {
                         switch (type)
                         {
@@ -203,7 +203,7 @@ namespace ncv
                 }
 
                 template <>
-                inline batch_optimizer from_string<batch_optimizer>(const std::string& string)
+                inline batch_optimizer from_string<batch_optimizer>(const string_t& string)
                 {
                         if (string == "gd")             return batch_optimizer::GD;
                         if (string == "cgd")            return batch_optimizer::CGD;
@@ -213,7 +213,7 @@ namespace ncv
                 }
 
                 template <>
-                inline std::string to_string(regularizer type)
+                inline string_t to_string(regularizer type)
                 {
                         switch (type)
                         {
@@ -225,7 +225,7 @@ namespace ncv
                 }
 
                 template <>
-                inline regularizer from_string<regularizer>(const std::string& string)
+                inline regularizer from_string<regularizer>(const string_t& string)
                 {
                         if (string == "none")           return regularizer::none;
                         if (string == "l2")             return regularizer::l2norm;
