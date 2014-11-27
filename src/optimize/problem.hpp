@@ -30,10 +30,10 @@ namespace ncv
                         typedef tscalar_                                                tscalar;
                         typedef tsize_                                                  tsize;
 
-                        typedef typename tensor::vector_types_t<tscalar>::tvector       tvector;
-
                         /// optimization current/optimum state
                         typedef state_t<tscalar, tsize>                                 tstate;
+
+                        typedef typename tstate::tvector                                tvector;
 
                         /// logging: warning, error, update (with the current state)
                         typedef std::function<void(const std::string&)>                 twlog;
