@@ -65,4 +65,26 @@ namespace ncv
                 gen_t           m_gen;
                 die_t           m_die;
         };
+
+        ///
+        /// generate random indices (e.g. for std::random_shuffle)
+        ///
+        template
+        <
+                typename tsize
+        >
+        struct random_index_t
+        {
+                random_index_t(random_t<tsize>& gen)
+                        :       m_gen(gen)
+                {
+                }
+
+                tsize operator()(tsize size)
+                {
+                        return m_gen() % size;
+                }
+
+                random_t<tsize>&  m_gen;
+        };
 }
