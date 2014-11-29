@@ -47,16 +47,18 @@ int main(int argc, char *argv[])
                 return EXIT_FAILURE;
         }
 
+        const size_t cmd_rows = 28;
+        const size_t cmd_cols = 28;
+        const size_t cmd_outputs = 10;
+
         dummy_task_t task;
-        task.set_rows(28);
-        task.set_cols(28);
+        task.set_rows(cmd_rows);
+        task.set_cols(cmd_cols);
         task.set_color(color_mode::luma);
-        task.set_outputs(10);
+        task.set_outputs(cmd_outputs);
         task.set_folds(1);
         task.set_size(cmd_samples * 100);
         task.setup();
-
-        const size_t cmd_outputs = task.n_outputs();
 
         const string_t lmodel0;
         const string_t lmodel1 = lmodel0 + "linear:dims=100;act-snorm;";

@@ -1,8 +1,13 @@
 #include "nanocv.h"
-#include <boost/program_options.hpp>
+#include "tasks/task_dummy.h"
+#include "common/log_search.hpp"
 #include <map>
 
 using namespace ncv;
+
+const size_t cmd_iterations = 1024;
+const scalar_t cmd_epsilon = 1e-6;
+const size_t cmd_trials = 256;
 
 struct opt_info_t
 {
@@ -133,216 +138,247 @@ void test(const opt_problem_t& problem, size_t max_iters, scalar_t eps, const st
         }
 }
 
+template <typename toptimizer>
+void optimize_batch(
+        const task_t& task, const model_t& model, const loss_t& loss, const string_t& criterion,
+        const toptimizer& optimizer, const string_t& header)
+{
+        samples_t samples = task.samples();
+
+        accumulator_t ldata(model, ncv::n_threads(), criterion, criterion_t::type::value, 0.1);
+        accumulator_t gdata(model, ncv::n_threads(), criterion, criterion_t::type::vgrad, 0.1);
+
+        vector_t x0;
+        model.save_params(x0);
+
+        // construct the optimization problem
+        const ncv::timer_t timer;
+
+        auto fn_size = [&] ()
+        {
+                return ldata.psize();
+        };
+
+        auto fn_fval = [&] (const vector_t& x)
+        {
+                ldata.reset(x);
+                ldata.update(task, samples, loss);
+
+                return ldata.value();
+        };
+
+        auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
+        {
+                gdata.reset(x);
+                gdata.update(task, samples, loss);
+
+                gx = gdata.vgrad();
+                return gdata.value();
+        };
+
+        auto fn_wlog = [] (const string_t& message)
+        {
+                log_warning() << message;
+        };
+        auto fn_elog = [] (const string_t& message)
+        {
+                log_error() << message;
+        };
+        const opt_opulog_t fn_ulog = [&] (const opt_state_t&)
+        {
+        };
+
+        // assembly optimization problem & optimize the model
+        const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
+
+        opt_state_t state = optimizer(problem, x0, cmd_iterations, cmd_epsilon,
+                                      fn_wlog, fn_elog, fn_ulog);
+
+        log_info() << header << "value = " << state.f << ", done in " << timer.elapsed() << ".";
+}
+
+template <typename toptimizer>
+void optimize_stoch(
+        const task_t& task, const model_t& model, const loss_t& loss, const string_t& criterion,
+        const toptimizer& optimizer, const string_t& header)
+{
+        const size_t cmd_epochs = cmd_iterations;
+        const size_t cmd_epoch_size = task.samples().size();
+        const scalar_t cmd_beta = std::pow(0.01, 1.0 / (cmd_epochs * cmd_epoch_size));
+
+        const ncv::timer_t timer;
+
+        // tune the learning rate
+        const auto op_tune_alpha0 = [&] (scalar_t alpha0)
+        {
+                samples_t samples = task.samples();
+
+                accumulator_t ldata(model, ncv::n_threads(), criterion, criterion_t::type::value, 0.1);
+                accumulator_t gdata(model, ncv::n_threads(), criterion, criterion_t::type::vgrad, 0.1);
+
+                vector_t x0;
+                model.save_params(x0);
+
+                // construct the optimization problem (NB: one random sample at the time)
+                size_t index = 0;
+
+                auto fn_size = [&] ()
+                {
+                        return ldata.psize();
+                };
+
+                auto fn_fval = [&] (const vector_t& x)
+                {
+                        ldata.reset(x);
+                        ldata.update(task, samples[(index ++) % samples.size()], loss);
+
+                        return ldata.value();
+                };
+
+                auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
+                {
+                        gdata.reset(x);
+                        gdata.update(task, samples[(index ++) % samples.size()], loss);
+
+                        gx = gdata.vgrad();
+                        return gdata.value();
+                };
+
+                const opt_opulog_t fn_ulog = [&] (const opt_state_t&)
+                {
+                        // shuffle randomly the training samples after each epoch
+                        random_t<size_t> xrng(0, samples.size());
+                        random_index_t<size_t> xrnd(xrng);
+
+                        std::random_shuffle(samples.begin(), samples.end(), xrnd);
+                };
+
+                // assembly optimization problem & optimize the model
+                const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
+
+                opt_state_t state = optimizer(problem, x0, cmd_epochs, cmd_epoch_size, alpha0, cmd_beta,
+                                              fn_ulog);
+
+                ldata.reset(state.x);
+                ldata.update(task, samples, loss);
+                state.f = ldata.value();        // need to compute the cumulative loss for stochastic optimizers
+
+                return state;
+        };
+
+        ncv::thread_pool_t wpool;
+        const opt_state_t state = ncv::log_min_search_mt(op_tune_alpha0, wpool, -6.0, -1.0, 0.5, ncv::n_threads());
+
+        log_info() << header << "value = " << state.f << ", done in " << timer.elapsed() << ".";
+}
+
+void test_optimize(const task_t& task, model_t& model, const loss_t& loss, const string_t& criterion)
+{
+        for (size_t cmd_trial = 0; cmd_trial < cmd_trials; cmd_trial ++)
+        {
+                model.random_params();
+
+                const string_t header = "[" + text::to_string(cmd_trial) + "/" + text::to_string(cmd_trials) + "] ";
+
+                // batch optimizers
+                optimize_batch(task, model, loss, criterion, optimize::gd<opt_problem_t>, header + "[batch-GD]: ");
+                optimize_batch(task, model, loss, criterion, optimize::cgd_n<opt_problem_t>, header + "[batch-CGD-N]: ");
+                optimize_batch(task, model, loss, criterion, optimize::cgd_cd<opt_problem_t>, header + "[batch-CGD-CD]: ");
+                optimize_batch(task, model, loss, criterion, optimize::cgd_dy<opt_problem_t>, header + "[batch-CGD-DY]: ");
+                optimize_batch(task, model, loss, criterion, optimize::cgd_fr<opt_problem_t>, header + "[batch-CGD-FR]: ");
+                optimize_batch(task, model, loss, criterion, optimize::cgd_hs<opt_problem_t>, header + "[batch-CGD-HS]: ");
+                optimize_batch(task, model, loss, criterion, optimize::cgd_ls<opt_problem_t>, header + "[batch-CGD-LS]: ");
+                optimize_batch(task, model, loss, criterion, optimize::cgd_pr<opt_problem_t>, header + "[batch-CGD-PR]: ");
+                optimize_batch(task, model, loss, criterion, optimize::lbfgs<opt_problem_t>, header + "[batch-LBFGS]: ");
+
+                // stochastic optimizers
+                optimize_stoch(task, model, loss, criterion, optimize::stoch_sg<opt_problem_t>, header + "[stoch-SG]: ");
+                optimize_stoch(task, model, loss, criterion, optimize::stoch_sga<opt_problem_t>, header + "[stoch-SGA]: ");
+                optimize_stoch(task, model, loss, criterion, optimize::stoch_sia<opt_problem_t>, header + "[stoch-SIA]: ");
+        }
+}
+
 int main(int argc, char *argv[])
 {
-        // parse the command line
-        boost::program_options::options_description po_desc("", 160);
-        po_desc.add_options()("help,h", "help message");
-        po_desc.add_options()("iters",
-                boost::program_options::value<size_t>()->default_value(2048),
-                "number of iterations [8, 16000]");
-        po_desc.add_options()("eps",
-                boost::program_options::value<scalar_t>()->default_value(1e-6),
-                "convergence accuracy [1e-20, 1e-1]");
-        po_desc.add_options()("dim",
-                boost::program_options::value<size_t>()->default_value(128),
-                "maximum dimension [2, 1024]");
+        ncv::init();
 
-        boost::program_options::variables_map po_vm;
-        boost::program_options::store(
-                boost::program_options::command_line_parser(argc, argv).options(po_desc).run(),
-                po_vm);
-        boost::program_options::notify(po_vm);
+        const size_t cmd_samples = 128;
+        const size_t cmd_rows = 10;
+        const size_t cmd_cols = 10;
+        const size_t cmd_outputs = 4;
 
-        // check arguments and options
-        if (	po_vm.empty() ||
-                po_vm.count("help"))
+        dummy_task_t task;
+        task.set_rows(cmd_rows);
+        task.set_cols(cmd_cols);
+        task.set_color(color_mode::luma);
+        task.set_outputs(cmd_outputs);
+        task.set_folds(1);
+        task.set_size(cmd_samples);
+        task.setup();
+
+        const string_t lmodel0;
+        const string_t lmodel1 = lmodel0 + "linear:dims=128;act-snorm;";
+        const string_t lmodel2 = lmodel1 + "linear:dims=64;act-snorm;";
+        const string_t lmodel3 = lmodel2 + "linear:dims=32;act-snorm;";
+
+        string_t cmodel100;
+        cmodel100 = cmodel100 + "conv:dims=16,rows=5,cols=5,mask=100;act-snorm;pool-max;";
+        cmodel100 = cmodel100 + "conv:dims=32,rows=3,cols=3,mask=100;act-snorm;";
+
+        string_t cmodel50;
+        cmodel50 = cmodel50 + "conv:dims=16,rows=5,cols=5,mask=50;act-snorm;pool-max;";
+        cmodel50 = cmodel50 + "conv:dims=32,rows=3,cols=3,mask=50;act-snorm;";
+
+        string_t cmodel25;
+        cmodel25 = cmodel25 + "conv:dims=16,rows=5,cols=5,mask=25;act-snorm;pool-max;";
+        cmodel25 = cmodel25 + "conv:dims=32,rows=3,cols=3,mask=25;act-snorm;";
+
+        const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
+
+        strings_t cmd_networks =
         {
-                std::cout << po_desc;
-                return EXIT_FAILURE;
-        }
+                lmodel0 + outlayer,
+                lmodel1 + outlayer,
+                lmodel2 + outlayer,
+                lmodel3 + outlayer,
 
-        const size_t cmd_iters = math::clamp(po_vm["iters"].as<size_t>(), 8, 16000);
-        const scalar_t cmd_eps = math::clamp(po_vm["eps"].as<scalar_t>(), 1e-20, 1e-1);
-        const size_t cmd_dims = math::clamp(po_vm["dim"].as<size_t>(), 2, 1024);
-        const size_t cmd_trials = 256;
+                cmodel100 + outlayer,
+                cmodel50 + outlayer,
+                cmodel25 + outlayer
+        };
 
-//         // sphere function
-//         for (size_t n = 2; n <= cmd_dims; n *= 2)
-//         {
-//                 const auto op_size = [=] ()
-//                 {
-//                         return n;
-//                 };
-// 
-//                 const auto op_fval = [=] (const vector_t& x)
-//                 {
-//                         return x.dot(x);
-//                 };
-// 
-//                 const auto op_grad = [=] (const vector_t& x, vector_t& g)
-//                 {
-//                         g = 2.0 * x;
-//                 };
-// 
-//                 const auto op_fval_grad = [=] (const vector_t& x, vector_t& g)
-//                 {
-//                         op_grad(x, g);
-//                         return op_fval(x);
-//                 };
-// 
-//                 const opt_problem_t problem(op_size, op_fval, op_fval_grad);
-//                 test(problem, cmd_iters, cmd_eps, "sphere [" + text::to_string(n) + "D]", cmd_trials);
-//         }
+        const strings_t cmd_losses = loss_manager_t::instance().ids();
+        const strings_t cmd_criteria = criterion_manager_t::instance().ids();
 
-//         // ellipsoidal function
-//         for (size_t n = 2; n <= cmd_dims; n *= 2)
-//         {
-//                 const auto op_size = [=] ()
-//                 {
-//                         return n;
-//                 };
-// 
-//                 const auto op_fval = [=] (const vector_t& x)
-//                 {
-//                         scalar_t f = 0.0;
-//                         for (size_t i = 0; i < n; i ++)
-//                         {
-//                                 f += (i + 1.0) * math::square(x[i]);
-//                         }
-//                         return f;
-//                 };
-// 
-//                const auto op_grad = [=] (const vector_t& x, vector_t& g)
-//                {
-//                        g.resize(n);
-//                        for (size_t i = 0; i < n; i ++)
-//                        {
-//                                g(i) = 2.0 * (i + 1.0) * x[i];
-//                        }
-//                };
-// 
-//                const auto op_fval_grad = [=] (const vector_t& x, vector_t& g)
-//                {
-//                        op_grad(x, g);
-//                        return op_fval(x);
-//                };
-// 
-//                const opt_problem_t problem(op_size, op_fval, op_fval_grad);
-//                test(problem, cmd_iters, cmd_eps, "ellipsoidal [" + text::to_string(n) + "D]", cmd_trials);
-//        }
-
-//        // rotated ellipsoidal function
-//        for (size_t n = 2; n <= cmd_dims; n *= 2)
-//        {
-//                const auto op_size = [=] ()
-//                {
-//                        return n;
-//                };
-// 
-//                const auto op_fval = [=] (const vector_t& x)
-//                {
-//                        scalar_t f = 0.0;
-// 
-//                        for (size_t i = 0; i < n; i ++)
-//                        {
-//                                scalar_t s = 0.0;
-//                                for (size_t j = 0; j <= i; j ++)
-//                                {
-//                                        s += x[j];
-//                                }
-// 
-//                                f += math::square(s);
-//                        }
-//                        return f;
-//                };
-// 
-//                const opt_problem_t problem(op_size, op_fval);
-//                test(problem, cmd_iters, cmd_eps, "rotated ellipsoidal [" + text::to_string(n) + "D]", cmd_trials);
-//        }
-// 
-//        // Whitley's function
-//        for (size_t n = 2; n <= cmd_dims; n *= 2)
-//        {
-//                const auto op_size = [=] ()
-//                {
-//                        return n;
-//                };
-// 
-//                const auto op_fval = [=] (const vector_t& x)
-//                {
-//                        scalar_t f = 0.0;
-//                        for (size_t i = 0; i < n; i ++)
-//                        {
-//                                for (size_t j = 0; j < n; j ++)
-//                                {
-//                                        const scalar_t d = 100.0 * math::square(x[i] * x[i] - x[j]) +
-//                                                           math::square(1.0 - x[j]);
-//                                        f += d * d / 4000.0 - std::cos(d) + 1.0;
-//                                }
-//                        }
-// 
-//                        return f;
-//                };
-// 
-//                const opt_problem_t problem(op_size, op_fval);
-//                test(problem, cmd_iters, cmd_eps, "whitley [" + text::to_string(n) + "D]", cmd_trials);
-//        }
-
-        // Rosenbrock problem
-        for (size_t n = 2; n <= cmd_dims; n *= 2)
+        // vary the model
+        for (const string_t& cmd_network : cmd_networks)
         {
-                const auto op_size = [=] ()
-                {
-                        return n;
-                };
+                log_info() << "<<< running network [" << cmd_network << "] ...";
 
-                const auto op_fval = [=] (const vector_t& x)
+                const rmodel_t model = model_manager_t::instance().get("forward-network", cmd_network);
+                assert(model);
+                model->resize(task, true);
+
+                // vary the loss
+                for (const string_t& cmd_loss : cmd_losses)
                 {
-                        scalar_t f = 0.0;
-                        for (size_t i = 0; i + 1 < n; i ++)
+                        log_info() << "<<< running loss [" << cmd_loss << "] ...";
+
+                        const rloss_t loss = loss_manager_t::instance().get(cmd_loss);
+                        assert(loss);
+
+                        // vary the criteria
+                        for (const string_t& cmd_criterion : cmd_criteria)
                         {
-                                f += 100.0 * math::square(x[i + 1] - math::square(x[i])) +
-                                     math::square(x[i] - 1.0);
+                                log_info() << "<<< running criterion [" << cmd_criterion << "] ...";
+
+                                test_optimize(task, *model, *loss, cmd_criterion);
                         }
+                }
 
-                        return f;
-                };
-
-                const opt_problem_t problem(op_size, op_fval);
-                test(problem, cmd_iters, cmd_eps, "rosenbrock [" + text::to_string(n) + "D]", cmd_trials);
+                log_info();
         }
 
-        // Himmelblau problem
-        {
-                const auto op_size = [=] ()
-                {
-                        return 2;
-                };
-
-                const auto op_fval = [=] (const vector_t& x)
-                {
-                        return std::pow(x[0] * x[0] + x[1] - 11.0, 2.0) + std::pow(x[0] + x[1] * x[1] - 7.0, 2.0);
-                };
-
-                const auto op_grad = [=] (const vector_t& x, vector_t& g)
-                {
-                        g.resize(2);
-                        g[0] = 4.0 * x[0] * (x[0] * x[0] + x[1] - 11.0) + 2.0 * (x[0] + x[1] * x[1] - 7.0);
-                        g[1] = 2.0 * (x[0] * x[0] + x[1] - 11.0) + 4.0 * x[1] * (x[0] + x[1] * x[1] - 7.0);
-                };
-
-                const auto op_fval_grad = [=] (const vector_t& x, vector_t& g)
-                {
-                        op_grad(x, g);
-                        return op_fval(x);
-                };
-
-                const opt_problem_t problem(op_size, op_fval, op_fval_grad);
-                test(problem, cmd_iters, cmd_eps, "himmelblau [2D]", cmd_trials);
-        }
-        
-        print_all();
 
         // OK
         log_info() << done;
