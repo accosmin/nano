@@ -18,10 +18,11 @@ int main(int argc, char *argv[])
                 stats(avg + rgen());
         }
 
-        log_info() << "size = " << stats.count();
-        log_info() << "mean = " << stats.avg();
-        log_info() << "stdev = " << stats.stdev();
-        log_info() << "range = [" << stats.min() << ", " << stats.max() << "]";
+        log_info() << "size = " << stats.count() << "/" << size;
+        log_info() << "mean = " << stats.avg() << "/" << avg;
+        log_info() << "stdev = " << stats.stdev() << "/" << var;
+        log_info() << "range = [" << stats.min() << ", " << stats.max()
+                   << "]/[" << (avg - var) << ", " << (avg + var) << "]";
 
         // OK
         log_info() << done;
