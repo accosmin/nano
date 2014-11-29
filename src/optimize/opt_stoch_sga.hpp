@@ -40,7 +40,7 @@ namespace ncv
 
                         tstate cstate(problem, x0);     // current state
 
-                        tvector gavg = x;               // running-averaged gradient
+                        tvector gavg = x0;              // running-averaged gradient
                         gavg.setZero();
 
                         tscalar alpha = alpha0;         // learning rate

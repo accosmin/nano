@@ -27,7 +27,7 @@ namespace ncv
                         typename telog = typename tproblem::telog,
                         typename tulog = typename tproblem::tulog
                 >
-                std::pair<tvector, tscalar> stoch_sia(
+                tstate stoch_sia(
                         const tproblem& problem,
                         const tvector& x0,
                         tsize epochs,                   ///< number of epochs
@@ -40,7 +40,7 @@ namespace ncv
 
                         tstate cstate(problem, x0);     // current state
 
-                        tvector xavg = x;               // running-averaged parameters
+                        tvector xavg = x0;              // running-averaged parameters
                         xavg.setZero();
 
                         tscalar alpha = alpha0;         // learning rate
@@ -51,7 +51,7 @@ namespace ncv
                                 for (tsize i = 0; i < iterations; i ++, alpha *= beta)
                                 {
                                         // descent direction
-                                        cstate.d = -g;
+                                        cstate.d = -cstate.g;
 
                                         // update solution
                                         cstate.update(problem, alpha);
