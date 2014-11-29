@@ -35,7 +35,7 @@ namespace ncv
                 {
                         assert(problem.size() == static_cast<tsize>(x0.size()));
 
-                        tstate cstate(problem, x0);
+                        tstate cstate(problem, x0);     // current state
 
                         // iterate until convergence
                         for (tsize i = 0; i < max_iterations; i ++)

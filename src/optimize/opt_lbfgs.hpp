@@ -39,7 +39,8 @@ namespace ncv
                         const tsize hist_size = tsize(6);
 
                         std::deque<tvector> ss, ys;
-                        tstate cstate(problem, x0), pstate = cstate;
+                        tstate cstate(problem, x0);     // current state
+                        tstate pstate = cstate;         // previous state
 
                         tvector q, r;
                         tscalar ft;

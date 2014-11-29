@@ -27,36 +27,47 @@ namespace ncv
                         typename telog = typename tproblem::telog,
                         typename tulog = typename tproblem::tulog
                 >
-                std::pair<tvector, tscalar> stoch_sga(
+                tstate stoch_sga(
                         const tproblem& problem,
                         const tvector& x0,
-                        tsize max_iterations,           ///< maximum number of iterations
+                        tsize epochs,                   ///< number of epochs
+                        tsize iterations,               ///< epoch size in number of iterations
                         tscalar alpha0,                 ///< initial learning rate
-                        tscalar beta)                   ///< decreasing factor for the learning rate (<1)
+                        tscalar beta,                   ///< decreasing factor for the learning rate (<1)
+                        const tulog& op_ulog = tulog()) ///< called after each epoch with the current state
                 {
                         assert(problem.size() == static_cast<tsize>(x0.size()));
 
-                        tvector x = x0;
-                        tvector g, gavg = x;
+                        tstate cstate(problem, x0);     // current state
+
+                        tvector gavg = x;               // running-averaged gradient
                         gavg.setZero();
 
-                        tscalar alpha = alpha0;
+                        tscalar alpha = alpha0;         // learning rate
                         tscalar sumb = tscalar(1) / alpha;
 
-                        for (tsize i = 0; i < max_iterations; i ++, alpha *= beta)
+                        for (tsize e = 0; e < epochs; e ++)
                         {
-                                problem(x, g);
+                                for (tsize i = 0; i < iterations; i ++, alpha *= beta)
+                                {
+                                        // descent direction
+                                        const tscalar b = tscalar(1) / alpha;
+                                        gavg = (gavg * sumb + cstate.g * b) / (sumb + b);
+                                        sumb = sumb + b;
 
-                                // average gradient
-                                const tscalar b = tscalar(1) / alpha;
-                                gavg = (gavg * sumb + g * b) / (sumb + b);
-                                sumb = sumb + b;
+                                        cstate.d = -gavg;
 
-                                x.noalias() -= alpha * gavg;
+                                        // update solution
+                                        cstate.update(problem, alpha);
+                                }
+
+                                if (op_ulog)
+                                {
+                                        op_ulog(cstate);
+                                }
                         }
 
-                        // OK, return <optimum parameters, last learning rate>
-                        return std::make_pair(x, alpha);
+                        return cstate;
                 }
         }
 }

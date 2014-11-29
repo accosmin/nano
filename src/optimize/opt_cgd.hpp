@@ -173,7 +173,8 @@ namespace ncv
                         {
                                 assert(problem.size() == static_cast<tsize>(x0.size()));
 
-                                tstate cstate(problem, x0), pstate = cstate;
+                                tstate cstate(problem, x0);     // current state
+                                tstate pstate = cstate;         // previous state
 
                                 tscalar ft;
                                 tvector gt;
