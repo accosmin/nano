@@ -127,12 +127,24 @@ int main(int argc, char *argv[])
                         const ncv::timer_t timer;
 
                         vector_t params(model->psize());
+                        vector_t paramsx(model->psize());
 
                         const size_t tests = 1024;
                         for (size_t t = 0; t < tests; t ++)
                         {
-                                model->save_params(params);
+                                params.setRandom();
+
                                 model->load_params(params);
+                                model->save_params(paramsx);
+
+                                // also check parameter loading & saving
+                                const scalar_t eps = 1e-6;
+                                const scalar_t err = (params - paramsx).lpNorm<Eigen::Infinity>();
+                                if (err > eps)
+                                {
+                                        log_error() << "loading & saving parameters failed: error = "
+                                                    << err << "/" << eps << "!";
+                                }
                         }
 
                         log_info() << "<<< loaded & saved " << tests << "x " << model->psize()
