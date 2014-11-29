@@ -23,7 +23,7 @@ namespace ncv
                         samples_t vsamples = data.m_vsampler.get();
 
                         // construct the optimization problem
-                        const timer_t timer;
+                        const ncv::timer_t timer;
 
                         auto fn_size = [&] ()
                         {
@@ -59,7 +59,7 @@ namespace ncv
                         {
                                 log_error() << message;
                         };
-                        auto fn_ulog = [&] (const opt_state_t& state, const timer_t& timer)
+                        const opt_opulog_t fn_ulog = [&] (const opt_state_t& state)
                         {
                                 ++ iteration;
                                 if ((iteration % iterations) == 0)
@@ -99,22 +99,20 @@ namespace ncv
                         // assembly optimization problem & optimize the model
                         const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
 
-                        const opt_opulog_t fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer));
-
                         switch (optimizer)
                         {
                         case batch_optimizer::LBFGS:
                                 return optimize::lbfgs(problem, data.m_x0, epochs * iterations, epsilon,
-                                                       fn_wlog, fn_elog, fn_ulog_ref);
+                                                       fn_wlog, fn_elog, fn_ulog);
 
                         case batch_optimizer::CGD:
                                 return optimize::cgd_pr(problem, data.m_x0, epochs * iterations, epsilon,
-                                                        fn_wlog, fn_elog, fn_ulog_ref);
+                                                        fn_wlog, fn_elog, fn_ulog);
 
                         case batch_optimizer::GD:
                         default:
                                 return optimize::gd(problem, data.m_x0, epochs * iterations, epsilon,
-                                                    fn_wlog, fn_elog, fn_ulog_ref);
+                                                    fn_wlog, fn_elog, fn_ulog);
                         }
                 }
         }

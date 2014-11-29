@@ -11,21 +11,6 @@ namespace ncv
 {
         namespace detail
         {
-                struct rnd_t
-                {
-                        rnd_t(random_t<size_t>& gen)
-                                :       m_gen(gen)
-                        {
-                        }
-
-                        size_t operator()(size_t i)
-                        {
-                                return m_gen() % i;
-                        }
-
-                        random_t<size_t>&  m_gen;
-                };
-
                 static trainer_result_t stochastic_train(
                         trainer_data_t& data,
                         stochastic_optimizer type, size_t epochs, scalar_t alpha0, scalar_t beta,
@@ -37,7 +22,7 @@ namespace ncv
                         trainer_result_t result;
 
                         random_t<size_t> xrng(0, tsamples.size());
-                        rnd_t xrnd(xrng);
+                        random_index_t<size_t> xrnd(xrng);
 
                         timer_t timer;
 
