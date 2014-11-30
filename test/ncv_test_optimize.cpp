@@ -5,7 +5,7 @@
 
 using namespace ncv;
 
-const size_t cmd_iterations = 128;
+const size_t cmd_iterations = 1024;
 const scalar_t cmd_epsilon = 1e-6;
 const size_t cmd_trials = 16;
 const size_t n_algorithms = 13;
@@ -70,8 +70,8 @@ void optimize_batch(
 {
         samples_t samples = task.samples();
 
-        accumulator_t ldata(model, ncv::n_threads(), criterion, criterion_t::type::value, 0.1);
-        accumulator_t gdata(model, ncv::n_threads(), criterion, criterion_t::type::vgrad, 0.1);
+        accumulator_t ldata(model, 1, criterion, criterion_t::type::value, 0.1);
+        accumulator_t gdata(model, 1, criterion, criterion_t::type::vgrad, 0.1);
 
         vector_t x0;
         model.save_params(x0);
@@ -140,8 +140,8 @@ void optimize_stoch(
         {
                 samples_t samples = task.samples();
 
-                accumulator_t ldata(model, ncv::n_threads(), criterion, criterion_t::type::value, 0.1);
-                accumulator_t gdata(model, ncv::n_threads(), criterion, criterion_t::type::vgrad, 0.1);
+                accumulator_t ldata(model, 1, criterion, criterion_t::type::value, 0.1);
+                accumulator_t gdata(model, 1, criterion, criterion_t::type::vgrad, 0.1);
 
                 vector_t x0;
                 model.save_params(x0);
@@ -192,18 +192,23 @@ void optimize_stoch(
                 return state;
         };
 
-        ncv::thread_pool_t wpool;
-        const opt_state_t state = ncv::log_min_search_mt(op_tune_alpha0, wpool, -6.0, -1.0, 0.5, ncv::n_threads());
+        const opt_state_t state = ncv::log_min_search(op_tune_alpha0, -6.0, -1.0, 0.5, 4);
 
 //        log_info() << header << "[" + name << "]: value = " << state.f << ", done in " << timer.elapsed() << ".";
 
         results.push_back(std::make_tuple(state.f, name, timer.miliseconds()));
 }
 
-void test_optimize(const task_t& task, model_t& model, const loss_t& loss, const string_t& criterion, opt_infos_t& infos)
+void test_optimize(const task_t& task, const model_t& imodel, const loss_t& loss, const string_t& criterion,
+        opt_infos_t& infos)
 {
-        for (size_t cmd_trial = 0; cmd_trial < cmd_trials; cmd_trial ++)
+        thread_pool_t::mutex_t mutex;
+
+        ncv::thread_loopi(cmd_trials, [&] (size_t cmd_trial)
         {
+                // random initialization
+                const rmodel_t rmodel = imodel.clone();
+                model_t& model = *rmodel;
                 model.random_params();
 
                 const string_t header = "[" + text::to_string(cmd_trial) + "/" + text::to_string(cmd_trials) + "] ";
@@ -230,6 +235,8 @@ void test_optimize(const task_t& task, model_t& model, const loss_t& loss, const
                 // rank algorithms
                 std::sort(results.begin(), results.end());
 
+                const thread_pool_t::lock_t lock(mutex);
+
                 for (size_t rank = 0; rank < results.size(); rank ++)
                 {
                         const string_t& name = std::get<1>(results[rank]);
@@ -237,7 +244,7 @@ void test_optimize(const task_t& task, model_t& model, const loss_t& loss, const
 
                         infos[name].update(rank, miliseconds);
                 }
-        }
+        });
 }
 
 void test_optimize(const task_t& task, model_t& model)

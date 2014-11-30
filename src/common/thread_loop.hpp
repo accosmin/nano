@@ -84,7 +84,7 @@ namespace ncv
         >
         void thread_loopi(tsize N, toperator op)
         {
-                thread_loopi(N, 0, op);
+                thread_loopi(N, tsize(0), op);
         }
         
         ///
@@ -111,6 +111,6 @@ namespace ncv
         >
         void thread_loopit(tsize N, toperator op)
         {
-                thread_loopit(N, 0, op);
+                thread_loopit(N, tsize(0), op);
         }
 }
