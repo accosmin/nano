@@ -1,3 +1,5 @@
+- finish the optimization test program to evaluate batch & stochastic optimizers faster
+
 - refactor criteria:
 	- L2-norm: update the gradient per sample with L2/N to be usable with different stochastic methods
 
@@ -10,8 +12,6 @@
 
 - stochastic methods using adaptive learning rates for each dimensions:
 	- if gradient becomes smaller, than decrease the learning rate ...
-
-- update the optimization test program with generic implementation of stochastic methods
 
 - MAD with index shifts (may speed-up corr2d)
 
