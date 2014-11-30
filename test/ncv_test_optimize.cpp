@@ -8,85 +8,56 @@ using namespace ncv;
 const size_t cmd_iterations = 128;
 const scalar_t cmd_epsilon = 1e-6;
 const size_t cmd_trials = 16;
+const size_t n_algorithms = 13;
 
+// optimization statistics for a particular algorithm
 struct opt_info_t
 {
-        opt_info_t()
-                :       m_miliseconds(0),
-                        m_iterations(0),
-                        m_failures(0),
-                        m_notconverged(0),
-                        m_count(0)
+        opt_info_t() :  m_miliseconds(0),
+                        m_ranks(n_algorithms, 0)
         {
         }
         
-        void update(const opt_state_t& result, size_t max_iterations,  size_t miliseconds)
+        void update(size_t rank, size_t miliseconds)
         {
+                assert(rank < n_algorithms);
+
                 m_miliseconds += miliseconds;
-                m_iterations += result.m_iterations;
-                if (!result.converged(1e-6))
-                {
-                        if (result.m_iterations < max_iterations)
-                        {
-                                m_failures ++;
-                        }
-                        else
-                        {
-                                m_notconverged ++;
-                        }
-                }
-                m_count ++;                        
+                m_ranks[rank] ++;
         }
         
-        size_t  m_miliseconds;          ///< total amount of time (miliseconds)
-        size_t  m_iterations;           ///< total number of iterations
-        size_t  m_failures;             ///< total number of problems where the algorithm fails
-        size_t  m_notconverged;         ///< total number of problems where the algorithm does not converge in the maximum number of iterations
-        size_t  m_count;                ///< number of tests
+        std::size_t             m_miliseconds;          ///< total amount of time (miliseconds)
+        std::vector<size_t>     m_ranks;                ///< total number of times per rank
 };
 
-std::map<string_t, opt_info_t> opt_statistics;
-
-// display the formatted optimization history (for an optimization problem)
-void print_one(const opt_state_t& result, size_t max_iterations, const string_t& header, const string_t& time)
-{
-        static const size_t col_size = 16;
-        static const string_t del_line(4 * col_size + 4, '-');
-
-        std::cout << del_line << std::endl;
-        std::cout << header << ": x  = [" << result.x.transpose() << "]" << std::endl;
-        std::cout << header << ": fx = [" << result.f << "]" << std::endl;
-        std::cout << header << ": gn = [" << result.g.norm() << "]" << std::endl;
-        std::cout << header << ": iterations = [" << result.n_iterations() << "/" << max_iterations
-                  << "], time = [" << time << "]." << std::endl;
-        std::cout << del_line << std::endl;
-}
+typedef std::map<string_t, opt_info_t>  opt_infos_t;
 
 // display the formatted optimization statistics for all optimization algorithms
-void print_all()
+void print_all(const opt_infos_t& infos)
 {
-        static const size_t col_size = 16;
-        static const string_t del_line(4 * col_size + 4, '$');
+        static const size_t col_size = 10;
+        static const string_t del_line((2 + n_algorithms) * col_size + 12, '$');
         
         std::cout << del_line << std::endl;
-        std::cout 
-                << text::resize("[algo]", col_size) 
-                << text::resize("[failures]", col_size) 
-                << text::resize("[not converged]", col_size) 
-                << text::resize("[iterations]", col_size)
-                << text::resize("[time (ms)]", col_size) << std::endl;
-        for (const auto& it : opt_statistics)
+        std::cout << text::resize("[algorithm]", col_size * 2);
+        for (size_t i = 0; i < n_algorithms; i ++)
+        {
+                std::cout << text::resize("[rank" + text::to_string(i + 1) + "]", col_size);
+        }
+        std::cout << text::resize("[time (ms)]", col_size) << std::endl;
+
+        for (const auto& it : infos)
         {
                 const string_t& name = it.first;
                 const opt_info_t& info = it.second;
                 
-                std::cout 
-                        << text::resize(name, col_size) 
-                        << text::resize(text::to_string(info.m_failures) + "/" + text::to_string(info.m_count), col_size)  
-                        << text::resize(text::to_string(info.m_notconverged) + "/" + text::to_string(info.m_count), col_size)  
-                        << text::resize(text::to_string(info.m_iterations), col_size) 
-                        << text::resize(text::to_string(info.m_miliseconds), col_size) 
-                        << std::endl;
+                std::cout << text::resize(name, col_size * 2);
+                for (size_t i = 0; i < n_algorithms; i ++)
+                {
+                        std::cout << text::resize(text::to_string(info.m_ranks[i]), col_size);
+                }
+                std::cout << text::resize(text::to_string(info.m_miliseconds), col_size);
+                std::cout << std::endl;
         }
         std::cout << del_line << std::endl;
 }
@@ -94,7 +65,8 @@ void print_all()
 template <typename toptimizer>
 void optimize_batch(
         const task_t& task, const model_t& model, const loss_t& loss, const string_t& criterion,
-        const toptimizer& optimizer, const string_t& header)
+        const toptimizer& optimizer, const string_t& header, const string_t& name,
+        std::vector<std::tuple<scalar_t, string_t, size_t>>& results)
 {
         samples_t samples = task.samples();
 
@@ -144,16 +116,18 @@ void optimize_batch(
         // assembly optimization problem & optimize the model
         const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
 
-        opt_state_t state = optimizer(problem, x0, cmd_iterations, cmd_epsilon,
-                                      fn_wlog, fn_elog, fn_ulog);
+        const opt_state_t state = optimizer(problem, x0, cmd_iterations, cmd_epsilon, fn_wlog, fn_elog, fn_ulog);
 
-        log_info() << header << "value = " << state.f << ", done in " << timer.elapsed() << ".";
+//        log_info() << header << "[" + name << "]: value = " << state.f << ", done in " << timer.elapsed() << ".";
+
+        results.push_back(std::make_tuple(state.f, name, timer.miliseconds()));
 }
 
 template <typename toptimizer>
 void optimize_stoch(
         const task_t& task, const model_t& model, const loss_t& loss, const string_t& criterion,
-        const toptimizer& optimizer, const string_t& header)
+        const toptimizer& optimizer, const string_t& header, const string_t& name,
+        std::vector<std::tuple<scalar_t, string_t, size_t>>& results)
 {
         const size_t cmd_epochs = cmd_iterations;
         const size_t cmd_epoch_size = task.samples().size();
@@ -209,8 +183,7 @@ void optimize_stoch(
                 // assembly optimization problem & optimize the model
                 const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
 
-                opt_state_t state = optimizer(problem, x0, cmd_epochs, cmd_epoch_size, alpha0, cmd_beta,
-                                              fn_ulog);
+                opt_state_t state = optimizer(problem, x0, cmd_epochs, cmd_epoch_size, alpha0, cmd_beta, fn_ulog);
 
                 ldata.reset(state.x);
                 ldata.update(task, samples, loss);
@@ -222,34 +195,53 @@ void optimize_stoch(
         ncv::thread_pool_t wpool;
         const opt_state_t state = ncv::log_min_search_mt(op_tune_alpha0, wpool, -6.0, -1.0, 0.5, ncv::n_threads());
 
-        log_info() << header << "value = " << state.f << ", done in " << timer.elapsed() << ".";
+//        log_info() << header << "[" + name << "]: value = " << state.f << ", done in " << timer.elapsed() << ".";
+
+        results.push_back(std::make_tuple(state.f, name, timer.miliseconds()));
 }
 
 void test_optimize(const task_t& task, model_t& model, const loss_t& loss, const string_t& criterion)
 {
+        opt_infos_t infos;
+
         for (size_t cmd_trial = 0; cmd_trial < cmd_trials; cmd_trial ++)
         {
                 model.random_params();
 
                 const string_t header = "[" + text::to_string(cmd_trial) + "/" + text::to_string(cmd_trials) + "] ";
 
+                std::vector<std::tuple<scalar_t, string_t, size_t>> results;
+
                 // batch optimizers
-                optimize_batch(task, model, loss, criterion, optimize::gd<opt_problem_t>, header + "[batch-GD]: ");
-                optimize_batch(task, model, loss, criterion, optimize::cgd_n<opt_problem_t>, header + "[batch-CGD-N]: ");
-                optimize_batch(task, model, loss, criterion, optimize::cgd_cd<opt_problem_t>, header + "[batch-CGD-CD]: ");
-                optimize_batch(task, model, loss, criterion, optimize::cgd_dy<opt_problem_t>, header + "[batch-CGD-DY]: ");
-                optimize_batch(task, model, loss, criterion, optimize::cgd_fr<opt_problem_t>, header + "[batch-CGD-FR]: ");
-                optimize_batch(task, model, loss, criterion, optimize::cgd_hs<opt_problem_t>, header + "[batch-CGD-HS]: ");
-                optimize_batch(task, model, loss, criterion, optimize::cgd_ls<opt_problem_t>, header + "[batch-CGD-LS]: ");
-                optimize_batch(task, model, loss, criterion, optimize::cgd_pr<opt_problem_t>, header + "[batch-CGD-PR]: ");
-                optimize_batch(task, model, loss, criterion, optimize::lbfgs<opt_problem_t>, header + "[batch-LBFGS]: ");
+                optimize_batch(task, model, loss, criterion, optimize::gd<opt_problem_t>, header, "batch-GD", results);
+                optimize_batch(task, model, loss, criterion, optimize::cgd_n<opt_problem_t>, header, "batch-CGD-N", results);
+                optimize_batch(task, model, loss, criterion, optimize::cgd_cd<opt_problem_t>, header, "batch-CGD-CD", results);
+                optimize_batch(task, model, loss, criterion, optimize::cgd_dy<opt_problem_t>, header, "batch-CGD-DY", results);
+                optimize_batch(task, model, loss, criterion, optimize::cgd_fr<opt_problem_t>, header, "batch-CGD-FR", results);
+                optimize_batch(task, model, loss, criterion, optimize::cgd_hs<opt_problem_t>, header, "batch-CGD-HS", results);
+                optimize_batch(task, model, loss, criterion, optimize::cgd_ls<opt_problem_t>, header, "batch-CGD-LS", results);
+                optimize_batch(task, model, loss, criterion, optimize::cgd_pr<opt_problem_t>, header, "batch-CGD-PR", results);
+                optimize_batch(task, model, loss, criterion, optimize::lbfgs<opt_problem_t>, header, "batch-LBFGS", results);
 
                 // stochastic optimizers
-                optimize_stoch(task, model, loss, criterion, optimize::stoch_sg<opt_problem_t>, header + "[stoch-SG]: ");
-                optimize_stoch(task, model, loss, criterion, optimize::stoch_sga<opt_problem_t>, header + "[stoch-SGA]: ");
-                optimize_stoch(task, model, loss, criterion, optimize::stoch_sia<opt_problem_t>, header + "[stoch-SIA]: ");
-                optimize_stoch(task, model, loss, criterion, optimize::stoch_nag<opt_problem_t>, header + "[stoch-NAG]: ");
+                optimize_stoch(task, model, loss, criterion, optimize::stoch_sg<opt_problem_t>, header, "stoch-SG", results);
+                optimize_stoch(task, model, loss, criterion, optimize::stoch_sga<opt_problem_t>, header, "stoch-SGA", results);
+                optimize_stoch(task, model, loss, criterion, optimize::stoch_sia<opt_problem_t>, header, "stoch-SIA", results);
+                optimize_stoch(task, model, loss, criterion, optimize::stoch_nag<opt_problem_t>, header, "stoch-NAG", results);
+
+                // rank algorithms
+                std::sort(results.begin(), results.end());
+
+                for (size_t rank = 0; rank < results.size(); rank ++)
+                {
+                        const string_t& name = std::get<1>(results[rank]);
+                        const size_t miliseconds = std::get<2>(results[rank]);
+
+                        infos[name].update(rank, miliseconds);
+                }
         }
+
+        print_all(infos);
 }
 
 int main(int argc, char *argv[])
