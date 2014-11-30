@@ -38,6 +38,7 @@ max_threads=`less /proc/cpuinfo | grep -i processor | wc -l`
 stoch_sg="--trainer stochastic --trainer-params opt=sg,epoch=16"
 stoch_sga="--trainer stochastic --trainer-params opt=sga,epoch=16"
 stoch_sia="--trainer stochastic --trainer-params opt=sia,epoch=16"
+stoch_nag="--trainer stochastic --trainer-params opt=nag,epoch=16"
 
 mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=1024,batch=1024,iters=4,eps=1e-6"
 mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=1024,batch=1024,iters=4,eps=1e-6"

@@ -5,6 +5,10 @@
 #include "common/random.hpp"
 #include "common/thread_pool.h"
 #include "common/timer.h"
+#include "optimize/opt_stoch_sg.hpp"
+#include "optimize/opt_stoch_sga.hpp"
+#include "optimize/opt_stoch_sia.hpp"
+#include "optimize/opt_stoch_nag.hpp"
 #include "io/logger.h"
 
 namespace ncv
@@ -13,7 +17,7 @@ namespace ncv
         {
                 static trainer_result_t stochastic_train(
                         trainer_data_t& data,
-                        stochastic_optimizer type, size_t epochs, scalar_t alpha0, scalar_t beta,
+                        stochastic_optimizer optimizer, size_t epochs, scalar_t alpha0, scalar_t beta,
                         thread_pool_t::mutex_t& mutex)
                 {
                         samples_t tsamples = data.m_tsampler.get();
@@ -21,100 +25,92 @@ namespace ncv
 
                         trainer_result_t result;
 
-                        random_t<size_t> xrng(0, tsamples.size());
-                        random_index_t<size_t> xrnd(xrng);
+                        const ncv::timer_t timer;
 
-                        timer_t timer;
+                        // construct the optimization problem (NB: one random sample at the time)
+                        size_t index = 0, epoch = 0;
 
-                        vector_t x = data.m_x0, xparam = x, xavg = x;
-
-                        vector_t gavg(x.size());
-                        gavg.setZero();
-
-                        scalar_t alpha = alpha0;
-                        scalar_t sumb = 1.0 / alpha;
-
-                        for (size_t e = 0; e < epochs; e ++)
+                        auto fn_size = [&] ()
                         {
+                                return data.m_gacc.psize();
+                        };
+
+                        auto fn_fval = [&] (const vector_t& x)
+                        {
+                                data.m_lacc.reset(x);
+                                data.m_lacc.update(data.m_task, tsamples[(index ++) % tsamples.size()], data.m_loss);
+
+                                return data.m_lacc.value();
+                        };
+
+                        auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
+                        {
+                                data.m_gacc.reset(x);
+                                data.m_gacc.update(data.m_task, tsamples[(index ++) % tsamples.size()], data.m_loss);
+
+                                gx = data.m_gacc.vgrad();
+                                return data.m_gacc.value();
+                        };
+
+                        const opt_opulog_t fn_ulog = [&] (const opt_state_t& state)
+                        {
+                                // shuffle randomly the training samples after each epoch
+                                random_t<size_t> xrng(0, tsamples.size());
+                                random_index_t<size_t> xrnd(xrng);
+
                                 std::random_shuffle(tsamples.begin(), tsamples.end(), xrnd);
 
-                                // one epoch: a pass through all training samples
-                                switch (type)
-                                {
-                                        // stochastic gradient
-                                case stochastic_optimizer::SG:
-                                        for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
-                                        {
-                                                data.m_gacc.reset(x);
-                                                data.m_gacc.update(data.m_task, tsamples[i], data.m_loss);
-
-                                                x.noalias() -= alpha * data.m_gacc.vgrad();
-                                        }
-                                        xparam = x;
-                                        break;
-
-                                        // stochastic gradient average
-                                case stochastic_optimizer::SGA:
-                                        for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
-                                        {
-                                                data.m_gacc.reset(x);
-                                                data.m_gacc.update(data.m_task, tsamples[i], data.m_loss);
-
-                                                const vector_t g = data.m_gacc.vgrad();
-
-                                                const scalar_t b = 1.0 / alpha;
-                                                gavg = (gavg * sumb + g * b) / (sumb + b);
-                                                sumb = sumb + b;
-
-                                                x.noalias() -= alpha * gavg;
-                                        }
-                                        xparam = x;
-                                        break;
-
-                                        // stochastic iterative average
-                                case stochastic_optimizer::SIA:
-                                default:
-                                        for (size_t i = 0; i < tsamples.size(); i ++, alpha *= beta)
-                                        {
-                                                data.m_gacc.reset(x);
-                                                data.m_gacc.update(data.m_task, tsamples[i], data.m_loss);
-
-                                                x.noalias() -= alpha * data.m_gacc.vgrad();
-
-                                                const scalar_t b = 1.0 / alpha;
-                                                xavg = (xavg * sumb + x * b) / (sumb + b);
-                                                sumb = sumb + b;
-                                        }
-                                        xparam = xavg;
-                                        break;
-                                }
-
                                 // evaluate training samples
-                                data.m_lacc.reset(xparam);
+                                data.m_lacc.reset(state.x);
                                 data.m_lacc.update(data.m_task, tsamples, data.m_loss);
                                 const scalar_t tvalue = data.m_lacc.value();
                                 const scalar_t terror = data.m_lacc.error();
 
                                 // evaluate validation samples
-                                data.m_lacc.reset(xparam);
+                                data.m_lacc.reset(state.x);
                                 data.m_lacc.update(data.m_task, vsamples, data.m_loss);
                                 const scalar_t vvalue = data.m_lacc.value();
                                 const scalar_t verror = data.m_lacc.error();
 
+                                epoch ++;
+
                                 // OK, update the optimum solution
                                 const thread_pool_t::lock_t lock(mutex);
 
-                                result.update(xparam, tvalue, terror, vvalue, verror, e,
+                                result.update(state.x, tvalue, terror, vvalue, verror, epoch,
                                               scalars_t({ alpha0, data.m_lacc.lambda() }));
 
                                 log_info()
                                         << "[train = " << tvalue << "/" << terror
                                         << ", valid = " << vvalue << "/" << verror
-                                        << ", param = " << xparam.lpNorm<Eigen::Infinity>()
-                                        << ", rate = " << alpha << "/" << alpha0
-                                        << ", epoch = " << e << "/" << epochs
+                                        << ", param = " << state.x.lpNorm<Eigen::Infinity>()
+                                        << ", alpha = " << alpha0
+                                        << ", epoch = " << epoch << "/" << epochs
                                         << ", lambda = " << data.m_lacc.lambda()
                                         << "] done in " << timer.elapsed() << ".";
+                        };
+
+                        // assembly optimization problem & optimize the model
+                        const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
+
+                        switch (optimizer)
+                        {
+                        case stochastic_optimizer::SGA:
+                                optimize::stoch_sga(problem, data.m_x0, epochs, tsamples.size(), alpha0, beta, fn_ulog);
+                                break;
+
+                        case stochastic_optimizer::SIA:
+                                optimize::stoch_sia(problem, data.m_x0, epochs, tsamples.size(), alpha0, beta, fn_ulog);
+                                break;
+
+                        case stochastic_optimizer::NAG:
+                                optimize::stoch_nag(problem, data.m_x0, epochs, tsamples.size(), alpha0, beta, fn_ulog);
+                                break;
+
+                        case stochastic_optimizer::SG:
+                        default:
+                                optimize::stoch_sg(problem, data.m_x0, epochs, tsamples.size(), alpha0, beta, fn_ulog);
+                                break;
                         }
 
                         // OK

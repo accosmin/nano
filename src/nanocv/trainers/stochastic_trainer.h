@@ -9,7 +9,7 @@ namespace ncv
         ///     a geometrically decreasing learning rate.
         ///
         /// parameters:
-        ///     opt=sg[,sga,sia]        - optimization method: SG, SGA, SIA
+        ///     opt=sg[,sga,sia, NAG]   - optimization method: SG, SGA, SIA, NAG
         ///     epoch=16[1,1024]        - #epochs (~ #samples)
         ///
         /// NB: "Minimizing Finite Sums with the Stochastic Average Gradient"
@@ -20,7 +20,7 @@ namespace ncv
         public:
 
                 NANOCV_MAKE_CLONABLE(stochastic_trainer_t,
-                                     "parameters: opt=sg[,sga,sia],epoch=16[1,1024]")
+                                     "parameters: opt=sg[,sga,sia,nag],epoch=16[1,1024]")
 
                 // constructor
                 stochastic_trainer_t(const string_t& parameters = string_t());
