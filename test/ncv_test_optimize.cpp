@@ -5,9 +5,9 @@
 
 using namespace ncv;
 
-const size_t cmd_iterations = 1024;
+const size_t cmd_iterations = 128;
 const scalar_t cmd_epsilon = 1e-6;
-const size_t cmd_trials = 16;
+const size_t cmd_trials = 128;
 const size_t n_algorithms = 13;
 
 // optimization statistics for a particular algorithm
@@ -252,7 +252,7 @@ void test_optimize(const task_t& task, model_t& model)
         opt_infos_t infos;
 
         const strings_t cmd_losses = loss_manager_t::instance().ids();
-        const strings_t cmd_criteria = criterion_manager_t::instance().ids();
+        const strings_t cmd_criteria = { "avg" };//criterion_manager_t::instance().ids();
 
         // vary the loss
         for (const string_t& cmd_loss : cmd_losses)
