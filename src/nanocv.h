@@ -12,6 +12,7 @@
 #include "optimize/opt_stoch_sg.hpp"
 #include "optimize/opt_stoch_sga.hpp"
 #include "optimize/opt_stoch_sia.hpp"
+#include "optimize/opt_stoch_nag.hpp"
 #include "common/measure.hpp"
 #include "common/math.hpp"
 #include "common/stats.hpp"

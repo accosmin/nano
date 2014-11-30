@@ -1,6 +1,5 @@
 #pragma once
 
-#include <utility>
 #include <cassert>
 
 namespace ncv

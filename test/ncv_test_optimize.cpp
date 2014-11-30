@@ -5,9 +5,9 @@
 
 using namespace ncv;
 
-const size_t cmd_iterations = 1024;
+const size_t cmd_iterations = 128;
 const scalar_t cmd_epsilon = 1e-6;
-const size_t cmd_trials = 256;
+const size_t cmd_trials = 16;
 
 struct opt_info_t
 {
@@ -89,53 +89,6 @@ void print_all()
                         << std::endl;
         }
         std::cout << del_line << std::endl;
-}
-
-auto fn_wlog = [] (const string_t& message)
-{
-        log_warning() << message;
-};
-
-auto fn_elog = [] (const string_t& message)
-{
-        log_error() << message;
-};
-
-// optimize a problem starting from random points
-void test(const opt_problem_t& problem, size_t max_iters, scalar_t eps, const string_t& name, size_t trials)
-{
-        const size_t size = problem.size();
-
-//        TODO: print rank of methods !!! & #times a method wins
-//        size_t ranks[3][3] = { { 0, 0, 0, }, { 0, 0, 0, }, { 0, 0, 0, } };
-
-        random_t<scalar_t> rgen(-2.0, 2.0);
-        for (size_t trial = 0; trial < trials; trial ++)
-        {
-                vector_t x0(size);
-                rgen(x0.data(), x0.data() + x0.size());
-
-                const string_t name_trial = " [" + text::to_string(trial + 1) + "/" + text::to_string(trials) + "]";
-
-                #define NCV_TEST_OPTIMIZER(FUN, NAME) \
-                { \
-                        const ncv::timer_t timer; \
-                        problem.reset(); \
-                        const opt_state_t res = optimize::FUN(problem, x0, max_iters, eps, fn_wlog, fn_elog); \
-                        print_one(res, max_iters, name + " " + #NAME + name_trial, timer.elapsed()); \
-                        opt_statistics[#NAME].update(res, max_iters, timer.miliseconds()); \
-                }
-
-                NCV_TEST_OPTIMIZER(gd,          GD)
-                NCV_TEST_OPTIMIZER(cgd_hs,      CGD-HS)
-                NCV_TEST_OPTIMIZER(cgd_fr,      CGD-FR)
-                NCV_TEST_OPTIMIZER(cgd_pr,      CGD-PR)
-                NCV_TEST_OPTIMIZER(cgd_cd,      CGD-CD)
-                NCV_TEST_OPTIMIZER(cgd_ls,      CGD-LS)
-                NCV_TEST_OPTIMIZER(cgd_dy,      CGD-DY)
-                NCV_TEST_OPTIMIZER(cgd_n,       CGD-N)
-                NCV_TEST_OPTIMIZER(lbfgs,       LBFGS)
-        }
 }
 
 template <typename toptimizer>
@@ -295,6 +248,7 @@ void test_optimize(const task_t& task, model_t& model, const loss_t& loss, const
                 optimize_stoch(task, model, loss, criterion, optimize::stoch_sg<opt_problem_t>, header + "[stoch-SG]: ");
                 optimize_stoch(task, model, loss, criterion, optimize::stoch_sga<opt_problem_t>, header + "[stoch-SGA]: ");
                 optimize_stoch(task, model, loss, criterion, optimize::stoch_sia<opt_problem_t>, header + "[stoch-SIA]: ");
+                optimize_stoch(task, model, loss, criterion, optimize::stoch_nag<opt_problem_t>, header + "[stoch-NAG]: ");
         }
 }
 
