@@ -199,9 +199,10 @@ void optimize_stoch(
         results.push_back(std::make_tuple(state.f, name, timer.miliseconds()));
 }
 
-void test_optimize(const task_t& task, const model_t& imodel, const loss_t& loss, const string_t& criterion,
-        opt_infos_t& infos)
+void test_optimize(const task_t& task, const model_t& imodel, const loss_t& loss, const string_t& criterion)
 {
+        opt_infos_t infos;
+
         thread_pool_t::mutex_t mutex;
 
         ncv::thread_loopi(cmd_trials, [&] (size_t cmd_trial)
@@ -245,31 +246,6 @@ void test_optimize(const task_t& task, const model_t& imodel, const loss_t& loss
                         infos[name].update(rank, miliseconds);
                 }
         });
-}
-
-void test_optimize(const task_t& task, model_t& model)
-{
-        opt_infos_t infos;
-
-        const strings_t cmd_losses = loss_manager_t::instance().ids();
-        const strings_t cmd_criteria = { "avg" };//criterion_manager_t::instance().ids();
-
-        // vary the loss
-        for (const string_t& cmd_loss : cmd_losses)
-        {
-                log_info() << "<<< running loss [" << cmd_loss << "] ...";
-
-                const rloss_t loss = loss_manager_t::instance().get(cmd_loss);
-                assert(loss);
-
-                // vary the criteria
-                for (const string_t& cmd_criterion : cmd_criteria)
-                {
-                        log_info() << "<<< running criterion [" << cmd_criterion << "] ...";
-
-                        test_optimize(task, model, *loss, cmd_criterion, infos);
-                }
-        }
 
         print_all(infos);
 }
@@ -323,6 +299,9 @@ int main(int argc, char *argv[])
                 cmodel25 + outlayer
         };
 
+        const strings_t cmd_losses = loss_manager_t::instance().ids();
+        const strings_t cmd_criteria = { "avg" };//criterion_manager_t::instance().ids();
+
         // vary the model
         for (const string_t& cmd_network : cmd_networks)
         {
@@ -332,7 +311,22 @@ int main(int argc, char *argv[])
                 assert(model);
                 model->resize(task, true);
 
-                test_optimize(task, *model);
+                // vary the loss
+                for (const string_t& cmd_loss : cmd_losses)
+                {
+                        log_info() << "<<< running loss [" << cmd_loss << "] ...";
+
+                        const rloss_t loss = loss_manager_t::instance().get(cmd_loss);
+                        assert(loss);
+
+                        // vary the criteria
+                        for (const string_t& cmd_criterion : cmd_criteria)
+                        {
+                                log_info() << "<<< running criterion [" << cmd_criterion << "] ...";
+
+                                test_optimize(task, *model, *loss, cmd_criterion);
+                        }
+                }
 
                 log_info();
         }
