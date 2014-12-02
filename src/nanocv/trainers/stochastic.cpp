@@ -112,7 +112,7 @@ namespace ncv
 
                         case stochastic_optimizer::SG:
                         default:
-                                optimize::stoch_sga<optimize::decay_rate::qrt3>(
+                                optimize::stoch_sg<optimize::decay_rate::qrt3>(
                                 problem, data.m_x0, epochs, tsamples.size(), alpha0, fn_ulog);
                                 break;
                         }

@@ -60,15 +60,6 @@ namespace ncv
 
                         return cstate;
                 }
-
-//                template <typename tproblem>
-//                using stoch_sg_unit = stoch_sg<decay_rate::unit, tproblem>;
-
-//                template <typename tproblem>
-//                using stoch_sg_qrt3 = stoch_sg<decay_rate::qrt3, tproblem>;
-
-//                template <typename tproblem>
-//                using stoch_sg_sqrt = stoch_sg<decay_rate::sqrt, tproblem>;
         }
 }
 
