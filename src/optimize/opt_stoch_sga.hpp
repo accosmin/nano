@@ -1,5 +1,6 @@
 #pragma once
 
+#include "opt_stoch.hpp"
 #include <cassert>
 
 namespace ncv
@@ -14,6 +15,9 @@ namespace ncv
                 ///
                 template
                 <
+                        // learning rate's decay rate
+                        decay_rate tbeta,
+
                         typename tproblem,
 
                         // dependent types
@@ -22,18 +26,15 @@ namespace ncv
                         typename tvector = typename tproblem::tvector,
                         typename tstate = typename tproblem::tstate,
 
-                        typename twlog = typename tproblem::twlog,
-                        typename telog = typename tproblem::telog,
                         typename tulog = typename tproblem::tulog
                 >
                 tstate stoch_sga(
                         const tproblem& problem,
                         const tvector& x0,
-                        tsize epochs,                   ///< number of epochs
-                        tsize iterations,               ///< epoch size in number of iterations
-                        tscalar alpha0,                 ///< initial learning rate
-                        tscalar beta,                   ///< decreasing factor for the learning rate (<1)
-                        const tulog& op_ulog = tulog()) ///< called after each epoch with the current state
+                        tsize epochs,                           ///< number of epochs
+                        tsize iterations,                       ///< epoch size in number of iterations
+                        tscalar alpha0,                         ///< initial learning rate
+                        const tulog& op_ulog = tulog())         ///< called after each epoch with the current state
                 {
                         assert(problem.size() == static_cast<tsize>(x0.size()));
 
@@ -45,9 +46,9 @@ namespace ncv
                         tscalar alpha = alpha0;         // learning rate
                         tscalar sumb = tscalar(1) / alpha;
 
-                        for (tsize e = 0; e < epochs; e ++)
+                        for (tsize e = 0, k = 0; e < epochs; e ++)
                         {
-                                for (tsize i = 0; i < iterations; i ++, alpha *= beta)
+                                for (tsize i = 0; i < iterations; i ++, alpha = optimize::decay(alpha0, k ++, tbeta))
                                 {
                                         // descent direction
                                         const tscalar b = tscalar(1) / alpha;

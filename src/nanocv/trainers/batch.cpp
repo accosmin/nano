@@ -102,17 +102,17 @@ namespace ncv
                         switch (optimizer)
                         {
                         case batch_optimizer::LBFGS:
-                                return optimize::lbfgs(problem, data.m_x0, epochs * iterations, epsilon,
-                                                       fn_wlog, fn_elog, fn_ulog);
+                                return optimize::lbfgs(
+                                problem, data.m_x0, epochs * iterations, epsilon, fn_wlog, fn_elog, fn_ulog);
 
                         case batch_optimizer::CGD:
-                                return optimize::cgd_pr(problem, data.m_x0, epochs * iterations, epsilon,
-                                                        fn_wlog, fn_elog, fn_ulog);
+                                return optimize::cgd_pr(
+                                problem, data.m_x0, epochs * iterations, epsilon, fn_wlog, fn_elog, fn_ulog);
 
                         case batch_optimizer::GD:
                         default:
-                                return optimize::gd(problem, data.m_x0, epochs * iterations, epsilon,
-                                                    fn_wlog, fn_elog, fn_ulog);
+                                return optimize::gd(
+                                problem, data.m_x0, epochs * iterations, epsilon, fn_wlog, fn_elog, fn_ulog);
                         }
                 }
         }

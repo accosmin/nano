@@ -17,7 +17,7 @@ namespace ncv
         {
                 static trainer_result_t stochastic_train(
                         trainer_data_t& data,
-                        stochastic_optimizer optimizer, size_t epochs, scalar_t alpha0, scalar_t beta,
+                        stochastic_optimizer optimizer, size_t epochs, scalar_t alpha0,
                         thread_pool_t::mutex_t& mutex)
                 {
                         samples_t tsamples = data.m_tsampler.get();
@@ -96,20 +96,24 @@ namespace ncv
                         switch (optimizer)
                         {
                         case stochastic_optimizer::SGA:
-                                optimize::stoch_sga(problem, data.m_x0, epochs, tsamples.size(), alpha0, beta, fn_ulog);
+                                optimize::stoch_sga<optimize::decay_rate::qrt3>(
+                                problem, data.m_x0, epochs, tsamples.size(), alpha0,  fn_ulog);
                                 break;
 
                         case stochastic_optimizer::SIA:
-                                optimize::stoch_sia(problem, data.m_x0, epochs, tsamples.size(), alpha0, beta, fn_ulog);
+                                optimize::stoch_sia<optimize::decay_rate::qrt3>(
+                                problem, data.m_x0, epochs, tsamples.size(), alpha0, fn_ulog);
                                 break;
 
                         case stochastic_optimizer::NAG:
-                                optimize::stoch_nag(problem, data.m_x0, epochs, tsamples.size(), alpha0, beta, fn_ulog);
+                                optimize::stoch_nag(
+                                problem, data.m_x0, epochs, tsamples.size(), alpha0, fn_ulog);
                                 break;
 
                         case stochastic_optimizer::SG:
                         default:
-                                optimize::stoch_sg(problem, data.m_x0, epochs, tsamples.size(), alpha0, beta, fn_ulog);
+                                optimize::stoch_sga<optimize::decay_rate::qrt3>(
+                                problem, data.m_x0, epochs, tsamples.size(), alpha0, fn_ulog);
                                 break;
                         }
 
@@ -128,9 +132,6 @@ namespace ncv
                 // operator to train for a given regularization factor
                 const auto op = [&] (scalar_t lambda)
                 {
-                        const size_t iterations = epochs * tsampler.size();             // SGD iterations
-                        const scalar_t beta = std::pow(0.01, 1.0 / iterations);         // Learning rate decay rate
-
                         vector_t x0;
                         model.save_params(x0);
 
@@ -142,11 +143,10 @@ namespace ncv
 
                                 trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
 
-                                return detail::stochastic_train(data, optimizer, epochs, alpha, beta, mutex);
+                                return detail::stochastic_train(data, optimizer, epochs, alpha, mutex);
                         };
 
                         thread_pool_t wpool(nthreads);
-
                         return log_min_search_mt(op_lrate, wpool, -6.0, -1.0, 0.5, nthreads);
                 };
 

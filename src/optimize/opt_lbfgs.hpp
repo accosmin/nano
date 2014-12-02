@@ -2,6 +2,7 @@
 
 #include "ls_wolfe.hpp"
 #include <deque>
+#include <vector>
 #include <cassert>
 
 namespace ncv

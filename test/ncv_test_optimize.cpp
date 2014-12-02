@@ -131,7 +131,6 @@ void optimize_stoch(
 {
         const size_t cmd_epochs = cmd_iterations;
         const size_t cmd_epoch_size = task.samples().size();
-        const scalar_t cmd_beta = std::pow(0.01, 1.0 / (cmd_epochs * cmd_epoch_size));
 
         const ncv::timer_t timer;
 
@@ -183,7 +182,7 @@ void optimize_stoch(
                 // assembly optimization problem & optimize the model
                 const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
 
-                opt_state_t state = optimizer(problem, x0, cmd_epochs, cmd_epoch_size, alpha0, cmd_beta, fn_ulog);
+                opt_state_t state = optimizer(problem, x0, cmd_epochs, cmd_epoch_size, alpha0, fn_ulog);
 
                 ldata.reset(state.x);
                 ldata.update(task, samples, loss);
@@ -228,9 +227,9 @@ void test_optimize(const task_t& task, const model_t& imodel, const loss_t& loss
                 optimize_batch(task, model, loss, criterion, optimize::lbfgs<opt_problem_t>, header, "batch-LBFGS", results);
 
                 // stochastic optimizers
-                optimize_stoch(task, model, loss, criterion, optimize::stoch_sg<opt_problem_t>, header, "stoch-SG", results);
-                optimize_stoch(task, model, loss, criterion, optimize::stoch_sga<opt_problem_t>, header, "stoch-SGA", results);
-                optimize_stoch(task, model, loss, criterion, optimize::stoch_sia<opt_problem_t>, header, "stoch-SIA", results);
+                optimize_stoch(task, model, loss, criterion, optimize::stoch_sg<optimize::decay_rate::qrt3, opt_problem_t>, header, "stoch-SG", results);
+                optimize_stoch(task, model, loss, criterion, optimize::stoch_sga<optimize::decay_rate::qrt3, opt_problem_t>, header, "stoch-SGA", results);
+                optimize_stoch(task, model, loss, criterion, optimize::stoch_sia<optimize::decay_rate::qrt3, opt_problem_t>, header, "stoch-SIA", results);
                 optimize_stoch(task, model, loss, criterion, optimize::stoch_nag<opt_problem_t>, header, "stoch-NAG", results);
 
                 // rank algorithms

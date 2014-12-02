@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cmath>
 #include <cassert>
 
 namespace ncv
@@ -23,18 +22,15 @@ namespace ncv
                         typename tvector = typename tproblem::tvector,
                         typename tstate = typename tproblem::tstate,
 
-                        typename twlog = typename tproblem::twlog,
-                        typename telog = typename tproblem::telog,
                         typename tulog = typename tproblem::tulog
                 >
                 tstate stoch_nag(
                         const tproblem& problem,
                         const tvector& x0,
-                        tsize epochs,                   ///< number of epochs
-                        tsize iterations,               ///< epoch size in number of iterations
-                        tscalar alpha0,                 ///< initial learning rate
-                        tscalar beta,                   ///< decreasing factor for the learning rate (<1)
-                        const tulog& op_ulog = tulog()) ///< called after each epoch with the current state
+                        tsize epochs,                           ///< number of epochs
+                        tsize iterations,                       ///< epoch size in number of iterations
+                        tscalar alpha0,                         ///< initial learning rate
+                        const tulog& op_ulog = tulog())         ///< called after each epoch with the current state
                 {
                         assert(problem.size() == static_cast<tsize>(x0.size()));
 
@@ -48,7 +44,7 @@ namespace ncv
 
                         tvector g = x0;                 // gradient
 
-                        for (tsize e = 0, k = 1; e < epochs; e ++)
+                        for (tsize e = 0, k = 0; e < epochs; e ++)
                         {
                                 for (tsize i = 0; i < iterations; i ++, k ++)
                                 {
