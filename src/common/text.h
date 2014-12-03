@@ -18,7 +18,8 @@ namespace ncv
                 using namespace boost::algorithm;
 
                 // align a string to fill the given size
-                std::string resize(const std::string& str, std::size_t size, align alignment = align::left);
+                std::string resize(const std::string& str, std::size_t size,
+                                   align alignment = align::left, char fill_char = ' ');
 
                 // string cast for built-in types
                 template

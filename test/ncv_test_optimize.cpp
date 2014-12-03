@@ -60,11 +60,13 @@ opt_info_t& giveit(opt_infos_t& infos, const string_t& name)
 }
 
 // display the formatted optimization statistics for all optimization algorithms
-void print_all(const opt_infos_t& infos)
+void print_all(const string_t& name, const opt_infos_t& infos)
 {
         static const size_t col_size = 24;
         static const string_t del_line(3 * col_size, '$');
         
+        std::cout << del_line << std::endl;
+        std::cout << text::resize(name, del_line.size(), align::center, '$');
         std::cout << del_line << std::endl;
         std::cout << text::resize("[algorithm]", col_size);
         std::cout << text::resize("[cumulated score]", col_size);
@@ -118,22 +120,10 @@ std::tuple<scalar_t, string_t, size_t> batch(
                 return gdata.value();
         };
 
-        auto fn_wlog = [] (const string_t& message)
-        {
-                log_warning() << message;
-        };
-        auto fn_elog = [] (const string_t& message)
-        {
-                log_error() << message;
-        };
-        const opt_opulog_t fn_ulog = [&] (const opt_state_t&)
-        {
-        };
-
         // assembly optimization problem & optimize the model
         const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
 
-        const opt_state_t state = optimizer(problem, x0, cmd_iterations, cmd_epsilon, fn_wlog, fn_elog, fn_ulog);
+        const opt_state_t state = optimizer(problem, x0, cmd_iterations, cmd_epsilon, nullptr, nullptr, nullptr);
 
 //        log_info() << name << ": value = " << state.f << ", done in " << timer.elapsed() << ".";
 
@@ -216,7 +206,9 @@ std::tuple<scalar_t, string_t, size_t> stoch(
         return std::make_tuple(state.f, name, timer.miliseconds());
 }
 
-void test_optimize(const task_t& task, const model_t& imodel, const loss_t& loss, const string_t& criterion)
+void test_optimize(
+        const task_t& task, const model_t& imodel, const loss_t& loss, const string_t& criterion,
+        const string_t& config_name)
 {
         opt_infos_t infos;
 
@@ -277,7 +269,7 @@ void test_optimize(const task_t& task, const model_t& imodel, const loss_t& loss
         });
 
         std::sort(infos.begin(), infos.end());
-        print_all(infos);
+        print_all(config_name, infos);
 }
 
 int main(int argc, char *argv[])
@@ -354,7 +346,8 @@ int main(int argc, char *argv[])
                         {
                                 log_info() << "<<< running criterion [" << cmd_criterion << "] ...";
 
-                                test_optimize(task, *model, *loss, cmd_criterion);
+                                test_optimize(task, *model, *loss, cmd_criterion,
+                                              "loss [" + cmd_loss + "], criterion [" + cmd_criterion + "]");
                         }
                 }
 
