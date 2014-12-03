@@ -10,7 +10,7 @@ namespace ncv
                 {
                         scalar_t operator()(scalar_t x) const
                         {
-                                return std::log(1.0 + std::exp(x));
+                                return std::log1p(std::exp(x));
                         }
                 };
 

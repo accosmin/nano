@@ -32,7 +32,7 @@ namespace ncv
                 
                 const vector_t edges = (- targets.array() * scores.array()).exp();
                 
-                return std::log(1.0 + edges.sum());
+                return std::log1p(edges.sum());
         }
         
         vector_t logistic_loss_t::vgrad(const vector_t& targets, const vector_t& scores) const
