@@ -62,17 +62,17 @@ opt_info_t& giveit(opt_infos_t& infos, const string_t& name)
 // display the formatted optimization statistics for all optimization algorithms
 void print_all(const opt_infos_t& infos)
 {
-        static const size_t col_size = 12;
-        static const string_t del_line(4 * col_size + 4, '$');
+        static const size_t col_size = 24;
+        static const string_t del_line(3 * col_size, '$');
         
         std::cout << del_line << std::endl;
-        std::cout << text::resize("[algorithm]", col_size * 2);
-        std::cout << text::resize("[score]",     col_size * 1);
-        std::cout << text::resize("[time (ms)]", col_size * 1) << std::endl;
+        std::cout << text::resize("[algorithm]", col_size);
+        std::cout << text::resize("[cumulated score]", col_size);
+        std::cout << text::resize("[total time (ms)]", col_size) << std::endl;
 
         for (const opt_info_t& info : infos)
         {
-                std::cout << text::resize(info.m_name, col_size * 2);
+                std::cout << text::resize(info.m_name, col_size);
                 std::cout << text::resize(text::to_string(info.m_score), col_size);
                 std::cout << text::resize(text::to_string(info.m_miliseconds), col_size);
                 std::cout << std::endl;
