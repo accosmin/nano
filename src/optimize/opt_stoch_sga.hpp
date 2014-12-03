@@ -18,6 +18,7 @@ namespace ncv
                         // learning rate's decay rate
                         decay_rate tbeta,
 
+                        // optimization problem
                         typename tproblem,
 
                         // dependent types
@@ -25,7 +26,6 @@ namespace ncv
                         typename tsize = typename tproblem::tsize,
                         typename tvector = typename tproblem::tvector,
                         typename tstate = typename tproblem::tstate,
-
                         typename tulog = typename tproblem::tulog
                 >
                 tstate stoch_sga(

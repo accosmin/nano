@@ -14,6 +14,7 @@ namespace ncv
                 ///
                 template
                 <
+                        // optimization problem
                         typename tproblem,
 
                         // dependent types

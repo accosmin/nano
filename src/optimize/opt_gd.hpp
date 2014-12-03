@@ -12,6 +12,7 @@ namespace ncv
                 ///
                 template
                 <
+                        // optimization problem
                         typename tproblem,
 
                         // dependent types
@@ -19,7 +20,6 @@ namespace ncv
                         typename tsize = typename tproblem::tsize,
                         typename tvector = typename tproblem::tvector,
                         typename tstate = typename tproblem::tstate,
-
                         typename twlog = typename tproblem::twlog,
                         typename telog = typename tproblem::telog,
                         typename tulog = typename tproblem::tulog

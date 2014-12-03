@@ -13,15 +13,17 @@ namespace ncv
                 ///
                 template
                 <
-                        typename tproblem,
+                        // CGD step update
                         typename tcgd_update,
+
+                        // optimization problem
+                        typename tproblem,
 
                         // dependent types
                         typename tscalar = typename tproblem::tscalar,
                         typename tsize = typename tproblem::tsize,
                         typename tvector = typename tproblem::tvector,
                         typename tstate = typename tproblem::tstate,
-
                         typename twlog = typename tproblem::twlog,
                         typename telog = typename tproblem::telog,
                         typename tulog = typename tproblem::tulog
