@@ -66,7 +66,7 @@ void print_all(const string_t& name, const opt_infos_t& infos)
         static const string_t del_line(3 * col_size, '$');
         
         std::cout << del_line << std::endl;
-        std::cout << text::resize(name, del_line.size(), align::center, '$');
+        std::cout << text::resize(name, del_line.size(), align::center, '$') << std::endl;
         std::cout << del_line << std::endl;
         std::cout << text::resize("[algorithm]", col_size);
         std::cout << text::resize("[cumulated score]", col_size);
