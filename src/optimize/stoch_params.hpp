@@ -35,13 +35,6 @@ namespace ncv
                         }
 
                         ///
-                        /// \brief destructor
-                        ///
-                        virtual ~stoch_params()
-                        {
-                        }
-
-                        ///
                         /// \brief change logger
                         ///
                         void set_ulog(const tulog& ulog) { m_ulog = ulog; }

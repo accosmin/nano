@@ -85,7 +85,7 @@ namespace ncv
                                         const tscalar t = ls_strong_wolfe(problem, cstate, base_t::m_wlog, ft, gt, alpha, beta);
                                         if (t < std::numeric_limits<tscalar>::epsilon())
                                         {
-                                                base_t::elog("line-search failed for CGD!");
+                                                base_t::elog(op_update.ls_failed_message());
                                                 break;
                                         }
                                         pstate = cstate;

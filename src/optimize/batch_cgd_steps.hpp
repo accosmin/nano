@@ -27,6 +27,11 @@ namespace ncv
 
                                 return gk1.dot(yk) / dk.dot(yk);
                         }
+
+                        const char* ls_failed_message() const
+                        {
+                                return "line-search failed for CGD-HS!";
+                        }
                 };
 
                 ///
@@ -45,6 +50,11 @@ namespace ncv
                                 const auto& gk1 = cstate.g;
 
                                 return gk1.squaredNorm() / gk.squaredNorm();
+                        }
+
+                        const char* ls_failed_message() const
+                        {
+                                return "line-search failed for CGD-FR!";
                         }
                 };
 
@@ -66,6 +76,11 @@ namespace ncv
 
                                 return gk1.dot(yk) / gk.squaredNorm();
                         }
+
+                        const char* ls_failed_message() const
+                        {
+                                return "line-search failed for CGD-PR!";
+                        }
                 };
 
                 ///
@@ -85,6 +100,11 @@ namespace ncv
                                 const auto& gk1 = cstate.g;
 
                                 return - gk1.squaredNorm() / dk.dot(gk);
+                        }
+
+                        const char* ls_failed_message() const
+                        {
+                                return "line-search failed for CGD-CD!";
                         }
                 };
 
@@ -107,6 +127,11 @@ namespace ncv
 
                                 return - gk1.dot(yk) / dk.dot(gk);
                         }
+
+                        const char* ls_failed_message() const
+                        {
+                                return "line-search failed for CGD-LS!";
+                        }
                 };
 
                 ///
@@ -127,6 +152,11 @@ namespace ncv
                                 const auto yk = gk1 - gk;
 
                                 return - gk1.squaredNorm() / dk.dot(yk);
+                        }
+
+                        const char* ls_failed_message() const
+                        {
+                                return "line-search failed for CGD-DY!";
                         }
                 };
 
@@ -149,6 +179,11 @@ namespace ncv
                                 const tscalar div = 1 / dk.dot(yk);
 
                                 return (yk - 2 * dk * yk.squaredNorm() * div).dot(gk1 * div);
+                        }
+
+                        const char* ls_failed_message() const
+                        {
+                                return "line-search failed for CGD-N!";
                         }
                 };
         }
