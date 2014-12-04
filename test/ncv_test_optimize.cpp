@@ -60,19 +60,20 @@ opt_info_t& giveit(opt_infos_t& infos, const string_t& name)
 // display the formatted optimization statistics for all optimization algorithms
 void print_all(const string_t& name, const opt_infos_t& infos)
 {
+        static const char delim = '$';
         static const size_t col_size = 24;
-        static const string_t del_line(3 * col_size, '$');
+        static const string_t del_line(3 * col_size, delim);
         
         std::cout << del_line << std::endl;
-        std::cout << text::resize(name, del_line.size(), align::center, '$') << std::endl;
+        std::cout << text::resize(" " + name + " ", del_line.size(), align::center, delim) << std::endl;
         std::cout << del_line << std::endl;
-        std::cout << text::resize("[algorithm]", col_size);
+        std::cout << string_t(1, delim) << " " << text::resize("[algorithm]", col_size);
         std::cout << text::resize("[cumulated score]", col_size);
         std::cout << text::resize("[total time (ms)]", col_size) << std::endl;
 
         for (const opt_info_t& info : infos)
         {
-                std::cout << text::resize(info.m_name, col_size);
+                std::cout << text::resize(string_t(1, delim) + " " + info.m_name, col_size);
                 std::cout << text::resize(text::to_string(info.m_score), col_size);
                 std::cout << text::resize(text::to_string(info.m_miliseconds), col_size);
                 std::cout << std::endl;
@@ -217,7 +218,6 @@ void test_optimize(
 
         const size_t cmd_iterations = 128;
         const scalar_t cmd_epsilon = 1e-6;
-        const size_t cmd_history_size = 8;
 
         const size_t cmd_epochs = cmd_iterations;
         const size_t cmd_epoch_size = task.samples().size();
@@ -225,6 +225,7 @@ void test_optimize(
 
         // create batch optimizers
         auto batch_gd = optimize::batch_gd<opt_problem_t>(cmd_iterations, cmd_epsilon);
+
         auto batch_cgd_n = optimize::batch_cgd_n<opt_problem_t>(cmd_iterations, cmd_epsilon);
         auto batch_cgd_cd = optimize::batch_cgd_cd<opt_problem_t>(cmd_iterations, cmd_epsilon);
         auto batch_cgd_dy = optimize::batch_cgd_dy<opt_problem_t>(cmd_iterations, cmd_epsilon);
@@ -232,7 +233,13 @@ void test_optimize(
         auto batch_cgd_hs = optimize::batch_cgd_hs<opt_problem_t>(cmd_iterations, cmd_epsilon);
         auto batch_cgd_ls = optimize::batch_cgd_ls<opt_problem_t>(cmd_iterations, cmd_epsilon);
         auto batch_cgd_pr = optimize::batch_cgd_pr<opt_problem_t>(cmd_iterations, cmd_epsilon);
-        auto batch_lbfgs = optimize::batch_lbfgs<opt_problem_t>(cmd_iterations, cmd_epsilon, cmd_history_size);
+
+        auto batch_lbfgs6 = optimize::batch_lbfgs<opt_problem_t>(cmd_iterations, cmd_epsilon, 6);
+        auto batch_lbfgs8 = optimize::batch_lbfgs<opt_problem_t>(cmd_iterations, cmd_epsilon, 8);
+        auto batch_lbfgs10 = optimize::batch_lbfgs<opt_problem_t>(cmd_iterations, cmd_epsilon, 10);
+        auto batch_lbfgs12 = optimize::batch_lbfgs<opt_problem_t>(cmd_iterations, cmd_epsilon, 12);
+        auto batch_lbfgs16 = optimize::batch_lbfgs<opt_problem_t>(cmd_iterations, cmd_epsilon, 16);
+        auto batch_lbfgs20 = optimize::batch_lbfgs<opt_problem_t>(cmd_iterations, cmd_epsilon, 20);
 
         // create stochastic optimizers
         auto stoch_nag = optimize::stoch_nag<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
@@ -265,6 +272,7 @@ void test_optimize(
 
                 // batch optimizers
                 results.push_back(batch(task, model, loss, criterion, batch_gd, header, "batch-GD"));
+
                 results.push_back(batch(task, model, loss, criterion, batch_cgd_n, header, "batch-CGD-N"));
                 results.push_back(batch(task, model, loss, criterion, batch_cgd_cd, header, "batch-CGD-CD"));
                 results.push_back(batch(task, model, loss, criterion, batch_cgd_dy, header, "batch-CGD-DY"));
@@ -272,7 +280,13 @@ void test_optimize(
                 results.push_back(batch(task, model, loss, criterion, batch_cgd_hs, header, "batch-CGD-HS"));
                 results.push_back(batch(task, model, loss, criterion, batch_cgd_ls, header, "batch-CGD-LS"));
                 results.push_back(batch(task, model, loss, criterion, batch_cgd_pr, header, "batch-CGD-PR"));
-                results.push_back(batch(task, model, loss, criterion, batch_lbfgs, header, "batch-LBFGS"));
+
+                results.push_back(batch(task, model, loss, criterion, batch_lbfgs6, header, "batch-LBFGS-6"));
+                results.push_back(batch(task, model, loss, criterion, batch_lbfgs8, header, "batch-LBFGS-8"));
+                results.push_back(batch(task, model, loss, criterion, batch_lbfgs10, header, "batch-LBFGS-10"));
+                results.push_back(batch(task, model, loss, criterion, batch_lbfgs12, header, "batch-LBFGS-12"));
+                results.push_back(batch(task, model, loss, criterion, batch_lbfgs16, header, "batch-LBFGS-16"));
+                results.push_back(batch(task, model, loss, criterion, batch_lbfgs20, header, "batch-LBFGS-20"));
 
                 // stochastic optimizers
                 results.push_back(stoch(task, model, loss, criterion, stoch_nag, header, "stoch-NAG"));
