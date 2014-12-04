@@ -97,8 +97,8 @@ auto fn_elog = [] (const string_t& message)
 };
 
 template <typename toptimizer>
-void test_optimize(const toptimizer& optimizer, const opt_problem_t& problem,
-                   scalar_t res, size_t max_iters, const string_t& name, const string_t& name_trial)
+void test_optimize(const toptimizer& optimizer, const opt_problem_t& problem, const vector_t& x0,
+                   size_t max_iters, const string_t& name, const string_t& name_trial)
 {
         const ncv::timer_t timer;
         problem.reset();
@@ -125,25 +125,25 @@ void test(const opt_problem_t& problem, size_t max_iters, scalar_t eps, const st
                 const string_t name_trial = " [" + text::to_string(trial + 1) + "/" + text::to_string(trials) + "]";
 
                 test_optimize(optimize::batch_gd<opt_problem_t>(max_iters, eps, fn_wlog, fn_elog),
-                              problem, res, max_iters, "GD", name_trial);
+                              problem, x0, max_iters, "GD", name_trial);
 
                 test_optimize(optimize::batch_cgd_hs<opt_problem_t>(max_iters, eps, fn_wlog, fn_elog),
-                              problem, res, max_iters, "CGD-HS", name_trial);
+                              problem, x0, max_iters, "CGD-HS", name_trial);
                 test_optimize(optimize::batch_cgd_fr<opt_problem_t>(max_iters, eps, fn_wlog, fn_elog),
-                              problem, res, max_iters, "CGD-FR", name_trial);
+                              problem, x0, max_iters, "CGD-FR", name_trial);
                 test_optimize(optimize::batch_cgd_pr<opt_problem_t>(max_iters, eps, fn_wlog, fn_elog),
-                              problem, res, max_iters, "CGD-PR", name_trial);
+                              problem, x0, max_iters, "CGD-PR", name_trial);
                 test_optimize(optimize::batch_cgd_cd<opt_problem_t>(max_iters, eps, fn_wlog, fn_elog),
-                              problem, res, max_iters, "CGD-CD", name_trial);
+                              problem, x0, max_iters, "CGD-CD", name_trial);
                 test_optimize(optimize::batch_cgd_ls<opt_problem_t>(max_iters, eps, fn_wlog, fn_elog),
-                              problem, res, max_iters, "CGD-LS", name_trial);
+                              problem, x0, max_iters, "CGD-LS", name_trial);
                 test_optimize(optimize::batch_cgd_dy<opt_problem_t>(max_iters, eps, fn_wlog, fn_elog),
-                              problem, res, max_iters, "CGD-DY", name_trial);
+                              problem, x0, max_iters, "CGD-DY", name_trial);
                 test_optimize(optimize::batch_cgd_n<opt_problem_t>(max_iters, eps, fn_wlog, fn_elog),
-                              problem, res, max_iters, "CGD-N", name_trial);
+                              problem, x0, max_iters, "CGD-N", name_trial);
 
                 test_optimize(optimize::batch_lbfgs<opt_problem_t>(max_iters, eps, 8, fn_wlog, fn_elog),
-                              problem, res, max_iters, "LBFGS", name_trial);
+                              problem, x0, max_iters, "LBFGS", name_trial);
         }
 }
 
