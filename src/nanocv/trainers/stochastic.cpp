@@ -5,10 +5,10 @@
 #include "common/random.hpp"
 #include "common/thread_pool.h"
 #include "common/timer.h"
-#include "optimize/opt_stoch_sg.hpp"
-#include "optimize/opt_stoch_sga.hpp"
-#include "optimize/opt_stoch_sia.hpp"
-#include "optimize/opt_stoch_nag.hpp"
+#include "optimize/stoch_sg.hpp"
+#include "optimize/stoch_sga.hpp"
+#include "optimize/stoch_sia.hpp"
+#include "optimize/stoch_nag.hpp"
 #include "io/logger.h"
 
 namespace ncv
@@ -96,24 +96,28 @@ namespace ncv
                         switch (optimizer)
                         {
                         case stochastic_optimizer::SGA:
-                                optimize::stoch_sga<optimize::decay_rate::qrt3>(
-                                problem, data.m_x0, epochs, tsamples.size(), alpha0,  fn_ulog);
+                                optimize::stoch_sga<optimize::decay_rate::sqrt, opt_problem_t>
+                                (epochs, tsamples.size(), alpha0,  fn_ulog)
+                                (problem, data.m_x0);
                                 break;
 
                         case stochastic_optimizer::SIA:
-                                optimize::stoch_sia<optimize::decay_rate::qrt3>(
-                                problem, data.m_x0, epochs, tsamples.size(), alpha0, fn_ulog);
+                                optimize::stoch_sia<optimize::decay_rate::sqrt, opt_problem_t>
+                                (epochs, tsamples.size(), alpha0, fn_ulog)
+                                (problem, data.m_x0);
                                 break;
 
                         case stochastic_optimizer::NAG:
-                                optimize::stoch_nag(
-                                problem, data.m_x0, epochs, tsamples.size(), alpha0, fn_ulog);
+                                optimize::stoch_nag<opt_problem_t>
+                                (epochs, tsamples.size(), alpha0, fn_ulog)
+                                (problem, data.m_x0);
                                 break;
 
                         case stochastic_optimizer::SG:
                         default:
-                                optimize::stoch_sg<optimize::decay_rate::qrt3>(
-                                problem, data.m_x0, epochs, tsamples.size(), alpha0, fn_ulog);
+                                optimize::stoch_sg<optimize::decay_rate::sqrt, opt_problem_t>
+                                (epochs, tsamples.size(), alpha0, fn_ulog)
+                                (problem, data.m_x0);
                                 break;
                         }
 

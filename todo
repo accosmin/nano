@@ -1,4 +1,4 @@
-- finish the optimization test program to evaluate batch & stochastic optimizers faster
+- BUG: NAG is not working well (nans & infs in the test program)
 
 - refactor criteria:
 	- L2-norm: update the gradient per sample with L2/N to be usable with different stochastic methods

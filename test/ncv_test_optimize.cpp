@@ -226,7 +226,7 @@ void test_optimize(
                 std::vector<std::tuple<scalar_t, string_t, size_t>> results;
 
                 // batch optimizers
-                results.push_back(batch(task, model, loss, criterion, optimize::gd<opt_problem_t>, header, "batch-GD"));
+                results.push_back(batch(task, model, loss, criterion, optimize::batch_gd<opt_problem_t>, header, "batch-GD"));
                 results.push_back(batch(task, model, loss, criterion, optimize::cgd_n<opt_problem_t>, header, "batch-CGD-N"));
                 results.push_back(batch(task, model, loss, criterion, optimize::cgd_cd<opt_problem_t>, header, "batch-CGD-CD"));
                 results.push_back(batch(task, model, loss, criterion, optimize::cgd_dy<opt_problem_t>, header, "batch-CGD-DY"));

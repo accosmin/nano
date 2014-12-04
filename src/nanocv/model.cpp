@@ -3,7 +3,7 @@
 #include "common/timer.h"
 #include "common/random.hpp"
 #include "losses/loss_square.h"
-#include "optimize/opt_lbfgs.hpp"
+#include "optimize/batch_lbfgs.hpp"
 #include "task.h"
 #include <fstream>
 
@@ -161,12 +161,14 @@ namespace ncv
 
                 const size_t iterations = 256;
                 const scalar_t epsilon = 1e-6;
+                const size_t history_size = 8;
 
                 tensor_t input(idims(), irows(), icols());
                 input.random(random_t<scalar_t>(0.0, 1.0));
 
-                const opt_state_t result = optimize::lbfgs(problem, input.vector(), iterations, epsilon,
-                                                           fn_wlog, fn_elog, fn_ulog_ref);
+                const opt_state_t result = optimize::batch_lbfgs<opt_problem_t>
+                                           (iterations, epsilon, history_size, fn_wlog, fn_elog, fn_ulog_ref)
+                                           (problem, input.vector());
                 input.copy_from(result.x.data());
 
                 log_info() << "[loss = " << result.f

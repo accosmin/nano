@@ -96,6 +96,18 @@ auto fn_elog = [] (const string_t& message)
         log_error() << message;
 };
 
+template <typename toptimizer>
+void test_optimize(const toptimizer& optimizer, const opt_problem_t& problem,
+                   scalar_t res, size_t max_iters, const string_t& name, const string_t& name_trial)
+{
+        const ncv::timer_t timer;
+        problem.reset();
+        const opt_state_t res = optimizer(problem, x0);
+        print_one(res, max_iters, name + " " + name + name_trial, timer.elapsed());
+
+        opt_statistics[name].update(res, max_iters, timer.miliseconds());
+}
+
 // optimize a problem starting from random points
 void test(const opt_problem_t& problem, size_t max_iters, scalar_t eps, const string_t& name, size_t trials)
 {
@@ -112,24 +124,26 @@ void test(const opt_problem_t& problem, size_t max_iters, scalar_t eps, const st
 
                 const string_t name_trial = " [" + text::to_string(trial + 1) + "/" + text::to_string(trials) + "]";
 
-                #define NCV_TEST_OPTIMIZER(FUN, NAME) \
-                { \
-                        const ncv::timer_t timer; \
-                        problem.reset(); \
-                        const opt_state_t res = optimize::FUN(problem, x0, max_iters, eps, fn_wlog, fn_elog); \
-                        print_one(res, max_iters, name + " " + #NAME + name_trial, timer.elapsed()); \
-                        opt_statistics[#NAME].update(res, max_iters, timer.miliseconds()); \
-                }
+                test_optimize(optimize::batch_gd<opt_problem_t>(max_iters, eps, fn_wlog, fn_elog),
+                              problem, res, max_iters, "GD", name_trial);
 
-                NCV_TEST_OPTIMIZER(gd,          GD)
-                NCV_TEST_OPTIMIZER(cgd_hs,      CGD-HS)
-                NCV_TEST_OPTIMIZER(cgd_fr,      CGD-FR)
-                NCV_TEST_OPTIMIZER(cgd_pr,      CGD-PR)
-                NCV_TEST_OPTIMIZER(cgd_cd,      CGD-CD)
-                NCV_TEST_OPTIMIZER(cgd_ls,      CGD-LS)
-                NCV_TEST_OPTIMIZER(cgd_dy,      CGD-DY)
-                NCV_TEST_OPTIMIZER(cgd_n,       CGD-N)
-                NCV_TEST_OPTIMIZER(lbfgs,       LBFGS)
+                test_optimize(optimize::batch_cgd_hs<opt_problem_t>(max_iters, eps, fn_wlog, fn_elog),
+                              problem, res, max_iters, "CGD-HS", name_trial);
+                test_optimize(optimize::batch_cgd_fr<opt_problem_t>(max_iters, eps, fn_wlog, fn_elog),
+                              problem, res, max_iters, "CGD-FR", name_trial);
+                test_optimize(optimize::batch_cgd_pr<opt_problem_t>(max_iters, eps, fn_wlog, fn_elog),
+                              problem, res, max_iters, "CGD-PR", name_trial);
+                test_optimize(optimize::batch_cgd_cd<opt_problem_t>(max_iters, eps, fn_wlog, fn_elog),
+                              problem, res, max_iters, "CGD-CD", name_trial);
+                test_optimize(optimize::batch_cgd_ls<opt_problem_t>(max_iters, eps, fn_wlog, fn_elog),
+                              problem, res, max_iters, "CGD-LS", name_trial);
+                test_optimize(optimize::batch_cgd_dy<opt_problem_t>(max_iters, eps, fn_wlog, fn_elog),
+                              problem, res, max_iters, "CGD-DY", name_trial);
+                test_optimize(optimize::batch_cgd_n<opt_problem_t>(max_iters, eps, fn_wlog, fn_elog),
+                              problem, res, max_iters, "CGD-N", name_trial);
+
+                test_optimize(optimize::batch_lbfgs<opt_problem_t>(max_iters, eps, 8, fn_wlog, fn_elog),
+                              problem, res, max_iters, "LBFGS", name_trial);
         }
 }
 

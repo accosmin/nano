@@ -4,9 +4,9 @@
 #include "io/logger.h"
 #include "common/log_search.hpp"
 #include "common/timer.h"
-#include "optimize/opt_gd.hpp"
-#include "optimize/opt_cgd.hpp"
-#include "optimize/opt_lbfgs.hpp"
+#include "optimize/batch_gd.hpp"
+#include "optimize/batch_cgd.hpp"
+#include "optimize/batch_lbfgs.hpp"
 
 namespace ncv
 {
@@ -99,20 +99,25 @@ namespace ncv
                         // assembly optimization problem & optimize the model
                         const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
 
+                        const size_t history_size = 8;
+
                         switch (optimizer)
                         {
                         case batch_optimizer::LBFGS:
-                                return optimize::lbfgs(
-                                problem, data.m_x0, epochs * iterations, epsilon, fn_wlog, fn_elog, fn_ulog);
+                                return  optimize::batch_lbfgs<opt_problem_t>
+                                        (epochs * iterations, epsilon, history_size, fn_wlog, fn_elog, fn_ulog)
+                                        (problem, data.m_x0);
 
                         case batch_optimizer::CGD:
-                                return optimize::cgd_pr(
-                                problem, data.m_x0, epochs * iterations, epsilon, fn_wlog, fn_elog, fn_ulog);
+                                return  optimize::batch_cgd_pr<opt_problem_t>
+                                        (epochs * iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
+                                        (problem, data.m_x0);
 
                         case batch_optimizer::GD:
                         default:
-                                return optimize::gd(
-                                problem, data.m_x0, epochs * iterations, epsilon, fn_wlog, fn_elog, fn_ulog);
+                                return  optimize::batch_gd<opt_problem_t>
+                                        (epochs * iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
+                                        (problem, data.m_x0);
                         }
                 }
         }
