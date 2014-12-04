@@ -24,12 +24,11 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        batch_params(
-                                tsize max_iterations,
-                                tscalar epsilon,
-                                const twlog& wlog = twlog(),
-                                const telog& elog = telog(),
-                                const tulog& ulog = tulog())
+                        batch_params(   tsize max_iterations,
+                                        tscalar epsilon,
+                                        const twlog& wlog = twlog(),
+                                        const telog& elog = telog(),
+                                        const tulog& ulog = tulog())
                                 :       m_max_iterations(max_iterations),
                                         m_epsilon(epsilon),
                                         m_wlog(wlog),
@@ -44,6 +43,19 @@ namespace ncv
                         virtual ~batch_params()
                         {
                         }
+
+                        ///
+                        /// \brief change loggers
+                        ///
+                        void set_wlog(const twlog& wlog) { m_wlog = wlog; }
+                        void set_elog(const telog& elog) { m_elog = elog; }
+                        void set_ulog(const tulog& ulog) { m_ulog = ulog; }
+
+                        ///
+                        /// \brief change parameters
+                        ///
+                        void set_max_iterations(tsize max_iterations) { m_max_iterations = max_iterations; }
+                        void set_epsilon(tscalar epsilon) { m_epsilon = epsilon; }
 
                         ///
                         /// \brief log warning message

@@ -78,6 +78,16 @@ namespace ncv
                                 return cstate;
                         }
                 };
+
+                // create various SGA algorithms
+                template <typename tproblem>
+                using stoch_sga_sqrt = stoch_sga<decay_rate::sqrt, tproblem>;
+
+                template <typename tproblem>
+                using stoch_sga_qrt3 = stoch_sga<decay_rate::qrt3, tproblem>;
+
+                template <typename tproblem>
+                using stoch_sga_unit = stoch_sga<decay_rate::unit, tproblem>;
         }
 }
 

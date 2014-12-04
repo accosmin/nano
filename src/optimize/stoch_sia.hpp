@@ -78,6 +78,16 @@ namespace ncv
                                 return cstate;
                         }
                 };
+
+                // create various SIA algorithms
+                template <typename tproblem>
+                using stoch_sia_sqrt = stoch_sia<decay_rate::sqrt, tproblem>;
+
+                template <typename tproblem>
+                using stoch_sia_qrt3 = stoch_sia<decay_rate::qrt3, tproblem>;
+
+                template <typename tproblem>
+                using stoch_sia_unit = stoch_sia<decay_rate::unit, tproblem>;
         }
 }
 

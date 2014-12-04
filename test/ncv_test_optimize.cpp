@@ -5,8 +5,6 @@
 
 using namespace ncv;
 
-const size_t cmd_iterations = 128;
-const scalar_t cmd_epsilon = 1e-6;
 const size_t cmd_trials = 128;
 
 // optimization statistics for a particular algorithm
@@ -85,7 +83,7 @@ void print_all(const string_t& name, const opt_infos_t& infos)
 template <typename toptimizer>
 std::tuple<scalar_t, string_t, size_t> batch(
         const task_t& task, const model_t& model, const loss_t& loss, const string_t& criterion,
-        const toptimizer& optimizer, const string_t& header, const string_t& name)
+        toptimizer& optimizer, const string_t& header, const string_t& name)
 {
         samples_t samples = task.samples();
 
@@ -123,7 +121,11 @@ std::tuple<scalar_t, string_t, size_t> batch(
         // assembly optimization problem & optimize the model
         const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
 
-        const opt_state_t state = optimizer(problem, x0, cmd_iterations, cmd_epsilon, nullptr, nullptr, nullptr);
+        optimizer.set_wlog(nullptr);
+        optimizer.set_elog(nullptr);
+        optimizer.set_ulog(nullptr);
+
+        const opt_state_t state = optimizer(problem, x0);
 
 //        log_info() << name << ": value = " << state.f << ", done in " << timer.elapsed() << ".";
 
@@ -134,11 +136,8 @@ std::tuple<scalar_t, string_t, size_t> batch(
 template <typename toptimizer>
 std::tuple<scalar_t, string_t, size_t> stoch(
         const task_t& task, const model_t& model, const loss_t& loss, const string_t& criterion,
-        const toptimizer& optimizer, const string_t& header, const string_t& name)
+        toptimizer& optimizer, const string_t& header, const string_t& name)
 {
-        const size_t cmd_epochs = cmd_iterations;
-        const size_t cmd_epoch_size = task.samples().size();
-
         const ncv::timer_t timer;
 
         // tune the learning rate
@@ -189,7 +188,11 @@ std::tuple<scalar_t, string_t, size_t> stoch(
                 // assembly optimization problem & optimize the model
                 const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
 
-                opt_state_t state = optimizer(problem, x0, cmd_epochs, cmd_epoch_size, alpha0, fn_ulog);
+                toptimizer optimizer_copy(optimizer);
+                optimizer_copy.set_ulog(fn_ulog);
+                optimizer_copy.set_alpha0(alpha0);
+
+                opt_state_t state = optimizer_copy(problem, x0);
 
                 ldata.reset(state.x);
                 ldata.update(task, samples, loss);
@@ -212,8 +215,43 @@ void test_optimize(
 {
         opt_infos_t infos;
 
+        const size_t cmd_iterations = 128;
+        const scalar_t cmd_epsilon = 1e-6;
+        const size_t cmd_history_size = 8;
+
+        const size_t cmd_epochs = cmd_iterations;
+        const size_t cmd_epoch_size = task.samples().size();
+        const scalar_t cmd_alpha0 = 0.1;
+
+        // create batch optimizers
+        auto batch_gd = optimize::batch_gd<opt_problem_t>(cmd_iterations, cmd_epsilon);
+        auto batch_cgd_n = optimize::batch_cgd_n<opt_problem_t>(cmd_iterations, cmd_epsilon);
+        auto batch_cgd_cd = optimize::batch_cgd_cd<opt_problem_t>(cmd_iterations, cmd_epsilon);
+        auto batch_cgd_dy = optimize::batch_cgd_dy<opt_problem_t>(cmd_iterations, cmd_epsilon);
+        auto batch_cgd_fr = optimize::batch_cgd_fr<opt_problem_t>(cmd_iterations, cmd_epsilon);
+        auto batch_cgd_hs = optimize::batch_cgd_hs<opt_problem_t>(cmd_iterations, cmd_epsilon);
+        auto batch_cgd_ls = optimize::batch_cgd_ls<opt_problem_t>(cmd_iterations, cmd_epsilon);
+        auto batch_cgd_pr = optimize::batch_cgd_pr<opt_problem_t>(cmd_iterations, cmd_epsilon);
+        auto batch_lbfgs = optimize::batch_lbfgs<opt_problem_t>(cmd_iterations, cmd_epsilon, cmd_history_size);
+
+        // create stochastic optimizers
+        auto stoch_nag = optimize::stoch_nag<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
+
+        auto stoch_sg_sqrt = optimize::stoch_sg_sqrt<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
+        auto stoch_sg_qrt3 = optimize::stoch_sg_qrt3<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
+        auto stoch_sg_unit = optimize::stoch_sg_unit<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
+
+        auto stoch_sga_sqrt = optimize::stoch_sga_sqrt<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
+        auto stoch_sga_qrt3 = optimize::stoch_sga_qrt3<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
+        auto stoch_sga_unit = optimize::stoch_sga_unit<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
+
+        auto stoch_sia_sqrt = optimize::stoch_sia_sqrt<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
+        auto stoch_sia_qrt3 = optimize::stoch_sia_qrt3<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
+        auto stoch_sia_unit = optimize::stoch_sia_unit<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
+
         thread_pool_t::mutex_t mutex;
 
+        // optimize starting from various random initial parameters
         ncv::thread_loopi(cmd_trials, [&] (size_t cmd_trial)
         {
                 // random initialization
@@ -226,30 +264,30 @@ void test_optimize(
                 std::vector<std::tuple<scalar_t, string_t, size_t>> results;
 
                 // batch optimizers
-                results.push_back(batch(task, model, loss, criterion, optimize::batch_gd<opt_problem_t>, header, "batch-GD"));
-                results.push_back(batch(task, model, loss, criterion, optimize::cgd_n<opt_problem_t>, header, "batch-CGD-N"));
-                results.push_back(batch(task, model, loss, criterion, optimize::cgd_cd<opt_problem_t>, header, "batch-CGD-CD"));
-                results.push_back(batch(task, model, loss, criterion, optimize::cgd_dy<opt_problem_t>, header, "batch-CGD-DY"));
-                results.push_back(batch(task, model, loss, criterion, optimize::cgd_fr<opt_problem_t>, header, "batch-CGD-FR"));
-                results.push_back(batch(task, model, loss, criterion, optimize::cgd_hs<opt_problem_t>, header, "batch-CGD-HS"));
-                results.push_back(batch(task, model, loss, criterion, optimize::cgd_ls<opt_problem_t>, header, "batch-CGD-LS"));
-                results.push_back(batch(task, model, loss, criterion, optimize::cgd_pr<opt_problem_t>, header, "batch-CGD-PR"));
-                results.push_back(batch(task, model, loss, criterion, optimize::lbfgs<opt_problem_t>, header, "batch-LBFGS"));
+                results.push_back(batch(task, model, loss, criterion, batch_gd, header, "batch-GD"));
+                results.push_back(batch(task, model, loss, criterion, batch_cgd_n, header, "batch-CGD-N"));
+                results.push_back(batch(task, model, loss, criterion, batch_cgd_cd, header, "batch-CGD-CD"));
+                results.push_back(batch(task, model, loss, criterion, batch_cgd_dy, header, "batch-CGD-DY"));
+                results.push_back(batch(task, model, loss, criterion, batch_cgd_fr, header, "batch-CGD-FR"));
+                results.push_back(batch(task, model, loss, criterion, batch_cgd_hs, header, "batch-CGD-HS"));
+                results.push_back(batch(task, model, loss, criterion, batch_cgd_ls, header, "batch-CGD-LS"));
+                results.push_back(batch(task, model, loss, criterion, batch_cgd_pr, header, "batch-CGD-PR"));
+                results.push_back(batch(task, model, loss, criterion, batch_lbfgs, header, "batch-LBFGS"));
 
                 // stochastic optimizers
-                results.push_back(stoch(task, model, loss, criterion, optimize::stoch_nag<opt_problem_t>, header, "stoch-NAG"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_nag, header, "stoch-NAG"));
 
-                results.push_back(stoch(task, model, loss, criterion, optimize::stoch_sg<optimize::decay_rate::sqrt, opt_problem_t>, header, "stoch-SG-SQRT"));
-                results.push_back(stoch(task, model, loss, criterion, optimize::stoch_sg<optimize::decay_rate::qrt3, opt_problem_t>, header, "stoch-SG-QRT3"));
-                results.push_back(stoch(task, model, loss, criterion, optimize::stoch_sg<optimize::decay_rate::unit, opt_problem_t>, header, "stoch-SG-UNIT"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sg_sqrt, header, "stoch-SG-SQRT"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sg_qrt3, header, "stoch-SG-QRT3"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sg_unit, header, "stoch-SG-UNIT"));
 
-                results.push_back(stoch(task, model, loss, criterion, optimize::stoch_sga<optimize::decay_rate::sqrt, opt_problem_t>, header, "stoch-SGA-SQRT"));
-                results.push_back(stoch(task, model, loss, criterion, optimize::stoch_sga<optimize::decay_rate::qrt3, opt_problem_t>, header, "stoch-SGA-QRT3"));
-                results.push_back(stoch(task, model, loss, criterion, optimize::stoch_sga<optimize::decay_rate::unit, opt_problem_t>, header, "stoch-SGA-UNIT"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sga_sqrt, header, "stoch-SGA-SQRT"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sga_qrt3, header, "stoch-SGA-QRT3"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sga_unit, header, "stoch-SGA-UNIT"));
 
-                results.push_back(stoch(task, model, loss, criterion, optimize::stoch_sia<optimize::decay_rate::sqrt, opt_problem_t>, header, "stoch-SIA-SQRT"));
-                results.push_back(stoch(task, model, loss, criterion, optimize::stoch_sia<optimize::decay_rate::qrt3, opt_problem_t>, header, "stoch-SIA-QRT3"));
-                results.push_back(stoch(task, model, loss, criterion, optimize::stoch_sia<optimize::decay_rate::unit, opt_problem_t>, header, "stoch-SIA-UNIT"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sia_sqrt, header, "stoch-SIA-SQRT"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sia_qrt3, header, "stoch-SIA-QRT3"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sia_unit, header, "stoch-SIA-UNIT"));
 
                 // rank algorithms
                 std::sort(results.begin(), results.end());

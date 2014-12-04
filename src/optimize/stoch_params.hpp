@@ -23,11 +23,10 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        stoch_params(
-                                tsize epochs,
-                                tsize epoch_size,
-                                tscalar alpha0,
-                                const tulog& ulog = tulog())
+                        stoch_params(   tsize epochs,
+                                        tsize epoch_size,
+                                        tscalar alpha0,
+                                        const tulog& ulog = tulog())
                                 :       m_epochs(epochs),
                                         m_epoch_size(epoch_size),
                                         m_alpha0(alpha0),
@@ -41,6 +40,18 @@ namespace ncv
                         virtual ~stoch_params()
                         {
                         }
+
+                        ///
+                        /// \brief change logger
+                        ///
+                        void set_ulog(const tulog& ulog) { m_ulog = ulog; }
+
+                        ///
+                        /// \brief change parameters
+                        ///
+                        void set_epochs(size_t epochs) { m_epochs = epochs; }
+                        void set_epoch_size(size_t epoch_size) { m_epoch_size = epoch_size; }
+                        void set_alpha0(size_t alpha0) { m_alpha0 = alpha0; }
 
                         ///
                         /// \brief log current optimization state
