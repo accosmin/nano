@@ -5,7 +5,7 @@
 
 using namespace ncv;
 
-const size_t cmd_trials = 128;
+const size_t cmd_trials = 16;
 
 // optimization statistics for a particular algorithm
 struct opt_info_t
@@ -62,23 +62,24 @@ void print_all(const string_t& name, const opt_infos_t& infos)
 {
         static const char delim = '$';
         static const size_t col_size = 24;
-        static const string_t del_line(3 * col_size, delim);
+        static const string_t delim_str = string_t(1, delim);
+        static const string_t delim_line(3 * col_size, delim);
         
-        std::cout << del_line << std::endl;
-        std::cout << text::resize(" " + name + " ", del_line.size(), align::center, delim) << std::endl;
-        std::cout << del_line << std::endl;
-        std::cout << string_t(1, delim) << " " << text::resize("[algorithm]", col_size);
+        std::cout << delim_line << std::endl;
+        std::cout << text::resize(" " + name + " ", delim_line.size(), align::center, delim) << std::endl;
+        std::cout << delim_line << std::endl;
+        std::cout << text::resize(delim_str + " " + "[algorithm]", col_size);
         std::cout << text::resize("[cumulated score]", col_size);
         std::cout << text::resize("[total time (ms)]", col_size) << std::endl;
 
         for (const opt_info_t& info : infos)
         {
-                std::cout << text::resize(string_t(1, delim) + " " + info.m_name, col_size);
+                std::cout << text::resize(delim_str + " " + info.m_name, col_size);
                 std::cout << text::resize(text::to_string(info.m_score), col_size);
                 std::cout << text::resize(text::to_string(info.m_miliseconds), col_size);
                 std::cout << std::endl;
         }
-        std::cout << del_line << std::endl;
+        std::cout << delim_line << std::endl;
 }
 
 template <typename toptimizer>
