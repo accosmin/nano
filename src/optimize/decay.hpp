@@ -22,8 +22,8 @@ namespace ncv
                 >
                 tscalar decay(tscalar alpha0, tsize iter, tscalar rate)
                 {
-                        assert(exponential >= tscalar(0));
-                        assert(exponential <= tscalar(1));
+                        assert(rate >= tscalar(0));
+                        assert(rate <= tscalar(1));
 
                         const tscalar base = static_cast<tscalar>(iter + 1);
 
