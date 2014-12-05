@@ -240,7 +240,12 @@ void test_optimize(
         auto batch_lbfgs20 = optimize::batch_lbfgs<opt_problem_t>(cmd_iterations, cmd_epsilon, 20);
 
         // create stochastic optimizers
-        auto stoch_nag = optimize::stoch_nag<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1);
+        auto stoch_nag000 = optimize::stoch_nag<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.00);
+        auto stoch_nag010 = optimize::stoch_nag<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.10);
+        auto stoch_nag020 = optimize::stoch_nag<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.20);
+        auto stoch_nag050 = optimize::stoch_nag<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.50);
+        auto stoch_nag075 = optimize::stoch_nag<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.75);
+        auto stoch_nag100 = optimize::stoch_nag<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 1.00);
 
         auto stoch_sg000 = optimize::stoch_sg<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.00);
         auto stoch_sg010 = optimize::stoch_sg<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.10);
@@ -298,7 +303,12 @@ void test_optimize(
                 results.push_back(batch(task, model, loss, criterion, batch_lbfgs20, header, "batch-LBFGS-20"));
 
                 // stochastic optimizers
-                results.push_back(stoch(task, model, loss, criterion, stoch_nag, header, "stoch-NAG"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_nag000, header, "stoch-NAG-0.00"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_nag010, header, "stoch-NAG-0.10"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_nag020, header, "stoch-NAG-0.20"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_nag050, header, "stoch-NAG-0.50"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_nag075, header, "stoch-NAG-0.75"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_nag100, header, "stoch-NAG-1.00"));
 
                 results.push_back(stoch(task, model, loss, criterion, stoch_sg000, header, "stoch-SG-0.00"));
                 results.push_back(stoch(task, model, loss, criterion, stoch_sg010, header, "stoch-SG-0.10"));

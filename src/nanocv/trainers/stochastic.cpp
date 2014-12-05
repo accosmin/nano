@@ -111,7 +111,7 @@ namespace ncv
 
                         case stochastic_optimizer::NAG:
                                 optimize::stoch_nag<opt_problem_t>
-                                (epochs, tsamples.size(), alpha0, fn_ulog)
+                                (epochs, tsamples.size(), alpha0, decay, fn_ulog)
                                 (problem, data.m_x0);
                                 break;
 

@@ -12,6 +12,7 @@ namespace ncv
                 ///
                 /// NB: Yu. Nesterov, "Introductory Lectures on Convex Optimization. A Basic Course"
                 /// NB: http://calculus.subwiki.org/wiki/Nesterov%27s_accelerated_gradient_descent_with_constant_learning_rate_for_a_quadratic_function_of_one_variable
+                /// NB: http://stronglyconvex.com/blog/accelerated-gradient-descent.html
                 ///
                 template
                 <
@@ -33,8 +34,9 @@ namespace ncv
                         stoch_nag(      tsize epochs,
                                         tsize epoch_size,
                                         tscalar alpha0,
+                                        tscalar decay,
                                         const tulog& ulog = tulog())
-                                :       base_t(epochs, epoch_size, alpha0, tscalar(1.0), ulog)
+                                :       base_t(epochs, epoch_size, alpha0, decay, ulog)
                         {
                         }
 
@@ -55,16 +57,19 @@ namespace ncv
 
                                 tvector g = x0;                 // gradient
 
-                                for (tsize e = 0, k = 1; e < base_t::m_epochs; e ++)
+                                for (tsize e = 0, k = 0; e < base_t::m_epochs; e ++)
                                 {
-                                        for (tsize i = 0; i < base_t::m_epoch_size; i ++, k ++)
+                                        for (tsize i = 0; i < base_t::m_epoch_size; i ++)
                                         {
+                                                // learning rate
+                                                const tscalar alpha = base_t::alpha(k ++);
+
                                                 // descent direction
                                                 problem(py, g);
-                                                const tscalar m = tscalar(k - 1) / tscalar(k + 2);
+                                                const tscalar m = tscalar(k) / tscalar(k + 3);
 
-                                                cx = py - base_t::m_alpha0 * g;
-                                                cy = px + m * (cx - px);
+                                                cx = py - alpha * g;
+                                                cy = cx + m * (cx - px);
 
                                                 // update solution
                                                 cstate.x = cx;
