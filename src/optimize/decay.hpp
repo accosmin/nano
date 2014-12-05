@@ -1,43 +1,33 @@
 #pragma once
 
 #include <cmath>
+#include <cassert>
 
 namespace ncv
 {
         namespace optimize
         {
                 ///
-                /// \brief learning rate's decay rate as a function of the iteration
-                ///
-                enum class decay_rate : int
-                {
-                        unit,           ///< 1/(iteration)^1.00
-                        qrt3,           ///< 1/(iteration)^0.75
-                        sqrt            ///< 1/(iteration)^0.50
-                };
-
-                ///
                 /// \brief compute the current learning rate as a function of:
                 ///     - alpha0        - the initial learning rate
                 ///     - iter          - the current iteration
-                ///     - decay_rate    - the decay rate mode
+                ///     - power         - the decay rate mode
+                ///
+                /// learning rate = alpha0 / (iter + 1)^rate
                 ///
                 template
                 <
                         typename tscalar,
                         typename tsize
                 >
-                tscalar decay(tscalar alpha0, tsize iter, decay_rate mode)
+                tscalar decay(tscalar alpha0, tsize iter, tscalar rate)
                 {
-                        const tscalar expo = static_cast<tscalar>(iter + 1);
+                        assert(exponential >= tscalar(0));
+                        assert(exponential <= tscalar(1));
 
-                        switch (mode)
-                        {
-                        case decay_rate::unit:  return static_cast<tscalar>(alpha0 / std::pow(expo, tscalar(1.00)));
-                        case decay_rate::qrt3:  return static_cast<tscalar>(alpha0 / std::pow(expo, tscalar(0.75)));
-                        case decay_rate::sqrt:
-                        default:                return static_cast<tscalar>(alpha0 / std::pow(expo, tscalar(0.50)));
-                        }
+                        const tscalar base = static_cast<tscalar>(iter + 1);
+
+                        return alpha0 / static_cast<tscalar>(std::pow(base, rate));
                 }
         }
 }

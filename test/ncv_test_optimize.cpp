@@ -5,7 +5,7 @@
 
 using namespace ncv;
 
-const size_t cmd_trials = 16;
+const size_t cmd_trials = 12;
 
 // optimization statistics for a particular algorithm
 struct opt_info_t
@@ -215,14 +215,11 @@ void test_optimize(
         const task_t& task, const model_t& imodel, const loss_t& loss, const string_t& criterion,
         const string_t& config_name)
 {
-        opt_infos_t infos;
-
         const size_t cmd_iterations = 128;
         const scalar_t cmd_epsilon = 1e-6;
 
         const size_t cmd_epochs = cmd_iterations;
         const size_t cmd_epoch_size = task.samples().size();
-        const scalar_t cmd_alpha0 = 0.1;
 
         // create batch optimizers
         auto batch_gd = optimize::batch_gd<opt_problem_t>(cmd_iterations, cmd_epsilon);
@@ -243,19 +240,30 @@ void test_optimize(
         auto batch_lbfgs20 = optimize::batch_lbfgs<opt_problem_t>(cmd_iterations, cmd_epsilon, 20);
 
         // create stochastic optimizers
-        auto stoch_nag = optimize::stoch_nag<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
+        auto stoch_nag = optimize::stoch_nag<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1);
 
-        auto stoch_sg_sqrt = optimize::stoch_sg_sqrt<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
-        auto stoch_sg_qrt3 = optimize::stoch_sg_qrt3<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
-        auto stoch_sg_unit = optimize::stoch_sg_unit<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
+        auto stoch_sg000 = optimize::stoch_sg<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.00);
+        auto stoch_sg010 = optimize::stoch_sg<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.10);
+        auto stoch_sg020 = optimize::stoch_sg<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.20);
+        auto stoch_sg050 = optimize::stoch_sg<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.50);
+        auto stoch_sg075 = optimize::stoch_sg<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.75);
+        auto stoch_sg100 = optimize::stoch_sg<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 1.00);
 
-        auto stoch_sga_sqrt = optimize::stoch_sga_sqrt<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
-        auto stoch_sga_qrt3 = optimize::stoch_sga_qrt3<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
-        auto stoch_sga_unit = optimize::stoch_sga_unit<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
+        auto stoch_sga000 = optimize::stoch_sga<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.00);
+        auto stoch_sga010 = optimize::stoch_sga<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.10);
+        auto stoch_sga020 = optimize::stoch_sga<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.20);
+        auto stoch_sga050 = optimize::stoch_sga<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.50);
+        auto stoch_sga075 = optimize::stoch_sga<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.75);
+        auto stoch_sga100 = optimize::stoch_sga<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 1.00);
 
-        auto stoch_sia_sqrt = optimize::stoch_sia_sqrt<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
-        auto stoch_sia_qrt3 = optimize::stoch_sia_qrt3<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
-        auto stoch_sia_unit = optimize::stoch_sia_unit<opt_problem_t>(cmd_epochs, cmd_epoch_size, cmd_alpha0);
+        auto stoch_sia000 = optimize::stoch_sia<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.00);
+        auto stoch_sia010 = optimize::stoch_sia<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.10);
+        auto stoch_sia020 = optimize::stoch_sia<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.20);
+        auto stoch_sia050 = optimize::stoch_sia<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.50);
+        auto stoch_sia075 = optimize::stoch_sia<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.75);
+        auto stoch_sia100 = optimize::stoch_sia<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 1.00);
+
+        opt_infos_t infos;
 
         thread_pool_t::mutex_t mutex;
 
@@ -292,17 +300,26 @@ void test_optimize(
                 // stochastic optimizers
                 results.push_back(stoch(task, model, loss, criterion, stoch_nag, header, "stoch-NAG"));
 
-                results.push_back(stoch(task, model, loss, criterion, stoch_sg_sqrt, header, "stoch-SG-SQRT"));
-                results.push_back(stoch(task, model, loss, criterion, stoch_sg_qrt3, header, "stoch-SG-QRT3"));
-                results.push_back(stoch(task, model, loss, criterion, stoch_sg_unit, header, "stoch-SG-UNIT"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sg000, header, "stoch-SG-0.00"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sg010, header, "stoch-SG-0.10"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sg020, header, "stoch-SG-0.20"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sg050, header, "stoch-SG-0.50"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sg075, header, "stoch-SG-0.75"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sg100, header, "stoch-SG-1.00"));
 
-                results.push_back(stoch(task, model, loss, criterion, stoch_sga_sqrt, header, "stoch-SGA-SQRT"));
-                results.push_back(stoch(task, model, loss, criterion, stoch_sga_qrt3, header, "stoch-SGA-QRT3"));
-                results.push_back(stoch(task, model, loss, criterion, stoch_sga_unit, header, "stoch-SGA-UNIT"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sga000, header, "stoch-SGA-0.00"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sga010, header, "stoch-SGA-0.10"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sga020, header, "stoch-SGA-0.20"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sga050, header, "stoch-SGA-0.50"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sga075, header, "stoch-SGA-0.75"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sga100, header, "stoch-SGA-1.00"));
 
-                results.push_back(stoch(task, model, loss, criterion, stoch_sia_sqrt, header, "stoch-SIA-SQRT"));
-                results.push_back(stoch(task, model, loss, criterion, stoch_sia_qrt3, header, "stoch-SIA-QRT3"));
-                results.push_back(stoch(task, model, loss, criterion, stoch_sia_unit, header, "stoch-SIA-UNIT"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sia000, header, "stoch-SIA-0.00"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sia010, header, "stoch-SIA-0.10"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sia020, header, "stoch-SIA-0.20"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sia050, header, "stoch-SIA-0.50"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sia075, header, "stoch-SIA-0.75"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_sia100, header, "stoch-SIA-1.00"));
 
                 // rank algorithms
                 std::sort(results.begin(), results.end());

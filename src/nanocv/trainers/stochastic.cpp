@@ -93,17 +93,19 @@ namespace ncv
                         // assembly optimization problem & optimize the model
                         const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
 
+                        const scalar_t decay = 0.5;
+
                         switch (optimizer)
                         {
                         case stochastic_optimizer::SGA:
-                                optimize::stoch_sga<optimize::decay_rate::sqrt, opt_problem_t>
-                                (epochs, tsamples.size(), alpha0,  fn_ulog)
+                                optimize::stoch_sga<opt_problem_t>
+                                (epochs, tsamples.size(), alpha0, decay, fn_ulog)
                                 (problem, data.m_x0);
                                 break;
 
                         case stochastic_optimizer::SIA:
-                                optimize::stoch_sia<optimize::decay_rate::sqrt, opt_problem_t>
-                                (epochs, tsamples.size(), alpha0, fn_ulog)
+                                optimize::stoch_sia<opt_problem_t>
+                                (epochs, tsamples.size(), alpha0, decay, fn_ulog)
                                 (problem, data.m_x0);
                                 break;
 
@@ -115,8 +117,8 @@ namespace ncv
 
                         case stochastic_optimizer::SG:
                         default:
-                                optimize::stoch_sg<optimize::decay_rate::sqrt, opt_problem_t>
-                                (epochs, tsamples.size(), alpha0, fn_ulog)
+                                optimize::stoch_sg<opt_problem_t>
+                                (epochs, tsamples.size(), alpha0, decay, fn_ulog)
                                 (problem, data.m_x0);
                                 break;
                         }

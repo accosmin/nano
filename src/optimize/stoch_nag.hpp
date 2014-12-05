@@ -34,7 +34,7 @@ namespace ncv
                                         tsize epoch_size,
                                         tscalar alpha0,
                                         const tulog& ulog = tulog())
-                                :       base_t(epochs, epoch_size, alpha0, ulog)
+                                :       base_t(epochs, epoch_size, alpha0, tscalar(1.0), ulog)
                         {
                         }
 

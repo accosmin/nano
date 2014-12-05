@@ -1,7 +1,6 @@
 #pragma once
 
 #include "stoch_params.hpp"
-#include "decay.hpp"
 #include <cassert>
 
 namespace ncv
@@ -16,7 +15,6 @@ namespace ncv
                 ///
                 template
                 <
-                        decay_rate tbeta,               ///< learning rate's decay rate
                         typename tproblem               ///< optimization problem
                 >
                 struct stoch_sga : public stoch_params<tproblem>
@@ -35,8 +33,9 @@ namespace ncv
                         stoch_sga(      tsize epochs,
                                         tsize epoch_size,
                                         tscalar alpha0,
+                                        tscalar decay,
                                         const tulog& ulog = tulog())
-                                :       base_t(epochs, epoch_size, alpha0, ulog)
+                                :       base_t(epochs, epoch_size, alpha0, decay, ulog)
                         {
                         }
 
@@ -52,14 +51,14 @@ namespace ncv
                                 tvector gavg = x0;                      // running-averaged gradient
                                 gavg.setZero();
 
-                                tscalar sumb = tscalar(1) / base_t::m_alpha0;
+                                tscalar sumb = 0;
 
                                 for (tsize e = 0, k = 0; e < base_t::m_epochs; e ++)
                                 {
                                         for (tsize i = 0; i < base_t::m_epoch_size; i ++)
                                         {
                                                 // learning rate
-                                                const tscalar alpha = optimize::decay(base_t::m_alpha0, k ++, tbeta);
+                                                const tscalar alpha = base_t::alpha(k ++);
 
                                                 // descent direction
                                                 const tscalar b = tscalar(1) / alpha;
@@ -78,16 +77,6 @@ namespace ncv
                                 return cstate;
                         }
                 };
-
-                // create various SGA algorithms
-                template <typename tproblem>
-                using stoch_sga_sqrt = stoch_sga<decay_rate::sqrt, tproblem>;
-
-                template <typename tproblem>
-                using stoch_sga_qrt3 = stoch_sga<decay_rate::qrt3, tproblem>;
-
-                template <typename tproblem>
-                using stoch_sga_unit = stoch_sga<decay_rate::unit, tproblem>;
         }
 }
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "stoch_params.hpp"
-#include "decay.hpp"
 #include <cassert>
 
 namespace ncv
@@ -16,7 +15,6 @@ namespace ncv
                 ///
                 template
                 <
-                        decay_rate tbeta,               ///< learning rate's decay rate
                         typename tproblem               ///< optimization problem
                 >
                 struct stoch_sg : public stoch_params<tproblem>
@@ -35,8 +33,9 @@ namespace ncv
                         stoch_sg(       tsize epochs,
                                         tsize epoch_size,
                                         tscalar alpha0,
+                                        tscalar decay,
                                         const tulog& ulog = tulog())
-                                :       base_t(epochs, epoch_size, alpha0, ulog)
+                                :       base_t(epochs, epoch_size, alpha0, decay, ulog)
                         {
                         }
 
@@ -54,7 +53,7 @@ namespace ncv
                                         for (tsize i = 0; i < base_t::m_epoch_size; i ++)
                                         {
                                                 // learning rate
-                                                const tscalar alpha = optimize::decay(base_t::m_alpha0, k ++, tbeta);
+                                                const tscalar alpha = base_t::alpha(k ++);
 
                                                 // descent direction
                                                 cstate.d = -cstate.g;
@@ -69,16 +68,6 @@ namespace ncv
                                 return cstate;
                         }
                 };
-
-                // create various SG algorithms
-                template <typename tproblem>
-                using stoch_sg_sqrt = stoch_sg<decay_rate::sqrt, tproblem>;
-
-                template <typename tproblem>
-                using stoch_sg_qrt3 = stoch_sg<decay_rate::qrt3, tproblem>;
-
-                template <typename tproblem>
-                using stoch_sg_unit = stoch_sg<decay_rate::unit, tproblem>;
         }
 }
 
