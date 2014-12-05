@@ -18,6 +18,8 @@ namespace ncv
                         typedef typename tproblem::tvector      tvector;
                         typedef typename tproblem::tstate       tstate;         ///< optimization state
 
+                        typedef typename tproblem::twlog        twlog;
+                        typedef typename tproblem::telog        telog;
                         typedef typename tproblem::tulog        tulog;
 
                         ///
@@ -31,6 +33,13 @@ namespace ncv
                                         m_epoch_size(epoch_size),
                                         m_alpha0(alpha0),
                                         m_ulog(ulog)
+                        {
+                        }
+
+                        ///
+                        /// \brief destructor
+                        ///
+                        virtual ~stoch_params()
                         {
                         }
 
