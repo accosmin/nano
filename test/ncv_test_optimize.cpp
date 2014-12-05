@@ -391,7 +391,7 @@ int main(int argc, char *argv[])
                 cmodel25 + outlayer
         };
 
-        const strings_t cmd_losses = loss_manager_t::instance().ids();
+        const strings_t cmd_losses = { "square", "cauchy", "logistic" };//loss_manager_t::instance().ids();
         const strings_t cmd_criteria = { "avg" };//criterion_manager_t::instance().ids();
 
         // vary the model
