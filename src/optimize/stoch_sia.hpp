@@ -8,7 +8,7 @@ namespace ncv
         namespace optimize
         {
                 ///
-                /// \brief stochastic iterative average gradient (descent) starting from the initial value (guess) x0
+                /// \brief stochastic iterative average gradient (descent)
                 ///
                 /// NB: "Minimizing Finite Sums with the Stochastic Average Gradient"
                 ///     - Mark Schmidth, Nicolas Le Roux, Francis Bach

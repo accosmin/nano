@@ -8,7 +8,7 @@ namespace ncv
         namespace optimize
         {
                 ///
-                /// \brief stochastic Nesterov's accelerated gradient (descent) starting from the initial value (guess) x0
+                /// \brief stochastic Nesterov's accelerated gradient (descent)
                 ///
                 /// NB: Yu. Nesterov, "Introductory Lectures on Convex Optimization. A Basic Course"
                 /// NB: http://calculus.subwiki.org/wiki/Nesterov%27s_accelerated_gradient_descent_with_constant_learning_rate_for_a_quadratic_function_of_one_variable
