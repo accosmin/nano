@@ -24,6 +24,7 @@ namespace ncv
                 {
                         assert(rate >= tscalar(0));
                         assert(rate <= tscalar(1));
+                        assert(alpha0 > tscalar(0));
 
                         const tscalar base = static_cast<tscalar>(iter + 1);
 

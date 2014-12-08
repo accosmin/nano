@@ -49,7 +49,6 @@ do
 	        fn_train ${dir_exp_mnist} ${trainer}_${model}_l2n ${params} ${!trainer} ${l2n_crit} ${!model}${outlayer}
                 fn_train ${dir_exp_mnist} ${trainer}_${model}_var ${params} ${!trainer} ${var_crit} ${!model}${outlayer}
 	done
-
         #for trainer in `echo "mbatch_gd mbatch_cgd mbatch_lbfgs"` # batch_gd batch_cgd batch_lbfgs"`
         #do
         #        fn_train ${dir_exp_mnist} ${trainer}_${model} ${params} ${!trainer} ${avg_crit} ${!model}${outlayer}

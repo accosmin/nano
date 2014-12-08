@@ -1,6 +1,7 @@
 #pragma once
 
 #include "descent.hpp"
+#include <cmath>
 
 namespace ncv
 {
