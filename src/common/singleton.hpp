@@ -24,7 +24,7 @@ namespace ncv
                 {
                         std::call_once(m_once_flag, []()
                         {
-                                m_instance.reset(new this_object);
+                                singleton_t::m_instance.reset(new this_object);
                         });
                         return *m_instance.get();
                 }
