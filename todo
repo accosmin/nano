@@ -1,3 +1,10 @@
+- move & copy trainers/batch.*-code to the minibatch_trainer_t & batch_trainer_t:
+	- even if duplicated, but may remove some weird constructs (e.g. cycles)
+
+- new parameter of the mini-batch trainer:
+	- upscale [1,2] - to geometrically increase the size of the mini-batch 
+	- this may help the convergence, by smoothing out the optimization trajectory
+
 - MAD with index shifts (may speed-up corr2d)
 
 - test program to assess the speed of the 3D convolution/correlation operations
@@ -7,10 +14,6 @@
 		- http://en.wikipedia.org/wiki/Toeplitz_matrix
 
         - check if any improvement if using a 3D convolution    
-
-- new parameter of the mini-batch trainer:
-	- upscale [1,2] - to geometrically increase the size of the mini-batch 
-	- this may help the convergence, by smoothing out the optimization trajectory
 
 - finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
 
