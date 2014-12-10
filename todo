@@ -8,7 +8,9 @@
 
         - check if any improvement if using a 3D convolution    
 
-- Tikhonov regularizer	
+- new parameter of the mini-batch trainer:
+	- upscale [1,2] - to geometrically increase the size of the mini-batch 
+	- this may help the convergence, by smoothing out the optimization trajectory
 
 - finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
 
