@@ -26,5 +26,11 @@ namespace ncv
                 virtual trainer_result_t train(
                         const task_t&, const fold_t&, const loss_t&, size_t nthreads, const string_t& criterion, 
                         model_t&) const;
+
+        private:
+
+                trainer_result_t batch_train(
+                        const task_t&, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
+                        const loss_t&, const string_t& criterion, const model_t&) const;
         };
 }
