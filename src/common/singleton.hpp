@@ -26,13 +26,8 @@ namespace ncv
                         {
                                 singleton_t::m_instance.reset(new this_object);
                         });
-                        return *m_instance.get();
+                        return *m_instance;
                 }
-
-                ///
-                /// \brief destructor
-                ///
-                virtual ~singleton_t() {}
 
         protected:
 
@@ -40,6 +35,11 @@ namespace ncv
                 /// \brief constructor
                 ///
                 singleton_t() {}
+
+                ///
+                /// \brief destructor
+                ///
+                virtual ~singleton_t() {}
 
         private:
 
