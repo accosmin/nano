@@ -53,9 +53,9 @@ namespace ncv
                 vsampler.setup(sampler_t::stype::batch);                // but all validation samples
 
                 // train the model
-                const trainer_result_t result = ncv::batch_train(
+                const trainer_result_t result = ncv::minibatch_train(
                         model, task, tsampler, vsampler, nthreads,
-                        loss, criterion, optimizer, epochs, 1, iterations, epsilon);
+                        loss, criterion, optimizer, epochs, iterations, epsilon);
 
                 log_info() << "optimum [train = " << result.m_opt_state.m_tvalue << "/" << result.m_opt_state.m_terror
                            << ", valid = " << result.m_opt_state.m_vvalue << "/" << result.m_opt_state.m_verror
