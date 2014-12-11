@@ -15,7 +15,7 @@ namespace ncv
                 static opt_state_t batch_train(
                         trainer_data_t& data,
                         batch_optimizer optimizer, size_t iterations, scalar_t epsilon, size_t epoch,
-                        trainer_result_t& result)
+                        timer_t& timer, trainer_result_t& result)
                 {
                         size_t iteration = 0;  
                         
@@ -23,8 +23,6 @@ namespace ncv
                         const samples_t vsamples = data.m_vsampler.get();
 
                         // construct the optimization problem
-                        const ncv::timer_t timer;
-
                         auto fn_size = [&] ()
                         {
                                 return data.m_lacc.psize();
@@ -122,6 +120,7 @@ namespace ncv
                 const auto op = [&] (scalar_t lambda)
                 {
                         trainer_result_t result;
+                        timer_t timer;
 
                         // optimize the model
                         vector_t x0;
@@ -134,7 +133,7 @@ namespace ncv
 
                                 trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
 
-                                detail::batch_train(data, optimizer, iterations, epsilon, epoch, result);
+                                detail::batch_train(data, optimizer, iterations, epsilon, epoch, timer, result);
                         }
 
                         // OK
@@ -162,6 +161,7 @@ namespace ncv
                 const auto op = [&] (scalar_t lambda)
                 {
                         trainer_result_t result;
+                        timer_t timer;
 
                         // optimize the model
                         vector_t x0;
@@ -174,7 +174,8 @@ namespace ncv
 
                                 trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
 
-                                const opt_state_t state = detail::batch_train(data, optimizer, iterations, epsilon, epoch, result);
+                                const opt_state_t state =
+                                detail::batch_train(data, optimizer, iterations, epsilon, epoch, timer, result);
                                 x0 = state.x;
 
                                 // NB: this will cause resampling of the training data!
