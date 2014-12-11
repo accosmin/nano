@@ -71,9 +71,13 @@ namespace ncv
                                                 sumb = sumb + b;
                                         }
 
+                                        std::swap(cstate.x, xavg);      // NB: to log correctly the current parameter update!
                                         base_t::ulog(cstate);
+                                        std::swap(cstate.x, xavg);      // revert it
                                 }
 
+                                // OK, setup the average parameter as the final result
+                                cstate.x = xavg;
                                 return cstate;
                         }
                 };
