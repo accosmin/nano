@@ -1,7 +1,7 @@
 #include "minibatch_trainer.h"
 #include "io/logger.h"
 #include "common/math.hpp"
-#include "batch.h"
+#include "minibatch.h"
 #include "model.h"
 #include "sampler.h"
 #include "loss.h"

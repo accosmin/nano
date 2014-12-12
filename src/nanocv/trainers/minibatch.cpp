@@ -12,9 +12,9 @@ namespace ncv
 {
         namespace detail
         {        
-                static opt_state_t batch_train(
+                static opt_state_t minibatch_train(
                         trainer_data_t& data,
-                        batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
+                        batch_optimizer optimizer, size_t iterations, scalar_t epsilon, size_t epoch,
                         timer_t& timer, trainer_result_t& result)
                 {
                         size_t iteration = 0;  
@@ -59,26 +59,29 @@ namespace ncv
                         };
                         const opt_opulog_t fn_ulog = [&] (const opt_state_t& state)
                         {
-                                const scalar_t tvalue = data.m_gacc.value();
-                                const scalar_t terror = data.m_gacc.error();
+                                if ((++ iteration) == iterations)
+                                {
+                                        const scalar_t tvalue = data.m_gacc.value();
+                                        const scalar_t terror = data.m_gacc.error();
 
-                                // validation samples: loss value
-                                data.m_lacc.reset(state.x);
-                                data.m_lacc.update(data.m_task, vsamples, data.m_loss);
-                                const scalar_t vvalue = data.m_lacc.value();
-                                const scalar_t verror = data.m_lacc.error();
+                                        // validation samples: loss value
+                                        data.m_lacc.reset(state.x);
+                                        data.m_lacc.update(data.m_task, vsamples, data.m_loss);
+                                        const scalar_t vvalue = data.m_lacc.value();
+                                        const scalar_t verror = data.m_lacc.error();
 
-                                // update the optimum state
-                                result.update(state.x, tvalue, terror, vvalue, verror,
-                                              ++ iteration, scalars_t({ data.m_lacc.lambda() }));
+                                        // update the optimum state
+                                        result.update(state.x, tvalue, terror, vvalue, verror,
+                                                      epoch, scalars_t({ data.m_lacc.lambda() }));
 
-                                log_info()
-                                        << "[train = " << tvalue << "/" << terror
-                                        << ", valid = " << vvalue << "/" << verror
-                                        << ", param = " << state.x.lpNorm<Eigen::Infinity>()
-                                        << ", calls = " << state.n_fval_calls() << "/" << state.n_grad_calls()
-                                        << ", lambda = " << data.m_lacc.lambda()
-                                        << "] done in " << timer.elapsed() << ".";
+                                        log_info()
+                                                << "[train = " << tvalue << "/" << terror
+                                                << ", valid = " << vvalue << "/" << verror
+                                                << ", param = " << state.x.lpNorm<Eigen::Infinity>()
+                                                << ", calls = " << state.n_fval_calls() << "/" << state.n_grad_calls()
+                                                << ", lambda = " << data.m_lacc.lambda()
+                                                << "] done in " << timer.elapsed() << ".";
+                                }
                         };
 
                         // assembly optimization problem & optimize the model
@@ -106,11 +109,11 @@ namespace ncv
                         }
                 }
         }
-        
-        trainer_result_t batch_train(
+
+        trainer_result_t minibatch_train(
                 const model_t& model, const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
-                const loss_t& loss, const string_t& criterion, 
-                batch_optimizer optimizer, size_t iterations, scalar_t epsilon)
+                const loss_t& loss, const string_t& criterion,
+                batch_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon)
         {
                 // operator to train for a given regularization factor
                 const auto op = [&] (scalar_t lambda)
@@ -122,12 +125,19 @@ namespace ncv
                         vector_t x0;
                         model.save_params(x0);
 
-                        accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value, lambda);
-                        accumulator_t gacc(model, nthreads, criterion, criterion_t::type::vgrad, lambda);
+                        for (size_t epoch = 1; epoch <= epochs; epoch ++)
+                        {
+                                accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value, lambda);
+                                accumulator_t gacc(model, nthreads, criterion, criterion_t::type::vgrad, lambda);
 
-                        trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
+                                trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
 
-                        detail::batch_train(data, optimizer, iterations, epsilon, timer, result);
+                                const opt_state_t state =
+                                detail::minibatch_train(data, optimizer, iterations, epsilon, epoch, timer, result);
+                                x0 = state.x;
+
+                                // NB: this will cause resampling of the training data!
+                        }
 
                         // OK
                         return result;
