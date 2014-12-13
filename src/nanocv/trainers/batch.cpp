@@ -73,11 +73,12 @@ namespace ncv
                                               ++ iteration, scalars_t({ data.m_lacc.lambda() }));
 
                                 log_info()
-                                        << "[train = " << tvalue << "/" << terror
-                                        << ", valid = " << vvalue << "/" << verror
+                                        << "[train = " << tvalue << "/" << terror << "/=" << tsamples.size()
+                                        << ", valid = " << vvalue << "/" << verror << "/=" << vsamples.size()
                                         << ", param = " << state.x.lpNorm<Eigen::Infinity>()
-                                        << ", calls = " << state.n_fval_calls() << "/" << state.n_grad_calls()
+                                        << ", epoch = " << iteration
                                         << ", lambda = " << data.m_lacc.lambda()
+                                        << ", calls = " << state.n_fval_calls() << "/" << state.n_grad_calls()
                                         << "] done in " << timer.elapsed() << ".";
                         };
 
