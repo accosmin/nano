@@ -112,8 +112,8 @@ namespace ncv
         }
 
         trainer_result_t minibatch_train(
-                const model_t& model, const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
-                const loss_t& loss, const string_t& criterion,
+                const model_t& model, const task_t& task, sampler_t& tsampler, sampler_t& vsampler, size_t nthreads,
+                const loss_t& loss, const string_t& criterion, size_t batchsize, scalar_t batchratio,
                 batch_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon)
         {
                 // operator to train for a given regularization factor
@@ -126,8 +126,22 @@ namespace ncv
                         vector_t x0;
                         model.save_params(x0);
 
-                        for (size_t epoch = 1; epoch <= epochs; epoch ++)
+                        for (size_t epoch = 1, tsize = batchsize; epoch <= epochs;
+                                epoch ++, tsize = static_cast<size_t>(tsize * batchratio))
                         {
+                                // random subset of training samples
+                                if (tsize < tsampler.size())
+                                {
+                                        tsampler.setup(sampler_t::stype::uniform, tsize);
+                                }
+                                else
+                                {
+                                        tsampler.setup(sampler_t::stype::batch);
+                                }
+
+                                // all validation samples
+                                vsampler.setup(sampler_t::stype::batch);
+
                                 accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value, lambda);
                                 accumulator_t gacc(model, nthreads, criterion, criterion_t::type::vgrad, lambda);
 
