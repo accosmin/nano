@@ -75,7 +75,8 @@ namespace ncv
                                 log_info()
                                         << "[train = " << tvalue << "/" << terror << "/=" << tsamples.size()
                                         << ", valid = " << vvalue << "/" << verror << "/=" << vsamples.size()
-                                        << ", param = " << state.x.lpNorm<Eigen::Infinity>()
+                                        << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
+                                        << ", gnorm = " << state.g.lpNorm<Eigen::Infinity>()
                                         << ", epoch = " << iteration
                                         << ", lambda = " << data.m_lacc.lambda()
                                         << ", calls = " << state.n_fval_calls() << "/" << state.n_grad_calls()
