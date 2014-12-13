@@ -43,9 +43,9 @@ namespace ncv
                 // parameters
                 const size_t epochs = math::clamp(text::from_params<size_t>(configuration(), "epoch", 16), 1, 1024);
                 const size_t batchsize = math::clamp(text::from_params<size_t>(configuration(), "batch", 1024), 32, 8192);
-                const scalar_t batchratio = math::clamp(text::from_params<scalar_t>(configuration(), "ratio", 1.1), 1.0, 2.0);
+                const scalar_t batchratio = math::clamp(text::from_params<scalar_t>(configuration(), "ratio", 1.05), 1.0, 2.0);
                 const size_t iterations = math::clamp(text::from_params<size_t>(configuration(), "iters", 8), 4, 128);
-                const scalar_t epsilon = math::clamp(text::from_params<scalar_t>(configuration(), "eps", 1e-6), 1e-8, 1e-3);
+                const scalar_t epsilon = math::clamp(text::from_params<scalar_t>(configuration(), "eps", 1e-4), 1e-8, 1e-3);
 
                 const batch_optimizer optimizer = text::from_string<batch_optimizer>
                                 (text::from_params<string_t>(configuration(), "opt", "gd"));

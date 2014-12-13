@@ -42,7 +42,7 @@ namespace ncv
 
                 // parameters
                 const size_t iterations = math::clamp(text::from_params<size_t>(configuration(), "iters", 1024), 4, 4096);
-                const scalar_t epsilon = math::clamp(text::from_params<scalar_t>(configuration(), "eps", 1e-6), 1e-8, 1e-3);
+                const scalar_t epsilon = math::clamp(text::from_params<scalar_t>(configuration(), "eps", 1e-4), 1e-8, 1e-3);
 
                 const batch_optimizer optimizer = text::from_string<batch_optimizer>
                         (text::from_params<string_t>(configuration(), "opt", "lbfgs"));
