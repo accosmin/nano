@@ -16,7 +16,7 @@ namespace ncv
         void thread_loopi(tsize N, thread_pool_t& pool, toperator op)
         {
                 const tsize n_tasks = static_cast<tsize>(pool.n_workers());
-                const tsize task_size = N / n_tasks + 1;
+                const tsize task_size = (N + n_tasks - 1) / n_tasks;
 
                 for (tsize t = 0; t < n_tasks; t ++)
                 {
@@ -44,7 +44,7 @@ namespace ncv
         void thread_loopit(tsize N, thread_pool_t& pool, toperator op)
         {
                 const tsize n_tasks = static_cast<tsize>(pool.n_workers());
-                const tsize task_size = N / n_tasks + 1;
+                const tsize task_size = (N + n_tasks - 1) / n_tasks;
                 
                 for (tsize t = 0; t < n_tasks; t ++)
                 {
