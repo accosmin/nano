@@ -62,6 +62,7 @@ exit
 
 # compare models
 bash plot_models.sh ${dir_exp_mnist}/models.pdf ${dir_exp_mnist}/*.state
+bash plot_models.sh ${dir_exp_mnist}/models.svg ${dir_exp_mnist}/*.state
 
 # bash plot_models.sh ${dir_exp_mnist}/conv_max_models.pdf ${dir_exp_mnist}/conv_max_*.state
 # bash plot_models.sh ${dir_exp_mnist}/conv_min_models.pdf ${dir_exp_mnist}/conv_min_*.state

@@ -12,8 +12,11 @@ fi
 # output file
 ofile=${ifiles[0]}
 
+# format (extension)
+format=`"${ofile#*.}" `
+
 # temporary gnuplot script file
-pfile=${ofile/.pdf/.gnuplot}
+pfile=${ofile/.${format}/.gnuplot}
 
 # data attributes
 indices=(1 2 3 4)
@@ -23,7 +26,7 @@ sizes=(`echo "0.5,0.5 0.5,0.5 0.5,0.5 0.5,0.5"`)
 
 # set the plotting attributes
 rm -f ${pfile}
-echo "set terminal pdf enhanced font ',7'" >> ${pfile}        
+echo "set terminal ${format} enhanced font ',7'" >> ${pfile}        
 echo "set output \"${ofile}\"" >> ${pfile}
 echo "set multiplot" >> ${pfile}
 echo "set size 1.0,1.0" >> ${pfile}
