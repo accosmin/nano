@@ -145,10 +145,8 @@ namespace ncv
 
                                         xp(i) += d;
                                         xn(i) -= d;
-                                        g(i) = _f(xp) - _f(xn);
+                                        g(i) = (_f(xp) - _f(xn)) / (xp(i) - xn(i));
                                 }
-
-                                g /= d * 2;
                         }
 
                 private:
