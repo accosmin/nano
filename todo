@@ -1,5 +1,6 @@
 - more robust optimizers:
 	- check for degenerated solutions (in all batch & stochastic versions)
+	- BUG: NAG optimizer results in INFs & NANs
 
 - MAD with index shifts (may speed-up corr2d)
 
