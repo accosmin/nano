@@ -1,3 +1,6 @@
+- more robust optimizers:
+	- check for degenerated solutions (in all batch & stochastic versions)
+
 - MAD with index shifts (may speed-up corr2d)
 
 - test program to assess the speed of the 3D convolution/correlation operations
