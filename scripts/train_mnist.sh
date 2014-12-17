@@ -45,7 +45,7 @@ batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,iters=128,eps=1e-4"
 # train models
 for model in `echo "mlp0 mlp1"` # mlp2 mlp3 conv100_max conv50_max conv25_max"`
 do
-        for trainer in `echo "mbatch0_lbfgs mbatch1_lbfgs mbatch2_lbfgs batch_gd batch_lbfgs"`
+        for trainer in `echo "mbatch0_lbfgs mbatch1_lbfgs mbatch2_lbfgs batch_lbfgs"`
         do
                 fn_train ${dir_exp_mnist} ${trainer}_${model} ${params} ${!trainer} ${avg_crit} ${!model}${outlayer}
                 fn_train ${dir_exp_mnist} ${trainer}_${model}_l2n ${params} ${!trainer} ${l2n_crit} ${!model}${outlayer}
