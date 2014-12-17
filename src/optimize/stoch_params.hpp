@@ -1,6 +1,7 @@
 #pragma once
 
 #include "decay.hpp"
+#include "params.hpp"
 
 namespace ncv
 {
@@ -13,7 +14,7 @@ namespace ncv
                 <
                         typename tproblem                       ///< optimization problem
                 >
-                struct stoch_params
+                struct stoch_params_t : public params_t<tproblem>
                 {
                         typedef typename tproblem::tscalar      tscalar;
                         typedef typename tproblem::tsize        tsize;
@@ -27,30 +28,27 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        stoch_params(   tsize epochs,
+                        stoch_params_t( tsize epochs,
                                         tsize epoch_size,
                                         tscalar alpha0,
                                         tscalar decay,
+                                        const twlog& wlog = twlog(),
+                                        const telog& elog = telog(),
                                         const tulog& ulog = tulog())
-                                :       m_epochs(epochs),
+                                :       params_t<tproblem>(wlog, elog, ulog),
+                                        m_epochs(epochs),
                                         m_epoch_size(epoch_size),
                                         m_alpha0(alpha0),
-                                        m_decay(decay),
-                                        m_ulog(ulog)
+                                        m_decay(decay)
                         {
                         }
 
                         ///
                         /// \brief destructor
                         ///
-                        virtual ~stoch_params()
+                        virtual ~stoch_params_t()
                         {
                         }
-
-                        ///
-                        /// \brief change logger
-                        ///
-                        void set_ulog(const tulog& ulog) { m_ulog = ulog; }
 
                         ///
                         /// \brief change parameters
@@ -65,19 +63,10 @@ namespace ncv
                         ///
                         tscalar alpha(tsize iter) const { return optimize::decay(m_alpha0, iter, m_decay); }
 
-                        ///
-                        /// \brief log current optimization state
-                        ///
-                        void ulog(const tstate& state) const
-                        {
-                                if (m_ulog) m_ulog(state);
-                        }
-
                         tsize           m_epochs;               ///< number of epochs
                         tsize           m_epoch_size;           ///< epoch size in number of iterations
                         tscalar         m_alpha0;               ///< initial learning rate
                         tscalar         m_decay;                ///< learning rate's decay rate
-                        tulog           m_ulog;                 ///< update log: called after each epoch with the current state
                 };
         }
 }

@@ -17,14 +17,16 @@ namespace ncv
                 <
                         typename tproblem               ///< optimization problem
                 >
-                struct stoch_sga : public stoch_params<tproblem>
+                struct stoch_sga : public stoch_params_t<tproblem>
                 {
-                        typedef stoch_params<tproblem>          base_t;
+                        typedef stoch_params_t<tproblem>        base_t;
 
                         typedef typename base_t::tscalar        tscalar;
                         typedef typename base_t::tsize          tsize;
                         typedef typename base_t::tvector        tvector;
                         typedef typename base_t::tstate         tstate;
+                        typedef typename base_t::twlog          twlog;
+                        typedef typename base_t::telog          telog;
                         typedef typename base_t::tulog          tulog;
 
                         ///
@@ -34,8 +36,10 @@ namespace ncv
                                         tsize epoch_size,
                                         tscalar alpha0,
                                         tscalar decay,
+                                        const twlog& wlog = twlog(),
+                                        const telog& elog = telog(),
                                         const tulog& ulog = tulog())
-                                :       base_t(epochs, epoch_size, alpha0, decay, ulog)
+                                :       base_t(epochs, epoch_size, alpha0, decay, wlog, elog, ulog)
                         {
                         }
 

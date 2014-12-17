@@ -15,9 +15,9 @@ namespace ncv
                 <
                         typename tproblem                       ///< optimization problem
                 >
-                struct batch_gd : public batch_params<tproblem>
+                struct batch_gd : public batch_params_t<tproblem>
                 {
-                        typedef batch_params<tproblem>          base_t;
+                        typedef batch_params_t<tproblem>        base_t;
 
                         typedef typename base_t::tscalar        tscalar;
                         typedef typename base_t::tsize          tsize;

@@ -17,9 +17,9 @@ namespace ncv
                         typename tcgd_update,                   ///< CGD step update
                         typename tproblem                       ///< optimization problem
                 >
-                struct batch_cgd : public batch_params<tproblem>
+                struct batch_cgd : public batch_params_t<tproblem>
                 {
-                        typedef batch_params<tproblem>          base_t;
+                        typedef batch_params_t<tproblem>        base_t;
 
                         typedef typename base_t::tscalar        tscalar;
                         typedef typename base_t::tsize          tsize;

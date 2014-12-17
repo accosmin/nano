@@ -52,6 +52,14 @@ namespace ncv
                                 return data.m_gacc.value();
                         };
 
+                        auto fn_wlog = [] (const string_t& message)
+                        {
+                                log_warning() << message;
+                        };
+                        auto fn_elog = [] (const string_t& message)
+                        {
+                                log_error() << message;
+                        };
                         const opt_opulog_t fn_ulog = [&] (const opt_state_t& state)
                         {
                                 // shuffle randomly the training samples after each epoch
@@ -99,26 +107,26 @@ namespace ncv
                         {
                         case stochastic_optimizer::SGA:
                                 optimize::stoch_sga<opt_problem_t>
-                                (epochs, tsamples.size(), alpha0, decay, fn_ulog)
+                                (epochs, tsamples.size(), alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, data.m_x0);
                                 break;
 
                         case stochastic_optimizer::SIA:
                                 optimize::stoch_sia<opt_problem_t>
-                                (epochs, tsamples.size(), alpha0, decay, fn_ulog)
+                                (epochs, tsamples.size(), alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, data.m_x0);
                                 break;
 
                         case stochastic_optimizer::NAG:
                                 optimize::stoch_nag<opt_problem_t>
-                                (epochs, tsamples.size(), alpha0, decay, fn_ulog)
+                                (epochs, tsamples.size(), alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, data.m_x0);
                                 break;
 
                         case stochastic_optimizer::SG:
                         default:
                                 optimize::stoch_sg<opt_problem_t>
-                                (epochs, tsamples.size(), alpha0, decay, fn_ulog)
+                                (epochs, tsamples.size(), alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, data.m_x0);
                                 break;
                         }
