@@ -70,7 +70,7 @@ namespace ncv
 
                                                 // descent direction
                                                 problem(py, g);
-                                                const tscalar m = tscalar(k) / tscalar(k + 3);
+                                                const tscalar m = tscalar(k - 1) / tscalar(k + 2);
 
                                                 cx = py - alpha * g;
                                                 cy = cx + m * (cx - px);
