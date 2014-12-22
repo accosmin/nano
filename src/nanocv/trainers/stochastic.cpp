@@ -91,7 +91,7 @@ namespace ncv
                                 log_info()
                                         << "[train = " << tvalue << "/" << terror
                                         << ", valid = " << vvalue << "/" << verror
-                                        << ", param = " << state.x.lpNorm<Eigen::Infinity>()
+                                        << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
                                         << ", alpha = " << alpha0
                                         << ", epoch = " << epoch << "/" << epochs
                                         << ", lambda = " << data.m_lacc.lambda()
