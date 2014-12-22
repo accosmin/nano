@@ -36,7 +36,8 @@ namespace ncv
                         for (tsize i = 0; i < splits; i ++)
                         {
                                 const tscalar log = minlog + i * varlog;
-                                history.insert(std::make_pair(op(std::exp(log)), log));
+                                const tresult result = op(std::exp(log));
+                                history.insert(std::make_pair(result, log));
                         }
                         
                         const tvalue& optimum = *history.begin();
@@ -65,9 +66,11 @@ namespace ncv
         {
                 typedef decltype(op(tscalar(0)))        tresult;                
                 typedef std::pair<tresult, tscalar>     tvalue;
+                typedef typename tpool::mutex_t         tmutex;
+                typedef typename tpool::lock_t          tlock;
                 
                 std::set<tvalue> history;
-                std::vector<tvalue> results(splits);
+                tmutex mutex;
                 
                 splits = std::max(tsize(4), splits);
                 
@@ -77,16 +80,19 @@ namespace ncv
                 {                                                
                         for (tsize i = 0; i < splits; i ++)
                         {
-                                const tscalar log = minlog + i * varlog;
-                                pool.enqueue([=,&results,&op]()
+                                pool.enqueue([=,&history,&mutex,&op]()
                                 {
-                                        results[i] = std::make_pair(op(std::exp(log)), log);
+                                        const tscalar log = minlog + i * varlog;
+                                        const tresult result = op(std::exp(log));
+
+                                        // synchronize per thread
+                                        const tlock lock(mutex);
+                                        history.insert(std::make_pair(result, log));
                                 });
                         }
                         
-                        pool.wait();    // synchronize
-                        
-                        history.insert(results.begin(), results.end()); // update history
+                        // synchronize per search step
+                        pool.wait();
                         
                         const tvalue& optimum = *history.begin();
                         minlog = optimum.second - varlog * tscalar(splits - 1) / tscalar(splits);
