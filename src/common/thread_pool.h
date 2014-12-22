@@ -1,5 +1,6 @@
 #pragma once
 
+#include "noncopyable.hpp"
 #include <thread>
 #include <vector>
 #include <condition_variable>
@@ -29,7 +30,7 @@ namespace ncv
         ///
         /// NB: this is heavily copied/inspired by http://progsch.net/wordpress/?p=81
         ///
-        class thread_pool_t
+        class thread_pool_t : private noncopyable_t
         {
         public:
 
@@ -66,23 +67,6 @@ namespace ncv
                 // access functions
                 size_t n_workers() const { return m_workers.size(); }
                 size_t n_jobs() const { return m_data.m_tasks.size(); }
-
-        private:
-
-                ///
-                /// \brief disable copying
-                ///
-                thread_pool_t(const thread_pool_t& other) = delete;
-
-                ///
-                /// \brief disable copying
-                ///
-                thread_pool_t(thread_pool_t&& other) = delete;
-
-                ///
-                /// \brief disable copying
-                ///
-                thread_pool_t& operator=(const thread_pool_t& other) = delete;
 
         private:
 
