@@ -61,12 +61,12 @@ namespace ncv
 
                                 tvector g = x0;                 // gradient
 
-                                for (tsize e = 0, k = 0; e < base_t::m_epochs; e ++)
+                                for (tsize e = 0, k = 1; e < base_t::m_epochs; e ++)
                                 {
                                         for (tsize i = 0; i < base_t::m_epoch_size; i ++)
                                         {
                                                 // learning rate
-                                                const tscalar alpha = base_t::alpha(k ++);
+                                                const tscalar alpha = base_t::m_alpha0;//base_t::alpha(k ++);
 
                                                 // descent direction
                                                 problem(py, g);
