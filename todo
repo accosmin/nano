@@ -1,6 +1,5 @@
-- more robust optimizers:
-	- check for degenerated solutions (in all batch & stochastic versions)
-	- BUG: NAG optimizer results in INFs & NANs
+- layer_t::FLOPS:
+	- compute & print the estimate FLOPs for the forward or the backward step
 
 - MAD with index shifts (may speed-up corr2d)
 
@@ -11,6 +10,11 @@
 		- http://en.wikipedia.org/wiki/Toeplitz_matrix
 
         - check if any improvement if using a 3D convolution    
+
+- per layer regularization:
+	- L2-norm of the layer parameters should be forced to be exactly 1
+
+	- different learning rates / regularization weights -> may result in too many hyper-parameters to tune!
 
 - finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
 
