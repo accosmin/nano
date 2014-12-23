@@ -59,7 +59,7 @@ set(CMAKE_CXX_FLAGS_DEBUG               "-g -Og -fno-omit-frame-pointer -fsaniti
 set(CMAKE_CXX_FLAGS_RELEASE             "-O3 -DNDEBUG")         # -DEIGEN_NO_DEBUG")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O2 -g")               # -DEIGEN_NO_DEBUG")
 set(CMAKE_CXX_FLAGS_MINSIZEREL          "-Os -DNDEBUG")         # -DEIGEN_NO_DEBUG")
-set(CMAKE_EXE_LINKER_FLAGS              "-ffunction-sections -flto")
+set(CMAKE_EXE_LINKER_FLAGS              "-flto")
 
 # Do not use Eigen's MT
 add_definitions(-DEIGEN_DONT_PARALLELIZE)
