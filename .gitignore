@@ -2,5 +2,5 @@
 *.kdev4
 *.txt.user
 build-release
-build-debug
+build-debug*
 install

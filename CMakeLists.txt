@@ -8,8 +8,11 @@ project(nanocv)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-option(NANOCV_HAVE_CUDA         "Build nanocv with CUDA as dependency"          OFF)
-option(NANOCV_HAVE_OPENCL       "Build nanocv with OpenCL as dependency"        OFF)
+option(NANOCV_WITH_CUDA         "Build with CUDA as dependency"                         OFF)
+option(NANOCV_WITH_OPENCL       "Build with OpenCL as dependency"                       OFF)
+option(NANOCV_WITH_ASAN         "build with address sanitizer suppport (debug, gcc)"    OFF)
+option(NANOCV_WITH_LSAN         "build with leak sanitizer suppport (debug, gcc)"       OFF)
+option(NANOCV_WITH_TSAN         "build with thread sanitizer suppport (debug, gcc)"     OFF)
 
 # Zlib & BZip2
 find_package(ZLIB REQUIRED)
@@ -33,21 +36,21 @@ find_package(DevIL REQUIRED)
 include_directories(${IL_INCLUDE_DIR})
 
 # OpenCL
-if(NANOCV_HAVE_OPENCL)
+if(NANOCV_WITH_OPENCL)
         find_package(OpenCL 1.1 REQUIRED)
         if(OPENCL_FOUND)
                 include_directories(${OPENCL_INCLUDE_DIRS})
-                add_definitions(-DNANOCV_HAVE_OPENCL)
+                add_definitions(-DNANOCV_WITH_OPENCL)
         endif()
 endif()
 
 # CUDA
-if(NANOCV_HAVE_CUDA)
+if(NANOCV_WITH_CUDA)
         find_package(CUDA QUIET REQUIRED)
         if(CUDA_FOUND)
                 set(CUDA_PROPAGATE_HOST_FLAGS OFF)
                 set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-O3 -gencode arch=compute_20,code=sm_20)
-                add_definitions(-DNANOCV_HAVE_CUDA)
+                add_definitions(-DNANOCV_WITH_CUDA)
         endif()
 endif()
 
@@ -55,11 +58,20 @@ endif()
 #set(CMAKE_C_COMPILER                    "/usr/bin/clang")
 #set(CMAKE_CXX_COMPILER                  "/usr/bin/clang++")
 set(CMAKE_CXX_FLAGS                     "-Wall -std=c++11 -march=native -mtune=native -fopenmp")
-set(CMAKE_CXX_FLAGS_DEBUG               "-g -Og -fno-omit-frame-pointer -fsanitize=address -fsanitize=undefined")
+set(CMAKE_CXX_FLAGS_DEBUG               "-g -Og -fno-omit-frame-pointer")
 set(CMAKE_CXX_FLAGS_RELEASE             "-O3 -DNDEBUG")         # -DEIGEN_NO_DEBUG")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O2 -g")               # -DEIGEN_NO_DEBUG")
 set(CMAKE_CXX_FLAGS_MINSIZEREL          "-Os -DNDEBUG")         # -DEIGEN_NO_DEBUG")
 set(CMAKE_EXE_LINKER_FLAGS              "-flto")
+
+if(NANOCV_WITH_ASAN)
+        set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address -fsanitize=undefined")
+elseif(NANOCV_WITH_LSAN)
+        set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=leak")
+elseif(NANOCV_WITH_TSAN)
+        set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=thread -fPIE")
+        set(CMAKE_EXE_LINKER_FLAGS      "${CMAKE_EXE_LINKER_FLAGS} -pie")
+endif()
 
 # Do not use Eigen's MT
 add_definitions(-DEIGEN_DONT_PARALLELIZE)
@@ -99,7 +111,7 @@ file(GLOB nanocv_sources
         src/nanocv/trainers/*.*
         )
 
-if(NANOCV_HAVE_OPENCL)
+if(NANOCV_WITH_OPENCL)
         file(GLOB nanocv_opencl_sources
                 src/opencl/*.*
         )
@@ -110,7 +122,7 @@ add_library(nanocv
         SHARED
         ${nanocv_sources})
 
-if(NANOCV_HAVE_CUDA)
+if(NANOCV_WITH_CUDA)
         file(GLOB nanocv_cuda_sources
                 src/cuda/*.*
         )
@@ -142,7 +154,7 @@ set(libs "${libs};${ZLIB_LIBRARIES}")
 set(libs "${libs};${BZIP2_LIBRARIES}")
 set(libs "${libs};${LibArchive_LIBRARIES}")
 set(libs "${libs};${IL_LIBRARIES}")
-if(NANOCV_HAVE_OPENCL)
+if(NANOCV_WITH_OPENCL)
         set(libs "${libs};${OPENCL_LIBRARIES}")
 endif()
 
