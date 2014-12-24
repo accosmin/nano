@@ -1,3 +1,7 @@
+- cmake 3.1 comes bundled with FindOpenCL:
+	- setup the minimum cmake version as 3.1
+	- remove the custom OpenCL module (use the builtin one)
+
 - layer_t::FLOPS:
 	- compute & print the estimate FLOPs for the forward or the backward step
 
