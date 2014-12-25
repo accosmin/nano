@@ -1,21 +1,12 @@
-build_dir="./build-debug"
+#!/bin/bash
 
-mkdir -p ${build_dir}
-cd ${build_dir}
-rm -rf *
+build_type=Debug
+cmake_cuda=OFF
+cmake_opencl=OFF
 
-cmake_params=""
-cmake_params=${cmake_params}" -DCMAKE_BUILD_TYPE=Debug"
-cmake_params=${cmake_params}" -DNANOCV_WITH_ASAN=OFF"
-cmake_params=${cmake_params}" -DNANOCV_WITH_LSAN=OFF"
-cmake_params=${cmake_params}" -DNANOCV_WITH_TSAN=OFF"
-cmake_params=${cmake_params}" -DNANOCV_HAVE_CUDA=OFF"
-cmake_params=${cmake_params}" -DNANOCV_HAVE_OPENCL=OFF"
-cmake_params=${cmake_params}" -G Ninja"
+bash build.sh ./build-debug ${build_type} ${cmake_cuda} ${cmake_opencl} OFF OFF OFF
 
-cmake ${cmake_params} ../
-
-ninja
-cd ..
-
+bash build.sh ./build-debug-asan ${build_type} ${cmake_cuda} ${cmake_opencl} ON OFF OFF
+bash build.sh ./build-debug-lsan ${build_type} ${cmake_cuda} ${cmake_opencl} OFF ON OFF
+bash build.sh ./build-debug-tsan ${build_type} ${cmake_cuda} ${cmake_opencl} OFF OFF ON
 
