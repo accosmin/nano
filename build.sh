@@ -36,6 +36,7 @@ cmake ${cmake_params} ${current_dir}/
 
 # build
 ninja
+echo
 
 # go back to the current directory
 cd ${current_dir}
