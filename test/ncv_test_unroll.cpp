@@ -1,7 +1,6 @@
 #include "nanocv.h"
 #include "common/dot.hpp"
 #include "common/mad.hpp"
-#include <boost/format.hpp>
 
 using namespace ncv;
 
@@ -111,7 +110,7 @@ void test_dot(size_t size)
         rand_vector(size, vec1);
         rand_vector(size, vec2);
 
-        const string_t header = (boost::format("(%1%): ") % size).str();
+        const string_t header = text::to_string(size) + ": ";
         std::cout << text::resize(header, 20);
 
         const test_scalar_t dot    = test_dot(ncv::dot<test_scalar_t>, "dot", vec1, vec2);
@@ -146,7 +145,7 @@ void test_mad(size_t size)
 
         wei = vec1(0) + vec2(3);
 
-        const string_t header = (boost::format("(%1%): ") % size).str();
+        const string_t header = text::to_string(size) + ": ";
         std::cout << text::resize(header, 20);
 
         const test_scalar_t mad    = test_mad(ncv::mad<test_scalar_t>, "mad", vec1, vec2, wei);

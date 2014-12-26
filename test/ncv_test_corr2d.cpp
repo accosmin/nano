@@ -8,7 +8,6 @@
 #include "cuda/cuda.h"
 #include "cuda/conv2d.h"
 #endif
-#include <boost/format.hpp>
 
 using namespace ncv;
 
@@ -115,9 +114,9 @@ tscalar test_cpu(
 
         const tscalar retx = sum_matrices(odatas);
 
-        const string_t time_str = (boost::format("%1%/%2%") %
-                math::cast<size_t>(proc1.min()) %
-                math::cast<size_t>(procx.min())).str();
+        const string_t time_str =
+                text::to_string(math::cast<size_t>(proc1.min())) + "/" +
+                text::to_string(math::cast<size_t>(procx.min()));
         
         std::cout << name << "= " << text::resize(time_str, 6, align::right) << "ms   ";
 
@@ -319,7 +318,10 @@ void test_corr2d(int isize, int ksize, int tsize)
         init_matrices(osize, osize, tsize, odatas);
         init_matrix(ksize, ksize, kdata);
 
-        const string_t header = (boost::format("%5% x (%1%x%2%@%3%x%4%): ") % isize % isize % ksize % ksize % tsize).str();
+        const string_t header =
+                text::to_string(tsize) + " x " + "(" +
+                text::to_string(isize) + "x" + text::to_string(isize) + "@" +
+                text::to_string(ksize) + "x" + text::to_string(ksize) + "): ";
         std::cout << text::resize(header, 24);
 
         const test_scalar_t corrcpu_egb = test_cpu(ncv::corr2d_egb<test_matrix_t>, "egb", odatas, kdata, idatas);
