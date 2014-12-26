@@ -241,7 +241,7 @@ namespace ncv
         // optimization data types
         typedef std::function<size_t(void)>                             opt_opsize_t;
         typedef std::function<scalar_t(const vector_t&)>                opt_opfval_t;
-        typedef std::function<scalar_t(const vector_t&, vector_t&)>     opt_opgrad_t;
+        typedef std::function<scalar_t(const vector_t&, vector_t&)>     opt_ogparam_t;
 
         typedef optimize::problem_t
         <
@@ -249,7 +249,7 @@ namespace ncv
                 size_t,
                 opt_opsize_t,
                 opt_opfval_t,
-                opt_opgrad_t
+                opt_ogparam_t
         >                                                               opt_problem_t;
 
         typedef opt_problem_t::tstate                                   opt_state_t;

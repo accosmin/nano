@@ -46,7 +46,7 @@ namespace ncv
 		return *input;
         }
 
-        const tensor_t& forward_network_t::igrad(const vector_t& _output) const
+        const tensor_t& forward_network_t::ginput(const vector_t& _output) const
         {
                 assert(static_cast<size_t>(_output.size()) == osize());
                 assert(!m_layers.empty());
@@ -61,13 +61,13 @@ namespace ncv
                 {
                         const rlayer_t& layer = *it;
 
-                        poutput = &layer->igrad(*poutput);
+                        poutput = &layer->ginput(*poutput);
                 }
 
                 return *poutput;
         }
 
-        vector_t forward_network_t::pgrad(const vector_t& _output) const
+        vector_t forward_network_t::gparam(const vector_t& _output) const
         {
                 assert(static_cast<size_t>(_output.size()) == osize());
                 assert(!m_layers.empty());
@@ -81,19 +81,19 @@ namespace ncv
 
                 // backward step
                 const tensor_t* poutput = &output;
-                scalar_t* pgradient = gradient.data() + gradient.size();
+                scalar_t* gparamient = gradient.data() + gradient.size();
 
                 for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
                 {
                         const rlayer_t& layer = *it;
 
-                        pgradient -= layer->psize();
-                        layer->pgrad(*poutput, pgradient);
+                        gparamient -= layer->psize();
+                        layer->gparam(*poutput, gparamient);
 
                         ++ it;
                         if (it != m_layers.rend())
                         {
-                                poutput = &layer->igrad(*poutput);
+                                poutput = &layer->ginput(*poutput);
                         }
                         -- it;
                 }
@@ -267,8 +267,8 @@ namespace ncv
                 const scalar_t mflops_inv = 1.0 / (1024.0 * 1024.0);
 
                 scalar_t model_output_mflops = 0.0;
-                scalar_t model_igrad_mflops = 0.0;
-                scalar_t model_pgrad_mflops = 0.0;
+                scalar_t model_ginput_mflops = 0.0;
+                scalar_t model_gparam_mflops = 0.0;
 
                 for (size_t l = 0; l < n_layers(); l ++)
                 {
@@ -280,18 +280,18 @@ namespace ncv
                                    << "(" << layer->odims() << "x" << layer->orows() << "x" << layer->ocols() << ").";
 
                         const scalar_t output_mflops = mflops_inv * static_cast<scalar_t>(layer->output_flops());
-                        const scalar_t igrad_mflops = mflops_inv * static_cast<scalar_t>(layer->igrad_flops());
-                        const scalar_t pgrad_mflops = mflops_inv * static_cast<scalar_t>(layer->pgrad_flops());
+                        const scalar_t ginput_mflops = mflops_inv * static_cast<scalar_t>(layer->ginput_flops());
+                        const scalar_t gparam_mflops = mflops_inv * static_cast<scalar_t>(layer->gparam_flops());
 
                         model_output_mflops += output_mflops;
-                        model_igrad_mflops += igrad_mflops;
-                        model_pgrad_mflops += pgrad_mflops;
+                        model_ginput_mflops += ginput_mflops;
+                        model_gparam_mflops += gparam_mflops;
                 }
 
                 log_info() << "forward network [MFLOPs]"
                            << ": output = " << std::setprecision(3) << model_output_mflops
-                           << ", ginput = " << std::setprecision(3) << model_igrad_mflops
-                           << ", gparam = " << std::setprecision(3) << model_pgrad_mflops;
+                           << ", ginput = " << std::setprecision(3) << model_ginput_mflops
+                           << ", gparam = " << std::setprecision(3) << model_gparam_mflops;
         }
 
         size_t forward_network_t::psize() const

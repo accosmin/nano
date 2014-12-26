@@ -133,7 +133,7 @@ namespace ncv
                         const tensor_t output = this->output(x);
                         const vector_t ograd = loss.vgrad(target, output.vector());
 
-                        gx = this->igrad(ograd).vector();
+                        gx = this->ginput(ograd).vector();
 
                         return loss.value(target, output.vector());
                 };

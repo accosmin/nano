@@ -71,12 +71,12 @@ namespace ncv
                 ///
                 /// \brief compute the gradient wrt the inputs
                 ///
-                virtual const tensor_t& igrad(const tensor_t& output) = 0;
+                virtual const tensor_t& ginput(const tensor_t& output) = 0;
 
                 ///
                 /// \brief compute the gradient wrt the parameters
                 ///
-                virtual void pgrad(const tensor_t& output, scalar_t* gradient) = 0;
+                virtual void gparam(const tensor_t& output, scalar_t* gradient) = 0;
 
                 ///
                 /// \brief returns the input/output dimensions
@@ -102,12 +102,12 @@ namespace ncv
                 ///
                 /// \brief returns the approximate number of FLOPs to compute the gradient wrt the inputs
                 ///
-                virtual size_t igrad_flops() const = 0;
+                virtual size_t ginput_flops() const = 0;
 
                 ///
                 /// \brief returns the approximate number of FLOPs to compute the gradient wrt the outputs
                 ///
-                virtual size_t pgrad_flops() const = 0;
+                virtual size_t gparam_flops() const = 0;
         };
 }
 

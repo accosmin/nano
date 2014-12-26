@@ -39,12 +39,12 @@ namespace ncv
                 ///
                 /// \brief compute the model's gradient wrt parameters
                 ///
-                virtual vector_t pgrad(const vector_t& output) const;
+                virtual vector_t gparam(const vector_t& output) const;
 
                 ///
                 /// \brief compute the model's gradient wrt inputs
                 ///
-                virtual const tensor_t& igrad(const vector_t& output) const;
+                virtual const tensor_t& ginput(const vector_t& output) const;
 
                 ///
                 /// \brief save/load/initialize parameters

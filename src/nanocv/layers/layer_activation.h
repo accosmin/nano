@@ -50,8 +50,8 @@ namespace ncv
 
                 // process inputs (compute outputs & gradients)
                 virtual const tensor_t& output(const tensor_t& input) { return _output(input); }
-                virtual const tensor_t& igrad(const tensor_t& output) { return _igrad(output); }
-                virtual void pgrad(const tensor_t& output, scalar_t*) { return _pgrad(output); }
+                virtual const tensor_t& ginput(const tensor_t& output) { return _ginput(output); }
+                virtual void gparam(const tensor_t& output, scalar_t*) { return _gparam(output); }
 
                 // access functions
                 virtual size_t idims() const { return m_data.dims(); }
@@ -64,8 +64,8 @@ namespace ncv
 
                 // flops
                 virtual size_t output_flops() const { return m_data.size(); }
-                virtual size_t igrad_flops() const { return m_data.size(); }
-                virtual size_t pgrad_flops() const { return 0; }
+                virtual size_t ginput_flops() const { return m_data.size(); }
+                virtual size_t gparam_flops() const { return 0; }
 
         private:
 
@@ -90,7 +90,7 @@ namespace ncv
                 }
 
                 // gradient
-                const tensor_t& _igrad(const tensor_t& output)
+                const tensor_t& _ginput(const tensor_t& output)
                 {
                         assert(m_data.dims() == output.dims());
                         assert(m_data.rows() == output.rows());
@@ -102,7 +102,7 @@ namespace ncv
                 }
 
                 // gradient
-                void _pgrad(const tensor_t& output)
+                void _gparam(const tensor_t& output)
                 {
                         assert(m_data.dims() == output.dims());
                         assert(m_data.rows() == output.rows());

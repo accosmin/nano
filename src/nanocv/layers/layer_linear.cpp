@@ -28,7 +28,7 @@ namespace ncv
                 typename tscalar,
                 typename tsize
         >
-        static void _igrad(
+        static void _ginput(
                 tscalar* idata, tsize isize,
                 const tscalar* wdata,
                 const tscalar* odata, tsize osize)
@@ -44,7 +44,7 @@ namespace ncv
                 typename tscalar,
                 typename tsize
         >
-        static void _pgrad(
+        static void _gparam(
                 tscalar* idata, tsize isize,
                 tscalar* gwdata,
                 tscalar* gbdata,
@@ -131,7 +131,7 @@ namespace ncv
                 return m_odata;
         }
 
-        const tensor_t& linear_layer_t::igrad(const tensor_t& output)
+        const tensor_t& linear_layer_t::ginput(const tensor_t& output)
         {
                 assert(output.dims() == odims());
                 assert(output.rows() == orows());
@@ -139,14 +139,14 @@ namespace ncv
 
                 m_odata.copy_from(output);
 
-                _igrad(m_idata.data(), isize(),
+                _ginput(m_idata.data(), isize(),
                        m_wdata.data(),
                        m_odata.data(), osize());
 
                 return m_idata;
         }
 
-        void linear_layer_t::pgrad(const tensor_t& output, scalar_t* gradient)
+        void linear_layer_t::gparam(const tensor_t& output, scalar_t* gradient)
         {
                 assert(output.dims() == odims());
                 assert(output.rows() == orows());
@@ -154,7 +154,7 @@ namespace ncv
 
                 m_odata.copy_from(output);
 
-                _pgrad(m_idata.data(), isize(),
+                _gparam(m_idata.data(), isize(),
                        gradient, gradient + m_wdata.size(),
                        m_odata.data(), osize());
         }

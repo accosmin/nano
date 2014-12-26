@@ -201,7 +201,7 @@ namespace ncv
                 return m_odata;
         }        
 
-        const tensor_t& conv_layer_t::igrad(const tensor_t& output)
+        const tensor_t& conv_layer_t::ginput(const tensor_t& output)
         {
                 assert(odims() == output.dims());
                 assert(orows() == output.rows());
@@ -229,7 +229,7 @@ namespace ncv
                 return m_idata;
         }
 
-        void conv_layer_t::pgrad(const tensor_t& output, scalar_t* gradient)
+        void conv_layer_t::gparam(const tensor_t& output, scalar_t* gradient)
         {
                 assert(odims() == output.dims());
                 assert(orows() == output.rows());

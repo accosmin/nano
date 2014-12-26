@@ -44,7 +44,7 @@ namespace ncv
                 typename tscalar,
                 typename tsize
         >
-        static void _igrad(
+        static void _ginput(
                 tscalar* idata, tsize irows, tsize icols,
                 const tscalar* wdata, const tscalar* sdata, const tscalar*, const tscalar* gdata)
         {
@@ -111,7 +111,7 @@ namespace ncv
                 return m_odata;
         }
 
-        const tensor_t& pool_layer_t::igrad(const tensor_t& output)
+        const tensor_t& pool_layer_t::ginput(const tensor_t& output)
         {
                 assert(odims() == output.dims());
                 assert(orows() == output.rows());
@@ -119,7 +119,7 @@ namespace ncv
 
                 for (size_t o = 0; o < odims(); o ++)
                 {
-                        _igrad(m_idata.plane_data(o), irows(), icols(),
+                        _ginput(m_idata.plane_data(o), irows(), icols(),
                                   m_wdata.plane_data(o),
                                   m_sdata.plane_data(o),
 				  m_cdata.plane_data(o),
@@ -129,7 +129,7 @@ namespace ncv
                 return m_idata;
         }
 
-        void pool_layer_t::pgrad(const tensor_t& output, scalar_t* gradient)
+        void pool_layer_t::gparam(const tensor_t& output, scalar_t* gradient)
         {
                 assert(odims() == output.dims());
                 assert(orows() == output.rows());

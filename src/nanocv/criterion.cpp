@@ -92,7 +92,7 @@ namespace ncv
                         break;
 
                 case type::vgrad:
-                        accumulate(weight * m_model->pgrad(loss.vgrad(target, output)),
+                        accumulate(weight * m_model->gparam(loss.vgrad(target, output)),
                                    weight * loss.value(target, output),
                                    weight * loss.error(target, output));
                         break;

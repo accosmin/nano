@@ -125,7 +125,7 @@ static void test_grad_inputs(const string_t& header, const string_t& loss_id, co
                 
                 const vector_t output = rmodel_inputs->output(x).vector();
                 
-                gx = rmodel_inputs->igrad(loss.vgrad(target, output)).vector();
+                gx = rmodel_inputs->ginput(loss.vgrad(target, output)).vector();
                 return loss.value(target, output);
         };
         
