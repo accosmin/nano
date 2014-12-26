@@ -2,18 +2,12 @@
 #include "io/logger.h"
 #include "common/math.hpp"
 #include "common/random.hpp"
-#include "common/conv2d.hpp"
-#include "common/corr2d.hpp"
 #include "common/sampling.hpp"
 #include "tensor/serialize.hpp"
+#include "convolution.hpp"
 
 namespace ncv
 {
-        static bool is_masked(scalar_t value)
-        {
-                return value > 0.5;
-        }
-
         conv_layer_t::conv_layer_t(const string_t& parameters)
                 :       layer_t(parameters)
         {
@@ -115,7 +109,7 @@ namespace ncv
 
                 for (matrix_t::Index i = 0; i < m_mdata.size(); i ++)
                 {
-                        if (is_masked(m_mdata(i)))
+                        if (convolution::is_masked(m_mdata(i)))
                         {
                                 count ++;
                         }
@@ -130,7 +124,7 @@ namespace ncv
                 {
                         for (size_t i = 0; i < idims(); i ++, k ++)
                         {
-                                if (is_masked(m_mdata(o, i)))
+                                if (convolution::is_masked(m_mdata(o, i)))
                                 {
                                         auto kmap = tensor::make_vector(m_kdata.plane_data(k), m_kdata.plane_size());
                                         params = tensor::save(kmap, params);
@@ -147,7 +141,7 @@ namespace ncv
                 {
                         for (size_t i = 0; i < idims(); i ++, k ++)
                         {
-                                if (is_masked(m_mdata(o, i)))
+                                if (convolution::is_masked(m_mdata(o, i)))
                                 {
                                         auto kmap = tensor::make_vector(m_kdata.plane_data(k), m_kdata.plane_size());
                                         params = tensor::load(kmap, params);
@@ -181,22 +175,11 @@ namespace ncv
 
                 m_idata.copy_from(input);
                 
-                for (size_t o = 0; o < odims(); o ++)
-                {
-                        auto omap = m_odata.plane_matrix(o);                        
-                        
-                        omap.setZero();                        
-                        for (size_t i = 0; i < idims(); i ++)
-                        {
-                                auto imap = m_idata.plane_matrix(i);
-                                auto kmap = m_kdata.plane_matrix(o * idims() + i);
-                                
-                                if (is_masked(m_mdata(o, i)))
-                                {
-                                        ncv::conv2d_dyn(imap, kmap, omap);
-                                }
-                        }
-                }
+                convolution::output(
+                        m_mdata.data(),
+                        m_idata.data(), idims(),
+                        m_kdata.data(), krows(), kcols(),
+                        m_odata.data(), odims(), orows(), ocols());
 
                 return m_odata;
         }        
@@ -209,22 +192,11 @@ namespace ncv
 
                 m_odata.copy_from(output);
                 
-                m_idata.zero();                
-                for (size_t o = 0; o < odims(); o ++)
-                {
-                        auto omap = m_odata.plane_matrix(o);
-                        
-                        for (size_t i = 0; i < idims(); i ++)
-                        {
-                                auto gimap = m_idata.plane_matrix(i);
-                                auto kmap = m_kdata.plane_matrix(o * idims() + i);
-                                
-                                if (is_masked(m_mdata(o, i)))
-                                {
-                                        ncv::corr2d_dyn(omap, kmap, gimap);
-                                }
-                        }
-                }
+                convolution::ginput(
+                        m_mdata.data(),
+                        m_idata.data(), idims(),
+                        m_kdata.data(), krows(), kcols(),
+                        m_odata.data(), odims(), orows(), ocols());
 
                 return m_idata;
         }
@@ -237,25 +209,11 @@ namespace ncv
 
                 m_odata.copy_from(output);
                 
-                const size_t ksize = krows() * kcols();
-                
-                for (size_t o = 0, k = 0; o < odims(); o ++)
-                {
-                        auto omap = m_odata.plane_matrix(o);
-                        
-                        for (size_t i = 0; i < idims(); i ++)
-                        {
-                                auto imap = m_idata.plane_matrix(i);
-                                auto gkmap = tensor::make_matrix(gradient + k * ksize, krows(), kcols());
-                                
-                                if (is_masked(m_mdata(o, i)))
-                                {
-                                        gkmap.setZero();
-                                        ncv::conv2d_dyn(imap, omap, gkmap);
-                                        k ++;
-                                }
-                        }
-                }
+                convolution::gparam(
+                        m_mdata.data(),
+                        m_idata.data(), idims(),
+                        gradient, krows(), kcols(),
+                        m_odata.data(), odims(), orows(), ocols());
         }
 }
 

@@ -2,63 +2,10 @@
 #include "common/math.hpp"
 #include "common/random.hpp"
 #include "tensor/serialize.hpp"
+#include "linear.hpp"
 
 namespace ncv
 {
-        template
-        <
-                typename tscalar,
-                typename tsize
-        >
-        static void _output(
-                const tscalar* idata, tsize isize,
-                const tscalar* wdata,
-                const tscalar* bdata,
-                tscalar* odata, tsize osize)
-        {
-                // output
-                tensor::make_vector(odata, osize).noalias() =
-                        tensor::make_vector(bdata, osize) +
-                        tensor::make_matrix(wdata, osize, isize) *
-                        tensor::make_vector(idata, isize);
-        }
-
-        template
-        <
-                typename tscalar,
-                typename tsize
-        >
-        static void _ginput(
-                tscalar* idata, tsize isize,
-                const tscalar* wdata,
-                const tscalar* odata, tsize osize)
-        {
-                // input gradient
-                tensor::make_vector(idata, isize).noalias() =
-                        tensor::make_matrix(wdata, osize, isize).transpose() *
-                        tensor::make_vector(odata, osize);
-        }
-
-        template
-        <
-                typename tscalar,
-                typename tsize
-        >
-        static void _gparam(
-                tscalar* idata, tsize isize,
-                tscalar* gwdata,
-                tscalar* gbdata,
-                const tscalar* odata, tsize osize)
-        {
-                // bias & weights gradient
-                tensor::make_vector(gbdata, osize).noalias() =
-                        tensor::make_vector(odata, osize);
-
-                tensor::make_matrix(gwdata, osize, isize).noalias() =
-                        tensor::make_vector(odata, osize) *
-                        tensor::make_vector(idata, isize).transpose();
-        }
-
         linear_layer_t::linear_layer_t(const string_t& parameters)
                 :       layer_t(parameters)
         {
@@ -124,7 +71,8 @@ namespace ncv
 
                 m_idata.copy_from(input);
 
-                _output(m_idata.data(), isize(),
+                linear::output(
+                        m_idata.data(), isize(),
                         m_wdata.data(), m_bdata.data(),
                         m_odata.data(), osize());
 
@@ -139,9 +87,10 @@ namespace ncv
 
                 m_odata.copy_from(output);
 
-                _ginput(m_idata.data(), isize(),
-                       m_wdata.data(),
-                       m_odata.data(), osize());
+                linear::ginput(
+                        m_idata.data(), isize(),
+                        m_wdata.data(),
+                        m_odata.data(), osize());
 
                 return m_idata;
         }
@@ -154,9 +103,10 @@ namespace ncv
 
                 m_odata.copy_from(output);
 
-                _gparam(m_idata.data(), isize(),
-                       gradient, gradient + m_wdata.size(),
-                       m_odata.data(), osize());
+                linear::gparam(
+                        m_idata.data(), isize(),
+                        gradient, gradient + m_wdata.size(),
+                        m_odata.data(), osize());
         }
 }
 
