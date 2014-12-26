@@ -1,12 +1,10 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1)
 
 project(nanocv)
 
 ######################################################################
 # External dependencies
 ######################################################################
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 option(NANOCV_WITH_CUDA         "Build with CUDA as dependency"                         OFF)
 option(NANOCV_WITH_OPENCL       "Build with OpenCL as dependency"                       OFF)
@@ -38,9 +36,11 @@ include_directories(${IL_INCLUDE_DIR})
 # OpenCL
 if(NANOCV_WITH_OPENCL)
         find_package(OpenCL 1.1 REQUIRED)
-        if(OPENCL_FOUND)
-                include_directories(${OPENCL_INCLUDE_DIRS})
+        if(OpenCL_FOUND)
+                include_directories(${OpenCL_INCLUDE_DIRS})
                 add_definitions(-DNANOCV_WITH_OPENCL)
+        else(OpenCL_FOUND)
+                message(FATAL_ERROR "Cannot find OpenCL libraries!")
         endif()
 endif()
 
@@ -51,6 +51,8 @@ if(NANOCV_WITH_CUDA)
                 set(CUDA_PROPAGATE_HOST_FLAGS OFF)
                 set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-O3 -gencode arch=compute_20,code=sm_20)
                 add_definitions(-DNANOCV_WITH_CUDA)
+        else(CUDA_FOUND)
+                message(FATAL_ERROR "Cannot find CUDA libraries!")
         endif()
 endif()
 
@@ -88,6 +90,9 @@ message("CXX MINSIZEREL FLAGS:         " "${CMAKE_CXX_FLAGS_MINSIZEREL}")
 message("CMAKE_EXE_LINKER_FLAGS:       " "${CMAKE_EXE_LINKER_FLAGS}")
 message("------------------------------------------------------------------------------" "")
 message("BUILD TYPE:                   " "${CMAKE_BUILD_TYPE}")
+message("------------------------------------------------------------------------------" "")
+message("CUDA                          " "${NANOCV_WITH_CUDA}")
+message("OPENCL                        " "${NANOCV_WITH_OPENCL}")
 message("------------------------------------------------------------------------------" "")
 
 include_directories(./)
@@ -155,7 +160,7 @@ set(libs "${libs};${BZIP2_LIBRARIES}")
 set(libs "${libs};${LibArchive_LIBRARIES}")
 set(libs "${libs};${IL_LIBRARIES}")
 if(NANOCV_WITH_OPENCL)
-        set(libs "${libs};${OPENCL_LIBRARIES}")
+        set(libs "${libs};${OpenCL_LIBRARIES}")
 endif()
 
 # Set the executables
