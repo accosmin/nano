@@ -56,12 +56,22 @@ namespace ncv
                 virtual size_t ocols() const { return m_odata.cols(); }
                 virtual size_t psize() const;
 
+                // flops
+                virtual size_t output_flops() const { return mask_count() * oplane_size() * kplane_size(); }
+                virtual size_t igrad_flops() const { return mask_count() * oplane_size() * kplane_size(); }
+                virtual size_t pgrad_flops() const { return mask_count() * iplane_size() * oplane_size(); }
+
         private:
 
                 size_t krows() const { return m_kdata.rows(); }
-                size_t kcols() const { return m_kdata.cols(); }
+                size_t kcols() const { return m_kdata.cols(); }                
+
+                size_t oplane_size() const { return m_odata.plane_size(); }
+                size_t iplane_size() const { return m_idata.plane_size(); }
+                size_t kplane_size() const { return m_kdata.plane_size(); }
 
                 void make_mask();
+                size_t mask_count() const;
 
         private:
 

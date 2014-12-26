@@ -109,6 +109,21 @@ namespace ncv
 //                }
         }
 
+        size_t conv_layer_t::mask_count() const
+        {
+                size_t count = 0;
+
+                for (matrix_t::Index i = 0; i < m_mdata.size(); i ++)
+                {
+                        if (is_masked(m_mdata(i)))
+                        {
+                                count ++;
+                        }
+                }
+
+                return count;
+        }
+
         scalar_t* conv_layer_t::save_params(scalar_t* params) const
         {
                 for (size_t o = 0, k = 0; o < odims(); o ++)

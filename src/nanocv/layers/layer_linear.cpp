@@ -5,6 +5,60 @@
 
 namespace ncv
 {
+        template
+        <
+                typename tscalar,
+                typename tsize
+        >
+        static void _output(
+                const tscalar* idata, tsize isize,
+                const tscalar* wdata,
+                const tscalar* bdata,
+                tscalar* odata, tsize osize)
+        {
+                // output
+                tensor::make_vector(odata, osize).noalias() =
+                        tensor::make_vector(bdata, osize) +
+                        tensor::make_matrix(wdata, osize, isize) *
+                        tensor::make_vector(idata, isize);
+        }
+
+        template
+        <
+                typename tscalar,
+                typename tsize
+        >
+        static void _igrad(
+                tscalar* idata, tsize isize,
+                const tscalar* wdata,
+                const tscalar* odata, tsize osize)
+        {
+                // input gradient
+                tensor::make_vector(idata, isize).noalias() =
+                        tensor::make_matrix(wdata, osize, isize).transpose() *
+                        tensor::make_vector(odata, osize);
+        }
+
+        template
+        <
+                typename tscalar,
+                typename tsize
+        >
+        static void _pgrad(
+                tscalar* idata, tsize isize,
+                tscalar* gwdata,
+                tscalar* gbdata,
+                const tscalar* odata, tsize osize)
+        {
+                // bias & weights gradient
+                tensor::make_vector(gbdata, osize).noalias() =
+                        tensor::make_vector(odata, osize);
+
+                tensor::make_matrix(gwdata, osize, isize).noalias() =
+                        tensor::make_vector(odata, osize) *
+                        tensor::make_vector(idata, isize).transpose();
+        }
+
         linear_layer_t::linear_layer_t(const string_t& parameters)
                 :       layer_t(parameters)
         {
@@ -69,11 +123,10 @@ namespace ncv
                 assert(icols() == input.cols());
 
                 m_idata.copy_from(input);
-                
-                tensor::make_vector(m_odata.data(), osize()) = 
-                        tensor::make_vector(m_bdata.data(), osize()) +
-                        tensor::make_matrix(m_wdata.data(), osize(), isize()) *
-                        tensor::make_vector(m_idata.data(), isize());;
+
+                _output(m_idata.data(), isize(),
+                        m_wdata.data(), m_bdata.data(),
+                        m_odata.data(), osize());
 
                 return m_odata;
         }
@@ -85,10 +138,10 @@ namespace ncv
                 assert(output.cols() == ocols());
 
                 m_odata.copy_from(output);
-                
-                tensor::make_vector(m_idata.data(), isize()).noalias() =
-                        tensor::make_matrix(m_wdata.data(), osize(), isize()).transpose() *
-                        tensor::make_vector(m_odata.data(), osize());
+
+                _igrad(m_idata.data(), isize(),
+                       m_wdata.data(),
+                       m_odata.data(), osize());
 
                 return m_idata;
         }
@@ -100,13 +153,10 @@ namespace ncv
                 assert(output.cols() == ocols());
 
                 m_odata.copy_from(output);
-                                
-                tensor::make_matrix(gradient, osize(), isize()).noalias() =
-                        tensor::make_vector(m_odata.data(), osize()) *
-                        tensor::make_vector(m_idata.data(), isize()).transpose();                
-                        
-                tensor::make_vector(gradient + osize() * isize(), osize()).noalias() = 
-                        tensor::make_vector(m_odata.data(), osize());                
+
+                _pgrad(m_idata.data(), isize(),
+                       gradient, gradient + m_wdata.size(),
+                       m_odata.data(), osize());
         }
 }
 

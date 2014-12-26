@@ -1,6 +1,3 @@
-- layer_t::FLOPS:
-	- compute & print the estimate FLOPs for the forward or the backward step
-
 - MAD with index shifts (may speed-up corr2d)
 
 - test program to assess the speed of the 3D convolution/correlation operations

@@ -3,7 +3,7 @@
 #include "common/math.hpp"
 #include "common/cast.hpp"
 #include "tensor/serialize.hpp"
-#include <boost/format.hpp>
+#include <iomanip>
 
 namespace ncv
 {
@@ -264,16 +264,34 @@ namespace ncv
         {
                 assert(n_layers() == layer_ids.size());
 
+                const scalar_t mflops_inv = 1.0 / (1024.0 * 1024.0);
+
+                scalar_t model_output_mflops = 0.0;
+                scalar_t model_igrad_mflops = 0.0;
+                scalar_t model_pgrad_mflops = 0.0;
+
                 for (size_t l = 0; l < n_layers(); l ++)
                 {
                         const rlayer_t& layer = m_layers[l];
 
-                        log_info() <<
-                                boost::format("forward network [%1%/%2%]: [%3%] (%4%x%5%x%6%) -> (%7%x%8%x%9%).")
-                                % (l + 1) % m_layers.size() % layer_ids[l]
-                                % layer->idims() % layer->irows() % layer->icols()
-                                % layer->odims() % layer->orows() % layer->ocols();
+                        log_info() << "forward network [" << (l + 1) << "/" << m_layers.size() << "]: "
+                                   << "[" << layer_ids[l] << "] "
+                                   << "(" << layer->idims() << "x" << layer->irows() << "x" << layer->icols() << ") -> "
+                                   << "(" << layer->odims() << "x" << layer->orows() << "x" << layer->ocols() << ").";
+
+                        const scalar_t output_mflops = mflops_inv * static_cast<scalar_t>(layer->output_flops());
+                        const scalar_t igrad_mflops = mflops_inv * static_cast<scalar_t>(layer->igrad_flops());
+                        const scalar_t pgrad_mflops = mflops_inv * static_cast<scalar_t>(layer->pgrad_flops());
+
+                        model_output_mflops += output_mflops;
+                        model_igrad_mflops += igrad_mflops;
+                        model_pgrad_mflops += pgrad_mflops;
                 }
+
+                log_info() << "forward network [MFLOPs]"
+                           << ": output = " << std::setprecision(3) << model_output_mflops
+                           << ", ginput = " << std::setprecision(3) << model_igrad_mflops
+                           << ", gparam = " << std::setprecision(3) << model_pgrad_mflops;
         }
 
         size_t forward_network_t::psize() const

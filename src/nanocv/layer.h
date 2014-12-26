@@ -93,6 +93,21 @@ namespace ncv
                 /// \brief returns the number of (optimization) parameters
                 ///
                 virtual size_t psize() const = 0;
+
+                ///
+                /// \brief returns the approximate number of FLOPs to compute the output
+                ///
+                virtual size_t output_flops() const = 0;
+
+                ///
+                /// \brief returns the approximate number of FLOPs to compute the gradient wrt the inputs
+                ///
+                virtual size_t igrad_flops() const = 0;
+
+                ///
+                /// \brief returns the approximate number of FLOPs to compute the gradient wrt the outputs
+                ///
+                virtual size_t pgrad_flops() const = 0;
         };
 }
 

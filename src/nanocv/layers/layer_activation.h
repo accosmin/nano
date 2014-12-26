@@ -62,6 +62,11 @@ namespace ncv
                 virtual size_t ocols() const { return m_data.cols(); }
                 virtual size_t psize() const { return 0; }
 
+                // flops
+                virtual size_t output_flops() const { return m_data.size(); }
+                virtual size_t igrad_flops() const { return m_data.size(); }
+                virtual size_t pgrad_flops() const { return 0; }
+
         private:
 
                 // resize to process new inputs, returns the number of parameters

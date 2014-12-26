@@ -50,6 +50,11 @@ namespace ncv
                 virtual size_t ocols() const { return m_odata.cols(); }
                 virtual size_t psize() const { return 0; }
 
+                // flops
+                virtual size_t output_flops() const { return idims() * irows() * icols() * 16; }
+                virtual size_t igrad_flops() const { return idims() * irows() * icols(); }
+                virtual size_t pgrad_flops() const { return 0; }
+
         private:
 
                 // attributes
