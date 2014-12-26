@@ -2,6 +2,10 @@
 
 This small (nano) library is used as a sandbox for training and testing models, such as neural networks and convolution networks, on various image classification and object detection problems. 
 
+Dependencies: gcc 4.9+, CMake 3.1+, Ninja, Boost, Eigen3, LibArchive and DevIL. 
+
+Platform: (Arch)Linux x64. The code is written to be cross-platform, so it may work (with minor fixes) on other plaforms (e.g. OSX/clang, Windows/MSVC).
+
 ## Concepts
 
 The library is built around several key concepts mapped to C++ object interfaces. Each object instantation is registered with an **ID** and thus it can be selected 
@@ -26,15 +30,15 @@ A loss function assigns a scalar score to the prediction of a model by comparing
 
 A trainer optimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as 
 a numerical optimization criteria. Implemented instances: **batch** (using **L-BFGS**, conjugate gradient descent - **CGD** or gradient descent - **GD**), **minibatch** 
-and **stochastic**.
+and **stochastic** (using Nesterov's accelerated gradient - **NAG**, stochastic gradient - **SG**, stochastic iterative averaging - **SIA** or stochastic gradient averaging - **SGA**).
 
 ## Usage
 
 ### Compilation
 
-To compile (and install) use a C++11 compiler, CMake, Boost, Eigen3, LibArchive and DevIL. The library is tested so far only on ArchLinux x64 using gcc, but the code is written to be cross-platform.
+The easiest way of compiling (and installation) is to run the `build_release.sh` bash script. The test programs and utilities will be found in the `build-release` directory.
 
-The easiest way of compiling is to run the `build_release.sh` bash script. The test programs and utilities will be found in the `build-release` directory.
+The `build_debug.sh` bash script will build the debugging version with and without address, leak and thread gcc/clang-based sanitizers.
 
 ### Examples
 
