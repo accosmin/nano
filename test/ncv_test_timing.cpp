@@ -116,7 +116,8 @@ int main(int argc, char *argv[])
                         const ncv::timer_t timer;
 
                         sampler_t sampler(task);
-                        sampler.setup(sampler_t::stype::uniform, cmd_samples).setup(sampler_t::atype::annotated);
+                        sampler.setup(sampler_t::stype::uniform, cmd_samples);
+                        sampler.setup(sampler_t::atype::annotated);
 
                         samples = sampler.get();
 
@@ -131,7 +132,7 @@ int main(int argc, char *argv[])
                         vector_t params(model->psize());
                         vector_t paramsx(model->psize());
 
-                        const size_t tests = 1024;
+                        const size_t tests = 128;
                         for (size_t t = 0; t < tests; t ++)
                         {
                                 params.setRandom();
@@ -140,7 +141,7 @@ int main(int argc, char *argv[])
                                 model->save_params(paramsx);
 
                                 // also check parameter loading & saving
-                                const scalar_t eps = 1e-6;
+                                const scalar_t eps = 1e-12;
                                 const scalar_t err = (params - paramsx).lpNorm<Eigen::Infinity>();
                                 if (err > eps)
                                 {
@@ -149,7 +150,7 @@ int main(int argc, char *argv[])
                                 }
                         }
 
-                        log_info() << "<<< loaded & saved " << tests << "x " << model->psize()
+                        log_info() << "<<< loaded & saved " << tests << " x " << model->psize()
                                    << " parameters in " << timer.elapsed() << ".";
                 }
 
@@ -161,7 +162,8 @@ int main(int argc, char *argv[])
                         const ncv::timer_t timer;
                         ldata.update(task, samples, *loss);
 
-                        log_info() << "<<< processed [" << ldata.count() << "] forward samples in " << timer.elapsed() << ".";
+                        log_info() << "<<< processed [" << ldata.count()
+                                   << "] forward samples in " << timer.elapsed() << ".";
                 }
 
                 if (cmd_backward)
@@ -171,7 +173,8 @@ int main(int argc, char *argv[])
                         const ncv::timer_t timer;
                         gdata.update(task, samples, *loss);
 
-                        log_info() << "<<< processed [" << gdata.count() << "] backward samples in " << timer.elapsed() << ".";
+                        log_info() << "<<< processed [" << gdata.count()
+                                   << "] backward samples in " << timer.elapsed() << ".";
                 }
 
                 log_info();
