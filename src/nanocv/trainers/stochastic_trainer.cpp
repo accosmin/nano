@@ -1,6 +1,6 @@
 #include "stochastic_trainer.h"
-#include "io/logger.h"
-#include "common/math.hpp"
+#include "file/logger.h"
+#include "util/math.hpp"
 #include "stochastic.h"
 #include "model.h"
 #include "sampler.h"

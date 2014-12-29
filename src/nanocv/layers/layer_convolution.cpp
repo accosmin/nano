@@ -1,8 +1,8 @@
 #include "layer_convolution.h"
-#include "io/logger.h"
-#include "common/math.hpp"
-#include "common/random.hpp"
-#include "common/sampling.hpp"
+#include "file/logger.h"
+#include "util/math.hpp"
+#include "util/random.hpp"
+#include "util/sampling.hpp"
 #include "tensor/serialize.hpp"
 #include "convolution.hpp"
 

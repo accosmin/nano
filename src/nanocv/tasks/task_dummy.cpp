@@ -1,6 +1,6 @@
 #include "task_dummy.h"
 #include "loss.h"
-#include "common/random.hpp"
+#include "util/random.hpp"
 
 namespace ncv
 {

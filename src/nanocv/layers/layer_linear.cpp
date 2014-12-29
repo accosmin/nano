@@ -1,6 +1,6 @@
 #include "layer_linear.h"
-#include "common/math.hpp"
-#include "common/random.hpp"
+#include "util/math.hpp"
+#include "util/random.hpp"
 #include "tensor/serialize.hpp"
 #include "linear.hpp"
 

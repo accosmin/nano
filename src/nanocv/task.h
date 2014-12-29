@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/manager.hpp"
+#include "util/manager.hpp"
 #include "image.h"
 #include "sample.h"
 

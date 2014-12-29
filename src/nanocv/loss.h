@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/manager.hpp"
+#include "util/manager.hpp"
 #include "types.h"
 
 namespace ncv

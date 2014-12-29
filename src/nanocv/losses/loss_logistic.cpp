@@ -1,5 +1,5 @@
 #include "loss_logistic.h"
-#include "common/math.hpp"
+#include "util/math.hpp"
 #include <cassert>
 
 namespace ncv

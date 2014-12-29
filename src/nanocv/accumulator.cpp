@@ -1,6 +1,6 @@
 #include "accumulator.h"
 #include "criterion.h"
-#include "common/thread_loop.hpp"
+#include "util/thread_loop.hpp"
 #include <cassert>
 
 namespace ncv

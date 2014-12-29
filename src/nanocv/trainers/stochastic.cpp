@@ -1,15 +1,15 @@
 #include "stochastic.h"
 #include "accumulator.h"
 #include "sampler.h"
-#include "common/log_search.hpp"
-#include "common/random.hpp"
-#include "common/thread_pool.h"
-#include "common/timer.h"
+#include "util/log_search.hpp"
+#include "util/random.hpp"
+#include "util/thread_pool.h"
+#include "util/timer.h"
 #include "optimize/stoch_sg.hpp"
 #include "optimize/stoch_sga.hpp"
 #include "optimize/stoch_sia.hpp"
 #include "optimize/stoch_nag.hpp"
-#include "io/logger.h"
+#include "file/logger.h"
 
 namespace ncv
 {

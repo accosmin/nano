@@ -2,7 +2,7 @@
 
 #include "tensor/tensor.hpp"
 #include "optimize/problem.hpp"
-#include "common/text.h"
+#include "util/text.h"
 #include <cstdint>
 
 namespace ncv

@@ -1,8 +1,8 @@
 #include "task_stl10.h"
-#include "common/cast.hpp"
-#include "io/logger.h"
-#include "io/archive.h"
-#include "io/stream.h"
+#include "util/cast.hpp"
+#include "file/logger.h"
+#include "file/archive.h"
+#include "file/stream.h"
 #include "loss.h"
 
 namespace ncv

@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <algorithm>
-#include "common/random.hpp"
+#include "util/random.hpp"
 
 namespace ncv
 {

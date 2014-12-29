@@ -1,8 +1,8 @@
 #include "task_svhn.h"
-#include "common/math.hpp"
-#include "io/logger.h"
-#include "io/gzip.h"
-#include "io/mat5.h"
+#include "util/math.hpp"
+#include "file/logger.h"
+#include "file/gzip.h"
+#include "file/mat5.h"
 #include "loss.h"
 #include "color.h"
 #include <fstream>

@@ -1,7 +1,7 @@
 #include "task_norb.h"
-#include "io/logger.h"
-#include "io/archive.h"
-#include "io/stream.h"
+#include "file/logger.h"
+#include "file/archive.h"
+#include "file/stream.h"
 #include "loss.h"
 
 namespace ncv

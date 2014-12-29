@@ -1,6 +1,6 @@
 #include "nanocv.h"
-#include "common/cast.hpp"
-#include "common/corr2d.hpp"
+#include "util/cast.hpp"
+#include "util/corr2d.hpp"
 #ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
 #endif

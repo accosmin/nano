@@ -1,6 +1,6 @@
 #include "color.h"
-#include "common/math.hpp"
-#include "common/cast.hpp"
+#include "util/math.hpp"
+#include "util/cast.hpp"
 
 namespace ncv
 {

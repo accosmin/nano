@@ -1,6 +1,6 @@
 #include "nanocv.h"
-#include "common/dot.hpp"
-#include "common/mad.hpp"
+#include "util/dot.hpp"
+#include "util/mad.hpp"
 
 using namespace ncv;
 

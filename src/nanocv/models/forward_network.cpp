@@ -1,7 +1,7 @@
 #include "forward_network.h"
-#include "io/logger.h"
-#include "common/math.hpp"
-#include "common/cast.hpp"
+#include "file/logger.h"
+#include "util/math.hpp"
+#include "util/cast.hpp"
 #include "tensor/serialize.hpp"
 #include <iomanip>
 

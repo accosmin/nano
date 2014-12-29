@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/noncopyable.hpp"
+#include "util/noncopyable.hpp"
 #include <utility>
 #include <string>
 

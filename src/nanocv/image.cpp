@@ -1,5 +1,5 @@
 #include "image.h"
-#include "common/bilinear.hpp"
+#include "util/bilinear.hpp"
 #include "tensor/transform.hpp"
 #include <IL/il.h>
 #include <map>

@@ -1,5 +1,5 @@
 #include "layer_pool.h"
-#include "common/math.hpp"
+#include "util/math.hpp"
 #include "pooling.hpp"
 
 namespace ncv

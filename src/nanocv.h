@@ -13,11 +13,11 @@
 #include "optimize/stoch_sga.hpp"
 #include "optimize/stoch_sia.hpp"
 #include "optimize/stoch_nag.hpp"
-#include "common/measure.hpp"
-#include "common/math.hpp"
-#include "common/stats.hpp"
-#include "common/thread_loop.hpp"
-#include "common/random.hpp"
+#include "util/measure.hpp"
+#include "util/math.hpp"
+#include "util/stats.hpp"
+#include "util/thread_loop.hpp"
+#include "util/random.hpp"
 
 namespace ncv
 {

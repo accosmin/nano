@@ -1,6 +1,6 @@
 #include "nanocv.h"
 #include "tasks/task_dummy.h"
-#include "common/log_search.hpp"
+#include "util/log_search.hpp"
 #include <map>
 
 using namespace ncv;
