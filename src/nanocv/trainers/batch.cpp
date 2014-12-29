@@ -4,9 +4,7 @@
 #include "file/logger.h"
 #include "util/log_search.hpp"
 #include "util/timer.h"
-#include "optimize/batch_gd.hpp"
-#include "optimize/batch_cgd.hpp"
-#include "optimize/batch_lbfgs.hpp"
+#include "optimize.h"
 
 namespace ncv
 {
@@ -86,28 +84,8 @@ namespace ncv
                         };
 
                         // assembly optimization problem & optimize the model
-                        const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
-
-                        const size_t history_size = 6;
-
-                        switch (optimizer)
-                        {
-                        case batch_optimizer::LBFGS:
-                                return  optimize::batch_lbfgs<opt_problem_t>
-                                        (iterations, epsilon, history_size, fn_wlog, fn_elog, fn_ulog)
-                                        (problem, data.m_x0);
-
-                        case batch_optimizer::CGD:
-                                return  optimize::batch_cgd_pr<opt_problem_t>
-                                        (iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
-                                        (problem, data.m_x0);
-
-                        case batch_optimizer::GD:
-                        default:
-                                return  optimize::batch_gd<opt_problem_t>
-                                        (iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
-                                        (problem, data.m_x0);
-                        }
+                        return ncv::minimize(fn_size, fn_fval, fn_fval_grad, fn_wlog, fn_elog, fn_ulog,
+                                             data.m_x0, optimizer, iterations, epsilon);
                 }
         }
         

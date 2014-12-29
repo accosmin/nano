@@ -3,7 +3,7 @@
 #include "util/timer.h"
 #include "util/random.hpp"
 #include "losses/loss_square.h"
-#include "optimize/batch_lbfgs.hpp"
+#include "optimize.h"
 #include "task.h"
 #include <fstream>
 
@@ -155,10 +155,9 @@ namespace ncv
                 };
 
                 // assembly optimization problem & optimize the input
-                const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
-
                 const opt_opulog_t fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer));
 
+                const batch_optimizer optimizer = batch_optimizer::LBFGS;
                 const size_t iterations = 256;
                 const scalar_t epsilon = 1e-6;
                 const size_t history_size = 8;
@@ -166,9 +165,10 @@ namespace ncv
                 tensor_t input(idims(), irows(), icols());
                 input.random(random_t<scalar_t>(0.0, 1.0));
 
-                const opt_state_t result = optimize::batch_lbfgs<opt_problem_t>
-                                           (iterations, epsilon, history_size, fn_wlog, fn_elog, fn_ulog_ref)
-                                           (problem, input.vector());
+                const opt_state_t result = ncv::minimize(
+                        fn_size, fn_fval, fn_fval_grad, fn_wlog, fn_elog, fn_ulog_ref,
+                        input.vector(), optimizer, iterations, epsilon, history_size);
+
                 input.copy_from(result.x.data());
 
                 log_info() << "[loss = " << result.f

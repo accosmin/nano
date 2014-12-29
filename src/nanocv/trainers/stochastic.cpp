@@ -1,15 +1,12 @@
 #include "stochastic.h"
 #include "accumulator.h"
 #include "sampler.h"
+#include "file/logger.h"
 #include "util/log_search.hpp"
 #include "util/random.hpp"
 #include "util/thread_pool.h"
 #include "util/timer.h"
-#include "optimize/stoch_sg.hpp"
-#include "optimize/stoch_sga.hpp"
-#include "optimize/stoch_sia.hpp"
-#include "optimize/stoch_nag.hpp"
-#include "file/logger.h"
+#include "optimize.h"
 
 namespace ncv
 {
@@ -101,37 +98,8 @@ namespace ncv
                         };
 
                         // assembly optimization problem & optimize the model
-                        const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
-
-                        const scalar_t decay = 0.75;
-
-                        switch (optimizer)
-                        {
-                        case stochastic_optimizer::SGA:
-                                optimize::stoch_sga<opt_problem_t>
-                                (epochs, tsamples.size(), alpha0, decay, fn_wlog, fn_elog, fn_ulog)
-                                (problem, data.m_x0);
-                                break;
-
-                        case stochastic_optimizer::SIA:
-                                optimize::stoch_sia<opt_problem_t>
-                                (epochs, tsamples.size(), alpha0, decay, fn_wlog, fn_elog, fn_ulog)
-                                (problem, data.m_x0);
-                                break;
-
-                        case stochastic_optimizer::NAG:
-                                optimize::stoch_nag<opt_problem_t>
-                                (epochs, tsamples.size(), alpha0, decay, fn_wlog, fn_elog, fn_ulog)
-                                (problem, data.m_x0);
-                                break;
-
-                        case stochastic_optimizer::SG:
-                        default:
-                                optimize::stoch_sg<opt_problem_t>
-                                (epochs, tsamples.size(), alpha0, decay, fn_wlog, fn_elog, fn_ulog)
-                                (problem, data.m_x0);
-                                break;
-                        }
+                        ncv::minimize(fn_size, fn_fval, fn_fval_grad, fn_wlog, fn_elog, fn_ulog,
+                                      data.m_x0, optimizer, epochs, tsamples.size(), alpha0);
 
                         // OK
                         return result;
