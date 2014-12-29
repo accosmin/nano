@@ -101,7 +101,7 @@ namespace ncv
                         // assembly optimization problem & optimize the model
                         const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
 
-                        const scalar_t decay = 0.5;
+                        const scalar_t decay = 0.75;
 
                         switch (optimizer)
                         {
