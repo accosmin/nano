@@ -1,3 +1,17 @@
+- expand training plots:
+	- average + variance of the loss values & errors
+	- L2-norm of the parameters
+
+- refactor criterion/accumulator:
+	- store loss value & errors as ncv::stats objects
+	- accomodate group L2-norms
+
+- per layer/convolution regularization:
+	- L2-norm of the layer parameters should be forced to be exactly/smaller than 1
+		=> there should be no regularization term to tune
+
+	- cannot tune the learning rate (may result in too many hyper-parameters to tune!)
+
 - MAD with index shifts (may speed-up corr2d)
 
 - test program to assess the speed of the 3D convolution/correlation operations
@@ -7,15 +21,6 @@
 		- http://en.wikipedia.org/wiki/Toeplitz_matrix
 
         - check if any improvement if using a 3D convolution    
-
-- refactor criterion/accumulator:
-	- accomodate group L2-norms
-
-- per layer/convolution regularization:
-	- L2-norm of the layer parameters should be forced to be exactly/smaller than 1
-		=> there should be no regularization term to tune
-
-	- cannot tune the learning rate (may result in too many hyper-parameters to tune!)
 
 - GTSD dataset support (after 0.1 release):
 	- create both classification and detection tasks
