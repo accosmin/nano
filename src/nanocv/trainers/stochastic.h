@@ -1,9 +1,12 @@
 #pragma once
 
-#include "trainer.h"
+#include "trainer_data.h"
+#include "trainer_result.h"
 
 namespace ncv
 {
+        class model_t;
+
         ///
         /// \brief stochastically train the given model
         ///

@@ -49,6 +49,7 @@ namespace ncv
 
                 return m_vgrad / count();
         }
+
         bool avg_criterion_t::can_regularize() const
         {
                 return false;

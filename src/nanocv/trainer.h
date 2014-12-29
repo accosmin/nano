@@ -1,16 +1,14 @@
 #pragma once
 
 #include "task.h"
-#include "trainer_data.h"
-#include "trainer_state.h"
 #include "trainer_result.h"
 
 namespace ncv
 {
-        class trainer_t;
         class loss_t;
-        class sampler_t;
         class model_t;
+        class trainer_t;
+        class sampler_t;
         class accumulator_t;
 
         ///
