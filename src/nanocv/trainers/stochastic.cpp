@@ -131,7 +131,7 @@ namespace ncv
                         };
 
                         thread_pool_t wpool(nthreads);
-                        return log_min_search_mt(op_lrate, wpool, -6.0, -1.0, 0.5, nthreads);
+                        return log_min_search_mt(op_lrate, wpool, -6.0, 0.0, 0.5, nthreads);
                 };
 
                 // tune the regularization factor (if needed)
