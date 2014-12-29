@@ -1,6 +1,8 @@
-- expand training plots:
-	- average + variance of the loss values & errors
-	- L2-norm of the parameters
+- stochastic trainer:
+	- tune the learning rate & the decay rate in a single epoch -> apparently the decay rate is very important
+		- and then run the remaining epochs using this configuration
+
+	- why the learning rate has to fixed (per iteration) for the NAG algorithm?!
 
 - refactor criterion/accumulator:
 	- store loss value & errors as ncv::stats objects
