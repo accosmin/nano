@@ -14,7 +14,7 @@ namespace ncv
         {
                 static trainer_result_t stochastic_train(
                         trainer_data_t& data,
-                        stochastic_optimizer optimizer, size_t epochs, scalar_t alpha0, scalar_t decay,
+                        stochastic_optimizer optimizer, size_t epochs, scalar_t alpha0,
                         thread_pool_t::mutex_t& mutex)
                 {
                         samples_t tsamples = data.m_tsampler.get();
@@ -85,14 +85,13 @@ namespace ncv
                                 const thread_pool_t::lock_t lock(mutex);
 
                                 result.update(state.x, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var,
-                                              epoch, scalars_t({ alpha0, decay, data.m_lacc.lambda() }));
+                                              epoch, scalars_t({ alpha0, data.m_lacc.lambda() }));
 
                                 log_info()
                                         << "[train = " << tvalue << "/" << terror_avg
                                         << ", valid = " << vvalue << "/" << verror_avg
                                         << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
                                         << ", alpha = " << alpha0
-                                        << ", decay = " << decay
                                         << ", epoch = " << epoch << "/" << epochs
                                         << ", lambda = " << data.m_lacc.lambda()
                                         << "] done in " << timer.elapsed() << ".";
@@ -128,14 +127,7 @@ namespace ncv
 
                                 trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
 
-                                // tune the decay rate
-                                trainer_result_t result;
-                                for (scalar_t decay : { 0.50, 0.75, 1.00 })
-                                {
-                                        result.update(detail::stochastic_train(data, optimizer, epochs, alpha, decay, mutex));
-                                }
-
-                                return result;
+                                return detail::stochastic_train(data, optimizer, epochs, alpha, mutex);
                         };
 
                         thread_pool_t wpool(nthreads);
