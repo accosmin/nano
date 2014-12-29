@@ -8,16 +8,20 @@
 
         - check if any improvement if using a 3D convolution    
 
-- per layer regularization:
-	- L2-norm of the layer parameters should be forced to be exactly 1
+- refactor criterion/accumulator:
+	- accomodate group L2-norms
 
-	- different learning rates / regularization weights -> may result in too many hyper-parameters to tune!
+- per layer/convolution regularization:
+	- L2-norm of the layer parameters should be forced to be exactly/smaller than 1
+		=> there should be no regularization term to tune
 
-- finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
+	- cannot tune the learning rate (may result in too many hyper-parameters to tune!)
 
 - GTSD dataset support (after 0.1 release):
 	- create both classification and detection tasks
 	- build an object detector
+
+- finish the training scripts for other datasets (CIFAR-10, CIFAR-100, SVHN, NORB, STL)
 
 - unsupervised learning (after 0.1 release): 
 	- unsupervised training:
@@ -29,8 +33,6 @@
 	- for linear & convolution layers -> reuse parameters to easily reconstruct the input
 
 - feature visualization & image generation (after 0.1 release)
-
-- random forests (after 0.1 release)
 
 - thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
 	
