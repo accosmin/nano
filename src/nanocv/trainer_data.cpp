@@ -1,4 +1,4 @@
-#include "trainer.h"
+#include "trainer_data.h"
 
 namespace ncv
 {
