@@ -1,6 +1,7 @@
 #pragma once
 
 #include "criterion.h"
+#include "util/stats.hpp"
 
 namespace ncv
 {

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "task.h"
+#include "trainer_state.h"
+#include "trainer_result.h"
 
 namespace ncv
 {
@@ -16,111 +18,6 @@ namespace ncv
         ///
         typedef manager_t<trainer_t>                    trainer_manager_t;
         typedef trainer_manager_t::robject_t            rtrainer_t;
-        
-        ///
-        /// \brief training state
-        ///
-        struct trainer_state_t
-        {
-                ///
-                /// \brief constructor
-                ///
-                trainer_state_t(scalar_t tvalue = std::numeric_limits<scalar_t>::max(),
-                                scalar_t terror = std::numeric_limits<scalar_t>::max(),
-                                scalar_t vvalue = std::numeric_limits<scalar_t>::max(),
-                                scalar_t verror = std::numeric_limits<scalar_t>::max())
-                        :       m_tvalue(tvalue),
-                                m_terror(terror),
-                                m_vvalue(vvalue),
-                                m_verror(verror)
-                {
-                }
-                
-                // attributes
-                scalar_t                m_tvalue;       ///< train loss value
-                scalar_t                m_terror;       ///< train error
-                scalar_t                m_vvalue;       ///< validation loss value
-                scalar_t                m_verror;       ///< validation error        
-        };
-
-        ///
-        /// \brief compare two training states
-        ///
-        inline bool operator<(const trainer_state_t& one, const trainer_state_t& another)
-        {
-                return one.m_verror < another.m_verror;
-        }
-        
-        typedef std::vector
-        <trainer_state_t>               trainer_states_t;
-
-        ///
-        /// \brief save optimization states to text file
-        ///
-        bool save(const string_t& path, const trainer_states_t& states);
-        
-        ///
-        /// \brief training configuration (e.g. learning rate, regularization weight)
-        ///
-        typedef scalars_t               trainer_config_t;
-        
-        ///
-        /// \brief training history (configuration, optimization states)
-        ///
-        typedef std::map
-        <
-                trainer_config_t,
-                trainer_states_t
-        >                               trainer_history_t;
-        
-        ///
-        /// \brief track the current/optimum model state
-        ///
-        struct trainer_result_t
-        {
-                ///
-                /// \brief constructor
-                ///
-                trainer_result_t();
-
-                ///
-                /// \brief update the current/optimum state with a possible better state
-                /// \return true is the state was improved (aka lower validation error)
-                ///
-                bool update(const vector_t& params,
-                            scalar_t tvalue, scalar_t terror,
-                            scalar_t vvalue, scalar_t verror,
-                            size_t epoch, const scalars_t& config);
-                bool update(const trainer_result_t& other);
-
-                ///
-                /// \brief check if valid result
-                ///
-                bool valid() const
-                {
-                        return !m_history.empty() && m_opt_params.size() > 0;
-                }
-                
-                ///
-                /// \brief training history for the optimum configuration
-                ///
-                trainer_states_t optimum_states() const;
-
-                // attributes
-                vector_t                m_opt_params;           ///< optimum model parameters
-                trainer_state_t         m_opt_state;            ///< optimum training state
-                trainer_config_t        m_opt_config;           ///< optimum configuration
-                size_t                  m_opt_epoch;            ///< optimum epoch
-                trainer_history_t       m_history;              ///< optimization history
-        };
-
-        ///
-        /// \brief compare two trainer results
-        ///
-        inline bool operator<(const trainer_result_t& one, const trainer_result_t& other)
-        {
-                return one.m_opt_state < other.m_opt_state;
-        }
         
         ///
         /// \brief stores all required buffers to train a model
