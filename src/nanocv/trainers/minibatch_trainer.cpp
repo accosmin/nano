@@ -55,8 +55,8 @@ namespace ncv
                         model, task, tsampler, vsampler, nthreads,
                         loss, criterion, batchsize, batchratio, optimizer, epochs, iterations, epsilon);
 
-                log_info() << "optimum [train = " << result.m_opt_state.m_tvalue << "/" << result.m_opt_state.m_terror
-                           << ", valid = " << result.m_opt_state.m_vvalue << "/" << result.m_opt_state.m_verror
+                log_info() << "optimum [train = " << result.m_opt_state.m_tvalue << "/" << result.m_opt_state.m_terror_avg
+                           << ", valid = " << result.m_opt_state.m_vvalue << "/" << result.m_opt_state.m_verror_avg
                            << ", epoch = " << result.m_opt_epoch
                            << ", config = " << text::concatenate(result.m_opt_config, "/")
                            << "].";

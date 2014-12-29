@@ -12,12 +12,14 @@ title=${bifile//_/-}
 
 # data attributes
 tlindex=0
-teindex=1
-vlindex=2
-veindex=3
+teindex_avg=1
+teindex_var=2
+vlindex=3
+veindex_avg=4
+veindex_var=5
 
-labels=(`echo "train-loss train-error valid-loss valid-error"`)
-styles=(`echo "lt:4:pt:1:lw:1:ps:0.3 lt:1:pt:2:lw:2:ps:0.3 lt:3:pt:3:lw:1:ps:0.3 lt:5:pt:6:lw:2:ps:0.3"`)
+labels=(`echo "train-loss train-error train-error-var valid-loss valid-error valid-error-var"`)
+styles=(`echo "lt:1:pt:1:lw:1:ps:0.3 lt:1:pt:2:lw:2:ps:0.3 lt:1:pt:4:lw:2:ps:0.3 lt:3:pt:1:lw:1:ps:0.3 lt:3:pt:2:lw:2:ps:0.3 lt:3:pt:4:lw:2:ps:0.3"`)
 
 # output file
 ofile=${ifile/.state/.pdf}
@@ -44,32 +46,16 @@ echo "set key right top" >> ${pfile}
 
 echo -n "plot " >> ${pfile}
 echo -e "\t'${ifile}' using $((tlindex+1)) title '${labels[$tlindex]}' with linespoints ${styles[$tlindex]//:/ },\\" >> ${pfile}
-echo -e "\t'${ifile}' using $((teindex+1)) title '${labels[$teindex]}' with linespoints ${styles[$teindex]//:/ },\\" >> ${pfile}
+echo -e "\t'${ifile}' using $((teindex_avg+1)) title '${labels[$teindex_avg]}' with linespoints ${styles[$teindex_avg]//:/ },\\" >> ${pfile}
+echo -e "\t'${ifile}' using $((teindex_var+1)) title '${labels[$teindex_var]}' with linespoints ${styles[$teindex_var]//:/ },\\" >> ${pfile}
 echo -e "\t'${ifile}' using $((vlindex+1)) title '${labels[$vlindex]}' with linespoints ${styles[$vlindex]//:/ },\\" >> ${pfile}
-echo -e "\t'${ifile}' using $((veindex+1)) title '${labels[$veindex]}' with linespoints ${styles[$veindex]//:/ }" >> ${pfile}
-echo "" >> ${pfile}
-
-# create plot: train vs validation error
-echo "set origin 0.0,0.0" >> ${pfile}
-echo "set size 0.5,0.5" >> ${pfile}
-echo "set title \"${title}\"" >> ${pfile}
-echo "set xlabel \"epochs/iterations\"" >> ${pfile}
-echo "set ylabel \"error\"" >> ${pfile}
-echo "set xrange [*:*]" >> ${pfile}
-echo "set yrange [*:*]" >> ${pfile}
-echo "set xtic auto" >> ${pfile}
-echo "set ytic auto" >> ${pfile}
-echo "set grid xtics ytics" >> ${pfile}
-echo "set key right top" >> ${pfile}
-
-echo -n "plot " >> ${pfile}
-echo -e "\t'${ifile}' using $((teindex+1)) title '${labels[$teindex]}' with linespoints ${styles[$teindex]//:/ },\\" >> ${pfile}
-echo -e "\t'${ifile}' using $((veindex+1)) title '${labels[$veindex]}' with linespoints ${styles[$veindex]//:/ }" >> ${pfile}
+echo -e "\t'${ifile}' using $((veindex_avg+1)) title '${labels[$veindex_avg]}' with linespoints ${styles[$veindex_avg]//:/ },\\" >> ${pfile}
+echo -e "\t'${ifile}' using $((veindex_var+1)) title '${labels[$veindex_var]}' with linespoints ${styles[$veindex_var]//:/ }" >> ${pfile}
 echo "" >> ${pfile}
 
 # create plot: train vs validation loss value
-echo "set origin 0.5,0.0" >> ${pfile}
-echo "set size 0.5,0.5" >> ${pfile}
+echo "set origin 0.0,0.0" >> ${pfile}
+echo "set size 0.33,0.5" >> ${pfile}
 echo "set title \"${title}\"" >> ${pfile}
 echo "set xlabel \"epochs/iterations\"" >> ${pfile}
 echo "set ylabel \"loss\"" >> ${pfile}
@@ -83,6 +69,42 @@ echo "set key right top" >> ${pfile}
 echo -n "plot " >> ${pfile}
 echo -e "\t'${ifile}' using $((tlindex+1)) title '${labels[$tlindex]}' with linespoints ${styles[$tlindex]//:/ },\\" >> ${pfile}
 echo -e "\t'${ifile}' using $((vlindex+1)) title '${labels[$vlindex]}' with linespoints ${styles[$vlindex]//:/ }" >> ${pfile}
+echo "" >> ${pfile}
+
+# create plot: train vs validation average error
+echo "set origin 0.33,0.0" >> ${pfile}
+echo "set size 0.33,0.5" >> ${pfile}
+echo "set title \"${title}\"" >> ${pfile}
+echo "set xlabel \"epochs/iterations\"" >> ${pfile}
+echo "set ylabel \"error\"" >> ${pfile}
+echo "set xrange [*:*]" >> ${pfile}
+echo "set yrange [*:*]" >> ${pfile}
+echo "set xtic auto" >> ${pfile}
+echo "set ytic auto" >> ${pfile}
+echo "set grid xtics ytics" >> ${pfile}
+echo "set key right top" >> ${pfile}
+
+echo -n "plot " >> ${pfile}
+echo -e "\t'${ifile}' using $((teindex_avg+1)) title '${labels[$teindex_avg]}' with linespoints ${styles[$teindex_avg]//:/ },\\" >> ${pfile}
+echo -e "\t'${ifile}' using $((veindex_avg+1)) title '${labels[$veindex_avg]}' with linespoints ${styles[$veindex_avg]//:/ }" >> ${pfile}
+echo "" >> ${pfile}
+
+# create plot: train vs validation error variance
+echo "set origin 0.66,0.0" >> ${pfile}
+echo "set size 0.33,0.5" >> ${pfile}
+echo "set title \"${title}\"" >> ${pfile}
+echo "set xlabel \"epochs/iterations\"" >> ${pfile}
+echo "set ylabel \"error\"" >> ${pfile}
+echo "set xrange [*:*]" >> ${pfile}
+echo "set yrange [*:*]" >> ${pfile}
+echo "set xtic auto" >> ${pfile}
+echo "set ytic auto" >> ${pfile}   
+echo "set grid xtics ytics" >> ${pfile}
+echo "set key right top" >> ${pfile}
+
+echo -n "plot " >> ${pfile}
+echo -e "\t'${ifile}' using $((teindex_var+1)) title '${labels[$teindex_var]}' with linespoints ${styles[$teindex_var]//:/ },\\" >> ${pfile}
+echo -e "\t'${ifile}' using $((veindex_var+1)) title '${labels[$veindex_var]}' with linespoints ${styles[$veindex_var]//:/ }" >> ${pfile}
 echo "" >> ${pfile}
 
 # export

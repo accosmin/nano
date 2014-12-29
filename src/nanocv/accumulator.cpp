@@ -152,9 +152,14 @@ namespace ncv
                 return m_impl->m_cache->value();
         }
 
-        scalar_t accumulator_t::error() const
+        scalar_t accumulator_t::avg_error() const
         {
-                return m_impl->m_cache->error();
+                return m_impl->m_cache->avg_error();
+        }
+
+        scalar_t accumulator_t::var_error() const
+        {
+                return m_impl->m_cache->var_error();
         }
 
         vector_t accumulator_t::vgrad() const

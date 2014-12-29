@@ -22,16 +22,23 @@ namespace ncv
         {
                 m_model = model.clone();
                 m_model->save_params(m_params);
+                m_estats.clear();
+
                 reset();
+
                 return *this;
         }
 
         criterion_t& criterion_t::reset(const vector_t& params)
         {
                 assert(m_model->psize() == static_cast<size_t>(params.size()));
+
                 m_model->load_params(params);
                 m_params = params;
+                m_estats.clear();
+
                 reset();
+
                 return *this;
         }
 
@@ -84,19 +91,52 @@ namespace ncv
         void criterion_t::accumulate(
                 const vector_t& output, const vector_t& target, const loss_t& loss, scalar_t weight)
         {
+                const scalar_t wvalue = weight * loss.value(target, output);
+                const scalar_t werror = weight * loss.error(target, output);
+
+                m_estats(werror);
+
                 switch (m_type)
                 {
                 case type::value:
-                        accumulate(weight * loss.value(target, output),
-                                   weight * loss.error(target, output));
+                        accumulate(wvalue,
+                                   werror);
                         break;
 
                 case type::vgrad:
                         accumulate(weight * m_model->gparam(loss.vgrad(target, output)),
-                                   weight * loss.value(target, output),
-                                   weight * loss.error(target, output));
+                                   wvalue,
+                                   werror);
                         break;
                 }
+        }
+
+        criterion_t& criterion_t::operator+=(const criterion_t& other)
+        {
+                m_estats(other.m_estats);
+
+                accumulate(other);
+
+                return *this;
+        }
+
+        scalar_t criterion_t::avg_error() const
+        {
+                assert(m_estats.count() > 0);
+
+                return m_estats.avg();
+        }
+
+        scalar_t criterion_t::var_error() const
+        {
+                assert(m_estats.count() > 0);
+
+                return m_estats.var();
+        }
+
+        size_t criterion_t::count() const
+        {
+                return m_estats.count();
         }
 
         size_t criterion_t::psize() const

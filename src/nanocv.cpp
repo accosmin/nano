@@ -100,7 +100,7 @@ namespace ncv
                 accumulator.update(task, sampler.get(), loss);
 
                 lvalue = accumulator.value();
-                lerror = accumulator.error();
+                lerror = accumulator.avg_error();
 
                 return accumulator.count();
         }

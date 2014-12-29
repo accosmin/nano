@@ -20,9 +20,9 @@ pfile=${ofile/.${format}/.gnuplot}
 
 # data attributes
 indices=(1 2 3 4)
-titles=(`echo "train-loss train-error valid-loss valid-error"`)
-origins=(`echo "0.0,0.0 0.5,0.0 0.0,0.5 0.5,0.5"`)
-sizes=(`echo "0.5,0.5 0.5,0.5 0.5,0.5 0.5,0.5"`)
+titles=(`echo "train-loss train-error train-error-var valid-loss valid-error valid-error-var"`)
+origins=(`echo "0.0,0.0 0.33,0.0 0.66,0.0 0.0,0.5 0.33,0.5 0.66,0.5"`)
+sizes=(`echo "0.33,0.5 0.33,0.5 0.33,0.5 0.33,0.5 0.33,0.5 0.33,0.5"`)
 
 # set the plotting attributes
 rm -f ${pfile}

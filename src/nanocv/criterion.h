@@ -2,6 +2,7 @@
 
 #include "model.h"
 #include "sample.h"
+#include "util/stats.hpp"
 
 namespace ncv
 {        
@@ -62,7 +63,7 @@ namespace ncv
                 ///
                 /// \brief cumulate statistics
                 ///
-                virtual criterion_t& operator+=(const criterion_t&) = 0;
+                criterion_t& operator+=(const criterion_t&);
 
                 ///
                 /// \brief cumulated loss value
@@ -70,19 +71,24 @@ namespace ncv
                 virtual scalar_t value() const = 0;
 
                 ///
-                /// \brief cumulated error value
-                ///
-                virtual scalar_t error() const = 0;
-
-                ///
                 /// \brief cumulated gradient
                 ///
                 virtual vector_t vgrad() const = 0;
-                
+
+                ///
+                /// \brief averaged error value
+                ///
+                scalar_t avg_error() const;
+
+                ///
+                /// \brief variance error value
+                ///
+                scalar_t var_error() const;
+
                 ///
                 /// \brief total number of processed samples
                 ///
-                virtual size_t count() const = 0;
+                size_t count() const;
 
                 ///
                 /// \brief number of dimensions/parameters
@@ -107,6 +113,11 @@ namespace ncv
                 virtual void accumulate(scalar_t value, scalar_t error) = 0;
                 virtual void accumulate(const vector_t& vgrad, scalar_t value, scalar_t error) = 0;
 
+                ///
+                /// \brief update statistics with cumulated samples
+                ///
+                virtual void accumulate(const criterion_t& other) = 0;
+
         private:
 
                 ///
@@ -122,6 +133,8 @@ namespace ncv
                 
                 scalar_t                m_lambda;       ///< regularization weight (if any)                
                 type                    m_type;         ///<
+
+                stats_t<scalar_t>       m_estats;       ///< loss error statistics
         };
 }
 

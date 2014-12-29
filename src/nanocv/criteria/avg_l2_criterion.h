@@ -24,19 +24,9 @@ namespace ncv
                 virtual void reset();
 
                 ///
-                /// \brief cumulate statistics
-                ///
-                virtual criterion_t& operator+=(const criterion_t&);
-
-                ///
                 /// \brief cumulated loss value
                 ///
                 virtual scalar_t value() const;
-
-                ///
-                /// \brief cumulated error value
-                ///
-                virtual scalar_t error() const;
 
                 ///
                 /// \brief cumulated gradient
@@ -55,5 +45,10 @@ namespace ncv
                 ///
                 virtual void accumulate(scalar_t value, scalar_t error);
                 virtual void accumulate(const vector_t& vgrad, scalar_t value, scalar_t error);
+
+                ///
+                /// \brief update statistics with cumulated samples
+                ///
+                virtual void accumulate(const criterion_t& other);
         };
 }

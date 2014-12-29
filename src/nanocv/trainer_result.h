@@ -34,8 +34,8 @@ namespace ncv
                 /// \return true is the state was improved (aka lower validation error)
                 ///
                 bool update(const vector_t& params,
-                            scalar_t tvalue, scalar_t terror,
-                            scalar_t vvalue, scalar_t verror,
+                            scalar_t tvalue, scalar_t terror_avg, scalar_t terror_var,
+                            scalar_t vvalue, scalar_t verror_avg, scalar_t verror_var,
                             size_t epoch, const scalars_t& config);
                 bool update(const trainer_result_t& other);
 

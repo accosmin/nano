@@ -72,25 +72,27 @@ namespace ncv
                                 data.m_lacc.reset(state.x);
                                 data.m_lacc.update(data.m_task, tsamples, data.m_loss);
                                 const scalar_t tvalue = data.m_lacc.value();
-                                const scalar_t terror = data.m_lacc.error();
+                                const scalar_t terror_avg = data.m_lacc.avg_error();
+                                const scalar_t terror_var = data.m_lacc.var_error();
 
                                 // evaluate validation samples
                                 data.m_lacc.reset(state.x);
                                 data.m_lacc.update(data.m_task, vsamples, data.m_loss);
                                 const scalar_t vvalue = data.m_lacc.value();
-                                const scalar_t verror = data.m_lacc.error();
+                                const scalar_t verror_avg = data.m_lacc.avg_error();
+                                const scalar_t verror_var = data.m_lacc.var_error();
 
                                 epoch ++;
 
                                 // OK, update the optimum solution
                                 const thread_pool_t::lock_t lock(mutex);
 
-                                result.update(state.x, tvalue, terror, vvalue, verror, epoch,
-                                              scalars_t({ alpha0, data.m_lacc.lambda() }));
+                                result.update(state.x, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var,
+                                              epoch, scalars_t({ alpha0, data.m_lacc.lambda() }));
 
                                 log_info()
-                                        << "[train = " << tvalue << "/" << terror
-                                        << ", valid = " << vvalue << "/" << verror
+                                        << "[train = " << tvalue << "/" << terror_avg
+                                        << ", valid = " << vvalue << "/" << verror_avg
                                         << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
                                         << ", alpha = " << alpha0
                                         << ", epoch = " << epoch << "/" << epochs

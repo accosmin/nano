@@ -62,21 +62,23 @@ namespace ncv
                                 if ((++ iteration) == iterations)
                                 {
                                         const scalar_t tvalue = data.m_gacc.value();
-                                        const scalar_t terror = data.m_gacc.error();
+                                        const scalar_t terror_avg = data.m_gacc.avg_error();
+                                        const scalar_t terror_var = data.m_gacc.var_error();
 
                                         // validation samples: loss value
                                         data.m_lacc.reset(state.x);
                                         data.m_lacc.update(data.m_task, vsamples, data.m_loss);
                                         const scalar_t vvalue = data.m_lacc.value();
-                                        const scalar_t verror = data.m_lacc.error();
+                                        const scalar_t verror_avg = data.m_lacc.avg_error();
+                                        const scalar_t verror_var = data.m_lacc.var_error();
 
                                         // update the optimum state
-                                        result.update(state.x, tvalue, terror, vvalue, verror,
+                                        result.update(state.x, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var,
                                                       epoch, scalars_t({ data.m_lacc.lambda() }));
 
                                         log_info()
-                                                << "[train = " << tvalue << "/" << terror << "/=" << tsamples.size()
-                                                << ", valid = " << vvalue << "/" << verror << "/=" << vsamples.size()
+                                                << "[train = " << tvalue << "/" << terror_avg << "/=" << tsamples.size()
+                                                << ", valid = " << vvalue << "/" << verror_avg << "/=" << vsamples.size()
                                                 << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
                                                 << ", gnorm = " << state.g.lpNorm<Eigen::Infinity>()
                                                 << ", epoch = " << epoch

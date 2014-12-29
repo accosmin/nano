@@ -12,12 +12,6 @@ namespace ncv
                 avg_criterion_t::reset();
         }
 
-        criterion_t& avg_l2_criterion_t::operator+=(const criterion_t& other)
-        {
-                avg_criterion_t::operator+=(other);
-                return *this;
-        }
-
         void avg_l2_criterion_t::accumulate(scalar_t value, scalar_t error)
         {
                 avg_criterion_t::accumulate(value, error);
@@ -27,16 +21,16 @@ namespace ncv
         {
                 avg_criterion_t::accumulate(vgrad, value, error);
         }
+
+        void avg_l2_criterion_t::accumulate(const criterion_t& other)
+        {
+                avg_criterion_t::accumulate(other);
+        }
         
         scalar_t avg_l2_criterion_t::value() const
         {
                 return  avg_criterion_t::value() +
                         0.5 * m_lambda * m_params.squaredNorm() / psize();
-        }
-
-        scalar_t avg_l2_criterion_t::error() const
-        {
-                return  avg_criterion_t::error();
         }
 
         vector_t avg_l2_criterion_t::vgrad() const

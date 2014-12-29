@@ -42,20 +42,25 @@ namespace ncv
                 void update(const vectors_t& inputs, const vectors_t& targets, const loss_t& loss);
 
                 ///
-                /// \brief average loss value
+                /// \brief cumulated loss value
                 ///
                 scalar_t value() const;
 
                 ///
-                /// \brief average error value
-                ///
-                scalar_t error() const;
-
-                ///
-                /// \brief average gradient
+                /// \brief cumulated gradient
                 ///
                 vector_t vgrad() const;
-                
+
+                ///
+                /// \brief averaged error value
+                ///
+                scalar_t avg_error() const;
+
+                ///
+                /// \brief variance error value
+                ///
+                scalar_t var_error() const;
+
                 ///
                 /// \brief total number of processed samples
                 ///

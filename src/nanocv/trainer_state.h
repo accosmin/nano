@@ -13,15 +13,19 @@ namespace ncv
                 /// \brief constructor
                 ///
                 trainer_state_t(scalar_t tvalue = std::numeric_limits<scalar_t>::max(),
-                                scalar_t terror = std::numeric_limits<scalar_t>::max(),
+                                scalar_t terror_avg = std::numeric_limits<scalar_t>::max(),
+                                scalar_t terror_var = std::numeric_limits<scalar_t>::max(),
                                 scalar_t vvalue = std::numeric_limits<scalar_t>::max(),
-                                scalar_t verror = std::numeric_limits<scalar_t>::max());
+                                scalar_t verror_avg = std::numeric_limits<scalar_t>::max(),
+                                scalar_t verror_var = std::numeric_limits<scalar_t>::max());
                 
                 // attributes
                 scalar_t                m_tvalue;       ///< train loss value
-                scalar_t                m_terror;       ///< train error
+                scalar_t                m_terror_avg;   ///< train error (average)
+                scalar_t                m_terror_var;   ///< train error (variance)
                 scalar_t                m_vvalue;       ///< validation loss value
-                scalar_t                m_verror;       ///< validation error
+                scalar_t                m_verror_avg;   ///< validation error (average)
+                scalar_t                m_verror_var;   ///< validation error (variance)
         };
 
         ///
@@ -29,7 +33,7 @@ namespace ncv
         ///
         inline bool operator<(const trainer_state_t& one, const trainer_state_t& another)
         {
-                return one.m_verror < another.m_verror;
+                return one.m_verror_avg < another.m_verror_avg;
         }
         
         typedef std::vector

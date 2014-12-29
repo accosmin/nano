@@ -8,11 +8,11 @@ namespace ncv
         }
 
         bool trainer_result_t::update(const vector_t& params,
-                    scalar_t tvalue, scalar_t terror,
-                    scalar_t vvalue, scalar_t verror,
-                    size_t epoch, const scalars_t& config)
+                scalar_t tvalue, scalar_t terror_avg, scalar_t terror_var,
+                scalar_t vvalue, scalar_t verror_avg, scalar_t verror_var,
+                size_t epoch, const scalars_t& config)
         {
-                const trainer_state_t state(tvalue, terror, vvalue, verror);
+                const trainer_state_t state(tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var);
                 m_history[config].push_back(state);
                 
                 if (state < m_opt_state)
