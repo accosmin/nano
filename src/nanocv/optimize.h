@@ -28,5 +28,5 @@ namespace ncv
                 const opt_opelog_t& fn_elog,
                 const opt_opulog_t& fn_ulog,
                 const vector_t& x0,
-                stochastic_optimizer, size_t epochs, size_t epoch_size, scalar_t alpha0, scalar_t decay = 0.75);
+                stochastic_optimizer, size_t epochs, size_t epoch_size, scalar_t alpha0, scalar_t decay = 0.50);
 }
