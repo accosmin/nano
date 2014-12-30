@@ -1,8 +1,3 @@
-- why the learning rate has to fixed (per iteration) for the NAG algorithm?!
-
-- create a criterion with a fixed regularization factor: 
-	- e.g. 10 samples / parameter&dimension -> alpha is approximatively 10 (for both L2-norm & VAR regularizer)
-
 - stochastic trainer:
 	- tune the learning rate & the decay rate in a single epoch -> apparently the decay rate is very important
 		- and then run the remaining epochs using this configuration
