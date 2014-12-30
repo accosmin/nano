@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
         task.set_color(color_mode::luma);
         task.set_outputs(cmd_outputs);
         task.set_folds(1);
-        task.set_size(cmd_samples * 100);
+        task.set_size(cmd_samples);
         task.setup();
 
         const string_t lmodel0;
