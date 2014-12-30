@@ -59,13 +59,14 @@ namespace ncv
                                 const thread_pool_t::lock_t lock(mutex);
 
                                 result.update(state.x, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var,
-                                              epoch, scalars_t({ alpha0, data.m_lacc.lambda() }));
+                                              epoch, scalars_t({ alpha0, decay, data.m_lacc.lambda() }));
 
                                 log_info()
                                         << "[train = " << tvalue << "/" << terror_avg
                                         << ", valid = " << vvalue << "/" << verror_avg
                                         << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
                                         << ", alpha = " << alpha0
+                                        << ", decay = " << decay
                                         << ", epoch = " << epoch << "/" << epochs
                                         << ", lambda = " << data.m_lacc.lambda()
                                         << "] done in " << timer.elapsed() << ".";

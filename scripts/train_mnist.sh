@@ -31,10 +31,10 @@ mlp3=${mlp2}"linear:dims=32;act-snorm;"
 outlayer="linear:dims=10;"
 
 # trainers
-stoch_sg="--trainer stochastic --trainer-params opt=sg,epoch=16"
-stoch_sga="--trainer stochastic --trainer-params opt=sga,epoch=16"
-stoch_sia="--trainer stochastic --trainer-params opt=sia,epoch=16"
-stoch_nag="--trainer stochastic --trainer-params opt=nag,epoch=16"
+stoch_sg="--trainer stochastic --trainer-params opt=sg,epoch=32"
+stoch_sga="--trainer stochastic --trainer-params opt=sga,epoch=32"
+stoch_sia="--trainer stochastic --trainer-params opt=sia,epoch=32"
+stoch_nag="--trainer stochastic --trainer-params opt=nag,epoch=32"
 
 mbatch0_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=128,batch=1024,ratio=1.0,iters=8,eps=1e-4"
 mbatch1_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=128,batch=1024,ratio=1.05,iters=8,eps=1e-4"
@@ -43,7 +43,7 @@ mbatch2_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=128,batch=10
 batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,iters=128,eps=1e-4"
 
 # train models
-for model in `echo "mlp0 mlp1"` # mlp2 mlp3 conv100_max conv50_max conv25_max"`
+for model in `echo "mlp0"` #mlp1 mlp2 mlp3 conv100_max conv50_max conv25_max"`
 do
         #for trainer in `echo "mbatch0_lbfgs mbatch1_lbfgs mbatch2_lbfgs batch_lbfgs"`
         #do
@@ -54,7 +54,7 @@ do
         for trainer in `echo "stoch_nag stoch_sg stoch_sga stoch_sia"`
         do
                 fn_train ${dir_exp_mnist} ${trainer}_${model} ${params} ${!trainer} ${avg_crit} ${!model}${outlayer}
-                fn_train ${dir_exp_mnist} ${trainer}_${model}_l2n ${params} ${!trainer} ${l2n_crit} ${!model}${outlayer}
+                #fn_train ${dir_exp_mnist} ${trainer}_${model}_l2n ${params} ${!trainer} ${l2n_crit} ${!model}${outlayer}
         done
 done
 
