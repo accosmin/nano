@@ -1,6 +1,7 @@
 #pragma once
 
 #include <eigen3/Eigen/Core>
+#include <limits>
 
 namespace ncv
 {
@@ -121,9 +122,12 @@ namespace ncv
                         typename tsize
                 >
                 bool operator<(const state_t<tscalar, tsize>& one,
-                               const state_t<tscalar, tsize>& other)
+                               const state_t<tscalar, tsize>& two)
                 {
-                        return one.f < other.f;
+                        const tscalar f1 = std::isfinite(one.f) ? one.f : std::numeric_limits<tscalar>::max();
+                        const tscalar f2 = std::isfinite(two.f) ? two.f : std::numeric_limits<tscalar>::max();
+
+                        return f1 < f2;
                 }
         }
 }

@@ -31,9 +31,11 @@ namespace ncv
         ///
         /// \brief compare two training states
         ///
-        inline bool operator<(const trainer_state_t& one, const trainer_state_t& another)
+        inline bool operator<(const trainer_state_t& one, const trainer_state_t& two)
         {
-                return one.m_verror_avg < another.m_verror_avg;
+                const scalar_t v1 = std::isfinite(one.m_verror_avg) ? one.m_verror_avg : std::numeric_limits<scalar_t>::max();
+                const scalar_t v2 = std::isfinite(two.m_verror_avg) ? two.m_verror_avg : std::numeric_limits<scalar_t>::max();
+                return v1 < v2;
         }
         
         typedef std::vector

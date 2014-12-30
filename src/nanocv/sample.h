@@ -74,9 +74,9 @@ namespace ncv
         ///
         /// \brief compare two samples (to order them for fast caching)
         ///
-        inline bool operator<(const sample_t& one, const sample_t& another)
+        inline bool operator<(const sample_t& one, const sample_t& two)
         {
-                return one.m_index < another.m_index;
+                return one.m_index < two.m_index;
         }
 }
 
