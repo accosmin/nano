@@ -19,8 +19,7 @@ namespace ncv
                 typename tscalar,
                 typename tsize
         >
-        auto log_min_search(const toperator& op, tscalar minlog, tscalar maxlog, tscalar epslog, tsize splits,
-                            tscalar* optlog = nullptr)
+        auto log_min_search(const toperator& op, tscalar minlog, tscalar maxlog, tscalar epslog, tsize splits)
                 -> std::pair<decltype(op(tscalar(0))), tscalar>
         {
                 typedef decltype(op(tscalar(0)))        tresult;                
@@ -39,6 +38,7 @@ namespace ncv
                         {
                                 const tscalar log = minlog + i * varlog;
                                 const tresult result = op(std::exp(log));
+
                                 history.insert(std::make_pair(result, log));
                         }
                         
@@ -63,8 +63,7 @@ namespace ncv
                 typename tscalar,
                 typename tsize
         >
-        auto log_min_search_mt(const toperator& op, tpool& pool, tscalar minlog, tscalar maxlog, tscalar epslog, tsize splits,
-                               tscalar* optlog = nullptr)
+        auto log_min_search_mt(const toperator& op, tpool& pool, tscalar minlog, tscalar maxlog, tscalar epslog, tsize splits)
                 -> std::pair<decltype(op(tscalar(0))), tscalar>
         {
                 typedef decltype(op(tscalar(0)))        tresult;                
@@ -101,12 +100,6 @@ namespace ncv
                         const tvalue& optimum = *history.begin();
                         minlog = optimum.second - varlog * tscalar(splits - 1) / tscalar(splits);
                         maxlog = optimum.second + varlog * tscalar(splits - 1) / tscalar(splits);
-                }
-
-                // update the optimum (log) parameter
-                if (optlog && !history.empty())
-                {
-                        *optlog = history.begin()->second;
                 }
                 
                 return history.empty() ? tvalue() : *history.begin();
