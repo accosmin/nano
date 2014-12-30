@@ -189,7 +189,7 @@ namespace ncv
                 if (accumulator_t::can_regularize(criterion))
                 {
                         thread_pool_t wpool(nthreads);
-                        return log_min_search_mt(op, wpool, -2.0, +6.0, 0.5, nthreads).first;
+                        return log_min_search_mt(op, wpool, -4.0, +4.0, 0.5, nthreads).first;
                 }
 
                 else
