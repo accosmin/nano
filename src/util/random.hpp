@@ -18,12 +18,10 @@ namespace ncv
                 
                 // constructor
                 random_t(tscalar min, tscalar max)
-                        :       m_gen(),//std::random_device()),
+                        :       m_gen(std::random_device()()),
                                 m_die(std::min(min, max),
                                       std::max(min, max))
                 {
-                        std::random_device rd;
-                        m_gen = gen_t(rd());
                 }
                 
                 // generate a random value
