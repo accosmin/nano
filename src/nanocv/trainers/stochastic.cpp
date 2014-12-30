@@ -12,52 +12,26 @@ namespace ncv
 {
         namespace detail
         {
-                static trainer_result_t stochastic_train(
+                static void train(
                         trainer_data_t& data,
-                        stochastic_optimizer optimizer, size_t epochs, scalar_t alpha0,
-                        thread_pool_t::mutex_t& mutex)
+                        stochastic_optimizer optimizer, size_t epochs, scalar_t alpha0, scalar_t decay,
+                        trainer_result_t& result, thread_pool_t::mutex_t& mutex)
                 {
                         samples_t tsamples = data.m_tsampler.get();
                         samples_t vsamples = data.m_vsampler.get();
-
-                        trainer_result_t result;
 
                         const ncv::timer_t timer;
 
                         // construct the optimization problem (NB: one random sample at the time)
                         size_t index = 0, epoch = 0;
 
-                        auto fn_size = [&] ()
-                        {
-                                return data.m_gacc.psize();
-                        };
+                        auto fn_size = ncv::make_opsize(data);
+                        auto fn_fval = ncv::make_opfval(data, tsamples, index);
+                        auto fn_grad = ncv::make_opgrad(data, tsamples, index);
 
-                        auto fn_fval = [&] (const vector_t& x)
-                        {
-                                data.m_lacc.reset(x);
-                                data.m_lacc.update(data.m_task, tsamples[(index ++) % tsamples.size()], data.m_loss);
-
-                                return data.m_lacc.value();
-                        };
-
-                        auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
-                        {
-                                data.m_gacc.reset(x);
-                                data.m_gacc.update(data.m_task, tsamples[(index ++) % tsamples.size()], data.m_loss);
-
-                                gx = data.m_gacc.vgrad();
-                                return data.m_gacc.value();
-                        };
-
-                        auto fn_wlog = [] (const string_t& message)
-                        {
-                                log_warning() << message;
-                        };
-                        auto fn_elog = [] (const string_t& message)
-                        {
-                                log_error() << message;
-                        };
-                        const opt_opulog_t fn_ulog = [&] (const opt_state_t& state)
+                        auto fn_wlog = ncv::make_opwlog();
+                        auto fn_elog = ncv::make_opelog();
+                        auto fn_ulog = [&] (const opt_state_t& state)
                         {
                                 // shuffle randomly the training samples after each epoch
                                 random_t<size_t> xrng(0, tsamples.size());
@@ -98,11 +72,8 @@ namespace ncv
                         };
 
                         // assembly optimization problem & optimize the model
-                        ncv::minimize(fn_size, fn_fval, fn_fval_grad, fn_wlog, fn_elog, fn_ulog,
-                                      data.m_x0, optimizer, epochs, tsamples.size(), alpha0);
-
-                        // OK
-                        return result;
+                        ncv::minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
+                                      data.m_x0, optimizer, epochs, tsamples.size(), alpha0, decay);
                 }
         }
 
@@ -127,17 +98,26 @@ namespace ncv
 
                                 trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
 
-                                return detail::stochastic_train(data, optimizer, epochs, alpha, mutex);
+                                const scalars_t decays = { 0.50, 0.75, 1.00 };
+
+                                // also tune the decay rate
+                                trainer_result_t result;
+                                for (scalar_t decay : decays)
+                                {
+                                        detail::train(data, optimizer, epochs, alpha, decay, result, mutex);
+                                }
+
+                                return result;
                         };
 
                         thread_pool_t wpool(nthreads);
-                        return log_min_search_mt(op_lrate, wpool, -6.0, 0.0, 0.5, nthreads);
+                        return log_min_search_mt(op_lrate, wpool, -6.0, 0.0, 0.5, nthreads).first;
                 };
 
                 // tune the regularization factor (if needed)
                 if (accumulator_t::can_regularize(criterion))
                 {
-                        return log_min_search(op, -2.0, +6.0, 0.5, 4);
+                        return log_min_search(op, -2.0, +6.0, 0.5, 4).first;
                 }
 
                 else

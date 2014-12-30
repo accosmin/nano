@@ -111,7 +111,7 @@ std::tuple<scalar_t, string_t, size_t> batch(
                 return ldata.value();
         };
 
-        auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
+        auto fn_grad = [&] (const vector_t& x, vector_t& gx)
         {
                 gdata.reset(x);
                 gdata.update(task, samples, loss);
@@ -121,7 +121,7 @@ std::tuple<scalar_t, string_t, size_t> batch(
         };
 
         // assembly optimization problem & optimize the model
-        const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
+        const opt_problem_t problem(fn_size, fn_fval, fn_grad);
 
         optimizer.set_wlog(nullptr);
         optimizer.set_elog(nullptr);
@@ -169,7 +169,7 @@ std::tuple<scalar_t, string_t, size_t> stoch(
                         return ldata.value();
                 };
 
-                auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
+                auto fn_grad = [&] (const vector_t& x, vector_t& gx)
                 {
                         gdata.reset(x);
                         gdata.update(task, samples[(index ++) % samples.size()], loss);
@@ -188,7 +188,7 @@ std::tuple<scalar_t, string_t, size_t> stoch(
                 };
 
                 // assembly optimization problem & optimize the model
-                const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
+                const opt_problem_t problem(fn_size, fn_fval, fn_grad);
 
                 toptimizer optimizer_copy(optimizer);
                 optimizer_copy.set_ulog(fn_ulog);
@@ -203,7 +203,7 @@ std::tuple<scalar_t, string_t, size_t> stoch(
                 return state;
         };
 
-        const opt_state_t state = ncv::log_min_search(op_tune_alpha0, -6.0, -1.0, 0.5, 4);
+        const opt_state_t state = ncv::log_min_search(op_tune_alpha0, -6.0, -1.0, 0.5, 4).first;
 
 //        log_info() << header << "[" + name << "]: value = " << state.f << ", done in " << timer.elapsed() << ".";
 

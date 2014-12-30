@@ -28,7 +28,7 @@ static void test_grad(
         };
 
         // optimization problem: function value & gradient
-        auto opt_fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
+        auto opt_fn_grad = [&] (const vector_t& x, vector_t& gx)
         {
                 const vector_t& output = x;
 
@@ -38,7 +38,7 @@ static void test_grad(
         };
 
         // construct optimization problem: analytic gradient and finite difference approximation
-        const opt_problem_t problem_gd(opt_fn_size, opt_fn_fval, opt_fn_fval_grad);
+        const opt_problem_t problem_gd(opt_fn_size, opt_fn_fval, opt_fn_grad);
         const opt_problem_t problem_ax(opt_fn_size, opt_fn_fval);
 
         for (size_t t = 0; t < n_tests; t ++)

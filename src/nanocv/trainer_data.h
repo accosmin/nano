@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+#include "sample.h"
 
 namespace ncv
 {
@@ -36,5 +37,30 @@ namespace ncv
                 accumulator_t&          m_lacc;                 ///< cumulated loss value
                 accumulator_t&          m_gacc;                 ///< cumulated loss gradient
         };
+
+        ///
+        /// \brief dimension operator
+        ///
+        opt_opsize_t make_opsize(const trainer_data_t& data);
+
+        ///
+        /// \brief cumulated loss value operator (batch)
+        ///
+        opt_opfval_t make_opfval(const trainer_data_t& data, const samples_t& samples);
+
+        ///
+        /// \brief cumulated loss value operator (stochastic)
+        ///
+        opt_opfval_t make_opfval(const trainer_data_t& data, const samples_t& samples, size_t& index);
+
+        ///
+        /// \brief cumulated loss gradient operator (batch)
+        ///
+        opt_opgrad_t make_opgrad(const trainer_data_t& data, const samples_t& samples);
+
+        ///
+        /// \brief cumulated loss gradient operator (stochastic)
+        ///
+        opt_opgrad_t make_opgrad(const trainer_data_t& data, const samples_t& samples, size_t& index);
 }
 

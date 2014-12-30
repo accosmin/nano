@@ -128,7 +128,7 @@ namespace ncv
                         return loss.value(target, output.vector());
                 };
 
-                auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
+                auto fn_grad = [&] (const vector_t& x, vector_t& gx)
                 {
                         const tensor_t output = this->output(x);
                         const vector_t ograd = loss.vgrad(target, output.vector());
@@ -166,7 +166,7 @@ namespace ncv
                 input.random(random_t<scalar_t>(0.0, 1.0));
 
                 const opt_state_t result = ncv::minimize(
-                        fn_size, fn_fval, fn_fval_grad, fn_wlog, fn_elog, fn_ulog_ref,
+                        fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog_ref,
                         input.vector(), optimizer, iterations, epsilon, history_size);
 
                 input.copy_from(result.x.data());

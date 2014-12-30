@@ -21,41 +21,13 @@ namespace ncv
                         const samples_t vsamples = data.m_vsampler.get();
 
                         // construct the optimization problem
-                        auto fn_size = [&] ()
-                        {
-                                return data.m_lacc.psize();
-                        };
+                        auto fn_size = ncv::make_opsize(data);
+                        auto fn_fval = ncv::make_opfval(data, tsamples);
+                        auto fn_grad = ncv::make_opgrad(data, tsamples);
 
-                        auto fn_fval = [&] (const vector_t& x)
-                        {
-                                // training samples: loss value
-                                data.m_lacc.reset(x);
-                                data.m_lacc.update(data.m_task, tsamples, data.m_loss);
-                                const scalar_t tvalue = data.m_lacc.value();
-
-                                return tvalue;
-                        };
-
-                        auto fn_fval_grad = [&] (const vector_t& x, vector_t& gx)
-                        {
-                                // training samples: loss value & gradient
-                                data.m_gacc.reset(x);
-                                data.m_gacc.update(data.m_task, tsamples, data.m_loss);
-                                const scalar_t tvalue = data.m_gacc.value();
-                                gx = data.m_gacc.vgrad();
-
-                                return tvalue;
-                        };
-
-                        auto fn_wlog = [] (const string_t& message)
-                        {
-                                log_warning() << message;
-                        };
-                        auto fn_elog = [] (const string_t& message)
-                        {
-                                log_error() << message;
-                        };
-                        const opt_opulog_t fn_ulog = [&] (const opt_state_t& state)
+                        auto fn_wlog = ncv::make_opwlog();
+                        auto fn_elog = ncv::make_opelog();
+                        auto fn_ulog = [&] (const opt_state_t& state)
                         {
                                 const scalar_t tvalue = data.m_gacc.value();
                                 const scalar_t terror_avg = data.m_gacc.avg_error();
@@ -84,7 +56,7 @@ namespace ncv
                         };
 
                         // assembly optimization problem & optimize the model
-                        return ncv::minimize(fn_size, fn_fval, fn_fval_grad, fn_wlog, fn_elog, fn_ulog,
+                        return ncv::minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
                                              data.m_x0, optimizer, iterations, epsilon);
                 }
         }
@@ -118,7 +90,7 @@ namespace ncv
                 // tune the regularization factor (if needed)
                 if (accumulator_t::can_regularize(criterion))
                 {
-                        return log_min_search(op, -2.0, +6.0, 0.5, 4);
+                        return log_min_search(op, -2.0, +6.0, 0.5, 4).first;
                 }
 
                 else

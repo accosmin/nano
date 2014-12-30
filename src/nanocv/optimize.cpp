@@ -6,20 +6,21 @@
 #include "optimize/stoch_sga.hpp"
 #include "optimize/stoch_sia.hpp"
 #include "optimize/stoch_nag.hpp"
+#include "file/logger.h"
 
 namespace ncv
 {
         opt_state_t minimize(
                 const opt_opsize_t& fn_size,
                 const opt_opfval_t& fn_fval,
-                const opt_opgrad_t& fn_fval_grad,
+                const opt_opgrad_t& fn_grad,
                 const opt_opwlog_t& fn_wlog,
                 const opt_opelog_t& fn_elog,
                 const opt_opulog_t& fn_ulog,
                 const vector_t& x0,
                 batch_optimizer optimizer, size_t iterations, scalar_t epsilon, scalar_t history_size)
         {
-                const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
+                const opt_problem_t problem(fn_size, fn_fval, fn_grad);
 
                 switch (optimizer)
                 {
@@ -44,14 +45,14 @@ namespace ncv
         opt_state_t minimize(
                 const opt_opsize_t& fn_size,
                 const opt_opfval_t& fn_fval,
-                const opt_opgrad_t& fn_fval_grad,
+                const opt_opgrad_t& fn_grad,
                 const opt_opwlog_t& fn_wlog,
                 const opt_opelog_t& fn_elog,
                 const opt_opulog_t& fn_ulog,
                 const vector_t& x0,
                 stochastic_optimizer optimizer, size_t epochs, size_t epoch_size, scalar_t alpha0, scalar_t decay)
         {
-                const opt_problem_t problem(fn_size, fn_fval, fn_fval_grad);
+                const opt_problem_t problem(fn_size, fn_fval, fn_grad);
 
                 switch (optimizer)
                 {
@@ -76,6 +77,22 @@ namespace ncv
                                 (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
                 }
+        }
+
+        opt_opwlog_t make_opwlog()
+        {
+                return [] (const string_t& message)
+                {
+                        log_warning() << message;
+                };
+        }
+
+        opt_opelog_t make_opelog()
+        {
+                return [] (const string_t& message)
+                {
+                        log_error() << message;
+                };
         }
 }
 	

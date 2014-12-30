@@ -11,7 +11,7 @@ namespace ncv
         /// \brief search for a 1D parameter that minimizes a given operator, 
         ///     using a greedy approach on the logarithmic scale in the range [minlog, maxlog].
         ///
-        /// \returns the result associated with the optimum (log) paramerer.
+        /// \returns { the result associated to the optimum (log) parameter, the optimum (log) parameter }.
         ///
         template
         <
@@ -19,8 +19,9 @@ namespace ncv
                 typename tscalar,
                 typename tsize
         >
-        auto log_min_search(const toperator& op, tscalar minlog, tscalar maxlog, tscalar epslog, tsize splits)
-                -> decltype(op(tscalar(0)))
+        auto log_min_search(const toperator& op, tscalar minlog, tscalar maxlog, tscalar epslog, tsize splits,
+                            tscalar* optlog = nullptr)
+                -> std::pair<decltype(op(tscalar(0))), tscalar>
         {
                 typedef decltype(op(tscalar(0)))        tresult;                
                 typedef std::pair<tresult, tscalar>     tvalue;
@@ -29,6 +30,7 @@ namespace ncv
 
                 splits = std::max(tsize(4), splits);
                 
+                // greedy sort-of-branch-and-bound search
                 for (   tscalar varlog = (maxlog - minlog) / tscalar(splits - 1);
                         (maxlog - minlog) > epslog && epslog > tscalar(0); 
                         varlog = varlog / splits)
@@ -44,15 +46,15 @@ namespace ncv
                         minlog = optimum.second - varlog * tscalar(splits - 1) / tscalar(splits);
                         maxlog = optimum.second + varlog * tscalar(splits - 1) / tscalar(splits);
                 }
-                
-                return history.empty() ? tresult() : history.begin()->first;
+
+                return history.empty() ? tvalue() : *history.begin();
         }
         
         ///
         /// \brief multi-threaded search for a 1D parameter that minimizes a given operator, 
         ///     using a greedy approach on the logarithmic scale in the range [minlog, maxlog].
         ///
-        /// \returns the result associated with the optimum (log) paramerer.
+        /// \returns { the result associated to the optimum (log) parameter, the optimum (log) parameter }.
         ///
         template
         <
@@ -61,8 +63,9 @@ namespace ncv
                 typename tscalar,
                 typename tsize
         >
-        auto log_min_search_mt(const toperator& op, tpool& pool, tscalar minlog, tscalar maxlog, tscalar epslog, tsize splits)
-                -> decltype(op(tscalar(0)))
+        auto log_min_search_mt(const toperator& op, tpool& pool, tscalar minlog, tscalar maxlog, tscalar epslog, tsize splits,
+                               tscalar* optlog = nullptr)
+                -> std::pair<decltype(op(tscalar(0))), tscalar>
         {
                 typedef decltype(op(tscalar(0)))        tresult;                
                 typedef std::pair<tresult, tscalar>     tvalue;
@@ -74,6 +77,7 @@ namespace ncv
                 
                 splits = std::max(tsize(4), splits);
                 
+                // greedy sort-of-branch-and-bound search
                 for (   tscalar varlog = (maxlog - minlog) / tscalar(splits - 1);
                         (maxlog - minlog) > epslog && epslog > tscalar(0); 
                         varlog = varlog / splits)
@@ -98,7 +102,13 @@ namespace ncv
                         minlog = optimum.second - varlog * tscalar(splits - 1) / tscalar(splits);
                         maxlog = optimum.second + varlog * tscalar(splits - 1) / tscalar(splits);
                 }
+
+                // update the optimum (log) parameter
+                if (optlog && !history.empty())
+                {
+                        *optlog = history.begin()->second;
+                }
                 
-                return history.empty() ? tresult() : history.begin()->first;
+                return history.empty() ? tvalue() : *history.begin();
         }
 }
