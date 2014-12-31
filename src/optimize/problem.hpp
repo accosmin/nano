@@ -147,7 +147,9 @@ namespace ncv
 
                                         xp(i) += d;
                                         xn(i) -= d;
-                                        g(i) = (_f(xp) - _f(xn)) / (xp(i) - xn(i));
+                                        g(i) = static_cast<tscalar>(
+                                               static_cast<long double>(_f(xp) - _f(xn)) /
+                                               static_cast<long double>(xp(i) - xn(i)));
                                 }
                         }
 
