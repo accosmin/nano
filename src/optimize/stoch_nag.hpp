@@ -53,8 +53,7 @@ namespace ncv
 
                                 tstate cstate;                  // current state
 
-                                tvector py = x0;                // previous iteration
-                                tvector cy = x0;                // current iteration
+                                tvector y = x0;                 //
 
                                 tvector px = x0;                // previous iteration
                                 tvector cx = x0;                // current iteration
@@ -66,21 +65,20 @@ namespace ncv
                                         for (tsize i = 0; i < base_t::m_epoch_size; i ++)
                                         {
                                                 // learning rate
-                                                const tscalar alpha = base_t::alpha(k ++);
+                                                const tscalar alpha = base_t::m_alpha0; //base_t::alpha(k ++);
 
                                                 // descent direction
-                                                problem(py, g);
-                                                const tscalar m = tscalar(k - 1) / tscalar(k + 2);
+                                                problem(y, g);
+                                                const tscalar m = tscalar(k) / tscalar(k + 3);
 
-                                                cx = py - alpha * g;
-                                                cy = cx + m * (cx - px);
+                                                cx = y - alpha * g;
+                                                y = px + m * (cx - px);
 
                                                 // update solution
                                                 cstate.x = cx;
 
                                                 // next iteration
                                                 px = cx;
-                                                py = cy;
                                         }
 
                                         base_t::ulog(cstate);
