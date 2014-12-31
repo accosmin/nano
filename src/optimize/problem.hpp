@@ -46,11 +46,12 @@ namespace ncv
                         explicit problem_t(
                                 const top_size& op_size,
                                 const top_fval& op_fval,
-                                const top_grad& op_grad)
+                                const top_grad& op_grad,
+                                tscalar eps = std::sqrt(std::numeric_limits<tscalar>::epsilon()))
                                 :       m_op_size(op_size),
                                         m_op_fval(op_fval),
                                         m_op_grad(op_grad),
-                                        m_eps(std::sqrt(std::numeric_limits<tscalar>::epsilon()))
+                                        m_eps(eps)
                         {
                                 reset();
                         }
@@ -60,8 +61,9 @@ namespace ncv
                         ///
                         explicit problem_t(
                                 const top_size& op_size,
-                                const top_fval& op_fval)
-                                :       problem_t(op_size, op_fval, top_grad())
+                                const top_fval& op_fval,
+                                tscalar eps = std::sqrt(std::numeric_limits<tscalar>::epsilon()))
+                                :       problem_t(op_size, op_fval, top_grad(), eps)
                         {
                         }
 
