@@ -30,7 +30,6 @@
 #include "criteria/avg_criterion.h"
 #include "criteria/avg_l2_criterion.h"
 #include "criteria/avg_var_criterion.h"
-#include "criteria/avg_l2_barrier_criterion.h"
 
 #include <cfenv>
 
@@ -88,7 +87,6 @@ namespace ncv
                 // register criteria
                 criterion_manager_t::instance().add("avg", avg_criterion_t());
                 criterion_manager_t::instance().add("l2n-reg", avg_l2_criterion_t());
-                criterion_manager_t::instance().add("l2b-reg", avg_l2_barrier_criterion_t());
                 criterion_manager_t::instance().add("var-reg", avg_var_criterion_t());
         }
 
