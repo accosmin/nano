@@ -108,6 +108,19 @@ namespace ncv
                 {
                         return value * square(value);
                 }
+
+
+                ///
+                /// \brief quartic
+                ///
+                template
+                <
+                        typename tvalue
+                >
+                tvalue quartic(tvalue value)
+                {
+                        return square(square(value));
+                }
         }
 }
 
