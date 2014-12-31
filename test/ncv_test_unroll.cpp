@@ -6,7 +6,7 @@ using namespace ncv;
 
 ncv::thread_pool_t pool;
 
-typedef double test_scalar_t;
+typedef ncv::scalar_t test_scalar_t;
 typedef ncv::tensor::vector_types_t<test_scalar_t>::tvector     test_vector_t;
 typedef ncv::tensor::vector_types_t<test_scalar_t>::tvectors    test_vectors_t;
 
