@@ -1,6 +1,11 @@
-- stochastic trainer:
-	- tune the learning rate & the decay rate in a single epoch -> apparently the decay rate is very important
-		- and then run the remaining epochs using this configuration
+- avg_l2_group_criterion:
+	- cannot be tuned (faster to train!)
+	- penalize with a power function (order 2,3,4) the L2-norm of each group
+	- default: no group so use the L2-norm of all parameters
+
+- create specific trainers for avg_l2_group_criterion:
+	- group by layer (convolution models + MLPs)
+	- group by convolutions (convolution models only)
 
 - refactor criterion/accumulator:
 	- store loss value & errors as ncv::stats objects
