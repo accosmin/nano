@@ -173,7 +173,7 @@ namespace ncv
                         };
 
                         thread_pool_t wpool(nthreads);
-                        log10_min_search_mt(op_lrate, wpool, -4.0, 0.0, 0.5, nthreads);
+                        log10_min_search_mt(op_lrate, wpool, -4.0, +2.0, 0.5, nthreads);
 
                         // train the model using the tuned learning rate & decay rate
                         {
