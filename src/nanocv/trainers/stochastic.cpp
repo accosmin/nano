@@ -12,13 +12,46 @@ namespace ncv
 {
         namespace detail
         {
-                static void train(
+                static opt_state_t tune(
+                        trainer_data_t& data,
+                        stochastic_optimizer optimizer, scalar_t alpha0, scalar_t decay)
+                {
+                        const samples_t tsamples = data.m_tsampler.get();
+                        const size_t epochs = 1;
+
+                        // construct the optimization problem (NB: one random sample at the time)
+                        size_t index = 0;
+
+                        auto fn_size = ncv::make_opsize(data);
+                        auto fn_fval = ncv::make_opfval(data, tsamples, index);
+                        auto fn_grad = ncv::make_opgrad(data, tsamples, index);
+
+                        auto fn_wlog = nullptr;
+                        auto fn_elog = nullptr;
+                        auto fn_ulog = nullptr;
+
+                        // assembly optimization problem & optimize the model
+                        opt_state_t opt = ncv::minimize(
+                                fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
+                                data.m_x0, optimizer, epochs, tsamples.size(), alpha0, decay);
+
+                        // OK, cumulate the loss value
+                        data.m_lacc.reset(opt.x);
+                        data.m_lacc.update(data.m_task, tsamples, data.m_loss);
+
+                        opt.f = data.m_lacc.value();
+                        return opt;
+                }
+
+                static trainer_result_t train(
                         trainer_data_t& data,
                         stochastic_optimizer optimizer, size_t epochs, scalar_t alpha0, scalar_t decay,
-                        trainer_result_t& result, thread_pool_t::mutex_t& mutex)
+                        thread_pool_t::mutex_t& mutex)
                 {
                         samples_t tsamples = data.m_tsampler.get();
                         samples_t vsamples = data.m_vsampler.get();
+
+                        trainer_result_t result;
 
                         const ncv::timer_t timer;
 
@@ -75,6 +108,9 @@ namespace ncv
                         // assembly optimization problem & optimize the model
                         ncv::minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
                                       data.m_x0, optimizer, epochs, tsamples.size(), alpha0, decay);
+
+                        // OK
+                        return result;
                 }
         }
 
@@ -91,6 +127,10 @@ namespace ncv
                         vector_t x0;
                         model.save_params(x0);
 
+                        opt_state_t opt_state;
+                        scalar_t opt_alpha = 1.00;
+                        scalar_t opt_decay = 0.50;
+
                         // operator to tune the learning rate
                         const auto op_lrate = [&] (scalar_t alpha)
                         {
@@ -103,17 +143,47 @@ namespace ncv
                                 const scalars_t decays = (optimizer == stochastic_optimizer::NAG) ?
                                         scalars_t({ 1.00 }) : scalars_t({ 0.50, 0.75, 1.00 });
 
-                                trainer_result_t result;
+                                std::set<std::pair<opt_state_t, scalar_t> > states;
                                 for (scalar_t decay : decays)
                                 {
-                                        detail::train(data, optimizer, epochs, alpha, decay, result, mutex);
+                                        const ncv::timer_t timer;
+
+                                        const opt_state_t state = detail::tune(data, optimizer, alpha, decay);
+
+                                        const thread_pool_t::lock_t lock(mutex);
+
+                                        log_info()
+                                                << "[tuning: loss = " << state.f
+                                                << ", alpha = " << alpha
+                                                << ", decay = " << decay
+                                                << ", lambda = " << data.m_lacc.lambda()
+                                                << "] done in " << timer.elapsed() << ".";
+
+                                        states.insert(std::make_pair(state, decay));
                                 }
 
-                                return result;
+                                if (states.begin()->first < opt_state)
+                                {
+                                        opt_state = states.begin()->first;
+                                        opt_alpha = alpha;
+                                        opt_decay = states.begin()->second;
+                                }
+
+                                return states.begin()->first;
                         };
 
                         thread_pool_t wpool(nthreads);
-                        return log10_min_search_mt(op_lrate, wpool, -4.0, 0.0, 0.5, nthreads).first;
+                        log10_min_search_mt(op_lrate, wpool, -4.0, 0.0, 0.5, nthreads);
+
+                        // train the model using the tuned learning rate & decay rate
+                        {
+                                accumulator_t lacc(model, 1, criterion, criterion_t::type::value, lambda);
+                                accumulator_t gacc(model, 1, criterion, criterion_t::type::vgrad, lambda);
+
+                                trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
+
+                                return detail::train(data, optimizer, epochs, opt_alpha, opt_decay, mutex);
+                        }
                 };
 
                 // tune the regularization factor (if needed)
