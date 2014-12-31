@@ -155,8 +155,8 @@ namespace ncv
         {
                 for (const rlayer_t& layer : m_layers)
                 {
-                        const size_t fanin = layer->idims();
-                        const size_t fanout = layer->odims();
+                        const size_t fanin = layer->idims() * layer->irows() * layer->icols();
+                        const size_t fanout = layer->odims() * layer->orows() * layer->ocols();
                         const scalar_t min = -std::sqrt(6.0 / (1.0 + fanin + fanout));
                         const scalar_t max = +std::sqrt(6.0 / (1.0 + fanin + fanout));
 
