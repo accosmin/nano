@@ -203,7 +203,7 @@ std::tuple<scalar_t, string_t, size_t> stoch(
                 return state;
         };
 
-        const opt_state_t state = ncv::log_min_search(op_tune_alpha0, -6.0, -1.0, 0.5, 4).first;
+        const opt_state_t state = ncv::log10_min_search(op_tune_alpha0, -6.0, 0.0, 0.5, 4).first;
 
 //        log_info() << header << "[" + name << "]: value = " << state.f << ", done in " << timer.elapsed() << ".";
 

@@ -90,7 +90,7 @@ namespace ncv
                 // tune the regularization factor (if needed)
                 if (accumulator_t::can_regularize(criterion))
                 {
-                        return log_min_search(op, -4.0, +4.0, 0.5, 4).first;
+                        return log10_min_search(op, -4.0, +4.0, 0.5, 4).first;
                 }
 
                 else

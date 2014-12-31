@@ -104,7 +104,6 @@ namespace ncv
                                         scalars_t({ 1.00 }) : scalars_t({ 0.50, 0.75, 1.00 });
 
                                 trainer_result_t result;
-
                                 for (scalar_t decay : decays)
                                 {
                                         detail::train(data, optimizer, epochs, alpha, decay, result, mutex);
@@ -114,14 +113,14 @@ namespace ncv
                         };
 
                         thread_pool_t wpool(nthreads);
-                        return log_min_search_mt(op_lrate, wpool, -6.0, 0.0, 0.5, nthreads).first;
+                        return log10_min_search_mt(op_lrate, wpool, -4.0, 0.0, 0.5, nthreads).first;
                 };
 
                 // tune the regularization factor (if needed)
                 if (accumulator_t::can_regularize(criterion))
                 {
                         thread_pool_t wpool(nthreads);
-                        return log_min_search_mt(op, wpool, -4.0, +4.0, 0.5, nthreads).first;
+                        return log10_min_search_mt(op, wpool, -4.0, +4.0, 0.5, nthreads).first;
                 }
 
                 else
