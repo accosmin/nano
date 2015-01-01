@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
 
                                 const samples_t ok_samples = ok_sampler.get();
                                 const samples_t nk_samples = nk_sampler.get();
-                                const sampler_t ll_samples = ll_sampler.get();
+                                const samples_t ll_samples = ll_sampler.get();
 
                                 log_info() << "miss-classified " << nk_samples.size()
                                            << "/" << ll_samples.size() 

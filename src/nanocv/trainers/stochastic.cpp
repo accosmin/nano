@@ -3,7 +3,6 @@
 #include "sampler.h"
 #include "file/logger.h"
 #include "util/log_search.hpp"
-#include "util/random.hpp"
 #include "util/thread_pool.h"
 #include "util/timer.h"
 #include "optimize.h"
@@ -16,15 +15,12 @@ namespace ncv
                         trainer_data_t& data,
                         stochastic_optimizer optimizer, scalar_t alpha0, scalar_t decay)
                 {
-                        const samples_t tsamples = data.m_tsampler.get();
                         const size_t epochs = 1;
 
                         // construct the optimization problem (NB: one random sample at the time)
-                        size_t index = 0;
-
                         auto fn_size = ncv::make_opsize(data);
-                        auto fn_fval = ncv::make_opfval(data, tsamples, index);
-                        auto fn_grad = ncv::make_opgrad(data, tsamples, index);
+                        auto fn_fval = ncv::make_opfval(data);
+                        auto fn_grad = ncv::make_opgrad(data);
 
                         auto fn_wlog = nullptr;
                         auto fn_elog = nullptr;
@@ -33,11 +29,11 @@ namespace ncv
                         // assembly optimization problem & optimize the model
                         opt_state_t opt = ncv::minimize(
                                 fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
-                                data.m_x0, optimizer, epochs, tsamples.size(), alpha0, decay);
+                                data.m_x0, optimizer, epochs, data.m_tsampler.size(), alpha0, decay);
 
                         // OK, cumulate the loss value
                         data.m_lacc.reset(opt.x);
-                        data.m_lacc.update(data.m_task, tsamples, data.m_loss);
+                        data.m_lacc.update(data.m_task, data.m_tsampler.all(), data.m_loss);
 
                         opt.f = data.m_lacc.value();
                         return opt;
@@ -48,40 +44,31 @@ namespace ncv
                         stochastic_optimizer optimizer, size_t epochs, scalar_t alpha0, scalar_t decay,
                         thread_pool_t::mutex_t& mutex)
                 {
-                        samples_t tsamples = data.m_tsampler.get();
-                        samples_t vsamples = data.m_vsampler.get();
-
                         trainer_result_t result;
 
                         const ncv::timer_t timer;
 
                         // construct the optimization problem (NB: one random sample at the time)
-                        size_t index = 0, epoch = 0;
+                        size_t epoch = 0;
 
                         auto fn_size = ncv::make_opsize(data);
-                        auto fn_fval = ncv::make_opfval(data, tsamples, index);
-                        auto fn_grad = ncv::make_opgrad(data, tsamples, index);
+                        auto fn_fval = ncv::make_opfval(data);
+                        auto fn_grad = ncv::make_opgrad(data);
 
                         auto fn_wlog = ncv::make_opwlog();
                         auto fn_elog = ncv::make_opelog();
                         auto fn_ulog = [&] (const opt_state_t& state)
                         {
-                                // shuffle randomly the training samples after each epoch
-                                random_t<size_t> xrng(0, tsamples.size());
-                                random_index_t<size_t> xrnd(xrng);
-
-                                std::random_shuffle(tsamples.begin(), tsamples.end(), xrnd);
-
                                 // evaluate training samples
                                 data.m_lacc.reset(state.x);
-                                data.m_lacc.update(data.m_task, tsamples, data.m_loss);
+                                data.m_lacc.update(data.m_task, data.m_tsampler.all(), data.m_loss);
                                 const scalar_t tvalue = data.m_lacc.value();
                                 const scalar_t terror_avg = data.m_lacc.avg_error();
                                 const scalar_t terror_var = data.m_lacc.var_error();
 
                                 // evaluate validation samples
                                 data.m_lacc.reset(state.x);
-                                data.m_lacc.update(data.m_task, vsamples, data.m_loss);
+                                data.m_lacc.update(data.m_task, data.m_vsampler.all(), data.m_loss);
                                 const scalar_t vvalue = data.m_lacc.value();
                                 const scalar_t verror_avg = data.m_lacc.avg_error();
                                 const scalar_t verror_var = data.m_lacc.var_error();
@@ -95,19 +82,19 @@ namespace ncv
                                               epoch, scalars_t({ alpha0, decay, data.m_lacc.lambda() }));
 
                                 log_info()
-                                        << "[train = " << tvalue << "/" << terror_avg
-                                        << ", valid = " << vvalue << "/" << verror_avg
-                                        << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
-                                        << ", alpha = " << alpha0
-                                        << ", decay = " << decay
-                                        << ", epoch = " << epoch << "/" << epochs
-                                        << ", lambda = " << data.m_lacc.lambda()
-                                        << "] done in " << timer.elapsed() << ".";
+                                << "[train = " << tvalue << "/" << terror_avg
+                                << ", valid = " << vvalue << "/" << verror_avg
+                                << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
+                                << ", alpha = " << alpha0
+                                << ", decay = " << decay
+                                << ", epoch = " << epoch << "/" << epochs
+                                << ", lambda = " << data.m_lacc.lambda()
+                                << "] done in " << timer.elapsed() << ".";
                         };
 
                         // assembly optimization problem & optimize the model
                         ncv::minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
-                                      data.m_x0, optimizer, epochs, tsamples.size(), alpha0, decay);
+                                      data.m_x0, optimizer, epochs, data.m_tsampler.size(), alpha0, decay);
 
                         // OK
                         return result;
@@ -173,7 +160,7 @@ namespace ncv
                         };
 
                         thread_pool_t wpool(nthreads);
-                        log10_min_search_mt(op_lrate, wpool, -4.0, +2.0, 0.5, nthreads);
+                        log10_min_search_mt(op_lrate, wpool, -4.0, +2.0, 0.2, nthreads);
 
                         // train the model using the tuned learning rate & decay rate
                         {

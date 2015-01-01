@@ -28,7 +28,7 @@ namespace ncv
         public:
 
                 // constructor
-                task_t(const string_t& configuration)
+                explicit task_t(const string_t& configuration)
                         : clonable_t<task_t>(configuration)
                 {
                 }

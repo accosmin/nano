@@ -15,15 +15,12 @@ namespace ncv
                         batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
                         timer_t& timer, trainer_result_t& result)
                 {
-                        size_t iteration = 0;  
-                        
-                        const samples_t tsamples = data.m_tsampler.get();
-                        const samples_t vsamples = data.m_vsampler.get();
+                        size_t iteration = 0;
 
                         // construct the optimization problem
                         auto fn_size = ncv::make_opsize(data);
-                        auto fn_fval = ncv::make_opfval(data, tsamples);
-                        auto fn_grad = ncv::make_opgrad(data, tsamples);
+                        auto fn_fval = ncv::make_opfval(data);
+                        auto fn_grad = ncv::make_opgrad(data);
 
                         auto fn_wlog = ncv::make_opwlog();
                         auto fn_elog = ncv::make_opelog();
@@ -35,7 +32,7 @@ namespace ncv
 
                                 // validation samples: loss value
                                 data.m_lacc.reset(state.x);
-                                data.m_lacc.update(data.m_task, vsamples, data.m_loss);
+                                data.m_lacc.update(data.m_task, data.m_vsampler.get(), data.m_loss);
                                 const scalar_t vvalue = data.m_lacc.value();
                                 const scalar_t verror_avg = data.m_lacc.avg_error();
                                 const scalar_t verror_var = data.m_lacc.var_error();
@@ -45,14 +42,14 @@ namespace ncv
                                               ++ iteration, scalars_t({ data.m_lacc.lambda() }));
 
                                 log_info()
-                                        << "[train = " << tvalue << "/" << terror_avg << "/=" << tsamples.size()
-                                        << ", valid = " << vvalue << "/" << verror_avg << "/=" << vsamples.size()
-                                        << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
-                                        << ", gnorm = " << state.g.lpNorm<Eigen::Infinity>()
-                                        << ", epoch = " << iteration
-                                        << ", lambda = " << data.m_lacc.lambda()
-                                        << ", calls = " << state.n_fval_calls() << "/" << state.n_grad_calls()
-                                        << "] done in " << timer.elapsed() << ".";
+                                << "[train = " << tvalue << "/" << terror_avg << "/=" << data.m_tsampler.size()
+                                << ", valid = " << vvalue << "/" << verror_avg << "/=" << data.m_vsampler.size()
+                                << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
+                                << ", gnorm = " << state.g.lpNorm<Eigen::Infinity>()
+                                << ", epoch = " << iteration
+                                << ", lambda = " << data.m_lacc.lambda()
+                                << ", calls = " << state.n_fval_calls() << "/" << state.n_grad_calls()
+                                << "] done in " << timer.elapsed() << ".";
                         };
 
                         // assembly optimization problem & optimize the model

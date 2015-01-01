@@ -30,12 +30,12 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                sampler_t(const task_t& task);
+                explicit sampler_t(const task_t& task);
 
                 ///
                 /// \brief constructor
                 ///
-                sampler_t(const samples_t& samples);
+                explicit sampler_t(const samples_t& samples);
 
                 ///
                 /// \brief restrict by fold
@@ -76,6 +76,11 @@ namespace ncv
                 /// \brief return a set of samples
                 ///
                 samples_t get() const;
+
+                ///
+                /// \brief return the pool of samples
+                ///
+                const samples_t& all() const;
 
                 ///
                 /// \brief check if any samples available

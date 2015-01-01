@@ -1,5 +1,6 @@
 #include "trainer_data.h"
 #include "accumulator.h"
+#include "sampler.h"
 
 namespace ncv
 {
@@ -28,46 +29,23 @@ namespace ncv
                 };
         }
 
-        opt_opfval_t make_opfval(const trainer_data_t& data, const samples_t& samples)
+        opt_opfval_t make_opfval(const trainer_data_t& data)
         {
                 return [&] (const vector_t& x)
                 {
                         data.m_lacc.reset(x);
-                        data.m_lacc.update(data.m_task, samples, data.m_loss);
+                        data.m_lacc.update(data.m_task, data.m_tsampler.get(), data.m_loss);
 
                         return data.m_lacc.value();
                 };
         }
 
-        opt_opfval_t make_opfval(const trainer_data_t& data, const samples_t& samples, size_t& index)
-        {
-                return [&] (const vector_t& x)
-                {
-                        data.m_lacc.reset(x);
-                        data.m_lacc.update(data.m_task, samples[(index ++) % samples.size()], data.m_loss);
-
-                        return data.m_lacc.value();
-                };
-        }
-
-        opt_opgrad_t make_opgrad(const trainer_data_t& data, const samples_t& samples)
+        opt_opgrad_t make_opgrad(const trainer_data_t& data)
         {
                 return [&] (const vector_t& x, vector_t& gx)
                 {
                         data.m_gacc.reset(x);
-                        data.m_gacc.update(data.m_task, samples, data.m_loss);
-
-                        gx = data.m_gacc.vgrad();
-                        return data.m_gacc.value();
-                };
-        }
-
-        opt_opgrad_t make_opgrad(const trainer_data_t& data, const samples_t& samples, size_t& index)
-        {
-                return [&] (const vector_t& x, vector_t& gx)
-                {
-                        data.m_gacc.reset(x);
-                        data.m_gacc.update(data.m_task, samples[(index ++) % samples.size()], data.m_loss);
+                        data.m_gacc.update(data.m_task, data.m_tsampler.get(), data.m_loss);
 
                         gx = data.m_gacc.vgrad();
                         return data.m_gacc.value();

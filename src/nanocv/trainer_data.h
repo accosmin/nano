@@ -44,23 +44,13 @@ namespace ncv
         opt_opsize_t make_opsize(const trainer_data_t& data);
 
         ///
-        /// \brief cumulated loss value operator (batch)
+        /// \brief cumulated loss value operator
         ///
-        opt_opfval_t make_opfval(const trainer_data_t& data, const samples_t& samples);
+        opt_opfval_t make_opfval(const trainer_data_t& data);
 
         ///
-        /// \brief cumulated loss value operator (stochastic)
+        /// \brief cumulated loss gradient operator
         ///
-        opt_opfval_t make_opfval(const trainer_data_t& data, const samples_t& samples, size_t& index);
-
-        ///
-        /// \brief cumulated loss gradient operator (batch)
-        ///
-        opt_opgrad_t make_opgrad(const trainer_data_t& data, const samples_t& samples);
-
-        ///
-        /// \brief cumulated loss gradient operator (stochastic)
-        ///
-        opt_opgrad_t make_opgrad(const trainer_data_t& data, const samples_t& samples, size_t& index);
+        opt_opgrad_t make_opgrad(const trainer_data_t& data);
 }
 
