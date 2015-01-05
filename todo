@@ -1,3 +1,13 @@
+- augment training samples (to reduce overfitting):
+	- salt & pepper noise (vary the percentage)
+	- translation, scale, various deformations
+
+	- test program to generate some augmented training samples
+
+- more experiments with floats instead of doubles:
+	- check the impact on MLPs and convolutions
+	- are the stochastic methods going to be faster?! (tons of gradient-based linear algebra)
+
 - MAD with index shifts (may speed-up corr2d)
 
 - test program to assess the speed of the 3D convolution/correlation operations
