@@ -128,7 +128,8 @@ namespace ncv
 
                                 // also tune the decay rate (if possible)
                                 const scalars_t decays = (optimizer == stochastic_optimizer::NAG) ?
-                                        scalars_t({ 1.00 }) : scalars_t({ 0.50, 0.75, 1.00 });
+                                        scalars_t({ 1.00 }) :
+                                        scalars_t({ 0.0, 0.10, 0.20, 0.50, 0.75, 1.00 });
 
                                 std::set<std::pair<opt_state_t, scalar_t> > states;
                                 for (scalar_t decay : decays)
