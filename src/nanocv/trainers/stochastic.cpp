@@ -127,9 +127,19 @@ namespace ncv
                                 trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
 
                                 // also tune the decay rate (if possible)
-                                const scalars_t decays = (optimizer == stochastic_optimizer::NAG) ?
-                                        scalars_t({ 1.00 }) :
-                                        scalars_t({ 0.0, 0.10, 0.20, 0.50, 0.75, 1.00 });
+                                scalars_t decays;
+
+                                switch (optimizer)
+                                {
+                                case stochastic_optimizer::NAG:
+                                case stochastic_optimizer::ADA:
+                                        decays = { 1.00 };
+                                        break;
+
+                                default:
+                                        decays = { 0.0, 0.10, 0.20, 0.50, 0.75, 1.00 };
+                                        break;
+                                }
 
                                 std::set<std::pair<opt_state_t, scalar_t> > states;
                                 for (scalar_t decay : decays)
