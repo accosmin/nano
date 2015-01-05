@@ -1,3 +1,9 @@
+- check the speed improvement if using floats instead of doubles for training MLP0
+
+- investigate why AdaGrad presents that strange bump in the training loss plot
+
+- investigate why NAG is so noisy
+
 - augment training samples (to reduce overfitting):
 	- salt & pepper noise (vary the percentage)
 	- translation, scale, various deformations
