@@ -160,7 +160,18 @@ namespace ncv
                                 return states.begin()->first;
                         };
 
-                        log10_min_search(op_lrate, -4.0, +2.0, 0.2, 4);
+                        if (accumulator_t::can_regularize(criterion))
+                        {
+                                // single-thread tuning
+                                log10_min_search(op_lrate, -4.0, +2.0, 0.2, 4);
+                        }
+
+                        else
+                        {
+                                // multi-thread tuning
+                                thread_pool_t wpool(nthreads);
+                                log10_min_search_mt(op_lrate, wpool, -4.0, +2.0, 0.2, wpool.n_workers());
+                        }
 
                         // train the model using the tuned learning rate & decay rate
                         {
@@ -177,7 +188,7 @@ namespace ncv
                 if (accumulator_t::can_regularize(criterion))
                 {
                         thread_pool_t wpool(nthreads);
-                        return log10_min_search_mt(op, wpool, -4.0, +4.0, 0.5, nthreads).first;
+                        return log10_min_search_mt(op, wpool, -4.0, +4.0, 0.5, wpool.n_workers()).first;
                 }
 
                 else
