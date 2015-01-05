@@ -81,7 +81,7 @@ namespace ncv
                 bool fill(luma_t luma);
 
                 ///
-                /// \brief copy the given (region of the given) patch at the (r, c) location
+                /// \brief copy the given (region of the given) patch at the (top, left) location
                 ///
                 bool copy(coord_t top, coord_t left, const rgba_matrix_t& patch);
                 bool copy(coord_t top, coord_t left, const luma_matrix_t& patch);
