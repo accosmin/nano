@@ -6,6 +6,7 @@
 #include "optimize/stoch_sga.hpp"
 #include "optimize/stoch_sia.hpp"
 #include "optimize/stoch_nag.hpp"
+#include "optimize/stoch_ada.hpp"
 #include "file/logger.h"
 
 namespace ncv
@@ -68,6 +69,11 @@ namespace ncv
 
                 case stochastic_optimizer::NAG:
                         return  optimize::stoch_nag<opt_problem_t>
+                                (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
+                                (problem, x0);
+
+                case stochastic_optimizer::ADA:
+                        return  optimize::stoch_ada<opt_problem_t>
                                 (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 

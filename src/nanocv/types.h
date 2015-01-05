@@ -73,7 +73,8 @@ namespace ncv
                 SG,                     ///< stochastic gradient
                 SGA,                    ///< stochastic gradient averaging
                 SIA,                    ///< stochastic iterate averaging
-                NAG                     ///< Nesterov's accelerated gradient descent
+                NAG,                    ///< Nesterov's accelerated gradient descent
+                ADA                     ///< AdaGrad
         };
 
         ///
@@ -120,9 +121,9 @@ namespace ncv
                 }
 
                 template <>
-                inline string_t to_string(color_channel dtype)
+                inline string_t to_string(color_channel type)
                 {
-                        switch (dtype)
+                        switch (type)
                         {
                         case color_channel::red:        return "red";
                         case color_channel::green:      return "green";
@@ -178,6 +179,7 @@ namespace ncv
                         case stochastic_optimizer::SGA: return "sga";
                         case stochastic_optimizer::SIA: return "sia";
                         case stochastic_optimizer::NAG: return "nag";
+                        case stochastic_optimizer::ADA: return "ada";
                         default:                        return "sg";
                         }
                 }
@@ -189,6 +191,7 @@ namespace ncv
                         if (string == "sga")            return stochastic_optimizer::SGA;
                         if (string == "sia")            return stochastic_optimizer::SIA;
                         if (string == "nag")            return stochastic_optimizer::NAG;
+                        if (string == "ada")            return stochastic_optimizer::ADA;
                         throw std::invalid_argument("invalid stochastic optimizer <" + string + ">!");
                         return stochastic_optimizer::SG;
                 }
