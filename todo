@@ -1,3 +1,6 @@
+- adagrad stochastic optimizer:
+	- does not need tuning of the learning rate (start with eta = 0.1)
+
 - augment training samples (to reduce overfitting):
 	- salt & pepper noise (vary the percentage)
 	- translation, scale, various deformations
