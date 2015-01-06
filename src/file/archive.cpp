@@ -22,7 +22,6 @@ namespace ncv
 
                 archive_type decode_archive_type(const std::string& path)
                 {
-
                         if (    boost::algorithm::iends_with(path, ".tar.gz") ||
                                 boost::algorithm::iends_with(path, ".tgz"))
                         {
