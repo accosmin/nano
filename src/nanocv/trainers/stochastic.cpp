@@ -11,13 +11,13 @@ namespace ncv
 {
         namespace detail
         {
-                static opt_state_t tune(
+                static scalar_t tune(
                         trainer_data_t& data,
                         stochastic_optimizer optimizer, scalar_t alpha0, scalar_t decay)
                 {
                         const size_t epochs = 1;
 
-                        // construct the optimization problem (NB: one random sample at the time)
+                        // construct the optimization problem
                         auto fn_size = ncv::make_opsize(data);
                         auto fn_fval = ncv::make_opfval(data);
                         auto fn_grad = ncv::make_opgrad(data);
@@ -26,17 +26,15 @@ namespace ncv
                         auto fn_elog = nullptr;
                         auto fn_ulog = nullptr;
 
-                        // assembly optimization problem & optimize the model
-                        opt_state_t opt = ncv::minimize(
+                        // optimize the model
+                        const opt_state_t state = ncv::minimize(
                                 fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
                                 data.m_x0, optimizer, epochs, data.m_tsampler.size(), alpha0, decay);
 
                         // OK, cumulate the loss value
-                        data.m_lacc.reset(opt.x);
+                        data.m_lacc.reset(state.x);
                         data.m_lacc.update(data.m_task, data.m_tsampler.all(), data.m_loss);
-
-                        opt.f = data.m_lacc.value();
-                        return opt;
+                        return data.m_lacc.value();
                 }
 
                 static trainer_result_t train(
@@ -48,7 +46,7 @@ namespace ncv
 
                         const ncv::timer_t timer;
 
-                        // construct the optimization problem (NB: one random sample at the time)
+                        // construct the optimization problem
                         size_t epoch = 0;
 
                         auto fn_size = ncv::make_opsize(data);
@@ -82,17 +80,17 @@ namespace ncv
                                               epoch, scalars_t({ alpha0, decay, data.m_lacc.lambda() }));
 
                                 log_info()
-                                << "[train = " << tvalue << "/" << terror_avg
-                                << ", valid = " << vvalue << "/" << verror_avg
-                                << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
-                                << ", alpha = " << alpha0
-                                << ", decay = " << decay
-                                << ", epoch = " << epoch << "/" << epochs
-                                << ", lambda = " << data.m_lacc.lambda()
-                                << "] done in " << timer.elapsed() << ".";
+                                        << "[train = " << tvalue << "/" << terror_avg
+                                        << ", valid = " << vvalue << "/" << verror_avg
+                                        << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
+                                        << ", alpha = " << alpha0
+                                        << ", decay = " << decay
+                                        << ", epoch = " << epoch << "/" << epochs
+                                        << ", lambda = " << data.m_lacc.lambda()
+                                        << "] done in " << timer.elapsed() << ".";
                         };
 
-                        // assembly optimization problem & optimize the model
+                        // optimize the model
                         ncv::minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
                                       data.m_x0, optimizer, epochs, data.m_tsampler.size(), alpha0, decay);
 
@@ -108,13 +106,13 @@ namespace ncv
         {
                 thread_pool_t::mutex_t mutex;
 
+                vector_t x0;
+                model.save_params(x0);
+
                 // operator to train for a given regularization factor
                 const auto op = [&] (scalar_t lambda)
                 {
-                        vector_t x0;
-                        model.save_params(x0);
-
-                        opt_state_t opt_state;
+                        scalar_t opt_state = std::numeric_limits<scalar_t>::max();
                         scalar_t opt_alpha = 1.00;
                         scalar_t opt_decay = 0.50;
 
@@ -141,17 +139,17 @@ namespace ncv
                                         break;
                                 }
 
-                                std::set<std::pair<opt_state_t, scalar_t> > states;
+                                std::set<std::pair<scalar_t, scalar_t> > states;
                                 for (scalar_t decay : decays)
                                 {
                                         const ncv::timer_t timer;
 
-                                        const opt_state_t state = detail::tune(data, optimizer, alpha, decay);
+                                        const scalar_t state = detail::tune(data, optimizer, alpha, decay);
 
                                         const thread_pool_t::lock_t lock(mutex);
 
                                         log_info()
-                                                << "[tuning: loss = " << state.f
+                                                << "[tuning: loss = " << state
                                                 << ", alpha = " << alpha
                                                 << ", decay = " << decay
                                                 << ", lambda = " << data.m_lacc.lambda()

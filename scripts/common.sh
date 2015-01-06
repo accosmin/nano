@@ -41,9 +41,9 @@ stoch_sia="--trainer stochastic --trainer-params opt=sia,epoch=16"
 stoch_nag="--trainer stochastic --trainer-params opt=nag,epoch=16"
 stoch_ada="--trainer stochastic --trainer-params opt=ada,epoch=16"
 
-mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=1024,batch=1024,ratio=1.05,iters=8,eps=1e-4"
-mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=1024,batch=1024,ratio=1.05,iters=8,eps=1e-4"
-mbatch_gd="--trainer minibatch --trainer-params opt=gd,epoch=1024,batch=1024,ratio=1.05,iters=8,eps=1e-4"
+mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=1024,eps=1e-4"
+mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=1024,eps=1e-4"
+mbatch_gd="--trainer minibatch --trainer-params opt=gd,epoch=1024,eps=1e-4"
 
 batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,iters=1024,eps=1e-4"
 batch_cgd="--trainer batch --trainer-params opt=cgd,iters=1024,eps=1e-4"

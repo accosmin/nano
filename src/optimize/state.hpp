@@ -34,7 +34,7 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        state_t(tsize size = 0)
+                        explicit state_t(tsize size = 0)
                                 :       x(size), g(size), d(size),
                                         f(std::numeric_limits<tscalar>::max()),
                                         m_iterations(0),

@@ -1,13 +1,12 @@
 #pragma once
 
 #include "types.h"
-#include "sample.h"
+#include "sampler.h"
 
 namespace ncv
 {
         class task_t;
         class loss_t;
-        class sampler_t;
         class accumulator_t;
 
         ///
@@ -28,8 +27,8 @@ namespace ncv
                 
                 // attributes
                 const task_t&           m_task;                 ///< 
-                const sampler_t&        m_tsampler;             ///< training samples
-                const sampler_t&        m_vsampler;             ///< validation samples
+                sampler_t               m_tsampler;             ///< training samples
+                sampler_t               m_vsampler;             ///< validation samples
 
                 const loss_t&           m_loss;                 ///< base loss function
                 const vector_t&         m_x0;                   ///< initial parameters

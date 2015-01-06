@@ -3,21 +3,99 @@
 #include "sampler.h"
 #include "file/logger.h"
 #include "util/log_search.hpp"
+#include "util/thread_pool.h"
 #include "util/timer.h"
 #include "optimize.h"
 
 namespace ncv
 {
         namespace detail
-        {        
-                static opt_state_t minibatch_train(
-                        trainer_data_t& data,
-                        batch_optimizer optimizer, size_t iterations, scalar_t epsilon, size_t epoch,
-                        timer_t& timer, trainer_result_t& result)
+        {
+                ///
+                /// \brief restore the original samplers at destruction
+                ///
+                struct sampler_backup_t
                 {
-                        size_t iteration = 0;
+                        sampler_backup_t(trainer_data_t& data, size_t tsize)
+                                :       m_data(data),
+                                        m_tsampler_orig(data.m_tsampler),
+                                        m_vsampler_orig(data.m_vsampler)
+                        {
+                                // random subset of training samples
+                                if (tsize < m_tsampler_orig.size())
+                                {
+                                        data.m_tsampler.setup(sampler_t::stype::uniform, tsize);
+                                }
+                                else
+                                {
+                                        data.m_tsampler.setup(sampler_t::stype::batch);
+                                }
+
+                                // all validation samples
+                                data.m_vsampler.setup(sampler_t::stype::batch);
+                        }
+
+                        ~sampler_backup_t()
+                        {
+                                m_data.m_tsampler = m_tsampler_orig;
+                                m_data.m_vsampler = m_vsampler_orig;
+                        }
+
+                        trainer_data_t&         m_data;
+                        const sampler_t         m_tsampler_orig;
+                        const sampler_t         m_vsampler_orig;
+                };
+
+                static scalar_t tune(
+                        trainer_data_t& data,
+                        batch_optimizer optimizer,
+                        size_t batch, scalar_t ratio, size_t iterations, scalar_t epsilon)
+                {
+                        const size_t epochs = 8;
 
                         // construct the optimization problem
+                        auto fn_size = ncv::make_opsize(data);
+                        auto fn_fval = ncv::make_opfval(data);
+                        auto fn_grad = ncv::make_opgrad(data);
+
+                        auto fn_wlog = nullptr;
+                        auto fn_elog = nullptr;
+                        auto fn_ulog = nullptr;
+
+                        // optimize the model
+                        vector_t x = data.m_x0;
+
+                        for (size_t epoch = 1, tsize = batch; epoch <= epochs;
+                                epoch ++, tsize = static_cast<size_t>(tsize * ratio))
+                        {
+                                const sampler_backup_t sampler_data(data, tsize);
+
+                                const opt_state_t state = ncv::minimize(
+                                        fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
+                                        x, optimizer, iterations, epsilon);
+
+                                x = state.x;
+                        }
+
+                        // OK, cumulate the loss value
+                        data.m_lacc.reset(x);
+                        data.m_lacc.update(data.m_task, data.m_tsampler.all(), data.m_loss);
+                        return data.m_lacc.value();
+                }
+
+                static trainer_result_t train(
+                        trainer_data_t& data,
+                        batch_optimizer optimizer,
+                        size_t epochs, size_t batch, scalar_t ratio, size_t iterations, scalar_t epsilon)
+                {
+                        trainer_result_t result;
+
+                        const ncv::timer_t timer;
+
+                        // construct the optimization problem
+                        size_t iteration = 0, epoch = 1, tsize = batch;
+                        const size_t vsize = data.m_vsampler.size();
+
                         auto fn_size = ncv::make_opsize(data);
                         auto fn_fval = ncv::make_opfval(data);
                         auto fn_grad = ncv::make_opgrad(data);
@@ -26,7 +104,7 @@ namespace ncv
                         auto fn_elog = ncv::make_opelog();
                         auto fn_ulog = [&] (const opt_state_t& state)
                         {
-                                if ((++ iteration) == iterations)
+                                if (((++ iteration) % iterations) == 0)
                                 {
                                         const scalar_t tvalue = data.m_gacc.value();
                                         const scalar_t terror_avg = data.m_gacc.avg_error();
@@ -41,71 +119,105 @@ namespace ncv
 
                                         // update the optimum state
                                         result.update(state.x, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var,
-                                                      epoch, scalars_t({ data.m_lacc.lambda() }));
+                                                      epoch, scalars_t({ static_cast<scalar_t>(batch),
+                                                                         ratio,
+                                                                         static_cast<scalar_t>(iterations),
+                                                                         data.m_lacc.lambda() }));
 
                                         log_info()
-                                        << "[train = " << tvalue << "/" << terror_avg << "/=" << data.m_tsampler.size()
-                                        << ", valid = " << vvalue << "/" << verror_avg << "/=" << data.m_vsampler.size()
-                                        << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
-                                        << ", gnorm = " << state.g.lpNorm<Eigen::Infinity>()
-                                        << ", epoch = " << epoch
-                                        << ", lambda = " << data.m_lacc.lambda()
-                                        << ", calls = " << state.n_fval_calls() << "/" << state.n_grad_calls()
-                                        << "] done in " << timer.elapsed() << ".";
+                                                << "[train = " << tvalue << "/" << terror_avg << "/=" << tsize
+                                                << ", valid = " << vvalue << "/" << verror_avg << "/=" << vsize
+                                                << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
+                                                << ", gnorm = " << state.g.lpNorm<Eigen::Infinity>()
+                                                << ", epoch = " << epoch
+                                                << ", batch = " << batch
+                                                << ", ratio = " << ratio
+                                                << ", iters = " << iterations
+                                                << ", lambda = " << data.m_lacc.lambda()
+                                                << ", calls = " << state.n_fval_calls() << "/" << state.n_grad_calls()
+                                                << "] done in " << timer.elapsed() << ".";
                                 }
                         };
 
-                        // assembly optimization problem & optimize the model
-                        return ncv::minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
-                                             data.m_x0, optimizer, iterations, epsilon);
+                        // optimize the model
+                        vector_t x = data.m_x0;
+
+                        for (   tsize = batch; epoch <= epochs;
+                                epoch ++, tsize = static_cast<size_t>(tsize * ratio))
+                        {
+                                const sampler_backup_t sampler_data(data, tsize);
+
+                                const opt_state_t state = ncv::minimize(
+                                        fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
+                                        x, optimizer, iterations, epsilon);
+
+                                x = state.x;
+                        }
+
+                        return result;
                 }
         }
 
         trainer_result_t minibatch_train(
-                const model_t& model, const task_t& task, sampler_t& tsampler, sampler_t& vsampler, size_t nthreads,
-                const loss_t& loss, const string_t& criterion, size_t batchsize, scalar_t batchratio,
-                batch_optimizer optimizer, size_t epochs, size_t iterations, scalar_t epsilon)
+                const model_t& model, const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
+                const loss_t& loss, const string_t& criterion,
+                batch_optimizer optimizer, size_t epochs, scalar_t epsilon)
         {
+                vector_t x0;
+                model.save_params(x0);
+
                 // operator to train for a given regularization factor
                 const auto op = [&] (scalar_t lambda)
                 {
-                        trainer_result_t result;
-                        timer_t timer;
+                        accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value, lambda);
+                        accumulator_t gacc(model, nthreads, criterion, criterion_t::type::vgrad, lambda);
 
-                        // optimize the model
-                        vector_t x0;
-                        model.save_params(x0);
+                        trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
 
-                        for (size_t epoch = 1, tsize = batchsize; epoch <= epochs;
-                                epoch ++, tsize = static_cast<size_t>(tsize * batchratio))
+                        const size_t min_batch = 16 * ncv::n_threads();
+                        const size_t max_batch = 16 * min_batch;
+
+                        const scalars_t batch_ratios = { 1.00, 1.01, 1.02, 1.03 };
+                        const indices_t batch_iterations = { 1, 2, 4, 8 };
+
+                        scalar_t opt_state = std::numeric_limits<scalar_t>::max();
+                        scalar_t opt_ratio = 1.0;
+                        size_t opt_batch = min_batch;
+                        size_t opt_iterations = 4;
+
+                        // tune the batch size, the batch size ratio and the number of optimization iterations per batch
+                        for (size_t batch = min_batch; batch <= max_batch; batch *= 2)
                         {
-                                // random subset of training samples
-                                if (tsize < tsampler.size())
+                                for (scalar_t ratio : batch_ratios)
                                 {
-                                        tsampler.setup(sampler_t::stype::uniform, tsize);
+                                        for (size_t iterations : batch_iterations)
+                                        {
+                                                const ncv::timer_t timer;
+
+                                                const scalar_t state =
+                                                        detail::tune(data, optimizer, batch, ratio, iterations, epsilon);
+
+                                                log_info()
+                                                        << "[tuning: loss = " << state
+                                                        << ", batch = " << batch
+                                                        << ", ratio = " << ratio
+                                                        << ", iters = " << iterations
+                                                        << ", lambda = " << data.m_lacc.lambda()
+                                                        << "] done in " << timer.elapsed() << ".";
+
+                                                if (state < opt_state)
+                                                {
+                                                        opt_state = state;
+                                                        opt_batch = batch;
+                                                        opt_ratio = ratio;
+                                                        opt_iterations = iterations;
+                                                }
+                                        }
                                 }
-                                else
-                                {
-                                        tsampler.setup(sampler_t::stype::batch);
-                                }
-
-                                // all validation samples
-                                vsampler.setup(sampler_t::stype::batch);
-
-                                accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value, lambda);
-                                accumulator_t gacc(model, nthreads, criterion, criterion_t::type::vgrad, lambda);
-
-                                trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
-
-                                const opt_state_t state =
-                                detail::minibatch_train(data, optimizer, iterations, epsilon, epoch, timer, result);
-                                x0 = state.x;
-
-                                // NB: this will cause resampling of the training data!
                         }
 
-                        // OK
-                        return result;
+                        // train the model using the tuned learning rate & decay rate
+                        return detail::train(data, optimizer, epochs, opt_batch, opt_ratio, opt_iterations, epsilon);
                 };
 
                 // tune the regularization factor (if needed)

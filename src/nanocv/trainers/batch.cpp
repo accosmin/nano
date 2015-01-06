@@ -63,6 +63,9 @@ namespace ncv
                 const loss_t& loss, const string_t& criterion, 
                 batch_optimizer optimizer, size_t iterations, scalar_t epsilon)
         {
+                vector_t x0;
+                model.save_params(x0);
+
                 // operator to train for a given regularization factor
                 const auto op = [&] (scalar_t lambda)
                 {
@@ -70,9 +73,6 @@ namespace ncv
                         timer_t timer;
 
                         // optimize the model
-                        vector_t x0;
-                        model.save_params(x0);
-
                         accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value, lambda);
                         accumulator_t gacc(model, nthreads, criterion, criterion_t::type::vgrad, lambda);
 

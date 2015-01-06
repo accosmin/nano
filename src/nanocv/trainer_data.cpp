@@ -1,6 +1,5 @@
 #include "trainer_data.h"
 #include "accumulator.h"
-#include "sampler.h"
 
 namespace ncv
 {

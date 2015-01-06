@@ -63,7 +63,7 @@ namespace ncv
                 sampler_t& setup(const string_t& label);
 
                 ///
-                /// \brief use the given percentage of samples (others are the rest of the samples)
+                /// \brief use the given percentage of samples (other's are the rest of the samples)
                 ///
                 sampler_t& split(size_t percentage, sampler_t& other);
 
