@@ -1,3 +1,7 @@
+- other stochastic methods to implement:
+	- http://arxiv.org/pdf/1206.1106v2.pdf
+	- http://www.matthewzeiler.com/pubs/googleTR2012/googleTR2012.pdf
+
 - check the speed improvement if using floats instead of doubles for training MLP0
 
 - investigate why AdaGrad presents that strange bump in the training loss plot
