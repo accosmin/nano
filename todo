@@ -1,3 +1,5 @@
+- check why the line-search fails for LBFGS
+
 - other stochastic methods to implement:
 	- http://arxiv.org/pdf/1206.1106v2.pdf
 	- http://www.matthewzeiler.com/pubs/googleTR2012/googleTR2012.pdf
