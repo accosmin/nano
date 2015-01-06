@@ -31,13 +31,13 @@ mlp3=${mlp2}"linear:dims=32;act-snorm;"
 outlayer="linear:dims=10;"
 
 # trainers
-stoch_sg="--trainer stochastic --trainer-params opt=sg,epoch=16"
-stoch_sga="--trainer stochastic --trainer-params opt=sga,epoch=16"
-stoch_sia="--trainer stochastic --trainer-params opt=sia,epoch=16"
-stoch_nag="--trainer stochastic --trainer-params opt=nag,epoch=16"
-stoch_ada="--trainer stochastic --trainer-params opt=ada,epoch=16"
+stoch_sg="--trainer stochastic --trainer-params opt=sg,epoch=64"
+stoch_sga="--trainer stochastic --trainer-params opt=sga,epoch=64"
+stoch_sia="--trainer stochastic --trainer-params opt=sia,epoch=64"
+stoch_nag="--trainer stochastic --trainer-params opt=nag,epoch=64"
+stoch_ada="--trainer stochastic --trainer-params opt=ada,epoch=64"
 
-mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=128,eps=1e-4"
+mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=1024,eps=1e-4"
 
 batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,iters=128,eps=1e-4"
 

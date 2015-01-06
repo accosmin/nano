@@ -30,6 +30,7 @@ namespace ncv
                                 {
                                         data.m_tsampler.setup(sampler_t::stype::batch);
                                 }
+                                data.m_tsampler = sampler_t(data.m_tsampler.get());
 
                                 // all validation samples
                                 data.m_vsampler.setup(sampler_t::stype::batch);
