@@ -181,7 +181,7 @@ namespace ncv
                                 log10_min_search_mt(op_lrate, wpool, -4.0, +2.0, 0.2, wpool.n_workers());
                         }
 
-                        // train the model using the tuned learning rate & decay rate
+                        // train the model using the tuned parameters
                         {
                                 accumulator_t lacc(model, 1, criterion, criterion_t::type::value, lambda);
                                 accumulator_t gacc(model, 1, criterion, criterion_t::type::vgrad, lambda);

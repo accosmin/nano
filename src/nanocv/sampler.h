@@ -80,17 +80,17 @@ namespace ncv
                 ///
                 /// \brief return the pool of samples
                 ///
-                const samples_t& all() const;
+                const samples_t& all() const { return m_samples; }
 
                 ///
                 /// \brief check if any samples available
                 ///
-                bool empty() const { return m_samples.empty(); }
+                bool empty() const { return all().empty(); }
 
                 ///
                 /// \brief return the number of available samples
                 ///
-                size_t size() const { return m_samples.size(); }
+                size_t size() const { return all().size(); }
 
                 ///
                 /// \brief return if the samples are selected randomly

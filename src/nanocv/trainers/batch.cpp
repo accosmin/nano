@@ -42,14 +42,14 @@ namespace ncv
                                               ++ iteration, scalars_t({ data.m_lacc.lambda() }));
 
                                 log_info()
-                                << "[train = " << tvalue << "/" << terror_avg << "/=" << data.m_tsampler.size()
-                                << ", valid = " << vvalue << "/" << verror_avg << "/=" << data.m_vsampler.size()
-                                << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
-                                << ", gnorm = " << state.g.lpNorm<Eigen::Infinity>()
-                                << ", epoch = " << iteration
-                                << ", lambda = " << data.m_lacc.lambda()
-                                << ", calls = " << state.n_fval_calls() << "/" << state.n_grad_calls()
-                                << "] done in " << timer.elapsed() << ".";
+                                        << "[train = " << tvalue << "/" << terror_avg
+                                        << ", valid = " << vvalue << "/" << verror_avg
+                                        << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
+                                        << ", gnorm = " << state.g.lpNorm<Eigen::Infinity>()
+                                        << ", epoch = " << iteration
+                                        << ", lambda = " << data.m_lacc.lambda()
+                                        << ", calls = " << state.n_fval_calls() << "/" << state.n_grad_calls()
+                                        << "] done in " << timer.elapsed() << ".";
                         };
 
                         // assembly optimization problem & optimize the model

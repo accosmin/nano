@@ -82,11 +82,6 @@ namespace ncv
                 return order();
         }
 
-        const samples_t& sampler_t::all() const
-        {
-                return m_samples;
-        }
-
         samples_t sampler_t::get() const
         {
                 samples_t samples;
