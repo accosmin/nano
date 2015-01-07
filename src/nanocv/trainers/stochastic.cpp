@@ -130,7 +130,7 @@ namespace ncv
                                 switch (optimizer)
                                 {
                                 case stochastic_optimizer::NAG:
-                                case stochastic_optimizer::ADA:
+                                case stochastic_optimizer::ADAGRAD:
                                         decays = { 1.00 };
                                         break;
 

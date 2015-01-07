@@ -13,7 +13,7 @@
 #include "optimize/stoch_sga.hpp"
 #include "optimize/stoch_sia.hpp"
 #include "optimize/stoch_nag.hpp"
-#include "optimize/stoch_ada.hpp"
+#include "optimize/stoch_adagrad.hpp"
 #include "util/measure.hpp"
 #include "util/math.hpp"
 #include "util/stats.hpp"
