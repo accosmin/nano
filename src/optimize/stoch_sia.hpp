@@ -54,7 +54,7 @@ namespace ncv
                                 // current state
                                 tstate cstate(problem, x0);
 
-                                // running-averaged parameters
+                                // running-weighted-averaged parameters
                                 average_vector<tscalar, tvector> xavg(x0.size());
 
                                 for (tsize e = 0, k = 0; e < base_t::m_epochs; e ++)

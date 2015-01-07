@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stoch_params.hpp"
+#include "average.hpp"
 #include <cassert>
 #include <limits>
 
@@ -52,23 +53,25 @@ namespace ncv
                         {
                                 assert(problem.size() == static_cast<tsize>(x0.size()));
 
-                                tstate cstate(problem, x0);             // current state
+                                // current state
+                                tstate cstate(problem, x0);
 
-                                tvector gsum = x0;                      // summed squared gradient (per dimension)
-                                gsum.setZero();
+                                // running-weighted-averaged-per-dimension-squared gradient
+                                average_vector<tscalar, tvector> gavg(x0.size());
 
+                                //
                                 const tscalar epsilon = std::sqrt(std::numeric_limits<tscalar>::epsilon());
 
-                                for (tsize e = 0; e < base_t::m_epochs; e ++)
+                                for (tsize e = 0, k = 1; e < base_t::m_epochs; e ++)
                                 {
-                                        for (tsize i = 0; i < base_t::m_epoch_size; i ++)
+                                        for (tsize i = 0; i < base_t::m_epoch_size; i ++, k ++)
                                         {
                                                 // learning rate
                                                 const tscalar alpha = base_t::m_alpha0;
 
                                                 // descent direction                                                
-                                                gsum.array() += cstate.g.array().square();
-                                                cstate.d = -cstate.g.array() / (epsilon + gsum.array()).sqrt();
+                                                gavg.update(cstate.g.array().square(), tscalar(k));
+                                                cstate.d = -cstate.g.array() / (epsilon + gavg.value().array()).sqrt();
 
                                                 // update solution
                                                 cstate.update(problem, alpha);
