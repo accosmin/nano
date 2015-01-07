@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stoch_params.hpp"
+#include "average.hpp"
 #include <cassert>
 
 namespace ncv
@@ -50,12 +51,11 @@ namespace ncv
                         {
                                 assert(problem.size() == static_cast<tsize>(x0.size()));
 
-                                tstate cstate(problem, x0);             // current state
+                                // current state
+                                tstate cstate(problem, x0);
 
-                                tvector xavg = x0;                      // running-averaged parameters
-                                xavg.setZero();
-
-                                tscalar sumb = 0;
+                                // running-averaged parameters
+                                average_vector<tscalar, tvector> xavg(x0.size());
 
                                 for (tsize e = 0, k = 0; e < base_t::m_epochs; e ++)
                                 {
@@ -70,18 +70,17 @@ namespace ncv
                                                 // update solution
                                                 cstate.update(problem, alpha);
 
-                                                const tscalar b = tscalar(1) / alpha;
-                                                xavg = (xavg * sumb + cstate.x * b) / (sumb + b);
-                                                sumb = sumb + b;
+                                                xavg.update(cstate.x, tscalar(1) / alpha);
                                         }
 
-                                        std::swap(cstate.x, xavg);      // NB: to log correctly the current parameter update!
+                                        const tvector cx = cstate.x;
+                                        cstate.x = xavg.value();        // NB: to correctly log the current parameters!
                                         base_t::ulog(cstate);
-                                        std::swap(cstate.x, xavg);      // revert it
+                                        cstate.x = cx;                  // revert it
                                 }
 
                                 // OK, setup the average parameter as the final result
-                                cstate.x = xavg;
+                                cstate.x = xavg.value();
                                 return cstate;
                         }
                 };

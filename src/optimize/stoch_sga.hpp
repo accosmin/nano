@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stoch_params.hpp"
+#include "average.hpp"
 #include <cassert>
 
 namespace ncv
@@ -50,12 +51,11 @@ namespace ncv
                         {
                                 assert(problem.size() == static_cast<tsize>(x0.size()));
 
-                                tstate cstate(problem, x0);             // current state
+                                // current state
+                                tstate cstate(problem, x0);
 
-                                tvector gavg = x0;                      // running-averaged gradient
-                                gavg.setZero();
-
-                                tscalar sumb = 0;
+                                // running-averaged gradient
+                                average_vector<tscalar, tvector> gavg(x0.size());
 
                                 for (tsize e = 0, k = 0; e < base_t::m_epochs; e ++)
                                 {
@@ -65,11 +65,8 @@ namespace ncv
                                                 const tscalar alpha = base_t::alpha(k ++);
 
                                                 // descent direction
-                                                const tscalar b = tscalar(1) / alpha;
-                                                gavg = (gavg * sumb + cstate.g * b) / (sumb + b);
-                                                sumb = sumb + b;
-
-                                                cstate.d = -gavg;
+                                                gavg.update(cstate.g, tscalar(1) / alpha);
+                                                cstate.d = -gavg.value();
 
                                                 // update solution
                                                 cstate.update(problem, alpha);

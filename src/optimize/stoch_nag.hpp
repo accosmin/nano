@@ -51,27 +51,28 @@ namespace ncv
                         {
                                 assert(problem.size() == static_cast<tsize>(x0.size()));
 
-                                tstate cstate;                  // current state
+                                // current state
+                                tstate cstate(problem, x0);
 
-                                tvector y = x0;                 //
+                                // previous & current iteration
+                                tvector y = x0;
 
-                                tvector px = x0;                // previous iteration
-                                tvector cx = x0;                // current iteration
+                                // previous / current iteration
+                                tvector px = x0;
+                                tvector cx = x0;
 
-                                tvector g = x0;                 // gradient
-
-                                for (tsize e = 0, k = 0; e < base_t::m_epochs; e ++)
+                                for (tsize e = 0, k = 1; e < base_t::m_epochs; e ++)
                                 {
                                         for (tsize i = 0; i < base_t::m_epoch_size; i ++)
                                         {
                                                 // learning rate
-                                                const tscalar alpha = base_t::m_alpha0; //base_t::alpha(k ++);
+                                                const tscalar alpha = base_t::m_alpha0;
 
                                                 // descent direction
-                                                problem(y, g);
-                                                const tscalar m = tscalar(k) / tscalar(k + 3);
+                                                problem(y, cstate.g);
+                                                const tscalar m = tscalar(k - 1) / tscalar(k + 2);
 
-                                                cx = y - alpha * g;
+                                                cx = y - alpha * cstate.g;
                                                 y = px + m * (cx - px);
 
                                                 // update solution

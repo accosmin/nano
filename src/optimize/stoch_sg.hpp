@@ -50,7 +50,8 @@ namespace ncv
                         {
                                 assert(problem.size() == static_cast<tsize>(x0.size()));
 
-                                tstate cstate(problem, x0);             // current state
+                                // current state
+                                tstate cstate(problem, x0);
 
                                 for (tsize e = 0, k = 0; e < base_t::m_epochs; e ++)
                                 {
