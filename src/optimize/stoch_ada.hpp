@@ -2,6 +2,7 @@
 
 #include "stoch_params.hpp"
 #include <cassert>
+#include <limits>
 
 namespace ncv
 {
@@ -54,6 +55,7 @@ namespace ncv
                                 tstate cstate(problem, x0);             // current state
 
                                 tscalar gsum = tscalar(0);              // running-summed squared gradient
+                                const tscalar epsilon = std::sqrt(std::numeric_limits<tscalar>::epsilon());
 
                                 for (tsize e = 0, k = 0; e < base_t::m_epochs; e ++)
                                 {
@@ -68,7 +70,7 @@ namespace ncv
                                                 // update solution
                                                 gsum += cstate.g.squaredNorm();
 
-                                                cstate.update(problem, alpha / std::sqrt(gsum));
+                                                cstate.update(problem, alpha / std::sqrt(epsilon + gsum));
                                         }
 
                                         base_t::ulog(cstate);
