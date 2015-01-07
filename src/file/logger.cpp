@@ -9,7 +9,7 @@ namespace ncv
                 :       m_stream(stream), m_flush(flush)
         {
                 log_time();
-                m_stream << "[" << header << "] ";
+                m_stream << "[" << header << "]";
         }
 
         logger_t::~logger_t()
@@ -67,7 +67,7 @@ namespace ncv
                 {
                         char buffer[128];
                         strftime(buffer, 128, "%Y:%m:%d %H:%M:%S", localtime(&t));
-                        m_stream << "[" << buffer << "] ";
+                        m_stream << "[" << buffer << "]";
                 }
         }
 }
