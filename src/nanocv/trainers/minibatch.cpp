@@ -147,7 +147,7 @@ namespace ncv
                                         << "[train = " << tvalue << "/" << terror_avg
                                         << ", valid = " << vvalue << "/" << verror_avg
                                         << ", xnorm = " << x.lpNorm<Eigen::Infinity>()
-                                        << ", epoch = " << epoch
+                                        << ", epoch = " << epoch << "/" << epochs
                                         << ", batch = " << batch
                                         << ", iters = " << iterations
                                         << ", lambda = " << data.m_lacc.lambda()
