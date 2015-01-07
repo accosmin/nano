@@ -1,4 +1,4 @@
-- check why the line-search fails for LBFGS
+- BUG: fix AdaGrad -> the previous gradients should be cumulated independently per-dimension!
 
 - other stochastic methods to implement:
 	- http://arxiv.org/pdf/1206.1106v2.pdf
