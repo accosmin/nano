@@ -54,23 +54,24 @@ namespace ncv
 
                                 tstate cstate(problem, x0);             // current state
 
-                                tscalar gsum = tscalar(0);              // running-summed squared gradient
+                                tvector gsum = x0;                      // summed squared gradient (per dimension)
+                                gsum.setZero();
+
                                 const tscalar epsilon = std::sqrt(std::numeric_limits<tscalar>::epsilon());
 
-                                for (tsize e = 0, k = 0; e < base_t::m_epochs; e ++)
+                                for (tsize e = 0; e < base_t::m_epochs; e ++)
                                 {
                                         for (tsize i = 0; i < base_t::m_epoch_size; i ++)
                                         {
                                                 // learning rate
-                                                const tscalar alpha = base_t::m_alpha0; //base_t::alpha(k ++);
+                                                const tscalar alpha = base_t::m_alpha0;
 
-                                                // descent direction
-                                                cstate.d = -cstate.g;
+                                                // descent direction                                                
+                                                gsum.array() += cstate.g.array().square();
+                                                cstate.d = -cstate.g.array() / (epsilon + gsum.array()).sqrt();
 
                                                 // update solution
-                                                gsum += cstate.g.squaredNorm();
-
-                                                cstate.update(problem, alpha / std::sqrt(epsilon + gsum));
+                                                cstate.update(problem, alpha);
                                         }
 
                                         base_t::ulog(cstate);
