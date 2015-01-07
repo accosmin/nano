@@ -1,11 +1,3 @@
-- BUG: fix AdaGrad -> the previous gradients should be cumulated independently per-dimension!
-
-- generic running weighted-average for scalars and vectors:
-	- refactor SGA & SIA implementations
-
-- weighted-ada-grad:
-	- running weighted-average for each dimension (e.g. 1/k)
-
 - test & benchmark all stochastic methods (make sure they all work OK - especially NAG & AdaGrad)
 
 - other stochastic methods to implement:

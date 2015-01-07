@@ -12,7 +12,7 @@ namespace ncv
                 ///
                 /// \brief stochastic AdaGrad
                 ///
-                /// NB: " Adaptive subgradient methods for online learning and stochastic optimization"
+                /// NB: "Adaptive subgradient methods for online learning and stochastic optimization"
                 ///     -  J. C. Duchi, E. Hazan, and Y. Singer
                 /// NB: http://xcorr.net/2014/01/23/adagrad-eliminating-learning-rates-in-stochastic-gradient-descent/
                 ///
