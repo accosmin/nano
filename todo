@@ -1,5 +1,10 @@
 - test & benchmark all stochastic methods (make sure they all work OK - especially NAG & AdaGrad)
 
+- implement AdaDelta
+
+- may modify the running-weighted-average to use the exponential scheme from AdaDelta:
+	- e.g. ro = 0.95 by default
+
 - other stochastic methods to implement:
 	- http://arxiv.org/pdf/1206.1106v2.pdf
 	- http://www.matthewzeiler.com/pubs/googleTR2012/googleTR2012.pdf
