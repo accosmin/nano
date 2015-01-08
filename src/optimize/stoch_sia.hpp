@@ -70,7 +70,7 @@ namespace ncv
                                                 // update solution
                                                 cstate.update(problem, alpha);
 
-                                                xavg.update(cstate.x, tscalar(1) / alpha);
+                                                xavg.update(cstate.x, tscalar(k));
                                         }
 
                                         const tvector cx = cstate.x;

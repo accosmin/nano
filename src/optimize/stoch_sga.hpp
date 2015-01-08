@@ -65,7 +65,7 @@ namespace ncv
                                                 const tscalar alpha = base_t::alpha(k ++);
 
                                                 // descent direction
-                                                gavg.update(cstate.g, tscalar(1) / alpha);
+                                                gavg.update(cstate.g, tscalar(k));
                                                 cstate.d = -gavg.value();
 
                                                 // update solution
