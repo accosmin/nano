@@ -35,15 +35,16 @@ mkdir -p ${dir_exp_cbclfaces}
 max_threads=`less /proc/cpuinfo | grep -i processor | wc -l`
 
 # trainers 
-stoch_sg="--trainer stochastic --trainer-params opt=sg,epoch=16"
-stoch_sga="--trainer stochastic --trainer-params opt=sga,epoch=16"
-stoch_sia="--trainer stochastic --trainer-params opt=sia,epoch=16"
-stoch_nag="--trainer stochastic --trainer-params opt=nag,epoch=16"
-stoch_adagrad="--trainer stochastic --trainer-params opt=adagrad,epoch=16"
+stoch_sg="--trainer stochastic --trainer-params opt=sg,epoch=32"
+stoch_sga="--trainer stochastic --trainer-params opt=sga,epoch=32"
+stoch_sia="--trainer stochastic --trainer-params opt=sia,epoch=32"
+stoch_nag="--trainer stochastic --trainer-params opt=nag,epoch=32"
+stoch_adagrad="--trainer stochastic --trainer-params opt=adagrad,epoch=32"
+stoch_adadelta="--trainer stochastic --trainer-params opt=adadelta,epoch=32"
 
-mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=1024,eps=1e-4"
-mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=1024,eps=1e-4"
-mbatch_gd="--trainer minibatch --trainer-params opt=gd,epoch=1024,eps=1e-4"
+mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=32,eps=1e-4"
+mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=32,eps=1e-4"
+mbatch_gd="--trainer minibatch --trainer-params opt=gd,epoch=32,eps=1e-4"
 
 batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,iters=1024,eps=1e-4"
 batch_cgd="--trainer batch --trainer-params opt=cgd,iters=1024,eps=1e-4"

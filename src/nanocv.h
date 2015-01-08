@@ -14,6 +14,7 @@
 #include "optimize/stoch_sia.hpp"
 #include "optimize/stoch_nag.hpp"
 #include "optimize/stoch_adagrad.hpp"
+#include "optimize/stoch_adadelta.hpp"
 #include "util/measure.hpp"
 #include "util/math.hpp"
 #include "util/stats.hpp"

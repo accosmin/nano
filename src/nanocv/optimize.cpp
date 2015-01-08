@@ -7,6 +7,7 @@
 #include "optimize/stoch_sia.hpp"
 #include "optimize/stoch_nag.hpp"
 #include "optimize/stoch_adagrad.hpp"
+#include "optimize/stoch_adadelta.hpp"
 #include "file/logger.h"
 
 namespace ncv
@@ -74,6 +75,11 @@ namespace ncv
 
                 case stochastic_optimizer::ADAGRAD:
                         return  optimize::stoch_adagrad<opt_problem_t>
+                                (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
+                                (problem, x0);
+
+                case stochastic_optimizer::ADADELTA:
+                        return  optimize::stoch_adadelta<opt_problem_t>
                                 (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 

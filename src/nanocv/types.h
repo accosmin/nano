@@ -74,7 +74,8 @@ namespace ncv
                 SGA,                    ///< stochastic gradient averaging
                 SIA,                    ///< stochastic iterate averaging
                 NAG,                    ///< Nesterov's accelerated gradient descent
-                ADAGRAD                 ///< AdaGrad
+                ADAGRAD,                ///< AdaGrad
+                ADADELTA                ///< AdaDelta
         };
 
         ///
@@ -180,6 +181,7 @@ namespace ncv
                         case stochastic_optimizer::SIA: return "sia";
                         case stochastic_optimizer::NAG: return "nag";
                         case stochastic_optimizer::ADAGRAD: return "adagrad";
+                        case stochastic_optimizer::ADADELTA: return "adadelta";
                         default:                        return "sg";
                         }
                 }
@@ -192,6 +194,7 @@ namespace ncv
                         if (string == "sia")            return stochastic_optimizer::SIA;
                         if (string == "nag")            return stochastic_optimizer::NAG;
                         if (string == "adagrad")        return stochastic_optimizer::ADAGRAD;
+                        if (string == "adadelta")       return stochastic_optimizer::ADADELTA;
                         throw std::invalid_argument("invalid stochastic optimizer <" + string + ">!");
                         return stochastic_optimizer::SG;
                 }

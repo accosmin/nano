@@ -124,13 +124,14 @@ namespace ncv
 
                                 trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
 
-                                // also tune the decay rate (if possible)
+                                // tune the decay rate (if possible)
                                 scalars_t decays;
 
                                 switch (optimizer)
                                 {
                                 case stochastic_optimizer::NAG:
                                 case stochastic_optimizer::ADAGRAD:
+                                case stochastic_optimizer::ADADELTA:
                                         decays = { 1.00 };
                                         break;
 
@@ -168,17 +169,24 @@ namespace ncv
                                 return states.begin()->first;
                         };
 
-                        if (accumulator_t::can_regularize(criterion))
+                        // tune the learning rate (if possible)
+                        switch (optimizer)
                         {
-                                // single-thread tuning
-                                log10_min_search(op_lrate, -4.0, +2.0, 0.2, 4);
-                        }
+                        case stochastic_optimizer::ADADELTA:
+                                break;
 
-                        else
-                        {
-                                // multi-thread tuning
-                                thread_pool_t wpool(nthreads);
-                                log10_min_search_mt(op_lrate, wpool, -4.0, +2.0, 0.2, wpool.n_workers());
+                        default:
+                                if (accumulator_t::can_regularize(criterion))
+                                {
+                                        log10_min_search(op_lrate, -4.0, +2.0, 0.2, 4);
+                                }
+
+                                else
+                                {
+                                        thread_pool_t wpool(nthreads);
+                                        log10_min_search_mt(op_lrate, wpool, -4.0, +2.0, 0.2, wpool.n_workers());
+                                }
+                                break;
                         }
 
                         // train the model using the tuned parameters

@@ -57,15 +57,15 @@ namespace ncv
                                 // running-weighted-averaged gradient
                                 average_vector<tscalar, tvector> gavg(x0.size());
 
-                                for (tsize e = 0, k = 0; e < base_t::m_epochs; e ++)
+                                for (tsize e = 0, k = 1; e < base_t::m_epochs; e ++)
                                 {
-                                        for (tsize i = 0; i < base_t::m_epoch_size; i ++)
+                                        for (tsize i = 0; i < base_t::m_epoch_size; i ++, k ++)
                                         {
                                                 // learning rate
-                                                const tscalar alpha = base_t::alpha(k ++);
+                                                const tscalar alpha = base_t::alpha(k);
 
                                                 // descent direction
-                                                gavg.update(cstate.g, tscalar(k));
+                                                gavg.update(cstate.g, base_t::weight(k));
                                                 cstate.d = -gavg.value();
 
                                                 // update solution

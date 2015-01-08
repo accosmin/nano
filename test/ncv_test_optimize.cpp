@@ -243,6 +243,7 @@ void test_optimize(
         auto stoch_nag = optimize::stoch_nag<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 1.00);
 
         auto stoch_adagrad = optimize::stoch_adagrad<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 1.00);
+        auto stoch_adadelta = optimize::stoch_adadelta<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 1.00);
 
         auto stoch_sg050 = optimize::stoch_sg<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.50);
         auto stoch_sg075 = optimize::stoch_sg<opt_problem_t>(cmd_epochs, cmd_epoch_size, 0.1, 0.75);
@@ -291,9 +292,10 @@ void test_optimize(
                 results.push_back(batch(task, model, loss, criterion, batch_lbfgs20, header, "batch-LBFGS-20"));
 
                 // stochastic optimizers
-                results.push_back(stoch(task, model, loss, criterion, stoch_adagrad, header, "stoch-ADAGRAD"));
-
                 results.push_back(stoch(task, model, loss, criterion, stoch_nag, header, "stoch-NAG"));
+
+                results.push_back(stoch(task, model, loss, criterion, stoch_adagrad, header, "stoch-ADAGRAD"));
+                results.push_back(stoch(task, model, loss, criterion, stoch_adadelta, header, "stoch-ADADELTA"));
 
                 results.push_back(stoch(task, model, loss, criterion, stoch_sg050, header, "stoch-SG-0.50"));
                 results.push_back(stoch(task, model, loss, criterion, stoch_sg075, header, "stoch-SG-0.75"));

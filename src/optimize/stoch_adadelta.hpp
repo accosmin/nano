@@ -9,17 +9,16 @@ namespace ncv
         namespace optimize
         {
                 ///
-                /// \brief stochastic AdaGrad
+                /// \brief stochastic AdaDelta
                 ///
-                /// NB: "Adaptive subgradient methods for online learning and stochastic optimization"
-                ///     -  J. C. Duchi, E. Hazan, and Y. Singer
-                /// NB: http://xcorr.net/2014/01/23/adagrad-eliminating-learning-rates-in-stochastic-gradient-descent/
+                /// NB: "ADADELTA: An Adaptive Learning Rate Method"
+                ///     - Matthew D. Zeiler
                 ///
                 template
                 <
                         typename tproblem               ///< optimization problem
                 >
-                struct stoch_adagrad : public stoch_params_t<tproblem>
+                struct stoch_adadelta : public stoch_params_t<tproblem>
                 {
                         typedef stoch_params_t<tproblem>        base_t;
 
@@ -34,7 +33,7 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        stoch_adagrad(  tsize epochs,
+                        stoch_adadelta( tsize epochs,
                                         tsize epoch_size,
                                         tscalar alpha0,
                                         tscalar decay,
@@ -58,21 +57,24 @@ namespace ncv
                                 // running-weighted-averaged-per-dimension-squared gradient
                                 average_vector<tscalar, tvector> gavg(x0.size());
 
+                                // running-weighted-averaged-per-dimension-squared step updates
+                                average_vector<tscalar, tvector> davg(x0.size());
+
                                 for (tsize e = 0, k = 1; e < base_t::m_epochs; e ++)
                                 {
                                         for (tsize i = 0; i < base_t::m_epoch_size; i ++, k ++)
                                         {
-                                                // learning rate
-                                                const tscalar alpha = base_t::m_alpha0;
-
-                                                // descent direction                                                
+                                                // descent direction
                                                 gavg.update(cstate.g.array().square(), base_t::weight(k));
 
-                                                cstate.d = -cstate.g.array() /
+                                                cstate.d = -cstate.g.array() *
+                                                           (base_t::m_epsilon + davg.value().array()).sqrt() /
                                                            (base_t::m_epsilon + gavg.value().array()).sqrt();
 
+                                                davg.update(cstate.d.array().square(), base_t::weight(k));
+
                                                 // update solution
-                                                cstate.update(problem, alpha);
+                                                cstate.update(problem, tscalar(1));
                                         }
 
                                         base_t::ulog(cstate);
