@@ -29,7 +29,7 @@ A loss function assigns a scalar score to the prediction of a model by comparing
 
 A trainer optimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as 
 a numerical optimization criteria. Implemented instances: **batch** (using **L-BFGS**, conjugate gradient descent - **CGD** or gradient descent - **GD**), **minibatch** 
-and **stochastic** (using Nesterov's accelerated gradient - **AG**, adaptive gradient AdaGrad - **ADAGRAD**, adaptive delta gradient AdaDelta - **ADADELTA**, stochastic gradient - **SG**, stochastic iterative averaging - **SIA** or stochastic 
+and **stochastic** (using Nesterov's accelerated gradient - **AG**, adaptive gradient - **ADAGRAD**, adaptive delta gradient - **ADADELTA**, stochastic gradient - **SG**, stochastic iterative averaging - **SIA** or stochastic 
 gradient averaging - **SGA**).
 
 ## Usage
