@@ -1,6 +1,8 @@
 - rename NAG to AG (accelerated gradient):
 	- NAG is used in the "Normalized online learning" paper
 
+- update readme (adagrad, adadelta, nag became ag)
+
 - modify the train_mnist.sh script to compare:
 	- various optimization methods for each model
 	=> can analyze how fast the training loss is decreased using various optimizers
@@ -19,6 +21,9 @@
 - other stochastic methods to implement:
 	- http://arxiv.org/pdf/1206.1106v2.pdf
 	- http://www.matthewzeiler.com/pubs/googleTR2012/googleTR2012.pdf
+
+- improve the dummy task to generate meaningful input images:
+	- this way the optimization test program will actually work on meaninful data
 
 - check the speed improvement if using floats instead of doubles for training MLP0
 
