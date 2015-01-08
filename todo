@@ -1,3 +1,6 @@
+- rename NAG to AG (accelerated gradient):
+	- NAG is used in the "Normalized online learning" paper
+
 - test & benchmark all stochastic methods (make sure they all work OK - especially NAG & AdaGrad)
 
 - implement AdaDelta:
