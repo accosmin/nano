@@ -1,6 +1,11 @@
 - rename NAG to AG (accelerated gradient):
 	- NAG is used in the "Normalized online learning" paper
 
+- modify the train_mnist.sh script to compare:
+	- various optimization methods for each model
+	=> can analyze how fast the training loss is decreased using various optimizers
+	=> can figure out if using fewer epochs (e.g. 8-16) is enough, if tuning the regularizer
+
 - test & benchmark all stochastic methods (make sure they all work OK - especially NAG & AdaGrad)
 
 - implement AdaDelta:
