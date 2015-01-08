@@ -8,8 +8,7 @@ Platform: (Arch)Linux x64. The code is written to be cross-platform, so it may w
 
 ## Concepts
 
-The library is built around several key concepts mapped to C++ object interfaces. Each object instantation is registered with an **ID** and thus it can be selected 
-from command line arguments.
+The library is built around several key concepts mapped to C++ object interfaces. Each object instantation is registered with an **ID** and thus it can be selected from command line arguments.
 
 #### Task
 
@@ -30,7 +29,7 @@ A loss function assigns a scalar score to the prediction of a model by comparing
 
 A trainer optimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as 
 a numerical optimization criteria. Implemented instances: **batch** (using **L-BFGS**, conjugate gradient descent - **CGD** or gradient descent - **GD**), **minibatch** 
-and **stochastic** (using Nesterov's accelerated gradient - **NAG**, adaptive gradient AdaGrad - **ADA**, stochastic gradient - **SG**, stochastic iterative averaging - **SIA** or stochastic 
+and **stochastic** (using Nesterov's accelerated gradient - **AG**, adaptive gradient AdaGrad - **ADAGRAD**, adaptive delta gradient AdaDelta - **ADADELTA**, stochastic gradient - **SG**, stochastic iterative averaging - **SIA** or stochastic 
 gradient averaging - **SGA**).
 
 ## Usage
