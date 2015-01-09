@@ -31,10 +31,10 @@ mlp3=${mlp2}"linear:dims=32;act-snorm;"
 outlayer="linear:dims=10;"
 
 # trainers
+stoch_ag="--trainer stochastic --trainer-params opt=ag,epoch=32"
 stoch_sg="--trainer stochastic --trainer-params opt=sg,epoch=32"
 stoch_sga="--trainer stochastic --trainer-params opt=sga,epoch=32"
 stoch_sia="--trainer stochastic --trainer-params opt=sia,epoch=32"
-stoch_nag="--trainer stochastic --trainer-params opt=nag,epoch=32"
 stoch_adagrad="--trainer stochastic --trainer-params opt=adagrad,epoch=32"
 stoch_adadelta="--trainer stochastic --trainer-params opt=adadelta,epoch=32"
 
@@ -46,7 +46,7 @@ batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,iters=128,eps=1e-4"
 
 # train models
 #for model in `echo "mlp0 mlp1 mlp2 mlp3 conv100_max conv50_max conv25_max"`
-for model in `echo "mlp0 mlp1 mlp2 mlp3 conv100_max conv50_max conv25_max"`
+for model in `echo "mlp0 mlp1"`
 do
         #for trainer in `echo "mbatch_lbfgs batch_lbfgs"`
         #for trainer in `echo "mbatch_gd mbatch_cgd mbatch_lbfgs"`
@@ -56,7 +56,7 @@ do
 	        #fn_train ${dir_exp_mnist} ${trainer}_${model}_var ${params} ${!trainer} ${var_crit} ${!model}${outlayer}
         #done
 
-        for trainer in `echo "stoch_nag stoch_adagrad stoch_adadelta stoch_sg stoch_sga stoch_sia"`
+        for trainer in `echo "stoch_ag stoch_adagrad stoch_adadelta stoch_sg stoch_sga stoch_sia"`
         do
                 fn_train ${dir_exp_mnist} ${trainer}_${model} ${params} ${!trainer} ${avg_crit} ${!model}${outlayer}
         	#fn_train ${dir_exp_mnist} ${trainer}_${model}_l2n ${params} ${!trainer} ${l2n_crit} ${!model}${outlayer}

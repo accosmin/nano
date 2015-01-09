@@ -2,10 +2,10 @@
 #include "optimize/batch_gd.hpp"
 #include "optimize/batch_cgd.hpp"
 #include "optimize/batch_lbfgs.hpp"
+#include "optimize/stoch_ag.hpp"
 #include "optimize/stoch_sg.hpp"
 #include "optimize/stoch_sga.hpp"
 #include "optimize/stoch_sia.hpp"
-#include "optimize/stoch_nag.hpp"
 #include "optimize/stoch_adagrad.hpp"
 #include "optimize/stoch_adadelta.hpp"
 #include "file/logger.h"
@@ -68,8 +68,8 @@ namespace ncv
                                 (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
-                case stochastic_optimizer::NAG:
-                        return  optimize::stoch_nag<opt_problem_t>
+                case stochastic_optimizer::AG:
+                        return  optimize::stoch_ag<opt_problem_t>
                                 (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 

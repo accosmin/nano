@@ -1,8 +1,3 @@
-- rename NAG to AG (accelerated gradient):
-	- NAG is used in the "Normalized online learning" paper
-
-- update readme (adagrad, adadelta, nag became ag)
-
 - modify the train_mnist.sh script to compare:
 	- various optimization methods for each model
 	=> can analyze how fast the training loss is decreased using various optimizers

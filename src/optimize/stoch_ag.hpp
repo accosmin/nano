@@ -18,7 +18,7 @@ namespace ncv
                 <
                         typename tproblem               ///< optimization problem
                 >
-                struct stoch_nag : public stoch_params_t<tproblem>
+                struct stoch_ag : public stoch_params_t<tproblem>
                 {
                         typedef stoch_params_t<tproblem>        base_t;
 
@@ -33,7 +33,7 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        stoch_nag(      tsize epochs,
+                        stoch_ag(       tsize epochs,
                                         tsize epoch_size,
                                         tscalar alpha0,
                                         tscalar decay,
