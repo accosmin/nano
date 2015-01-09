@@ -44,9 +44,11 @@ mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=32,eps=1e-4"
 
 batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,iters=128,eps=1e-4"
 
+models="mlp0 mlp1 mlp2 mlp3 conv100_max conv50_max conv25_max"
+models="mlp0"
+
 # train models
-#for model in `echo "mlp0 mlp1 mlp2 mlp3 conv100_max conv50_max conv25_max"`
-for model in `echo "mlp0 mlp1"`
+for model in ${models}
 do
         #for trainer in `echo "mbatch_lbfgs batch_lbfgs"`
         #for trainer in `echo "mbatch_gd mbatch_cgd mbatch_lbfgs"`
@@ -63,12 +65,13 @@ do
         done
 done
 
-exit
+# compare optimizers
+for model in ${models}
+do
+        bash plot_models.sh ${dir_exp_mnist}/${model}.pdf ${dir_exp_mnist}/*_${model}*.state
+done
 
 # compare models
-bash plot_models.sh ${dir_exp_mnist}/models.pdf ${dir_exp_mnist}/*.state
-bash plot_models.sh ${dir_exp_mnist}/models.svg ${dir_exp_mnist}/*.state
-
 # bash plot_models.sh ${dir_exp_mnist}/conv_max_models.pdf ${dir_exp_mnist}/conv_max_*.state
 # bash plot_models.sh ${dir_exp_mnist}/conv_min_models.pdf ${dir_exp_mnist}/conv_min_*.state
 # bash plot_models.sh ${dir_exp_mnist}/conv_avg_models.pdf ${dir_exp_mnist}/conv_avg_*.state
