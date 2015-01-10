@@ -19,10 +19,6 @@ find_package(BZip2 REQUIRED)
 include_directories(${ZLIB_INCLUDE_DIR})
 include_directories(${BZIP2_INCLUDE_DIR})
 
-# LibArchive
-find_package(LibArchive REQUIRED)
-include_directories(${LibArchive_INCLUDE_DIRS})
-
 # Boost
 include(FindBoost)
 set(Boost_USE_MULTITHREADED ON)
@@ -32,6 +28,10 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 # DevIL
 find_package(DevIL REQUIRED)
 include_directories(${IL_INCLUDE_DIR})
+
+# LibArchive
+find_package(LibArchive REQUIRED)
+include_directories(${LibArchive_INCLUDE_DIRS})
 
 # OpenCL
 if(NANOCV_WITH_OPENCL)
@@ -56,10 +56,18 @@ if(NANOCV_WITH_CUDA)
         endif()
 endif()
 
+# OpenMP
+find_package(OpenMP QUIET)
+if(OPENMP_FOUND)
+	set(NANOCV_OPENMP_FLAG "-fopenmp")
+endif()
+
 # Set the compiler flags
 #set(CMAKE_C_COMPILER                    "/usr/bin/clang")
 #set(CMAKE_CXX_COMPILER                  "/usr/bin/clang++")
-set(CMAKE_CXX_FLAGS                     "-Wall -std=c++11 -march=native -mtune=native -fopenmp")
+#set(CMAKE_CXX_COMPILER                  "g++-4.9")
+
+set(CMAKE_CXX_FLAGS                     "-Wall -std=c++11 -march=native -mtune=native ${NANOCV_OPENMP_FLAG}")
 set(CMAKE_CXX_FLAGS_DEBUG               "-g -Og -fno-omit-frame-pointer")
 set(CMAKE_CXX_FLAGS_RELEASE             "-O3 -DNDEBUG")         # -DEIGEN_NO_DEBUG")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O2 -g")               # -DEIGEN_NO_DEBUG")
@@ -123,9 +131,23 @@ if(NANOCV_WITH_OPENCL)
         set(nanocv_sources "${nanocv_sources};${nanocv_opencl_sources}")
 endif()
 
+set(libs "${libs};${Boost_SERIALIZATION_LIBRARY}")
+set(libs "${libs};${Boost_PROGRAM_OPTIONS_LIBRARY}")
+set(libs "${libs};${Boost_SYSTEM_LIBRARY}")
+set(libs "${libs};${Boost_FILESYSTEM_LIBRARY}")
+set(libs "${libs};${Boost_IOSTREAMS_LIBRARY}")
+set(libs "${libs};${ZLIB_LIBRARIES}")
+set(libs "${libs};${BZIP2_LIBRARIES}")
+set(libs "${libs};${LibArchive_LIBRARIES}")
+set(libs "${libs};${IL_LIBRARIES}")
+if(NANOCV_WITH_OPENCL)
+        set(libs "${libs};${OpenCL_LIBRARIES}")
+endif()
+
 add_library(nanocv
         SHARED
         ${nanocv_sources})
+target_link_libraries(nanocv ${libs})
 
 if(NANOCV_WITH_CUDA)
         file(GLOB nanocv_cuda_sources
@@ -148,20 +170,6 @@ set(nanocv_includes
 
 include_directories(
         ${nanocv_includes})
-
-set(libs "nanocv;")
-set(libs "${libs};${Boost_SERIALIZATION_LIBRARY}")
-set(libs "${libs};${Boost_PROGRAM_OPTIONS_LIBRARY}")
-set(libs "${libs};${Boost_SYSTEM_LIBRARY}")
-set(libs "${libs};${Boost_FILESYSTEM_LIBRARY}")
-set(libs "${libs};${Boost_IOSTREAMS_LIBRARY}")
-set(libs "${libs};${ZLIB_LIBRARIES}")
-set(libs "${libs};${BZIP2_LIBRARIES}")
-set(libs "${libs};${LibArchive_LIBRARIES}")
-set(libs "${libs};${IL_LIBRARIES}")
-if(NANOCV_WITH_OPENCL)
-        set(libs "${libs};${OpenCL_LIBRARIES}")
-endif()
 
 # Set the executables
 set(nanocv_test_programs
@@ -195,11 +203,11 @@ set(nanocv_programs
 # Build executables
 foreach(proj ${nanocv_test_programs})
         add_executable(${proj} test/${proj}.cpp)
-        target_link_libraries(${proj} ${libs})
+        target_link_libraries(${proj} nanocv ${libs})
 endforeach()
 foreach(proj ${nanocv_programs})
         add_executable(${proj} apps/${proj}.cpp)
-        target_link_libraries(${proj} ${libs})
+        target_link_libraries(${proj} nanocv ${libs})
 endforeach()
 
 ######################################################################
