@@ -4,7 +4,7 @@ namespace ncv
 {
         namespace optimize
         {
-                // these variantions have been implemented following
+                // these variations have been implemented following
                 //      "A survey of nonlinear conjugate gradient methods"
                 //      by William W. Hager and Hongchao Zhang
 
@@ -13,14 +13,14 @@ namespace ncv
                 ///
                 template
                 <
-                        typename tstate,
-                        typename tscalar = typename tstate::tscalar
-                >
+                                typename tstate,
+                                typename tscalar = typename tstate::tscalar
+                                >
                 struct cgd_step_HS
                 {
-			cgd_step_HS()
-			{
-			}
+                        cgd_step_HS()
+                        {
+                        }
 
                         tscalar operator()(const tstate& pstate, const tstate& cstate) const
                         {
@@ -43,14 +43,14 @@ namespace ncv
                 ///
                 template
                 <
-                        typename tstate,
-                        typename tscalar = typename tstate::tscalar
-                >
+                                typename tstate,
+                                typename tscalar = typename tstate::tscalar
+                                >
                 struct cgd_step_FR
                 {
-			cgd_step_FR()
-			{
-			}
+                        cgd_step_FR()
+                        {
+                        }
 
                         tscalar operator()(const tstate& pstate, const tstate& cstate) const
                         {
@@ -71,15 +71,15 @@ namespace ncv
                 ///
                 template
                 <
-                        typename tstate,
-                        typename tscalar = typename tstate::tscalar
-                >
+                                typename tstate,
+                                typename tscalar = typename tstate::tscalar
+                                >
                 struct cgd_step_PR
                 {
-			cgd_step_PR()
-			{
-			}
-			
+                        cgd_step_PR()
+                        {
+                        }
+
                         tscalar operator()(const tstate& pstate, const tstate& cstate) const
                         {
                                 const auto& gk = pstate.g;
@@ -100,14 +100,14 @@ namespace ncv
                 ///
                 template
                 <
-                        typename tstate,
-                        typename tscalar = typename tstate::tscalar
-                >
+                                typename tstate,
+                                typename tscalar = typename tstate::tscalar
+                                >
                 struct cgd_step_CD
                 {
-			cgd_step_CD()
-			{
-			}
+                        cgd_step_CD()
+                        {
+                        }
 
                         tscalar operator()(const tstate& pstate, const tstate& cstate) const
                         {
@@ -129,14 +129,14 @@ namespace ncv
                 ///
                 template
                 <
-                        typename tstate,
-                        typename tscalar = typename tstate::tscalar
-                >
+                                typename tstate,
+                                typename tscalar = typename tstate::tscalar
+                                >
                 struct cgd_step_LS
                 {
-			cgd_step_LS()
-			{
-			}
+                        cgd_step_LS()
+                        {
+                        }
 
                         tscalar operator()(const tstate& pstate, const tstate& cstate) const
                         {
@@ -159,15 +159,15 @@ namespace ncv
                 ///
                 template
                 <
-                        typename tstate,
-                        typename tscalar = typename tstate::tscalar
-                >
+                                typename tstate,
+                                typename tscalar = typename tstate::tscalar
+                                >
                 struct cgd_step_DY
                 {
-			cgd_step_DY()
-			{
-			}
-	
+                        cgd_step_DY()
+                        {
+                        }
+
                         tscalar operator()(const tstate& pstate, const tstate& cstate) const
                         {
                                 const auto& dk = pstate.d;
@@ -189,14 +189,14 @@ namespace ncv
                 ///
                 template
                 <
-                        typename tstate,
-                        typename tscalar = typename tstate::tscalar
-                >
+                                typename tstate,
+                                typename tscalar = typename tstate::tscalar
+                                >
                 struct cgd_step_N
                 {
-			cgd_step_N()
-			{
-			}
+                        cgd_step_N()
+                        {
+                        }
 
                         tscalar operator()(const tstate& pstate, const tstate& cstate) const
                         {
