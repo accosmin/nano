@@ -1,12 +1,13 @@
 #!/bin/bash
 
 # paths
-dir_exp=/home/cosmin/experiments/results
-dir_db=/home/cosmin/experiments/databases
+dir_exp=/Users/cosmin/experiments/results
+dir_db=/Users/cosmin/experiments/databases
 
 exe_trainer=../build-release/ncv_trainer
 exe_tester=../build-release/ncv_tester
 exe_info=../build-release/ncv_info
+exe_max_threads=../build-release/ncv_max_threads
 
 # datasets
 task_svhn="--task svhn --task-dir ${dir_db}/svhn/"
@@ -32,7 +33,8 @@ mkdir -p ${dir_exp_cifar100}
 mkdir -p ${dir_exp_cbclfaces}
 
 # number of available threads
-max_threads=`less /proc/cpuinfo | grep -i processor | wc -l`
+#max_threads=`less /proc/cpuinfo | grep -i processor | wc -l`
+max_threads=`${exe_max_threads}`
 
 # trainers 
 stoch_ag="--trainer stochastic --trainer-params opt=ag,epoch=32"

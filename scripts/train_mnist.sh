@@ -39,7 +39,7 @@ stoch_adagrad="--trainer stochastic --trainer-params opt=adagrad,epoch=32"
 stoch_adadelta="--trainer stochastic --trainer-params opt=adadelta,epoch=32"
 
 mbatch_gd="--trainer minibatch --trainer-params opt=gd,epoch=32,eps=1e-4"
-mbatch_cgd="--trainer minibatch --trainer-params opt=cdg,epoch=32,eps=1e-4"
+mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=32,eps=1e-4"
 mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=32,eps=1e-4"
 
 batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,iters=128,eps=1e-4"
@@ -51,12 +51,12 @@ models="mlp0"
 for model in ${models}
 do
         #for trainer in `echo "mbatch_lbfgs batch_lbfgs"`
-        #for trainer in `echo "mbatch_gd mbatch_cgd mbatch_lbfgs"`
-	#do
-                #fn_train ${dir_exp_mnist} ${trainer}_${model} ${params} ${!trainer} ${avg_crit} ${!model}${outlayer}
+        for trainer in `echo "mbatch_gd mbatch_cgd mbatch_lbfgs"`
+	do
+                fn_train ${dir_exp_mnist} ${trainer}_${model} ${params} ${!trainer} ${avg_crit} ${!model}${outlayer}
 		#fn_train ${dir_exp_mnist} ${trainer}_${model}_l2n ${params} ${!trainer} ${l2n_crit} ${!model}${outlayer}
 	        #fn_train ${dir_exp_mnist} ${trainer}_${model}_var ${params} ${!trainer} ${var_crit} ${!model}${outlayer}
-        #done
+        done
 
         for trainer in `echo "stoch_ag stoch_adagrad stoch_adadelta stoch_sg stoch_sga stoch_sia"`
         do
@@ -69,6 +69,8 @@ done
 for model in ${models}
 do
         bash plot_models.sh ${dir_exp_mnist}/${model}.pdf ${dir_exp_mnist}/*_${model}*.state
+	bash plot_models.sh ${dir_exp_mnist}/${model}_stoch.pdf ${dir_exp_mnist}/stoch_*_${model}*.state
+	bash plot_models.sh ${dir_exp_mnist}/${model}_mbatch.pdf ${dir_exp_mnist}/mbatch_*_${model}*.state
 done
 
 # compare models

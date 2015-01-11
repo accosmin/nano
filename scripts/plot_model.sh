@@ -26,7 +26,7 @@ ofile=${ifile/.state/.pdf}
 
 # set the plotting attributes
 rm -f ${pfile}
-echo "set terminal pdf enhanced font ',7'" >> ${pfile}        
+echo "set terminal pdf enhanced font ',3'" >> ${pfile}        
 echo "set output \"${ofile}\"" >> ${pfile}
 echo "set multiplot" >> ${pfile}
 echo "set size 1.0,1.0" >> ${pfile}

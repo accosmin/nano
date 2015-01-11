@@ -26,7 +26,7 @@ sizes=(`echo "0.33,0.5 0.33,0.5 0.33,0.5 0.33,0.5 0.33,0.5 0.33,0.5"`)
 
 # set the plotting attributes
 rm -f ${pfile}
-echo "set terminal ${format} enhanced font ',7'" >> ${pfile}        
+echo "set terminal ${format} enhanced font ',3'" >> ${pfile}        
 echo "set output \"${ofile}\"" >> ${pfile}
 echo "set multiplot" >> ${pfile}
 echo "set size 1.0,1.0" >> ${pfile}
