@@ -16,7 +16,7 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                avg_l2_criterion_t(const string_t& = string_t());
+                explicit avg_l2_criterion_t(const string_t& = string_t());
                 
                 ///
                 /// \brief reset statistics and settings

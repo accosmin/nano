@@ -19,7 +19,7 @@ namespace ncv
                 NANOCV_MAKE_CLONABLE(pool_layer_t, "pooling layer, parameters: alpha=[-100.0,+100.0]")
 
                 // constructor
-                pool_layer_t(const string_t& parameters = string_t());
+                explicit pool_layer_t(const string_t& parameters = string_t());
 
                 // resize to process new tensors of the given type
                 virtual size_t resize(const tensor_t& tensor) override;

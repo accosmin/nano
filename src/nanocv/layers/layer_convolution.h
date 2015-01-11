@@ -22,7 +22,7 @@ namespace ncv
                                      "parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32],mask=100[1,100]")
 
                 // constructor
-                conv_layer_t(const string_t& parameters = string_t());
+                explicit conv_layer_t(const string_t& parameters = string_t());
 
                 // destructor
                 virtual ~conv_layer_t();

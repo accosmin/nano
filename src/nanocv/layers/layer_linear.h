@@ -17,7 +17,7 @@ namespace ncv
                 NANOCV_MAKE_CLONABLE(linear_layer_t, "fully-connected linear layer, parameters: dims=10[1,4096]")
 
                 // constructor
-                linear_layer_t(const string_t& parameters = string_t());
+                explicit linear_layer_t(const string_t& parameters = string_t());
 
                 // resize to process new tensors of the given type
                 virtual size_t resize(const tensor_t& tensor) override;

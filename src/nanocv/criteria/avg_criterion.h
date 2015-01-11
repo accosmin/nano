@@ -16,7 +16,7 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                avg_criterion_t(const string_t& configuration = string_t());
+                explicit avg_criterion_t(const string_t& configuration = string_t());
                 
                 ///
                 /// \brief destructor
