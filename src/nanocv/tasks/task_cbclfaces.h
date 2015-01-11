@@ -22,13 +22,13 @@ namespace ncv
                 cbclfaces_task_t(const string_t& configuration = string_t());
 
                 // load images from the given directory
-                virtual bool load(const string_t& dir);
+                virtual bool load(const string_t& dir) override;
 
                 // access functions
-                virtual size_t n_rows() const { return 19; }
-                virtual size_t n_cols() const { return 19; }
-                virtual size_t n_outputs() const { return 1; }
-                virtual size_t n_folds() const { return 1; }
-                virtual color_mode color() const { return color_mode::luma; }
+                virtual size_t n_rows() const override { return 19; }
+                virtual size_t n_cols() const override { return 19; }
+                virtual size_t n_outputs() const override { return 1; }
+                virtual size_t n_folds() const override { return 1; }
+                virtual color_mode color() const override { return color_mode::luma; }
         };
 }

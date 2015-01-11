@@ -28,7 +28,7 @@ namespace ncv
                 // train the model
                 virtual trainer_result_t train(
                         const task_t&, const fold_t&, const loss_t&, size_t nthreads, const string_t& criterion, 
-                        model_t&) const;
+                        model_t&) const override;
         };
 }
 

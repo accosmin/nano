@@ -22,14 +22,14 @@ namespace ncv
                 cifar10_task_t(const string_t& configuration = string_t());
 
                 // load images from the given directory
-                virtual bool load(const string_t& dir);
+                virtual bool load(const string_t& dir) override;
 
                 // access functions
-                virtual size_t n_rows() const { return 32; }
-                virtual size_t n_cols() const { return 32; }
-                virtual size_t n_outputs() const { return 10; }
-                virtual size_t n_folds() const { return 1; }
-                virtual color_mode color() const { return color_mode::rgba; }
+                virtual size_t n_rows() const override { return 32; }
+                virtual size_t n_cols() const override { return 32; }
+                virtual size_t n_outputs() const override { return 10; }
+                virtual size_t n_folds() const override { return 1; }
+                virtual color_mode color() const override { return color_mode::rgba; }
 
         private:
 

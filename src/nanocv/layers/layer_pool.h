@@ -22,38 +22,38 @@ namespace ncv
                 pool_layer_t(const string_t& parameters = string_t());
 
                 // resize to process new tensors of the given type
-                virtual size_t resize(const tensor_t& tensor);
+                virtual size_t resize(const tensor_t& tensor) override;
 
                 // reset parameters
-                virtual void zero_params() {}
-                virtual void random_params(scalar_t min, scalar_t max) {}
+                virtual void zero_params() override {}
+                virtual void random_params(scalar_t min, scalar_t max) override {}
 
                 // serialize parameters (to memory)
-                virtual scalar_t* save_params(scalar_t* params) const { return params; }
-                virtual const scalar_t* load_params(const scalar_t* params) { return params; }
+                virtual scalar_t* save_params(scalar_t* params) const override { return params; }
+                virtual const scalar_t* load_params(const scalar_t* params) override { return params; }
 
                 // serialize parameters (to disk)
-                virtual boost::archive::binary_oarchive& save(boost::archive::binary_oarchive& oa) const { return oa; }
-                virtual boost::archive::binary_iarchive& load(boost::archive::binary_iarchive& ia) { return ia; }
+                virtual boost::archive::binary_oarchive& save(boost::archive::binary_oarchive& oa) const override { return oa; }
+                virtual boost::archive::binary_iarchive& load(boost::archive::binary_iarchive& ia) override { return ia; }
 
                 // process inputs (compute outputs & gradients)
-                virtual const tensor_t& output(const tensor_t& input);
-                virtual const tensor_t& ginput(const tensor_t& output);
-                virtual void gparam(const tensor_t& output, scalar_t* gradient);
+                virtual const tensor_t& output(const tensor_t& input) override;
+                virtual const tensor_t& ginput(const tensor_t& output) override;
+                virtual void gparam(const tensor_t& output, scalar_t* gradient) override;
 
                 // access functions
-                virtual size_t idims() const { return m_idata.dims(); }
-                virtual size_t irows() const { return m_idata.rows(); }
-                virtual size_t icols() const { return m_idata.cols(); }
-                virtual size_t odims() const { return m_odata.dims(); }
-                virtual size_t orows() const { return m_odata.rows(); }
-                virtual size_t ocols() const { return m_odata.cols(); }
-                virtual size_t psize() const { return 0; }
+                virtual size_t idims() const override { return m_idata.dims(); }
+                virtual size_t irows() const override { return m_idata.rows(); }
+                virtual size_t icols() const override { return m_idata.cols(); }
+                virtual size_t odims() const override { return m_odata.dims(); }
+                virtual size_t orows() const override { return m_odata.rows(); }
+                virtual size_t ocols() const override { return m_odata.cols(); }
+                virtual size_t psize() const override { return 0; }
 
                 // flops
-                virtual size_t output_flops() const { return idims() * irows() * icols() * 16; }
-                virtual size_t ginput_flops() const { return idims() * irows() * icols(); }
-                virtual size_t gparam_flops() const { return 0; }
+                virtual size_t output_flops() const override { return idims() * irows() * icols() * 16; }
+                virtual size_t ginput_flops() const override { return idims() * irows() * icols(); }
+                virtual size_t gparam_flops() const override { return 0; }
 
         private:
 

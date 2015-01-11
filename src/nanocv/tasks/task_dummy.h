@@ -32,14 +32,14 @@ namespace ncv
                 void setup();
 
                 // load images from the given directory
-                virtual bool load(const string_t&) { return true; }
+                virtual bool load(const string_t&) override { return true; }
 
                 // access functions
-                virtual size_t n_rows() const { return m_rows; }
-                virtual size_t n_cols() const { return m_cols; }
-                virtual size_t n_outputs() const { return m_outputs; }
-                virtual size_t n_folds() const { return m_folds; }
-                virtual color_mode color() const { return m_color; }
+                virtual size_t n_rows() const override { return m_rows; }
+                virtual size_t n_cols() const override { return m_cols; }
+                virtual size_t n_outputs() const override { return m_outputs; }
+                virtual size_t n_folds() const override { return m_folds; }
+                virtual color_mode color() const override { return m_color; }
 
         private:
 

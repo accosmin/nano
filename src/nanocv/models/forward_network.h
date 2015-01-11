@@ -34,30 +34,30 @@ namespace ncv
                 ///
                 /// \brief compute the model's output
                 ///
-                virtual const tensor_t& output(const tensor_t& input) const;
+                virtual const tensor_t& output(const tensor_t& input) const override;
 
                 ///
                 /// \brief compute the model's gradient wrt parameters
                 ///
-                virtual vector_t gparam(const vector_t& output) const;
+                virtual vector_t gparam(const vector_t& output) const override;
 
                 ///
                 /// \brief compute the model's gradient wrt inputs
                 ///
-                virtual const tensor_t& ginput(const vector_t& output) const;
+                virtual const tensor_t& ginput(const vector_t& output) const override;
 
                 ///
                 /// \brief save/load/initialize parameters
                 ///
-                virtual bool load_params(const vector_t& x);
-                virtual bool save_params(vector_t& x) const;
-                virtual void zero_params();
-                virtual void random_params();
+                virtual bool load_params(const vector_t& x) override;
+                virtual bool save_params(vector_t& x) const override;
+                virtual void zero_params() override;
+                virtual void random_params() override;
 
                 ///
                 /// \brief number of parameters
                 ///
-                virtual size_t psize() const;
+                virtual size_t psize() const override;
 
                 ///
                 /// \brief manage layers
