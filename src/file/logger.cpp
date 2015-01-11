@@ -9,7 +9,7 @@ namespace ncv
                 :       m_stream(stream), m_flush(flush)
         {
                 log_time();
-                m_stream << "[" << header << "]";
+                m_stream << "[" << header << "] ";
         }
 
         logger_t::~logger_t()
