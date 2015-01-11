@@ -2,6 +2,7 @@
 
 build_dir=""
 build_type="Release"
+install_dir="/usr/local/"
 
 cuda_flag="OFF"
 opencl_flag="OFF"
@@ -14,8 +15,9 @@ tsan_flag="OFF"
 function usage
 {
 	echo "Usage: "
-	echo -e "\t--build-dir          <build directory>" 
+	echo -e "\t--build-dir          <build directory>               required" 
 	echo -e "\t--build-type         <build type [Release/Debug]>    default=${build_type}"
+	echo -e "\t--install-dir        <installation directory>        default=${install_dir}" 
 	echo -e "\t--cuda               <CUDA flag [ON/OFF]>            default=${cuda_flag}"
 	echo -e "\t--opencl             <OpenCL flag [ON/OFF]>          default=${opencl_flag}"
 	echo -e "\t--asan               <address sanitizer [ON/OFF]>    default=${asan_flag}"
@@ -33,6 +35,9 @@ do
                                 ;;
         	--build-type)	shift
                                 build_type=$1
+                                ;;
+        	--install-dir)	shift
+                                install_dir=$1
                                 ;;
         	--cuda)		shift
                                 cuda_flag=$1
@@ -65,7 +70,7 @@ current_dir=`pwd`
 # create build directory
 if [ -z "${build_dir}" ]
 then
-	echo "please provide a build directory!"
+	echo "Please provide a build directory!"
 	echo
 	exit 1
 fi
@@ -83,12 +88,20 @@ cmake_params=${cmake_params}" -DNANOCV_WITH_ASAN=${asan_flag}"
 cmake_params=${cmake_params}" -DNANOCV_WITH_LSAN=${lsan_flag}"
 cmake_params=${cmake_params}" -DNANOCV_WITH_TSAN=${tsan_flag}"
 cmake_params=${cmake_params}" -G Ninja"
+cmake_params=${cmake_params}" -DCMAKE_INSTALL_PREFIX=${install_dir}"
 
 cmake ${cmake_params} ${current_dir}/
 
 # build
 ninja
 echo
+
+# install
+if [ "Release" == "${build_type}" ]
+then
+	ninja install
+	echo
+fi
 
 # go back to the current directory
 cd ${current_dir}

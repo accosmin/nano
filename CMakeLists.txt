@@ -244,9 +244,9 @@ install(TARGETS
         ${nanocv_programs}
         DESTINATION bin)
 
-set_target_properties(
-        ${nanocv_programs}
-        PROPERTIES INSTALL_RPATH "../lib:./:./lib")
+#set_target_properties(
+#        ${nanocv_programs}
+#        PROPERTIES INSTALL_RPATH "../lib:./:./lib")
 
 # libraries
 install(TARGETS
@@ -255,7 +255,7 @@ install(TARGETS
 
 # headers
 install(DIRECTORY ${nanocv_SOURCE_DIR}/src/
-        DESTINATION include
+        DESTINATION include/nanocv
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
 
 ## http://www.cmake.org/Wiki/CMake_RPATH_handling
