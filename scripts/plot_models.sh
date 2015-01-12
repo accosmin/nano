@@ -21,26 +21,21 @@ pfile=${ofile/.${format}/.gnuplot}
 # data attributes
 indices=(1 2 3 4 5 6)
 titles=(`echo "train-loss train-error train-error-var valid-loss valid-error valid-error-var"`)
-origins=(`echo "0.0,0.0 0.33,0.0 0.66,0.0 0.0,0.5 0.33,0.5 0.66,0.5"`)
-sizes=(`echo "0.33,0.5 0.33,0.5 0.33,0.5 0.33,0.5 0.33,0.5 0.33,0.5"`)
 
 # set the plotting attributes
 rm -f ${pfile}
 echo "set terminal ${format} enhanced font ',3'" >> ${pfile}        
 echo "set output \"${ofile}\"" >> ${pfile}
-echo "set multiplot" >> ${pfile}
 echo "set size 1.0,1.0" >> ${pfile}
 
-# create sub-plots for each data type
+# create plots for each data type
 for ((k=0;k<${#indices[*]};k++))
 do
         index=${indices[$k]}
-        origin=${origins[$k]}
-        size=${sizes[$k]}
         title=${titles[$k]}
 
-        echo "set origin ${origin}" >> ${pfile}
-        echo "set size ${size}" >> ${pfile}
+        echo "set origin 0.0,0.0" >> ${pfile}
+        echo "set size 1.0,1.0" >> ${pfile}
         echo "set title \"${title}\"" >> ${pfile}
         echo "set xlabel \"epochs/iterations\"" >> ${pfile}
         echo "set ylabel \"loss/error\"" >> ${pfile}
@@ -72,6 +67,5 @@ do
 done
 
 # export
-echo "unset multiplot" >> ${pfile}
 gnuplot ${pfile} 
 rm -f ${pfile}
