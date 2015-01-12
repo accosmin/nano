@@ -17,8 +17,17 @@ int main(int argc, char *argv[])
                                                 ncv::color::make_green(rgba) != g ||
                                                 ncv::color::make_blue(rgba) != b)
                                         {
-                                                ncv::log_error() << "failed!";
+                                                ncv::log_error() << "RGB transform failed!";
                                                 return EXIT_FAILURE;
+                                        }
+
+                                        for (ncv::rgba_t a = 0; a < 256; a ++)
+                                        {
+                                                if (rgba != ncv::color::make_opaque(ncv::color::make_rgba(r, g, b, a)))
+                                                {
+                                                        ncv::log_error() << "RGBA opaque transform failed!";
+                                                        return EXIT_FAILURE;
+                                                }
                                         }
                                 }
                         }

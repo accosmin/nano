@@ -24,6 +24,7 @@ namespace ncv
                 inline rgba_t make_green(rgba_t rgba)   { return (rgba >> 16) & 0xFF; }
                 inline rgba_t make_blue(rgba_t rgba)    { return (rgba >>  8) & 0xFF; }
                 inline rgba_t make_alpha(rgba_t rgba)   { return (rgba >>  0) & 0xFF; }
+                inline rgba_t make_opaque(rgba_t rgba)  { return rgba | 0xFF; }
 
                 inline rgba_t make_luma(rgba_t r, rgba_t g, rgba_t b)
                 {
