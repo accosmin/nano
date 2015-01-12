@@ -1,5 +1,3 @@
-- modify the plotting scripts to generate a plot per page
-
 - improve the dummy task to generate meaningful input images:
 	- this way the optimization test program will actually work on meaninful data
 
