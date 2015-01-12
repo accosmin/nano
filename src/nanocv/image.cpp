@@ -613,6 +613,7 @@ namespace ncv
 
                 case color_mode::rgba:
                         m_rgba.setRandom();
+                        tensor::transform(m_rgba, m_rgba, color::make_opaque);
                         return true;
 
                 default:

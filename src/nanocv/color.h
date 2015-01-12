@@ -12,7 +12,7 @@ namespace ncv
         typedef tensor::fixed_size_vector_types_t<scalar_t, 3>::tvector         cielab_t;
         typedef tensor::matrix_types_t<cielab_t>::tmatrix                       cielab_matrix_t;
 
-        // Grayscale
+        // grayscale
         typedef uint8_t                                                         luma_t;
         typedef tensor::matrix_types_t<luma_t>::tmatrix                         luma_matrix_t;
 
