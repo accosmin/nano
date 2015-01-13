@@ -1,5 +1,12 @@
+- 6core machine: mlp0 optimized with all mbatch & stochastic variants in 
+
 - improve the dummy task to generate meaningful input images:
 	- this way the optimization test program will actually work on meaninful data
+
+	- the number of outputs is equal with the number of white/colored rectangles/pixels:
+		- vary the background (uniform color, random)
+		- vary the color, size and position of the rectangles
+		- add small random noise
 
 - check the speed improvement if using floats instead of doubles for training MLP0
 
