@@ -1,5 +1,3 @@
-- 6core machine: mlp0 optimized with all mbatch & stochastic variants in 
-
 - improve the dummy task to generate meaningful input images:
 	- this way the optimization test program will actually work on meaninful data
 
