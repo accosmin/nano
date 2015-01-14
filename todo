@@ -1,5 +1,5 @@
 - fix the font in plot_model.sh & plot_models.sh such that it works on both OSX and Linux
-	- use cairo terminal?!
+	- use pdfcairo terminal?! (it is supported on both platforms)
 
 - implement the normalized adaptive gradient (stochastic optimization) method
 
