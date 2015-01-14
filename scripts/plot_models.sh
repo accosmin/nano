@@ -24,7 +24,7 @@ titles=(`echo "train-loss train-error train-error-var valid-loss valid-error val
 
 # set the plotting attributes
 rm -f ${pfile}
-echo "set terminal ${format} enhanced font ',3'" >> ${pfile}        
+echo "set terminal ${format}" >> ${pfile}        
 echo "set output \"${ofile}\"" >> ${pfile}
 echo "set size 1.0,1.0" >> ${pfile}
 
