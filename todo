@@ -1,3 +1,7 @@
+- fix the font in plot_model.sh & plot_models.sh such that it works on both OSX and Linux
+
+- implement the normalized adaptive gradient (stochastic optimization) method
+
 - improve the dummy task to generate meaningful input images:
 	- this way the optimization test program will actually work on meaninful data
 
