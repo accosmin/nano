@@ -3,6 +3,7 @@
 build_dir=""
 build_type="Release"
 install_dir="/usr/local/"
+install="OFF"
 
 cuda_flag="OFF"
 opencl_flag="OFF"
@@ -18,6 +19,7 @@ function usage
 	echo -e "\t--build-dir          <build directory>               required" 
 	echo -e "\t--build-type         <build type [Release/Debug]>    default=${build_type}"
 	echo -e "\t--install-dir        <installation directory>        default=${install_dir}" 
+	echo -e "\t--install            <install [ON/OFF] Release only> default=${install}" 
 	echo -e "\t--cuda               <CUDA flag [ON/OFF]>            default=${cuda_flag}"
 	echo -e "\t--opencl             <OpenCL flag [ON/OFF]>          default=${opencl_flag}"
 	echo -e "\t--asan               <address sanitizer [ON/OFF]>    default=${asan_flag}"
@@ -38,6 +40,9 @@ do
                                 ;;
         	--install-dir)	shift
                                 install_dir=$1
+                                ;;
+        	--install)	shift
+                                install=$1
                                 ;;
         	--cuda)		shift
                                 cuda_flag=$1
@@ -97,7 +102,7 @@ ninja
 echo
 
 # install
-if [ "Release" == "${build_type}" ]
+if [ "Release" == "${build_type}" ] && [ "ON" == "${install}" ]
 then
 	ninja install
 	echo
