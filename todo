@@ -1,5 +1,6 @@
 - implement image noising & blurring:
 	- also update the image test program to test these effects
+	- scaling using RGB channels directly
 
 - nicer way to specify colors than using the current array:
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2  # blue

@@ -22,6 +22,9 @@ int main(int argc, char *argv[])
         po_desc.add_options()("noise-variance",
                 boost::program_options::value<ncv::scalar_t>()->default_value(0.0),
                 "noise variance [0.0, 100.0]");
+        po_desc.add_options()("gauss-sigma",
+                boost::program_options::value<ncv::scalar_t>()->default_value(0.0),
+                "gaussian bluring standard deviation [0.0, 10.0]");
         po_desc.add_options()("output,o",
                 boost::program_options::value<ncv::string_t>(),
                 "output image path");
@@ -49,7 +52,8 @@ int main(int argc, char *argv[])
         const string_t cmd_input = po_vm["input"].as<string_t>();
         const scalar_t cmd_scale = math::clamp(po_vm["scale"].as<scalar_t>(), 0.1, 10.0);
         const scalar_t cmd_noise_offset = math::clamp(po_vm["noise-offset"].as<scalar_t>(), -100.0, +100.0);
-        const scalar_t cmd_noise_variance = math::clamp(po_vm["noise-variance"].as<scalar_t>(), -100.0, +100.0);
+        const scalar_t cmd_noise_variance = math::clamp(po_vm["noise-variance"].as<scalar_t>(), 0.0, +100.0);
+        const scalar_t cmd_gauss_sigma = math::clamp(po_vm["gauss-sigma"].as<scalar_t>(), 0.0, 10.0);
         const string_t cmd_output = po_vm["output"].as<string_t>();
         const bool cmd_luma = po_vm.count("luma");
         const bool cmd_rgba = po_vm.count("rgba");        
@@ -94,6 +98,20 @@ int main(int argc, char *argv[])
                 image.noise(color_channel::blue, cmd_noise_offset, cmd_noise_variance);
         }
         log_info() << "<<< applied noise to " << image.cols() << "x" << image.rows() << " pixels in " << timer.elapsed() << ".";
+
+        // apply bluring
+        timer.start();
+        if (cmd_luma)
+        {
+                image.blur(color_channel::luma, cmd_gauss_sigma);
+        }
+        else
+        {
+                image.blur(color_channel::red, cmd_gauss_sigma);
+                image.blur(color_channel::green, cmd_gauss_sigma);
+                image.blur(color_channel::blue, cmd_gauss_sigma);
+        }
+        log_info() << "<<< applied bluring to " << image.cols() << "x" << image.rows() << " pixels in " << timer.elapsed() << ".";
 
         // save output image
         timer.start();

@@ -1,10 +1,13 @@
 #include "image.h"
 #include "util/bilinear.hpp"
+#include "util/gaussian.hpp"
 #include "util/random.hpp"
 #include "util/math.hpp"
 #include "tensor/transform.hpp"
 #include <IL/il.h>
 #include <map>
+
+#include <iostream>
 
 namespace ncv
 {
@@ -635,14 +638,14 @@ namespace ncv
                 {
                         random_t<scalar_t> noiser(offset - variance, offset + variance);
 
-                        const scalar_t minc = 0;
-                        const scalar_t maxc = 255;
+                        const scalar_t minv = 0;
+                        const scalar_t maxv = 255;
 
                         typedef typename tmatrix::Scalar tvalue;
 
-                        tensor::transform(plane, plane, [&] (tvalue c)
+                        tensor::transform(plane, plane, [&] (tvalue v)
                         {
-                                return setter(c, math::cast<tvalue>(math::clamp(noiser() + getter(c), minc, maxc)));
+                                return setter(v, math::cast<tvalue>(math::clamp(noiser() + getter(v), minv, maxv)));
                         });
 
                         return true;
@@ -684,9 +687,119 @@ namespace ncv
                 }
         }
 
-        bool image_t::smooth(color_channel ch, scalar_t sigma)
+        namespace
         {
-                // TODO
+                template
+                <
+                        typename tmatrix,
+                        typename tgetter,
+                        typename tsetter
+                >
+                bool apply_gauss(tmatrix& plane, scalar_t sigma, tgetter getter, tsetter setter)
+                {
+                        const int rows = static_cast<int>(plane.rows());
+                        const int cols = static_cast<int>(plane.cols());
+
+                        const scalars_t kernel = make_gaussian<scalar_t>(math::cast<double>(sigma));
+
+                        for (size_t i = 0; i < kernel.size(); i ++)
+                        {
+                                std::cout << "kernel [" << (i + 1) << "/" << kernel.size() << "] = " << kernel[i]
+                                             << " / " << std::accumulate(kernel.begin(), kernel.end(), 0.0) << std::endl;
+                        }
+
+                        const int ksize = static_cast<int>(kernel.size());
+                        const int krad = ksize / 2;
+
+                        if (ksize != (2 * krad + 1))
+                        {
+                                return false;
+                        }
+
+                        const scalar_t minv = 0;
+                        const scalar_t maxv = 255;
+
+                        typedef typename tmatrix::Scalar tvalue;
+
+                        scalars_t buff(std::max(rows, cols));
+
+                        for (int r = 0; r < rows; r ++)
+                        {
+                                for (int c = 0; c < cols; c ++)
+                                {
+                                        buff[c] = math::cast<scalar_t>(getter(plane(r, c)));
+                                }
+
+                                for (int c = 0; c < cols; c ++)
+                                {
+                                        scalar_t v = 0;
+                                        for (int k = -krad; k <= krad; k ++)
+                                        {
+                                                const int cc = math::clamp(k + c, 0, cols - 1);
+                                                v += kernel[k + krad] * buff[cc];
+                                        }
+
+                                        plane(r, c) = setter(plane(r, c), math::cast<tvalue>(math::clamp(v, minv, maxv)));
+                                }
+                        }
+
+                        for (int c = 0; c < cols; c ++)
+                        {
+                                for (int r = 0; r < rows; r ++)
+                                {
+                                        buff[r] = math::cast<scalar_t>(getter(plane(r, c)));
+                                }
+
+                                for (int r = 0; r < rows; r ++)
+                                {
+                                        scalar_t v = 0;
+                                        for (int k = -krad; k <= krad; k ++)
+                                        {
+                                                const int rr = math::clamp(k + r, 0, rows - 1);
+                                                v += kernel[k + krad] * buff[rr];
+                                        }
+
+                                        plane(r, c) = setter(plane(r, c), math::cast<tvalue>(math::clamp(v, minv, maxv)));
+                                }
+                        }
+
+                        return true;
+                }
+        }
+
+        bool image_t::blur(color_channel channel, scalar_t sigma)
+        {
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        switch (channel)
+                        {
+                        case color_channel::luma:
+                                return apply_gauss(m_luma, sigma, color::get_luma, color::set_luma);
+
+                        default:
+                                return false;
+                        }
+
+                case color_mode::rgba:
+                        switch (channel)
+                        {
+                        case color_channel::red:
+                                return apply_gauss(m_rgba, sigma, color::get_red, color::set_red);
+
+                        case color_channel::green:
+                                return apply_gauss(m_rgba, sigma, color::get_green, color::set_green);
+
+                        case color_channel::blue:
+                                return apply_gauss(m_rgba, sigma, color::get_blue, color::set_blue);
+
+                        default:
+                                return false;
+                        }
+
+                default:
+                        return false;
+                }
 
                 return false;
         }

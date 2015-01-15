@@ -116,9 +116,9 @@ namespace ncv
                 bool noise(color_channel channel, scalar_t offset, scalar_t variance);
 
                 ///
-                /// \brief smooth the given color channel with a Gaussian filter having the given sigma
+                /// \brief blur the given color channel with a Gaussian filter having the given sigma
                 ///
-                bool smooth(color_channel channel, scalar_t sigma);
+                bool blur(color_channel channel, scalar_t sigma);
 
                 // access functions
                 coord_t rows() const { return m_rows; }
