@@ -1,6 +1,10 @@
 - implement image noising & blurring:
 	- also update the image test program to test these effects
 
+- nicer way to specify colors than using the current array:
+set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2  # blue
+set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2  # red
+
 - implement the normalized adaptive gradient (stochastic optimization) method
 
 - improve the dummy task to generate meaningful input images:
