@@ -187,14 +187,10 @@ endif()
 # Build projects
 ######################################################################
 
-# Set the include directories and linking libraries
-set(nanocv_includes
-        src/
-        src/nanocv
-        )
-
+# Set the include directories
 include_directories(
-        ${nanocv_includes})
+	src/
+	src/nanocv)
 
 # Set the executables
 set(nanocv_test_programs
