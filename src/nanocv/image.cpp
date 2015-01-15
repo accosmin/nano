@@ -1,8 +1,12 @@
 #include "image.h"
 #include "util/bilinear.hpp"
+#include "util/random.hpp"
+#include "util/math.hpp"
 #include "tensor/transform.hpp"
 #include <IL/il.h>
 #include <map>
+
+#include <iostream>
 
 namespace ncv
 {
@@ -18,29 +22,29 @@ namespace ncv
                         
                         switch (mode)
                         {
-                                case color_mode::luma:
-                                        luma.resize(rows, cols);
-                                        for (int r = 0; r < rows; r ++)
+                        case color_mode::luma:
+                                luma.resize(rows, cols);
+                                for (int r = 0; r < rows; r ++)
+                                {
+                                        for (int c = 0; c < cols; c ++)
                                         {
-                                                for (int c = 0; c < cols; c ++)
-                                                {
-                                                        const ILubyte* pix = data + 4 * (r * cols + c);
-                                                        luma(r, c) = color::make_luma(pix[0], pix[1], pix[2]);
-                                                }
+                                                const ILubyte* pix = data + 4 * (r * cols + c);
+                                                luma(r, c) = color::make_luma(pix[0], pix[1], pix[2]);
                                         }
-                                        break;
-                                        
-                                case color_mode::rgba:
-                                        rgba.resize(rows, cols);
-                                        for (int r = 0; r < rows; r ++)
+                                }
+                                break;
+
+                        case color_mode::rgba:
+                                rgba.resize(rows, cols);
+                                for (int r = 0; r < rows; r ++)
+                                {
+                                        for (int c = 0; c < cols; c ++)
                                         {
-                                                for (int c = 0; c < cols; c ++)
-                                                {
-                                                        const ILubyte* pix = data + 4 * (r * cols + c);
-                                                        rgba(r, c) = color::make_rgba(pix[0], pix[1], pix[2], pix[3]);
-                                                }
+                                                const ILubyte* pix = data + 4 * (r * cols + c);
+                                                rgba(r, c) = color::make_rgba(pix[0], pix[1], pix[2], pix[3]);
                                         }
-                                        break;
+                                }
+                                break;
                         }
                         
                         ret = true;
@@ -143,12 +147,17 @@ namespace ncv
                                         for (int c = 0; c < cols; c ++)
                                         {
                                                 const rgba_t val = rgba(rows - 1 - r, c);
-                                                const rgba_t cr = color::make_red(val);
-                                                const rgba_t cg = color::make_green(val);
-                                                const rgba_t cb = color::make_blue(val);
-                                                const rgba_t ca = color::make_alpha(val);
+                                                const rgba_t cr = color::get_red(val);
+                                                const rgba_t cg = color::get_green(val);
+                                                const rgba_t cb = color::get_blue(val);
+                                                const rgba_t ca = color::get_alpha(val);
 
                                                 temp(r, c) = color::make_rgba(ca, cb, cg, cr);
+
+                                                if (color::get_alpha(temp(r, c)) < 255)
+                                                {
+                                                        std::cout << "alpha = " << color::get_alpha(temp(r, c)) << std::endl;
+                                                }
                                         }
                                 }
                                 ret = ilTexImage(cols, rows, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, (void*)temp.data());
@@ -269,7 +278,7 @@ namespace ncv
         bool image_t::load_luma(const rgba_matrix_t& data)
         {
                 m_luma.resize(data.rows(), data.cols());
-                tensor::transform(data, m_luma, [] (rgba_t c) { return color::make_luma(c); });
+                tensor::transform(data, m_luma, [] (rgba_t c) { return color::get_luma(c); });
 
                 return setup_luma();
         }
@@ -366,15 +375,15 @@ namespace ncv
 
                                 tensor::transform(m_rgba.block(top, left, rows, cols), rmap, [=] (rgba_t rgba)
                                 {
-                                        return scale * color::make_red(rgba);
+                                        return scale * color::get_red(rgba);
                                 });
                                 tensor::transform(m_rgba.block(top, left, rows, cols), gmap, [=] (rgba_t rgba)
                                 {
-                                        return scale * color::make_green(rgba);
+                                        return scale * color::get_green(rgba);
                                 });
                                 tensor::transform(m_rgba.block(top, left, rows, cols), bmap, [=] (rgba_t rgba)
                                 {
-                                        return scale * color::make_blue(rgba);
+                                        return scale * color::get_blue(rgba);
                                 });
 
                                 return data;
@@ -413,7 +422,7 @@ namespace ncv
 
                 case color_mode::rgba:
                         m_luma.resize(rows(), cols());
-                        tensor::transform(m_rgba, m_luma, [] (rgba_t c) { return color::make_luma(c); });
+                        tensor::transform(m_rgba, m_luma, [] (rgba_t c) { return color::get_luma(c); });
 
                         return setup_luma();
 
@@ -427,7 +436,7 @@ namespace ncv
                 switch (m_mode)
                 {
                 case color_mode::luma:
-                        m_luma.setConstant(color::make_luma(rgba));
+                        m_luma.setConstant(color::get_luma(rgba));
                         return true;
 
                 case color_mode::rgba:
@@ -613,7 +622,7 @@ namespace ncv
 
                 case color_mode::rgba:
                         m_rgba.setRandom();
-                        tensor::transform(m_rgba, m_rgba, color::make_opaque);
+                        tensor::transform(m_rgba, m_rgba, [] (rgba_t c) { return color::set_alpha(c, 255); });
                         return true;
 
                 default:
@@ -621,11 +630,65 @@ namespace ncv
                 }
         }
 
-        bool image_t::noise(color_channel ch, scalar_t center, scalar_t variance)
+        namespace
         {
-                // TODO
+                template
+                <
+                        typename tmatrix,
+                        typename tgetter,
+                        typename tsetter
+                >
+                bool apply_noise(tmatrix& plane, scalar_t offset, scalar_t variance, tgetter getter, tsetter setter)
+                {
+                        random_t<scalar_t> noiser(offset - variance, offset + variance);
 
-                return false;
+                        const scalar_t minc = 0;
+                        const scalar_t maxc = 255;
+
+                        typedef typename tmatrix::Scalar tvalue;
+
+                        tensor::transform(plane, plane, [&] (tvalue c)
+                        {
+                                return setter(c, math::cast<tvalue>(math::clamp(noiser() + getter(c), minc, maxc)));
+                        });
+
+                        return true;
+                }
+        }
+
+        bool image_t::noise(color_channel channel, scalar_t offset, scalar_t variance)
+        {
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        switch (channel)
+                        {
+                        case color_channel::luma:
+                                return apply_noise(m_luma, offset, variance, color::get_luma, color::set_luma);
+
+                        default:
+                                return false;
+                        }
+
+                case color_mode::rgba:
+                        switch (channel)
+                        {
+                        case color_channel::red:
+                                return apply_noise(m_rgba, offset, variance, color::get_red, color::set_red);
+
+                        case color_channel::green:
+                                return apply_noise(m_rgba, offset, variance, color::get_green, color::set_green);
+
+                        case color_channel::blue:
+                                return apply_noise(m_rgba, offset, variance, color::get_blue, color::set_blue);
+
+                        default:
+                                return false;
+                        }
+
+                default:
+                        return false;
+                }
         }
 
         bool image_t::smooth(color_channel ch, scalar_t sigma)

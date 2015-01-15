@@ -2,30 +2,37 @@
 
 int main(int argc, char *argv[])
 {
+        using namespace ncv;
+
         // test RGBA transform
         {
-                ncv::log_info() << "testing RGBA transform ...";
+                log_info() << "testing RGBA transform ...";
 
-                for (ncv::rgba_t r = 0; r < 256; r ++)
+                for (rgba_t r = 0; r < 256; r ++)
                 {
-                        for (ncv::rgba_t g = 0; g < 256; g++)
+                        for (rgba_t g = 0; g < 256; g++)
                         {
-                                for (ncv::rgba_t b = 0; b < 256; b ++)
+                                for (rgba_t b = 0; b < 256; b ++)
                                 {
-                                        const ncv::rgba_t rgba = ncv::color::make_rgba(r, g, b);
-                                        if (    ncv::color::make_red(rgba) != r ||
-                                                ncv::color::make_green(rgba) != g ||
-                                                ncv::color::make_blue(rgba) != b)
+                                        for (rgba_t a = 0; a < 256; a ++)
                                         {
-                                                ncv::log_error() << "RGB transform failed!";
-                                                return EXIT_FAILURE;
-                                        }
+                                                const rgba_t rgba = color::make_rgba(r, g, b, a);
 
-                                        for (ncv::rgba_t a = 0; a < 256; a ++)
-                                        {
-                                                if (rgba != ncv::color::make_opaque(ncv::color::make_rgba(r, g, b, a)))
+                                                if (    color::get_red(rgba)    != r ||
+                                                        color::get_green(rgba)  != g ||
+                                                        color::get_blue(rgba)   != b ||
+                                                        color::get_alpha(rgba)  != a)
                                                 {
-                                                        ncv::log_error() << "RGBA opaque transform failed!";
+                                                        log_error() << "RGBA setup failed!";
+                                                        return EXIT_FAILURE;
+                                                }
+
+                                                if (    rgba != color::set_red(rgba, r) ||
+                                                        rgba != color::set_green(rgba, g) ||
+                                                        rgba != color::set_blue(rgba, b) ||
+                                                        rgba != color::set_alpha(rgba, a))
+                                                {
+                                                        log_error() << "RGBA update failed!";
                                                         return EXIT_FAILURE;
                                                 }
                                         }
@@ -33,28 +40,28 @@ int main(int argc, char *argv[])
                         }
                 }
 
-                ncv::log_info() << ">>> done.";
+                log_info() << ">>> done.";
         }
 
         // test CIELab transform
         {
-                ncv::log_info() << "testing CIELab transform ...";
+                log_info() << "testing CIELab transform ...";
 
-                ncv::scalar_t min_cie_l = +1e100, min_cie_a = min_cie_l, min_cie_b = min_cie_l;
-                ncv::scalar_t max_cie_l = -min_cie_l, max_cie_a = max_cie_l, max_cie_b = max_cie_l;
+                scalar_t min_cie_l = +1e100, min_cie_a = min_cie_l, min_cie_b = min_cie_l;
+                scalar_t max_cie_l = -min_cie_l, max_cie_a = max_cie_l, max_cie_b = max_cie_l;
 
-                for (ncv::rgba_t r = 0; r < 256; r ++)
+                for (rgba_t r = 0; r < 256; r ++)
                 {
-                        for (ncv::rgba_t g = 0; g < 256; g++)
+                        for (rgba_t g = 0; g < 256; g++)
                         {
-                                for (ncv::rgba_t b = 0; b < 256; b ++)
+                                for (rgba_t b = 0; b < 256; b ++)
                                 {
-                                        const ncv::rgba_t rgba = ncv::color::make_rgba(r, g, b);
-                                        const ncv::cielab_t cielab = ncv::color::make_cielab(rgba);
+                                        const rgba_t rgba = color::make_rgba(r, g, b);
+                                        const cielab_t cielab = color::make_cielab(rgba);
 
-                                        if (ncv::color::make_rgba(cielab) != rgba)
+                                        if (color::make_rgba(cielab) != rgba)
                                         {
-                                                ncv::log_error() << "failed!";
+                                                log_error() << "failed!";
                                                 return EXIT_FAILURE;
                                         }
 
@@ -69,14 +76,14 @@ int main(int argc, char *argv[])
                         }
                 }
 
-                ncv::log_info() << ">>> done.";
+                log_info() << ">>> done.";
 
-                ncv::log_info() << "CIELab range: L = [" << min_cie_l << ", " << max_cie_l
+                log_info() << "CIELab range: L = [" << min_cie_l << ", " << max_cie_l
                                 << "], a = [" << min_cie_a << ", " << max_cie_a
                                 << "], b = [" << min_cie_b << ", " << max_cie_b << "].";
         }
 
         // OK
-        ncv::log_info() << ncv::done;
+        log_info() << done;
         return EXIT_SUCCESS;
 }

@@ -20,19 +20,25 @@ namespace ncv
         namespace color
         {
                 // RGBA decoding (R, G, B, A, L(uma), CIELab)
-                inline rgba_t make_red(rgba_t rgba)     { return (rgba >> 24) & 0xFF; }
-                inline rgba_t make_green(rgba_t rgba)   { return (rgba >> 16) & 0xFF; }
-                inline rgba_t make_blue(rgba_t rgba)    { return (rgba >>  8) & 0xFF; }
-                inline rgba_t make_alpha(rgba_t rgba)   { return (rgba >>  0) & 0xFF; }
-                inline rgba_t make_opaque(rgba_t rgba)  { return rgba | 0xFF; }
+                inline rgba_t get_red(rgba_t rgba)                      { return (rgba >> 24) & 0xFF; }
+                inline rgba_t get_green(rgba_t rgba)                    { return (rgba >> 16) & 0xFF; }
+                inline rgba_t get_blue(rgba_t rgba)                     { return (rgba >>  8) & 0xFF; }
+                inline rgba_t get_alpha(rgba_t rgba)                    { return (rgba >>  0) & 0xFF; }
+                inline luma_t get_luma(luma_t luma)                     { return luma; }
 
-                inline rgba_t make_luma(rgba_t r, rgba_t g, rgba_t b)
+                inline rgba_t set_red(rgba_t rgba, rgba_t v)            { return (rgba & 0x00FFFFFF) | (v << 24); }
+                inline rgba_t set_green(rgba_t rgba, rgba_t v)          { return (rgba & 0xFF00FFFF) | (v << 16); }
+                inline rgba_t set_blue(rgba_t rgba, rgba_t v)           { return (rgba & 0xFFFF00FF) | (v <<  8); }
+                inline rgba_t set_alpha(rgba_t rgba, rgba_t v)          { return (rgba & 0xFFFFFF00) | (v <<  0); }
+                inline luma_t set_luma(luma_t, luma_t v)                { return v; }
+
+                inline luma_t make_luma(rgba_t r, rgba_t g, rgba_t b)
                 {
-                        return (r * 11 + g * 16 + b * 5) / 32;
+                        return static_cast<luma_t>((r * 11 + g * 16 + b * 5) / 32);
                 }
-                inline rgba_t make_luma(rgba_t rgba)
+                inline luma_t make_luma(rgba_t rgba)
                 {
-                        return make_luma(make_red(rgba), make_green(rgba), make_blue(rgba));
+                        return make_luma(get_red(rgba), get_green(rgba), get_blue(rgba));
                 }
 
                 cielab_t make_cielab(rgba_t rgba);

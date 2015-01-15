@@ -183,7 +183,7 @@ namespace ncv
                 cielab_t cielab;
                 scalar_t x, y, z;
 
-                detail::rgb2xyz(make_red(rgba), make_green(rgba), make_blue(rgba), x, y, z);
+                detail::rgb2xyz(get_red(rgba), get_green(rgba), get_blue(rgba), x, y, z);
                 detail::xyz2lab(x, y, z, cielab(0), cielab(1), cielab(2));
 
                 return cielab;
