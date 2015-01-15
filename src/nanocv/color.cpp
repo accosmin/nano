@@ -185,6 +185,7 @@ namespace ncv
 
                 detail::rgb2xyz(get_red(rgba), get_green(rgba), get_blue(rgba), x, y, z);
                 detail::xyz2lab(x, y, z, cielab(0), cielab(1), cielab(2));
+                cielab(3) = color::get_alpha(rgba);
 
                 return cielab;
         }
@@ -197,6 +198,6 @@ namespace ncv
                 detail::lab2xyz(cielab(0), cielab(1), cielab(2), x, y, z);
                 detail::xyz2rgb(x, y, z, r, g, b);
 
-                return make_rgba(r, g, b);
+                return make_rgba(r, g, b, static_cast<rgba_t>(cielab(3)));
         }
 }

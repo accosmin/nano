@@ -6,8 +6,6 @@
 #include <IL/il.h>
 #include <map>
 
-#include <iostream>
-
 namespace ncv
 {
         static bool load_image(color_mode mode, rgba_matrix_t& rgba, luma_matrix_t& luma)
@@ -153,11 +151,6 @@ namespace ncv
                                                 const rgba_t ca = color::get_alpha(val);
 
                                                 temp(r, c) = color::make_rgba(ca, cb, cg, cr);
-
-                                                if (color::get_alpha(temp(r, c)) < 255)
-                                                {
-                                                        std::cout << "alpha = " << color::get_alpha(temp(r, c)) << std::endl;
-                                                }
                                         }
                                 }
                                 ret = ilTexImage(cols, rows, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, (void*)temp.data());

@@ -1,5 +1,3 @@
-- bug: cannot properly save the alpha channel to png
-
 - implement image noising & blurring:
 	- also update the image test program to test these effects
 
