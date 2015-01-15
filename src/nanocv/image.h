@@ -110,6 +110,16 @@ namespace ncv
                 ///
                 bool random();
 
+                ///
+                /// \brief add random noise [center +/- variance] to the given color channel
+                ///
+                bool noise(color_channel ch, scalar_t center, scalar_t variance);
+
+                ///
+                /// \brief smooth the given color channel with a Gaussian filter having the given sigma
+                ///
+                bool smooth(color_channel ch, scalar_t sigma);
+
                 // access functions
                 coord_t rows() const { return m_rows; }
                 coord_t cols() const { return m_cols; }

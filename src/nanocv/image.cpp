@@ -620,4 +620,18 @@ namespace ncv
                         return false;
                 }
         }
+
+        bool image_t::noise(color_channel ch, scalar_t center, scalar_t variance)
+        {
+                // TODO
+
+                return false;
+        }
+
+        bool image_t::smooth(color_channel ch, scalar_t sigma)
+        {
+                // TODO
+
+                return false;
+        }
 }

@@ -1,3 +1,6 @@
+- implement image noising & blurring:
+	- also update the image test program to test these effects
+
 - implement the normalized adaptive gradient (stochastic optimization) method
 
 - improve the dummy task to generate meaningful input images:
@@ -16,6 +19,8 @@
 - investigate why AdaGrad presents that strange bump in the training loss plot
 
 - investigate why NAG is so noisy
+
+- investigate why mini-batch methods are so noisy
 
 - augment training samples (to reduce overfitting):
 	- salt & pepper noise (vary the percentage)
