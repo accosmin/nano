@@ -1,7 +1,7 @@
 #include "stochastic.h"
 #include "accumulator.h"
 #include "sampler.h"
-#include "file/logger.h"
+#include "util/logger.h"
 #include "util/log_search.hpp"
 #include "util/thread_pool.h"
 #include "util/timer.h"

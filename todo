@@ -7,8 +7,6 @@
 
 - move & refactor the image processing algorithms (noise, scale, gauss) to src/nanocv/image or to src/util/
 
-- move the logger to src/util & make sure the file module does not depend on it (pass a logging functor)
-
 - nicer way to specify colors than using the current array:
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2  # blue
 set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2  # red

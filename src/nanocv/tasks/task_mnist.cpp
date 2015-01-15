@@ -1,6 +1,6 @@
 #include "task_mnist.h"
 #include "util/cast.hpp"
-#include "file/logger.h"
+#include "util/logger.h"
 #include "file/archive.h"
 #include "file/stream.h"
 #include "loss.h"

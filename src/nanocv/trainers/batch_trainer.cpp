@@ -1,5 +1,5 @@
 #include "batch_trainer.h"
-#include "file/logger.h"
+#include "util/logger.h"
 #include "util/math.hpp"
 #include "batch.h"
 #include "model.h"

@@ -1,5 +1,5 @@
 #include "mat5.h"
-#include "logger.h"
+#include "util/logger.h"
 #include <fstream>
 #include <limits>
 #include <cstdint>

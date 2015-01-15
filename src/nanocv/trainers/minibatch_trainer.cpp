@@ -1,5 +1,5 @@
 #include "minibatch_trainer.h"
-#include "file/logger.h"
+#include "util/logger.h"
 #include "util/math.hpp"
 #include "minibatch.h"
 #include "model.h"

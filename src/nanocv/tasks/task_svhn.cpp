@@ -1,6 +1,6 @@
 #include "task_svhn.h"
 #include "util/math.hpp"
-#include "file/logger.h"
+#include "util/logger.h"
 #include "file/gzip.h"
 #include "file/mat5.h"
 #include "loss.h"

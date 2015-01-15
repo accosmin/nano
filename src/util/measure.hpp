@@ -1,6 +1,6 @@
 #pragma once
 
-#include "file/logger.h"
+#include "logger.h"
 #include "timer.h"
 #include <cstdlib>
 

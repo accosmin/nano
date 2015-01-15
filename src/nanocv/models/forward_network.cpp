@@ -1,5 +1,5 @@
 #include "forward_network.h"
-#include "file/logger.h"
+#include "util/logger.h"
 #include "util/math.hpp"
 #include "util/cast.hpp"
 #include "tensor/serialize.hpp"
