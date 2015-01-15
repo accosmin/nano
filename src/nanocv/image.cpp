@@ -7,8 +7,6 @@
 #include <IL/il.h>
 #include <map>
 
-#include <iostream>
-
 namespace ncv
 {
         static bool load_image(color_mode mode, rgba_matrix_t& rgba, luma_matrix_t& luma)
@@ -657,14 +655,7 @@ namespace ncv
                 switch (m_mode)
                 {
                 case color_mode::luma:
-                        switch (channel)
-                        {
-                        case color_channel::luma:
-                                return apply_noise(m_luma, offset, variance, color::get_luma, color::set_luma);
-
-                        default:
-                                return false;
-                        }
+                        return apply_noise(m_luma, offset, variance, color::get_luma, color::set_luma);
 
                 case color_mode::rgba:
                         switch (channel)
@@ -679,7 +670,9 @@ namespace ncv
                                 return apply_noise(m_rgba, offset, variance, color::get_blue, color::set_blue);
 
                         default:
-                                return false;
+                                return apply_noise(m_rgba, offset, variance, color::get_red, color::set_red) &&
+                                       apply_noise(m_rgba, offset, variance, color::get_green, color::set_green) &&
+                                       apply_noise(m_rgba, offset, variance, color::get_blue, color::set_blue);
                         }
 
                 default:
@@ -701,12 +694,6 @@ namespace ncv
                         const int cols = static_cast<int>(plane.cols());
 
                         const scalars_t kernel = make_gaussian<scalar_t>(math::cast<double>(sigma));
-
-                        for (size_t i = 0; i < kernel.size(); i ++)
-                        {
-                                std::cout << "kernel [" << (i + 1) << "/" << kernel.size() << "] = " << kernel[i]
-                                             << " / " << std::accumulate(kernel.begin(), kernel.end(), 0.0) << std::endl;
-                        }
 
                         const int ksize = static_cast<int>(kernel.size());
                         const int krad = ksize / 2;
@@ -767,19 +754,12 @@ namespace ncv
                 }
         }
 
-        bool image_t::blur(color_channel channel, scalar_t sigma)
+        bool image_t::gauss(color_channel channel, scalar_t sigma)
         {
                 switch (m_mode)
                 {
                 case color_mode::luma:
-                        switch (channel)
-                        {
-                        case color_channel::luma:
-                                return apply_gauss(m_luma, sigma, color::get_luma, color::set_luma);
-
-                        default:
-                                return false;
-                        }
+                        return apply_gauss(m_luma, sigma, color::get_luma, color::set_luma);
 
                 case color_mode::rgba:
                         switch (channel)
@@ -794,13 +774,13 @@ namespace ncv
                                 return apply_gauss(m_rgba, sigma, color::get_blue, color::set_blue);
 
                         default:
-                                return false;
+                                return apply_gauss(m_rgba, sigma, color::get_red, color::set_red) &&
+                                       apply_gauss(m_rgba, sigma, color::get_green, color::set_green) &&
+                                       apply_gauss(m_rgba, sigma, color::get_blue, color::set_blue);
                         }
 
                 default:
                         return false;
                 }
-
-                return false;
         }
 }

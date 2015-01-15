@@ -42,6 +42,7 @@ namespace ncv
                 green,                  // G
                 blue,                   // B
                 luma,                   // Y/L
+                rgba,                   // RGBA
                 cielab_l,               // CIELab L
                 cielab_a,               // CIELab a
                 cielab_b                // CIELab b
@@ -130,6 +131,7 @@ namespace ncv
                         case color_channel::green:      return "green";
                         case color_channel::blue:       return "blue";
                         case color_channel::luma:       return "luma";
+                        case color_channel::rgba:       return "rgba";
                         case color_channel::cielab_l:   return "cielab_l";
                         case color_channel::cielab_a:   return "cielab_a";
                         case color_channel::cielab_b:   return "cielab_b";
@@ -144,6 +146,7 @@ namespace ncv
                         if (string == "green")          return color_channel::green;
                         if (string == "blue")           return color_channel::blue;
                         if (string == "luma")           return color_channel::luma;
+                        if (string == "rgba")           return color_channel::rgba;
                         if (string == "cielab_l")       return color_channel::cielab_l;
                         if (string == "cielab_a")       return color_channel::cielab_a;
                         if (string == "cielab_b")       return color_channel::cielab_b;

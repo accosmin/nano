@@ -118,7 +118,7 @@ namespace ncv
                 ///
                 /// \brief blur the given color channel with a Gaussian filter having the given sigma
                 ///
-                bool blur(color_channel channel, scalar_t sigma);
+                bool gauss(color_channel channel, scalar_t sigma);
 
                 // access functions
                 coord_t rows() const { return m_rows; }
