@@ -65,14 +65,14 @@ namespace ncv
                 m_impl->m_cache->update(task, sample, loss);
         }
 
-        void accumulator_t::update(const tensor_t& input, const vector_t& target, const loss_t& loss, scalar_t weight)
+        void accumulator_t::update(const tensor_t& input, const vector_t& target, const loss_t& loss)
         {
-                m_impl->m_cache->update(input, target, loss, weight);
+                m_impl->m_cache->update(input, target, loss);
         }
 
-        void accumulator_t::update(const vector_t& input, const vector_t& target, const loss_t& loss, scalar_t weight)
+        void accumulator_t::update(const vector_t& input, const vector_t& target, const loss_t& loss)
         {
-                m_impl->m_cache->update(input, target, loss, weight);
+                m_impl->m_cache->update(input, target, loss);
         }
 
         void accumulator_t::update(const task_t& task, const samples_t& samples, const loss_t& loss)

@@ -52,7 +52,7 @@ namespace ncv
                 m_images.clear();
                 m_samples.clear();
 
-                for (size_t f = 0, idx = 0; f < n_folds(); f ++)
+                for (size_t f = 0; f < n_folds(); f ++)
                 {
                         for (protocol p : {protocol::train, protocol::test})
                         {
@@ -60,7 +60,7 @@ namespace ncv
                                 {
                                         const size_t ilabel = (rng() < 90) ? 0 : (rng() % n_outputs());
 
-                                        sample_t sample(m_images.size(), sample_region(0, 0), ilabel == 0 ? 50.0 : 1.0);
+                                        sample_t sample(m_images.size(), sample_region(0, 0));
                                         sample.m_label = "label" + text::to_string(ilabel);
                                         sample.m_target = ncv::class_target(ilabel, n_outputs());
                                         sample.m_fold = {f, p};
@@ -70,13 +70,6 @@ namespace ncv
                                         image.random();
                                         m_images.push_back(image);
                                 }
-
-                                // normalize weights
-                                const samples_it_t begin = m_samples.begin() + idx;
-                                const samples_it_t end = m_samples.begin() + (idx + m_size / 2);
-
-                                ncv::label_normalize(begin, end);
-                                idx += m_size / 2;
                         }
                 }
         }

@@ -4,12 +4,13 @@ This small (nano) library is used as a sandbox for training and testing models, 
 
 ## Concepts
 
-The library is built around several key concepts mapped to C++ object interfaces. Each object instantation is registered with an **ID** and thus it can be selected from command line arguments.
+The library is built around several key concepts mapped to C++ object interfaces. Each object instantation is registered with an **ID** and thus it can be selected from command line arguments. Also 
+new objects can be easily registered and then they are automatically visibile across the library and its associated programs.
 
 #### Task
 
-A task describes a classification or regression problem consisting of separate training and test image patches with associated target outputs if any. Supported benchmark 
-datasets: **MNIST**, **CIFAR-10**, **CIFAR-100**, **CBCL-FACES**, **STL-10**, **SVHN**, **NORB**. These datasets are loaded directly from the original (compressed) files.
+A task describes a classification or regression problem consisting of separate training and test image patches with associated target outputs if any. The library has built-in support for various 
+standard benchmark datasets like: **MNIST**, **CIFAR-10**, **CIFAR-100**, **STL-10**, **SVHN**, **NORB**. These datasets are loaded directly from the original (compressed) files.
 
 #### Model
 

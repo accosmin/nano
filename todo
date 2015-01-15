@@ -17,11 +17,6 @@
 
 - investigate why NAG is so noisy
 
-- do we actually need the sampling weights?!:
-	- can pass parameters to detection task that specify the amount of samples to generate: samples=10k
-		such that equal number of positive and negative samples are generated
-	- may speed-up training
-
 - augment training samples (to reduce overfitting):
 	- salt & pepper noise (vary the percentage)
 	- translation, scale, various deformations

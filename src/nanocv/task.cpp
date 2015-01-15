@@ -19,9 +19,7 @@ namespace ncv
                         const samples_t lsamples = sampler.get();
                         log_info() << header << " [" << label
                                    << "]: count = " << lsamples.size()
-                                   << "/" << samples.size()
-                                   << ", weights = " << ncv::accumulate(lsamples)
-                                   << "/" << ncv::accumulate(samples) << ".";
+                                   << "/" << samples.size() << ".";
                 }
         }
 

@@ -64,49 +64,43 @@ namespace ncv
 
                 assert(static_cast<size_t>(output.size()) == m_model->osize());
                 assert(static_cast<size_t>(target.size()) == m_model->osize());
-                
-                accumulate(output, target, loss, sample.m_weight);
         }
         
-        void criterion_t::update(const tensor_t& input, const vector_t& target, const loss_t& loss, scalar_t weight)
+        void criterion_t::update(const tensor_t& input, const vector_t& target, const loss_t& loss)
         {
                 const vector_t& output = m_model->output(input).vector();
 
                 assert(static_cast<size_t>(output.size()) == m_model->osize());
                 assert(static_cast<size_t>(target.size()) == m_model->osize());
                 
-                accumulate(output, target, loss, weight);
+                accumulate(output, target, loss);
         }
         
-        void criterion_t::update(const vector_t& input, const vector_t& target, const loss_t& loss, scalar_t weight)
+        void criterion_t::update(const vector_t& input, const vector_t& target, const loss_t& loss)
         {
                 const vector_t& output = m_model->output(input).vector();
 
                 assert(static_cast<size_t>(output.size()) == m_model->osize());
                 assert(static_cast<size_t>(target.size()) == m_model->osize());
                 
-                accumulate(output, target, loss, weight);
+                accumulate(output, target, loss);
         }
 
-        void criterion_t::accumulate(
-                const vector_t& output, const vector_t& target, const loss_t& loss, scalar_t weight)
+        void criterion_t::accumulate(const vector_t& output, const vector_t& target, const loss_t& loss)
         {
-                const scalar_t wvalue = weight * loss.value(target, output);
-                const scalar_t werror = weight * loss.error(target, output);
+                const scalar_t value = loss.value(target, output);
+                const scalar_t error = loss.error(target, output);
 
-                m_estats(werror);
+                m_estats(error);
 
                 switch (m_type)
                 {
                 case type::value:
-                        accumulate(wvalue,
-                                   werror);
+                        accumulate(value, error);
                         break;
 
                 case type::vgrad:
-                        accumulate(weight * m_model->gparam(loss.vgrad(target, output)),
-                                   wvalue,
-                                   werror);
+                        accumulate(m_model->gparam(loss.vgrad(target, output)), value, error);
                         break;
                 }
         }
