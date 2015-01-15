@@ -14,6 +14,8 @@
 - update the test program to evaluate the optimizers to call directly trainer-based functions:
 	- to also do tuning
 
+- may tune the batch size for stochastic optimizers
+
 - check the speed improvement if using floats instead of doubles for training MLP0
 
 - investigate why AdaGrad presents that strange bump in the training loss plot
