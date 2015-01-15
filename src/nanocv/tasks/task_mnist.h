@@ -19,7 +19,7 @@ namespace ncv
                 NANOCV_MAKE_CLONABLE(mnist_task_t, "MNIST (digit classification)")
 
                 // constructor
-                mnist_task_t(const string_t& configuration = string_t());
+                explicit mnist_task_t(const string_t& configuration = string_t());
 
                 // load images from the given directory
                 virtual bool load(const string_t& dir) override;

@@ -18,7 +18,7 @@ namespace ncv
                 NANOCV_MAKE_CLONABLE(dummy_task_t, "test task")
 
                 // constructor
-                dummy_task_t(const string_t& configuration = string_t());
+                explicit dummy_task_t(const string_t& configuration = string_t());
 
                 // change parameters
                 void set_rows(size_t rows);

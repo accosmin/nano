@@ -20,7 +20,7 @@ namespace ncv
                 NANOCV_MAKE_CLONABLE(svhn_task_t, "SVHN (object classification)")
 
                 // constructor
-                svhn_task_t(const string_t& configuration = string_t());
+                explicit svhn_task_t(const string_t& configuration = string_t());
 
                 // load images from the given directory
                 virtual bool load(const string_t& dir) override;

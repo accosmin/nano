@@ -19,7 +19,7 @@ namespace ncv
                 NANOCV_MAKE_CLONABLE(stl10_task_t, "STL-10 (object classification)")
 
                 // constructor
-                stl10_task_t(const string_t& configuration = string_t());
+                explicit stl10_task_t(const string_t& configuration = string_t());
 
                 // load images from the given directory
                 virtual bool load(const string_t& dir) override;

@@ -19,7 +19,7 @@ namespace ncv
                 NANOCV_MAKE_CLONABLE(cifar10_task_t, "CIFAR-10 (object classification)")
 
                 // constructor
-                cifar10_task_t(const string_t& configuration = string_t());
+                explicit cifar10_task_t(const string_t& configuration = string_t());
 
                 // load images from the given directory
                 virtual bool load(const string_t& dir) override;
