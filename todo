@@ -1,6 +1,13 @@
 - implement image noising & blurring:
 	- also update the image test program to test these effects
-	- scaling using RGB channels directly
+	
+	- ncv_test_image: scale using RGB channels directly
+	- ncv_test_image: move the timing functions to ::measure_critical_call
+	- ncv_test_image: options to apply the noise filter or the gaussian filter to a single particular channel or to all RGB ones 
+
+- move & refactor the image processing algorithms (noise, scale, gauss) to src/nanocv/image or to src/util/
+
+- move the logger to src/util & make sure the file module does not depend on it (pass a logging functor)
 
 - nicer way to specify colors than using the current array:
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2  # blue
