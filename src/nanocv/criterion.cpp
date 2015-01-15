@@ -133,6 +133,11 @@ namespace ncv
                 return m_estats.count();
         }
 
+        const vector_t& criterion_t::params() const
+        {
+                return m_params;
+        }
+
         size_t criterion_t::psize() const
         {
                 return static_cast<size_t>(m_params.size());

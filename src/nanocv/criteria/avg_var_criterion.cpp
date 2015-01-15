@@ -48,13 +48,13 @@ namespace ncv
         scalar_t avg_var_criterion_t::value() const
         {
                 return  avg_criterion_t::value() +
-                        m_lambda * (count() * m_value2 - m_value * m_value) / (count() * count());
+                        lambda() * (count() * m_value2 - m_value * m_value) / (count() * count());
         }
 
         vector_t avg_var_criterion_t::vgrad() const
         {
                 return  avg_criterion_t::vgrad() +
-                        2.0 * m_lambda * (count() * m_vgrad2 - m_value * m_vgrad) / (count() * count());
+                        2.0 * lambda() * (count() * m_vgrad2 - m_value * m_vgrad) / (count() * count());
         }
 
         bool avg_var_criterion_t::can_regularize() const

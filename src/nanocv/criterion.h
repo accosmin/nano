@@ -91,6 +91,11 @@ namespace ncv
                 size_t count() const;
 
                 ///
+                /// \brief current parameters
+                ///
+                const vector_t& params() const;
+
+                ///
                 /// \brief number of dimensions/parameters
                 ///
                 size_t psize() const;
@@ -125,7 +130,7 @@ namespace ncv
                 ///
                 void accumulate(const vector_t& output, const vector_t& target, const loss_t&);
 
-        protected:
+        private:
 
                 // attributes
                 rmodel_t                m_model;        ///< current model
