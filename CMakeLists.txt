@@ -228,11 +228,11 @@ set(nanocv_programs
 # Build executables
 foreach(proj ${nanocv_test_programs})
         add_executable(${proj} test/${proj}.cpp)
-        target_link_libraries(${proj} nanocv ${libs})
+        target_link_libraries(${proj} nanocv)
 endforeach()
 foreach(proj ${nanocv_programs})
         add_executable(${proj} apps/${proj}.cpp)
-        target_link_libraries(${proj} nanocv ${libs})
+        target_link_libraries(${proj} nanocv)
 endforeach()
 
 ######################################################################
