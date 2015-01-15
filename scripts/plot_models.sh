@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source common_plot.sh
+
 # input files: [output plot] [*.state (train loss, train error, train error variance, valid loss, valid error, valid error variance)]+
 ifiles=("$@")
   
@@ -24,7 +26,7 @@ titles=(`echo "train-loss train-error train-error-var valid-loss valid-error val
 
 # set the plotting attributes
 rm -f ${pfile}
-echo "set terminal ${format}" >> ${pfile}        
+prepare_terminal ${pfile}
 echo "set output \"${ofile}\"" >> ${pfile}
 echo "set size 1.0,1.0" >> ${pfile}
 
@@ -34,17 +36,12 @@ do
         index=${indices[$k]}
         title=${titles[$k]}
 
+	prepare_plot ${pfile}
         echo "set origin 0.0,0.0" >> ${pfile}
         echo "set size 1.0,1.0" >> ${pfile}
         echo "set title \"${title}\"" >> ${pfile}
         echo "set xlabel \"epochs/iterations\"" >> ${pfile}
         echo "set ylabel \"loss/error\"" >> ${pfile}
-        echo "set xrange [*:*]" >> ${pfile}
-        echo "set yrange [*:*]" >> ${pfile}
-        echo "set xtic auto" >> ${pfile}
-        echo "set ytic auto" >> ${pfile}   
-        echo "set grid xtics ytics" >> ${pfile}
-        echo "set key right top" >> ${pfile}
 
         echo -n "plot " >> ${pfile}
         for ((i=1;i<${#ifiles[*]};i++))

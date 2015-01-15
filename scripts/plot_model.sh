@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source common_plot.sh
+
 # input file: *.state (train loss, train error, valid loss, valid error)
 ifile=$1
 
@@ -26,23 +28,18 @@ ofile=${ifile/.state/.pdf}
 
 # set the plotting attributes
 rm -f ${pfile}
-echo "set terminal pdf" >> ${pfile}        
+prepare_terminal ${pfile}
 echo "set output \"${ofile}\"" >> ${pfile}
 echo "set multiplot" >> ${pfile}
 echo "set size 1.0,1.0" >> ${pfile}
 
 # create plot: train vs validation (loss value and error)
+prepare_plot ${pfile}
 echo "set origin 0.0,0.5" >> ${pfile}
 echo "set size 1.0,0.5" >> ${pfile}
 echo "set title \"${title}\"" >> ${pfile}
 echo "set xlabel \"epochs/iterations\"" >> ${pfile}
 echo "set ylabel \"loss/error\"" >> ${pfile}
-echo "set xrange [*:*]" >> ${pfile}
-echo "set yrange [*:*]" >> ${pfile}
-echo "set xtic auto" >> ${pfile}
-echo "set ytic auto" >> ${pfile}   
-echo "set grid xtics ytics" >> ${pfile}
-echo "set key right top" >> ${pfile}
 
 echo -n "plot " >> ${pfile}
 echo -e "\t'${ifile}' using $((tlindex+1)) title '${labels[$tlindex]}' with linespoints ${styles[$tlindex]//:/ },\\" >> ${pfile}
@@ -54,17 +51,12 @@ echo -e "\t'${ifile}' using $((veindex_var+1)) title '${labels[$veindex_var]}' w
 echo "" >> ${pfile}
 
 # create plot: train vs validation loss value
+prepare_plot ${pfile}
 echo "set origin 0.0,0.0" >> ${pfile}
 echo "set size 0.33,0.5" >> ${pfile}
 echo "set title \"${title}\"" >> ${pfile}
 echo "set xlabel \"epochs/iterations\"" >> ${pfile}
 echo "set ylabel \"loss\"" >> ${pfile}
-echo "set xrange [*:*]" >> ${pfile}
-echo "set yrange [*:*]" >> ${pfile}
-echo "set xtic auto" >> ${pfile}
-echo "set ytic auto" >> ${pfile}   
-echo "set grid xtics ytics" >> ${pfile}
-echo "set key right top" >> ${pfile}
 
 echo -n "plot " >> ${pfile}
 echo -e "\t'${ifile}' using $((tlindex+1)) title '${labels[$tlindex]}' with linespoints ${styles[$tlindex]//:/ },\\" >> ${pfile}
@@ -72,17 +64,12 @@ echo -e "\t'${ifile}' using $((vlindex+1)) title '${labels[$vlindex]}' with line
 echo "" >> ${pfile}
 
 # create plot: train vs validation average error
+prepare_plot ${pfile}
 echo "set origin 0.33,0.0" >> ${pfile}
 echo "set size 0.33,0.5" >> ${pfile}
 echo "set title \"${title}\"" >> ${pfile}
 echo "set xlabel \"epochs/iterations\"" >> ${pfile}
 echo "set ylabel \"error\"" >> ${pfile}
-echo "set xrange [*:*]" >> ${pfile}
-echo "set yrange [*:*]" >> ${pfile}
-echo "set xtic auto" >> ${pfile}
-echo "set ytic auto" >> ${pfile}
-echo "set grid xtics ytics" >> ${pfile}
-echo "set key right top" >> ${pfile}
 
 echo -n "plot " >> ${pfile}
 echo -e "\t'${ifile}' using $((teindex_avg+1)) title '${labels[$teindex_avg]}' with linespoints ${styles[$teindex_avg]//:/ },\\" >> ${pfile}
@@ -90,17 +77,12 @@ echo -e "\t'${ifile}' using $((veindex_avg+1)) title '${labels[$veindex_avg]}' w
 echo "" >> ${pfile}
 
 # create plot: train vs validation error variance
+prepare_plot ${pfile}
 echo "set origin 0.66,0.0" >> ${pfile}
 echo "set size 0.33,0.5" >> ${pfile}
 echo "set title \"${title}\"" >> ${pfile}
 echo "set xlabel \"epochs/iterations\"" >> ${pfile}
 echo "set ylabel \"error\"" >> ${pfile}
-echo "set xrange [*:*]" >> ${pfile}
-echo "set yrange [*:*]" >> ${pfile}
-echo "set xtic auto" >> ${pfile}
-echo "set ytic auto" >> ${pfile}   
-echo "set grid xtics ytics" >> ${pfile}
-echo "set key right top" >> ${pfile}
 
 echo -n "plot " >> ${pfile}
 echo -e "\t'${ifile}' using $((teindex_var+1)) title '${labels[$teindex_var]}' with linespoints ${styles[$teindex_var]//:/ },\\" >> ${pfile}

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source common.sh
+source common_train.sh
 
 # common parameters
 params=""
