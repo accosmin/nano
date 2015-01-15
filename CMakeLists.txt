@@ -111,9 +111,6 @@ endif()
 # Do not use Eigen's MT
 add_definitions(-DEIGEN_DONT_PARALLELIZE)
 
-#set (CMAKE_BUILD_TYPE RELEASE)
-#set (CMAKE_BUILD_TYPE DEBUG)
-
 message("------------------------------------------------------------------------------" "")
 message("CXX FLAGS:                    " "${CMAKE_CXX_FLAGS}")
 message("CXX DEBUG FLAGS:              " "${CMAKE_CXX_FLAGS_DEBUG}")
