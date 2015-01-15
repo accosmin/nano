@@ -9,8 +9,9 @@ namespace ncv
         /// \brief resize the input matrix by the given factor (using bilinear interpolation)
         ///
         template
-        <       typename tmatrix,
-                typename tscalar = double
+        <
+                typename tscalar = double,
+                typename tmatrix
         >
         void bilinear(const tmatrix& src, tmatrix& dst, tscalar factor)
         {
