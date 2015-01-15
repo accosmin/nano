@@ -64,6 +64,8 @@ namespace ncv
 
                 assert(static_cast<size_t>(output.size()) == m_model->osize());
                 assert(static_cast<size_t>(target.size()) == m_model->osize());
+
+                accumulate(output, target, loss);
         }
         
         void criterion_t::update(const tensor_t& input, const vector_t& target, const loss_t& loss)
