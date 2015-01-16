@@ -1,13 +1,11 @@
-- ncv_test_image: move the timing functions to ::measure_critical_call
-
 - move & refactor the image processing algorithms (noise, scale, gauss) to src/nanocv/image or to src/util/
-
-- image_t::scale_keep_size (only if scale > 1)
-- image_t::scale_translate_keep_size (scale only if scale > 1, translate with offset and then cut)
 
 - improved noise model:
 	- salt & pepper - like now
 	- smooth the noise map (with a sigma parameter) and then apply it
+
+- image_t::scale_keep_size (only if scale > 1)
+- image_t::scale_translate_keep_size (scale only if scale > 1, translate with offset and then cut)
 
 - nicer way to specify colors than using the current array:
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2  # blue
