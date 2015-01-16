@@ -73,47 +73,42 @@ int main(int argc, char *argv[])
                 return EXIT_FAILURE;
         }
 
-        ncv::timer_t timer;
-
         // load input image
-        timer.start();
         image_t image;
-        if (!(cmd_luma ? image.load_luma(cmd_input) : image.load_rgba(cmd_input)))
-        {
-                log_error() << "<<< failed to load image <" << cmd_input << ">!";
-                return EXIT_FAILURE;
-        }
-        else
-        {
-                log_info() << "<<< loaded " << image.cols() << "x" << image.rows() << " pixels in " << timer.elapsed() << ".";
-        }
+        ncv::measure_critical_call(
+               [&] () { return (cmd_luma ? image.load_luma(cmd_input) : image.load_rgba(cmd_input)); },
+               "loaded image from <" + cmd_input + ">",
+               "failed to load image from <" + cmd_input + ">");
+
+        log_info () << "image: " << image.cols() << "x" << image.rows() << " pixels, "
+                    << (image.is_luma() ? "[luma]" : "[rgba]") << ".";
 
         // scale the image
-        timer.start();
-        image.scale(cmd_scale);
-        log_info() << "<<< scaled to " << image.cols() << "x" << image.rows() << " pixels in " << timer.elapsed() << ".";
+        ncv::measure_critical_call(
+                [&] () { return image.scale(cmd_scale); },
+                "scaled image",
+                "failed to scale image");
+
+        log_info () << "image: " << image.cols() << "x" << image.rows() << " pixels, "
+                    << (image.is_luma() ? "[luma]" : "[rgba]") << ".";
 
         // apply noise
-        timer.start();
-        image.noise(cmd_noise_channel, cmd_noise_offset, cmd_noise_variance);
-        log_info() << "<<< applied noise to " << image.cols() << "x" << image.rows() << " pixels in " << timer.elapsed() << ".";
+        ncv::measure_critical_call(
+                [&] () { return image.noise(cmd_noise_channel, cmd_noise_offset, cmd_noise_variance); },
+                "applied noise",
+                "failed to apply noise");
 
         // apply bluring
-        timer.start();
-        image.gauss(cmd_gauss_channel, cmd_gauss_sigma);
-        log_info() << "<<< applied bluring to " << image.cols() << "x" << image.rows() << " pixels in " << timer.elapsed() << ".";
+        ncv::measure_critical_call(
+                [&] () { return image.gauss(cmd_gauss_channel, cmd_gauss_sigma); },
+                "blurred",
+                "failed to blur");
 
         // save output image
-        timer.start();
-        if (!image.save(cmd_output))
-        {
-                log_error() << ">>> failed to save image <" << cmd_output << ">!";
-                return EXIT_FAILURE;
-        }
-        else
-        {
-                log_info() << ">>> saved scaled image in " << timer.elapsed() << ".";
-        }
+        ncv::measure_critical_call(
+                [&] () { return image.save(cmd_output); },
+                "saved image to <" + cmd_output + ">",
+                "failed to save to <" + cmd_output + ">");
 		
         // OK
         log_info() << ncv::done;
