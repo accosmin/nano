@@ -1,49 +1,87 @@
 #pragma once
 
-#include "cast.hpp"
-#include <vector>
-#include <type_traits>
-#include <numeric>
+#include "gauss.hpp"
 
 namespace ncv
 {
         ///
-        /// \brief compute the Gaussian filter associated to the given standard deviation
+        /// \brief filter the input matrix with a Gaussian kernel having the given standard deviation sigma
         ///
         template
         <
-                typename tscalar,
+                typename tscalar = double,
+                typename tmatrix,
+                typename tgetter,                       ///< extract value from element (e.g. pixel)
+                typename tsetter,                       ///< set value to element (e.g. pixel)
 
-                /// disable for not valid types!
-                typename tvalid_tscalar = typename std::enable_if<std::is_floating_point<tscalar>::value>::type
+                typename tvalue = typename tmatrix::Scalar
         >
-        std::vector<tscalar> make_gaussian(tscalar _sigma)
+        bool gaussian(const tmatrix& src, tmatrix& dst, tscalar sigma, tvalue minv, tvalue maxv, tgetter getter, tsetter setter)
         {
-                const double sigma = std::max(0.1, static_cast<double>(_sigma));
+                const int rows = static_cast<int>(src.rows());
+                const int cols = static_cast<int>(src.cols());
 
-                static const double kmin = 0.01;
-                static const double pi = 4.0 * std::atan2(1.0, 1.0);
-
-                const double xnorm = 1.0 / (2.0 * sigma * sigma);
-                const double gnorm = 1.0 / (std::sqrt(2.0 * pi) * sigma);
-
-                // estimate radius that produces weights higher than minimum weight <kmin>
-                const double xradius = std::sqrt(-std::log(kmin / gnorm) / xnorm);
-                const int radius = std::max(1, math::cast<int>(xradius));
-
-                // setup kernel
-                std::vector<tscalar> kernel(2 * radius + 1);
-                for (int x = -radius; x <= radius; x ++)
+                if (&src != &dst)
                 {
-                        kernel[x + radius] = math::cast<tscalar>(gnorm * std::exp(-x * x * xnorm));
+                        dst = src;
                 }
 
-                // normalize kernel
-                const tscalar wnorm = tscalar(1) / std::accumulate(kernel.begin(), kernel.end(), tscalar(0));
-                std::for_each(kernel.begin(), kernel.end(), [=] (tscalar& w) { w *= wnorm; });
+                // construct Gaussian kernel
+                const std::vector<tscalar> kernel = make_gaussian(sigma);
 
-                // OK
-                return kernel;
+                const int ksize = static_cast<int>(kernel.size());
+                const int krad = ksize / 2;
+
+                if (ksize != (2 * krad + 1))
+                {
+                        return false;
+                }
+
+                std::vector<tscalar> buff(std::max(rows, cols));
+
+                // horizontal filter
+                for (int r = 0; r < rows; r ++)
+                {
+                        for (int c = 0; c < cols; c ++)
+                        {
+                                buff[c] = math::cast<tscalar>(getter(dst(r, c)));
+                        }
+
+                        for (int c = 0; c < cols; c ++)
+                        {
+                                tscalar v = 0;
+                                for (int k = -krad; k <= krad; k ++)
+                                {
+                                        const int cc = math::clamp(k + c, 0, cols - 1);
+                                        v += kernel[k + krad] * buff[cc];
+                                }
+
+                                dst(r, c) = setter(dst(r, c), math::cast<tvalue>(math::clamp(v, minv, maxv)));
+                        }
+                }
+
+                // vertical filter
+                for (int c = 0; c < cols; c ++)
+                {
+                        for (int r = 0; r < rows; r ++)
+                        {
+                                buff[r] = math::cast<tscalar>(getter(dst(r, c)));
+                        }
+
+                        for (int r = 0; r < rows; r ++)
+                        {
+                                tscalar v = 0;
+                                for (int k = -krad; k <= krad; k ++)
+                                {
+                                        const int rr = math::clamp(k + r, 0, rows - 1);
+                                        v += kernel[k + krad] * buff[rr];
+                                }
+
+                                dst(r, c) = setter(dst(r, c), math::cast<tvalue>(math::clamp(v, minv, maxv)));
+                        }
+                }
+
+                return true;
         }
 }
 

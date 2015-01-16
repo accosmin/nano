@@ -671,100 +671,29 @@ namespace ncv
                 }
         }
 
-        namespace
-        {
-                template
-                <
-                        typename tmatrix,
-                        typename tgetter,                       ///< extract value from element (e.g. pixel)
-                        typename tsetter                        ///< set value to element (e.g. pixel)
-                >
-                bool apply_gauss(tmatrix& plane, scalar_t sigma, scalar_t minv, scalar_t maxv, tgetter getter, tsetter setter)
-                {
-                        const int rows = static_cast<int>(plane.rows());
-                        const int cols = static_cast<int>(plane.cols());
-
-                        const scalars_t kernel = make_gaussian<scalar_t>(sigma);
-
-                        const int ksize = static_cast<int>(kernel.size());
-                        const int krad = ksize / 2;
-
-                        if (ksize != (2 * krad + 1))
-                        {
-                                return false;
-                        }
-
-                        typedef typename tmatrix::Scalar tvalue;
-
-                        scalars_t buff(std::max(rows, cols));
-
-                        for (int r = 0; r < rows; r ++)
-                        {
-                                for (int c = 0; c < cols; c ++)
-                                {
-                                        buff[c] = math::cast<scalar_t>(getter(plane(r, c)));
-                                }
-
-                                for (int c = 0; c < cols; c ++)
-                                {
-                                        scalar_t v = 0;
-                                        for (int k = -krad; k <= krad; k ++)
-                                        {
-                                                const int cc = math::clamp(k + c, 0, cols - 1);
-                                                v += kernel[k + krad] * buff[cc];
-                                        }
-
-                                        plane(r, c) = setter(plane(r, c), math::cast<tvalue>(math::clamp(v, minv, maxv)));
-                                }
-                        }
-
-                        for (int c = 0; c < cols; c ++)
-                        {
-                                for (int r = 0; r < rows; r ++)
-                                {
-                                        buff[r] = math::cast<scalar_t>(getter(plane(r, c)));
-                                }
-
-                                for (int r = 0; r < rows; r ++)
-                                {
-                                        scalar_t v = 0;
-                                        for (int k = -krad; k <= krad; k ++)
-                                        {
-                                                const int rr = math::clamp(k + r, 0, rows - 1);
-                                                v += kernel[k + krad] * buff[rr];
-                                        }
-
-                                        plane(r, c) = setter(plane(r, c), math::cast<tvalue>(math::clamp(v, minv, maxv)));
-                                }
-                        }
-
-                        return true;
-                }
-        }
-
         bool image_t::gauss(color_channel channel, scalar_t sigma)
         {
                 switch (m_mode)
                 {
                 case color_mode::luma:
-                        return apply_gauss(m_luma, sigma, 0, 255, color::get_luma, color::set_luma);
+                        return gaussian(m_luma, m_luma, sigma, 0, 255, color::get_luma, color::set_luma);
 
                 case color_mode::rgba:
                         switch (channel)
                         {
                         case color_channel::red:
-                                return apply_gauss(m_rgba, sigma, 0, 255, color::get_red, color::set_red);
+                                return gaussian(m_rgba, m_rgba, sigma, 0, 255, color::get_red, color::set_red);
 
                         case color_channel::green:
-                                return apply_gauss(m_rgba, sigma, 0, 255, color::get_green, color::set_green);
+                                return gaussian(m_rgba, m_rgba, sigma, 0, 255, color::get_green, color::set_green);
 
                         case color_channel::blue:
-                                return apply_gauss(m_rgba, sigma, 0, 255, color::get_blue, color::set_blue);
+                                return gaussian(m_rgba, m_rgba, sigma, 0, 255, color::get_blue, color::set_blue);
 
                         default:
-                                return apply_gauss(m_rgba, sigma, 0, 255, color::get_red, color::set_red) &&
-                                       apply_gauss(m_rgba, sigma, 0, 255, color::get_green, color::set_green) &&
-                                       apply_gauss(m_rgba, sigma, 0, 255, color::get_blue, color::set_blue);
+                                return gaussian(m_rgba, m_rgba, sigma, 0, 255, color::get_red, color::set_red) &&
+                                       gaussian(m_rgba, m_rgba, sigma, 0, 255, color::get_green, color::set_green) &&
+                                       gaussian(m_rgba, m_rgba, sigma, 0, 255, color::get_blue, color::set_blue);
                         }
 
                 default:
