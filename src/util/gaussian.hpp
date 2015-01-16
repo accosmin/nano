@@ -5,7 +5,7 @@
 namespace ncv
 {
         ///
-        /// \brief filter the input matrix with a Gaussian kernel having the given standard deviation sigma
+        /// \brief in-place filter the input matrix with a Gaussian kernel having the given standard deviation sigma
         ///
         template
         <
@@ -16,15 +16,10 @@ namespace ncv
 
                 typename tvalue = typename tmatrix::Scalar
         >
-        bool gaussian(const tmatrix& src, tmatrix& dst, tscalar sigma, tvalue minv, tvalue maxv, tgetter getter, tsetter setter)
+        bool gaussian(tmatrix& src, tscalar sigma, tvalue minv, tvalue maxv, tgetter getter, tsetter setter)
         {
                 const int rows = static_cast<int>(src.rows());
                 const int cols = static_cast<int>(src.cols());
-
-                if (&src != &dst)
-                {
-                        dst = src;
-                }
 
                 // construct Gaussian kernel
                 const std::vector<tscalar> kernel = make_gaussian(sigma);
@@ -44,7 +39,7 @@ namespace ncv
                 {
                         for (int c = 0; c < cols; c ++)
                         {
-                                buff[c] = math::cast<tscalar>(getter(dst(r, c)));
+                                buff[c] = math::cast<tscalar>(getter(src(r, c)));
                         }
 
                         for (int c = 0; c < cols; c ++)
@@ -56,7 +51,7 @@ namespace ncv
                                         v += kernel[k + krad] * buff[cc];
                                 }
 
-                                dst(r, c) = setter(dst(r, c), math::cast<tvalue>(math::clamp(v, minv, maxv)));
+                                src(r, c) = setter(src(r, c), math::cast<tvalue>(math::clamp(v, minv, maxv)));
                         }
                 }
 
@@ -65,7 +60,7 @@ namespace ncv
                 {
                         for (int r = 0; r < rows; r ++)
                         {
-                                buff[r] = math::cast<tscalar>(getter(dst(r, c)));
+                                buff[r] = math::cast<tscalar>(getter(src(r, c)));
                         }
 
                         for (int r = 0; r < rows; r ++)
@@ -77,7 +72,7 @@ namespace ncv
                                         v += kernel[k + krad] * buff[rr];
                                 }
 
-                                dst(r, c) = setter(dst(r, c), math::cast<tvalue>(math::clamp(v, minv, maxv)));
+                                src(r, c) = setter(src(r, c), math::cast<tvalue>(math::clamp(v, minv, maxv)));
                         }
                 }
 
