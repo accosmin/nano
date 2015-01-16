@@ -580,25 +580,19 @@ namespace ncv
                 case color_mode::luma:
                         {
                                 luma_matrix_t luma_scaled;
-                                ncv::bilinear(m_luma, luma_scaled, factor);
-
+                                ncv::bilinear(m_luma, luma_scaled, factor, 0, 255, color::get_luma, color::set_luma);
                                 m_luma = luma_scaled;
                         }
-
                         return setup_luma();
 
                 case color_mode::rgba:
                         {
-                                cielab_matrix_t cielab(rows(), cols());
-                                tensor::transform(m_rgba, cielab, color::make_cielab);
-
-                                cielab_matrix_t cielab_scaled;
-                                ncv::bilinear(cielab, cielab_scaled, factor);
-
-                                m_rgba.resize(cielab_scaled.rows(), cielab_scaled.cols());
-                                tensor::transform(cielab_scaled, m_rgba, [] (const cielab_t& lab) { return color::make_rgba(lab); });
+                                rgba_matrix_t rgba_scaled;
+                                ncv::bilinear(m_rgba, rgba_scaled, factor, 0, 255, color::get_red, color::set_red);
+                                ncv::bilinear(m_rgba, rgba_scaled, factor, 0, 255, color::get_green, color::set_green);
+                                ncv::bilinear(m_rgba, rgba_scaled, factor, 0, 255, color::get_blue, color::set_blue);
+                                m_rgba = rgba_scaled;
                         }
-
                         return setup_rgba();
 
                 default:
@@ -629,15 +623,12 @@ namespace ncv
                 template
                 <
                         typename tmatrix,
-                        typename tgetter,
-                        typename tsetter
+                        typename tgetter,                       ///< extract value from element (e.g. pixel)
+                        typename tsetter                        ///< set value to element (e.g. pixel)
                 >
-                bool apply_noise(tmatrix& plane, scalar_t offset, scalar_t variance, tgetter getter, tsetter setter)
+                bool apply_noise(tmatrix& plane, scalar_t offset, scalar_t variance, scalar_t minv, scalar_t maxv, tgetter getter, tsetter setter)
                 {
                         random_t<scalar_t> noiser(offset - variance, offset + variance);
-
-                        const scalar_t minv = 0;
-                        const scalar_t maxv = 255;
 
                         typedef typename tmatrix::Scalar tvalue;
 
@@ -655,24 +646,24 @@ namespace ncv
                 switch (m_mode)
                 {
                 case color_mode::luma:
-                        return apply_noise(m_luma, offset, variance, color::get_luma, color::set_luma);
+                        return apply_noise(m_luma, offset, variance, 0, 255, color::get_luma, color::set_luma);
 
                 case color_mode::rgba:
                         switch (channel)
                         {
                         case color_channel::red:
-                                return apply_noise(m_rgba, offset, variance, color::get_red, color::set_red);
+                                return apply_noise(m_rgba, offset, variance, 0, 255, color::get_red, color::set_red);
 
                         case color_channel::green:
-                                return apply_noise(m_rgba, offset, variance, color::get_green, color::set_green);
+                                return apply_noise(m_rgba, offset, variance, 0, 255, color::get_green, color::set_green);
 
                         case color_channel::blue:
-                                return apply_noise(m_rgba, offset, variance, color::get_blue, color::set_blue);
+                                return apply_noise(m_rgba, offset, variance, 0, 255, color::get_blue, color::set_blue);
 
                         default:
-                                return apply_noise(m_rgba, offset, variance, color::get_red, color::set_red) &&
-                                       apply_noise(m_rgba, offset, variance, color::get_green, color::set_green) &&
-                                       apply_noise(m_rgba, offset, variance, color::get_blue, color::set_blue);
+                                return apply_noise(m_rgba, offset, variance, 0, 255, color::get_red, color::set_red) &&
+                                       apply_noise(m_rgba, offset, variance, 0, 255, color::get_green, color::set_green) &&
+                                       apply_noise(m_rgba, offset, variance, 0, 255, color::get_blue, color::set_blue);
                         }
 
                 default:
@@ -685,15 +676,15 @@ namespace ncv
                 template
                 <
                         typename tmatrix,
-                        typename tgetter,
-                        typename tsetter
+                        typename tgetter,                       ///< extract value from element (e.g. pixel)
+                        typename tsetter                        ///< set value to element (e.g. pixel)
                 >
-                bool apply_gauss(tmatrix& plane, scalar_t sigma, tgetter getter, tsetter setter)
+                bool apply_gauss(tmatrix& plane, scalar_t sigma, scalar_t minv, scalar_t maxv, tgetter getter, tsetter setter)
                 {
                         const int rows = static_cast<int>(plane.rows());
                         const int cols = static_cast<int>(plane.cols());
 
-                        const scalars_t kernel = make_gaussian<scalar_t>(math::cast<double>(sigma));
+                        const scalars_t kernel = make_gaussian<scalar_t>(sigma);
 
                         const int ksize = static_cast<int>(kernel.size());
                         const int krad = ksize / 2;
@@ -702,9 +693,6 @@ namespace ncv
                         {
                                 return false;
                         }
-
-                        const scalar_t minv = 0;
-                        const scalar_t maxv = 255;
 
                         typedef typename tmatrix::Scalar tvalue;
 
@@ -759,24 +747,24 @@ namespace ncv
                 switch (m_mode)
                 {
                 case color_mode::luma:
-                        return apply_gauss(m_luma, sigma, color::get_luma, color::set_luma);
+                        return apply_gauss(m_luma, sigma, 0, 255, color::get_luma, color::set_luma);
 
                 case color_mode::rgba:
                         switch (channel)
                         {
                         case color_channel::red:
-                                return apply_gauss(m_rgba, sigma, color::get_red, color::set_red);
+                                return apply_gauss(m_rgba, sigma, 0, 255, color::get_red, color::set_red);
 
                         case color_channel::green:
-                                return apply_gauss(m_rgba, sigma, color::get_green, color::set_green);
+                                return apply_gauss(m_rgba, sigma, 0, 255, color::get_green, color::set_green);
 
                         case color_channel::blue:
-                                return apply_gauss(m_rgba, sigma, color::get_blue, color::set_blue);
+                                return apply_gauss(m_rgba, sigma, 0, 255, color::get_blue, color::set_blue);
 
                         default:
-                                return apply_gauss(m_rgba, sigma, color::get_red, color::set_red) &&
-                                       apply_gauss(m_rgba, sigma, color::get_green, color::set_green) &&
-                                       apply_gauss(m_rgba, sigma, color::get_blue, color::set_blue);
+                                return apply_gauss(m_rgba, sigma, 0, 255, color::get_red, color::set_red) &&
+                                       apply_gauss(m_rgba, sigma, 0, 255, color::get_green, color::set_green) &&
+                                       apply_gauss(m_rgba, sigma, 0, 255, color::get_blue, color::set_blue);
                         }
 
                 default:

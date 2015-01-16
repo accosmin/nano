@@ -17,9 +17,9 @@ namespace ncv
                 /// disable for not valid types!
                 typename tvalid_tscalar = typename std::enable_if<std::is_floating_point<tscalar>::value>::type
         >
-        std::vector<tscalar> make_gaussian(double sigma)
+        std::vector<tscalar> make_gaussian(tscalar _sigma)
         {
-                sigma = std::max(0.1, sigma);
+                const double sigma = std::max(0.1, static_cast<double>(_sigma));
 
                 static const double kmin = 0.01;
                 static const double pi = 4.0 * std::atan2(1.0, 1.0);
