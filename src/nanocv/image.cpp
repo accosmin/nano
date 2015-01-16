@@ -1,8 +1,7 @@
 #include "image.h"
 #include "util/bilinear.hpp"
 #include "util/gaussian.hpp"
-#include "util/random.hpp"
-#include "util/math.hpp"
+#include "util/additive_noise.hpp"
 #include "tensor/transform.hpp"
 #include <IL/il.h>
 #include <map>
@@ -618,52 +617,29 @@ namespace ncv
                 }
         }
 
-        namespace
-        {
-                template
-                <
-                        typename tmatrix,
-                        typename tgetter,                       ///< extract value from element (e.g. pixel)
-                        typename tsetter                        ///< set value to element (e.g. pixel)
-                >
-                bool apply_noise(tmatrix& plane, scalar_t offset, scalar_t variance, scalar_t minv, scalar_t maxv, tgetter getter, tsetter setter)
-                {
-                        random_t<scalar_t> noiser(offset - variance, offset + variance);
-
-                        typedef typename tmatrix::Scalar tvalue;
-
-                        tensor::transform(plane, plane, [&] (tvalue v)
-                        {
-                                return setter(v, math::cast<tvalue>(math::clamp(noiser() + getter(v), minv, maxv)));
-                        });
-
-                        return true;
-                }
-        }
-
         bool image_t::noise(color_channel channel, scalar_t offset, scalar_t range, scalar_t sigma)
         {
                 switch (m_mode)
                 {
                 case color_mode::luma:
-                        return apply_noise(m_luma, offset, range, 0, 255, color::get_luma, color::set_luma);
+                        return additive_noise(m_luma, offset, range, sigma, 0, 255, color::get_luma, color::set_luma);
 
                 case color_mode::rgba:
                         switch (channel)
                         {
                         case color_channel::red:
-                                return apply_noise(m_rgba, offset, range, 0, 255, color::get_red, color::set_red);
+                                return additive_noise(m_rgba, offset, range, sigma, 0, 255, color::get_red, color::set_red);
 
                         case color_channel::green:
-                                return apply_noise(m_rgba, offset, range, 0, 255, color::get_green, color::set_green);
+                                return additive_noise(m_rgba, offset, range, sigma, 0, 255, color::get_green, color::set_green);
 
                         case color_channel::blue:
-                                return apply_noise(m_rgba, offset, range, 0, 255, color::get_blue, color::set_blue);
+                                return additive_noise(m_rgba, offset, range, sigma, 0, 255, color::get_blue, color::set_blue);
 
                         default:
-                                return apply_noise(m_rgba, offset, range, 0, 255, color::get_red, color::set_red) &&
-                                       apply_noise(m_rgba, offset, range, 0, 255, color::get_green, color::set_green) &&
-                                       apply_noise(m_rgba, offset, range, 0, 255, color::get_blue, color::set_blue);
+                                return additive_noise(m_rgba, offset, range, sigma, 0, 255, color::get_red, color::set_red) &&
+                                       additive_noise(m_rgba, offset, range, sigma, 0, 255, color::get_green, color::set_green) &&
+                                       additive_noise(m_rgba, offset, range, sigma, 0, 255, color::get_blue, color::set_blue);
                         }
 
                 default:
