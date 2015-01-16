@@ -21,8 +21,8 @@ namespace ncv
         {
                 sigma = std::max(0.1, sigma);
 
-                const double kmin = 0.01;
-                const double pi = 4.0 * std::atan2(1.0, 1.0);
+                static const double kmin = 0.01;
+                static const double pi = 4.0 * std::atan2(1.0, 1.0);
 
                 const double xnorm = 1.0 / (2.0 * sigma * sigma);
                 const double gnorm = 1.0 / (std::sqrt(2.0 * pi) * sigma);
