@@ -641,29 +641,29 @@ namespace ncv
                 }
         }
 
-        bool image_t::noise(color_channel channel, scalar_t offset, scalar_t variance)
+        bool image_t::noise(color_channel channel, scalar_t offset, scalar_t range, scalar_t sigma)
         {
                 switch (m_mode)
                 {
                 case color_mode::luma:
-                        return apply_noise(m_luma, offset, variance, 0, 255, color::get_luma, color::set_luma);
+                        return apply_noise(m_luma, offset, range, 0, 255, color::get_luma, color::set_luma);
 
                 case color_mode::rgba:
                         switch (channel)
                         {
                         case color_channel::red:
-                                return apply_noise(m_rgba, offset, variance, 0, 255, color::get_red, color::set_red);
+                                return apply_noise(m_rgba, offset, range, 0, 255, color::get_red, color::set_red);
 
                         case color_channel::green:
-                                return apply_noise(m_rgba, offset, variance, 0, 255, color::get_green, color::set_green);
+                                return apply_noise(m_rgba, offset, range, 0, 255, color::get_green, color::set_green);
 
                         case color_channel::blue:
-                                return apply_noise(m_rgba, offset, variance, 0, 255, color::get_blue, color::set_blue);
+                                return apply_noise(m_rgba, offset, range, 0, 255, color::get_blue, color::set_blue);
 
                         default:
-                                return apply_noise(m_rgba, offset, variance, 0, 255, color::get_red, color::set_red) &&
-                                       apply_noise(m_rgba, offset, variance, 0, 255, color::get_green, color::set_green) &&
-                                       apply_noise(m_rgba, offset, variance, 0, 255, color::get_blue, color::set_blue);
+                                return apply_noise(m_rgba, offset, range, 0, 255, color::get_red, color::set_red) &&
+                                       apply_noise(m_rgba, offset, range, 0, 255, color::get_green, color::set_green) &&
+                                       apply_noise(m_rgba, offset, range, 0, 255, color::get_blue, color::set_blue);
                         }
 
                 default:

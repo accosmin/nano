@@ -19,9 +19,12 @@ int main(int argc, char *argv[])
         po_desc.add_options()("noise-offset",
                 boost::program_options::value<ncv::scalar_t>()->default_value(0.0),
                 "noise offset [-100, +100.0]");
-        po_desc.add_options()("noise-variance",
+        po_desc.add_options()("noise-range",
                 boost::program_options::value<ncv::scalar_t>()->default_value(0.0),
-                "noise variance [0.0, 100.0]");
+                "noise range [0.0, 100.0]");
+        po_desc.add_options()("noise-sigma",
+                boost::program_options::value<ncv::scalar_t>()->default_value(0.0),
+                "noise gaussian bluring standard deviation [0.0, 10.0]");
         po_desc.add_options()("noise-channel",
                 boost::program_options::value<ncv::string_t>()->default_value("rgba"),
                 "noise color channel [luma|red|green|blue|rgba]");
@@ -58,7 +61,8 @@ int main(int argc, char *argv[])
         const string_t cmd_input = po_vm["input"].as<string_t>();
         const scalar_t cmd_scale = math::clamp(po_vm["scale"].as<scalar_t>(), 0.1, 10.0);
         const scalar_t cmd_noise_offset = math::clamp(po_vm["noise-offset"].as<scalar_t>(), -100.0, +100.0);
-        const scalar_t cmd_noise_variance = math::clamp(po_vm["noise-variance"].as<scalar_t>(), 0.0, +100.0);
+        const scalar_t cmd_noise_range = math::clamp(po_vm["noise-range"].as<scalar_t>(), 0.0, 100.0);
+        const scalar_t cmd_noise_sigma = math::clamp(po_vm["noise-sigma"].as<scalar_t>(), 0.0, 10.0);
         const color_channel cmd_noise_channel = text::from_string<color_channel>(po_vm["noise-channel"].as<string_t>());
         const scalar_t cmd_gauss_sigma = math::clamp(po_vm["gauss-sigma"].as<scalar_t>(), 0.0, 10.0);
         const color_channel cmd_gauss_channel = text::from_string<color_channel>(po_vm["gauss-channel"].as<string_t>());
@@ -94,7 +98,7 @@ int main(int argc, char *argv[])
 
         // apply noise
         ncv::measure_critical_call(
-                [&] () { return image.noise(cmd_noise_channel, cmd_noise_offset, cmd_noise_variance); },
+                [&] () { return image.noise(cmd_noise_channel, cmd_noise_offset, cmd_noise_range, cmd_noise_sigma); },
                 "applied noise",
                 "failed to apply noise");
 
