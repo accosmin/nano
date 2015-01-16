@@ -2,6 +2,7 @@
 
 #include <eigen3/Eigen/Core>
 #include <type_traits>
+#include <vector>
 
 namespace ncv
 {

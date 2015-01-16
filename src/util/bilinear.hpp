@@ -18,7 +18,7 @@ namespace ncv
                 typename tvalue = typename tmatrix::Scalar
         >
         bool bilinear(const tmatrix& src, tmatrix& dst, tscalar factor,
-                tvalue minv, tvalue maxv, tgetter getter, tsetter setter)
+                tscalar minv, tscalar maxv, tgetter getter, tsetter setter)
         {
                 static const tscalar eps = math::cast<tscalar>(1e-2);
                 static const tscalar one = math::cast<tscalar>(1.0);

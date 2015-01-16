@@ -1,14 +1,14 @@
 #pragma once
 
-#include "cast.hpp"
-#include "math.hpp"
 #include "random.hpp"
-#include <algorithm>
+#include "gaussian.hpp"
+#include "tensor/matrix.hpp"
+#include "tensor/transform.hpp"
 
 namespace ncv
 {
         ///
-        /// \brief add in-place random noise with a given offset and a dynamic range
+        /// \brief add in-place to the input matrix some random noise with a given offset and a dynamic range
         ///
         /// the noise map is filtered with a Gaussian kernel having the given standard deviation sigma
         ///
@@ -22,15 +22,23 @@ namespace ncv
                 typename tvalue = typename tmatrix::Scalar
         >
         bool additive_noise(tmatrix& src, tscalar offset, tscalar range, tscalar sigma,
-                tvalue minv, tvalue maxv, tgetter getter, tsetter setter)
+                tscalar minv, tscalar maxv, tgetter getter, tsetter setter)
         {
                 random_t<tscalar> noiser(offset - range, offset + range);
 
-                // TODO: store the noise map into a matrix & smoothed with the given sigma!
+                // create random noise map
+                typename tensor::matrix_types_t<tscalar>::tmatrix noisemap(src.rows(), src.cols());
+                tensor::transform(noisemap, noisemap, [&] (tvalue) { return noiser(); });
 
-                std::transform(src.data(), src.data() + src.size(), src.data(), [&] (tvalue v)
+                // smooth the noise map
+                gaussian(noisemap, sigma, noiser.min(), noiser.max(),
+                         [] (tscalar v) { return v; },
+                         [] (tscalar, tscalar v) { return v; });
+
+                // add the noise map to the input matrix
+                tensor::transform(src, noisemap, src, [&] (tvalue v, tscalar n)
                 {
-                        return setter(v, math::cast<tvalue>(math::clamp(noiser() + getter(v), minv, maxv)));
+                        return setter(v, math::cast<tvalue>(math::clamp(n + getter(v), minv, maxv)));
                 });
 
                 return true;

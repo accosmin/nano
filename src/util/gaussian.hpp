@@ -17,7 +17,7 @@ namespace ncv
                 typename tvalue = typename tmatrix::Scalar
         >
         bool gaussian(tmatrix& src, tscalar sigma,
-                tvalue minv, tvalue maxv, tgetter getter, tsetter setter)
+                tscalar minv, tscalar maxv, tgetter getter, tsetter setter)
         {
                 const int rows = static_cast<int>(src.rows());
                 const int cols = static_cast<int>(src.cols());
