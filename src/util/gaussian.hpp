@@ -5,7 +5,7 @@
 namespace ncv
 {
         ///
-        /// \brief in-place filter the input matrix with a Gaussian kernel having the given standard deviation sigma
+        /// \brief in-place Gaussian filter with having the given standard deviation sigma
         ///
         template
         <

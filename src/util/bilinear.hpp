@@ -12,13 +12,11 @@ namespace ncv
         <
                 typename tscalar = double,
                 typename tmatrix,
-                typename tgetter,                       ///< extract value from element (e.g. pixel)
-                typename tsetter,                       ///< set value to element (e.g. pixel)
+                typename tmixer,                        ///< interpolate (pixel) values given weights
 
                 typename tvalue = typename tmatrix::Scalar
         >
-        bool bilinear(const tmatrix& src, tmatrix& dst, tscalar factor,
-                tscalar minv, tscalar maxv, tgetter getter, tsetter setter)
+        bool bilinear(const tmatrix& src, tmatrix& dst, tscalar factor, tmixer mixer)
         {
                 static const tscalar eps = math::cast<tscalar>(1e-2);
                 static const tscalar one = math::cast<tscalar>(1.0);
@@ -49,13 +47,11 @@ namespace ncv
                                         const int ic0 = math::cast<int>(isc), ic1 = std::min(ic0 + 1, icols - 1);
                                         const tscalar wc1 = isc - ic0, wc0 = one - wc1;
 
-                                        const tvalue v = math::cast<tvalue>(
-                                                wr0 * wc0 * getter(src(ir0, ic0)) +
-                                                wr0 * wc1 * getter(src(ir0, ic1)) +
-                                                wr1 * wc1 * getter(src(ir1, ic1)) +
-                                                wr1 * wc0 * getter(src(ir1, ic0)));
-
-                                        dst(_or, _oc) = setter(dst(_or, _oc), math::cast<tvalue>(math::clamp(v, minv, maxv)));
+                                        dst(_or, _oc) = mixer(
+                                                wr0 * wc0, src(ir0, ic0),
+                                                wr0 * wc1, src(ir0, ic1),
+                                                wr1 * wc1, src(ir1, ic1),
+                                                wr1 * wc0, src(ir1, ic0));
                                 }
                         }
                 }

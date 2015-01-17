@@ -111,10 +111,15 @@ namespace ncv
                 bool random();
 
                 ///
-                /// \brief add to the given color channel random additive noise
+                /// \brief apply to the given color channel a random additive noise [offset - range, offset + range]
                 /// (smoothed with a Gaussian filter having the given sigma)
                 ///
-                bool noise(color_channel channel, scalar_t offset, scalar_t range, scalar_t sigma);
+                bool random_noise(color_channel channel, scalar_t offset, scalar_t range, scalar_t sigma);
+
+                ///
+                /// \brief apply a random translation [-range, +range]
+                ///
+                bool random_translation(coord_t range);
 
                 ///
                 /// \brief blur the given color channel with a Gaussian filter having the given sigma

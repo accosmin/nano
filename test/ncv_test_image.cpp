@@ -96,9 +96,9 @@ int main(int argc, char *argv[])
         log_info () << "image: " << image.cols() << "x" << image.rows() << " pixels, "
                     << (image.is_luma() ? "[luma]" : "[rgba]") << ".";
 
-        // apply noise
+        // apply random (additive) noise
         ncv::measure_critical_call(
-                [&] () { return image.noise(cmd_noise_channel, cmd_noise_offset, cmd_noise_range, cmd_noise_sigma); },
+                [&] () { return image.random_noise(cmd_noise_channel, cmd_noise_offset, cmd_noise_range, cmd_noise_sigma); },
                 "applied noise",
                 "failed to apply noise");
 

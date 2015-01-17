@@ -8,9 +8,8 @@
 namespace ncv
 {
         ///
-        /// \brief add in-place to the input matrix some random noise with a given offset and a dynamic range
-        ///
-        /// the noise map is filtered with a Gaussian kernel having the given standard deviation sigma
+        /// \brief in-place random additive noise [offset - range, offset + range]
+        /// (smoothed with a Gaussian filter having the given sigma)
         ///
         template
         <

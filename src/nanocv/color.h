@@ -1,6 +1,8 @@
 #pragma once
 
 #include "types.h"
+#include "util/cast.hpp"
+#include "util/math.hpp"
 
 namespace ncv
 {
@@ -54,6 +56,38 @@ namespace ncv
                 }
 
                 rgba_t make_rgba(const cielab_t& cielab);
+
+                // interpolate luma
+                inline luma_t luma_mixer(
+                        scalar_t w0, luma_t l0,
+                        scalar_t w1, luma_t l1,
+                        scalar_t w2, luma_t l2,
+                        scalar_t w3, luma_t l3)
+                {
+                        const scalar_t l = w0 * l0 + w1 * l1 + w2 * l2 + w3 * l3;
+
+                        return math::cast<luma_t>(math::clamp(l, scalar_t(0), scalar_t(255)));
+                }
+
+                // interpolate rgba
+                inline rgba_t rgba_mixer(
+                        scalar_t w0, rgba_t c0,
+                        scalar_t w1, rgba_t c1,
+                        scalar_t w2, rgba_t c2,
+                        scalar_t w3, rgba_t c3)
+                {
+                        const scalar_t r = w0 * get_red(c0) + w1 * get_red(c1) + w2 * get_red(c2) + w3 * get_red(c3);
+                        const scalar_t g = w0 * get_green(c0) + w1 * get_green(c1) + w2 * get_green(c2) + w3 * get_green(c3);
+                        const scalar_t b = w0 * get_blue(c0) + w1 * get_blue(c1) + w2 * get_blue(c2) + w3 * get_blue(c3);
+                        const scalar_t a = w0 * get_alpha(c0) + w1 * get_alpha(c1) + w2 * get_alpha(c2) + w3 * get_alpha(c3);
+
+                        return  make_rgba(
+                                math::cast<rgba_t>(math::clamp(r, scalar_t(0), scalar_t(255))),
+                                math::cast<rgba_t>(math::clamp(g, scalar_t(0), scalar_t(255))),
+                                math::cast<rgba_t>(math::clamp(b, scalar_t(0), scalar_t(255))),
+                                math::cast<rgba_t>(math::clamp(a, scalar_t(0), scalar_t(255))));
+
+                }
 
                 // color channel range
                 inline scalar_t min(color_channel ch)

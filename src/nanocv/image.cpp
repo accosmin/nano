@@ -1,7 +1,8 @@
 #include "image.h"
 #include "util/bilinear.hpp"
 #include "util/gaussian.hpp"
-#include "util/additive_noise.hpp"
+#include "util/random_noise.hpp"
+#include "util/random_translate.hpp"
 #include "tensor/transform.hpp"
 #include <IL/il.h>
 #include <map>
@@ -579,7 +580,7 @@ namespace ncv
                 case color_mode::luma:
                         {
                                 luma_matrix_t luma_scaled;
-                                ncv::bilinear(m_luma, luma_scaled, factor, 0.0, 255.0, color::get_luma, color::set_luma);
+                                ncv::bilinear(m_luma, luma_scaled, factor, color::luma_mixer);
                                 m_luma = luma_scaled;
                         }
                         return setup_luma();
@@ -587,9 +588,7 @@ namespace ncv
                 case color_mode::rgba:
                         {
                                 rgba_matrix_t rgba_scaled;
-                                ncv::bilinear(m_rgba, rgba_scaled, factor, 0.0, 255.0, color::get_red, color::set_red);
-                                ncv::bilinear(m_rgba, rgba_scaled, factor, 0.0, 255.0, color::get_green, color::set_green);
-                                ncv::bilinear(m_rgba, rgba_scaled, factor, 0.0, 255.0, color::get_blue, color::set_blue);
+                                ncv::bilinear(m_rgba, rgba_scaled, factor, color::rgba_mixer);
                                 m_rgba = rgba_scaled;
                         }
                         return setup_rgba();
@@ -617,7 +616,7 @@ namespace ncv
                 }
         }
 
-        bool image_t::noise(color_channel channel, scalar_t offset, scalar_t range, scalar_t sigma)
+        bool image_t::random_noise(color_channel channel, scalar_t offset, scalar_t range, scalar_t sigma)
         {
                 switch (m_mode)
                 {
@@ -645,6 +644,38 @@ namespace ncv
                 default:
                         return false;
                 }
+        }
+
+        bool image_t::random_translation(coord_t range)
+        {
+                return false;
+
+//                switch (m_mode)
+//                {
+//                case color_mode::luma:
+//                        return additive_noise(m_luma, offset, range, sigma, 0.0, 255.0, color::get_luma, color::set_luma);
+
+//                case color_mode::rgba:
+//                        switch (channel)
+//                        {
+//                        case color_channel::red:
+//                                return additive_noise(m_rgba, offset, range, sigma, 0.0, 255.0, color::get_red, color::set_red);
+
+//                        case color_channel::green:
+//                                return additive_noise(m_rgba, offset, range, sigma, 0.0, 255.0, color::get_green, color::set_green);
+
+//                        case color_channel::blue:
+//                                return additive_noise(m_rgba, offset, range, sigma, 0.0, 255.0, color::get_blue, color::set_blue);
+
+//                        default:
+//                                return additive_noise(m_rgba, offset, range, sigma, 0.0, 255.0, color::get_red, color::set_red) &&
+//                                       additive_noise(m_rgba, offset, range, sigma, 0.0, 255.0, color::get_green, color::set_green) &&
+//                                       additive_noise(m_rgba, offset, range, sigma, 0.0, 255.0, color::get_blue, color::set_blue);
+//                        }
+
+//                default:
+//                        return false;
+//                }
         }
 
         bool image_t::gauss(color_channel channel, scalar_t sigma)
