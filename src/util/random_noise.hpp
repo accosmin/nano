@@ -9,7 +9,8 @@ namespace ncv
 {
         ///
         /// \brief in-place random additive noise [offset - range, offset + range]
-        /// (smoothed with a Gaussian filter having the given sigma)
+        ///
+        /// \note the noise is smoothed with a Gaussian filter having the given sigma
         ///
         template
         <
@@ -40,6 +41,7 @@ namespace ncv
                         return setter(v, math::cast<tvalue>(math::clamp(n + getter(v), minv, maxv)));
                 });
 
+                // OK
                 return true;
         }
 }

@@ -8,6 +8,8 @@ namespace ncv
         ///
         /// \brief in-place random translate [-range, +range]
         ///
+        /// \note keeps the same size, but upscales the input matrix to fit the translation
+        ///
         template
         <
                 typename tscalar = double,
@@ -27,68 +29,21 @@ namespace ncv
                 const int dy = rgen();
 
                 // scale the image to fit the translation
-                const double scalex = math::cast<double>(cols + math::abs(dx) + 1) / math::cast<double>(cols);
-                const double scaley = math::cast<double>(rows + math::abs(dy) + 1) / math::cast<double>(rows);
+                const double scalex = math::cast<double>(cols + 2 * math::abs(dx) + 1) / math::cast<double>(cols);
+                const double scaley = math::cast<double>(rows + 2 * math::abs(dy) + 1) / math::cast<double>(rows);
 
-                tmatrix scaled_src;
-                bilinear(src, scaled_src, std::max(scalex, scaley), mixer);
+                tmatrix ssrc;
+                bilinear(src, ssrc, std::max(scalex, scaley), mixer);
 
+                // cut the translated area
+                const int srows = static_cast<int>(ssrc.rows());
+                const int scols = static_cast<int>(ssrc.cols());
 
-//                // construct Gaussian kernel
-//                const std::vector<tscalar> kernel = make_gaussian(sigma);
+                const int x = dx + (scols - cols) / 2;
+                const int y = dy + (srows - rows) / 2;
+                src = ssrc.block(y, x, rows, cols);
 
-//                const int ksize = static_cast<int>(kernel.size());
-//                const int krad = ksize / 2;
-
-//                if (ksize != (2 * krad + 1))
-//                {
-//                        return false;
-//                }
-
-//                std::vector<tscalar> buff(std::max(rows, cols));
-
-//                // horizontal filter
-//                for (int r = 0; r < rows; r ++)
-//                {
-//                        for (int c = 0; c < cols; c ++)
-//                        {
-//                                buff[c] = math::cast<tscalar>(getter(src(r, c)));
-//                        }
-
-//                        for (int c = 0; c < cols; c ++)
-//                        {
-//                                tscalar v = 0;
-//                                for (int k = -krad; k <= krad; k ++)
-//                                {
-//                                        const int cc = math::clamp(k + c, 0, cols - 1);
-//                                        v += kernel[k + krad] * buff[cc];
-//                                }
-
-//                                src(r, c) = setter(src(r, c), math::cast<tvalue>(math::clamp(v, minv, maxv)));
-//                        }
-//                }
-
-//                // vertical filter
-//                for (int c = 0; c < cols; c ++)
-//                {
-//                        for (int r = 0; r < rows; r ++)
-//                        {
-//                                buff[r] = math::cast<tscalar>(getter(src(r, c)));
-//                        }
-
-//                        for (int r = 0; r < rows; r ++)
-//                        {
-//                                tscalar v = 0;
-//                                for (int k = -krad; k <= krad; k ++)
-//                                {
-//                                        const int rr = math::clamp(k + r, 0, rows - 1);
-//                                        v += kernel[k + krad] * buff[rr];
-//                                }
-
-//                                src(r, c) = setter(src(r, c), math::cast<tvalue>(math::clamp(v, minv, maxv)));
-//                        }
-//                }
-
+                // OK
                 return true;
         }
 }

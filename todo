@@ -1,8 +1,5 @@
 - src/util depends on src/tensor ?!!
 
-- image_t::scale_keep_size (only if scale > 1)
-- image_t::scale_translate_keep_size (scale only if scale > 1, translate with offset and then cut)
-
 - nicer way to specify colors than using the current array:
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2  # blue
 set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2  # red
