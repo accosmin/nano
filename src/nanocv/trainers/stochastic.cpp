@@ -16,6 +16,7 @@ namespace ncv
                         stochastic_optimizer optimizer, scalar_t alpha0, scalar_t decay)
                 {
                         const size_t epochs = 1;
+                        const size_t epoch_size = data.m_tsampler.size();
 
                         // construct the optimization problem
                         auto fn_size = ncv::make_opsize(data);
@@ -29,7 +30,7 @@ namespace ncv
                         // optimize the model
                         const opt_state_t state = ncv::minimize(
                                 fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
-                                data.m_x0, optimizer, epochs, data.m_tsampler.size(), alpha0, decay);
+                                data.m_x0, optimizer, epochs, epoch_size, alpha0, decay);
 
                         // OK, cumulate the loss value
                         data.m_lacc.reset(state.x);
@@ -48,6 +49,7 @@ namespace ncv
 
                         // construct the optimization problem
                         size_t epoch = 0;
+                        const size_t epoch_size = data.m_tsampler.size();
 
                         auto fn_size = ncv::make_opsize(data);
                         auto fn_fval = ncv::make_opfval(data);
@@ -92,7 +94,7 @@ namespace ncv
 
                         // optimize the model
                         ncv::minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
-                                      data.m_x0, optimizer, epochs, data.m_tsampler.size(), alpha0, decay);
+                                      data.m_x0, optimizer, epochs, epoch_size, alpha0, decay);
 
                         // OK
                         return result;
