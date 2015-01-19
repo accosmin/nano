@@ -16,8 +16,8 @@ option(NANOCV_WITH_TSAN         "build with thread sanitizer suppport (debug, gc
 find_package(ZLIB REQUIRED)
 find_package(BZip2 REQUIRED)
 
-include_directories(${ZLIB_INCLUDE_DIR})
-include_directories(${BZIP2_INCLUDE_DIR})
+include_directories(SYSTEM ${ZLIB_INCLUDE_DIR})
+include_directories(SYSTEM ${BZIP2_INCLUDE_DIR})
 
 # Boost
 include(FindBoost)
@@ -27,17 +27,17 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 # DevIL
 find_package(DevIL REQUIRED)
-include_directories(${IL_INCLUDE_DIR})
+include_directories(SYSTEM ${IL_INCLUDE_DIR})
 
 # LibArchive
 find_package(LibArchive REQUIRED)
-include_directories(${LibArchive_INCLUDE_DIRS})
+include_directories(SYSTEM ${LibArchive_INCLUDE_DIRS})
 
 # OpenCL
 if(NANOCV_WITH_OPENCL)
         find_package(OpenCL 1.1 REQUIRED)
         if(OpenCL_FOUND)
-                include_directories(${OpenCL_INCLUDE_DIRS})
+                include_directories(SYSTEM ${OpenCL_INCLUDE_DIRS})
                 add_definitions(-DNANOCV_WITH_OPENCL)
         else(OpenCL_FOUND)
                 message(FATAL_ERROR "Cannot find OpenCL libraries!")
