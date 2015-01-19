@@ -459,8 +459,57 @@ namespace ncv
                 }
         }
 
+        bool image_t::fill(const rect_t& rect, rgba_t rgba)
+        {
+                if (!valid(rect))
+                {
+                        return false;
+                }
+
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        m_luma.block(rect.top(), rect.left(), rect.rows(), rect.cols()).setConstant(color::make_luma(rgba));
+                        return true;
+
+                case color_mode::rgba:
+                        m_rgba.block(rect.top(), rect.left(), rect.rows(), rect.cols()).setConstant(rgba);
+                        return true;
+
+                default:
+                        return false;
+                }
+        }
+
+        bool image_t::fill(const rect_t& rect, luma_t luma)
+        {
+                if (!valid(rect))
+                {
+                        return false;
+                }
+
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        m_luma.block(rect.top(), rect.left(), rect.rows(), rect.cols()).setConstant(luma);
+                        return true;
+
+                case color_mode::rgba:
+                        m_rgba.block(rect.top(), rect.left(), rect.rows(), rect.cols()).setConstant(color::make_rgba(luma, luma, luma));
+                        return true;
+
+                default:
+                        return false;
+                }
+        }
+
         bool image_t::copy(coord_t top, coord_t left, const rgba_matrix_t& patch)
         {
+                if (!valid(rect_t(left, top, patch.cols(), patch.rows())))
+                {
+                        return false;
+                }
+
                 switch (m_mode)
                 {
                 case color_mode::luma:
@@ -482,6 +531,11 @@ namespace ncv
 
         bool image_t::copy(coord_t top, coord_t left, const luma_matrix_t& patch)
         {
+                if (!valid(rect_t(left, top, patch.cols(), patch.rows())))
+                {
+                        return false;
+                }
+
                 switch (m_mode)
                 {
                 case color_mode::luma:

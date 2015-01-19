@@ -79,6 +79,8 @@ namespace ncv
                 ///
                 bool fill(rgba_t rgba);
                 bool fill(luma_t luma);
+                bool fill(const rect_t& rect, rgba_t rgba);
+                bool fill(const rect_t& rect, luma_t luma);
 
                 ///
                 /// \brief copy the given (region of the given) patch at the (top, left) location
@@ -145,6 +147,15 @@ namespace ncv
                 ///
                 bool setup_rgba();
                 bool setup_luma();
+
+                ///
+                /// \brief check if the given rectangle is within image bounds
+                ///
+                bool valid(const rect_t& rect) const
+                {
+                        return  rect.left() >= 0 && rect.right() <= cols() &&
+                                rect.top() >= 0 && rect.bottom() <= rows();
+                }
 
         private:
 
