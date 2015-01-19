@@ -1,4 +1,15 @@
-- src/util depends on src/tensor ?!!
+- improve the synthetic dot counting task:
+	- some dots overlap too much with one another	
+
+- update the test programs to use the synthetic task:
+	- and remove the dummy_task_t!
+
+- update the test program to evaluate the optimizers to call directly trainer-based functions:
+	- to also do tuning of stochastic & minibatch parameters
+	- use the synthetic dataset	
+
+- src/util depends on src/tensor (e.g. random_noise.hpp)
+- src/file depends on src/util (e.g. on logger)
 
 - nicer way to specify colors than using the current array:
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2  # blue
@@ -6,32 +17,15 @@ set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2  # red
 
 - implement the normalized adaptive gradient (stochastic optimization) method
 
-- improve the dummy task to generate meaningful input images:
-	- this way the optimization test program will actually work on meaninful data
-
-	- the number of outputs is equal with the number of white/colored rectangles/pixels:
-		- vary the background (uniform color, random)
-		- vary the color, size and position of the rectangles
-		- add small random noise
-
-- update the test program to evaluate the optimizers to call directly trainer-based functions:
-	- to also do tuning
-
-- may tune the batch size for stochastic optimizers
-
-- check the speed improvement if using floats instead of doubles for training MLP0
-
-- investigate why AdaGrad presents that strange bump in the training loss plot
-
-- investigate why NAG is so noisy
-
-- investigate why mini-batch methods are so noisy
-
 - augment training samples (to reduce overfitting):
 	- salt & pepper noise (vary the percentage)
 	- translation, scale, various deformations
 
 	- test program to generate some augmented training samples
+
+- may tune the batch size for stochastic optimizers
+
+- check the speed improvement if using floats instead of doubles for training MLP0
 
 - more experiments with floats instead of doubles:
 	- check the impact on MLPs and convolutions
