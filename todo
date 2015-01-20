@@ -1,3 +1,8 @@
+- unit tests with ctest:
+	- http://www.cmake.org/Wiki/CMake/Testing_With_CTest
+
+	- need to test most objects out there (e.g. color processing, image_t, rect_t, sampler_t, task_t interface, optimizers)
+
 - update the test program to evaluate the optimizers to call directly trainer-based functions:
 	- to also do tuning of stochastic & minibatch parameters
 	- use the synthetic dataset	
