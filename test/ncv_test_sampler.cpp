@@ -1,5 +1,5 @@
 #include "nanocv.h"
-#include "tasks/task_dummy.h"
+#include "tasks/task_syn_dots.h"
 #include <algorithm>
 
 using namespace ncv;
@@ -17,14 +17,8 @@ int main(int argc, char *argv[])
         const size_t n_samples = 1000;
         const size_t n_rand_samples = n_samples / 4;
 
-        dummy_task_t task;
-        task.set_rows(28);
-        task.set_cols(28);
-        task.set_color(color_mode::luma);
-        task.set_outputs(5);
-        task.set_folds(3);
-        task.set_size(n_samples);
-        task.setup();
+        syn_dots_task_t task("rows=28,cols=28,color=luma,dims=5,size=" + text::to_string(n_samples));
+        task.load("");
 
         for (size_t f = 0; f < task.n_folds(); f ++)
         {

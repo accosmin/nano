@@ -1,5 +1,5 @@
 #include "nanocv.h"
-#include "tasks/task_dummy.h"
+#include "tasks/task_syn_dots.h"
 #include "util/log_search.hpp"
 #include <map>
 
@@ -339,14 +339,12 @@ int main(int argc, char *argv[])
         const size_t cmd_cols = 10;
         const size_t cmd_outputs = 4;
 
-        dummy_task_t task;
-        task.set_rows(cmd_rows);
-        task.set_cols(cmd_cols);
-        task.set_color(color_mode::luma);
-        task.set_outputs(cmd_outputs);
-        task.set_folds(1);
-        task.set_size(cmd_samples);
-        task.setup();
+        syn_dots_task_t task("rows=" + text::to_string(cmd_rows) + "," +
+                             "cols=" + text::to_string(cmd_cols) + "," +
+                             "color=luma" + "," +
+                             "dims=" + text::to_string(cmd_outputs) + "," +
+                             "size=" + text::to_string(cmd_samples));
+        task.load("");
 
         const string_t lmodel0;
         const string_t lmodel1 = lmodel0 + "linear:dims=128;act-snorm;";

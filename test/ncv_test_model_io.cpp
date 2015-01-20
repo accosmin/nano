@@ -1,5 +1,5 @@
 #include "nanocv.h"
-#include "tasks/task_dummy.h"
+#include "tasks/task_syn_dots.h"
 #include <cstdio>
 
 int main(int argc, char *argv[])
@@ -8,14 +8,8 @@ int main(int argc, char *argv[])
 
         using namespace ncv;
 
-        dummy_task_t task;
-        task.set_rows(28);
-        task.set_cols(28);
-        task.set_color(color_mode::luma);
-        task.set_outputs(10);
-        task.set_folds(1);
-        task.set_size(1000);
-        task.setup();
+        syn_dots_task_t task("rows=28,cols=28,dims=10,size=1000,color=rgba");
+        task.load("");
 
         const size_t cmd_outputs = task.n_outputs();
 
