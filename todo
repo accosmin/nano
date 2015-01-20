@@ -1,5 +1,6 @@
 - unit tests with ctest:
 	- http://www.cmake.org/Wiki/CMake/Testing_With_CTest
+	- http://neyasystems.com/an-engineers-guide-to-unit-testing-cmake-and-boost-unit-tests/
 
 	- need to test most objects out there (e.g. color processing, image_t, rect_t, sampler_t, task_t interface, optimizers)
 
