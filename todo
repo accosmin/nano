@@ -8,6 +8,8 @@
 	- to also do tuning of stochastic & minibatch parameters
 	- use the synthetic dataset	
 
+	- sort the optimization results by log-loss as well as timed
+
 - src/util depends on src/tensor (e.g. random_noise.hpp)
 - src/file depends on src/util (e.g. on logger)
 
