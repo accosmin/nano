@@ -194,7 +194,6 @@ set(nanocv_test_programs
         ncv_test_thread_loop
         ncv_test_thread_pool
         ncv_test_optimize
-        ncv_test_optimize_benchmark
         ncv_test_image
         ncv_test_color
         ncv_test_loss
@@ -207,7 +206,6 @@ set(nanocv_test_programs
         ncv_test_stats
         ncv_test_sampler
         ncv_test_model_io
-        ncv_test_convnet_benchmark
         ncv_test_archive)
 
 set(nanocv_programs
