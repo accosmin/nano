@@ -1,9 +1,3 @@
-- improve the synthetic dot counting task:
-	- some dots overlap too much with one another	
-
-- update the test programs to use the synthetic task:
-	- and remove the dummy_task_t!
-
 - update the test program to evaluate the optimizers to call directly trainer-based functions:
 	- to also do tuning of stochastic & minibatch parameters
 	- use the synthetic dataset	
