@@ -62,10 +62,7 @@ if(OPENMP_FOUND)
 	set(NANOCV_OPENMP_FLAG "-fopenmp")
 endif()
 
-######################################################################
-# Compilation & linking flags
-######################################################################
-
+# Set the compiler flags
 #set(CMAKE_C_COMPILER                    "/usr/bin/clang")
 #set(CMAKE_CXX_COMPILER                  "/usr/bin/clang++")
 #set(CMAKE_CXX_COMPILER                  "g++-4.9")
@@ -131,12 +128,76 @@ message("-----------------------------------------------------------------------
 include_directories(./)
 
 ######################################################################
-# Build the library & programs & tests
+# Build the library
 ######################################################################
 
-add_subdirectory(src)
-add_subdirectory(apps)
-#add_subdirectory(test)
+file(GLOB nanocv_sources
+        src/*.*
+        src/file/*.*
+        src/util/*.*
+        src/tensor/*.*
+        src/optimize/*.*
+        src/nanocv/*.*
+        src/nanocv/criteria/*.*
+        src/nanocv/losses/*.*
+        src/nanocv/layers/*.*
+        src/nanocv/tasks/*.*
+        src/nanocv/models/*.*
+        src/nanocv/trainers/*.*
+        )
+
+if(NANOCV_WITH_OPENCL)
+        file(GLOB nanocv_opencl_sources
+                src/opencl/*.*
+        )
+        set(nanocv_sources "${nanocv_sources};${nanocv_opencl_sources}")
+endif()
+
+set(libs "${libs};${Boost_SERIALIZATION_LIBRARY}")
+set(libs "${libs};${Boost_PROGRAM_OPTIONS_LIBRARY}")
+set(libs "${libs};${Boost_SYSTEM_LIBRARY}")
+set(libs "${libs};${Boost_FILESYSTEM_LIBRARY}")
+set(libs "${libs};${Boost_IOSTREAMS_LIBRARY}")
+set(libs "${libs};${ZLIB_LIBRARIES}")
+set(libs "${libs};${BZIP2_LIBRARIES}")
+set(libs "${libs};${LibArchive_LIBRARIES}")
+set(libs "${libs};${IL_LIBRARIES}")
+if(NANOCV_WITH_OPENCL)
+        set(libs "${libs};${OpenCL_LIBRARIES}")
+endif()
+
+add_library(nanocv
+        SHARED
+        ${nanocv_sources})
+target_link_libraries(nanocv ${libs})
+
+if(NANOCV_WITH_CUDA)
+        file(GLOB nanocv_cuda_sources
+                src/cuda/*.*
+        )
+
+        cuda_add_library(nanocv_cuda STATIC ${nanocv_cuda_sources})
+        target_link_libraries(nanocv nanocv_cuda)
+endif()
+
+######################################################################
+# Build executables
+######################################################################
+
+# Set the include directories
+include_directories(
+	src/
+	src/nanocv)
+
+# Build the command line applications
+file(GLOB nanocv_apps RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} apps/*.cpp)
+
+foreach(app ${nanocv_apps})
+        get_filename_component(app_name ${app} NAME_WE)
+
+        add_executable(${app_name} ${app})
+        target_link_libraries(${app_name} nanocv)
+endforeach()
 
 ######################################################################
 # Installing
@@ -151,23 +212,23 @@ set(nanocv_programs
         ncv_tester
         ncv_generator)
 
-#install(TARGETS
-#        ${nanocv_programs}
-#        DESTINATION bin)
+install(TARGETS
+        ${nanocv_programs}
+        DESTINATION bin)
 
 #set_target_properties(
 #        ${nanocv_programs}
 #        PROPERTIES INSTALL_RPATH "../lib:./:./lib")
 
 # libraries
-#install(TARGETS
-#        nanocv
-#        DESTINATION lib)
+install(TARGETS
+        nanocv
+        DESTINATION lib)
 
 # headers
-#install(DIRECTORY ${nanocv_SOURCE_DIR}/src/
-#        DESTINATION include/nanocv
-#        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+install(DIRECTORY ${nanocv_SOURCE_DIR}/src/
+        DESTINATION include/nanocv
+        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
 
 ## http://www.cmake.org/Wiki/CMake_RPATH_handling
 #set(CMAKE_SKIP_BUILD_RPATH  FALSE)
