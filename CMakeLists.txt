@@ -21,8 +21,11 @@ include_directories(SYSTEM ${BZIP2_INCLUDE_DIR})
 
 # Boost
 include(FindBoost)
-set(Boost_USE_MULTITHREADED ON)
-find_package(Boost COMPONENTS serialization program_options filesystem system)
+set(Boost_USE_STATIC_LIBS        OFF)
+set(Boost_USE_MULTITHREADED      ON)
+set(Boost_USE_STATIC_RUNTIME     OFF)
+set(BOOST_ALL_DYN_LINK           ON)
+find_package(Boost COMPONENTS serialization program_options filesystem system unit_test_framework REQUIRED)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 # DevIL
@@ -140,5 +143,5 @@ include_directories(./)
 
 add_subdirectory(src)
 add_subdirectory(apps)
-#add_subdirectory(test)
+add_subdirectory(test)
 
