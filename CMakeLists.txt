@@ -181,7 +181,7 @@ if(NANOCV_WITH_CUDA)
 endif()
 
 ######################################################################
-# Build projects
+# Build executables
 ######################################################################
 
 # Set the include directories
@@ -189,25 +189,21 @@ include_directories(
 	src/
 	src/nanocv)
 
-# Set the executables
-set(nanocv_test_programs
-        ncv_test_thread_loop
-        ncv_test_thread_pool
-        ncv_test_optimize
-        ncv_test_image
-        ncv_test_color
-        ncv_test_loss
-        ncv_test_conv2d
-        ncv_test_corr2d
-        ncv_test_unroll
-        ncv_test_gradient
-        ncv_test_timing
-        ncv_test_mem
-        ncv_test_stats
-        ncv_test_sampler
-        ncv_test_model_io
-        ncv_test_archive)
+# Build the command line applications
+file(GLOB nanocv_apps RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} apps/*.cpp)
 
+foreach(app ${nanocv_apps})
+        get_filename_component(app_name ${app} NAME_WE)
+
+        add_executable(${app_name} ${app})
+        target_link_libraries(${app_name} nanocv)
+endforeach()
+
+######################################################################
+# Installing
+######################################################################
+
+# executables
 set(nanocv_programs
         ncv_max_threads
         ncv_info
@@ -216,21 +212,6 @@ set(nanocv_programs
         ncv_tester
         ncv_generator)
 
-# Build executables
-foreach(proj ${nanocv_test_programs})
-        add_executable(${proj} test/${proj}.cpp)
-        target_link_libraries(${proj} nanocv)
-endforeach()
-foreach(proj ${nanocv_programs})
-        add_executable(${proj} apps/${proj}.cpp)
-        target_link_libraries(${proj} nanocv)
-endforeach()
-
-######################################################################
-# Installing
-######################################################################
-
-# executables
 install(TARGETS
         ${nanocv_programs}
         DESTINATION bin)
