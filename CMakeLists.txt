@@ -135,11 +135,11 @@ message("CUDA                          " "${NANOCV_WITH_CUDA}")
 message("OPENCL                        " "${NANOCV_WITH_OPENCL}")
 message("------------------------------------------------------------------------------" "")
 
-include_directories(./)
-
 ######################################################################
 # Build the library, programs & tests
 ######################################################################
+
+include_directories(./ ./src ./src/nanocv)
 
 add_subdirectory(src)
 add_subdirectory(apps)

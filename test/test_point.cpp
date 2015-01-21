@@ -1,17 +1,15 @@
-//Link to Boost
 #define BOOST_TEST_DYN_LINK
 
-//Define our Module name (prints at testing)
-#define BOOST_TEST_MODULE "BaseClassModule"
+#define BOOST_TEST_MODULE "test_nanocv"
 
-//VERY IMPORTANT - include this last
 #include <boost/test/unit_test.hpp>
 
-//#include "some_project/some_base_class.h"
-// ------------- Tests Follow --------------
+#include "geom.h"
 
-BOOST_AUTO_TEST_CASE(point)
+BOOST_AUTO_TEST_CASE(test_point)
 {
-        BOOST_CHECK(true);
-        BOOST_CHECK_EQUAL(5, 5);
+        const ncv::point_t point(3, 7);
+
+        BOOST_CHECK_EQUAL(point.x(), 3);
+        BOOST_CHECK_EQUAL(point.y(), 7);
 }

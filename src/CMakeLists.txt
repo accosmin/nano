@@ -1,7 +1,3 @@
-include_directories(
-        ./ 
-        ./nanocv)
-
 # Build library
 file(GLOB nanocv_sources
         *.*

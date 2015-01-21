@@ -4,10 +4,10 @@
 dir_exp=/Users/cosmin/experiments/results
 dir_db=/Users/cosmin/experiments/databases
 
-exe_trainer=../build-release/ncv_trainer
-exe_tester=../build-release/ncv_tester
-exe_info=../build-release/ncv_info
-exe_max_threads=../build-release/ncv_max_threads
+exe_trainer=../build-release/apps/ncv_trainer
+exe_tester=../build-release/apps/ncv_tester
+exe_info=../build-release/apps/ncv_info
+exe_max_threads=../build-release/apps/ncv_max_threads
 
 # datasets
 task_svhn="--task svhn --task-dir ${dir_db}/svhn/"

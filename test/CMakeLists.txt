@@ -1,7 +1,3 @@
-include_directories(
-        ./ 
-        ./nanocv)
-
 # Setup CMake to run tests
 enable_testing()
 

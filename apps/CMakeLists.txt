@@ -1,7 +1,3 @@
-include_directories(
-        ../src
-        ../src/nanocv)
-
 # Build command line programs
 file(GLOB nanocv_apps RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 
