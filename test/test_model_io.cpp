@@ -1,5 +1,4 @@
 #define BOOST_TEST_DYN_LINK
-
 #define BOOST_TEST_MODULE "test_nanocv"
 
 #include <boost/test/unit_test.hpp>
@@ -68,7 +67,7 @@ BOOST_AUTO_TEST_CASE(test_model_io)
                 // create feed-forward network
                 const rmodel_t model = model_manager_t::instance().get("forward-network", cmd_network);
                 BOOST_CHECK_EQUAL(model.operator bool(), true);
-                BOOST_CHECK_EQUAL(model->resize(task, true), true);
+                BOOST_CHECK_EQUAL(model->resize(task, false), true);
 
                 // test random networks
                 for (size_t t = 0; t < n_tests; t ++)
