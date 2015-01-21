@@ -36,13 +36,20 @@ BOOST_AUTO_TEST_CASE(test_rect_construction)
 
 BOOST_AUTO_TEST_CASE(test_rect_operations)
 {
-        const ncv::rect_t rect(1, 2, 8, 6);
+        using namespace ncv;
 
-        BOOST_CHECK_EQUAL(rect.left(), 1);
-        BOOST_CHECK_EQUAL(rect.top(), 2);
-        BOOST_CHECK_EQUAL(rect.right(), 9);
-        BOOST_CHECK_EQUAL(rect.bottom(), 8);
+        // intersecting rectangles
+        BOOST_CHECK_EQUAL(ncv::rect_t(1, 1, 3, 3) | ncv::rect_t(2, 2, 5, 4),
+                          ncv::rect_t(1, 1, 6, 5));
 
-        BOOST_CHECK_EQUAL(rect.area(), 48);
-        BOOST_CHECK_EQUAL(rect.empty(), false);
+        BOOST_CHECK_EQUAL(ncv::rect_t(1, 1, 3, 3) & ncv::rect_t(2, 2, 5, 4),
+                          ncv::rect_t(2, 2, 2, 2));
+
+        // disjoint rectangles
+        BOOST_CHECK_EQUAL(ncv::rect_t(1, 1, 3, 3) & ncv::rect_t(7, 4, 5, 4),
+                          ncv::rect_t(0, 0, 0, 0));
+
+        // test center
+        BOOST_CHECK_EQUAL(ncv::rect_t(1, 1, 3, 3).center(),
+                          ncv::point_t(2, 2));
 }
