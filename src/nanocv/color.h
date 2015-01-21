@@ -48,7 +48,7 @@ namespace ncv
                 // RGBA encoding (R, G, B, A, CIELab)
                 inline rgba_t make_rgba(rgba_t r, rgba_t g, rgba_t b, rgba_t a = 255)
                 {
-                        return ((r & 0xFF) << 24) | ((g & 0xFF) << 16) | ((b & 0xFF) << 8) | (a & 0xFF);
+                        return (r << 24) | (g << 16) | (b << 8) | a;
                 }                
                 inline rgba_t make_rgba(luma_t l, rgba_t a = 255)
                 {
