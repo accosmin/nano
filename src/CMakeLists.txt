@@ -2,6 +2,7 @@ include_directories(
         ./ 
         ./nanocv)
 
+# Build library
 file(GLOB nanocv_sources
         *.*
         file/*.*
@@ -50,3 +51,16 @@ if(NANOCV_WITH_CUDA)
         cuda_add_library(nanocv_cuda STATIC ${nanocv_cuda_sources})
         target_link_libraries(nanocv nanocv_cuda)
 endif()
+
+# Install library
+install(TARGETS
+        nanocv
+        DESTINATION lib)
+
+# Install headers
+install(DIRECTORY ${nanocv_SOURCE_DIR}/src/
+        DESTINATION include/nanocv
+        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+
+
+                

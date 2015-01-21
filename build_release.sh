@@ -1,7 +1,7 @@
 #!/bin/bash
 
 build_type=Release
-install_dir="/usr/local/"
+install_dir="./install"
 install=OFF
 
 cmake_cuda=OFF

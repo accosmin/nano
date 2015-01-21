@@ -62,13 +62,13 @@ if(OPENMP_FOUND)
 	set(NANOCV_OPENMP_FLAG "-fopenmp")
 endif()
 
-######################################################################
-# Compilation & linking flags
-######################################################################
-
 #set(CMAKE_C_COMPILER                    "/usr/bin/clang")
 #set(CMAKE_CXX_COMPILER                  "/usr/bin/clang++")
 #set(CMAKE_CXX_COMPILER                  "g++-4.9")
+
+######################################################################
+# Compilation & linking flags (GCC)
+######################################################################
 
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
 	message("Compiling with GCC ...")
@@ -89,6 +89,10 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
         	set(CMAKE_EXE_LINKER_FLAGS      "${CMAKE_EXE_LINKER_FLAGS} -pie")
 	endif()
 
+######################################################################
+# Compilation & linking flags (CLANG)
+######################################################################
+	
 elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
 	message("Compiling with CLANG ...")
 
@@ -131,51 +135,10 @@ message("-----------------------------------------------------------------------
 include_directories(./)
 
 ######################################################################
-# Build the library & programs & tests
+# Build the library, programs & tests
 ######################################################################
 
 add_subdirectory(src)
 add_subdirectory(apps)
 #add_subdirectory(test)
 
-######################################################################
-# Installing
-######################################################################
-
-# executables
-set(nanocv_programs
-        ncv_max_threads
-        ncv_info
-        ncv_info_task
-        ncv_trainer
-        ncv_tester
-        ncv_generator)
-
-#install(TARGETS
-#        ${nanocv_programs}
-#        DESTINATION bin)
-
-#set_target_properties(
-#        ${nanocv_programs}
-#        PROPERTIES INSTALL_RPATH "../lib:./:./lib")
-
-# libraries
-#install(TARGETS
-#        nanocv
-#        DESTINATION lib)
-
-# headers
-#install(DIRECTORY ${nanocv_SOURCE_DIR}/src/
-#        DESTINATION include/nanocv
-#        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
-
-## http://www.cmake.org/Wiki/CMake_RPATH_handling
-#set(CMAKE_SKIP_BUILD_RPATH  FALSE)
-#set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-#set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-#set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-#list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
-#if("${isSystemDir}" STREQUAL "-1")
-#        set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-#endif("${isSystemDir}" STREQUAL "-1")
