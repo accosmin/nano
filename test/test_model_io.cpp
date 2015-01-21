@@ -1,17 +1,24 @@
+#define BOOST_TEST_DYN_LINK
+
+#define BOOST_TEST_MODULE "test_nanocv"
+
+#include <boost/test/unit_test.hpp>
 #include "nanocv.h"
 #include "tasks/task_syn_dots.h"
 #include <cstdio>
 
-int main(int argc, char *argv[])
+BOOST_AUTO_TEST_CASE(test_model_io)
 {
         ncv::init();
 
         using namespace ncv;
 
         syn_dots_task_t task("rows=28,cols=28,dims=10,size=1000,color=rgba");
-        task.load("");
+        BOOST_CHECK_EQUAL(task.load(""), true);
 
         const size_t cmd_outputs = task.n_outputs();
+
+        const size_t n_tests = 8;
 
         const string_t lmodel0;
         const string_t lmodel1 = lmodel0 + "linear:dims=100;act-snorm;";
@@ -52,7 +59,7 @@ int main(int argc, char *argv[])
         };
 
         const rloss_t loss = loss_manager_t::instance().get("logistic");
-        assert(loss);
+        BOOST_CHECK_EQUAL(loss.operator bool(), true);
 
         for (const string_t& cmd_network : cmd_networks)
         {
@@ -60,11 +67,10 @@ int main(int argc, char *argv[])
 
                 // create feed-forward network
                 const rmodel_t model = model_manager_t::instance().get("forward-network", cmd_network);
-                assert(model);
-                model->resize(task, true);
+                BOOST_CHECK_EQUAL(model.operator bool(), true);
+                BOOST_CHECK_EQUAL(model->resize(task, true), true);
 
                 // test random networks
-                const size_t n_tests = 64;
                 for (size_t t = 0; t < n_tests; t ++)
                 {
                         model->random_params();
@@ -78,39 +84,19 @@ int main(int argc, char *argv[])
                         scalar_t lvalue_before, lerror_before;
                         const size_t lcount_before = ncv::test(task, fold, *loss, *model, lvalue_before, lerror_before);
 
-                        ncv::measure_critical_call(
-                                [&] () { return model->save(path); },
-                                header + "model saved",
-                                header + "failed to save model to <" + path + ">!");
-
-                        ncv::measure_critical_call(
-                                [&] () { return model->load(path); },
-                                header + "model loaded",
-                                header + "failed to load model from <" + path + ">!");
+                        BOOST_CHECK_EQUAL(model->save(path), true);
+                        BOOST_CHECK_EQUAL(model->load(path), true);
 
                         // test error after loading
                         scalar_t lvalue_after, lerror_after;
                         const size_t lcount_after = ncv::test(task, fold, *loss, *model, lvalue_after, lerror_after);
 
-                        const bool ok =
-                                lcount_before == lcount_after &&
-                                lvalue_before == lvalue_after &&
-                                lerror_before == lerror_before;
+                        BOOST_CHECK_EQUAL(lcount_before, lcount_after);
+                        BOOST_CHECK_EQUAL(lvalue_before, lvalue_after);
+                        BOOST_CHECK_EQUAL(lerror_before, lerror_before);
 
-                        (ok ? log_info() : log_error())
-                                << header << "io " << (ok ? "PASSED" : "FAILED")
-                                << ": count = " << lcount_before << "/" << lcount_after
-                                << ", value = " << lvalue_before << "/" << lvalue_after
-                                << ", error = " << lerror_before << "/" << lerror_after
-                                << (ok ? "." : "!");
-
+                        // cleanup
                         std::remove(path.c_str());
                 }
-
-                log_info();
         }
-
-        // OK
-        log_info() << done;
-        return EXIT_SUCCESS;
 }

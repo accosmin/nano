@@ -3,7 +3,6 @@
 #define BOOST_TEST_MODULE "test_nanocv"
 
 #include <boost/test/unit_test.hpp>
-
 #include "point.h"
 
 namespace test
