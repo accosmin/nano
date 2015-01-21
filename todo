@@ -17,15 +17,13 @@
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2  # blue
 set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2  # red
 
-- implement the normalized adaptive gradient (stochastic optimization) method
-
 - augment training samples (to reduce overfitting):
+	- new parameter to all tasks: "noisy=off/on"
+
 	- salt & pepper noise (vary the percentage)
 	- translation, scale, various deformations
 
-	- test program to generate some augmented training samples
-
-- may tune the batch size for stochastic optimizers
+	- ncv_info_task should also be updated to display the noisy training samples
 
 - check the speed improvement if using floats instead of doubles for training MLP0
 
