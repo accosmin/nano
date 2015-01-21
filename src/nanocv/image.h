@@ -1,7 +1,7 @@
 #pragma once
 
 #include "color.h"
-#include "geom.h"
+#include "rect.h"
 
 namespace ncv
 {

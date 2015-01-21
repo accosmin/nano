@@ -1,6 +1,6 @@
 #pragma once
 
-#include "geom.h"
+#include "rect.h"
 
 namespace ncv
 {

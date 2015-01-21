@@ -4,7 +4,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "geom.h"
+#include "point.h"
 
 namespace test
 {
