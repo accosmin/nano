@@ -6,14 +6,16 @@
 
 namespace test
 {
+        using namespace ncv;
+
         // run loop for the given number of trials using no threads
         template
         <
                 typename toperator
         >
-        ncv::stats_t<ncv::scalar_t> test_cpu(int size, int trials, toperator op)
+        stats_t<scalar_t> test_cpu(int size, int trials, toperator op)
         {
-                ncv::stats_t<ncv::scalar_t> timings;
+                stats_t<scalar_t> timings;
                 for (int t = 0; t < trials; t ++)
                 {
                         const ncv::timer_t timer;
@@ -35,9 +37,9 @@ namespace test
         <
                 typename toperator
         >
-        ncv::stats_t<ncv::scalar_t> test_omp(int size, int trials, toperator op)
+        stats_t<scalar_t> test_omp(int size, int trials, toperator op)
         {
-                ncv::stats_t<ncv::scalar_t> timings;
+                stats_t<scalar_t> timings;
                 for (int t = 0; t < trials; t ++)
                 {
                         const ncv::timer_t timer;
@@ -55,19 +57,19 @@ namespace test
         }
 #endif
 
-        // run loop for the given number of trials using ncv::thread_loop
+        // run loop for the given number of trials using thread_loop
         template
         <
                 typename toperator
         >
-        ncv::stats_t<ncv::scalar_t> test_ncv(int size, int trials, toperator op)
+        stats_t<scalar_t> test_ncv(int size, int trials, toperator op)
         {
-                ncv::stats_t<ncv::scalar_t> timings;
+                stats_t<scalar_t> timings;
                 for (int t = 0; t < trials; t ++)
                 {
                         const ncv::timer_t timer;
 
-                        ncv::thread_loopi(size, op);
+                        thread_loopi(size, op);
 
                         timings(timer.miliseconds());
                 }
@@ -75,21 +77,21 @@ namespace test
                 return timings;
         }
 
-        // run loop for the given number of trials using ncv::thread_loop
+        // run loop for the given number of trials using thread_loop
         template
         <
                 typename toperator
         >
-        ncv::stats_t<ncv::scalar_t> test_ncv_pool(int size, int trials, toperator op)
+        stats_t<scalar_t> test_ncv_pool(int size, int trials, toperator op)
         {
-                static ncv::thread_pool_t pool;
+                static thread_pool_t pool;
 
-                ncv::stats_t<ncv::scalar_t> timings;
+                stats_t<scalar_t> timings;
                 for (int t = 0; t < trials; t ++)
                 {
                         const ncv::timer_t timer;
 
-                        ncv::thread_loopi(size, pool, op);
+                        thread_loopi(size, pool, op);
 
                         timings(timer.miliseconds());
                 }
@@ -97,23 +99,23 @@ namespace test
                 return timings;
         }
 
-        ncv::string_t to_string(const ncv::stats_t<ncv::scalar_t>& timings, ncv::size_t col_size)
+        string_t to_string(const stats_t<scalar_t>& timings, size_t col_size)
         {
-                return  ncv::text::resize(
-                        ncv::text::to_string(timings.avg()) + " +/- " + ncv::text::to_string(timings.stdev()),
+                return  text::resize(
+                        text::to_string(timings.avg()) + " +/- " + text::to_string(timings.stdev()),
                         col_size);
         }
 
         // display the formatted timing statistics
-        void print(const ncv::string_t& header, size_t col_size,
-                   const ncv::stats_t<ncv::scalar_t>& timings_cpu,
+        void print(const string_t& header, size_t col_size,
+                   const stats_t<scalar_t>& timings_cpu,
 #ifdef _OPENMP
-                   const ncv::stats_t<ncv::scalar_t>& timings_omp,
+                   const stats_t<scalar_t>& timings_omp,
 #endif
-                   const ncv::stats_t<ncv::scalar_t>& timings_ncv,
-                   const ncv::stats_t<ncv::scalar_t>& timings_ncv_pool)
+                   const stats_t<scalar_t>& timings_ncv,
+                   const stats_t<scalar_t>& timings_ncv_pool)
         {
-                std::cout << ncv::text::resize(header, col_size)
+                std::cout << text::resize(header, col_size)
                           << to_string(timings_cpu, col_size)
 #ifdef _OPENMP
                           << to_string(timings_omp, col_size)
@@ -135,18 +137,18 @@ BOOST_AUTO_TEST_CASE(test_thread_loop)
         const size_t col_size = 28;
 
         // test for different problems size
-        std::cout << ncv::text::resize("", col_size)
-                  << ncv::text::resize("CPU", col_size)
+        std::cout << text::resize("", col_size)
+                  << text::resize("CPU", col_size)
 #ifdef _OPENMP
-                  << ncv::text::resize("OpenMP", col_size)
+                  << text::resize("OpenMP", col_size)
 #endif
-                  << ncv::text::resize("NanoCV", col_size)
-                  << ncv::text::resize("NanoCV(pool)", col_size)
+                  << text::resize("NanoCV", col_size)
+                  << text::resize("NanoCV(pool)", col_size)
                   << std::endl;
 
         for (size_t size = min_size; size <= max_size; size *= 3)
         {
-                ncv::scalars_t results(size);
+                scalars_t results(size);
 
                 // operator to test
                 auto op = [&](int i)
@@ -164,27 +166,27 @@ BOOST_AUTO_TEST_CASE(test_thread_loop)
 
                 // 1CPU
                 std::fill(std::begin(results), std::end(results), 0.0);
-                const ncv::stats_t<ncv::scalar_t> timings_cpu = test::test_cpu(size, trials, op);
+                const stats_t<scalar_t> timings_cpu = test::test_cpu(size, trials, op);
                 const scalar_t sum_cpu = std::accumulate(std::begin(results), std::end(results), 0.0);
 
 #ifdef _OPENMP
                 // OpenMP
                 std::fill(std::begin(results), std::end(results), 0.0);
-                const ncv::stats_t<ncv::scalar_t> timings_omp = test::test_omp(size, trials, op);
+                const stats_t<scalar_t> timings_omp = test::test_omp(size, trials, op);
                 const scalar_t sum_omp = std::accumulate(std::begin(results), std::end(results), 0.0);
 #endif
 
                 // NanoCV threads
                 std::fill(std::begin(results), std::end(results), 0.0);
-                const ncv::stats_t<ncv::scalar_t> timings_ncv = test::test_ncv(size, trials, op);
+                const stats_t<scalar_t> timings_ncv = test::test_ncv(size, trials, op);
                 const scalar_t sum_ncv = std::accumulate(std::begin(results), std::end(results), 0.0);
 
                 // NanoCV threads with reusing the thread pool
                 std::fill(std::begin(results), std::end(results), 0.0);
-                const ncv::stats_t<ncv::scalar_t> timings_ncv_pool = test::test_ncv_pool(size, trials, op);
+                const stats_t<scalar_t> timings_ncv_pool = test::test_ncv_pool(size, trials, op);
                 const scalar_t sum_ncv_loop = std::accumulate(std::begin(results), std::end(results), 0.0);
 
-                test::print("test [" + ncv::text::to_string(size) + "]", col_size,
+                test::print("test [" + text::to_string(size) + "]", col_size,
                       timings_cpu,
 #ifdef _OPENMP
                       timings_omp,
