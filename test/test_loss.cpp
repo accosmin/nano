@@ -53,8 +53,8 @@ namespace test
                         rgen(x.data(), x.data() + n_dims);
 
                         vector_t gx_gd, gx_ax;
-                        problem_gd(x, gx_gd);
-                        problem_ax(x, gx_ax);
+                        BOOST_CHECK_GE(problem_gd(x, gx_gd), 0.0);
+                        BOOST_CHECK_GE(problem_ax(x, gx_ax), 0.0);
 
                         const scalar_t dgx = (gx_gd - gx_ax).lpNorm<Eigen::Infinity>();
                         BOOST_CHECK_LE(dgx, epsilon);
