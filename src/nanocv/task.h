@@ -27,7 +27,9 @@ namespace ncv
 	{
         public:
 
-                // constructor
+                ///
+                /// \brief constructor
+                ///
                 explicit task_t(const string_t& configuration)
                         : clonable_t<task_t>(configuration)
                 {
@@ -36,24 +38,38 @@ namespace ncv
                 // destructor
                 virtual ~task_t() {}
 
-                // load images from the given directory
+                ///
+                /// \brief load images from the given directory
+                ///
                 virtual bool load(const string_t& dir) = 0;
 
-                // sample size
+                ///
+                /// \brief sample size (in pixels)
+                ///
                 rect_t sample_size() const;
 
-                // sample region at a particular offset
+                ///
+                /// \brief sample region (in pixels) at a particular offset
+                ///
                 rect_t sample_region(coord_t x, coord_t y) const;               
 
-                // save the task images to file (by grouping sample patchs into (grows, gcols) grids)
+                ///
+                /// \brief save the task images to file (by grouping sample patchs into (grows, gcols) grids)
+                ///
                 void save_as_images(
                         const fold_t&, const string_t& basepath, size_t grows, size_t gcols,
                         size_t border = 8, rgba_t bkcolor = color::make_rgba(225, 225, 0)) const;
+
+                ///
+                /// \brief save the task images to file (by grouping sample patchs into (grows, gcols) grids)
+                ///
                 void save_as_images(
                         const samples_t&, const string_t& basepath, size_t grows, size_t gcols,
                         size_t border = 8, rgba_t bkcolor = color::make_rgba(225, 225, 0)) const;
 
-                // distinct labels
+                ///
+                /// \brief distinct labels
+                ///
                 strings_t labels() const;
 
                 // access functions
@@ -70,28 +86,47 @@ namespace ncv
 
         protected:
 
+                ///
+                /// \brief clear & reserve memory for images
+                ///
                 void clear_images(size_t capacity)
                 {
                         m_images.clear();
                         m_images.reserve(capacity);
                 }
 
+                ///
+                /// \brief clear & reserve memory for samples
+                ///
                 void clear_samples(size_t capacity)
                 {
                         m_samples.clear();
                         m_samples.reserve(capacity);
                 }
 
+                ///
+                /// \brief clear & reserve memory
+                ///
                 void clear_memory(size_t capacity)
                 {
                         clear_images(capacity);
                         clear_samples(capacity);
                 }
 
-        protected:
+                ///
+                /// \brief add a new image
+                ///
+                void add_image(const image_t& image);
+
+                ///
+                /// \brief add a new sample
+                ///
+                void add_sample(const sample_t& sample);
+
+        private:
 
                 // attributes
-                images_t                m_images;
-                samples_t               m_samples;
+                images_t                m_images;       ///< input images (can be bigger than the samples)
+                samples_t               m_samples;      ///< patch samples in images
         };
 }

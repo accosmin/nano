@@ -89,4 +89,28 @@ namespace ncv
                         grid_image.image().save(path);
                 }
         }
+
+        void task_t::add_image(const image_t& image)
+        {
+                m_images.push_back(image);
+        }
+
+        void task_t::add_sample(const sample_t& sample)
+        {
+                // check sample to correspond to a valid region of a valid image
+                if (    sample.m_index < n_images() &&
+                        image(sample.m_index).valid(sample.m_region))
+                {
+                        m_samples.push_back(sample);
+                }
+
+                else
+                {
+                        log_error() << "task: cannot add invalid sample (index = "
+                                    << sample.m_index << "/" << n_images() << ", region = "
+                                    << sample.m_region << ")!";
+
+                        throw std::runtime_error("invalid sample");
+                }
+        }
 }

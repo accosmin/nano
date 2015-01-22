@@ -12,8 +12,6 @@ namespace ncv
         ///     - loading and saving from and to files
         ///     - scaling to [0, 1] tensors
         ///
-        /// fixme: merge grid_image here!
-        ///
         class image_t
         {
         public:
@@ -129,6 +127,15 @@ namespace ncv
                 ///
                 bool gauss(color_channel channel, scalar_t sigma);
 
+                ///
+                /// \brief check if the given rectangle is within image bounds
+                ///
+                bool valid(const rect_t& rect) const
+                {
+                        return  rect.left() >= 0 && rect.right() <= cols() &&
+                                rect.top() >= 0 && rect.bottom() <= rows();
+                }
+
                 // access functions
                 coord_t rows() const { return m_rows; }
                 coord_t cols() const { return m_cols; }
@@ -147,15 +154,6 @@ namespace ncv
                 ///
                 bool setup_rgba();
                 bool setup_luma();
-
-                ///
-                /// \brief check if the given rectangle is within image bounds
-                ///
-                bool valid(const rect_t& rect) const
-                {
-                        return  rect.left() >= 0 && rect.right() <= cols() &&
-                                rect.top() >= 0 && rect.bottom() <= rows();
-                }
 
         private:
 

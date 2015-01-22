@@ -161,12 +161,6 @@ namespace ncv
                                 continue;
                         }
 
-                        sample_t sample(m_images.size(), sample_region(0, 0));
-                        sample.m_label = "digit" + text::to_string(ilabel);
-                        sample.m_target = ncv::class_target(ilabel, n_outputs());
-                        sample.m_fold = { 0, p };
-                        m_samples.push_back(sample);
-
                         // image ...
                         image_t image(n_rows(), n_cols(), color());
 
@@ -186,7 +180,14 @@ namespace ncv
                                 }
                         }
 
-                        m_images.push_back(image);
+                        add_image(image);
+
+                        // sample
+                        sample_t sample(n_images() - 1, sample_region(0, 0));
+                        sample.m_label = "digit" + text::to_string(ilabel);
+                        sample.m_target = ncv::class_target(ilabel, n_outputs());
+                        sample.m_fold = { 0, p };
+                        add_sample(sample);
 
                         ++ cnt;
                 }

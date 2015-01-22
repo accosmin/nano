@@ -94,17 +94,17 @@ namespace ncv
                 // load images
                 while (stream.read(buffer.data(), buffer.size()))
                 {
-                        if (unlabeled)
-                        {
-                                sample_t sample(m_images.size(), sample_region(0, 0));
-                                // no annotation
-                                m_samples.push_back(sample);
-                        }
-
                         image_t image;
                         image.load_rgba(buffer.data(), n_rows(), n_cols(), n_rows() * n_cols());
                         image.transpose_in_place();
-                        m_images.push_back(image);
+                        add_image(image);
+
+                        if (unlabeled)
+                        {
+                                sample_t sample(n_images() - 1, sample_region(0, 0));
+                                // no annotation
+                                add_sample(sample);
+                        }
 
                         ++ icount;
                 }
@@ -122,7 +122,7 @@ namespace ncv
 
                 char label;
 
-                size_t iindex = m_images.size() - count;
+                size_t iindex = n_images() - count;
                 size_t gcount = 0;
 
                 // load annotations
@@ -136,7 +136,7 @@ namespace ncv
                                 sample.m_label = tlabels[ilabel];
                                 sample.m_target = ncv::class_target(ilabel, n_outputs());
                         }
-                        m_samples.push_back(sample);
+                        add_sample(sample);
 
                         ++ gcount;
                         ++ iindex;
@@ -156,8 +156,8 @@ namespace ncv
 
                 io::stream_t stream(bdata, bdata_size);
                 
-                const samples_t orig_samples = m_samples;
-                m_samples.clear();
+                const samples_t orig_samples = this->samples();
+                clear_samples(0);
 
                 const size_t n_folds = 10;
                 const size_t fold_size = 1000;
@@ -189,7 +189,7 @@ namespace ncv
                                         {
                                                 sample_t sample = orig_samples[n_test + i];
                                                 sample.m_fold = { f, protocol::train };
-                                                m_samples.push_back(sample);
+                                                add_sample(sample);
 
                                                 ++ fcount;
                                         }
@@ -218,7 +218,7 @@ namespace ncv
                         {
                                 sample_t sample = orig_samples[n_test + n_train + i];
                                 sample.m_fold = { f, protocol::train };
-                                m_samples.push_back(sample);
+                                add_sample(sample);
                         }
                 }
 
@@ -229,7 +229,7 @@ namespace ncv
                         {
                                 sample_t sample = orig_samples[i];
                                 sample.m_fold = { f, protocol::test };
-                                m_samples.push_back(sample);
+                                add_sample(sample);
                         }
                 }
 

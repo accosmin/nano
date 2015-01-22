@@ -37,8 +37,7 @@ namespace ncv
                 random_t<rgba_t> rng_green(175, 255);
                 random_t<rgba_t> rng_blue(175, 255);
 
-                m_images.clear();
-                m_samples.clear();
+                clear_memory(0);
 
                 for (size_t f = 0; f < n_folds(); f ++)
                 {
@@ -49,13 +48,6 @@ namespace ncv
 
                                 // random output class: #dots
                                 const size_t o = rng_output();
-
-                                // generate sample
-                                sample_t sample(m_images.size(), sample_region(0, 0));
-                                sample.m_label = "count" + text::to_string(o);
-                                sample.m_target = ncv::class_target(o - 1, n_outputs());
-                                sample.m_fold = {f, p};
-                                m_samples.push_back(sample);
 
                                 // generate random image background
                                 image_t image(n_rows(), n_cols(), color());
@@ -114,7 +106,14 @@ namespace ncv
                                         image.fill(dot_rects[io], dot_rgbas[io]);
                                 }
 
-                                m_images.push_back(image);
+                                add_image(image);
+
+                                // generate sample
+                                sample_t sample(n_images() - 1, sample_region(0, 0));
+                                sample.m_label = "count" + text::to_string(o);
+                                sample.m_target = ncv::class_target(o - 1, n_outputs());
+                                sample.m_fold = {f, p};
+                                add_sample(sample);
                         }
                 }
 

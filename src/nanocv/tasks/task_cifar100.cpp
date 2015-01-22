@@ -168,15 +168,15 @@ namespace ncv
                                 continue;
                         }
 
-                        sample_t sample(m_images.size(), sample_region(0, 0));
+                        image_t image;
+                        image.load_rgba(buffer.data(), n_rows(), n_cols(), n_rows() * n_cols());
+                        add_image(image);
+
+                        sample_t sample(n_images() - 1, sample_region(0, 0));
                         sample.m_label = tlabels[ilabel];
                         sample.m_target = ncv::class_target(ilabel, n_outputs());
                         sample.m_fold = { 0, p };
-                        m_samples.push_back(sample);
-
-                        image_t image;
-                        image.load_rgba(buffer.data(), n_rows(), n_cols(), n_rows() * n_cols());
-                        m_images.push_back(image);
+                        add_sample(sample);
 
                         icount ++;
                 }

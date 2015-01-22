@@ -30,7 +30,7 @@ namespace ncv
 
         bool mnist_task_t::load(const string_t& ifile, const string_t& gfile, protocol p, size_t count)
         {
-                size_t iindex = m_images.size();
+                size_t iindex = n_images();
                 size_t icount = 0;
                 size_t gcount = 0;
 
@@ -47,7 +47,7 @@ namespace ncv
                         {
                                 image_t image;
                                 image.load_luma(buffer.data(), n_rows(), n_cols());
-                                m_images.push_back(image);
+                                add_image(image);
 
                                 ++ icount;
                         }                        
@@ -80,7 +80,7 @@ namespace ncv
                                 sample.m_label = "digit" + text::to_string(ilabel);
                                 sample.m_target = ncv::class_target(ilabel, n_outputs());
                                 sample.m_fold = { 0, p };
-                                m_samples.push_back(sample);
+                                add_sample(sample);
 
                                 ++ gcount;
                                 ++ iindex;

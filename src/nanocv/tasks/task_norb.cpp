@@ -88,7 +88,7 @@ namespace ncv
                 static const int magic_i08 = 0x1E3D4C55;
 //                 static const int magic_i16 = 0x1E3D4C56;
                 
-                size_t iindex = m_images.size();
+                size_t iindex = n_images();
                 size_t icount = 0;
                 size_t gcount = 0;
                 
@@ -129,7 +129,7 @@ namespace ncv
                                 {
                                         image_t image;
                                         image.load_luma(dimage.data(), n_rows(), n_cols());
-                                        m_images.push_back(image);
+                                        add_image(image);
                                 }
                                 
                                 ++ icount;
@@ -185,7 +185,7 @@ namespace ncv
                                                 sample.m_target = ncv::class_target(ilabel, n_outputs());
                                         }
                                         sample.m_fold = { 0, p };
-                                        m_samples.push_back(sample);
+                                        add_sample(sample);
                                         
                                         ++ iindex;
                                 }
