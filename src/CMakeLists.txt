@@ -1,5 +1,5 @@
 # Build library
-file(GLOB nanocv_sources
+file(GLOB libnanocv_sources
         *.*
         file/*.*
         util/*.*
@@ -15,10 +15,10 @@ file(GLOB nanocv_sources
         )
 
 if(NANOCV_WITH_OPENCL)
-        file(GLOB nanocv_opencl_sources
+        file(GLOB libnanocv_opencl_sources
                 opencl/*.*
         )
-        set(nanocv_sources "${nanocv_sources};${nanocv_opencl_sources}")
+        set(libnanocv_sources "${libnanocv_sources};${libnanocv_opencl_sources}")
 endif()
 
 set(libs "${libs};${Boost_SERIALIZATION_LIBRARY}")
@@ -34,23 +34,21 @@ if(NANOCV_WITH_OPENCL)
         set(libs "${libs};${OpenCL_LIBRARIES}")
 endif()
 
-add_library(nanocv
-        SHARED
-        ${nanocv_sources})
-target_link_libraries(nanocv ${libs})
+add_library(libnanocv SHARED ${libnanocv_sources})
+target_link_libraries(libnanocv ${libs})
 
 if(NANOCV_WITH_CUDA)
-        file(GLOB nanocv_cuda_sources
+        file(GLOB libnanocv_cuda_sources
                 cuda/*.*
         )
 
-        cuda_add_library(nanocv_cuda STATIC ${nanocv_cuda_sources})
-        target_link_libraries(nanocv nanocv_cuda)
+        cuda_add_library(libnanocv_cuda STATIC ${libnanocv_cuda_sources})
+        target_link_libraries(libnanocv libnanocv_cuda)
 endif()
 
 # Install library
 install(TARGETS
-        nanocv
+        libnanocv
         DESTINATION lib)
 
 # Install headers
