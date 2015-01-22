@@ -33,7 +33,7 @@ namespace ncv
                         {
                                 static tround dispatch(tvalue value)
                                 {
-                                        return static_cast<tround>(std::nearbyint(value));
+                                        return static_cast<tround>(std::round(value));
                                 }
                         };
                 }
