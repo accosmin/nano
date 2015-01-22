@@ -139,7 +139,7 @@ message("-----------------------------------------------------------------------
 # Build the library, programs & tests
 ######################################################################
 
-include_directories(./ ./src ./src/nanocv)
+include_directories(./src ./src/nanocv)
 
 add_subdirectory(src)
 add_subdirectory(apps)

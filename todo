@@ -1,5 +1,4 @@
 - unit tests:
-	- accumulator: value & gradient -> check the number of samples & the same results with different number of threads (NO TEST PROGRAM)
 	- thread_loop: make sure the same results are obtained with openmp, thread_loop and normal loop (NO TEST PROGRAM)
 	- mad & dot operators: make sure the same results are obtained with different implementations (may keep the test program to benchmark the times)
 	- image_t: resize, color mode, filling
