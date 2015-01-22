@@ -1,10 +1,22 @@
-#include "nanocv.h"
+#define BOOST_TEST_DYN_LINK
+#define BOOST_TEST_MODULE "test_thread_pool"
 
-int main(int argc, char *argv[])
+#include <boost/test/unit_test.hpp>
+#include "util/thread_pool.h"
+#include "util/logger.h"
+#include "util/random.hpp"
+
+BOOST_AUTO_TEST_CASE(test_thread_pool)
 {
         using namespace ncv;
 
         thread_pool_t pool;
+
+        thread_pool_t::mutex_t mutex;
+
+        // check that there is no job to do
+        BOOST_CHECK_EQUAL(pool.n_workers(), ncv::n_threads());
+        BOOST_CHECK_EQUAL(pool.n_jobs(), 0);
 
         const size_t n_tests = 8;
         const size_t n_max_jobs = pool.n_workers() * 16;
@@ -17,35 +29,45 @@ int main(int argc, char *argv[])
                 // ... enqueue jobs
                 const size_t n_jobs = rnd();
                 log_info() << "@pool [" << (t + 1) << "/" << n_tests
-                                << "]: creating " << n_jobs << " jobs ...";
+                           << "]: creating " << n_jobs << " jobs ...";
 
                 for (size_t j = 0; j < n_jobs; j ++)
                 {
-                        pool.enqueue([=]()
+                        pool.enqueue([=, &mutex]()
                         {
-                                const size_t sleep1 = random_t<size_t>(10, 100)();
+                                const size_t sleep1 = random_t<size_t>(10, 50)();
                                 std::this_thread::sleep_for(std::chrono::milliseconds(sleep1));
 
-                                log_info() << "#job [" << (j + 1) << "/" << n_jobs << "@"
-                                                << (t + 1) << "/" << n_tests << "] started ...";
+                                {
+                                        const thread_pool_t::lock_t lock(mutex);
 
-                                const size_t sleep2 = random_t<size_t>(10, 500)();
+                                        log_info() << "#job [" << (j + 1) << "/" << n_jobs << "@"
+                                                   << (t + 1) << "/" << n_tests << "] started ...";
+                                }
+
+                                const size_t sleep2 = random_t<size_t>(10, 100)();
                                 std::this_thread::sleep_for(std::chrono::milliseconds(sleep2));
 
-                                log_info() << "#job [" << (j + 1) << "/" << n_jobs << "@"
-                                                << (t + 1) << "/" << n_tests << "] done.";
+                                {
+                                        const thread_pool_t::lock_t lock(mutex);
+
+                                        log_info() << "#job [" << (j + 1) << "/" << n_jobs << "@"
+                                                   << (t + 1) << "/" << n_tests << "] done.";
+                                }
                         });
                 }
 
                 // ... wait for all jobs to finish
                 log_info() << "@pool [" << (t + 1) << "/" << n_tests
-                                << "]: waiting for " << pool.n_jobs() << " jobs ...";
+                           << "]: waiting for " << pool.n_jobs() << " jobs ...";
+
                 pool.wait();
+
                 log_info() << "@pool [" << (t + 1) << "/" << n_tests
                                 << "]: waiting done (enqueued " << pool.n_jobs() << " jobs).";
-        }
 
-        // OK
-        log_info() << done;
-        return EXIT_SUCCESS;
+                // check that all jobs are done
+                BOOST_CHECK_EQUAL(pool.n_workers(), ncv::n_threads());
+                BOOST_CHECK_EQUAL(pool.n_jobs(), 0);
+        }
 }

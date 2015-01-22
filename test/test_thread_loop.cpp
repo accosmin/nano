@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE(test_thread_loop)
 {
         using namespace ncv;
 
-        const size_t min_size = 128;
+        const size_t min_size = 37;
         const size_t max_size = 1024 * 1024;
 
         const size_t trials = 16;
@@ -144,7 +144,7 @@ BOOST_AUTO_TEST_CASE(test_thread_loop)
                   << ncv::text::resize("NanoCV(pool)", col_size)
                   << std::endl;
 
-        for (size_t size = min_size; size <= max_size; size *= 2)
+        for (size_t size = min_size; size <= max_size; size *= 3)
         {
                 ncv::scalars_t results(size);
 
