@@ -53,7 +53,7 @@ The library provides various command line programs and utilities. Each program d
 
 * **ncv_tester** - test a model on a given task.
 
-* **ncv_generator** - creates input image patches that maximally activates an output unit (e.g. associated to a class label).
+* **ncv_generator** - creates input image patches that maximally activate an output unit (e.g. associated to a class label).
 
 The `scripts` directory contains examples on how to train various models on different tasks.
 
