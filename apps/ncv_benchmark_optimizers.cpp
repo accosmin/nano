@@ -1,6 +1,15 @@
 #include "nanocv.h"
 #include "tasks/task_syn_dots.h"
 #include "util/log_search.hpp"
+#include "optimize/batch_gd.hpp"
+#include "optimize/batch_cgd.hpp"
+#include "optimize/batch_lbfgs.hpp"
+#include "optimize/stoch_ag.hpp"
+#include "optimize/stoch_sg.hpp"
+#include "optimize/stoch_sga.hpp"
+#include "optimize/stoch_sia.hpp"
+#include "optimize/stoch_adagrad.hpp"
+#include "optimize/stoch_adadelta.hpp"
 #include <map>
 
 using namespace ncv;
