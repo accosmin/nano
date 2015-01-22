@@ -6,7 +6,7 @@
 namespace ncv
 {
         ///
-        /// uniform random number generator in the [min, max] range.
+        /// \brief uniform random number generator in the [min, max] range.
         ///
         template
         <
@@ -16,7 +16,9 @@ namespace ncv
         {
         public:
                 
-                // constructor
+                ///
+                /// \brief constructor
+                ///
                 random_t(tscalar min, tscalar max)
                         :       m_gen(std::random_device()()),
                                 m_die(std::min(min, max),
@@ -24,13 +26,17 @@ namespace ncv
                 {
                 }
                 
-                // generate a random value
+                ///
+                /// \brief generate a random value
+                ///
                 tscalar operator()()
                 {
                         return m_die(m_gen);
                 }
                 
-                // fill the [begin, end) range with random values
+                ///
+                /// \brief fill the [begin, end) range with random values
+                ///
                 template
                 <
                         class titerator
@@ -43,8 +49,14 @@ namespace ncv
                         }
                 }
 
-                // access functions
+                ///
+                /// \brief minimum
+                ///
                 tscalar min() const { return m_die.min(); }
+
+                ///
+                /// \brief maximum
+                ///
                 tscalar max() const { return m_die.max(); }
                 
         private:
@@ -65,7 +77,7 @@ namespace ncv
         };
 
         ///
-        /// generate random indices (e.g. for std::random_shuffle)
+        /// \brief generate random indices (e.g. for std::random_shuffle)
         ///
         template
         <
