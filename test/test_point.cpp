@@ -1,5 +1,5 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_nanocv"
+#define BOOST_TEST_MODULE "test_point"
 
 #include <boost/test/unit_test.hpp>
 #include "point.h"
