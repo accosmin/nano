@@ -1,16 +1,15 @@
-- unit tests:
-	- thread_loop: make sure the same results are obtained with openmp, thread_loop and normal loop (NO TEST PROGRAM)
-	- mad & dot operators: make sure the same results are obtained with different implementations (may keep the test program to benchmark the times)
-	- image_t: resize, color mode, filling
-	- gauss: kernel size, kernel sum
-	- batch & stochastic optimizers: small (convex) functions to check if they converge to known minima
-
 - refactor nanocv.h to include fewer files:
 	- may keep only the ::version() & ::init() functions
 
 - ncv_benchmark_models:
 	- run the tests for various number of threads and print timing statistics: [model] [time with #threads]
 	- this is to assess how various models scale with the number of threads/cores 
+
+- unit tests:
+	- mad & dot operators: make sure the same results are obtained with different implementations (may keep the test program to benchmark the times)
+	- image_t: resize, color mode, filling
+	- gauss: kernel size, kernel sum
+	- batch & stochastic optimizers: small (convex) functions to check if they converge to known minima
 
 - update the test program to evaluate the optimizers to call directly trainer-based functions:
 	- to also do tuning of stochastic & minibatch parameters
