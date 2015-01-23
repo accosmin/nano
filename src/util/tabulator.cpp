@@ -52,7 +52,7 @@ namespace ncv
 
         bool tabulator_t::print(std::ostream& os) const
         {
-                const size_t border = 2;
+                const size_t border = 4;
 
                 const char row_delim = '.';
                 const char col_delim = ' ';

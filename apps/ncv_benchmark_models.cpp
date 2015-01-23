@@ -113,8 +113,8 @@ int main(int argc, char *argv[])
         assert(loss);
 
         // construct tables to compare models
-        tabulator_t ftable("forward");
-        tabulator_t btable("backward");
+        tabulator_t ftable("model-forward\\threads");
+        tabulator_t btable("model-backward\\threads");
 
         for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; nthreads ++)
         {
