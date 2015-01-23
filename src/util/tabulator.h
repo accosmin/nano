@@ -6,7 +6,7 @@
 namespace ncv
 {
         ///
-        /// \brief collects & formats for display tabular data
+        /// \brief collects & formats for ASCII display tabular data
         ///
         class tabulator_t
         {
@@ -20,6 +20,42 @@ namespace ncv
                         bool(const string_t&,
                              const string_t&)
                 >                                       comparator_t;
+
+                ///
+                /// \brief a header in the table
+                ///
+                class header_t
+                {
+                public:
+
+                        ///
+                        /// \brief append a column value
+                        ///
+                        template
+                        <
+                                typename tvalue
+                        >
+                        header_t& operator<<(tvalue value)
+                        {
+                                m_values.emplace_back(text::to_string(value));
+                                return *this;
+                        }
+
+                        ///
+                        /// \brief retrieve the column values
+                        ///
+                        const strings_t& values() const { return m_values; }
+
+                        ///
+                        /// \brief retrieve the number of columns
+                        ///
+                        size_t size() const { return m_values.size(); }
+
+                private:
+
+                        // attributes
+                        strings_t       m_values;       ///< column values
+                };
 
                 ///
                 /// \brief a row in the table
@@ -62,7 +98,7 @@ namespace ncv
                         ///
                         /// \brief retrieve the number of columns
                         ///
-                        size_t cols() const { return m_values.size(); }
+                        size_t size() const { return m_values.size(); }
 
                 private:
 
@@ -74,12 +110,17 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                tabulator_t(const strings_t& header);
+                tabulator_t(const header_t& header = header_t());
 
                 ///
                 /// \brief remove all rows, but keeps the header
                 ///
                 void clear();
+
+                ///
+                /// \brief access header
+                ///
+                header_t& header();
 
                 ///
                 /// \brief append a new row
@@ -111,7 +152,7 @@ namespace ncv
         private:
 
                 // attributes
-                strings_t               m_header;       ///<
+                header_t                m_header;       ///<
                 std::vector<row_t>      m_rows;         ///<
         };
 }

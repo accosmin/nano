@@ -42,6 +42,11 @@ namespace ncv
                 {
                         return value;
                 }
+                template <>
+                inline std::string to_string(const char* value)
+                {
+                        return value;
+                }
 
                 ///
                 /// \brief cast built-int types from string

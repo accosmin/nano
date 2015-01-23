@@ -3,6 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include "nanocv.h"
+#include "util/tabulator.h"
 
 namespace test
 {
@@ -99,30 +100,9 @@ namespace test
                 return timings;
         }
 
-        string_t to_string(const stats_t<scalar_t>& timings, size_t col_size)
+        string_t to_string(const stats_t<scalar_t>& timings)
         {
-                return  text::resize(
-                        text::to_string(timings.avg()) + " +/- " + text::to_string(timings.stdev()),
-                        col_size);
-        }
-
-        // display the formatted timing statistics
-        void print(const string_t& header, size_t col_size,
-                   const stats_t<scalar_t>& timings_cpu,
-#ifdef _OPENMP
-                   const stats_t<scalar_t>& timings_omp,
-#endif
-                   const stats_t<scalar_t>& timings_ncv,
-                   const stats_t<scalar_t>& timings_ncv_pool)
-        {
-                std::cout << text::resize(header, col_size)
-                          << to_string(timings_cpu, col_size)
-#ifdef _OPENMP
-                          << to_string(timings_omp, col_size)
-#endif
-                          << to_string(timings_ncv, col_size)
-                          << to_string(timings_ncv_pool, col_size)
-                          << std::endl;
+                return text::to_string(timings.avg()) + " +/- " + text::to_string(timings.stdev());
         }
 }
 
@@ -134,18 +114,16 @@ BOOST_AUTO_TEST_CASE(test_thread_loop)
         const size_t max_size = 1024 * 1024;
 
         const size_t trials = 16;
-        const size_t col_size = 28;
+
+        tabulator_t table;
+        table.header() << "CPU";
+#ifdef _OPENMP
+        table.header() << "OpenMP";
+#endif
+        table.header() << "NanoCV";
+        table.header() << "NanoCV(pool)";
 
         // test for different problems size
-        std::cout << text::resize("", col_size)
-                  << text::resize("CPU", col_size)
-#ifdef _OPENMP
-                  << text::resize("OpenMP", col_size)
-#endif
-                  << text::resize("NanoCV", col_size)
-                  << text::resize("NanoCV(pool)", col_size)
-                  << std::endl;
-
         for (size_t size = min_size; size <= max_size; size *= 3)
         {
                 scalars_t results(size);
@@ -186,13 +164,13 @@ BOOST_AUTO_TEST_CASE(test_thread_loop)
                 const stats_t<scalar_t> timings_ncv_pool = test::test_ncv_pool(size, trials, op);
                 const scalar_t sum_ncv_loop = std::accumulate(std::begin(results), std::end(results), 0.0);
 
-                test::print("test [" + text::to_string(size) + "]", col_size,
-                      timings_cpu,
+                table.append("test [" + text::to_string(size) + "]")
+                << test::to_string(timings_cpu)
 #ifdef _OPENMP
-                      timings_omp,
+                << test::to_string(timings_omp)
 #endif
-                      timings_ncv,
-                      timings_ncv_pool);
+                << test::to_string(timings_ncv)
+                << test::to_string(timings_ncv_pool);
 
                 // Check accuracy
                 const scalar_t eps = 1e-12;
@@ -203,4 +181,6 @@ BOOST_AUTO_TEST_CASE(test_thread_loop)
                 BOOST_CHECK_LE(std::fabs(sum_cpu - sum_ncv), eps);
                 BOOST_CHECK_LE(std::fabs(sum_cpu - sum_ncv_loop),  eps);
         }
+
+        table.print(std::cout);
 }

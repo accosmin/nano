@@ -3,9 +3,15 @@
 
 namespace ncv
 {
-        tabulator_t::tabulator_t(const strings_t& header)
+        tabulator_t::tabulator_t(const header_t& header)
                 :       m_header(header)
         {
+        }
+
+        tabulator_t::header_t& tabulator_t::header()
+        {
+                clear();
+                return m_header;
         }
 
         void tabulator_t::clear()
@@ -25,11 +31,11 @@ namespace ncv
                 {
                         std::sort(m_rows.begin(), m_rows.end(), [&] (const row_t& row1, const row_t& row2)
                         {
-                                assert(col < row1.cols());
-                                assert(row1.cols() == cols());
+                                assert(col < row1.size());
+                                assert(row1.size() == cols());
 
-                                assert(col < row2.cols());
-                                assert(row2.cols() == cols());
+                                assert(col < row2.size());
+                                assert(row2.size() == cols());
 
                                 return comp(row1.values()[col], row2.values()[col]);
                         });
@@ -47,7 +53,6 @@ namespace ncv
         bool tabulator_t::print(std::ostream& os) const
         {
                 const size_t border = 2;
-                const string_t skip(border, ' ');
 
                 // size of name column (in characters)
                 size_t name_colsize = 0;
@@ -69,8 +74,8 @@ namespace ncv
                 value_colsize += border;
 
                 // display header
-                os << string_t(name_colsize + border, ' ');
-                for (const string_t& colname : m_header)
+                os << string_t(name_colsize, ' ');
+                for (const string_t& colname : m_header.values())
                 {
                         os << text::resize(colname, value_colsize);
                 }
