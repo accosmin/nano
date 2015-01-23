@@ -1,3 +1,8 @@
+- cleanup nanocv.h:
+	- keep only ::version() & ::init()
+	- include only version.h & types.h
+	- modify test programs to explicitly include the required headers & not rely on nanocv.h  
+
 - unit tests:
 	- mad & dot operators: make sure the same results are obtained with different implementations (may keep the test program to benchmark the times)
 	- image_t: resize, color mode, filling
