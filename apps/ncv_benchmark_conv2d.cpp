@@ -14,10 +14,6 @@ using namespace ncv;
 ncv::thread_pool_t pool;
 const size_t tests = 16;
 
-typedef double test_scalar_t;
-typedef ncv::tensor::matrix_types_t<test_scalar_t>::tmatrix     test_matrix_t;
-typedef ncv::tensor::matrix_types_t<test_scalar_t>::tmatrices   test_matrices_t;
-
 template
 <
         typename tmatrix
@@ -336,8 +332,8 @@ void test_conv2d(int isize, int ksize, int tsize)
 {
         const int osize = isize - ksize + 1;
 
-        test_matrices_t idatas, odatas;
-        test_matrix_t kdata;
+        matrices_t idatas, odatas;
+        matrix_t kdata;
 
         init_matrices(isize, isize, tsize, idatas);
         init_matrices(osize, osize, tsize, odatas);
@@ -349,15 +345,15 @@ void test_conv2d(int isize, int ksize, int tsize)
                 text::to_string(ksize) + "x" + text::to_string(ksize) + "): ";
         std::cout << text::resize(header, 24);
         
-        const test_scalar_t convcpu_eig = test_cpu(ncv::conv2d_eig<test_matrix_t>, "eig", idatas, kdata, odatas);
-        const test_scalar_t convcpu_cpp = test_cpu(ncv::conv2d_cpp<test_matrix_t>, "cpp", idatas, kdata, odatas);
-        const test_scalar_t convcpu_dot = test_cpu(ncv::conv2d_dot<test_matrix_t>, "dot", idatas, kdata, odatas);
-        const test_scalar_t convcpu_mad = test_cpu(ncv::conv2d_mad<test_matrix_t>, "mad", idatas, kdata, odatas);
-        const test_scalar_t convcpu_dyn = test_cpu(ncv::conv2d_dyn<test_matrix_t>, "dyn", idatas, kdata, odatas);
+        const scalar_t convcpu_eig = test_cpu(ncv::conv2d_eig<matrix_t>, "eig", idatas, kdata, odatas);
+        const scalar_t convcpu_cpp = test_cpu(ncv::conv2d_cpp<matrix_t>, "cpp", idatas, kdata, odatas);
+        const scalar_t convcpu_dot = test_cpu(ncv::conv2d_dot<matrix_t>, "dot", idatas, kdata, odatas);
+        const scalar_t convcpu_mad = test_cpu(ncv::conv2d_mad<matrix_t>, "mad", idatas, kdata, odatas);
+        const scalar_t convcpu_dyn = test_cpu(ncv::conv2d_dyn<matrix_t>, "dyn", idatas, kdata, odatas);
 #if defined(NANOCV_HAVE_OPENCL)
-        const test_scalar_t convgpu    = test_gpu("conv_kernel", "gpu", idatas, kdata, odatas);
+        const scalar_t convgpu    = test_gpu("conv_kernel", "gpu", idatas, kdata, odatas);
 #elif defined(NANOCV_HAVE_CUDA)
-        const test_scalar_t convgpu    = test_gpu(cuda::conv2d<test_scalar_t>, "gpu", idatas, kdata, odatas);
+        const scalar_t convgpu    = test_gpu(cuda::conv2d<scalar_t>, "gpu", idatas, kdata, odatas);
 #endif
         std::cout << std::endl;
 

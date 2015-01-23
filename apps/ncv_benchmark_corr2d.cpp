@@ -14,10 +14,6 @@ using namespace ncv;
 ncv::thread_pool_t pool;
 const size_t tests = 16;
 
-typedef double test_scalar_t;
-typedef ncv::tensor::matrix_types_t<test_scalar_t>::tmatrix     test_matrix_t;
-typedef ncv::tensor::matrix_types_t<test_scalar_t>::tmatrices   test_matrices_t;
-
 template
 <
         typename tmatrix
@@ -311,8 +307,8 @@ void test_corr2d(int isize, int ksize, int tsize)
 {
         const int osize = isize - ksize + 1;
 
-        test_matrices_t idatas, odatas;
-        test_matrix_t kdata;
+        matrices_t idatas, odatas;
+        matrix_t kdata;
 
         init_matrices(isize, isize, tsize, idatas);
         init_matrices(osize, osize, tsize, odatas);
@@ -324,16 +320,16 @@ void test_corr2d(int isize, int ksize, int tsize)
                 text::to_string(ksize) + "x" + text::to_string(ksize) + "): ";
         std::cout << text::resize(header, 24);
 
-        const test_scalar_t corrcpu_egb = test_cpu(ncv::corr2d_egb<test_matrix_t>, "egb", odatas, kdata, idatas);
-        const test_scalar_t corrcpu_egr = test_cpu(ncv::corr2d_egr<test_matrix_t>, "egr", odatas, kdata, idatas);
-        const test_scalar_t corrcpu_cpp = test_cpu(ncv::corr2d_cpp<test_matrix_t>, "cpp", odatas, kdata, idatas);
-        const test_scalar_t corrcpu_mdk = test_cpu(ncv::corr2d_mdk<test_matrix_t>, "mkd", odatas, kdata, idatas);
-        const test_scalar_t corrcpu_mdo = test_cpu(ncv::corr2d_mdo<test_matrix_t>, "mko", odatas, kdata, idatas);
-        const test_scalar_t corrcpu_dyn = test_cpu(ncv::corr2d_dyn<test_matrix_t>, "dyn", odatas, kdata, idatas);
+        const scalar_t corrcpu_egb = test_cpu(ncv::corr2d_egb<matrix_t>, "egb", odatas, kdata, idatas);
+        const scalar_t corrcpu_egr = test_cpu(ncv::corr2d_egr<matrix_t>, "egr", odatas, kdata, idatas);
+        const scalar_t corrcpu_cpp = test_cpu(ncv::corr2d_cpp<matrix_t>, "cpp", odatas, kdata, idatas);
+        const scalar_t corrcpu_mdk = test_cpu(ncv::corr2d_mdk<matrix_t>, "mkd", odatas, kdata, idatas);
+        const scalar_t corrcpu_mdo = test_cpu(ncv::corr2d_mdo<matrix_t>, "mko", odatas, kdata, idatas);
+        const scalar_t corrcpu_dyn = test_cpu(ncv::corr2d_dyn<matrix_t>, "dyn", odatas, kdata, idatas);
 #if defined(NANOCV_HAVE_OPENCL)
-        const test_scalar_t corrgpu   = test_gpu("corr_kernel", "gpu", odatas, kdata, idatas);
+        const scalar_t corrgpu   = test_gpu("corr_kernel", "gpu", odatas, kdata, idatas);
 #elif NANOCV_HAVE_CUDA
-        const test_scalar_t corrgpu   = test_gpu(cuda::corr2d<test_scalar_t>, "gpu", odatas, kdata, idatas);
+        const scalar_t corrgpu   = test_gpu(cuda::corr2d<scalar_t>, "gpu", odatas, kdata, idatas);
 #endif
         std::cout << std::endl;
 
