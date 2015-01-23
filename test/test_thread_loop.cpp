@@ -111,17 +111,17 @@ BOOST_AUTO_TEST_CASE(test_thread_loop)
         using namespace ncv;
 
         const size_t min_size = 37;
-        const size_t max_size = 1024 * 1024;
+        const size_t max_size = 256 * 1024;
 
         const size_t trials = 16;
 
-        tabulator_t table;
-        table.header() << "CPU";
+        tabulator_t table("method");
+        table.header() << "cpu";
 #ifdef _OPENMP
-        table.header() << "OpenMP";
+        table.header() << "openmp";
 #endif
-        table.header() << "NanoCV";
-        table.header() << "NanoCV(pool)";
+        table.header() << "nanocv";
+        table.header() << "nanocv(pool)";
 
         // test for different problems size
         for (size_t size = min_size; size <= max_size; size *= 3)

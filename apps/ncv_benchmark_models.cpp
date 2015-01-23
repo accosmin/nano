@@ -1,5 +1,6 @@
 #include "nanocv.h"
 #include "tasks/task_syn_dots.h"
+#include "util/tabulator.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
@@ -10,10 +11,7 @@ int main(int argc, char *argv[])
 
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
-        po_desc.add_options()("help,h", "test program");
-        po_desc.add_options()("threads,t",
-                boost::program_options::value<size_t>()->default_value(1),
-                "number of threads to use [1, 64], 0 - use all available threads");
+        po_desc.add_options()("help,h", "benchmark models");
         po_desc.add_options()("samples,s",
                 boost::program_options::value<size_t>()->default_value(10000),
                 "number of samples to use [1000, 100000]");
@@ -36,7 +34,6 @@ int main(int argc, char *argv[])
                 return EXIT_FAILURE;
         }
 
-        const size_t cmd_threads = math::clamp(po_vm["threads"].as<size_t>(), 0, 64);
         const size_t cmd_samples = math::clamp(po_vm["samples"].as<size_t>(), 1000, 100 * 1000);
         const bool cmd_forward = po_vm.count("forward");
         const bool cmd_backward = po_vm.count("backward");
@@ -50,6 +47,8 @@ int main(int argc, char *argv[])
         const size_t cmd_rows = 28;
         const size_t cmd_cols = 28;
         const size_t cmd_outputs = 10;
+        const size_t cmd_min_nthreads = 1;
+        const size_t cmd_max_nthreads = ncv::n_threads();
 
         syn_dots_task_t task("rows=" + text::to_string(cmd_rows) + "," +
                              "cols=" + text::to_string(cmd_cols) + "," +
@@ -96,11 +95,42 @@ int main(int argc, char *argv[])
                 cmodel25 + outlayer
         };
 
+        strings_t cmd_names =
+        {
+                "lmodel0",
+                "lmodel1",
+                "lmodel2",
+                "lmodel3",
+                "lmodel4",
+                "lmodel5",
+
+                "cmodel100",
+                "cmodel50",
+                "cmodel25"
+        };
+
         const rloss_t loss = loss_manager_t::instance().get("logistic");
         assert(loss);
 
-        for (const string_t& cmd_network : cmd_networks)
+        // construct tables to compare models
+        tabulator_t ftable("forward");
+        tabulator_t btable("backward");
+
+        for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; nthreads ++)
         {
+                ftable.header() << (text::to_string(nthreads) + "xCPU [ms]");
+                btable.header() << (text::to_string(nthreads) + "xCPU [ms]");
+        }
+
+        // evaluate models
+        for (size_t im = 0; im < cmd_networks.size(); im ++)
+        {
+                const string_t cmd_network = cmd_networks[im];
+                const string_t cmd_name = cmd_names[im];
+
+                tabulator_t::row_t& frow = ftable.append(cmd_name);
+                tabulator_t::row_t& brow = btable.append(cmd_name);
+
                 log_info() << "<<< running network [" << cmd_network << "] ...";
 
                 // create feed-forward network
@@ -153,29 +183,47 @@ int main(int argc, char *argv[])
                 }
 
                 // process the samples
-                if (cmd_forward)
+                for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; nthreads ++)
                 {
-                        accumulator_t ldata(*model, cmd_threads, "l2n-reg", criterion_t::type::value, 0.1);
+                        if (cmd_forward)
+                        {
+                                accumulator_t ldata(*model, nthreads, "l2n-reg", criterion_t::type::value, 0.1);
 
-                        const ncv::timer_t timer;
-                        ldata.update(task, samples, *loss);
+                                const ncv::timer_t timer;
+                                ldata.update(task, samples, *loss);
 
-                        log_info() << "<<< processed [" << ldata.count()
-                                   << "] forward samples in " << timer.elapsed() << ".";
-                }
+                                log_info() << "<<< processed [" << ldata.count()
+                                           << "] forward samples in " << timer.elapsed() << ".";
 
-                if (cmd_backward)
-                {
-                        accumulator_t gdata(*model, cmd_threads, "l2n-reg", criterion_t::type::vgrad, 0.1);
+                                frow << timer.miliseconds();
+                        }
 
-                        const ncv::timer_t timer;
-                        gdata.update(task, samples, *loss);
+                        if (cmd_backward)
+                        {
+                                accumulator_t gdata(*model, nthreads, "l2n-reg", criterion_t::type::vgrad, 0.1);
 
-                        log_info() << "<<< processed [" << gdata.count()
-                                   << "] backward samples in " << timer.elapsed() << ".";
+                                const ncv::timer_t timer;
+                                gdata.update(task, samples, *loss);
+
+                                log_info() << "<<< processed [" << gdata.count()
+                                           << "] backward samples in " << timer.elapsed() << ".";
+
+                                brow << timer.miliseconds();
+                        }
                 }
 
                 log_info();
+        }
+
+        // print results
+        if (cmd_forward)
+        {
+                ftable.print(std::cout);
+        }
+        log_info();
+        if (cmd_backward)
+        {
+                btable.print(std::cout);
         }
 
         // OK

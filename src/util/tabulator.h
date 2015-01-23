@@ -110,7 +110,7 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                tabulator_t(const header_t& header = header_t());
+                explicit tabulator_t(const string_t& title);
 
                 ///
                 /// \brief remove all rows, but keeps the header
@@ -139,6 +139,8 @@ namespace ncv
                 ///
                 bool print(std::ostream& os) const;
 
+        private:
+
                 ///
                 /// \brief retrieve the number of columns
                 ///
@@ -152,6 +154,7 @@ namespace ncv
         private:
 
                 // attributes
+                string_t                m_title;        ///<
                 header_t                m_header;       ///<
                 std::vector<row_t>      m_rows;         ///<
         };

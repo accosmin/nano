@@ -3,8 +3,8 @@
 
 namespace ncv
 {
-        tabulator_t::tabulator_t(const header_t& header)
-                :       m_header(header)
+        tabulator_t::tabulator_t(const string_t& title)
+                :       m_title(title)
         {
         }
 
@@ -54,16 +54,24 @@ namespace ncv
         {
                 const size_t border = 2;
 
+                const char row_delim = '.';
+                const char col_delim = ' ';
+
                 // size of name column (in characters)
                 size_t name_colsize = 0;
                 for (const row_t& row : m_rows)
                 {
                         name_colsize = std::max(name_colsize, row.name().size());
                 }
+                name_colsize = std::max(name_colsize, m_title.size());
                 name_colsize += border;
 
                 // size of value columns (in characters)
                 size_t value_colsize = 0;
+                for (const string_t& colname : m_header.values())
+                {
+                        value_colsize = std::max(value_colsize, colname.size());
+                }
                 for (const row_t& row : m_rows)
                 {
                         for (const string_t& value : row.values())
@@ -74,23 +82,29 @@ namespace ncv
                 value_colsize += border;
 
                 // display header
-                os << string_t(name_colsize, ' ');
+                os << string_t(name_colsize + cols() * value_colsize, row_delim) << std::endl;
+
+                os << text::resize(m_title, name_colsize);
                 for (const string_t& colname : m_header.values())
                 {
-                        os << text::resize(colname, value_colsize);
+                        os << text::resize(col_delim + colname, value_colsize);
                 }
                 os << std::endl;
 
                 // display rows
                 for (const row_t& row : m_rows)
                 {
+                        os << string_t(name_colsize + cols() * value_colsize, row_delim) << std::endl;
+
                         os << text::resize(row.name(), name_colsize);
                         for (const string_t& value : row.values())
                         {
-                                os << text::resize(value, value_colsize);
+                                os << text::resize(col_delim + value, value_colsize);
                         }
                         os << std::endl;
                 }
+
+                os << string_t(name_colsize + cols() * value_colsize, row_delim) << std::endl;
 
                 return true;
         }
