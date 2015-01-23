@@ -6,7 +6,9 @@
 
 namespace ncv
 {
-        // alignment options
+        ///
+        /// \brief text alignment options
+        ///
         enum class align : int
         {
                 left,
@@ -18,11 +20,15 @@ namespace ncv
         {
                 using namespace boost::algorithm;
 
-                // align a string to fill the given size
+                ///
+                /// \brief align a string to fill the given size
+                ///
                 std::string resize(const std::string& str, std::size_t size,
                                    align alignment = align::left, char fill_char = ' ');
 
-                // string cast for built-in types
+                ///
+                /// \brief cast to string for built-in types
+                ///
                 template
                 <
                         typename tvalue
@@ -37,6 +43,9 @@ namespace ncv
                         return value;
                 }
 
+                ///
+                /// \brief cast built-int types from string
+                ///
                 template
                 <
                         typename tvalue
@@ -46,7 +55,9 @@ namespace ncv
                         return boost::lexical_cast<tvalue>(str);
                 }
 
-                // compact a list of values into a string using the given glue string
+                ///
+                /// \brief compact a list of values into a string using the given "glue" string
+                ///
                 template
                 <
                         typename tvalue
@@ -62,8 +73,10 @@ namespace ncv
                         return ret.empty() ? ret : ret.substr(0, ret.size() - glue.size());
                 }
 
-                // decode parameter by name: [name1=value1[,name2=value2[...]]
-                // the default value is returned if the parameter cannot be found or is invalid.
+                ///
+                /// \brief decode parameter by name: [name1=value1[,name2=value2[...]]
+                /// the default value is returned if the parameter cannot be found or is invalid.
+                ///
                 template
                 <
                         class tvalue
