@@ -71,11 +71,7 @@ namespace ncv
         ///
         /// \brief stream a rectangle
         ///
-        inline std::ostream& operator<<(std::ostream& s, const rect_t& rect)
-        {
-                return s << "{RECT: top-left = (" << rect.left() << ", " << rect.top()
-                         << "), size = " << rect.width() << "x" << rect.height() << "}";
-        }
+        std::ostream& operator<<(std::ostream& s, const rect_t& rect);
 }
 
 
