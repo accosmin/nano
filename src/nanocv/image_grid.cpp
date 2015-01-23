@@ -1,8 +1,8 @@
-#include "grid_image.h"
+#include "image_grid.h"
 
 namespace ncv
 {
-        grid_image_t::grid_image_t(
+        image_grid_t::image_grid_t(
                 size_t patch_rows, size_t patch_cols,
                 size_t group_rows, size_t group_cols,
                 size_t border,
@@ -21,12 +21,12 @@ namespace ncv
                 m_image.fill(m_bcolor);
         }
 
-        bool grid_image_t::set(size_t grow, size_t gcol, const image_t& image)
+        bool image_grid_t::set(size_t grow, size_t gcol, const image_t& image)
         {
                 return set(grow, gcol, image, rect_t(0, 0, image.cols(), image.rows()));
         }
 
-        bool grid_image_t::set(size_t grow, size_t gcol, const image_t& image, const rect_t& region)
+        bool image_grid_t::set(size_t grow, size_t gcol, const image_t& image, const rect_t& region)
         {
                 if (    grow < m_grows &&
                         gcol < m_gcols &&

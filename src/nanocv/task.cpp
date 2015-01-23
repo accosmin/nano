@@ -1,8 +1,7 @@
 #include "task.h"
 #include "util/logger.h"
 #include "sampler.h"
-#include "grid_image.h"
-#include <set>
+#include "image_grid.h"
 
 namespace ncv
 {
@@ -63,7 +62,7 @@ namespace ncv
         {
                 for (size_t i = 0, g = 1; i < samples.size(); g ++)
                 {
-                        grid_image_t grid_image(n_rows(), n_cols(), grows, gcols, border, bkcolor);
+                        image_grid_t grid_image(n_rows(), n_cols(), grows, gcols, border, bkcolor);
 
                         // select samples
                         samples_t gsamples;

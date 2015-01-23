@@ -1,5 +1,5 @@
 #include "nanocv.h"
-#include "grid_image.h"
+#include "image_grid.h"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
         const size_t labels = rmodel->osize();
         for (size_t l = 0; l < labels; l ++)
         {
-                grid_image_t grid_image(rmodel->irows(), rmodel->icols(), cmd_save_group_rows, cmd_save_group_cols);
+                image_grid_t grid_image(rmodel->irows(), rmodel->icols(), cmd_save_group_rows, cmd_save_group_cols);
 
                 const vector_t target = ncv::class_target(l, labels);
                 for (size_t r = 0; r < cmd_save_group_rows; r ++)

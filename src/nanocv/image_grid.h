@@ -4,17 +4,15 @@
 
 namespace ncv
 {
-        // fixme: merge in image_t!
-
         ///
         /// \brief create an RGBA image composed from fixed-size RGBA patches disposed in a grid
         ///
-        class grid_image_t
+        class image_grid_t
         {
         public:
 
                 // constructor
-                grid_image_t(   size_t patch_rows, size_t patch_cols,
+                image_grid_t(   size_t patch_rows, size_t patch_cols,
                                 size_t group_rows, size_t group_cols,
                                 size_t border = 8,
                                 rgba_t back_color = color::make_rgba(225, 225, 0));
