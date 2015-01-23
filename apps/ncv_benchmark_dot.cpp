@@ -11,29 +11,13 @@ template
         typename tvector,
         typename tscalar = typename tvector::Scalar
 >
-tscalar test_dot(
-        tabulator_t::row_t& row, top op, const tvector& vec1, const tvector& vec2)
+void test_dot(tabulator_t::row_t& row, top op, const tvector& vec1, const tvector& vec2)
 {
         const ncv::timer_t timer;
 
-        const tscalar ret = op(vec1.data(), vec2.data(), vec1.size());
+        op(vec1.data(), vec2.data(), vec1.size());
         
         row << timer.microseconds();
-
-        return ret;
-}
-
-template
-<
-        typename tscalar
->
-void check(tscalar result, tscalar baseline, const char* name)
-{
-        const tscalar err = math::abs(result - baseline);
-        if (!math::almost_equal(err, tscalar(0)))
-        {
-                std::cout << name << " FAILED (diff = " << err << ")!" << std::endl;
-        }
 }
 
 void test_dot(size_t size, tabulator_t::row_t& row)
@@ -42,25 +26,15 @@ void test_dot(size_t size, tabulator_t::row_t& row)
         vec1.setRandom();
         vec2.setRandom();
 
-        const scalar_t dot    = test_dot(row, ncv::dot<scalar_t>, vec1, vec2);
-        const scalar_t dotul2 = test_dot(row, ncv::dot_unroll<scalar_t, 2>, vec1, vec2);
-        const scalar_t dotul3 = test_dot(row, ncv::dot_unroll<scalar_t, 3>, vec1, vec2);
-        const scalar_t dotul4 = test_dot(row, ncv::dot_unroll<scalar_t, 4>, vec1, vec2);
-        const scalar_t dotul5 = test_dot(row, ncv::dot_unroll<scalar_t, 5>, vec1, vec2);
-        const scalar_t dotul6 = test_dot(row, ncv::dot_unroll<scalar_t, 6>, vec1, vec2);
-        const scalar_t dotul7 = test_dot(row, ncv::dot_unroll<scalar_t, 7>, vec1, vec2);
-        const scalar_t dotul8 = test_dot(row, ncv::dot_unroll<scalar_t, 8>, vec1, vec2);
-        const scalar_t doteig = test_dot(row, ncv::tensor::dot_eig<scalar_t>, vec1, vec2);
-
-        check(dot,      dot, "dot");
-        check(dotul2,   dot, "dotul2");
-        check(dotul3,   dot, "dotul3");
-        check(dotul4,   dot, "dotul4");
-        check(dotul5,   dot, "dotul5");
-        check(dotul6,   dot, "dotul6");
-        check(dotul7,   dot, "dotul7");
-        check(dotul8,   dot, "dotul8");
-        check(doteig,   dot, "doteig");
+        test_dot(row, ncv::dot<scalar_t>, vec1, vec2);
+        test_dot(row, ncv::dot_unroll<scalar_t, 2>, vec1, vec2);
+        test_dot(row, ncv::dot_unroll<scalar_t, 3>, vec1, vec2);
+        test_dot(row, ncv::dot_unroll<scalar_t, 4>, vec1, vec2);
+        test_dot(row, ncv::dot_unroll<scalar_t, 5>, vec1, vec2);
+        test_dot(row, ncv::dot_unroll<scalar_t, 6>, vec1, vec2);
+        test_dot(row, ncv::dot_unroll<scalar_t, 7>, vec1, vec2);
+        test_dot(row, ncv::dot_unroll<scalar_t, 8>, vec1, vec2);
+        test_dot(row, ncv::tensor::dot_eig<scalar_t>, vec1, vec2);
 }
 
 int main(int argc, char* argv[])
