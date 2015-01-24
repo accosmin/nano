@@ -1,12 +1,10 @@
-#include "nanocv.h"
+#include "image.h"
 #include "util/measure.hpp"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
 {
         using namespace ncv;
-
-        ncv::init();
         
         // parse the command line
         boost::program_options::options_description po_desc("", 160);

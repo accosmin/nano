@@ -1,9 +1,11 @@
-#include "nanocv.h"
+#include "types.h"
 #include "util/timer.h"
+#include "util/math.hpp"
 #include "util/cast.hpp"
 #include "util/stats.hpp"
 #include "util/corr2d.hpp"
 #include "util/thread_loop.hpp"
+#include <iostream>
 #ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
 #endif

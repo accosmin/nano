@@ -1,5 +1,6 @@
-#include "nanocv.h"
+#include "types.h"
 #include "util/timer.h"
+#include "util/math.hpp"
 #include "util/cast.hpp"
 #include "util/stats.hpp"
 #include "util/conv2d.hpp"
@@ -11,6 +12,7 @@
 #include "cuda/cuda.h"
 #include "cuda/conv2d.h"
 #endif
+#include <iostream>
 
 using namespace ncv;
 

@@ -1,4 +1,4 @@
-#include "nanocv.h"
+#include "types.h"
 #include "util/timer.h"
 #include "util/logger.h"
 #include "file/archive.h"
@@ -7,8 +7,6 @@
 int main(int argc, char *argv[])
 {
         using namespace ncv;
-
-        ncv::init();
         
         // parse the command line
         boost::program_options::options_description po_desc("", 160);

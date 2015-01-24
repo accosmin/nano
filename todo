@@ -2,13 +2,6 @@
 	- create task_t::print(header, fold_t)
 	- move ncv::print(header, samples) to task_t::print(header, samples)
 
-- remove the nanocv.h include if no need for ::init() or ::version()
-
-- cleanup nanocv.h:
-	- keep only ::version() & ::init()
-	- include only version.h & types.h
-	- modify test programs to explicitly include the required headers & not rely on nanocv.h  
-
 - src/util depends on src/tensor (e.g. random_noise.hpp)
 - src/file depends on src/util (e.g. on logger)
 
@@ -24,6 +17,8 @@
 	- use the synthetic dataset	
 
 	- sort the optimization results by log-loss as well as timed
+
+- cleanup the <iostream> includes (some are not needed)
 
 - nicer way to specify colors than using the current array:
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2  # blue
