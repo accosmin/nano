@@ -8,6 +8,7 @@
 #include "util/tabulator.h"
 #include "util/thread_loop.hpp"
 #include <iostream>
+#include <numeric>
 
 namespace test
 {
