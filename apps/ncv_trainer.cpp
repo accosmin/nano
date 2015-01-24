@@ -1,6 +1,5 @@
 #include "nanocv.h"
 #include "tester.h"
-#include "sampler.h"
 #include "util/measure.hpp"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
@@ -121,22 +120,7 @@ int main(int argc, char *argv[])
                 "failed to load task <" + cmd_task + "> from directory <" + cmd_task_dir + ">");
 
         // describe task
-        log_info() << "images: " << rtask->n_images() << ".";
-        log_info() << "sample: #rows = " << rtask->n_rows()
-                   << ", #cols = " << rtask->n_cols()
-                   << ", #outputs = " << rtask->n_outputs()
-                   << ", #folds = " << rtask->n_folds() << ".";
-
-        for (size_t f = 0; f < rtask->n_folds(); f ++)
-        {
-                sampler_t trsampler(*rtask), tesampler(*rtask);
-                trsampler.setup(fold_t{f, protocol::train});
-                tesampler.setup(fold_t{f, protocol::test});
-
-                log_info() << "fold [" << (f + 1) << "/" << rtask->n_folds()
-                           << "]: #train samples = " << trsampler.size()
-                           << ", #test samples = " << tesampler.size() << ".";
-        }
+        rtask->describe();
 
         // create loss
         const rloss_t rloss = loss_manager_t::instance().get(cmd_loss);

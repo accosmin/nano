@@ -112,4 +112,26 @@ namespace ncv
                         throw std::runtime_error("invalid sample");
                 }
         }
+
+        void task_t::describe() const
+        {
+                log_info() << "images: " << n_images() << ".";
+                log_info() << "sample: #rows = " << n_rows()
+                           << ", #cols = " << n_cols()
+                           << ", #outputs = " << n_outputs()
+                           << ", #folds = " << n_folds() << ".";
+
+                for (size_t f = 0; f < n_folds(); f ++)
+                {
+                        for (protocol p : {protocol::train, protocol::test})
+                        {
+                                sampler_t sampler(*this);
+                                sampler.setup({f, p});
+
+                                ncv::print("fold [" + text::to_string(f + 1) + "/" + text::to_string(n_folds()) + "] " +
+                                           "protocol [" + text::to_string(p) + "]",
+                                           sampler.all());
+                        }
+                }
+        }
 }

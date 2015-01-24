@@ -1,5 +1,4 @@
 #include "nanocv.h"
-#include "sampler.h"
 #include "util/measure.hpp"
 #include <boost/program_options.hpp>
 
@@ -62,24 +61,7 @@ int main(int argc, char *argv[])
                 "failed to load task from directory <" + cmd_task_dir + ">");
 
         // describe task
-        log_info() << "images: " << rtask->n_images() << ".";
-        log_info() << "sample: #rows = " << rtask->n_rows()
-                        << ", #cols = " << rtask->n_cols()
-                        << ", #outputs = " << rtask->n_outputs()
-                        << ", #folds = " << rtask->n_folds() << ".";
-
-        for (size_t f = 0; f < rtask->n_folds(); f ++)
-        {
-                for (protocol p : {protocol::train, protocol::test})
-                {
-                        sampler_t sampler(*rtask);
-                        sampler.setup({f, p});
-
-                        ncv::print("fold [" + text::to_string(f + 1) + "/" +
-                                   text::to_string(rtask->n_folds()) + "] " +
-                                   "protocol [" + text::to_string(p) + "]", sampler.get());
-                }
-        }
+        rtask->describe();
 
         // save samples as images
         if (!cmd_save_dir.empty())

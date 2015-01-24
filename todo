@@ -1,7 +1,3 @@
-- ncv_trainer & ncv_tester depend on sampler_t ONLY for displaying some statistics for a fold:
-	- create task_t::print(header, fold_t)
-	- move ncv::print(header, samples) to task_t::print(header, samples)
-
 - src/util depends on src/tensor (e.g. random_noise.hpp)
 - src/file depends on src/util (e.g. on logger)
 

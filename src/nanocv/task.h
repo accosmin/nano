@@ -14,7 +14,7 @@ namespace ncv
         typedef task_manager_t::robject_t               rtask_t;
 
         ///
-        /// \brief display a short description of the samples
+        /// \brief describe the given samples
         ///
         void print(const string_t& header, const samples_t& samples);
 
@@ -66,6 +66,11 @@ namespace ncv
                 void save_as_images(
                         const samples_t&, const string_t& basepath, size_t grows, size_t gcols,
                         size_t border = 8, rgba_t bkcolor = color::make_rgba(225, 225, 0)) const;
+
+                ///
+                /// \brief describe the task
+                ///
+                void describe() const;
 
                 ///
                 /// \brief distinct labels
