@@ -4,9 +4,8 @@
 	- modify test programs to explicitly include the required headers & not rely on nanocv.h  
 
 - unit tests:
-	- mad & dot operators: make sure the same results are obtained with different implementations (may keep the test program to benchmark the times)
-	- image_t: resize, color mode, filling
 	- gauss: kernel size, kernel sum
+	- image_t: resize, color mode, filling
 	- batch & stochastic optimizers: small (convex) functions to check if they converge to known minima
 
 - update the test program to evaluate the optimizers to call directly trainer-based functions:
