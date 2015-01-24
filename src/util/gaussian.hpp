@@ -16,14 +16,14 @@ namespace ncv
 
                 typename tvalue = typename tmatrix::Scalar
         >
-        bool gaussian(tmatrix& src, tscalar sigma,
+        bool gaussian(tmatrix& src, tscalar sigma, tscalar cutoff,
                 tscalar minv, tscalar maxv, tgetter getter, tsetter setter)
         {
                 const int rows = static_cast<int>(src.rows());
                 const int cols = static_cast<int>(src.cols());
 
                 // construct Gaussian kernel
-                const std::vector<tscalar> kernel = make_gaussian(sigma);
+                const std::vector<tscalar> kernel = make_gaussian(sigma, cutoff);
 
                 const int ksize = static_cast<int>(kernel.size());
                 const int krad = ksize / 2;

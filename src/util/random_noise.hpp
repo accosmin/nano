@@ -21,7 +21,7 @@ namespace ncv
 
                 typename tvalue = typename tmatrix::Scalar
         >
-        bool additive_noise(tmatrix& src, tscalar offset, tscalar range, tscalar sigma,
+        bool additive_noise(tmatrix& src, tscalar offset, tscalar range, tscalar sigma, tscalar cutoff,
                 tscalar minv, tscalar maxv, tgetter getter, tsetter setter)
         {
                 random_t<tscalar> noiser(offset - range, offset + range);
@@ -31,7 +31,7 @@ namespace ncv
                 tensor::transform(noisemap, noisemap, [&] (tvalue) { return noiser(); });
 
                 // smooth the noise map
-                gaussian(noisemap, sigma, noiser.min(), noiser.max(),
+                gaussian(noisemap, sigma, cutoff, noiser.min(), noiser.max(),
                          [] (tscalar v) { return v; },
                          [] (tscalar, tscalar v) { return v; });
 
