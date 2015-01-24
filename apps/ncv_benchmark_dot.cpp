@@ -11,13 +11,15 @@ template
         typename tvector,
         typename tscalar = typename tvector::Scalar
 >
-void test_dot(tabulator_t::row_t& row, top op, const tvector& vec1, const tvector& vec2)
+tscalar test_dot(tabulator_t::row_t& row, top op, const tvector& vec1, const tvector& vec2)
 {
         const ncv::timer_t timer;
 
-        op(vec1.data(), vec2.data(), vec1.size());
+        const volatile tscalar ret = op(vec1.data(), vec2.data(), vec1.size());
         
         row << timer.microseconds();
+
+        return ret;
 }
 
 void test_dot(size_t size, tabulator_t::row_t& row)
