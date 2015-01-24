@@ -1,10 +1,20 @@
+- ncv_trainer & ncv_tester depend on sampler_t ONLY for displaying some statistics for a fold:
+	- create task_t::print(header, fold_t)
+	- move ncv::print(header, samples) to task_t::print(header, samples)
+
+- remove the nanocv.h include if no need for ::init() or ::version()
+
 - cleanup nanocv.h:
 	- keep only ::version() & ::init()
 	- include only version.h & types.h
 	- modify test programs to explicitly include the required headers & not rely on nanocv.h  
 
+- src/util depends on src/tensor (e.g. random_noise.hpp)
+- src/file depends on src/util (e.g. on logger)
+
 - unit tests:
-	- gauss: kernel size, kernel sum
+	- log_search: with & without thread pool (find minimum of a function like: y(x) = a + (x - b)^2) 
+	- gradient: split the check using multiple test programs to test it faster in parallel
 	- image_t: resize, color mode, filling
 	- batch & stochastic optimizers: small (convex) functions to check if they converge to known minima
 
@@ -13,9 +23,6 @@
 	- use the synthetic dataset	
 
 	- sort the optimization results by log-loss as well as timed
-
-- src/util depends on src/tensor (e.g. random_noise.hpp)
-- src/file depends on src/util (e.g. on logger)
 
 - nicer way to specify colors than using the current array:
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2  # blue
