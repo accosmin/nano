@@ -15,6 +15,7 @@
 - unit tests:
 	- log_search: with & without thread pool (find minimum of a function like: y(x) = a + (x - b)^2) 
 	- gradient: split the check using multiple test programs to test it faster in parallel
+	- conv2d & corr2d (update the bechmark programs to use tabulator)
 	- image_t: resize, color mode, filling
 	- batch & stochastic optimizers: small (convex) functions to check if they converge to known minima
 
