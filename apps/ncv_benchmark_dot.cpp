@@ -1,5 +1,6 @@
 #include "nanocv.h"
 #include "util/dot.hpp"
+#include "util/timer.h"
 #include "util/tabulator.h"
 #include "tensor/dot.hpp"
 

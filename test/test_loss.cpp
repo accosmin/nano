@@ -3,6 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include "nanocv.h"
+#include "util/random.hpp"
 
 namespace test
 {

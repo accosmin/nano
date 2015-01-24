@@ -1,6 +1,11 @@
 #include "nanocv.h"
-#include "tasks/task_syn_dots.h"
+#include "sampler.h"
+#include "accumulator.h"
+#include "util/timer.h"
+#include "util/logger.h"
+#include "util/thread_pool.h"
 #include "util/tabulator.h"
+#include "tasks/task_syn_dots.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])

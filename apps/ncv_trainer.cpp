@@ -1,4 +1,7 @@
 #include "nanocv.h"
+#include "tester.h"
+#include "sampler.h"
+#include "util/measure.hpp"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 

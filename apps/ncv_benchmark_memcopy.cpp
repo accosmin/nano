@@ -1,4 +1,8 @@
 #include "nanocv.h"
+#include "util/timer.h"
+#include "util/logger.h"
+#include "util/stats.hpp"
+#include "util/thread_loop.hpp"
 #ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
 #endif

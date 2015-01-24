@@ -1,4 +1,6 @@
 #include "nanocv.h"
+#include "util/timer.h"
+#include "util/logger.h"
 #include "file/archive.h"
 #include <boost/program_options.hpp>
 

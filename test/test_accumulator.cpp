@@ -3,10 +3,11 @@
 
 #include <boost/test/unit_test.hpp>
 #include "nanocv/tasks/task_syn_dots.h"
-#include "nanocv/accumulator.h"
 #include "nanocv.h"
-#include "util/logger.h"
 #include "util/timer.h"
+#include "util/logger.h"
+#include "util/thread_pool.h"
+#include "accumulator.h"
 
 namespace test
 {

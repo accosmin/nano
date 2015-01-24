@@ -1,4 +1,7 @@
 #include "nanocv.h"
+#include "accumulator.h"
+#include "util/logger.h"
+#include "util/random.hpp"
 #include <boost/program_options.hpp>
 #include <set>
 

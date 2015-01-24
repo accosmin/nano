@@ -3,6 +3,8 @@
 
 #include <boost/test/unit_test.hpp>
 #include "nanocv.h"
+#include "tester.h"
+#include "util/logger.h"
 #include "tasks/task_syn_dots.h"
 #include <cstdio>
 

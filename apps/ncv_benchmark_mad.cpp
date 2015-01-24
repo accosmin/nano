@@ -1,5 +1,6 @@
 #include "nanocv.h"
 #include "util/mad.hpp"
+#include "util/timer.h"
 #include "util/tabulator.h"
 #include "tensor/mad.hpp"
 
