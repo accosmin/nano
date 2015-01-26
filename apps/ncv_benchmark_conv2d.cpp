@@ -1,9 +1,10 @@
 #include "types.h"
 #include "util/timer.h"
-#include "util/math.hpp"
 #include "util/cast.hpp"
+#include "util/close.hpp"
 #include "util/stats.hpp"
 #include "util/conv2d.hpp"
+#include "util/epsilon.hpp"
 #include "util/thread_loop.hpp"
 #ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
@@ -326,7 +327,7 @@ template
 >
 void check(tscalar result, tscalar baseline, const char* name)
 {
-        if (!math::extremely_close(result, baseline))
+        if (!math::close(result, baseline, math::epsilon1<tscalar>()))
         {
                 std::cout << name << " FAILED (diff = " << math::abs(result - baseline) << ")!" << std::endl;
         }

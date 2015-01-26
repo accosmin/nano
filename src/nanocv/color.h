@@ -2,7 +2,7 @@
 
 #include "types.h"
 #include "util/cast.hpp"
-#include "util/math.hpp"
+#include "util/clamp.hpp"
 
 namespace ncv
 {

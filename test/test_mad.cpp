@@ -4,7 +4,8 @@
 #include <boost/test/unit_test.hpp>
 #include "nanocv/types.h"
 #include "util/mad.hpp"
-#include "util/math.hpp"
+#include "util/abs.hpp"
+#include "util/epsilon.hpp"
 #include "tensor/mad.hpp"
 
 namespace test
@@ -45,7 +46,7 @@ namespace test
                 const scalar_t madul8 = test_mad(ncv::mad_unroll<scalar_t, 8>, vec1, vec2, wei);
                 const scalar_t madeig = test_mad(ncv::tensor::mad_eig<scalar_t>, vec1, vec2, wei);
 
-                const scalar_t epsilon = 1e-10;
+                const scalar_t epsilon = math::epsilon1<scalar_t>();
 
                 BOOST_CHECK_LE(math::abs(mad - mad), epsilon);
                 BOOST_CHECK_LE(math::abs(mad - madul2), epsilon);

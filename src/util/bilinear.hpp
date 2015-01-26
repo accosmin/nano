@@ -1,7 +1,7 @@
 #pragma once
 
-#include "math.hpp"
 #include "cast.hpp"
+#include "abs.hpp"
 
 namespace ncv
 {

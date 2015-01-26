@@ -1,5 +1,5 @@
 #include "layer_linear.h"
-#include "util/math.hpp"
+#include "util/clamp.hpp"
 #include "util/random.hpp"
 #include "tensor/serialize.hpp"
 #include "linear.hpp"

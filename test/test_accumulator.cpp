@@ -4,8 +4,10 @@
 #include <boost/test/unit_test.hpp>
 #include "nanocv/tasks/task_syn_dots.h"
 #include "nanocv.h"
+#include "util/abs.hpp"
 #include "util/timer.h"
 #include "util/logger.h"
+#include "util/epsilon.hpp"
 #include "util/thread_pool.h"
 #include "accumulator.h"
 
@@ -28,7 +30,7 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
 
         const size_t cmd_samples = 256;
         const size_t cmd_outputs = 5;
-        const scalar_t cmd_epsilon = 1e-8;
+        const scalar_t cmd_epsilon = math::epsilon1<scalar_t>();
 
         syn_dots_task_t task("rows=16,cols=16,color=luma,dims=" + text::to_string(cmd_outputs) +
                              ",size=" + text::to_string(cmd_samples));

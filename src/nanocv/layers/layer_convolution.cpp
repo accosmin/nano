@@ -1,6 +1,6 @@
 #include "layer_convolution.h"
 #include "util/logger.h"
-#include "util/math.hpp"
+#include "util/clamp.hpp"
 #include "util/random.hpp"
 #include "util/sampling.hpp"
 #include "tensor/serialize.hpp"
