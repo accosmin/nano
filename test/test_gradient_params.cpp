@@ -8,12 +8,11 @@
 #include "util/random.hpp"
 #include <set>
 
-namespace ncv
+namespace test
 {
         using namespace ncv;
 
-        void test_grad_params(
-                const string_t& header, const string_t& loss_id, const model_t& model, accumulator_t& acc_params)
+        void test_grad(const string_t& header, const string_t& loss_id, const model_t& model, accumulator_t& acc_params)
         {
                 random_t<size_t> rand(8, 16);
 
@@ -100,7 +99,7 @@ namespace ncv
                         const size_t n_threads = 1 + (rand() % 2);
 
                         accumulator_t acc_params(model, n_threads, criterion, criterion_t::type::vgrad, 1.0);
-                        test_grad_params(header + "[criterion = " + criterion + "]", loss_id, model, acc_params);
+                        test_grad(header + "[criterion = " + criterion + "]", loss_id, model, acc_params);
                 }
         }
 }
@@ -192,7 +191,7 @@ BOOST_AUTO_TEST_CASE(test_gradient_params)
                 // test network
                 for (const string_t& loss_id : loss_ids)
                 {
-                        test_grad("[loss = " + loss_id + "]", loss_id, *model);
+                        test::test_grad("[loss = " + loss_id + "]", loss_id, *model);
                 }
         }
 }

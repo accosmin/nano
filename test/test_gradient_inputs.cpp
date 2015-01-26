@@ -8,11 +8,11 @@
 #include "util/random.hpp"
 #include <set>
 
-namespace ncv
+namespace test
 {
         using namespace ncv;
 
-        void test_grad_inputs(const string_t& header, const string_t& loss_id, const model_t& model)
+        void test_grad(const string_t& header, const string_t& loss_id, const model_t& model)
         {
                 rmodel_t rmodel_inputs = model.clone();
 
@@ -85,12 +85,6 @@ namespace ncv
                                    << "]: samples = " << n_samples
                                    << ", dg_inputs = " << dg_inputs << " (" << (ok ? "OK" : "ERROR") << ").";
                 }
-        }
-
-        void test_grad(const string_t& header, const string_t& loss_id, const model_t& model)
-        {
-                // check gradients wrt the input
-                test_grad_inputs(header, loss_id, model);
         }
 }
 
@@ -181,7 +175,7 @@ BOOST_AUTO_TEST_CASE(test_gradient_inputs)
                 // test network
                 for (const string_t& loss_id : loss_ids)
                 {
-                        test_grad("[loss = " + loss_id + "]", loss_id, *model);
+                        test::test_grad("[loss = " + loss_id + "]", loss_id, *model);
                 }
         }
 }
