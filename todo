@@ -1,6 +1,9 @@
 - src/util depends on src/tensor (e.g. random_noise.hpp)
 - src/file depends on src/util (e.g. on logger)
 
+- script to download the tasks to the experiments directories pointed by common_train.sh:
+	- aka download_task.sh
+
 - unit tests:
 	- log_search: with & without thread pool (find minimum of a function like: y(x) = a + (x - b)^2) 
 	- gradient: split the check using multiple test programs to test it faster in parallel
