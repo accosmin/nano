@@ -26,7 +26,7 @@ namespace test
         {
                 random_t<size_t> rand(8, 16);
 
-                const size_t n_tests = 64;
+                const size_t n_tests = 16;
                 const size_t n_samples = rand();
 
                 const rloss_t rloss = loss_manager_t::instance().get(loss_id);
@@ -239,4 +239,8 @@ BOOST_AUTO_TEST_CASE(test_gradient_params)
         log_info() << "failures: level1 = " << test::n_failures1 << "/" << test::n_checks << ", epsilon = " << eps1;
         log_info() << "failures: level2 = " << test::n_failures2 << "/" << test::n_checks << ", epsilon = " << eps2;
         log_info() << "failures: level3 = " << test::n_failures3 << "/" << test::n_checks << ", epsilon = " << eps3;
+
+        BOOST_CHECK_LE(test::n_failures1 * 100, 100 * test::n_checks);
+        BOOST_CHECK_LE(test::n_failures2 * 100, 5 * test::n_checks);
+        BOOST_CHECK_LE(test::n_failures3 * 100, 0 * test::n_checks);
 }
