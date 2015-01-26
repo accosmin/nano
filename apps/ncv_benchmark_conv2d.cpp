@@ -326,10 +326,9 @@ template
 >
 void check(tscalar result, tscalar baseline, const char* name)
 {
-        const tscalar err = math::abs(result - baseline);
-        if (!math::almost_equal(err, tscalar(0)))
+        if (!math::extremely_close(result, baseline))
         {
-                std::cout << name << " FAILED (diff = " << err << ")!" << std::endl;
+                std::cout << name << " FAILED (diff = " << math::abs(result - baseline) << ")!" << std::endl;
         }
 }
 

@@ -53,36 +53,123 @@ namespace ncv
                 }
                 
                 ///
-                /// \brief precision comparison criteria for scalars
+                /// \brief check if two scalars are almost equal using the given precision
                 ///
                 template
                 <
                         typename tscalar
                 >
-                bool almost_equal(tscalar x, tscalar y)
+                bool close(tscalar x, tscalar y, tscalar precision)
                 {
                         return x == y;
                 }
                 
                 template <>
-                inline bool almost_equal(float x, float y)
+                inline bool close(float x, float y, float precision)
                 {
-                        return  math::abs(x - y) <=
-                                (1 + math::abs(x) + math::abs(y)) * std::sqrt(std::numeric_limits<float>::epsilon());
+                        return math::abs(x - y) <= (1 + math::abs(x) + math::abs(y)) * precision;
                 }
                 
                 template <>
-                inline bool almost_equal(double x, double y)
+                inline bool close(double x, double y, double precision)
                 {
-                        return  math::abs(x - y) <=
-                                (1 + math::abs(x) + math::abs(y)) * std::sqrt(std::numeric_limits<double>::epsilon());
+                        return math::abs(x - y) <= (1 + math::abs(x) + math::abs(y)) * precision;
                 }
                 
                 template <>
-                inline bool almost_equal(long double x, long double y)
+                inline bool close(long double x, long double y, long double precision)
                 {
-                        return  math::abs(x - y) <=
-                                (1 + math::abs(x) + math::abs(y)) * std::sqrt(std::numeric_limits<long double>::epsilon());
+                        return math::abs(x - y) <= (1 + math::abs(x) + math::abs(y)) * precision;
+                }
+
+                ///
+                /// \brief check if two scalars are almost equal with extremely high precision
+                ///
+                template
+                <
+                        typename tscalar
+                >
+                bool extremely_close(tscalar x, tscalar y)
+                {
+                        return close(x, y, tscalar(0));
+                }
+
+                template <>
+                inline bool extremely_close(float x, float y)
+                {
+                        return close(x, y, std::numeric_limits<float>::epsilon());
+                }
+
+                template <>
+                inline bool extremely_close(double x, double y)
+                {
+                        return close(x, y, std::numeric_limits<double>::epsilon());
+                }
+
+                template <>
+                inline bool extremely_close(long double x, long double y)
+                {
+                        return close(x, y, std::numeric_limits<long double>::epsilon());
+                }
+
+                ///
+                /// \brief check if two scalars are almost equal with high precision
+                ///
+                template
+                <
+                        typename tscalar
+                >
+                bool very_close(tscalar x, tscalar y)
+                {
+                        return close(x, y, tscalar(0));
+                }
+
+                template <>
+                inline bool very_close(float x, float y)
+                {
+                        return close(x, y, std::sqrt(std::numeric_limits<float>::epsilon()));
+                }
+
+                template <>
+                inline bool very_close(double x, double y)
+                {
+                        return close(x, y, std::sqrt(std::numeric_limits<double>::epsilon()));
+                }
+
+                template <>
+                inline bool very_close(long double x, long double y)
+                {
+                        return close(x, y, std::sqrt(std::numeric_limits<long double>::epsilon()));
+                }
+
+                ///
+                /// \brief check if two scalars are almost equal with low/relaxed precision
+                ///
+                template
+                <
+                        typename tscalar
+                >
+                bool quite_close(tscalar x, tscalar y)
+                {
+                        return close(x, y, tscalar(0));
+                }
+
+                template <>
+                inline bool quite_close(float x, float y)
+                {
+                        return close(x, y, std::cbrt(std::numeric_limits<float>::epsilon()));
+                }
+
+                template <>
+                inline bool quite_close(double x, double y)
+                {
+                        return close(x, y, std::cbrt(std::numeric_limits<double>::epsilon()));
+                }
+
+                template <>
+                inline bool quite_close(long double x, long double y)
+                {
+                        return close(x, y, std::cbrt(std::numeric_limits<long double>::epsilon()));
                 }
 
                 ///
