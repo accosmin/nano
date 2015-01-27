@@ -1,6 +1,6 @@
 #pragma once
 
-#include "types.h"
+#include "libnanocv/types.h"
 
 namespace test
 {

@@ -1,8 +1,8 @@
-#include "types.h"
-#include "util/mad.hpp"
-#include "util/timer.h"
-#include "util/tabulator.h"
-#include "tensor/mad.hpp"
+#include "libnanocv/types.h"
+#include "libnanocv/util/mad.hpp"
+#include "libnanocv/util/timer.h"
+#include "libnanocv/util/tabulator.h"
+#include "libnanocv/tensor/mad.hpp"
 #include <iostream>
 
 using namespace ncv;

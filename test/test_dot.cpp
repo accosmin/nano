@@ -2,11 +2,11 @@
 #define BOOST_TEST_MODULE "test_dot"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/types.h"
-#include "util/dot.hpp"
-#include "util/abs.hpp"
-#include "util/epsilon.hpp"
-#include "tensor/dot.hpp"
+#include "libnanocv/types.h"
+#include "libnanocv/util/dot.hpp"
+#include "libnanocv/util/abs.hpp"
+#include "libnanocv/util/epsilon.hpp"
+#include "libnanocv/tensor/dot.hpp"
 
 namespace test
 {

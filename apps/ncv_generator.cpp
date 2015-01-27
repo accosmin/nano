@@ -1,6 +1,6 @@
-#include "nanocv.h"
-#include "image_grid.h"
-#include "util/measure.hpp"
+#include "libnanocv/nanocv.h"
+#include "libnanocv/image_grid.h"
+#include "libnanocv/util/measure.hpp"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 

@@ -3,8 +3,8 @@
 
 #include <boost/test/unit_test.hpp>
 #include <numeric>
-#include "util/stats.hpp"
-#include "util/random.hpp"
+#include "libnanocv/util/stats.hpp"
+#include "libnanocv/util/random.hpp"
 
 namespace test
 {

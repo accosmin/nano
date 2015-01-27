@@ -1,6 +1,6 @@
 #include "check_gradients.h"
-#include "util/random.hpp"
-#include "loss.h"
+#include "libnanocv/util/random.hpp"
+#include "libnanocv/loss.h"
 #include <set>
 
 namespace test

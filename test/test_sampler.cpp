@@ -2,10 +2,10 @@
 #define BOOST_TEST_MODULE "test_sampler"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/tasks/task_syn_dots.h"
-#include "nanocv/sampler.h"
-#include "util/logger.h"
-#include "util/timer.h"
+#include "libnanocv/tasks/task_syn_dots.h"
+#include "libnanocv/sampler.h"
+#include "libnanocv/util/logger.h"
+#include "libnanocv/util/timer.h"
 
 namespace test
 {

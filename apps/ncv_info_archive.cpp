@@ -1,7 +1,7 @@
-#include "types.h"
-#include "util/timer.h"
-#include "util/logger.h"
-#include "file/archive.h"
+#include "libnanocv/types.h"
+#include "libnanocv/util/timer.h"
+#include "libnanocv/util/logger.h"
+#include "libnanocv/file/archive.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])

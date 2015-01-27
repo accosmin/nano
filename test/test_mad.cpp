@@ -2,11 +2,11 @@
 #define BOOST_TEST_MODULE "test_mad"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/types.h"
-#include "util/mad.hpp"
-#include "util/abs.hpp"
-#include "util/epsilon.hpp"
-#include "tensor/mad.hpp"
+#include "libnanocv/types.h"
+#include "libnanocv/util/mad.hpp"
+#include "libnanocv/util/abs.hpp"
+#include "libnanocv/util/epsilon.hpp"
+#include "libnanocv/tensor/mad.hpp"
 
 namespace test
 {

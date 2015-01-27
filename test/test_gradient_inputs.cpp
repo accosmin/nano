@@ -2,13 +2,13 @@
 #define BOOST_TEST_MODULE "test_gradient_inputs"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv.h"
-#include "accumulator.h"
-#include "util/logger.h"
-#include "util/close.hpp"
-#include "util/random.hpp"
-#include "util/epsilon.hpp"
-#include "util/thread_pool.h"
+#include "libnanocv/nanocv.h"
+#include "libnanocv/accumulator.h"
+#include "libnanocv/util/logger.h"
+#include "libnanocv/util/close.hpp"
+#include "libnanocv/util/random.hpp"
+#include "libnanocv/util/epsilon.hpp"
+#include "libnanocv/util/thread_pool.h"
 #include "libnanocv-test/check_gradients.h"
 
 namespace test

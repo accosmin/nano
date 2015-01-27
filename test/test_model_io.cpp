@@ -2,10 +2,10 @@
 #define BOOST_TEST_MODULE "test_model_io"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv.h"
-#include "tester.h"
-#include "util/logger.h"
-#include "tasks/task_syn_dots.h"
+#include "libnanocv/nanocv.h"
+#include "libnanocv/tester.h"
+#include "libnanocv/util/logger.h"
+#include "libnanocv/tasks/task_syn_dots.h"
 #include <cstdio>
 
 BOOST_AUTO_TEST_CASE(test_model_io)

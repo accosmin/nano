@@ -1,11 +1,11 @@
-#include "nanocv.h"
-#include "sampler.h"
-#include "accumulator.h"
-#include "util/timer.h"
-#include "util/logger.h"
-#include "util/thread_pool.h"
-#include "util/tabulator.h"
-#include "tasks/task_syn_dots.h"
+#include "libnanocv/nanocv.h"
+#include "libnanocv/sampler.h"
+#include "libnanocv/accumulator.h"
+#include "libnanocv/util/timer.h"
+#include "libnanocv/util/logger.h"
+#include "libnanocv/util/thread_pool.h"
+#include "libnanocv/util/tabulator.h"
+#include "libnanocv/tasks/task_syn_dots.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])

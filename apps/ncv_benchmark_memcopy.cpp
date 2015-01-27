@@ -1,8 +1,8 @@
-#include "types.h"
-#include "util/timer.h"
-#include "util/logger.h"
-#include "util/stats.hpp"
-#include "util/thread_loop.hpp"
+#include "libnanocv/types.h"
+#include "libnanocv/util/timer.h"
+#include "libnanocv/util/logger.h"
+#include "libnanocv/util/stats.hpp"
+#include "libnanocv/util/thread_loop.hpp"
 #ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
 #endif
