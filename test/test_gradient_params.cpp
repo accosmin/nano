@@ -8,8 +8,8 @@
 #include "util/close.hpp"
 #include "util/random.hpp"
 #include "util/epsilon.hpp"
-#include "util/thread_loop.hpp"
-#include <set>
+#include "util/thread_pool.h"
+#include "libnanocv-test/check_gradients.h"
 
 namespace test
 {
@@ -136,105 +136,39 @@ BOOST_AUTO_TEST_CASE(test_gradient_params)
 
         ncv::init();
 
-        const strings_t conv_layer_ids { "", "conv" };
-        const strings_t conv_masks { "25", "50", "100" };
-        const strings_t pool_layer_ids { "", "pool-max", "pool-min", "pool-avg" };
-        const strings_t full_layer_ids { "", "linear" };
-        const strings_t actv_layer_ids { "", "act-unit", "act-tanh", "act-snorm", "act-splus" };
-        const strings_t loss_ids = loss_manager_t::instance().ids();
+        size_t cmd_irows;
+        size_t cmd_icols;
+        size_t cmd_outputs;
+        color_mode cmd_color;
 
-        const color_mode cmd_color = color_mode::luma;
-        const size_t cmd_irows = 8;
-        const size_t cmd_icols = 8;
-        const size_t cmd_outputs = 4;
-        const size_t cmd_max_layers = 2;
+        auto configs = test::make_grad_configs(cmd_irows, cmd_icols, cmd_outputs, cmd_color);
 
-        // evaluate the analytical gradient vs. the finite difference approximation for various:
-        //      * convolution layers
-        //      * convolution connection types
-        //      * pooling layers
-        //      * fully connected layers
-        //      * activation layers
-        std::set<string_t> descs;
-        for (size_t n_layers = 0; n_layers <= cmd_max_layers; n_layers ++)
-        {
-                for (const string_t& actv_layer_id : actv_layer_ids)
-                {
-                        for (const string_t& pool_layer_id : pool_layer_ids)
-                        {
-                                for (const string_t& conv_layer_id : conv_layer_ids)
-                                {
-                                        for (const string_t& conv_mask : conv_masks)
-                                        {
-                                                for (const string_t& full_layer_id : full_layer_ids)
-                                                {
-                                                        string_t desc;
-
-                                                        // convolution part
-                                                        for (size_t l = 0; l < n_layers && !conv_layer_id.empty(); l ++)
-                                                        {
-                                                                random_t<size_t> rgen(2, 3);
-
-                                                                string_t params;
-                                                                params += "dims=" + text::to_string(rgen());
-                                                                params += (rgen() % 2 == 0) ? ",rows=2,cols=2," : ",rows=3,cols=3,";
-                                                                params += "mask=" + conv_mask;
-
-                                                                desc += conv_layer_id + ":" + params + ";";
-                                                                if (l == 0)
-                                                                {
-                                                                        desc += pool_layer_id + ";";
-                                                                }
-                                                                desc += actv_layer_id + ";";
-                                                        }
-
-                                                        // fully-connected part
-                                                        for (size_t l = 0; l < n_layers && !full_layer_id.empty(); l ++)
-                                                        {
-                                                                random_t<size_t> rgen(1, 5);
-
-                                                                string_t params;
-                                                                params += "dims=" + text::to_string(rgen());
-
-                                                                desc += full_layer_id + ":" + params + ";";
-                                                                desc += actv_layer_id + ";";
-                                                        }
-
-                                                        desc += "linear:dims=" + text::to_string(cmd_outputs) + ";";
-
-                                                        descs.insert(desc);
-                                                }
-                                        }
-                                }
-                        }
-                }
-        }
-
-        // test each (network, loss) configuration
+        // test each configuration
         thread_pool_t pool;
-        for (const string_t& network : descs)
+        for (auto config : configs)
         {
-                for (const string_t& loss_id : loss_ids)
+                pool.enqueue([=] ()
                 {
-                        pool.enqueue([=]()
+                        const string_t desc = config.first;
+                        const string_t loss_id = config.second;
+
+                        // create model
+                        const rmodel_t model = model_manager_t::instance().get("forward-network", desc);
+                        BOOST_CHECK_EQUAL(model.operator bool(), true);
                         {
-                                // create network
-                                const rmodel_t model = model_manager_t::instance().get("forward-network", network);
-                                BOOST_CHECK_EQUAL(model.operator bool(), true);
-                                {
-                                        const thread_pool_t::lock_t lock(test::mutex);
+                                const thread_pool_t::lock_t lock(test::mutex);
 
-                                        model->resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color, false);
-                                }
+                                model->resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color, false);
+                        }
 
-                                // check with the given loss
-                                test::test_grad("[loss = " + loss_id + "]", loss_id, *model);
-                        });
-                }
-        }
+                        // check with the given loss
+                        test::test_grad("[loss = " + loss_id + "]", loss_id, *model);
+                });
+        };
 
         pool.wait();
 
+        // print statistics
         const scalar_t eps1 = math::epsilon1<scalar_t>();
         const scalar_t eps2 = math::epsilon2<scalar_t>();
         const scalar_t eps3 = math::epsilon3<scalar_t>();

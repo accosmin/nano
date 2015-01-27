@@ -1,4 +1,4 @@
-# Build library
+# build library
 file(GLOB libnanocv_sources
         *.*
         file/*.*
@@ -46,12 +46,12 @@ if(NANOCV_WITH_CUDA)
         target_link_libraries(libnanocv libnanocv_cuda)
 endif()
 
-# Install library
+# install library
 install(TARGETS
         libnanocv
         DESTINATION lib)
 
-# Install headers
+# install headers
 install(DIRECTORY ${nanocv_SOURCE_DIR}/src/
         DESTINATION include/nanocv
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")

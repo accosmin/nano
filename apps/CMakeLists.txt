@@ -1,4 +1,4 @@
-# Build command line programs
+# build command line programs
 file(GLOB nanocv_apps RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 
 foreach(app ${nanocv_apps})
@@ -8,7 +8,7 @@ foreach(app ${nanocv_apps})
         target_link_libraries(${app_name} libnanocv)
 endforeach()
 
-# Install (some) programs
+# install (some) programs
 set(nanocv_programs
         ncv_max_threads
         ncv_info

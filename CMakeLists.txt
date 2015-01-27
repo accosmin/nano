@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.1)
 project(nanocv)
 
 ######################################################################
-# External dependencies
+# external dependencies
 ######################################################################
 
 option(NANOCV_WITH_CUDA         "Build with CUDA as dependency"                         OFF)
@@ -70,7 +70,7 @@ endif()
 #set(CMAKE_CXX_COMPILER                  "g++-4.9")
 
 ######################################################################
-# Compilation & linking flags (GCC)
+# compilation & linking flags (GCC)
 ######################################################################
 
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
@@ -93,7 +93,7 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
 	endif()
 
 ######################################################################
-# Compilation & linking flags (CLANG)
+# compilation & linking flags (CLANG)
 ######################################################################
 	
 elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
@@ -118,7 +118,7 @@ else()
 	message(WARNING "Compiling with an unsupported compiler ...")
 endif()
 
-# Do not use Eigen's MT
+# do not use Eigen's MT
 add_definitions(-DEIGEN_DONT_PARALLELIZE)
 
 message("------------------------------------------------------------------------------" "")
@@ -136,7 +136,7 @@ message("OPENCL                        " "${NANOCV_WITH_OPENCL}")
 message("------------------------------------------------------------------------------" "")
 
 ######################################################################
-# Build the library, programs & tests
+# build the library, programs & tests
 ######################################################################
 
 include_directories(./src ./src/nanocv)
