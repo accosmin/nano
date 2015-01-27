@@ -210,27 +210,30 @@ BOOST_AUTO_TEST_CASE(test_gradient_params)
                 }
         }
 
-        // test each network
-        const strings_t networks(descs.begin(), descs.end());
-        ncv::thread_loopi(networks.size(), [&] (size_t i)
+        // test each (network, loss) configuration
+        thread_pool_t pool;
+        for (const string_t& network : descs)
         {
-                const string_t network = networks[i];
-
-                // create network
-                const rmodel_t model = model_manager_t::instance().get("forward-network", network);
-                BOOST_CHECK_EQUAL(model.operator bool(), true);
-                {
-                        const thread_pool_t::lock_t lock(test::mutex);
-
-                        model->resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color, false);
-                }
-
-                // check with different loss functions
                 for (const string_t& loss_id : loss_ids)
                 {
-                        test::test_grad("[loss = " + loss_id + "]", loss_id, *model);
+                        pool.enqueue([=]()
+                        {
+                                // create network
+                                const rmodel_t model = model_manager_t::instance().get("forward-network", network);
+                                BOOST_CHECK_EQUAL(model.operator bool(), true);
+                                {
+                                        const thread_pool_t::lock_t lock(test::mutex);
+
+                                        model->resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color, false);
+                                }
+
+                                // check with the given loss
+                                test::test_grad("[loss = " + loss_id + "]", loss_id, *model);
+                        });
                 }
-        });
+        }
+
+        pool.wait();
 
         const scalar_t eps1 = math::epsilon1<scalar_t>();
         const scalar_t eps2 = math::epsilon2<scalar_t>();
