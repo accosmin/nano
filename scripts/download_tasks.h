@@ -20,7 +20,7 @@ wget -N http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz -P ${dir_db_m
 # STL10 dataset
 mkdir ${dir_db_stl10}
 
-wget -N http://ai.stanford.edu/~acoates/stl10/stl10_matlab.tar.gz -P ${dir_db_stl10}
+wget -N http://ai.stanford.edu/~acoates/stl10/stl10_binary.tar.gz -P ${dir_db_stl10}
 
 # CIFAR10 dataset
 mkdir ${dir_db_cifar10}
