@@ -251,7 +251,7 @@ BOOST_AUTO_TEST_CASE(test_gradient)
                                 BOOST_CHECK_EQUAL(model->irows(), cmd_irows);
                                 BOOST_CHECK_EQUAL(model->icols(), cmd_icols);
                                 BOOST_CHECK_EQUAL(model->osize(), cmd_outputs);
-                                BOOST_CHECK_EQUAL(model->color(), cmd_color);
+                                BOOST_CHECK_EQUAL(static_cast<int>(model->color()), static_cast<int>(cmd_color));
                         }
 
                         // check with the given loss
