@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # paths
-dir_exp=/Users/cosmin/experiments/results
-dir_db=/Users/cosmin/experiments/databases
+dir_exp=/home/cosmin/experiments/results
+dir_db=/home/cosmin/experiments/databases
 
 exe_trainer=../build-release/apps/ncv_trainer
 exe_tester=../build-release/apps/ncv_tester
@@ -10,12 +10,19 @@ exe_info=../build-release/apps/ncv_info
 exe_max_threads=../build-release/apps/ncv_max_threads
 
 # datasets
-task_svhn="--task svhn --task-dir ${dir_db}/svhn/"
-task_mnist="--task mnist --task-dir ${dir_db}/mnist/"
-task_stl10="--task stl10 --task-dir ${dir_db}/stl10/"
-task_cifar10="--task cifar10 --task-dir ${dir_db}/cifar10/"
-task_cifar100="--task cifar100 --task-dir ${dir_db}/cifar100/"
-task_cbclfaces="--task cbcl-faces --task-dir ${dir_db}/cbcl-faces/"
+dir_db_svhn=${dir_db}/svhn/
+dir_db_mnist=${dir_db}/mnist/
+dir_db_stl10=${dir_db}/stl10/
+dir_db_cifar10=${dir_db}/cifar10/
+dir_db_cifar100=${dir_db}/cifar100/
+dir_db_norb=${dir_db}/norb/
+
+task_svhn="--task svhn --task-dir ${dir_db_svhn}"
+task_mnist="--task mnist --task-dir ${dir_db_mnist}"
+task_stl10="--task stl10 --task-dir ${dir_db_stl10}"
+task_cifar10="--task cifar10 --task-dir ${dir_db_cifar10}"
+task_cifar100="--task cifar100 --task-dir ${dir_db_cifar100}"
+task_norb="--task norb --task-dir ${dir_db_norb}"
 
 # results
 dir_exp_svhn=${dir_exp}/svhn/
