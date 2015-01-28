@@ -39,7 +39,7 @@ namespace test
                 const scalar_t dotul8 = test_dot(ncv::dot_unroll<scalar_t, 8>, vec1, vec2);
                 const scalar_t doteig = test_dot(ncv::tensor::dot_eig<scalar_t>, vec1, vec2);
 
-                const scalar_t epsilon = math::epsilon1<scalar_t>();
+                const scalar_t epsilon = math::epsilon2<scalar_t>();
 
                 BOOST_CHECK_LE(math::abs(dot - dot), epsilon);
                 BOOST_CHECK_LE(math::abs(dot - dotul2), epsilon);
