@@ -3,9 +3,10 @@
 
 - unit tests:
 	- log_search: with & without thread pool (find minimum of a function like: y(x) = a + (x - b)^2) 
-	- conv2d & corr2d (update the bechmark programs to use tabulator)
 	- image_t: resize, color mode, filling
 	- batch & stochastic optimizers: small (convex) functions to check if they converge to known minima
+
+- update the conv2d & corr2d benchmark program to use tabulator
 
 - update the test program to evaluate the optimizers to call directly trainer-based functions:
 	- to also do tuning of stochastic & minibatch parameters
