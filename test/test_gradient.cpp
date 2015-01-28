@@ -248,6 +248,10 @@ BOOST_AUTO_TEST_CASE(test_gradient)
                                 const thread_pool_t::lock_t lock(test::mutex);
 
                                 model->resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color, false);
+                                BOOST_CHECK_EQUAL(model->irows(), cmd_irows);
+                                BOOST_CHECK_EQUAL(model->icols(), cmd_icols);
+                                BOOST_CHECK_EQUAL(model->osize(), cmd_outputs);
+                                BOOST_CHECK_EQUAL(model->color(), cmd_color);
                         }
 
                         // check with the given loss
