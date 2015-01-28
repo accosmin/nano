@@ -12,13 +12,12 @@ namespace ncv
                 template
                 <
                         typename tvalue,
-                        typename tsize,
                         typename tscalar
                 >
-                void update_range(const tvalue& optimum, tsize splits, tscalar varlog, tscalar& minlog, tscalar& maxlog)
+                void update_range(const tvalue& optimum, tscalar varlog, tscalar& minlog, tscalar& maxlog)
                 {
-                        minlog = optimum.second - varlog * tscalar(splits - 1) / tscalar(splits);
-                        maxlog = optimum.second + varlog * tscalar(splits - 1) / tscalar(splits);
+                        minlog = optimum.second - varlog;
+                        maxlog = optimum.second + varlog;
                 }
 
                 template
@@ -75,10 +74,10 @@ namespace ncv
                 splits = std::max(tsize(4), splits);
 
                 // greedy sort-of-branch-and-bound search
-                for (   tscalar varlog = (maxlog - minlog) / tscalar(splits - 1);
-                        (maxlog - minlog) > epslog && epslog > tscalar(0);
-                        varlog = varlog / tscalar(splits))
+                while ((maxlog - minlog) > epslog && epslog > tscalar(0))
                 {
+                        const tscalar varlog = (maxlog - minlog) / tscalar(splits - 1);
+
                         for (tsize i = 0; i < splits; i ++)
                         {
                                 const tvalue value = min_search_detail::evaluate(op, minlog + i * varlog);
@@ -86,7 +85,7 @@ namespace ncv
                                 history.insert(value);
                         }
                         
-                        min_search_detail::update_range(*history.begin(), splits, varlog, minlog, maxlog);
+                        min_search_detail::update_range(*history.begin(), varlog, minlog, maxlog);
                 }
 
                 return history.empty() ? tvalue() : min_search_detail::make_result(*history.begin());
@@ -124,10 +123,10 @@ namespace ncv
                 splits = std::max(tsize(4), splits);
                 
                 // greedy sort-of-branch-and-bound search
-                for (   tscalar varlog = (maxlog - minlog) / tscalar(splits - 1);
-                        (maxlog - minlog) > epslog && epslog > tscalar(0); 
-                        varlog = varlog / tscalar(splits))
-                {                                                
+                while ((maxlog - minlog) > epslog && epslog > tscalar(0))
+                {
+                        const tscalar varlog = (maxlog - minlog) / tscalar(splits - 1);
+
                         for (tsize i = 0; i < splits; i ++)
                         {
                                 pool.enqueue([=,&history,&mutex]()
@@ -143,7 +142,7 @@ namespace ncv
                         // synchronize per search step
                         pool.wait();
                         
-                        min_search_detail::update_range(*history.begin(), splits, varlog, minlog, maxlog);
+                        min_search_detail::update_range(*history.begin(), varlog, minlog, maxlog);
                 }
                 
                 return history.empty() ? tvalue() : min_search_detail::make_result(*history.begin());
