@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 
         // test model
         stats_t<scalar_t> lstats, estats;
-        for (size_t f = 0; f < rtask->n_folds(); f ++)
+        for (size_t f = 0; f < rtask->fsize(); f ++)
         {
                 const fold_t test_fold = std::make_pair(f, protocol::test);
 

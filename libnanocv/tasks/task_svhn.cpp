@@ -121,8 +121,8 @@ namespace ncv
 
                 // check array size
                 if (    idims.size() != 4 ||
-                        idims[0] != n_rows() ||
-                        idims[1] != n_cols() ||
+                        idims[0] != irows() ||
+                        idims[1] != icols() ||
                         idims[2] != 3 ||
 
                         ldims.size() != 2 ||
@@ -162,15 +162,15 @@ namespace ncv
                         }
 
                         // image ...
-                        image_t image(n_rows(), n_cols(), color());
+                        image_t image(irows(), icols(), color());
 
-                        const size_t px = n_rows() * n_cols();
-                        const size_t ix = n_rows() * n_cols() * 3;
+                        const size_t px = irows() * icols();
+                        const size_t ix = irows() * icols() * 3;
                         const size_t ibeg = isection.dbegin() + i * ix;
 
-                        for (size_t r = 0, p = 0; r < n_rows(); r ++)
+                        for (size_t r = 0, p = 0; r < irows(); r ++)
                         {
-                                for (size_t c = 0; c < n_cols(); c ++, p ++)
+                                for (size_t c = 0; c < icols(); c ++, p ++)
                                 {
                                         const size_t ir = ibeg + (px * 0 + p);
                                         const size_t ig = ibeg + (px * 1 + p);
@@ -185,7 +185,7 @@ namespace ncv
                         // sample
                         sample_t sample(n_images() - 1, sample_region(0, 0));
                         sample.m_label = "digit" + text::to_string(ilabel);
-                        sample.m_target = ncv::class_target(ilabel, n_outputs());
+                        sample.m_target = ncv::class_target(ilabel, osize());
                         sample.m_fold = { 0, p };
                         add_sample(sample);
 

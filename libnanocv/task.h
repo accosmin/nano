@@ -78,10 +78,10 @@ namespace ncv
                 strings_t labels() const;
 
                 // access functions
-                virtual size_t n_rows() const = 0;
-                virtual size_t n_cols() const = 0;
-                virtual size_t n_outputs() const = 0;
-                virtual size_t n_folds() const = 0;
+                virtual size_t irows() const = 0;
+                virtual size_t icols() const = 0;
+                virtual size_t osize() const = 0;
+                virtual size_t fsize() const = 0;
                 virtual color_mode color() const = 0;
 
                 size_t n_images() const { return m_images.size(); }

@@ -29,10 +29,10 @@ namespace ncv
                 virtual bool load(const string_t&) override;
 
                 // access functions
-                virtual size_t n_rows() const override { return m_rows; }
-                virtual size_t n_cols() const override { return m_cols; }
-                virtual size_t n_outputs() const override { return m_outputs; }
-                virtual size_t n_folds() const override { return m_folds; }
+                virtual size_t irows() const override { return m_rows; }
+                virtual size_t icols() const override { return m_cols; }
+                virtual size_t osize() const override { return m_outputs; }
+                virtual size_t fsize() const override { return m_folds; }
                 virtual color_mode color() const override { return m_color; }
 
         private:

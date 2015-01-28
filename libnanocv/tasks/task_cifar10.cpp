@@ -71,7 +71,7 @@ namespace ncv
         {
                 log_info() << "CIFAR-10: loading file <" << filename << "> ...";
                 
-                std::vector<char> buffer(n_rows() * n_cols() * 3);
+                std::vector<char> buffer(irows() * icols() * 3);
                 char label[1];
 
                 io::stream_t stream(bdata, bdata_size);
@@ -81,18 +81,18 @@ namespace ncv
                         stream.read(buffer.data(), buffer.size()))
                 {
                         const size_t ilabel = math::cast<size_t>(label[0]);
-                        if (ilabel >= n_outputs())
+                        if (ilabel >= osize())
                         {
                                 continue;
                         }
 
                         image_t image;
-                        image.load_rgba(buffer.data(), n_rows(), n_cols(), n_rows() * n_cols());
+                        image.load_rgba(buffer.data(), irows(), icols(), irows() * icols());
                         add_image(image);
 
                         sample_t sample(n_images() - 1, sample_region(0, 0));
                         sample.m_label = tlabels[ilabel];
-                        sample.m_target = ncv::class_target(ilabel, n_outputs());
+                        sample.m_target = ncv::class_target(ilabel, osize());
                         sample.m_fold = { 0, p };
                         add_sample(sample);
 

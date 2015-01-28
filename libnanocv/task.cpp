@@ -29,7 +29,7 @@ namespace ncv
 
         rect_t task_t::sample_region(coord_t x, coord_t y) const
         {
-                return rect_t(x, y, n_cols(), n_rows());
+                return rect_t(x, y, icols(), irows());
         }
 
         strings_t task_t::labels() const
@@ -62,7 +62,7 @@ namespace ncv
         {
                 for (size_t i = 0, g = 1; i < samples.size(); g ++)
                 {
-                        image_grid_t grid_image(n_rows(), n_cols(), grows, gcols, border, bkcolor);
+                        image_grid_t grid_image(irows(), icols(), grows, gcols, border, bkcolor);
 
                         // select samples
                         samples_t gsamples;
@@ -116,19 +116,19 @@ namespace ncv
         void task_t::describe() const
         {
                 log_info() << "images: " << n_images() << ".";
-                log_info() << "sample: #rows = " << n_rows()
-                           << ", #cols = " << n_cols()
-                           << ", #outputs = " << n_outputs()
-                           << ", #folds = " << n_folds() << ".";
+                log_info() << "sample: #rows = " << irows()
+                           << ", #cols = " << icols()
+                           << ", #outputs = " << osize()
+                           << ", #folds = " << fsize() << ".";
 
-                for (size_t f = 0; f < n_folds(); f ++)
+                for (size_t f = 0; f < fsize(); f ++)
                 {
                         for (protocol p : {protocol::train, protocol::test})
                         {
                                 sampler_t sampler(*this);
                                 sampler.setup({f, p});
 
-                                ncv::print("fold [" + text::to_string(f + 1) + "/" + text::to_string(n_folds()) + "] " +
+                                ncv::print("fold [" + text::to_string(f + 1) + "/" + text::to_string(fsize()) + "] " +
                                            "protocol [" + text::to_string(p) + "]",
                                            sampler.all());
                         }

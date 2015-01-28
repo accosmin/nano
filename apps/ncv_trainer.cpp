@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
         stats_t<scalar_t> lstats, estats;
         for (size_t t = 0; t < cmd_trials; t ++)
         {
-                for (size_t f = 0; f < rtask->n_folds(); f ++)
+                for (size_t f = 0; f < rtask->fsize(); f ++)
                 {
                         const fold_t train_fold = std::make_pair(f, protocol::train);
                         const fold_t test_fold = std::make_pair(f, protocol::test);

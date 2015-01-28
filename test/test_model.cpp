@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(test_model_io)
         syn_dots_task_t task("rows=28,cols=28,dims=10,size=1000,color=rgba");
         BOOST_CHECK_EQUAL(task.load(""), true);
 
-        const size_t cmd_outputs = task.n_outputs();
+        const size_t cmd_outputs = task.osize();
 
         const size_t n_tests = 8;
 
@@ -70,9 +70,9 @@ BOOST_AUTO_TEST_CASE(test_model_io)
                 const rmodel_t model = model_manager_t::instance().get("forward-network", cmd_network);
                 BOOST_CHECK_EQUAL(model.operator bool(), true);
                 BOOST_CHECK_EQUAL(model->resize(task, false), true);
-                BOOST_CHECK_EQUAL(model->irows(), task.n_rows());
-                BOOST_CHECK_EQUAL(model->icols(), task.n_cols());
-                BOOST_CHECK_EQUAL(model->osize(), task.n_outputs());
+                BOOST_CHECK_EQUAL(model->irows(), task.irows());
+                BOOST_CHECK_EQUAL(model->icols(), task.icols());
+                BOOST_CHECK_EQUAL(model->osize(), task.osize());
                 BOOST_CHECK_EQUAL(static_cast<int>(model->color()), static_cast<int>(task.color()));
 
                 // test random networks

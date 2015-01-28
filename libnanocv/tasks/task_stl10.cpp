@@ -87,7 +87,7 @@ namespace ncv
 
                 io::stream_t stream(bdata, bdata_size);
 
-                std::vector<char> buffer(n_rows() * n_cols() * 3);
+                std::vector<char> buffer(irows() * icols() * 3);
 
                 size_t icount = 0;
                 
@@ -95,7 +95,7 @@ namespace ncv
                 while (stream.read(buffer.data(), buffer.size()))
                 {
                         image_t image;
-                        image.load_rgba(buffer.data(), n_rows(), n_cols(), n_rows() * n_cols());
+                        image.load_rgba(buffer.data(), irows(), icols(), irows() * icols());
                         image.transpose_in_place();
                         add_image(image);
 
@@ -131,10 +131,10 @@ namespace ncv
                         const size_t ilabel = math::cast<size_t>(label) - 1;
 
                         sample_t sample(iindex, sample_region(0, 0));
-                        if (ilabel < n_outputs())
+                        if (ilabel < osize())
                         {
                                 sample.m_label = tlabels[ilabel];
-                                sample.m_target = ncv::class_target(ilabel, n_outputs());
+                                sample.m_target = ncv::class_target(ilabel, osize());
                         }
                         add_sample(sample);
 

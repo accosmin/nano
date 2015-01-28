@@ -18,18 +18,18 @@ namespace ncv
         bool syn_dots_task_t::load(const string_t &)
         {
                 random_t<size_t> rng_protocol(1, 10);
-                random_t<size_t> rng_output(1, n_outputs());
+                random_t<size_t> rng_output(1, osize());
 
-                random_t<scalar_t> rng_gauss(scalar_t(1), math::cast<scalar_t>(n_cols() + n_rows()) / scalar_t(8));
+                random_t<scalar_t> rng_gauss(scalar_t(1), math::cast<scalar_t>(icols() + irows()) / scalar_t(8));
 
                 const coord_t border = 1;
                 const coord_t minx = border;
-                const coord_t maxx = math::cast<coord_t>(n_cols());
+                const coord_t maxx = math::cast<coord_t>(icols());
                 const coord_t miny = border;
-                const coord_t maxy = math::cast<coord_t>(n_rows());
+                const coord_t maxy = math::cast<coord_t>(irows());
 
-                random_t<coord_t> rng_dotdx(coord_t(2), math::cast<coord_t>(n_cols() / 4));
-                random_t<coord_t> rng_dotdy(coord_t(2), math::cast<coord_t>(n_rows() / 4));
+                random_t<coord_t> rng_dotdx(coord_t(2), math::cast<coord_t>(icols() / 4));
+                random_t<coord_t> rng_dotdy(coord_t(2), math::cast<coord_t>(irows() / 4));
                 random_t<coord_t> rng_posx(minx, maxx);
                 random_t<coord_t> rng_posy(miny, maxy);
 
@@ -39,7 +39,7 @@ namespace ncv
 
                 clear_memory(0);
 
-                for (size_t f = 0; f < n_folds(); f ++)
+                for (size_t f = 0; f < fsize(); f ++)
                 {
                         for (size_t i = 0; i < m_size; i ++)
                         {
@@ -50,7 +50,7 @@ namespace ncv
                                 const size_t o = rng_output();
 
                                 // generate random image background
-                                image_t image(n_rows(), n_cols(), color());
+                                image_t image(irows(), icols(), color());
                                 image.fill(color::make_rgba(rng_red(), rng_green(), rng_blue()));
                                 image.random_noise(color_channel::rgba, -155.0, 55.0, rng_gauss());
 
@@ -111,7 +111,7 @@ namespace ncv
                                 // generate sample
                                 sample_t sample(n_images() - 1, sample_region(0, 0));
                                 sample.m_label = "count" + text::to_string(o);
-                                sample.m_target = ncv::class_target(o - 1, n_outputs());
+                                sample.m_target = ncv::class_target(o - 1, osize());
                                 sample.m_fold = {f, p};
                                 add_sample(sample);
                         }

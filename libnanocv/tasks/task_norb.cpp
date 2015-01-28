@@ -110,8 +110,8 @@ namespace ncv
                                 
                                 dims.size() != 4 ||                                
                                 dims[1] != 2 ||
-                                dims[2] != static_cast<int>(n_rows()) ||
-                                dims[3] != static_cast<int>(n_cols()))
+                                dims[2] != static_cast<int>(irows()) ||
+                                dims[3] != static_cast<int>(icols()))
                         {
                                 log_error() << "NORB: invalid header!";
                                 return false;
@@ -119,7 +119,7 @@ namespace ncv
                         
                         // load images
                         const size_t n_cameras = 2;
-                        const size_t n_pixels = n_rows() * n_cols();
+                        const size_t n_pixels = irows() * icols();
                         const size_t cnt = dims[0];
                         
                         std::vector<char> dimage(n_pixels);                        
@@ -128,7 +128,7 @@ namespace ncv
                                 for (size_t cam = 0; cam < n_cameras && stream.read(dimage.data(), dimage.size()); cam ++)
                                 {
                                         image_t image;
-                                        image.load_luma(dimage.data(), n_rows(), n_cols());
+                                        image.load_luma(dimage.data(), irows(), icols());
                                         add_image(image);
                                 }
                                 
@@ -179,10 +179,10 @@ namespace ncv
                                 for (size_t cam = 0; cam < n_cameras; cam ++)
                                 {
                                         sample_t sample(iindex, sample_region(0, 0));
-                                        if (ilabel < n_outputs())
+                                        if (ilabel < osize())
                                         {
                                                 sample.m_label = tlabels[ilabel];
-                                                sample.m_target = ncv::class_target(ilabel, n_outputs());
+                                                sample.m_target = ncv::class_target(ilabel, osize());
                                         }
                                         sample.m_fold = { 0, p };
                                         add_sample(sample);

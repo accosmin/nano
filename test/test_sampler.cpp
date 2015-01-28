@@ -28,12 +28,12 @@ BOOST_AUTO_TEST_CASE(test_sampler)
         syn_dots_task_t task("rows=28,cols=28,color=luma,dims=5,size=" + text::to_string(n_samples));
         BOOST_CHECK_EQUAL(task.load(""), true);
 
-        for (size_t f = 0; f < task.n_folds(); f ++)
+        for (size_t f = 0; f < task.fsize(); f ++)
         {
                 const fold_t train_fold = {f, protocol::train};
                 const fold_t test_fold = {f, protocol::test};
 
-                const string_t header = "fold [" + text::to_string(f + 1) + "/" + text::to_string(task.n_folds()) + "]";
+                const string_t header = "fold [" + text::to_string(f + 1) + "/" + text::to_string(task.fsize()) + "]";
                 const string_t train_header = header + " protocol [" + text::to_string(protocol::train) + "]";
                 const string_t test_header = header + " protocol [" + text::to_string(protocol::test) + "]";
 
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(test_sampler)
 
                 const samples_t test_urand_samples = sampler.get();
 
-                log_info() << "fold [" << (f + 1) << "/" << task.n_folds() << "]: sampled in " << timer.elapsed() << ".";
+                log_info() << "fold [" << (f + 1) << "/" << task.fsize() << "]: sampled in " << timer.elapsed() << ".";
 
                 // check training & testing split
                 BOOST_CHECK_EQUAL(train_batch_samples.size() + test_batch_samples.size(), n_samples);

@@ -34,7 +34,7 @@ namespace ncv
                 size_t icount = 0;
                 size_t gcount = 0;
 
-                std::vector<char> buffer(n_rows() * n_cols());
+                std::vector<char> buffer(irows() * icols());
                 char label[2];
 
                 // load images
@@ -46,7 +46,7 @@ namespace ncv
                         while (stream.read(buffer.data(), buffer.size()))
                         {
                                 image_t image;
-                                image.load_luma(buffer.data(), n_rows(), n_cols());
+                                image.load_luma(buffer.data(), irows(), icols());
                                 add_image(image);
 
                                 ++ icount;
@@ -71,14 +71,14 @@ namespace ncv
                         while (stream.read(label, 1) && stream.gcount() == 1)
                         {
                                 const size_t ilabel = math::cast<size_t>(label[0]);
-                                if (ilabel >= n_outputs())
+                                if (ilabel >= osize())
                                 {
                                         continue;
                                 }
 
                                 sample_t sample(iindex, sample_region(0, 0));
                                 sample.m_label = "digit" + text::to_string(ilabel);
-                                sample.m_target = ncv::class_target(ilabel, n_outputs());
+                                sample.m_target = ncv::class_target(ilabel, osize());
                                 sample.m_fold = { 0, p };
                                 add_sample(sample);
 

@@ -90,7 +90,7 @@ namespace ncv
 
         bool model_t::resize(const task_t& task, bool verbose)
         {
-                return resize(task.n_rows(), task.n_cols(), task.n_outputs(), task.color(), verbose);
+                return resize(task.irows(), task.icols(), task.osize(), task.color(), verbose);
         }
 
         bool model_t::resize(size_t rows, size_t cols, size_t outputs, color_mode color, bool verbose)
