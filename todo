@@ -1,11 +1,11 @@
 - src/util depends on src/tensor (e.g. random_noise.hpp)
 - src/file depends on src/util (e.g. on logger)
 
+- update the conv2d & corr2d benchmark program to use tabulator
+
 - unit tests:
 	- image_t: resize, color mode, filling
 	- batch & stochastic optimizers: small (convex) functions to check if they converge to known minima
-
-- update the conv2d & corr2d benchmark program to use tabulator
 
 - update the test program to evaluate the optimizers to call directly trainer-based functions:
 	- to also do tuning of stochastic & minibatch parameters

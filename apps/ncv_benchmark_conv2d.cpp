@@ -1,10 +1,7 @@
 #include "libnanocv/types.h"
 #include "libnanocv/util/timer.h"
-#include "libnanocv/util/cast.hpp"
-#include "libnanocv/util/close.hpp"
-#include "libnanocv/util/stats.hpp"
 #include "libnanocv/util/conv2d.hpp"
-#include "libnanocv/util/epsilon.hpp"
+#include "libnanocv/util/tabulator.h"
 #include "libnanocv/util/thread_loop.hpp"
 #ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
@@ -18,7 +15,6 @@
 using namespace ncv;
 
 ncv::thread_pool_t pool;
-const size_t tests = 16;
 
 template
 <
@@ -77,15 +73,10 @@ template
         typename tmatrix,
         typename tscalar = typename tmatrix::Scalar
 >
-tscalar test_cpu(
-        top op, const char* name,
+tscalar test_cpu(tabulator_t::row_t& row, top op,
         const std::vector<tmatrix>& idatas, const tmatrix& kdata, std::vector<tmatrix>& odatas)
 {
-        ncv::stats_t<double, size_t> proc1;
-        ncv::stats_t<double, size_t> procx;
-        
-        // run multiple tests (single threaded)
-        for (size_t t = 0; t < tests; t ++)
+        // single-threaded version
         {
                 zero_matrices(odatas);
                 
@@ -95,13 +86,12 @@ tscalar test_cpu(
                         op(idatas[i], kdata, odatas[i]);
                 }
                 
-                proc1(timer.miliseconds());
+                row << timer.microseconds();
         }
 
-        const tscalar ret1 = sum_matrices(odatas);
+        const volatile tscalar ret1 = sum_matrices(odatas);
 
-        // run multiple tests (multi threaded)
-        for (size_t t = 0; t < tests; t ++)
+        // multi-threaded version
         {
                 zero_matrices(odatas);
 
@@ -111,23 +101,12 @@ tscalar test_cpu(
                         op(idatas[i], kdata, odatas[i]);
                 });
 
-                procx(timer.miliseconds());
+                row << timer.microseconds();
         }
 
-        const tscalar retx = sum_matrices(odatas);
+        const volatile tscalar retx = sum_matrices(odatas);
 
-        const string_t time_str =
-                text::to_string(math::cast<size_t>(proc1.min())) + "/" +
-                text::to_string(math::cast<size_t>(procx.min()));
-        
-        std::cout << name << "= " << text::resize(time_str, 6, align::right) << "ms   ";
-
-        if (ret1 != retx)
-        {
-                throw std::runtime_error(string_t("missmatch between single & multi-threaded version of ") + name);
-        }
-        
-        return ret1;
+        return ret1 + retx;
 }
 
 #ifdef NANOCV_HAVE_OPENCL
@@ -321,19 +300,7 @@ tscalar test_gpu(
 
 #endif
 
-template
-<
-        typename tscalar
->
-void check(tscalar result, tscalar baseline, const char* name)
-{
-        if (!math::close(result, baseline, math::epsilon1<tscalar>()))
-        {
-                std::cout << name << " FAILED (diff = " << math::abs(result - baseline) << ")!" << std::endl;
-        }
-}
-
-void test_conv2d(int isize, int ksize, int tsize)
+void test_conv2d(tabulator_t::row_t& row, int isize, int ksize, int tsize)
 {
         const int osize = isize - ksize + 1;
 
@@ -344,31 +311,15 @@ void test_conv2d(int isize, int ksize, int tsize)
         init_matrices(osize, osize, tsize, odatas);
         init_matrix(ksize, ksize, kdata);
         
-        const string_t header =
-                text::to_string(tsize) + " x (" +
-                text::to_string(isize) + "x" + text::to_string(isize) + "@" +
-                text::to_string(ksize) + "x" + text::to_string(ksize) + "): ";
-        std::cout << text::resize(header, 24);
-        
-        const scalar_t convcpu_eig = test_cpu(ncv::conv2d_eig<matrix_t>, "eig", idatas, kdata, odatas);
-        const scalar_t convcpu_cpp = test_cpu(ncv::conv2d_cpp<matrix_t>, "cpp", idatas, kdata, odatas);
-        const scalar_t convcpu_dot = test_cpu(ncv::conv2d_dot<matrix_t>, "dot", idatas, kdata, odatas);
-        const scalar_t convcpu_mad = test_cpu(ncv::conv2d_mad<matrix_t>, "mad", idatas, kdata, odatas);
-        const scalar_t convcpu_dyn = test_cpu(ncv::conv2d_dyn<matrix_t>, "dyn", idatas, kdata, odatas);
+        test_cpu(row, ncv::conv2d_eig<matrix_t>, idatas, kdata, odatas);
+        test_cpu(row, ncv::conv2d_cpp<matrix_t>, idatas, kdata, odatas);
+        test_cpu(row, ncv::conv2d_dot<matrix_t>, idatas, kdata, odatas);
+        test_cpu(row, ncv::conv2d_mad<matrix_t>, idatas, kdata, odatas);
+        test_cpu(row, ncv::conv2d_dyn<matrix_t>, idatas, kdata, odatas);
 #if defined(NANOCV_HAVE_OPENCL)
-        const scalar_t convgpu    = test_gpu("conv_kernel", "gpu", idatas, kdata, odatas);
+        test_gpu(row, "conv_kernel", idatas, kdata, odatas);
 #elif defined(NANOCV_HAVE_CUDA)
-        const scalar_t convgpu    = test_gpu(cuda::conv2d<scalar_t>, "gpu", idatas, kdata, odatas);
-#endif
-        std::cout << std::endl;
-
-        check(convcpu_eig, convcpu_eig, "eig");
-        check(convcpu_cpp, convcpu_eig, "cpp");
-        check(convcpu_dot, convcpu_eig, "dot");
-        check(convcpu_mad, convcpu_eig, "mad");
-        check(convcpu_dyn, convcpu_eig, "dyn");
-#if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
-        check(convgpu    , convcpu_eig, "gpu");
+        test_gpu(row, cuda::conv2d<scalar_t>, idatas, kdata, odatas);
 #endif
 }
 
@@ -385,22 +336,43 @@ int main(int argc, char* argv[])
         cuda::print_info();
 #endif
 
-        static const int min_isize = 24;
-        static const int max_isize = 48;
-        static const int min_ksize = 5;
-        static const int max_n_samples = 4000;
-        static const int var_samples = 500;
+        const int min_isize = 24;
+        const int max_isize = 48;
+        const int min_ksize = 5;
+        const int max_n_samples = 800;
+        const int var_samples = 100;
 
 #ifdef NANOCV_HAVE_OPENCL
         try
 #endif
         {
+                tabulator_t table("size\\method");
+                table.header() << "eig [us]" << "eig-MT [us]"
+                               << "cpp [us]" << "cpp-MT [us]"
+                               << "dot [us]" << "dot-MT [us]"
+                               << "mad [us]" << "mad-MT [us]"
+                               << "dyn [us]" << "dyn-MT [us]";
+#if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
+                table.header() << "gpu [us]";
+#endif
+
                 for (int isize = min_isize, n_samples = max_n_samples; isize <= max_isize; isize += 4, n_samples -= var_samples)
                 {
+                        table.clear();
+
                         for (int ksize = min_ksize; ksize <= isize - min_ksize; ksize += 2)
                         {
-                                test_conv2d(isize, ksize, n_samples);
+                                const string_t header = "(" +
+                                        text::to_string(isize) + "x" + text::to_string(isize) + "@" +
+                                        text::to_string(ksize) + "x" + text::to_string(ksize) + ")";
+
+                                tabulator_t::row_t& row = table.append(header);
+
+                                test_conv2d(row, isize, ksize, n_samples);
                         }
+
+                        table.print(std::cout);
+
                         std::cout << std::endl;
                 }
         }
