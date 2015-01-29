@@ -132,9 +132,9 @@ namespace test
 
         void test_grad_inputs(const string_t& header, const string_t& loss_id, const model_t& model)
         {
-                rmodel_t rmodel_inputs = model.clone();
+                const rmodel_t rmodel_inputs = model.clone();
 
-                const size_t n_tests = 256;
+                const size_t n_tests = 16;
 
                 const rloss_t rloss = loss_manager_t::instance().get(loss_id);
                 const loss_t& loss = *rloss;
