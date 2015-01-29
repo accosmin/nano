@@ -7,8 +7,6 @@
 #include "libnanocv/util/close.hpp"
 #include "libnanocv/util/corr2d.hpp"
 #include "libnanocv/util/epsilon.hpp"
-#include "libnanocv/util/thread_loop.hpp"
-#include "libnanocv-test/matrix_utils.hpp"
 #ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
 #endif
@@ -21,43 +19,19 @@ namespace test
 {
         using namespace ncv;
 
-        ncv::thread_pool_t pool;
-
         template
         <
                 typename top,
                 typename tmatrix,
                 typename tscalar = typename tmatrix::Scalar
         >
-        tscalar test_cpu(
-                top op, const char* name,
-                const std::vector<tmatrix>& idatas, const tmatrix& kdata, std::vector<tmatrix>& odatas)
+        tscalar test_cpu(top op, const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
         {
-                // single-threaded version
-                zero_matrices(odatas);
+                odata.setZero();
 
-                for (size_t i = 0; i < idatas.size(); i ++)
-                {
-                        op(idatas[i], kdata, odatas[i]);
-                }
+                op(idata, kdata, odata);
 
-                const tscalar ret1 = sum_matrices(odatas);
-
-                // multi-threaded version
-                zero_matrices(odatas);
-
-                ncv::thread_loopi(idatas.size(), pool, [&] (size_t i)
-                {
-                        op(idatas[i], kdata, odatas[i]);
-                });
-
-                const tscalar retx = sum_matrices(odatas);
-
-                // check single-threaded vs. the multi-threaded
-                const tscalar epsilon = math::epsilon1<tscalar>();
-                BOOST_CHECK_LE(math::abs(ret1 - retx), epsilon);
-
-                return ret1;
+                return odata.sum();
         }
 
         #ifdef NANOCV_HAVE_OPENCL
@@ -226,27 +200,32 @@ namespace test
 
         #endif
 
-        void test_corr2d(int isize, int ksize, int tsize)
+        void test_corr2d(int isize, int ksize)
         {
                 const int osize = isize - ksize + 1;
 
-                matrices_t idatas, odatas;
-                matrix_t kdata;
+                matrix_t idata(isize, isize);
+                matrix_t kdata(ksize, ksize);
+                matrix_t odata(osize, osize);
 
-                init_matrices(isize, isize, tsize, idatas);
-                init_matrices(osize, osize, tsize, odatas);
-                init_matrix(ksize, ksize, kdata);
+                idata.setRandom();
+                kdata.setRandom();
+                odata.setRandom();
 
-                const scalar_t corrcpu_egb = test_cpu(ncv::corr2d_egb<matrix_t>, "egb", odatas, kdata, idatas);
-                const scalar_t corrcpu_egr = test_cpu(ncv::corr2d_egr<matrix_t>, "egr", odatas, kdata, idatas);
-                const scalar_t corrcpu_cpp = test_cpu(ncv::corr2d_cpp<matrix_t>, "cpp", odatas, kdata, idatas);
-                const scalar_t corrcpu_mdk = test_cpu(ncv::corr2d_mdk<matrix_t>, "mkd", odatas, kdata, idatas);
-                const scalar_t corrcpu_mdo = test_cpu(ncv::corr2d_mdo<matrix_t>, "mko", odatas, kdata, idatas);
-                const scalar_t corrcpu_dyn = test_cpu(ncv::corr2d_dyn<matrix_t>, "dyn", odatas, kdata, idatas);
+                idata /= isize;
+                kdata /= ksize;
+                odata /= osize;
+
+                const scalar_t corrcpu_egb = test_cpu(ncv::corr2d_egb<matrix_t>, odata, kdata, idata);
+                const scalar_t corrcpu_egr = test_cpu(ncv::corr2d_egr<matrix_t>, odata, kdata, idata);
+                const scalar_t corrcpu_cpp = test_cpu(ncv::corr2d_cpp<matrix_t>, odata, kdata, idata);
+                const scalar_t corrcpu_mdk = test_cpu(ncv::corr2d_mdk<matrix_t>, odata, kdata, idata);
+                const scalar_t corrcpu_mdo = test_cpu(ncv::corr2d_mdo<matrix_t>, odata, kdata, idata);
+                const scalar_t corrcpu_dyn = test_cpu(ncv::corr2d_dyn<matrix_t>, odata, kdata, idata);
         #if defined(NANOCV_HAVE_OPENCL)
-                const scalar_t corrgpu   = test_gpu("corr_kernel", "gpu", odatas, kdata, idatas);
+                const scalar_t corrgpu   = test_gpu("corr_kernel", "gpu", odata, kdata, idata);
         #elif NANOCV_HAVE_CUDA
-                const scalar_t corrgpu   = test_gpu(cuda::corr2d<scalar_t>, "gpu", odatas, kdata, idatas);
+                const scalar_t corrgpu   = test_gpu(cuda::corr2d<scalar_t>, odata, kdata, idata);
         #endif
 
                 const scalar_t epsilon = math::epsilon1<scalar_t>();
@@ -277,21 +256,23 @@ BOOST_AUTO_TEST_CASE(test_corr2d)
         cuda::print_info();
 #endif
 
-        static const int min_isize = 24;
-        static const int max_isize = 48;
-        static const int min_ksize = 5;
-        static const int max_n_samples = 400;
-        static const int var_samples = 50;
+        const int min_isize = 24;
+        const int max_isize = 48;
+        const int min_ksize = 5;
+        const int n_tests = 256;
 
 #ifdef NANOCV_HAVE_OPENCL
         try
 #endif
         {
-                for (int isize = min_isize, n_samples = max_n_samples; isize <= max_isize; isize += 4, n_samples -= var_samples)
+                for (int isize = min_isize; isize <= max_isize; isize += 4)
                 {
                         for (int ksize = min_ksize; ksize <= isize - min_ksize; ksize += 2)
                         {
-                                test::test_corr2d(isize, ksize, n_samples);
+                                for (int t = 0; t < n_tests; t ++)
+                                {
+                                        test::test_corr2d(isize, ksize);
+                                }
                         }
                 }
         }

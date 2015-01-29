@@ -2,7 +2,6 @@
 #include "libnanocv/util/timer.h"
 #include "libnanocv/util/conv2d.hpp"
 #include "libnanocv/util/tabulator.h"
-#include "libnanocv/util/thread_loop.hpp"
 #ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
 #endif
@@ -14,99 +13,28 @@
 
 using namespace ncv;
 
-ncv::thread_pool_t pool;
-
-template
-<
-        typename tmatrix
->
-void init_matrix(int rows, int cols, tmatrix& matrix)
-{
-        matrix.resize(rows, cols);
-        matrix.setRandom();
-        matrix /= rows;
-}
-
-template
-<
-        typename tmatrix
->
-void init_matrices(int rows, int cols, int count, std::vector<tmatrix>& matrices)
-{
-	matrices.resize(count);
-	for (int i = 0; i < count; i ++)
-	{
-		init_matrix(rows, cols, matrices[i]);
-	}
-}
-
-template
-<
-        typename tmatrix
->
-void zero_matrices(std::vector<tmatrix>& matrices)
-{
-        for (size_t i = 0; i < matrices.size(); i ++)
-        {
-                matrices[i].setZero();
-        }
-}
-
-template
-<
-        typename tmatrix,
-        typename tscalar = typename tmatrix::Scalar
->
-tscalar sum_matrices(std::vector<tmatrix>& matrices)
-{
-        tscalar sum = 0;
-        for (size_t i = 0; i < matrices.size(); i ++)
-        {
-                sum += matrices[i].sum();
-        }
-        return sum;
-}
-
 template
 <
         typename top,
         typename tmatrix,
         typename tscalar = typename tmatrix::Scalar
 >
-tscalar test_cpu(tabulator_t::row_t& row, top op,
-        const std::vector<tmatrix>& idatas, const tmatrix& kdata, std::vector<tmatrix>& odatas)
+tscalar test_cpu(tabulator_t::row_t& row, top op, const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
 {
-        // single-threaded version
+        const ncv::timer_t timer;
+
+        const size_t n_tests = 32;
+        for (size_t t = 0; t < n_tests; t ++)
         {
-                zero_matrices(odatas);
-                
-                const ncv::timer_t timer;
-                for (size_t i = 0; i < idatas.size(); i ++)
-                {
-                        op(idatas[i], kdata, odatas[i]);
-                }
-                
-                row << timer.microseconds();
+                odata.setZero();
+
+                op(idata, kdata, odata);
         }
 
-        const volatile tscalar ret1 = sum_matrices(odatas);
+        row << timer.microseconds();
 
-        // multi-threaded version
-        {
-                zero_matrices(odatas);
-
-                const ncv::timer_t timer;
-                ncv::thread_loopi(idatas.size(), pool, [&] (size_t i)
-                {
-                        op(idatas[i], kdata, odatas[i]);
-                });
-
-                row << timer.microseconds();
-        }
-
-        const volatile tscalar retx = sum_matrices(odatas);
-
-        return ret1 + retx;
+        const volatile tscalar ret = odata.sum();
+        return ret;
 }
 
 #ifdef NANOCV_HAVE_OPENCL
@@ -300,26 +228,31 @@ tscalar test_gpu(
 
 #endif
 
-void test_conv2d(tabulator_t::row_t& row, int isize, int ksize, int tsize)
+void test_conv2d(tabulator_t::row_t& row, int isize, int ksize)
 {
         const int osize = isize - ksize + 1;
 
-        matrices_t idatas, odatas;
-        matrix_t kdata;
+        matrix_t idata(isize, isize);
+        matrix_t kdata(ksize, ksize);
+        matrix_t odata(osize, osize);
 
-        init_matrices(isize, isize, tsize, idatas);
-        init_matrices(osize, osize, tsize, odatas);
-        init_matrix(ksize, ksize, kdata);
+        idata.setRandom();
+        kdata.setRandom();
+        odata.setRandom();
+
+        idata /= isize;
+        kdata /= ksize;
+        odata /= osize;
         
-        test_cpu(row, ncv::conv2d_eig<matrix_t>, idatas, kdata, odatas);
-        test_cpu(row, ncv::conv2d_cpp<matrix_t>, idatas, kdata, odatas);
-        test_cpu(row, ncv::conv2d_dot<matrix_t>, idatas, kdata, odatas);
-        test_cpu(row, ncv::conv2d_mad<matrix_t>, idatas, kdata, odatas);
-        test_cpu(row, ncv::conv2d_dyn<matrix_t>, idatas, kdata, odatas);
+        test_cpu(row, ncv::conv2d_eig<matrix_t>, idata, kdata, odata);
+        test_cpu(row, ncv::conv2d_cpp<matrix_t>, idata, kdata, odata);
+        test_cpu(row, ncv::conv2d_dot<matrix_t>, idata, kdata, odata);
+        test_cpu(row, ncv::conv2d_mad<matrix_t>, idata, kdata, odata);
+        test_cpu(row, ncv::conv2d_dyn<matrix_t>, idata, kdata, odata);
 #if defined(NANOCV_HAVE_OPENCL)
-        test_gpu(row, "conv_kernel", idatas, kdata, odatas);
+        test_gpu(row, "conv_kernel", idata, kdata, odata);
 #elif defined(NANOCV_HAVE_CUDA)
-        test_gpu(row, cuda::conv2d<scalar_t>, idatas, kdata, odatas);
+        test_gpu(row, cuda::conv2d<scalar_t>, idata, kdata, odata);
 #endif
 }
 
@@ -339,24 +272,22 @@ int main(int argc, char* argv[])
         const int min_isize = 24;
         const int max_isize = 48;
         const int min_ksize = 5;
-        const int max_n_samples = 800;
-        const int var_samples = 100;
 
 #ifdef NANOCV_HAVE_OPENCL
         try
 #endif
         {
                 tabulator_t table("size\\method");
-                table.header() << "eig [us]" << "eig-MT [us]"
-                               << "cpp [us]" << "cpp-MT [us]"
-                               << "dot [us]" << "dot-MT [us]"
-                               << "mad [us]" << "mad-MT [us]"
-                               << "dyn [us]" << "dyn-MT [us]";
+                table.header() << "eig [us]"
+                               << "cpp [us]"
+                               << "dot [us]"
+                               << "mad [us]"
+                               << "dyn [us]";
 #if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
                 table.header() << "gpu [us]";
 #endif
 
-                for (int isize = min_isize, n_samples = max_n_samples; isize <= max_isize; isize += 4, n_samples -= var_samples)
+                for (int isize = min_isize; isize <= max_isize; isize += 4)
                 {
                         table.clear();
 
@@ -368,7 +299,7 @@ int main(int argc, char* argv[])
 
                                 tabulator_t::row_t& row = table.append(header);
 
-                                test_conv2d(row, isize, ksize, n_samples);
+                                test_conv2d(row, isize, ksize);
                         }
 
                         table.print(std::cout);

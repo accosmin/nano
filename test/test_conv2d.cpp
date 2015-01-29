@@ -7,8 +7,6 @@
 #include "libnanocv/util/close.hpp"
 #include "libnanocv/util/conv2d.hpp"
 #include "libnanocv/util/epsilon.hpp"
-#include "libnanocv/util/thread_loop.hpp"
-#include "libnanocv-test/matrix_utils.hpp"
 #ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
 #endif
@@ -21,43 +19,19 @@ namespace test
 {
         using namespace ncv;
 
-        ncv::thread_pool_t pool;
-
         template
         <
                 typename top,
                 typename tmatrix,
                 typename tscalar = typename tmatrix::Scalar
         >
-        tscalar test_cpu(
-                top op, const char* name,
-                const std::vector<tmatrix>& idatas, const tmatrix& kdata, std::vector<tmatrix>& odatas)
+        tscalar test_cpu(top op, const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
         {
-                // single-threaded version
-                zero_matrices(odatas);
+                odata.setZero();
 
-                for (size_t i = 0; i < idatas.size(); i ++)
-                {
-                        op(idatas[i], kdata, odatas[i]);
-                }
+                op(idata, kdata, odata);
 
-                const tscalar ret1 = sum_matrices(odatas);
-
-                // multi-threaded version
-                zero_matrices(odatas);
-
-                ncv::thread_loopi(idatas.size(), pool, [&] (size_t i)
-                {
-                        op(idatas[i], kdata, odatas[i]);
-                });
-
-                const tscalar retx = sum_matrices(odatas);
-
-                // check single-threaded vs. the multi-threaded
-                const tscalar epsilon = math::epsilon1<tscalar>();
-                BOOST_CHECK_LE(math::abs(ret1 - retx), epsilon);
-
-                return ret1;
+                return odata.sum();
         }
 
         #ifdef NANOCV_HAVE_OPENCL
@@ -219,27 +193,33 @@ namespace test
 
         #endif
 
-        void test_conv2d(int isize, int ksize, int tsize)
+        void test_conv2d(int isize, int ksize)
         {
                 const int osize = isize - ksize + 1;
 
-                matrices_t idatas, odatas;
-                matrix_t kdata;
+                matrix_t idata(isize, isize);
+                matrix_t kdata(ksize, ksize);
+                matrix_t odata(osize, osize);
 
-                init_matrices(isize, isize, tsize, idatas);
-                init_matrices(osize, osize, tsize, odatas);
-                init_matrix(ksize, ksize, kdata);
+                idata.setRandom();
+                kdata.setRandom();
+                odata.setRandom();
 
-                const scalar_t convcpu_eig = test_cpu(ncv::conv2d_eig<matrix_t>, "eig", idatas, kdata, odatas);
-                const scalar_t convcpu_cpp = test_cpu(ncv::conv2d_cpp<matrix_t>, "cpp", idatas, kdata, odatas);
-                const scalar_t convcpu_dot = test_cpu(ncv::conv2d_dot<matrix_t>, "dot", idatas, kdata, odatas);
-                const scalar_t convcpu_mad = test_cpu(ncv::conv2d_mad<matrix_t>, "mad", idatas, kdata, odatas);
-                const scalar_t convcpu_dyn = test_cpu(ncv::conv2d_dyn<matrix_t>, "dyn", idatas, kdata, odatas);
+                idata /= isize;
+                kdata /= ksize;
+                odata /= osize;
+
+                const scalar_t convcpu_eig = test_cpu(ncv::conv2d_eig<matrix_t>, idata, kdata, odata);
+                const scalar_t convcpu_cpp = test_cpu(ncv::conv2d_cpp<matrix_t>, idata, kdata, odata);
+                const scalar_t convcpu_dot = test_cpu(ncv::conv2d_dot<matrix_t>, idata, kdata, odata);
+                const scalar_t convcpu_mad = test_cpu(ncv::conv2d_mad<matrix_t>, idata, kdata, odata);
+                const scalar_t convcpu_dyn = test_cpu(ncv::conv2d_dyn<matrix_t>, idata, kdata, odata);
         #if defined(NANOCV_HAVE_OPENCL)
-                const scalar_t convgpu    = test_gpu("conv_kernel", "gpu", idatas, kdata, odatas);
+                const scalar_t convgpu    = test_gpu("conv_kernel", idata, kdata, odata);
         #elif defined(NANOCV_HAVE_CUDA)
-                const scalar_t convgpu    = test_gpu(cuda::conv2d<scalar_t>, "gpu", idatas, kdata, odatas);
+                const scalar_t convgpu    = test_gpu(cuda::conv2d<scalar_t>, idata, kdata, odata);
         #endif
+
                 const scalar_t epsilon = math::epsilon1<scalar_t>();
 
                 BOOST_CHECK_LE(math::abs(convcpu_eig - convcpu_eig), epsilon);
@@ -269,21 +249,23 @@ BOOST_AUTO_TEST_CASE(test_conv2d)
         cuda::print_info();
 #endif
 
-        static const int min_isize = 24;
-        static const int max_isize = 48;
-        static const int min_ksize = 5;
-        static const int max_n_samples = 400;
-        static const int var_samples = 50;
+        const int min_isize = 24;
+        const int max_isize = 48;
+        const int min_ksize = 5;
+        const int n_tests = 256;
 
 #ifdef NANOCV_HAVE_OPENCL
         try
 #endif
         {
-                for (int isize = min_isize, n_samples = max_n_samples; isize <= max_isize; isize += 4, n_samples -= var_samples)
+                for (int isize = min_isize; isize <= max_isize; isize += 4)
                 {
                         for (int ksize = min_ksize; ksize <= isize - min_ksize; ksize += 2)
                         {
-                                test::test_conv2d(isize, ksize, n_samples);
+                                for (int t = 0; t < n_tests; t ++)
+                                {
+                                        test::test_conv2d(isize, ksize);
+                                }
                         }
                 }
         }
