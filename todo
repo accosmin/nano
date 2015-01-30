@@ -5,6 +5,8 @@
 	- batch & stochastic optimizers: small (convex) functions to check if they converge to known minima
 		(!!! need to implement a more generic tuning of the stochastic methods)
 
+		- use functions from here: https://en.wikipedia.org/wiki/Test_functions_for_optimization
+
 - update the test program to evaluate the optimizers to call directly trainer-based functions:
 	- to also do tuning of stochastic & minibatch parameters
 	- use the synthetic dataset	
