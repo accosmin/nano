@@ -133,9 +133,7 @@ namespace ncv
                 bool sort(size_t col, comparator_t comp);
 
                 ///
-                /// \brief print
-                /// \param os
-                /// \return
+                /// \brief pretty-print its content
                 ///
                 bool print(std::ostream& os,
                            const char table_delim = '=',
