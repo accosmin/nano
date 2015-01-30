@@ -50,11 +50,12 @@ namespace ncv
                 }
         }
 
-        bool tabulator_t::print(std::ostream& os) const
+        bool tabulator_t::print(std::ostream& os,
+                const char table_delim,
+                const char row_delim, bool use_row_delim) const
         {
                 const size_t border = 4;
 
-                const char row_delim = '.';
                 const char col_delim = ' ';
 
                 // size of name column (in characters)
@@ -82,7 +83,7 @@ namespace ncv
                 value_colsize += border;
 
                 // display header
-                os << string_t(name_colsize + cols() * value_colsize, row_delim) << std::endl;
+                os << string_t(name_colsize + cols() * value_colsize, table_delim) << std::endl;
 
                 os << text::resize(m_title, name_colsize);
                 for (const string_t& colname : m_header.values())
@@ -91,10 +92,17 @@ namespace ncv
                 }
                 os << std::endl;
 
+                os << string_t(name_colsize + cols() * value_colsize, row_delim) << std::endl;
+
                 // display rows
-                for (const row_t& row : m_rows)
+                for (size_t i = 0; i < m_rows.size(); i ++)
                 {
-                        os << string_t(name_colsize + cols() * value_colsize, row_delim) << std::endl;
+                        const row_t& row = m_rows[i];
+
+                        if (i > 0 && i < m_rows.size() && use_row_delim)
+                        {
+                                os << string_t(name_colsize + cols() * value_colsize, row_delim) << std::endl;
+                        }
 
                         os << text::resize(row.name(), name_colsize);
                         for (const string_t& value : row.values())
@@ -104,7 +112,7 @@ namespace ncv
                         os << std::endl;
                 }
 
-                os << string_t(name_colsize + cols() * value_colsize, row_delim) << std::endl;
+                os << string_t(name_colsize + cols() * value_colsize, table_delim) << std::endl;
 
                 return true;
         }

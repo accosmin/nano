@@ -137,7 +137,9 @@ namespace ncv
                 /// \param os
                 /// \return
                 ///
-                bool print(std::ostream& os) const;
+                bool print(std::ostream& os,
+                           const char table_delim = '=',
+                           const char row_delim = '.', bool use_row_delim = false) const;
 
         private:
 
