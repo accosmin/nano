@@ -1,6 +1,6 @@
 #include "libnanocv/types.h"
-#include "libnanocv/util/timer.h"
 #include "libnanocv/util/corr2d.hpp"
+#include "libnanocv/util/measure.hpp"
 #include "libnanocv/util/tabulator.h"
 #ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
@@ -19,22 +19,16 @@ template
         typename tmatrix,
         typename tscalar = typename tmatrix::Scalar
 >
-tscalar test_cpu(tabulator_t::row_t& row, top op, const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
+void test_cpu(tabulator_t::row_t& row, top op, const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
 {
-        const ncv::timer_t timer;
+        const size_t trials = 16;
 
-        const size_t n_tests = 32;
-        for (size_t t = 0; t < n_tests; t ++)
+        row << ncv::measure_robustly_usec([&] ()
         {
                 odata.setZero();
-
                 op(idata, kdata, odata);
-        }
 
-        row << timer.microseconds();
-
-        const volatile tscalar ret = odata.sum();
-        return ret;
+        }, trials);
 }
 
 #ifdef NANOCV_HAVE_OPENCL

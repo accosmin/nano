@@ -1,7 +1,7 @@
 #include "libnanocv/types.h"
 #include "libnanocv/util/dot.hpp"
-#include "libnanocv/util/timer.h"
 #include "libnanocv/util/tabulator.h"
+#include "libnanocv/util/measure.hpp"
 #include "libnanocv/tensor/dot.hpp"
 #include <iostream>
 
@@ -13,15 +13,15 @@ template
         typename tvector,
         typename tscalar = typename tvector::Scalar
 >
-tscalar test_dot(tabulator_t::row_t& row, top op, const tvector& vec1, const tvector& vec2)
+void test_dot(tabulator_t::row_t& row, top op, const tvector& vec1, const tvector& vec2)
 {
-        const ncv::timer_t timer;
+        const size_t trials = 16;
 
-        const volatile tscalar ret = op(vec1.data(), vec2.data(), vec1.size());
-        
-        row << timer.microseconds();
-
-        return ret;
+        row << ncv::measure_robustly_usec([&] ()
+        {
+                const volatile tscalar ret = op(vec1.data(), vec2.data(), vec1.size());
+                ret;
+        }, trials);
 }
 
 void test_dot(size_t size, tabulator_t::row_t& row)

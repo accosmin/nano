@@ -1,7 +1,7 @@
 #include "libnanocv/types.h"
 #include "libnanocv/util/mad.hpp"
-#include "libnanocv/util/timer.h"
 #include "libnanocv/util/tabulator.h"
+#include "libnanocv/util/measure.hpp"
 #include "libnanocv/tensor/mad.hpp"
 #include <iostream>
 
@@ -18,11 +18,12 @@ void test_mad(tabulator_t::row_t& row, top op, const tvector& vec1, const tvecto
         vector_t cvec1 = vec1;
         vector_t cvec2 = vec2;
 
-        const ncv::timer_t timer;
+        const size_t trials = 16;
 
-        op(cvec1.data(), wei, cvec1.size(), cvec2.data());
-
-        row << timer.microseconds();
+        row << ncv::measure_robustly_usec([&] ()
+        {
+                op(cvec1.data(), wei, cvec1.size(), cvec2.data());
+        }, trials);
 }
 
 void test_mad(size_t size, tabulator_t::row_t& row)
