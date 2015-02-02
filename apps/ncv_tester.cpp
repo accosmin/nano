@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
         const rtask_t rtask = task_manager_t::instance().get(cmd_task);
 
         // load task data
-        ncv::measure_critical_call(
+        ncv::measure_critical_and_log(
                 [&] () { return rtask->load(cmd_task_dir); },
                 "loaded task",
                 "failed to load task <" + cmd_task + "> from directory <" + cmd_task_dir + ">");
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
         const rmodel_t rmodel = model_manager_t::instance().get(cmd_model);
 
         // load model
-        ncv::measure_critical_call(
+        ncv::measure_critical_and_log(
                 [&] () { return rmodel->load(cmd_input); },
                 "loaded model",
                 "failed to load model from <" + cmd_input + ">");

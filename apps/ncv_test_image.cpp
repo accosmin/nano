@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 
         // load input image
         image_t image;
-        ncv::measure_critical_call(
+        ncv::measure_critical_and_log(
                [&] () { return (cmd_luma ? image.load_luma(cmd_input) : image.load_rgba(cmd_input)); },
                "loaded image from <" + cmd_input + ">",
                "failed to load image from <" + cmd_input + ">");
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
                     << (image.is_luma() ? "[luma]" : "[rgba]") << ".";
 
         // scale the image
-        ncv::measure_critical_call(
+        ncv::measure_critical_and_log(
                 [&] () { return image.scale(cmd_scale); },
                 "scaled image",
                 "failed to scale image");
@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
                     << (image.is_luma() ? "[luma]" : "[rgba]") << ".";
 
         // translate the image
-        ncv::measure_critical_call(
+        ncv::measure_critical_and_log(
                 [&] () { return image.random_translate(cmd_translate_range); },
                 "translated image",
                 "failed to translate image");
@@ -114,19 +114,19 @@ int main(int argc, char *argv[])
                     << (image.is_luma() ? "[luma]" : "[rgba]") << ".";
 
         // apply random (additive) noise
-        ncv::measure_critical_call(
+        ncv::measure_critical_and_log(
                 [&] () { return image.random_noise(cmd_noise_channel, cmd_noise_offset, cmd_noise_range, cmd_noise_sigma); },
                 "applied noise",
                 "failed to apply noise");
 
         // apply bluring
-        ncv::measure_critical_call(
+        ncv::measure_critical_and_log(
                 [&] () { return image.gauss(cmd_gauss_channel, cmd_gauss_sigma); },
                 "blurred",
                 "failed to blur");
 
         // save output image
-        ncv::measure_critical_call(
+        ncv::measure_critical_and_log(
                 [&] () { return image.save(cmd_output); },
                 "saved image to <" + cmd_output + ">",
                 "failed to save to <" + cmd_output + ">");

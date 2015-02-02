@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
         const rtask_t rtask = task_manager_t::instance().get(cmd_task);
 
         // load task data
-        ncv::measure_critical_call(
+        ncv::measure_critical_and_log(
                 [&] () { return rtask->load(cmd_task_dir); },
                 "task loaded",
                 "failed to load task <" + cmd_task + "> from directory <" + cmd_task_dir + ">");
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
 
                         // train
                         trainer_result_t result;
-                        ncv::measure_critical_call(
+                        ncv::measure_critical_and_log(
                                 [&] ()
                                 {
                                         result = rtrainer->train(*rtask, train_fold, *rloss, cmd_threads, cmd_criterion, *rmodel);
@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
 
                         // test
                         scalar_t lvalue, lerror;
-                        ncv::measure_call(
+                        ncv::measure_once_and_log(
                                 [&] () { ncv::test(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror); },
                                 "model tested");
                         log_info() << "<<< test error: [" << lvalue << "/" << lerror << "].";
@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
                 const rmodel_t& opt_model = std::get<0>(models.begin()->second);
                 const trainer_states_t& opt_states = std::get<1>(models.begin()->second);
                 
-                ncv::measure_critical_call(
+                ncv::measure_critical_and_log(
                         [&] () { return opt_model->save(cmd_output); },
                         "saved model",
                         "failed to save model to <" + cmd_output + ">");
@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
                 const string_t path = (boost::filesystem::path(cmd_output).parent_path() /
                         boost::filesystem::path(cmd_output).stem()).string() + ".state";
                 
-                ncv::measure_critical_call(
+                ncv::measure_critical_and_log(
                         [&] () { return ncv::save(path, opt_states); },
                         "saved state",
                         "failed to save state to <" + path + ">");

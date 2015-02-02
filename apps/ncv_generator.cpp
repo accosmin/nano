@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
         const rmodel_t rmodel = model_manager_t::instance().get(cmd_model);
 
         // load model
-        ncv::measure_critical_call(
+        ncv::measure_critical_and_log(
                 [&] () { return rmodel->load(cmd_input); },
                 "loaded model",
                 "failed to load model from <" + cmd_input + ">");

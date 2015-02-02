@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
         const rtask_t rtask = task_manager_t::instance().get(cmd_task);
 
         // load task data
-        ncv::measure_critical_call(
+        ncv::measure_critical_and_log(
                 [&] () { return rtask->load(cmd_task_dir); },
                 "loaded task",
                 "failed to load task from directory <" + cmd_task_dir + ">");
