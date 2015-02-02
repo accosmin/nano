@@ -8,7 +8,6 @@
 #include "libnanocv/util/logger.h"
 #include "libnanocv/util/random.hpp"
 #include "libnanocv/util/epsilon.hpp"
-#include <iostream>
 
 namespace test
 {

@@ -9,8 +9,6 @@
 #include "libnanocv/util/thread_pool.h"
 #include "libnanocv/util/log_search.hpp"
 
-#include <iostream>
-
 namespace test
 {
         using namespace ncv;

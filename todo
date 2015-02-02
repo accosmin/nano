@@ -2,12 +2,10 @@
 - src/file depends on src/util (e.g. on logger)
 
 - update the test program to evaluate the optimizers to call directly trainer-based functions:
-	- to also do tuning of stochastic & minibatch parameters
+	- use the trainers' implementation
 	- use the synthetic dataset	
 
-	- sort the optimization results by log-loss as well as timed
-
-- cleanup the <iostream> includes (some are not needed)
+	- sort the optimization results by training log-loss, training error, validation error and elapsed time
 
 - nicer way to specify colors than using the current array:
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2  # blue
