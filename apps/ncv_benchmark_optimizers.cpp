@@ -46,6 +46,7 @@ void test_optimizers(
         const size_t cmd_iterations = 32;
         const size_t cmd_epochs = cmd_iterations;
         const scalar_t cmd_epsilon = 1e-4;
+        const bool verbose = false;
 
         sampler_t tsampler(task);
         tsampler.setup(sampler_t::atype::annotated);
@@ -90,7 +91,7 @@ void test_optimizers(
                 {
                         return ncv::batch_train(
                                 model, task, tsampler, vsampler, ncv::n_threads(),
-                                loss, criterion, optimizer, cmd_iterations, cmd_epsilon);
+                                loss, criterion, optimizer, cmd_iterations, cmd_epsilon, verbose);
                 }, optimizer, table);
         }
 
@@ -100,7 +101,7 @@ void test_optimizers(
                 {
                         return ncv::minibatch_train(
                                 model, task, tsampler, vsampler, ncv::n_threads(),
-                                loss, criterion, optimizer, cmd_epochs, cmd_epsilon);
+                                loss, criterion, optimizer, cmd_epochs, cmd_epsilon, verbose);
                 }, optimizer, table);
         }
 
@@ -110,7 +111,7 @@ void test_optimizers(
                 {
                         return ncv::stochastic_train(
                                 model, task, tsampler, vsampler, ncv::n_threads(),
-                                loss, criterion, optimizer, cmd_epochs);
+                                loss, criterion, optimizer, cmd_epochs, verbose);
                 }, optimizer, table);
         }
 

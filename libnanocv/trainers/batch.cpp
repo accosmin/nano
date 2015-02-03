@@ -13,7 +13,7 @@ namespace ncv
                 static opt_state_t batch_train(
                         trainer_data_t& data,
                         batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
-                        timer_t& timer, trainer_result_t& result)
+                        timer_t& timer, trainer_result_t& result, bool verbose)
                 {
                         size_t iteration = 0;
 
@@ -41,6 +41,7 @@ namespace ncv
                                 result.update(state.x, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var,
                                               ++ iteration, scalars_t({ data.m_lacc.lambda() }));
 
+                                if (verbose)
                                 log_info()
                                         << "[train = " << tvalue << "/" << terror_avg
                                         << ", valid = " << vvalue << "/" << verror_avg
@@ -61,7 +62,8 @@ namespace ncv
         trainer_result_t batch_train(
                 const model_t& model, const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, const string_t& criterion, 
-                batch_optimizer optimizer, size_t iterations, scalar_t epsilon)
+                batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
+                bool verbose)
         {
                 vector_t x0;
                 model.save_params(x0);
@@ -78,7 +80,7 @@ namespace ncv
 
                         trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
 
-                        detail::batch_train(data, optimizer, iterations, epsilon, timer, result);
+                        detail::batch_train(data, optimizer, iterations, epsilon, timer, result, verbose);
 
                         // OK
                         return result;

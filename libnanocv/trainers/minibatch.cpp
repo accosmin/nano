@@ -90,7 +90,7 @@ namespace ncv
                 static trainer_result_t train(
                         trainer_data_t& data,
                         batch_optimizer optimizer,
-                        size_t epochs, size_t batch, size_t iterations, scalar_t epsilon)
+                        size_t epochs, size_t batch, size_t iterations, scalar_t epsilon, bool verbose)
                 {
                         trainer_result_t result;
 
@@ -143,6 +143,7 @@ namespace ncv
                                                                  static_cast<scalar_t>(iterations),
                                                                  data.m_lacc.lambda() }));
 
+                                if (verbose)
                                 log_info()
                                         << "[train = " << tvalue << "/" << terror_avg
                                         << ", valid = " << vvalue << "/" << verror_avg
@@ -161,7 +162,8 @@ namespace ncv
         trainer_result_t minibatch_train(
                 const model_t& model, const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, const string_t& criterion,
-                batch_optimizer optimizer, size_t epochs, scalar_t epsilon)
+                batch_optimizer optimizer, size_t epochs, scalar_t epsilon,
+                bool verbose)
         {
                 vector_t x0;
                 model.save_params(x0);
@@ -193,6 +195,7 @@ namespace ncv
                                         const scalar_t state =
                                                 detail::tune(data, optimizer, batch, iterations, epsilon);
 
+                                        if (verbose)
                                         log_info()
                                                 << "[tuning: loss = " << state
                                                 << ", batch = " << batch
@@ -210,7 +213,7 @@ namespace ncv
                         }
 
                         // train the model using the tuned parameters
-                        return detail::train(data, optimizer, epochs, opt_batch, opt_iterations, epsilon);
+                        return detail::train(data, optimizer, epochs, opt_batch, opt_iterations, epsilon, verbose);
                 };
 
                 // tune the regularization factor (if needed)

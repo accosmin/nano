@@ -41,7 +41,7 @@ namespace ncv
                 static trainer_result_t train(
                         trainer_data_t& data,
                         stochastic_optimizer optimizer, size_t epochs, scalar_t alpha0, scalar_t decay,
-                        thread_pool_t::mutex_t& mutex)
+                        thread_pool_t::mutex_t& mutex, bool verbose)
                 {
                         trainer_result_t result;
 
@@ -81,6 +81,7 @@ namespace ncv
                                 result.update(state.x, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var,
                                               epoch, scalars_t({ alpha0, decay, data.m_lacc.lambda() }));
 
+                                if (verbose)
                                 log_info()
                                         << "[train = " << tvalue << "/" << terror_avg
                                         << ", valid = " << vvalue << "/" << verror_avg
@@ -104,7 +105,8 @@ namespace ncv
         trainer_result_t stochastic_train(
                 const model_t& model, const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, const string_t& criterion,
-                stochastic_optimizer optimizer, size_t epochs)
+                stochastic_optimizer optimizer, size_t epochs,
+                bool verbose)
         {
                 thread_pool_t::mutex_t mutex;
 
@@ -151,6 +153,7 @@ namespace ncv
 
                                         const thread_pool_t::lock_t lock(mutex);
 
+                                        if (verbose)
                                         log_info()
                                                 << "[tuning: loss = " << state
                                                 << ", alpha = " << alpha
@@ -198,7 +201,7 @@ namespace ncv
 
                                 trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
 
-                                return detail::train(data, optimizer, epochs, opt_alpha, opt_decay, mutex);
+                                return detail::train(data, optimizer, epochs, opt_alpha, opt_decay, mutex, verbose);
                         }
                 };
 
