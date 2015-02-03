@@ -11,10 +11,9 @@ using namespace ncv;
 
 template
 <
-        typename ttrainer,
-        typename toptimizer
+        typename ttrainer
 >
-void test_optimizer(ttrainer trainer, toptimizer optimizer, tabulator_t& table)
+void test_optimizer(ttrainer trainer, const string_t& name, tabulator_t& table)
 {
         const size_t cmd_trials = 16;
 
@@ -34,7 +33,7 @@ void test_optimizer(ttrainer trainer, toptimizer optimizer, tabulator_t& table)
                 verrors(result.m_opt_state.m_verror_avg);
         }, cmd_trials);
 
-        table.append(text::to_string(optimizer))
+        table.append(name)
                 << tvalues.avg() << terrors.avg() << vvalues.avg() << verrors.avg()
                 << (usec / 1000);
 }
@@ -92,7 +91,7 @@ void test_optimizers(
                         return ncv::batch_train(
                                 model, task, tsampler, vsampler, ncv::n_threads(),
                                 loss, criterion, optimizer, cmd_iterations, cmd_epsilon, verbose);
-                }, optimizer, table);
+                }, "batch [" + text::to_string(optimizer) + "]", table);
         }
 
         for (batch_optimizer optimizer : minibatch_optimizers)
@@ -102,7 +101,7 @@ void test_optimizers(
                         return ncv::minibatch_train(
                                 model, task, tsampler, vsampler, ncv::n_threads(),
                                 loss, criterion, optimizer, cmd_epochs, cmd_epsilon, verbose);
-                }, optimizer, table);
+                }, "minibatch [" + text::to_string(optimizer) + "]", table);
         }
 
         for (stochastic_optimizer optimizer : stochastic_optimizers)
@@ -112,7 +111,7 @@ void test_optimizers(
                         return ncv::stochastic_train(
                                 model, task, tsampler, vsampler, ncv::n_threads(),
                                 loss, criterion, optimizer, cmd_epochs, verbose);
-                }, optimizer, table);
+                }, "stochastic [" + text::to_string(optimizer) + "]", table);
         }
 
         table.print(std::cout);
