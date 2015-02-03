@@ -8,7 +8,7 @@
 #include "libnanocv/util/timer.h"
 #include "libnanocv/util/logger.h"
 #include "libnanocv/util/epsilon.hpp"
-#include "libnanocv/util/thread_pool.h"
+#include "libnanocv/util/thread.h"
 #include "libnanocv/accumulator.h"
 
 namespace test

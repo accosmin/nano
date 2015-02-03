@@ -3,7 +3,7 @@
 #include "libnanocv/accumulator.h"
 #include "libnanocv/util/timer.h"
 #include "libnanocv/util/logger.h"
-#include "libnanocv/util/thread_pool.h"
+#include "libnanocv/util/thread.h"
 #include "libnanocv/util/tabulator.h"
 #include "libnanocv/tasks/task_syn_dots.h"
 #include <boost/program_options.hpp>

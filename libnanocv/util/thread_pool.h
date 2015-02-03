@@ -1,29 +1,13 @@
 #pragma once
 
+#include "thread.h"
 #include "noncopyable.hpp"
-#include <thread>
 #include <vector>
 #include <condition_variable>
 #include <deque>
 
 namespace ncv
 {
-        ///
-        /// \brief the number of threads available on the system
-        ///
-        inline size_t n_threads()
-        {
-                return static_cast<size_t>(std::thread::hardware_concurrency());
-        }
-
-        ///
-        /// \brief maximum number of supported threads
-        ///
-        inline size_t max_n_threads()
-        {
-                return n_threads() * 8;
-        }
-
         ///
         /// \brief asynchronously runs multiple workers/jobs/threads
         /// by enqueing and distribute them on all available threads
