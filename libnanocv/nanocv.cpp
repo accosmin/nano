@@ -12,6 +12,7 @@
 #include "tasks/task_svhn.h"
 #include "tasks/task_norb.h"
 #include "tasks/task_syn_dots.h"
+#include "tasks/task_synthetic_shapes.h"
 
 #include "layers/layer_activation_unit.h"
 #include "layers/layer_activation_tanh.h"
@@ -64,6 +65,7 @@ namespace ncv
                 task_manager_t::instance().add("svhn", svhn_task_t());
                 task_manager_t::instance().add("norb", norb_task_t());
                 task_manager_t::instance().add("syn-dots", syn_dots_task_t());
+                task_manager_t::instance().add("syn-shapes", synthetic_shapes_task_t());
 
                 // register layers
                 layer_manager_t::instance().add("act-unit", unit_activation_layer_t());
