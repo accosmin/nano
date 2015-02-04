@@ -13,7 +13,7 @@ template
 <
         typename ttrainer
 >
-void test_optimizer(ttrainer trainer, const string_t& name, tabulator_t& table)
+void test_optimizer(const task_t& task, ttrainer trainer, const string_t& name, tabulator_t& table)
 {
         const size_t cmd_trials = 16;
 
@@ -24,7 +24,13 @@ void test_optimizer(ttrainer trainer, const string_t& name, tabulator_t& table)
 
         const size_t usec = ncv::measure_robustly_usec([&] ()
         {
-                const trainer_result_t result = trainer();
+                sampler_t tsampler(task);
+                tsampler.setup(sampler_t::atype::annotated);
+
+                sampler_t vsampler(task);
+                tsampler.split(80, vsampler);
+
+                const trainer_result_t result = trainer(tsampler, vsampler);
 
                 tvalues(result.m_opt_state.m_tvalue);
                 vvalues(result.m_opt_state.m_vvalue);
@@ -46,12 +52,6 @@ void test_optimizers(
         const size_t cmd_epochs = cmd_iterations;
         const scalar_t cmd_epsilon = 1e-4;
         const bool verbose = false;
-
-        sampler_t tsampler(task);
-        tsampler.setup(sampler_t::atype::annotated);
-
-        sampler_t vsampler(task);
-        tsampler.split(80, vsampler);
 
         // batch optimizers
         const auto batch_optimizers =
@@ -86,7 +86,7 @@ void test_optimizers(
 
         for (batch_optimizer optimizer : batch_optimizers)
         {
-                test_optimizer([&] ()
+                test_optimizer(task, [&] (const sampler_t& tsampler, const sampler_t& vsampler)
                 {
                         return ncv::batch_train(
                                 model, task, tsampler, vsampler, ncv::n_threads(),
@@ -96,7 +96,7 @@ void test_optimizers(
 
         for (batch_optimizer optimizer : minibatch_optimizers)
         {
-                test_optimizer([&] ()
+                test_optimizer(task, [&] (const sampler_t& tsampler, const sampler_t& vsampler)
                 {
                         return ncv::minibatch_train(
                                 model, task, tsampler, vsampler, ncv::n_threads(),
@@ -106,7 +106,7 @@ void test_optimizers(
 
         for (stochastic_optimizer optimizer : stochastic_optimizers)
         {
-                test_optimizer([&] ()
+                test_optimizer(task, [&] (const sampler_t& tsampler, const sampler_t& vsampler)
                 {
                         return ncv::stochastic_train(
                                 model, task, tsampler, vsampler, ncv::n_threads(),
@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
 {
         ncv::init();
 
-        const size_t cmd_samples = 128;
+        const size_t cmd_samples = 8 * 1024;
         const size_t cmd_rows = 10;
         const size_t cmd_cols = 10;
         const size_t cmd_outputs = 4;
