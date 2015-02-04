@@ -128,6 +128,11 @@ namespace ncv
                 bool gauss(color_channel channel, scalar_t sigma);
 
                 ///
+                /// \brief blend with the given patch using the alpha channel as mask
+                ///
+                bool alpha_blend(const rgba_matrix_t& patch);
+
+                ///
                 /// \brief check if the given rectangle is within image bounds
                 ///
                 bool valid(const rect_t& rect) const
@@ -139,6 +144,7 @@ namespace ncv
                 // access functions
                 coord_t rows() const { return m_rows; }
                 coord_t cols() const { return m_cols; }
+                coord_t size() const { return rows() * cols(); }
                 color_mode mode() const { return m_mode; }
 
                 bool is_rgba() const { return mode() == color_mode::rgba; }

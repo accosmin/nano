@@ -15,6 +15,22 @@ namespace ncv
         {
         }
 
+        namespace
+        {
+                rgba_matrix_t make_shape_rect(
+                        coord_t rows, coord_t cols, coord_t posx, coord_t posy, coord_t sizex, coord_t sizey,
+                        random_t<rgba_t>& rng_red, random_t<rgba_t>& rng_green, random_t<rgba_t>& rng_blue)
+                {
+                        rgba_matrix_t image(rows, cols);
+                        image.setConstant(color::make_rgba(0, 0, 0, 0));
+
+                        const rgba_t rgba = color::make_rgba(rng_red(), rng_green(), rng_blue());
+                        image.block(posy, posx, sizey, sizex).setConstant(rgba);
+
+                        return image;
+                }
+        }
+
         bool synthetic_shapes_task_t::load(const string_t &)
         {
                 random_t<size_t> rng_protocol(1, 10);
@@ -22,16 +38,15 @@ namespace ncv
 
                 random_t<scalar_t> rng_gauss(scalar_t(1), math::cast<scalar_t>(icols() + irows()) / scalar_t(8));
 
-                const coord_t border = 1;
-                const coord_t minx = border;
-                const coord_t maxx = math::cast<coord_t>(icols());
-                const coord_t miny = border;
-                const coord_t maxy = math::cast<coord_t>(irows());
+                const coord_t rows = static_cast<coord_t>(irows());
+                const coord_t cols = static_cast<coord_t>(icols());
 
-                random_t<coord_t> rng_dotdx(coord_t(2), math::cast<coord_t>(icols() / 4));
-                random_t<coord_t> rng_dotdy(coord_t(2), math::cast<coord_t>(irows() / 4));
-                random_t<coord_t> rng_posx(minx, maxx);
-                random_t<coord_t> rng_posy(miny, maxy);
+                const coord_t border = 1;
+
+                random_t<coord_t> rng_sizex(cols / 2, cols - 2 * border);
+                random_t<coord_t> rng_sizey(rows / 2, rows - 2 * border);
+                random_t<coord_t> rng_posx(0, cols);
+                random_t<coord_t> rng_posy(0, rows);
 
                 random_t<rgba_t> rng_red(175, 255);
                 random_t<rgba_t> rng_green(175, 255);
@@ -54,57 +69,16 @@ namespace ncv
                                 image.fill(color::make_rgba(rng_red(), rng_green(), rng_blue()));
                                 image.random_noise(color_channel::rgba, -155.0, 55.0, rng_gauss());
 
-//                                for (size_t io = 0; io < o; io ++)
-//                                {
-//                                        // generate random dot
-//                                        const coord_t dx = rng_dotdx();
-//                                        const coord_t dy = rng_dotdy();
-//                                        const coord_t x = minx + (rng_posx() % (maxx - minx - dx));
-//                                        const coord_t y = miny + (rng_posy() % (maxy - miny - dy));
+                                // generate random shapes
+                                const coord_t sizex = rng_sizex();
+                                const coord_t sizey = rng_sizey();
+                                const coord_t posx = border + rng_posx() % (cols - sizex - border);
+                                const coord_t posy = border + rng_posy() & (rows - sizey - border);
 
-//                                        image.fill(rect_t(x, y, dx, dy),
-//                                                   color::make_rgba(rng_red(), rng_green(), rng_blue()));
-//                                }
-
-                                std::vector<rect_t> dot_rects;
-                                std::vector<rgba_t> dot_rgbas;
-
-                                // generate random dots
-                                for (size_t io = 0; io < o; io ++)
-                                {
-                                        while (true)
-                                        {
-                                                const coord_t dx = rng_dotdx();
-                                                const coord_t dy = rng_dotdy();
-                                                const coord_t x = minx + (rng_posx() % (maxx - minx - dx));
-                                                const coord_t y = miny + (rng_posy() % (maxy - miny - dy));
-
-                                                const rect_t rect(x, y, dx, dy);
-
-                                                // accept the dot only if it does not intersect with the previous ones!
-                                                bool ok = true;
-                                                for (size_t ioo = 0; ioo < io && ok; ioo ++)
-                                                {
-                                                        const rect_t& orect = dot_rects[ioo];
-
-                                                        ok = (rect & rect_t(orect.left() - 1, orect.top() - 1,
-                                                                            orect.width() + 1, orect.height() + 1)).empty();
-                                                }
-
-                                                if (ok)
-                                                {
-                                                        dot_rects.push_back(rect);
-                                                        dot_rgbas.push_back(color::make_rgba(rng_red(), rng_green(), rng_blue()));
-                                                        break;
-                                                }
-                                        }
-                                }
-
-                                // draw the dots
-                                for (size_t io = 0; io < o; io ++)
-                                {
-                                        image.fill(dot_rects[io], dot_rgbas[io]);
-                                }
+                                // todo: generate other shapes
+                                const rgba_matrix_t shape = make_shape_rect(rows, cols, posx, posy, sizex, sizey,
+                                                                            rng_red, rng_green, rng_blue);
+                                image.alpha_blend(shape);
 
                                 add_image(image);
 

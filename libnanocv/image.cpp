@@ -751,4 +751,49 @@ namespace ncv
                         return false;
                 }
         }
+
+        bool image_t::alpha_blend(const rgba_matrix_t& patch)
+        {
+                if (    patch.rows() != rows() ||
+                        patch.cols() != cols())
+                {
+                        return false;
+                }
+
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        for (coord_t i = 0; i < size(); i ++)
+                        {
+                                const rgba_t rgba1 = patch(i);
+
+                                const rgba_t alpha1 = color::get_alpha(rgba1);
+                                const rgba_t alpha2 = 255;
+
+                                m_luma(i) = (alpha1 * color::get_luma(rgba1) + alpha2 * m_luma(i)) / (alpha1 + alpha2);
+                        }
+                        return true;
+
+                case color_mode::rgba:
+                        for (coord_t i = 0; i < size(); i ++)
+                        {
+                                const rgba_t rgba1 = patch(i);
+                                const rgba_t rgba2 = m_rgba(i);
+
+                                const rgba_t alpha1 = color::get_alpha(rgba1);
+                                const rgba_t alpha2 = color::get_alpha(rgba2);
+                                const rgba_t alphax = alpha1 + alpha2;
+
+                                m_rgba(i) = color::make_rgba(
+                                        (alpha1 * color::get_red(rgba1) + alpha2 * color::get_red(rgba2)) / alphax,
+                                        (alpha1 * color::get_green(rgba1) + alpha2 * color::get_green(rgba2)) / alphax,
+                                        (alpha1 * color::get_blue(rgba1) + alpha2 * color::get_blue(rgba2)) / alphax,
+                                        std::max(alpha1, alpha2));
+                        }
+                        return true;
+
+                default:
+                        return false;
+                }
+        }
 }

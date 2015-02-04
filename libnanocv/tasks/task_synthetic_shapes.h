@@ -10,7 +10,7 @@ namespace ncv
         /// parameters:
         ///     rows=16[8,32]           - patch size in pixels (rows)
         ///     cols=16[8,32]           - patch size in pixels (columns)
-        ///     dims=4[2,16]            - number of outputs (= maximum number of dots in an image)
+        ///     dims=4[2,16]            - number of outputs (= shape index in an image)
         ///     color=rgba[,luma]       - color mode
         ///     size=1024[256,16*1024]  - number of samples (training + validation)
         ///
