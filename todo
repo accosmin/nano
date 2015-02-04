@@ -1,6 +1,10 @@
 - src/util depends on src/tensor (e.g. random_noise.hpp)
 - src/file depends on src/util (e.g. on logger)
 
+- change the synthetic task:
+	- recognize various shapes: (filled & hollow) squares, triangles, circles
+	- alpha-blend these shapes on images with random background
+
 - update the test program to evaluate the optimizers to call directly trainer-based functions:
 	- use the trainers' implementation
 	- use the synthetic dataset	
