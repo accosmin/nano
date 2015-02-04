@@ -55,8 +55,8 @@ namespace ncv
                         auto fn_fval = ncv::make_opfval(data);
                         auto fn_grad = ncv::make_opgrad(data);
 
-                        auto fn_wlog = ncv::make_opwlog();
-                        auto fn_elog = ncv::make_opelog();
+                        auto fn_wlog = verbose ? ncv::make_opwlog() : nullptr;
+                        auto fn_elog = verbose ? ncv::make_opelog() : nullptr;
                         auto fn_ulog = [&] (const opt_state_t& state)
                         {
                                 // evaluate training samples
