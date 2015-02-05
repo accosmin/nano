@@ -32,6 +32,15 @@ namespace ncv
                         return color::make_rgba(rng_red(), rng_green(), rng_blue());
                 }
 
+                rgba_t make_dark_color()
+                {
+                        random_t<rgba_t> rng_red(0, 125);
+                        random_t<rgba_t> rng_green(0, 125);
+                        random_t<rgba_t> rng_blue(0, 125);
+
+                        return color::make_rgba(rng_red(), rng_green(), rng_blue());
+                }
+
                 rect_t make_rect(coord_t rows, coord_t cols)
                 {
                         random_t<coord_t> rng(2, std::min(rows / 4, cols / 4));
@@ -61,52 +70,52 @@ namespace ncv
                         return make_interior_rect(rect.left(), rect.top(), rect.width(), rect.height());
                 }
 
-                image_t make_filled_rect(coord_t rows, coord_t cols)
+                image_t make_filled_rect(coord_t rows, coord_t cols, rgba_t fill_color)
                 {
                         const rect_t rect = make_rect(rows, cols);
 
                         image_t image(rows, cols, color_mode::rgba);
 
                         image.fill(make_transparent_color());
-                        image.fill(rect, make_light_color());
+                        image.fill(rect, fill_color);
 
                         return image;
                 }
 
-                image_t make_hollow_rect(coord_t rows, coord_t cols)
+                image_t make_hollow_rect(coord_t rows, coord_t cols, rgba_t fill_color)
                 {
                         const rect_t rect = make_rect(rows, cols);
 
                         image_t image(rows, cols, color_mode::rgba);
 
                         image.fill(make_transparent_color());
-                        image.fill(rect, make_light_color());
+                        image.fill(rect, fill_color);
                         image.fill(make_interior_rect(rect), make_transparent_color());
 
                         return image;
                 }
 
-                image_t make_filled_ellipse(coord_t rows, coord_t cols)
+                image_t make_filled_circle(coord_t rows, coord_t cols, rgba_t fill_color)
                 {
                         const rect_t rect = make_rect(rows, cols);
 
                         image_t image(rows, cols, color_mode::rgba);
 
                         image.fill(make_transparent_color());
-                        image.fill_ellipse(rect, make_light_color());
+                        image.fill_circle(rect, fill_color);
 
                         return image;
                 }
 
-                image_t make_hollow_ellipse(coord_t rows, coord_t cols)
+                image_t make_hollow_circle(coord_t rows, coord_t cols, rgba_t fill_color)
                 {
                         const rect_t rect = make_rect(rows, cols);
 
                         image_t image(rows, cols, color_mode::rgba);
 
                         image.fill(make_transparent_color());
-                        image.fill_ellipse(rect, make_light_color());
-                        image.fill_ellipse(make_interior_rect(rect), make_transparent_color());
+                        image.fill_circle(rect, fill_color);
+                        image.fill_circle(make_interior_rect(rect), make_transparent_color());
 
                         return image;
                 }
@@ -134,24 +143,28 @@ namespace ncv
                                 // random output class: #dots
                                 const size_t o = rng_output();
 
+                                const bool is_dark_background = (rng_protocol() % 2) == 0;
+                                const rgba_t back_color = is_dark_background ? make_dark_color() : make_light_color();
+                                const rgba_t shape_color = is_dark_background ? make_light_color() : make_dark_color();
+
                                 // generate random image background
                                 image_t image(irows(), icols(), color());
-                                image.fill(make_light_color());
-                                image.random_noise(color_channel::rgba, -155.0, 55.0, rng_gauss());
+                                image.fill(back_color);
+                                image.random_noise(color_channel::rgba, -25.0, +25.0, rng_gauss());
 
                                 // generate random shapes
                                 image_t shape;
 
                                 switch (o)
                                 {
-                                case 1:         shape = make_filled_rect(rows, cols); break;
-                                case 2:         shape = make_hollow_rect(rows, cols); break;
-                                case 3:         shape = make_filled_ellipse(rows, cols); break;
-                                case 4:         shape = make_hollow_ellipse(rows, cols); break;
+                                case 1:         shape = make_filled_rect(rows, cols, shape_color); break;
+                                case 2:         shape = make_hollow_rect(rows, cols, shape_color); break;
+                                case 3:         shape = make_filled_circle(rows, cols, shape_color); break;
+                                case 4:         shape = make_hollow_circle(rows, cols, shape_color); break;
                                 default:        break;
                                 }
 
-                                shape.random_noise(color_channel::rgba, -10.0, +10.0, rng_gauss() * 0.5);
+                                shape.random_noise(color_channel::rgba, -25.0, +25.0, rng_gauss() * 0.5);
                                 image.alpha_blend(shape.rgba());
 
                                 add_image(image);
@@ -162,8 +175,8 @@ namespace ncv
                                 {
                                 case 1:         sample.m_label = "filled_rectangle"; break;
                                 case 2:         sample.m_label = "hollow_rectangle"; break;
-                                case 3:         sample.m_label = "filled_ellipse"; break;
-                                case 4:         sample.m_label = "hollow_ellipse"; break;
+                                case 3:         sample.m_label = "filled_circle"; break;
+                                case 4:         sample.m_label = "hollow_circle"; break;
                                 default:        sample.m_label = "unkown"; break;
                                 }
 
