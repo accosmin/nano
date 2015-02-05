@@ -43,7 +43,7 @@ namespace ncv
 
                 rect_t make_rect(coord_t rows, coord_t cols)
                 {
-                        random_t<coord_t> rng(2, std::min(rows / 4, cols / 4));
+                        random_t<coord_t> rng(3, std::min(rows / 4, cols / 4));
 
                         const coord_t dx = rng();
                         const coord_t dy = rng();
@@ -55,7 +55,7 @@ namespace ncv
 
                 rect_t make_interior_rect(coord_t x, coord_t y, coord_t w, coord_t h)
                 {
-                        random_t<coord_t> rng(3, std::min(w / 4, h / 4));
+                        random_t<coord_t> rng(4, std::min(w / 4, h / 4));
 
                         const coord_t dx = rng();
                         const coord_t dy = rng();
@@ -126,7 +126,7 @@ namespace ncv
                 random_t<size_t> rng_protocol(1, 10);
                 random_t<size_t> rng_output(1, osize());
 
-                random_t<scalar_t> rng_gauss(scalar_t(1), math::cast<scalar_t>(icols() + irows()) / scalar_t(8));
+                random_t<scalar_t> rng_gauss(scalar_t(0.5), math::cast<scalar_t>(icols() + irows()) / scalar_t(8));
 
                 const coord_t rows = static_cast<coord_t>(irows());
                 const coord_t cols = static_cast<coord_t>(icols());
