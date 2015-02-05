@@ -19,6 +19,9 @@ int main(int argc, char *argv[])
         po_desc.add_options()("task-dir",
                 boost::program_options::value<string_t>(),
                 "directory to load task data from");        
+        po_desc.add_options()("task-params",
+                boost::program_options::value<string_t>()->default_value(""),
+                "task parameters (if any)");
         po_desc.add_options()("save-dir",
                 boost::program_options::value<string_t>(),
                 "directory to save task samples to");
@@ -47,12 +50,13 @@ int main(int argc, char *argv[])
 
         const string_t cmd_task = po_vm["task"].as<string_t>();
         const string_t cmd_task_dir = po_vm["task-dir"].as<string_t>();
+        const string_t cmd_task_params = po_vm["task-params"].as<string_t>();
         const string_t cmd_save_dir = po_vm.count("save-dir") ? po_vm["save-dir"].as<string_t>() : "";
         const size_t cmd_save_group_rows = math::clamp(po_vm["save-group-rows"].as<size_t>(), 1, 128);
         const size_t cmd_save_group_cols = math::clamp(po_vm["save-group-cols"].as<size_t>(), 1, 128);
 
         // create task
-        const rtask_t rtask = task_manager_t::instance().get(cmd_task);
+        const rtask_t rtask = task_manager_t::instance().get(cmd_task, cmd_task_params);
 
         // load task data
         ncv::measure_critical_and_log(
