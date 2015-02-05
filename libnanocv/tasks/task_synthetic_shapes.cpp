@@ -73,7 +73,7 @@ namespace ncv
                                 const coord_t sizex = rng_sizex();
                                 const coord_t sizey = rng_sizey();
                                 const coord_t posx = border + rng_posx() % (cols - sizex - border);
-                                const coord_t posy = border + rng_posy() & (rows - sizey - border);
+                                const coord_t posy = border + rng_posy() % (rows - sizey - border);
 
                                 // todo: generate other shapes
                                 const rgba_matrix_t shape = make_shape_rect(rows, cols, posx, posy, sizex, sizey,
