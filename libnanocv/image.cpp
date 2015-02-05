@@ -803,47 +803,107 @@ namespace ncv
                 return fill(rect, rgba);
         }
 
+        namespace
+        {
+                template
+                <
+                        typename tmatrix,
+                        typename tvalue
+                >
+                bool setup_circle(const rect_t& rect, tmatrix& data, tvalue fill_value)
+                {
+                        const point_t center = rect.center();
+                        const coord_t cx = center.x();
+                        const coord_t cy = center.y();
+
+                        const coord_t radius = (std::min(rect.width(), rect.height()) + 1) / 2;
+                        const coord_t radius2 = radius * radius;
+
+                        const coord_t l = std::max(rect.left(), coord_t(0));
+                        const coord_t r = std::min(rect.right(), static_cast<coord_t>(data.cols()));
+                        const coord_t t = std::max(rect.top(), coord_t(0));
+                        const coord_t b = std::min(rect.bottom(), static_cast<coord_t>(data.rows()));
+
+                        for (coord_t x = l; x < r; x ++)
+                        {
+                                for (coord_t y = t; y < b; y ++)
+                                {
+                                        if (math::square(x - cx) + math::square(y - cy) < radius2)
+                                        {
+                                                data(y, x) = fill_value;
+                                        }
+                                }
+                        }
+
+                        return true;
+                }
+        }
+
         bool image_t::fill_circle(const rect_t& rect, rgba_t rgba)
         {
-                const point_t center = rect.center();
-                const coord_t cx = center.x();
-                const coord_t cy = center.y();
-
-                const coord_t radius = (std::min(rect.width(), rect.height()) + 1) / 2;
-                const coord_t radius2 = radius * radius;
-
-                const coord_t l = std::max(rect.left(), coord_t(0));
-                const coord_t r = std::min(rect.right(), cols());
-                const coord_t t = std::max(rect.top(), coord_t(0));
-                const coord_t b = std::min(rect.bottom(), rows());
-
                 switch (m_mode)
                 {
                 case color_mode::luma:
-                        for (coord_t x = l; l < r; x ++)
-                        {
-                                for (coord_t y = t; y < b; y ++)
-                                {
-                                        if (math::square(x - cx) + math::square(y - cy) < radius2)
-                                        {
-                                                m_luma(y, x) = color::get_luma(rgba);
-                                        }
-                                }
-                        }
-                        return true;
+                        return setup_circle(rect, m_luma, color::get_luma(rgba));
 
                 case color_mode::rgba:
-                        for (coord_t x = l; l < r; x ++)
+                        return setup_circle(rect, m_rgba, rgba);
+
+                default:
+                        return false;
+                }
+        }
+
+        namespace
+        {
+                template
+                <
+                        typename tmatrix,
+                        typename tvalue
+                >
+                bool setup_ellipse(const rect_t& rect, tmatrix& data, tvalue fill_value)
+                {
+                        const point_t center = rect.center();
+                        const coord_t cx = center.x();
+                        const coord_t cy = center.y();
+
+                        const coord_t radiusx = (rect.width() + 1) / 2;
+                        const coord_t radiusy = (rect.height() + 1) / 2;
+
+                        const coord_t radiusx2 = radiusx * radiusx;
+                        const coord_t radiusy2 = radiusy * radiusy;
+
+                        const coord_t radius2 = radiusx2 + radiusy2;
+
+                        const coord_t l = std::max(rect.left(), coord_t(0));
+                        const coord_t r = std::min(rect.right(), static_cast<coord_t>(data.cols()));
+                        const coord_t t = std::max(rect.top(), coord_t(0));
+                        const coord_t b = std::min(rect.bottom(), static_cast<coord_t>(data.rows()));
+
+                        for (coord_t x = l; x < r; x ++)
                         {
                                 for (coord_t y = t; y < b; y ++)
                                 {
-                                        if (math::square(x - cx) + math::square(y - cy) < radius2)
+                                        if (math::square(x - cx) * radiusy2 + math::square(y - cy) * radiusx2 < radius2)
                                         {
-                                                m_rgba(y, x) = rgba;
+                                                data(y, x) = fill_value;
                                         }
                                 }
                         }
+
                         return true;
+                }
+        }
+
+        bool image_t::fill_ellipse(const rect_t& rect, rgba_t rgba)
+        {
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        return setup_ellipse(rect, m_luma, color::get_luma(rgba));
+
+                case color_mode::rgba:
+                        return setup_ellipse(rect, m_rgba, rgba);
 
                 default:
                         return false;

@@ -86,47 +86,27 @@ namespace ncv
                         return image;
                 }
 
-                void fill_circle(image_t& image, const rect_t& rect, rgba_t rgba)
-                {
-                        const point_t center = rect.center();
-                        const coord_t cx = center.x();
-                        const coord_t cy = center.y();
-
-                        const coord_t radius = (std::min(rect.width(), rect.height()) + 1) / 2;
-
-                        for (coord_t x = rect.left(); x < rect.right(); x ++)
-                        {
-                                for (coord_t y = rect.top(); y < rect.bottom(); y ++)
-                                {
-                                        if (math::square(x - cx) + math::square(y - cy) < radius * radius)
-                                        {
-                                                image.set(y, x, rgba);
-                                        }
-                                }
-                        }
-                }
-
-                image_t make_filled_circle(coord_t rows, coord_t cols)
+                image_t make_filled_ellipse(coord_t rows, coord_t cols)
                 {
                         const rect_t rect = make_rect(rows, cols);
 
                         image_t image(rows, cols, color_mode::rgba);
 
                         image.fill(make_transparent_color());
-                        fill_circle(image, rect, make_light_color());
+                        image.fill_ellipse(rect, make_light_color());
 
                         return image;
                 }
 
-                image_t make_hollow_circle(coord_t rows, coord_t cols)
+                image_t make_hollow_ellipse(coord_t rows, coord_t cols)
                 {
                         const rect_t rect = make_rect(rows, cols);
 
                         image_t image(rows, cols, color_mode::rgba);
 
                         image.fill(make_transparent_color());
-                        fill_circle(image, rect, make_light_color());
-                        fill_circle(image, make_interior_rect(rect), make_transparent_color());
+                        image.fill_ellipse(rect, make_light_color());
+                        image.fill_ellipse(make_interior_rect(rect), make_transparent_color());
 
                         return image;
                 }
@@ -166,8 +146,8 @@ namespace ncv
                                 {
                                 case 1:         shape = make_filled_rect(rows, cols); break;
                                 case 2:         shape = make_hollow_rect(rows, cols); break;
-                                case 3:         shape = make_filled_circle(rows, cols); break;
-                                case 4:         shape = make_hollow_circle(rows, cols); break;
+                                case 3:         shape = make_filled_ellipse(rows, cols); break;
+                                case 4:         shape = make_hollow_ellipse(rows, cols); break;
                                 default:        break;
                                 }
 
@@ -182,8 +162,8 @@ namespace ncv
                                 {
                                 case 1:         sample.m_label = "filled_rectangle"; break;
                                 case 2:         sample.m_label = "hollow_rectangle"; break;
-                                case 3:         sample.m_label = "filled_circle"; break;
-                                case 4:         sample.m_label = "hollow_circle"; break;
+                                case 3:         sample.m_label = "filled_ellipse"; break;
+                                case 4:         sample.m_label = "hollow_ellipse"; break;
                                 default:        sample.m_label = "unkown"; break;
                                 }
 
