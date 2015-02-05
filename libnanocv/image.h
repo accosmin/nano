@@ -133,6 +133,21 @@ namespace ncv
                 bool alpha_blend(const rgba_matrix_t& patch);
 
                 ///
+                /// \brief fill rectangle with the given color
+                ///
+                bool fill_rectangle(const rect_t& rect, rgba_t rgba);
+
+                ///
+                /// \brief fill circle with the given color
+                ///
+                bool fill_circle(const rect_t& rect, rgba_t rgba);
+
+                ///
+                /// \brief fill ellipse with the given color
+                ///
+                bool fill_ellipse(const rect_t& rect, rgba_t rgba);
+
+                ///
                 /// \brief check if the given rectangle is within image bounds
                 ///
                 bool valid(const rect_t& rect) const

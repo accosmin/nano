@@ -1,4 +1,5 @@
 #include "image.h"
+#include "libnanocv/util/math.hpp"
 #include "libnanocv/util/bilinear.hpp"
 #include "libnanocv/util/gaussian.hpp"
 #include "libnanocv/util/random_noise.hpp"
@@ -789,6 +790,58 @@ namespace ncv
                                         (alpha1 * color::get_green(rgba1) + alpha2 * color::get_green(rgba2)) / alphax,
                                         (alpha1 * color::get_blue(rgba1) + alpha2 * color::get_blue(rgba2)) / alphax,
                                         std::max(alpha1, alpha2));
+                        }
+                        return true;
+
+                default:
+                        return false;
+                }
+        }
+
+        bool image_t::fill_rectangle(const rect_t& rect, rgba_t rgba)
+        {
+                return fill(rect, rgba);
+        }
+
+        bool image_t::fill_circle(const rect_t& rect, rgba_t rgba)
+        {
+                const point_t center = rect.center();
+                const coord_t cx = center.x();
+                const coord_t cy = center.y();
+
+                const coord_t radius = (std::min(rect.width(), rect.height()) + 1) / 2;
+                const coord_t radius2 = radius * radius;
+
+                const coord_t l = std::max(rect.left(), coord_t(0));
+                const coord_t r = std::min(rect.right(), cols());
+                const coord_t t = std::max(rect.top(), coord_t(0));
+                const coord_t b = std::min(rect.bottom(), rows());
+
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        for (coord_t x = l; l < r; x ++)
+                        {
+                                for (coord_t y = t; y < b; y ++)
+                                {
+                                        if (math::square(x - cx) + math::square(y - cy) < radius2)
+                                        {
+                                                m_luma(y, x) = color::get_luma(rgba);
+                                        }
+                                }
+                        }
+                        return true;
+
+                case color_mode::rgba:
+                        for (coord_t x = l; l < r; x ++)
+                        {
+                                for (coord_t y = t; y < b; y ++)
+                                {
+                                        if (math::square(x - cx) + math::square(y - cy) < radius2)
+                                        {
+                                                m_rgba(y, x) = rgba;
+                                        }
+                                }
                         }
                         return true;
 
