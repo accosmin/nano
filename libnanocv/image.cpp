@@ -873,7 +873,7 @@ namespace ncv
                         const coord_t radiusx2 = radiusx * radiusx;
                         const coord_t radiusy2 = radiusy * radiusy;
 
-                        const coord_t radius2 = radiusx2 + radiusy2;
+                        const coord_t radius2 = radiusx2 * radiusy2;
 
                         const coord_t l = std::max(rect.left(), coord_t(0));
                         const coord_t r = std::min(rect.right(), static_cast<coord_t>(data.cols()));

@@ -55,7 +55,7 @@ namespace ncv
 
                 rect_t make_interior_rect(coord_t x, coord_t y, coord_t w, coord_t h)
                 {
-                        random_t<coord_t> rng(2, std::min(w / 4, h / 4));
+                        random_t<coord_t> rng(3, std::min(w / 4, h / 4));
 
                         const coord_t dx = rng();
                         const coord_t dy = rng();
@@ -95,27 +95,27 @@ namespace ncv
                         return image;
                 }
 
-                image_t make_filled_circle(coord_t rows, coord_t cols, rgba_t fill_color)
+                image_t make_filled_ellipse(coord_t rows, coord_t cols, rgba_t fill_color)
                 {
                         const rect_t rect = make_rect(rows, cols);
 
                         image_t image(rows, cols, color_mode::rgba);
 
                         image.fill(make_transparent_color());
-                        image.fill_circle(rect, fill_color);
+                        image.fill_ellipse(rect, fill_color);
 
                         return image;
                 }
 
-                image_t make_hollow_circle(coord_t rows, coord_t cols, rgba_t fill_color)
+                image_t make_hollow_ellipse(coord_t rows, coord_t cols, rgba_t fill_color)
                 {
                         const rect_t rect = make_rect(rows, cols);
 
                         image_t image(rows, cols, color_mode::rgba);
 
                         image.fill(make_transparent_color());
-                        image.fill_circle(rect, fill_color);
-                        image.fill_circle(make_interior_rect(rect), make_transparent_color());
+                        image.fill_ellipse(rect, fill_color);
+                        image.fill_ellipse(make_interior_rect(rect), make_transparent_color());
 
                         return image;
                 }
@@ -159,8 +159,8 @@ namespace ncv
                                 {
                                 case 1:         shape = make_filled_rect(rows, cols, shape_color); break;
                                 case 2:         shape = make_hollow_rect(rows, cols, shape_color); break;
-                                case 3:         shape = make_filled_circle(rows, cols, shape_color); break;
-                                case 4:         shape = make_hollow_circle(rows, cols, shape_color); break;
+                                case 3:         shape = make_filled_ellipse(rows, cols, shape_color); break;
+                                case 4:         shape = make_hollow_ellipse(rows, cols, shape_color); break;
                                 default:        break;
                                 }
 
@@ -175,8 +175,8 @@ namespace ncv
                                 {
                                 case 1:         sample.m_label = "filled_rectangle"; break;
                                 case 2:         sample.m_label = "hollow_rectangle"; break;
-                                case 3:         sample.m_label = "filled_circle"; break;
-                                case 4:         sample.m_label = "hollow_circle"; break;
+                                case 3:         sample.m_label = "filled_ellipse"; break;
+                                case 4:         sample.m_label = "hollow_ellipse"; break;
                                 default:        sample.m_label = "unkown"; break;
                                 }
 
