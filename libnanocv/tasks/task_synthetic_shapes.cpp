@@ -1,5 +1,6 @@
 #include "task_synthetic_shapes.h"
 #include "libnanocv/loss.h"
+#include "libnanocv/util/math.hpp"
 #include "libnanocv/util/random.hpp"
 
 namespace ncv
@@ -84,6 +85,40 @@ namespace ncv
 
                         return image;
                 }
+
+                void fill_circle(image_t& image, const rect_t& rect)
+                {
+                        const point_t center = rect.center();
+                        const coord_t cx = center.x();
+                        const coord_t cy = center.y();
+
+                        const coord_t radius = (std::min(rect.width(), rect.height()) + 1) / 2;
+
+                        const rgba_t rgba = make_light_color();
+
+                        for (coord_t x = rect.left(); x < rect.right(); x ++)
+                        {
+                                for (coord_t y = rect.top(); y < rect.bottom(); y ++)
+                                {
+                                        if (math::square(x - cx) + math::square(y - cy) < radius * radius)
+                                        {
+                                                image.set(y, x, rgba);
+                                        }
+                                }
+                        }
+                }
+
+                image_t make_filled_circle(coord_t rows, coord_t cols)
+                {
+                        const rect_t rect = make_rect(rows, cols);
+
+                        image_t image(rows, cols, color_mode::rgba);
+
+                        image.fill(make_transparent_color());
+                        fill_circle(image, rect);
+
+                        return image;
+                }
         }
 
         bool synthetic_shapes_task_t::load(const string_t &)
@@ -120,6 +155,7 @@ namespace ncv
                                 {
                                 case 1:         shape = make_filled_rect(rows, cols); break;
                                 case 2:         shape = make_hollow_rect(rows, cols); break;
+                                case 3:         shape = make_filled_circle(rows, cols); break;
                                 default:        break;
                                 }
 
@@ -133,6 +169,7 @@ namespace ncv
                                 {
                                 case 1:         sample.m_label = "filled_rectangle"; break;
                                 case 2:         sample.m_label = "hollow_rectangle"; break;
+                                case 3:         sample.m_label = "filled_circle"; break;
                                 default:        sample.m_label = "unkown"; break;
                                 }
 
