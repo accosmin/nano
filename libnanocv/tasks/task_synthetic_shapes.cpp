@@ -6,8 +6,8 @@ namespace ncv
 {
         synthetic_shapes_task_t::synthetic_shapes_task_t(const string_t& configuration)
                 :       task_t(configuration),
-                        m_rows(math::clamp(text::from_params<size_t>(configuration, "rows", 16), 8, 32)),
-                        m_cols(math::clamp(text::from_params<size_t>(configuration, "cols", 16), 8, 32)),
+                        m_rows(math::clamp(text::from_params<size_t>(configuration, "rows", 32), 16, 32)),
+                        m_cols(math::clamp(text::from_params<size_t>(configuration, "cols", 32), 16, 32)),
                         m_outputs(math::clamp(text::from_params<size_t>(configuration, "dims", 4), 2, 16)),
                         m_folds(1),
                         m_color(text::from_params<color_mode>(configuration, "color", color_mode::rgba)),
@@ -17,15 +17,70 @@ namespace ncv
 
         namespace
         {
-                rgba_matrix_t make_shape_rect(
-                        coord_t rows, coord_t cols, coord_t posx, coord_t posy, coord_t sizex, coord_t sizey,
-                        random_t<rgba_t>& rng_red, random_t<rgba_t>& rng_green, random_t<rgba_t>& rng_blue)
+                rgba_t make_transparent_color()
                 {
-                        rgba_matrix_t image(rows, cols);
-                        image.setConstant(color::make_rgba(0, 0, 0, 0));
+                        return 0;
+                }
 
-                        const rgba_t rgba = color::make_rgba(rng_red(), rng_green(), rng_blue());
-                        image.block(posy, posx, sizey, sizex).setConstant(rgba);
+                rgba_t make_light_color()
+                {
+                        random_t<rgba_t> rng_red(175, 255);
+                        random_t<rgba_t> rng_green(175, 255);
+                        random_t<rgba_t> rng_blue(175, 255);
+
+                        return color::make_rgba(rng_red(), rng_green(), rng_blue());
+                }
+
+                rect_t make_rect(coord_t rows, coord_t cols)
+                {
+                        random_t<coord_t> rng(2, std::min(rows / 4, cols / 4));
+
+                        const coord_t dx = rng();
+                        const coord_t dy = rng();
+                        const coord_t dw = rng();
+                        const coord_t dh = rng();
+
+                        return rect_t(dx, dy, cols - dx - dw, rows - dy - dh);
+                }
+
+                rect_t make_interior_rect(coord_t x, coord_t y, coord_t w, coord_t h)
+                {
+                        random_t<coord_t> rng(2, std::min(w / 4, h / 4));
+
+                        const coord_t dx = rng();
+                        const coord_t dy = rng();
+                        const coord_t dw = rng();
+                        const coord_t dh = rng();
+
+                        return rect_t(x + dx, y + dy, w - dx - dw, h - dy - dh);
+                }
+
+                rect_t make_interior_rect(const rect_t& rect)
+                {
+                        return make_interior_rect(rect.left(), rect.top(), rect.width(), rect.height());
+                }
+
+                image_t make_filled_rect(coord_t rows, coord_t cols)
+                {
+                        const rect_t rect = make_rect(rows, cols);
+
+                        image_t image(rows, cols, color_mode::rgba);
+
+                        image.fill(make_transparent_color());
+                        image.fill(rect, make_light_color());
+
+                        return image;
+                }
+
+                image_t make_hollow_rect(coord_t rows, coord_t cols)
+                {
+                        const rect_t rect = make_rect(rows, cols);
+
+                        image_t image(rows, cols, color_mode::rgba);
+
+                        image.fill(make_transparent_color());
+                        image.fill(rect, make_light_color());
+                        image.fill(make_interior_rect(rect), make_transparent_color());
 
                         return image;
                 }
@@ -41,17 +96,6 @@ namespace ncv
                 const coord_t rows = static_cast<coord_t>(irows());
                 const coord_t cols = static_cast<coord_t>(icols());
 
-                const coord_t border = 1;
-
-                random_t<coord_t> rng_sizex(cols / 2, cols - 2 * border);
-                random_t<coord_t> rng_sizey(rows / 2, rows - 2 * border);
-                random_t<coord_t> rng_posx(0, cols);
-                random_t<coord_t> rng_posy(0, rows);
-
-                random_t<rgba_t> rng_red(175, 255);
-                random_t<rgba_t> rng_green(175, 255);
-                random_t<rgba_t> rng_blue(175, 255);
-
                 clear_memory(0);
 
                 for (size_t f = 0; f < fsize(); f ++)
@@ -66,25 +110,32 @@ namespace ncv
 
                                 // generate random image background
                                 image_t image(irows(), icols(), color());
-                                image.fill(color::make_rgba(rng_red(), rng_green(), rng_blue()));
+                                image.fill(make_light_color());
                                 image.random_noise(color_channel::rgba, -155.0, 55.0, rng_gauss());
 
                                 // generate random shapes
-                                const coord_t sizex = rng_sizex();
-                                const coord_t sizey = rng_sizey();
-                                const coord_t posx = border + rng_posx() % (cols - sizex - border);
-                                const coord_t posy = border + rng_posy() % (rows - sizey - border);
+                                image_t shape;
 
-                                // todo: generate other shapes
-                                const rgba_matrix_t shape = make_shape_rect(rows, cols, posx, posy, sizex, sizey,
-                                                                            rng_red, rng_green, rng_blue);
-                                image.alpha_blend(shape);
+                                switch (o)
+                                {
+                                case 1:         shape = make_filled_rect(rows, cols); break;
+                                case 2:         shape = make_hollow_rect(rows, cols); break;
+                                default:        break;
+                                }
+
+                                image.alpha_blend(shape.rgba());
 
                                 add_image(image);
 
                                 // generate sample
                                 sample_t sample(n_images() - 1, sample_region(0, 0));
-                                sample.m_label = "count" + text::to_string(o);
+                                switch (o)
+                                {
+                                case 1:         sample.m_label = "filled_rectangle"; break;
+                                case 2:         sample.m_label = "hollow_rectangle"; break;
+                                default:        sample.m_label = "unkown"; break;
+                                }
+
                                 sample.m_target = ncv::class_target(o - 1, osize());
                                 sample.m_fold = {f, p};
                                 add_sample(sample);
