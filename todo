@@ -1,6 +1,8 @@
 - src/util depends on src/tensor (e.g. random_noise.hpp)
 - src/file depends on src/util (e.g. on logger)
 
+- move the image loading & saving from image_t to image_loader.h/cpp as separate functions
+
 - finish the synthetic task:
 	- more shapes: filled & hollow triangles, vertical & diagonal crosses
 
