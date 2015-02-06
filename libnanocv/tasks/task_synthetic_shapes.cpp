@@ -164,7 +164,7 @@ namespace ncv
                 random_t<size_t> rng_protocol(1, 10);
                 random_t<size_t> rng_output(1, osize());
 
-                random_t<scalar_t> rng_gauss(scalar_t(0.5), math::cast<scalar_t>(icols() + irows()) / scalar_t(8));
+                random_t<scalar_t> rng_gauss(scalar_t(0.0), scalar_t(4.0));
 
                 const coord_t rows = static_cast<coord_t>(irows());
                 const coord_t cols = static_cast<coord_t>(icols());
@@ -188,7 +188,7 @@ namespace ncv
                                 // generate random image background
                                 image_t image(irows(), icols(), color());
                                 image.fill(back_color);
-                                image.random_noise(color_channel::rgba, -25.0, +25.0, rng_gauss());
+                                image.random_noise(color_channel::rgba, -50.0, +50.0, rng_gauss());
 
                                 // generate random shapes
                                 image_t shape;
@@ -203,7 +203,7 @@ namespace ncv
                                 default:        break;
                                 }
 
-                                shape.random_noise(color_channel::rgba, -25.0, +25.0, rng_gauss() * 0.5);
+                                shape.random_noise(color_channel::rgba, -50.0, +50.0, rng_gauss() * 0.5);
                                 image.alpha_blend(shape.rgba());
 
                                 add_image(image);
