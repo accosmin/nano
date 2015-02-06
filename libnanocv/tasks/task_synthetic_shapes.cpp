@@ -53,21 +53,46 @@ namespace ncv
                         return rect_t(dx, dy, cols - dx - dw, rows - dy - dh);
                 }
 
-                rect_t make_interior_rect(coord_t x, coord_t y, coord_t w, coord_t h)
-                {
-                        random_t<coord_t> rng(4, std::min(w / 4, h / 4));
-
-                        const coord_t dx = rng();
-                        const coord_t dy = rng();
-                        const coord_t dw = rng();
-                        const coord_t dh = rng();
-
-                        return rect_t(x + dx, y + dy, w - dx - dw, h - dy - dh);
-                }
-
                 rect_t make_interior_rect(const rect_t& rect)
                 {
-                        return make_interior_rect(rect.left(), rect.top(), rect.width(), rect.height());
+                        random_t<coord_t> rngx(4, rect.width() / 4);
+                        random_t<coord_t> rngy(4, rect.height() / 4);
+
+                        const coord_t dx = rngx();
+                        const coord_t dy = rngy();
+                        const coord_t dw = rngx();
+                        const coord_t dh = rngy();
+
+                        return rect_t(rect.left() + dx,
+                                      rect.top() + dy,
+                                      rect.width() - dx - dw,
+                                      rect.height() - dy - dh);
+                }
+
+                rect_t make_vertical_interior_rect(const rect_t& rect)
+                {
+                        const coord_t dx = (rect.width() + 2) / 3;
+                        const coord_t dy = 0;
+                        const coord_t dw = (rect.width() + 2) / 3;
+                        const coord_t dh = 0;
+
+                        return rect_t(rect.left() + dx,
+                                      rect.top() + dy,
+                                      rect.width() - dx - dw,
+                                      rect.height() - dy - dh);
+                }
+
+                rect_t make_horizontal_interior_rect(const rect_t& rect)
+                {
+                        const coord_t dx = 0;
+                        const coord_t dy = (rect.height() + 2) / 3;
+                        const coord_t dw = 0;
+                        const coord_t dh = (rect.height() + 2) / 3;
+
+                        return rect_t(rect.left() + dx,
+                                      rect.top() + dy,
+                                      rect.width() - dx - dw,
+                                      rect.height() - dy - dh);
                 }
 
                 image_t make_filled_rect(coord_t rows, coord_t cols, rgba_t fill_color)
@@ -119,6 +144,19 @@ namespace ncv
 
                         return image;
                 }
+
+                image_t make_cross(coord_t rows, coord_t cols, rgba_t fill_color)
+                {
+                        const rect_t rect = make_rect(rows, cols);
+
+                        image_t image(rows, cols, color_mode::rgba);
+
+                        image.fill(make_transparent_color());
+                        image.fill(make_vertical_interior_rect(rect), fill_color);
+                        image.fill(make_horizontal_interior_rect(rect), fill_color);
+
+                        return image;
+                }
         }
 
         bool synthetic_shapes_task_t::load(const string_t &)
@@ -161,6 +199,7 @@ namespace ncv
                                 case 2:         shape = make_hollow_rect(rows, cols, shape_color); break;
                                 case 3:         shape = make_filled_ellipse(rows, cols, shape_color); break;
                                 case 4:         shape = make_hollow_ellipse(rows, cols, shape_color); break;
+                                case 5:         shape = make_cross(rows, cols, shape_color); break;
                                 default:        break;
                                 }
 
@@ -177,6 +216,7 @@ namespace ncv
                                 case 2:         sample.m_label = "hollow_rectangle"; break;
                                 case 3:         sample.m_label = "filled_ellipse"; break;
                                 case 4:         sample.m_label = "hollow_ellipse"; break;
+                                case 5:         sample.m_label = "cross"; break;
                                 default:        sample.m_label = "unkown"; break;
                                 }
 
