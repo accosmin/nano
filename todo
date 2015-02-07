@@ -1,9 +1,6 @@
 - src/util depends on src/tensor (e.g. random_noise.hpp)
 - src/file depends on src/util (e.g. on logger)
 
-- finish the synthetic task:
-	- more shapes: filled & hollow triangles, vertical & diagonal crosses
-
 - update the test program to evaluate the optimizers to call directly trainer-based functions:
 	- use the trainers' implementation
 	- use the synthetic dataset	
