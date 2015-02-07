@@ -138,14 +138,19 @@ namespace ncv
                 bool fill_rectangle(const rect_t& rect, rgba_t rgba);
 
                 ///
-                /// \brief fill circle with the given color
+                /// \brief fill rectangle-centered circle with the given color
                 ///
                 bool fill_circle(const rect_t& rect, rgba_t rgba);
 
                 ///
-                /// \brief fill ellipse with the given color
+                /// \brief fill rectangle-centered ellipse with the given color
                 ///
                 bool fill_ellipse(const rect_t& rect, rgba_t rgba);
+
+                ///
+                /// \brief fill rectangle-centered triangle with the given color
+                ///
+                bool fill_triangle(const rect_t& rect, rgba_t rgba);
 
                 ///
                 /// \brief check if the given rectangle is within image bounds

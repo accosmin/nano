@@ -157,6 +157,31 @@ namespace ncv
 
                         return image;
                 }
+
+                image_t make_filled_triangle(coord_t rows, coord_t cols, rgba_t fill_color)
+                {
+                        const rect_t rect = make_rect(rows, cols);
+
+                        image_t image(rows, cols, color_mode::rgba);
+
+                        image.fill(make_transparent_color());
+                        image.fill_triangle(rect, fill_color);
+
+                        return image;
+                }
+
+                image_t make_hollow_triangle(coord_t rows, coord_t cols, rgba_t fill_color)
+                {
+                        const rect_t rect = make_rect(rows, cols);
+
+                        image_t image(rows, cols, color_mode::rgba);
+
+                        image.fill(make_transparent_color());
+                        image.fill_triangle(rect, fill_color);
+                        image.fill_triangle(make_interior_rect(rect), make_transparent_color());
+
+                        return image;
+                }
         }
 
         bool synthetic_shapes_task_t::load(const string_t &)
@@ -200,6 +225,8 @@ namespace ncv
                                 case 3:         shape = make_filled_ellipse(rows, cols, shape_color); break;
                                 case 4:         shape = make_hollow_ellipse(rows, cols, shape_color); break;
                                 case 5:         shape = make_cross(rows, cols, shape_color); break;
+                                case 6:         shape = make_filled_triangle(rows, cols, shape_color); break;
+                                case 7:         shape = make_hollow_triangle(rows, cols, shape_color); break;
                                 default:        break;
                                 }
 
@@ -217,6 +244,8 @@ namespace ncv
                                 case 3:         sample.m_label = "filled_ellipse"; break;
                                 case 4:         sample.m_label = "hollow_ellipse"; break;
                                 case 5:         sample.m_label = "cross"; break;
+                                case 6:         sample.m_label = "filled_triangle"; break;
+                                case 7:         sample.m_label = "hollow_triangle"; break;
                                 default:        sample.m_label = "unkown"; break;
                                 }
 
