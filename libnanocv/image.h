@@ -150,7 +150,12 @@ namespace ncv
                 ///
                 /// \brief fill rectangle-centered triangle with the given color
                 ///
-                bool fill_triangle(const rect_t& rect, rgba_t rgba);
+                bool fill_up_triangle(const rect_t& rect, rgba_t rgba);
+
+                ///
+                /// \brief fill rectangle-centered triangle with the given color
+                ///
+                bool fill_down_triangle(const rect_t& rect, rgba_t rgba);
 
                 ///
                 /// \brief check if the given rectangle is within image bounds

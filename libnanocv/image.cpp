@@ -767,7 +767,7 @@ namespace ncv
                         typename tmatrix,
                         typename tvalue
                 >
-                bool setup_triangle(const rect_t& rect, tmatrix& data, tvalue fill_value)
+                bool setup_up_triangle(const rect_t& rect, tmatrix& data, tvalue fill_value)
                 {
                         const coord_t w = rect.width(), w2 = (w + 1) / 2;
                         const coord_t h = rect.height();
@@ -792,17 +792,63 @@ namespace ncv
 
                         return true;
                 }
+
+                template
+                <
+                        typename tmatrix,
+                        typename tvalue
+                >
+                bool setup_down_triangle(const rect_t& rect, tmatrix& data, tvalue fill_value)
+                {
+                        const coord_t w = rect.width(), w2 = (w + 1) / 2;
+                        const coord_t h = rect.height();
+
+                        const coord_t l = std::max(rect.left(), coord_t(0));
+                        const coord_t r = std::min(rect.right(), static_cast<coord_t>(data.cols()));
+                        const coord_t t = std::max(rect.top(), coord_t(0));
+                        const coord_t b = std::min(rect.bottom(), static_cast<coord_t>(data.rows()));
+
+                        for (coord_t x = l; x < r; x ++)
+                        {
+                                const coord_t dy = (h * (x < l + w2 ? x - l : r - x) + w2 - 1) / w2;
+
+                                for (coord_t y = t; y < b; y ++)
+                                {
+                                        if (y - t <= dy)
+                                        {
+                                                data(y, x) = fill_value;
+                                        }
+                                }
+                        }
+
+                        return true;
+                }
         }
 
-        bool image_t::fill_triangle(const rect_t& rect, rgba_t rgba)
+        bool image_t::fill_up_triangle(const rect_t& rect, rgba_t rgba)
         {
                 switch (m_mode)
                 {
                 case color_mode::luma:
-                        return setup_triangle(rect, m_luma, color::get_luma(rgba));
+                        return setup_up_triangle(rect, m_luma, color::get_luma(rgba));
 
                 case color_mode::rgba:
-                        return setup_triangle(rect, m_rgba, rgba);
+                        return setup_up_triangle(rect, m_rgba, rgba);
+
+                default:
+                        return false;
+                }
+        }
+
+        bool image_t::fill_down_triangle(const rect_t& rect, rgba_t rgba)
+        {
+                switch (m_mode)
+                {
+                case color_mode::luma:
+                        return setup_down_triangle(rect, m_luma, color::get_luma(rgba));
+
+                case color_mode::rgba:
+                        return setup_down_triangle(rect, m_rgba, rgba);
 
                 default:
                         return false;
