@@ -5,7 +5,7 @@
 #include "libnanocv/nanocv.h"
 #include "libnanocv/tester.h"
 #include "libnanocv/util/logger.h"
-#include "libnanocv/tasks/task_syn_dots.h"
+#include "libnanocv/tasks/task_synthetic_shapes.h"
 #include <cstdio>
 
 BOOST_AUTO_TEST_CASE(test_model_io)
@@ -14,7 +14,7 @@ BOOST_AUTO_TEST_CASE(test_model_io)
 
         using namespace ncv;
 
-        syn_dots_task_t task("rows=28,cols=28,dims=10,size=1000,color=rgba");
+        synthetic_shapes_task_t task("rows=28,cols=28,dims=10,size=1000,color=rgba");
         BOOST_CHECK_EQUAL(task.load(""), true);
 
         const size_t cmd_outputs = task.osize();

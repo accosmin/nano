@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_sampler"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/tasks/task_syn_dots.h"
+#include "libnanocv/tasks/task_synthetic_shapes.h"
 #include "libnanocv/sampler.h"
 #include "libnanocv/util/logger.h"
 #include "libnanocv/util/timer.h"
@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE(test_sampler)
         const size_t n_samples = 1000;
         const size_t n_rand_samples = n_samples / 4;
 
-        syn_dots_task_t task("rows=28,cols=28,color=luma,dims=5,size=" + text::to_string(n_samples));
+        synthetic_shapes_task_t task("rows=28,cols=28,color=luma,dims=5,size=" + text::to_string(n_samples));
         BOOST_CHECK_EQUAL(task.load(""), true);
 
         for (size_t f = 0; f < task.fsize(); f ++)

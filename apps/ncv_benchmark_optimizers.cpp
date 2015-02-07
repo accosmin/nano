@@ -1,5 +1,5 @@
 #include "libnanocv/nanocv.h"
-#include "libnanocv/tasks/task_syn_dots.h"
+#include "libnanocv/tasks/task_synthetic_shapes.h"
 #include "libnanocv/util/thread.h"
 #include "libnanocv/util/measure.hpp"
 #include "libnanocv/util/tabulator.h"
@@ -122,15 +122,16 @@ int main(int argc, char *argv[])
         ncv::init();
 
         const size_t cmd_samples = 8 * 1024;
-        const size_t cmd_rows = 10;
-        const size_t cmd_cols = 10;
+        const size_t cmd_rows = 16;
+        const size_t cmd_cols = 16;
         const size_t cmd_outputs = 4;
 
-        syn_dots_task_t task("rows=" + text::to_string(cmd_rows) + "," +
-                             "cols=" + text::to_string(cmd_cols) + "," +
-                             "color=luma" + "," +
-                             "dims=" + text::to_string(cmd_outputs) + "," +
-                             "size=" + text::to_string(cmd_samples));
+        synthetic_shapes_task_t task(
+                "rows=" + text::to_string(cmd_rows) + "," +
+                "cols=" + text::to_string(cmd_cols) + "," +
+                "color=luma" + "," +
+                "dims=" + text::to_string(cmd_outputs) + "," +
+                "size=" + text::to_string(cmd_samples));
         task.load("");
 
         const string_t lmodel0;

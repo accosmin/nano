@@ -5,7 +5,7 @@
 #include "libnanocv/util/logger.h"
 #include "libnanocv/util/thread.h"
 #include "libnanocv/util/tabulator.h"
-#include "libnanocv/tasks/task_syn_dots.h"
+#include "libnanocv/tasks/task_synthetic_shapes.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
@@ -55,11 +55,12 @@ int main(int argc, char *argv[])
         const size_t cmd_min_nthreads = 1;
         const size_t cmd_max_nthreads = ncv::n_threads();
 
-        syn_dots_task_t task("rows=" + text::to_string(cmd_rows) + "," +
-                             "cols=" + text::to_string(cmd_cols) + "," +
-                             "dims=" + text::to_string(cmd_outputs) + "," +
-                             "color=luma" + "," +
-                             "size=" + text::to_string(cmd_samples));
+        synthetic_shapes_task_t task(
+                "rows=" + text::to_string(cmd_rows) + "," +
+                "cols=" + text::to_string(cmd_cols) + "," +
+                "dims=" + text::to_string(cmd_outputs) + "," +
+                "color=luma" + "," +
+                "size=" + text::to_string(cmd_samples));
         task.load("");
 
         const string_t lmodel0;
