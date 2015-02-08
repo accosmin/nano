@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
 {
         ncv::init();
 
-        const size_t cmd_samples = 8 * 1024;
+        const size_t cmd_samples = 1024;
         const size_t cmd_rows = 16;
         const size_t cmd_cols = 16;
         const size_t cmd_outputs = 4;
@@ -135,21 +135,21 @@ int main(int argc, char *argv[])
         task.load("");
 
         const string_t lmodel0;
-        const string_t lmodel1 = lmodel0 + "linear:dims=128;act-snorm;";
-        const string_t lmodel2 = lmodel1 + "linear:dims=64;act-snorm;";
-        const string_t lmodel3 = lmodel2 + "linear:dims=32;act-snorm;";
+        const string_t lmodel1 = lmodel0 + "linear:dims=64;act-snorm;";
+        const string_t lmodel2 = lmodel1 + "linear:dims=32;act-snorm;";
+        const string_t lmodel3 = lmodel2 + "linear:dims=16;act-snorm;";
 
         string_t cmodel100;
-        cmodel100 = cmodel100 + "conv:dims=16,rows=5,cols=5,mask=100;act-snorm;pool-max;";
-        cmodel100 = cmodel100 + "conv:dims=32,rows=3,cols=3,mask=100;act-snorm;";
+        cmodel100 = cmodel100 + "conv:dims=8,rows=5,cols=5,mask=100;act-snorm;pool-max;";
+        cmodel100 = cmodel100 + "conv:dims=16,rows=3,cols=3,mask=100;act-snorm;";
 
         string_t cmodel50;
-        cmodel50 = cmodel50 + "conv:dims=16,rows=5,cols=5,mask=50;act-snorm;pool-max;";
-        cmodel50 = cmodel50 + "conv:dims=32,rows=3,cols=3,mask=50;act-snorm;";
+        cmodel50 = cmodel50 + "conv:dims=8,rows=5,cols=5,mask=50;act-snorm;pool-max;";
+        cmodel50 = cmodel50 + "conv:dims=16,rows=3,cols=3,mask=50;act-snorm;";
 
         string_t cmodel25;
-        cmodel25 = cmodel25 + "conv:dims=16,rows=5,cols=5,mask=25;act-snorm;pool-max;";
-        cmodel25 = cmodel25 + "conv:dims=32,rows=3,cols=3,mask=25;act-snorm;";
+        cmodel25 = cmodel25 + "conv:dims=8,rows=5,cols=5,mask=25;act-snorm;pool-max;";
+        cmodel25 = cmodel25 + "conv:dims=16,rows=3,cols=3,mask=25;act-snorm;";
 
         const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
 
@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
                 cmodel25 + outlayer
         };
 
-        const strings_t cmd_losses = loss_manager_t::instance().ids();
+        const strings_t cmd_losses = { "classnll", "logistic" }; //loss_manager_t::instance().ids();
         const strings_t cmd_criteria = criterion_manager_t::instance().ids();
 
         // vary the model
