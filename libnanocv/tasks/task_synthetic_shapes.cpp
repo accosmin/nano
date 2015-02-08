@@ -55,8 +55,8 @@ namespace ncv
 
                 rect_t make_interior_rect(const rect_t& rect)
                 {
-                        random_t<coord_t> rngx(4, rect.width() / 4);
-                        random_t<coord_t> rngy(4, rect.height() / 4);
+                        random_t<coord_t> rngx(3, rect.width() / 4);
+                        random_t<coord_t> rngy(3, rect.height() / 4);
 
                         const coord_t dx = rngx();
                         const coord_t dy = rngy();
@@ -214,7 +214,7 @@ namespace ncv
                 random_t<size_t> rng_protocol(1, 10);
                 random_t<size_t> rng_output(1, osize());
 
-                random_t<scalar_t> rng_gauss(scalar_t(0.0), scalar_t(4.0));
+                random_t<scalar_t> rng_gauss(scalar_t(1.0), scalar_t(4.0));
 
                 const coord_t rows = static_cast<coord_t>(irows());
                 const coord_t cols = static_cast<coord_t>(icols());
