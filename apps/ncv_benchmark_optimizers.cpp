@@ -133,6 +133,7 @@ int main(int argc, char *argv[])
                 "dims=" + text::to_string(cmd_outputs) + "," +
                 "size=" + text::to_string(cmd_samples));
         task.load("");
+	task.describe();
 
         const string_t lmodel0;
         const string_t lmodel1 = lmodel0 + "linear:dims=64;act-snorm;";
