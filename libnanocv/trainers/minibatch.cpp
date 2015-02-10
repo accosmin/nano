@@ -53,7 +53,7 @@ namespace ncv
                         size_t batch, size_t iterations, scalar_t epsilon)
                 {
                         const size_t epochs = 1;
-                        const size_t epoch_size = (data.m_tsampler.size() + batch / 2) / batch;
+                        const size_t epoch_size = (data.m_tsampler.size() + batch - 1) / batch;
 
                         // construct the optimization problem
                         auto fn_size = ncv::make_opsize(data);
@@ -96,7 +96,7 @@ namespace ncv
 
                         const ncv::timer_t timer;
 
-                        const size_t epoch_size = (data.m_tsampler.size() + batch / 2) / batch;
+                        const size_t epoch_size = (data.m_tsampler.size() + batch - 1) / batch;
 
                         // construct the optimization problem
                         auto fn_size = ncv::make_opsize(data);

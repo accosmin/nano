@@ -37,6 +37,9 @@ void test_optimizer(const task_t& task, ttrainer trainer, const string_t& name, 
 
                 terrors(result.m_opt_state.m_terror_avg);
                 verrors(result.m_opt_state.m_verror_avg);
+
+                log_info() << "done (" << name << ") ...";
+
         }, cmd_trials);
 
         table.append(name)
@@ -121,7 +124,7 @@ int main(int argc, char *argv[])
 {
         ncv::init();
 
-        const size_t cmd_samples = 1024;
+        const size_t cmd_samples = 8 * 1024;
         const size_t cmd_rows = 16;
         const size_t cmd_cols = 16;
         const size_t cmd_outputs = 4;
