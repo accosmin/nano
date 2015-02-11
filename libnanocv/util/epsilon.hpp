@@ -21,7 +21,7 @@ namespace ncv
                 template <>
                 inline float epsilon1<float>()
                 {
-                        return std::numeric_limits<float>::epsilon();
+                        return 1e+1f * std::numeric_limits<float>::epsilon();
                 }
 
                 template <>

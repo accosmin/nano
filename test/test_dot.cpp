@@ -8,8 +8,6 @@
 #include "libnanocv/util/epsilon.hpp"
 #include "libnanocv/tensor/dot.hpp"
 
-#include "libnanocv/util/logger.h"
-
 namespace test
 {
         using namespace ncv;
@@ -31,6 +29,9 @@ namespace test
                 vec1.setRandom();
                 vec2.setRandom();
 
+                vec1.array() *= scalar_t(1) / std::cbrt(scalar_t(size));
+                vec2.array() *= scalar_t(1) / std::cbrt(scalar_t(size));
+
                 const scalar_t dot    = test_dot(ncv::dot<scalar_t>, vec1, vec2);
                 const scalar_t dotul2 = test_dot(ncv::dot_unroll<scalar_t, 2>, vec1, vec2);
                 const scalar_t dotul3 = test_dot(ncv::dot_unroll<scalar_t, 3>, vec1, vec2);
@@ -40,8 +41,6 @@ namespace test
                 const scalar_t dotul7 = test_dot(ncv::dot_unroll<scalar_t, 7>, vec1, vec2);
                 const scalar_t dotul8 = test_dot(ncv::dot_unroll<scalar_t, 8>, vec1, vec2);
                 const scalar_t doteig = test_dot(ncv::tensor::dot_eig<scalar_t>, vec1, vec2);
-
-                log_info() << "size = " << size << ", dot = " << dot << ", doteig = " << doteig << "/" << vec1.dot(vec2);
 
                 BOOST_CHECK_LE(math::abs(dot - dot), math::epsilon1<scalar_t>());
                 BOOST_CHECK_LE(math::abs(dot - dotul2), math::epsilon1<scalar_t>());
@@ -59,8 +58,8 @@ BOOST_AUTO_TEST_CASE(test_dot)
 {
         using namespace ncv;
 
-        static const size_t min_size = 32 * 1024;
-        static const size_t max_size = 4 * 1024 * 1024;
+        static const size_t min_size = 1024;
+        static const size_t max_size = 1024 * 1024;
 
         for (size_t size = min_size; size <= max_size; size *= 2)
         {
