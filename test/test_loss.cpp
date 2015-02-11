@@ -4,6 +4,7 @@
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/nanocv.h"
 #include "libnanocv/util/random.hpp"
+#include "libnanocv/util/epsilon.hpp"
 
 namespace test
 {
@@ -74,7 +75,7 @@ BOOST_AUTO_TEST_CASE(test_loss)
         const size_t cmd_min_dims = 2;
         const size_t cmd_max_dims = 10;
         const size_t cmd_tests = 128;
-        const scalar_t cmd_epsilon = 1e-6;
+        const scalar_t cmd_epsilon = math::epsilon2<scalar_t>();
 
         // evaluate the analytical gradient vs. the finite difference approximation
         for (const string_t& loss_id : loss_ids)

@@ -44,8 +44,8 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
         const string_t lmodel2 = lmodel1 + "linear:dims=32;act-snorm;";
 
         string_t cmodel;
-        cmodel = cmodel + "conv:dims=4,rows=5,cols=5,mask=100;act-snorm;pool-max;";
-        cmodel = cmodel + "conv:dims=8,rows=3,cols=3,mask=100;act-snorm;pool-max;";
+        cmodel = cmodel + "conv:dims=4,rows=5,cols=5,mask=100;pool-max;act-snorm;";
+        cmodel = cmodel + "conv:dims=8,rows=3,cols=3,mask=100;pool-max;act-snorm;";
 
         const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
 

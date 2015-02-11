@@ -9,18 +9,18 @@ params=${params}" --loss logistic --trials 1 --threads ${max_threads}"
 
 # models
 conv100_max="--model forward-network --model-params "
-conv100_max=${conv100_max}"conv:dims=16,rows=9,cols=9,mask=100;act-snorm;pool-max;"
-conv100_max=${conv100_max}"conv:dims=32,rows=5,cols=5,mask=100;act-snorm;pool-max;"
+conv100_max=${conv100_max}"conv:dims=16,rows=9,cols=9,mask=100;pool-max;act-snorm;"
+conv100_max=${conv100_max}"conv:dims=32,rows=5,cols=5,mask=100;pool-max;act-snorm;"
 conv100_max=${conv100_max}"conv:dims=64,rows=3,cols=3,mask=100;act-snorm;"
 
 conv50_max="--model forward-network --model-params "
-conv50_max=${conv50_max}"conv:dims=16,rows=9,cols=9,mask=50;act-snorm;pool-max;"
-conv50_max=${conv50_max}"conv:dims=32,rows=5,cols=5,mask=50;act-snorm;pool-max;"
+conv50_max=${conv50_max}"conv:dims=16,rows=9,cols=9,mask=50;pool-max;act-snorm;"
+conv50_max=${conv50_max}"conv:dims=32,rows=5,cols=5,mask=50;pool-max;act-snorm;"
 conv50_max=${conv50_max}"conv:dims=64,rows=3,cols=3,mask=50;act-snorm;"
 
 conv25_max="--model forward-network --model-params "
-conv25_max=${conv25_max}"conv:dims=16,rows=9,cols=9,mask=25;act-snorm;pool-max;"
-conv25_max=${conv25_max}"conv:dims=32,rows=5,cols=5,mask=25;act-snorm;pool-max;"
+conv25_max=${conv25_max}"conv:dims=16,rows=9,cols=9,mask=25;pool-max;act-snorm;"
+conv25_max=${conv25_max}"conv:dims=32,rows=5,cols=5,mask=25;pool-max;act-snorm;"
 conv25_max=${conv25_max}"conv:dims=64,rows=3,cols=3,mask=25;act-snorm;"
 
 mlp0="--model forward-network --model-params "

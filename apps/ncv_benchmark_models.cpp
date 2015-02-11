@@ -71,18 +71,18 @@ int main(int argc, char *argv[])
         const string_t lmodel5 = lmodel4 + "linear:dims=100;act-snorm;";
         
         string_t cmodel100;
-        cmodel100 = cmodel100 + "conv:dims=16,rows=9,cols=9,mask=100;act-snorm;pool-max;";
-        cmodel100 = cmodel100 + "conv:dims=32,rows=5,cols=5,mask=100;act-snorm;pool-max;";
+        cmodel100 = cmodel100 + "conv:dims=16,rows=9,cols=9,mask=100;pool-max;act-snorm;";
+        cmodel100 = cmodel100 + "conv:dims=32,rows=5,cols=5,mask=100;pool-max;act-snorm;";
         cmodel100 = cmodel100 + "conv:dims=64,rows=3,cols=3,mask=100;act-snorm;";
 
         string_t cmodel50;
-        cmodel50 = cmodel50 + "conv:dims=16,rows=9,cols=9,mask=50;act-snorm;pool-max;";
-        cmodel50 = cmodel50 + "conv:dims=32,rows=5,cols=5,mask=50;act-snorm;pool-max;";
+        cmodel50 = cmodel50 + "conv:dims=16,rows=9,cols=9,mask=50;pool-max;act-snorm;";
+        cmodel50 = cmodel50 + "conv:dims=32,rows=5,cols=5,mask=50;pool-max;act-snorm;";
         cmodel50 = cmodel50 + "conv:dims=64,rows=3,cols=3,mask=50;act-snorm;";
 
         string_t cmodel25;
-        cmodel25 = cmodel25 + "conv:dims=16,rows=9,cols=9,mask=25;act-snorm;pool-max;";
-        cmodel25 = cmodel25 + "conv:dims=32,rows=5,cols=5,mask=25;act-snorm;pool-max;";
+        cmodel25 = cmodel25 + "conv:dims=16,rows=9,cols=9,mask=25;pool-max;act-snorm;";
+        cmodel25 = cmodel25 + "conv:dims=32,rows=5,cols=5,mask=25;pool-max;act-snorm;";
         cmodel25 = cmodel25 + "conv:dims=64,rows=3,cols=3,mask=25;act-snorm;";
 
         const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
