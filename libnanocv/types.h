@@ -18,7 +18,7 @@ namespace ncv
 #elseif NANOCV_WIDTH_LONG_DOUBLE
         typedef long double                                     scalar_t;
 #else
-        typedef double                                          scalar_t;
+        typedef float                                           scalar_t;
 #endif
         typedef std::vector<scalar_t>                           scalars_t;
 

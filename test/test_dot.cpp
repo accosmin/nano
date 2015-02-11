@@ -8,6 +8,8 @@
 #include "libnanocv/util/epsilon.hpp"
 #include "libnanocv/tensor/dot.hpp"
 
+#include "libnanocv/util/logger.h"
+
 namespace test
 {
         using namespace ncv;
@@ -39,17 +41,17 @@ namespace test
                 const scalar_t dotul8 = test_dot(ncv::dot_unroll<scalar_t, 8>, vec1, vec2);
                 const scalar_t doteig = test_dot(ncv::tensor::dot_eig<scalar_t>, vec1, vec2);
 
-                const scalar_t epsilon = math::epsilon2<scalar_t>();
+                log_info() << "size = " << size << ", dot = " << dot << ", doteig = " << doteig << "/" << vec1.dot(vec2);
 
-                BOOST_CHECK_LE(math::abs(dot - dot), epsilon);
-                BOOST_CHECK_LE(math::abs(dot - dotul2), epsilon);
-                BOOST_CHECK_LE(math::abs(dot - dotul3), epsilon);
-                BOOST_CHECK_LE(math::abs(dot - dotul4), epsilon);
-                BOOST_CHECK_LE(math::abs(dot - dotul5), epsilon);
-                BOOST_CHECK_LE(math::abs(dot - dotul6), epsilon);
-                BOOST_CHECK_LE(math::abs(dot - dotul7), epsilon);
-                BOOST_CHECK_LE(math::abs(dot - dotul8), epsilon);
-                BOOST_CHECK_LE(math::abs(dot - doteig), epsilon);
+                BOOST_CHECK_LE(math::abs(dot - dot), math::epsilon1<scalar_t>());
+                BOOST_CHECK_LE(math::abs(dot - dotul2), math::epsilon1<scalar_t>());
+                BOOST_CHECK_LE(math::abs(dot - dotul3), math::epsilon1<scalar_t>());
+                BOOST_CHECK_LE(math::abs(dot - dotul4), math::epsilon1<scalar_t>());
+                BOOST_CHECK_LE(math::abs(dot - dotul5), math::epsilon1<scalar_t>());
+                BOOST_CHECK_LE(math::abs(dot - dotul6), math::epsilon1<scalar_t>());
+                BOOST_CHECK_LE(math::abs(dot - dotul7), math::epsilon1<scalar_t>());
+                BOOST_CHECK_LE(math::abs(dot - dotul8), math::epsilon1<scalar_t>());
+                BOOST_CHECK_LE(math::abs(dot - doteig), math::epsilon1<scalar_t>());
         }
 }
 
