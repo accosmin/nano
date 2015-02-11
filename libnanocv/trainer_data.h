@@ -23,7 +23,13 @@ namespace ncv
                                const loss_t& loss,
                                const vector_t& x0,
                                accumulator_t& lacc,
-                               accumulator_t& gacc);
+                               accumulator_t& gacc,
+                               size_t batch = 0);
+
+                ///
+                /// \brief set the training using the given batch size (=0 implies using all samples)
+                ///
+                void setup(size_t batch);
                 
                 // attributes
                 const task_t&           m_task;                 ///< 

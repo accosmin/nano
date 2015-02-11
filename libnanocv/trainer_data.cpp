@@ -9,7 +9,8 @@ namespace ncv
                        const loss_t& loss,
                        const vector_t& x0,
                        accumulator_t& lacc,
-                       accumulator_t& gacc)
+                       accumulator_t& gacc,
+                       size_t batch)
                 :       m_task(task),
                         m_tsampler(tsampler),
                         m_vsampler(vsampler),
@@ -18,6 +19,23 @@ namespace ncv
                         m_lacc(lacc),
                         m_gacc(gacc)
         {
+                setup(batch);
+        }
+
+        void trainer_data_t::setup(size_t batch)
+        {
+                // Training: may use all (bath) or a subset (minibatch) of samples
+                if (batch == 0)
+                {
+                        m_tsampler.setup(sampler_t::stype::batch);
+                }
+                else
+                {
+                        m_tsampler.setup(sampler_t::stype::uniform, batch);
+                }
+
+                // Validation: always use all samples
+                m_vsampler.setup(sampler_t::stype::batch);
         }
 
         opt_opsize_t make_opsize(const trainer_data_t& data)

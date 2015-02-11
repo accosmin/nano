@@ -46,9 +46,6 @@ namespace ncv
                 const batch_optimizer optimizer = text::from_string<batch_optimizer>
                         (text::from_params<string_t>(configuration(), "opt", "lbfgs"));
 
-                tsampler.setup(sampler_t::stype::batch);                // all training samples
-                vsampler.setup(sampler_t::stype::batch);                // all validation samples
-
                 // train the model
                 const trainer_result_t result = ncv::batch_train(
                         model, task, tsampler, vsampler, nthreads,

@@ -12,39 +12,26 @@ namespace ncv
         namespace detail
         {
                 ///
-                /// \brief restore the original samplers at destruction
+                /// \brief restore the original sampler at destruction
                 ///
                 struct sampler_backup_t
                 {
                         sampler_backup_t(trainer_data_t& data, size_t tsize)
                                 :       m_data(data),
-                                        m_tsampler_orig(data.m_tsampler),
-                                        m_vsampler_orig(data.m_vsampler)
+                                        m_tsampler_orig(data.m_tsampler)
                         {
-                                // random subset of training samples
-                                if (tsize < m_tsampler_orig.size())
-                                {
-                                        data.m_tsampler.setup(sampler_t::stype::uniform, tsize);
-                                }
-                                else
-                                {
-                                        data.m_tsampler.setup(sampler_t::stype::batch);
-                                }
+                                // FIXED random subset of training samples
+                                data.m_tsampler.setup(sampler_t::stype::uniform, tsize);
                                 data.m_tsampler = sampler_t(data.m_tsampler.get());
-
-                                // all validation samples
-                                data.m_vsampler.setup(sampler_t::stype::batch);
                         }
 
                         ~sampler_backup_t()
                         {
                                 m_data.m_tsampler = m_tsampler_orig;
-                                m_data.m_vsampler = m_vsampler_orig;
                         }
 
                         trainer_data_t&         m_data;
                         const sampler_t         m_tsampler_orig;
-                        const sampler_t         m_vsampler_orig;
                 };
 
                 static scalar_t tune(

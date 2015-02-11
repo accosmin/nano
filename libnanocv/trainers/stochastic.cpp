@@ -11,20 +11,11 @@ namespace ncv
 {
         namespace detail
         {
-                static void setup_data(trainer_data_t& data, size_t batch)
-                {
-                        // random subset of training samples
-                        data.m_tsampler.setup(sampler_t::stype::uniform, batch);
-
-                        // all validation samples
-                        data.m_vsampler.setup(sampler_t::stype::batch);
-                }
-
                 static scalar_t tune(
                         trainer_data_t& data,
                         stochastic_optimizer optimizer, size_t batch, scalar_t alpha0, scalar_t decay)
                 {
-                        setup_data(data, batch);
+                        data.setup(batch);
 
                         const size_t epochs = 1;
                         const size_t epoch_size = (data.m_tsampler.size() + batch - 1) / batch;
@@ -58,7 +49,7 @@ namespace ncv
 
                         const ncv::timer_t timer;
 
-                        setup_data(data, batch);
+                        data.setup(batch);
 
                         // construct the optimization problem
                         size_t epoch = 0;
@@ -222,7 +213,7 @@ namespace ncv
                 // tune the regularization factor (if needed)
                 if (accumulator_t::can_regularize(criterion))
                 {
-                        return log10_min_search(op, -4.0, +4.0, 0.5, 4).first;
+                        return log10_min_search(op, -4.0, +4.0, 0.2, 4).first;
                 }
 
                 else

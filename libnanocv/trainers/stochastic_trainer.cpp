@@ -45,9 +45,6 @@ namespace ncv
                 const stochastic_optimizer optimizer = text::from_string<stochastic_optimizer>
                         (text::from_params<string_t>(configuration(), "opt", "sg"));
 
-                tsampler.setup(sampler_t::stype::uniform, 1);           // one training sample at a time
-                vsampler.setup(sampler_t::stype::batch);                // all validation samples
-
                 // train the model
                 const trainer_result_t result = ncv::stochastic_train(
                         model, task, tsampler, vsampler, nthreads,
