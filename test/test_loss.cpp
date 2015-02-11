@@ -10,7 +10,7 @@ namespace test
 {
         using namespace ncv;
 
-        void check_grad(const string_t& loss_id, size_t n_dims, size_t n_tests, scalar_t epsilon)
+        void check_grad(const string_t& loss_id, size_t n_dims, size_t n_tests)
         {
                 const rloss_t loss = loss_manager_t::instance().get(loss_id);
 
@@ -41,10 +41,10 @@ namespace test
                 };
 
                 // construct optimization problem: analytic gradient
-                const opt_problem_t problem_gd(opt_fn_size, opt_fn_fval, opt_fn_grad);
+                const opt_problem_t problem_gd(opt_fn_size, opt_fn_fval, opt_fn_grad, math::epsilon2<scalar_t>());
 
                 // construct optimization problem: finite difference approximation of the gradient
-                const opt_problem_t problem_ax(opt_fn_size, opt_fn_fval);
+                const opt_problem_t problem_ax(opt_fn_size, opt_fn_fval, math::epsilon2<scalar_t>());
 
                 // check the gradient using random parameters
                 for (size_t t = 0; t < n_tests; t ++)
@@ -59,7 +59,7 @@ namespace test
                         BOOST_CHECK_GE(problem_ax(x, gx_ax), 0.0);
 
                         const scalar_t dgx = (gx_gd - gx_ax).lpNorm<Eigen::Infinity>();
-                        BOOST_CHECK_LE(dgx, epsilon);
+                        BOOST_CHECK_LE(dgx, math::epsilon2<scalar_t>());
                 }
         }
 }
@@ -75,14 +75,13 @@ BOOST_AUTO_TEST_CASE(test_loss)
         const size_t cmd_min_dims = 2;
         const size_t cmd_max_dims = 10;
         const size_t cmd_tests = 128;
-        const scalar_t cmd_epsilon = math::epsilon2<scalar_t>();
 
         // evaluate the analytical gradient vs. the finite difference approximation
         for (const string_t& loss_id : loss_ids)
         {                
                 for (size_t cmd_dims = cmd_min_dims; cmd_dims <= cmd_max_dims; cmd_dims ++)
                 {
-                        test::check_grad(loss_id, cmd_dims, cmd_tests, cmd_epsilon);
+                        test::check_grad(loss_id, cmd_dims, cmd_tests);
                 }
         }
 }
