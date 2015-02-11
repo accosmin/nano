@@ -1,5 +1,5 @@
-- src/util depends on src/tensor (e.g. random_noise.hpp)
-- src/file depends on src/util (e.g. on logger)
+- design: src/util depends on src/tensor (e.g. random_noise.hpp)
+- design: src/file depends on src/util (e.g. on logger)
 
 - make the stochastic optimizers work in the mini-batch case:
 	- allow the minibatch trainer to use a stochastic optimizer (need to also tune the learning rates)
