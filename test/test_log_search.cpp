@@ -27,7 +27,7 @@ namespace test
                 thread_pool_t pool(splits);
                 const std::pair<scalar_t, scalar_t> retx = ncv::log10_min_search_mt(op, pool, minlog, maxlog, epslog, splits);
 
-                const scalar_t epsilon = math::epsilon3<scalar_t>();
+                const scalar_t epsilon = math::epsilon2<scalar_t>();
 
                 // check optimum result
                 BOOST_CHECK_LE(math::abs(ret1.first - b), epsilon);

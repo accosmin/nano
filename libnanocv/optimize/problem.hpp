@@ -46,12 +46,10 @@ namespace ncv
                         explicit problem_t(
                                 const top_size& op_size,
                                 const top_fval& op_fval,
-                                const top_grad& op_grad,
-                                tscalar eps = std::sqrt(std::numeric_limits<tscalar>::epsilon()))
+                                const top_grad& op_grad)
                                 :       m_op_size(op_size),
                                         m_op_fval(op_fval),
-                                        m_op_grad(op_grad),
-                                        m_eps(eps)
+                                        m_op_grad(op_grad)
                         {
                                 reset();
                         }
@@ -61,9 +59,8 @@ namespace ncv
                         ///
                         explicit problem_t(
                                 const top_size& op_size,
-                                const top_fval& op_fval,
-                                tscalar eps = std::sqrt(std::numeric_limits<tscalar>::epsilon()))
-                                :       problem_t(op_size, op_fval, top_grad(), eps)
+                                const top_fval& op_fval)
+                                :       problem_t(op_size, op_fval, top_grad())
                         {
                         }
 
@@ -132,7 +129,7 @@ namespace ncv
                         void eval_grad(const tvector& x, tvector& g) const
                         {
                                 const tsize n = size();
-                                const tscalar d = m_eps;
+                                const tscalar dx = std::sqrt(tscalar(10) * std::numeric_limits<tscalar>::epsilon());
 
                                 tvector xp = x, xn = x;
 
@@ -141,15 +138,14 @@ namespace ncv
                                 {
                                         if (i > 0)
                                         {
-                                                xp(i - 1) -= d;
-                                                xn(i - 1) += d;
+                                                xp(i - 1) -= dx;
+                                                xn(i - 1) += dx;
                                         }
+                                        xp(i) += dx;
+                                        xn(i) -= dx;
 
-                                        xp(i) += d;
-                                        xn(i) -= d;
-                                        g(i) = static_cast<tscalar>(
-                                               static_cast<long double>(_f(xp) - _f(xn)) /
-                                               static_cast<long double>(xp(i) - xn(i)));
+                                        g(i) = static_cast<tscalar>(static_cast<long double>(_f(xp) - _f(xn)) /
+                                                                    static_cast<long double>(xp(i) - xn(i)));
                                 }
                         }
 

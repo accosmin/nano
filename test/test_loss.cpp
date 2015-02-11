@@ -41,10 +41,10 @@ namespace test
                 };
 
                 // construct optimization problem: analytic gradient
-                const opt_problem_t problem_gd(opt_fn_size, opt_fn_fval, opt_fn_grad, math::epsilon2<scalar_t>());
+                const opt_problem_t problem_gd(opt_fn_size, opt_fn_fval, opt_fn_grad);
 
                 // construct optimization problem: finite difference approximation of the gradient
-                const opt_problem_t problem_ax(opt_fn_size, opt_fn_fval, math::epsilon2<scalar_t>());
+                const opt_problem_t problem_ax(opt_fn_size, opt_fn_fval);
 
                 // check the gradient using random parameters
                 for (size_t t = 0; t < n_tests; t ++)

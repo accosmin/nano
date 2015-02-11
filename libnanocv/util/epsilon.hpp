@@ -15,25 +15,7 @@ namespace ncv
                 >
                 tscalar epsilon1()
                 {
-                        return tscalar(0);
-                }
-
-                template <>
-                inline float epsilon1<float>()
-                {
-                        return 1e+1f * std::numeric_limits<float>::epsilon();
-                }
-
-                template <>
-                inline double epsilon1<double>()
-                {
-                        return 1e+3 * std::numeric_limits<double>::epsilon();
-                }
-
-                template <>
-                inline long double epsilon1<long double>()
-                {
-                        return 1e+5L * std::numeric_limits<long double>::epsilon();
+                        return tscalar(10) * std::numeric_limits<tscalar>::epsilon();
                 }
 
                 template
@@ -42,7 +24,7 @@ namespace ncv
                 >
                 tscalar epsilon2()
                 {
-                        return static_cast<tscalar>(std::sqrt(epsilon1<tscalar>()));
+                        return tscalar(10) * std::sqrt(std::numeric_limits<tscalar>::epsilon());
                 }
 
                 template
@@ -51,7 +33,7 @@ namespace ncv
                 >
                 tscalar epsilon3()
                 {
-                        return static_cast<tscalar>(std::cbrt(epsilon1<tscalar>()));
+                        return tscalar(10) * std::cbrt(std::numeric_limits<tscalar>::epsilon());
                 }
         }
 }
