@@ -6,11 +6,15 @@ project(nanocv)
 # external dependencies
 ######################################################################
 
-option(NANOCV_WITH_CUDA         "Build with CUDA as dependency"                         OFF)
-option(NANOCV_WITH_OPENCL       "Build with OpenCL as dependency"                       OFF)
+option(NANOCV_WITH_CUDA         "build with CUDA as dependency"                         OFF)
+option(NANOCV_WITH_OPENCL       "build with OpenCL as dependency"                       OFF)
 option(NANOCV_WITH_ASAN         "build with address sanitizer suppport (debug, gcc)"    OFF)
 option(NANOCV_WITH_LSAN         "build with leak sanitizer suppport (debug, gcc)"       OFF)
 option(NANOCV_WITH_TSAN         "build with thread sanitizer suppport (debug, gcc)"     OFF)
+
+option(NANOCV_WITH_FLOAT        "build using C++'s float as the default scalar"         OFF)
+option(NANOCV_WITH_DOUBLE       "build using C++'s double as the default scalar"        OFF)
+option(NANOCV_WITH_LONG_DOUBLE  "build using C++'s long double as the default scalar"   OFF)
 
 # Zlib & BZip2
 find_package(ZLIB REQUIRED)
@@ -63,6 +67,17 @@ endif()
 find_package(OpenMP QUIET)
 if(OPENMP_FOUND)
 	set(NANOCV_OPENMP_FLAG "-fopenmp")
+endif()
+
+# scalar type
+if(NANOCV_WITH_FLOAT)
+        add_definitions(-DNANOCV_WITH_FLOAT)
+endif()
+if(NANOCV_WITH_DOUBLE)
+        add_definitions(-DNANOCV_WITH_DOUBLE)
+endif()
+if(NANOCV_WITH_LONG_DOUBLE)
+        add_definitions(-DNANOCV_WITH_LONG_DOUBLE)
 endif()
 
 #set(CMAKE_C_COMPILER                    "/usr/bin/clang")
