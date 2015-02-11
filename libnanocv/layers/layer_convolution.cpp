@@ -46,6 +46,7 @@ namespace ncv
                 m_idata.resize(idims, irows, icols);
                 m_odata.resize(odims, orows, ocols);
                 m_kdata.resize(odims * idims, krows, kcols);
+                m_bdata.resize(odims, orows, ocols);
                 m_mdata.resize(odims, idims);
 
                 make_mask();
@@ -56,6 +57,7 @@ namespace ncv
         void conv_layer_t::zero_params()
         {
                 m_kdata.zero();
+                m_bdata.zero();
 
                 make_mask();
         }
@@ -63,6 +65,7 @@ namespace ncv
         void conv_layer_t::random_params(scalar_t min, scalar_t max)
         {
                 m_kdata.random(random_t<scalar_t>(min, max));
+                m_bdata.random(random_t<scalar_t>(min, max));
 
                 make_mask();
         }
@@ -132,6 +135,8 @@ namespace ncv
                         }
                 }
 
+                params = tensor::save(m_bdata, params);
+
                 return params;
         }
 
@@ -149,20 +154,27 @@ namespace ncv
                         }
                 }
 
+                params = tensor::load(m_bdata, params);
+
                 return params;
         }
 
         boost::archive::binary_oarchive& conv_layer_t::save(boost::archive::binary_oarchive& oa) const
         {
-                return oa << m_kdata << m_mdata;
+                return oa << m_kdata << m_bdata <<  m_mdata;
         }
 
         boost::archive::binary_iarchive& conv_layer_t::load(boost::archive::binary_iarchive& ia)
         {
-                return ia >> m_kdata >> m_mdata;
+                return ia >> m_kdata >> m_bdata >> m_mdata;
         }
 
         size_t conv_layer_t::psize() const
+        {
+                return kparam_size() + m_bdata.size();
+        }
+
+        size_t conv_layer_t::kparam_size() const
         {
                 return static_cast<size_t>(m_mdata.sum()) * m_kdata.plane_size();
         }
@@ -175,11 +187,15 @@ namespace ncv
 
                 m_idata.copy_from(input);
                 
+                // convolution
                 convolution::output(
                         m_mdata.data(),
                         m_idata.data(), idims(),
                         m_kdata.data(), krows(), kcols(),
                         m_odata.data(), odims(), orows(), ocols());
+
+                // +bias
+                tensor::make_vector(m_odata.data(), m_odata.size()).noalias() += m_bdata.vector();
 
                 return m_odata;
         }        
@@ -209,11 +225,15 @@ namespace ncv
 
                 m_odata.copy_from(output);
                 
+                // wrt convolution
                 convolution::gparam(
                         m_mdata.data(),
                         m_idata.data(), idims(),
                         gradient, krows(), kcols(),
                         m_odata.data(), odims(), orows(), ocols());
+
+                // wrt bias
+                tensor::make_vector(gradient + kparam_size(), m_odata.size()) = m_odata.vector();
         }
 }
 
