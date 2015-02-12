@@ -239,7 +239,12 @@ BOOST_AUTO_TEST_CASE(test_gradient)
                 pool.enqueue([=] ()
                 {
                         const string_t desc = config.first;
-                        const string_t loss_id = config.second;
+                        const string_t loss_id = config.second;                        
+
+                        {
+                                const thread_pool_t::lock_t lock(test::mutex);
+                                log_info() << desc;
+                        }
 
                         // create model
                         const rmodel_t model = model_manager_t::instance().get("forward-network", desc);
@@ -255,8 +260,8 @@ BOOST_AUTO_TEST_CASE(test_gradient)
                         }
 
                         // check with the given loss
-                        test::test_grad_params("[loss = " + loss_id + "]", loss_id, *model);
-                        test::test_grad_inputs("[loss = " + loss_id + "]", loss_id, *model);
+                        test::test_grad_params("param [loss = " + loss_id + "]", loss_id, *model);
+                        test::test_grad_inputs("input [loss = " + loss_id + "]", loss_id, *model);
                 });
         };
 
