@@ -139,21 +139,13 @@ int main(int argc, char *argv[])
 	task.describe();
 
         const string_t lmodel0;
-        const string_t lmodel1 = lmodel0 + "linear:dims=64;act-snorm;";
+        const string_t lmodel1 = lmodel0 + "linear:dims=32;act-snorm;";
         const string_t lmodel2 = lmodel1 + "linear:dims=32;act-snorm;";
-        const string_t lmodel3 = lmodel2 + "linear:dims=16;act-snorm;";
+        const string_t lmodel3 = lmodel2 + "linear:dims=32;act-snorm;";
 
-        string_t cmodel100;
-        cmodel100 = cmodel100 + "conv:dims=8,rows=5,cols=5,mask=100;pool-max;act-snorm;";
-        cmodel100 = cmodel100 + "conv:dims=16,rows=3,cols=3,mask=100;act-snorm;";
-
-        string_t cmodel50;
-        cmodel50 = cmodel50 + "conv:dims=8,rows=5,cols=5,mask=50;pool-max;act-snorm;";
-        cmodel50 = cmodel50 + "conv:dims=16,rows=3,cols=3,mask=50;act-snorm;";
-
-        string_t cmodel25;
-        cmodel25 = cmodel25 + "conv:dims=8,rows=5,cols=5,mask=25;pool-max;act-snorm;";
-        cmodel25 = cmodel25 + "conv:dims=16,rows=3,cols=3,mask=25;act-snorm;";
+        string_t cmodel;
+        cmodel = cmodel + "conv:dims=8,rows=5,cols=5;pool-max;act-snorm;";
+        cmodel = cmodel + "conv:dims=8,rows=3,cols=3;act-snorm;";
 
         const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
 
@@ -164,9 +156,7 @@ int main(int argc, char *argv[])
                 lmodel2 + outlayer,
                 lmodel3 + outlayer,
 
-                cmodel100 + outlayer,
-                cmodel50 + outlayer,
-                cmodel25 + outlayer
+                cmodel + outlayer
         };
 
         const strings_t cmd_losses = { "classnll", "logistic" }; //loss_manager_t::instance().ids();

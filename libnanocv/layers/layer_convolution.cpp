@@ -47,9 +47,6 @@ namespace ncv
                 m_odata.resize(odims, orows, ocols);
                 m_kdata.resize(odims * idims, krows, kcols);
                 m_bdata.resize(odims, 1, 1);
-                m_mdata.resize(odims, idims);
-
-                make_mask();
 
                 return psize();
         }
@@ -58,83 +55,17 @@ namespace ncv
         {
                 m_kdata.zero();
                 m_bdata.zero();
-
-                make_mask();
         }
 
         void conv_layer_t::random_params(scalar_t min, scalar_t max)
         {
                 m_kdata.random(random_t<scalar_t>(min, max));
                 m_bdata.random(random_t<scalar_t>(min, max));
-
-                make_mask();
-        }
-
-        void conv_layer_t::make_mask()
-        {
-                const size_t mask = math::clamp(text::from_params<size_t>(configuration(), "mask", 100), 1, 100);
-
-                if (mask >= 100)
-                {
-                        // full connection
-                        m_mdata.setOnes();
-                }
-
-                else
-                {
-                        // connect with the given probability
-                        m_mdata.setZero();
-                        for (size_t o = 0; o < odims(); o ++)
-                        {
-                                const indices_t indices = uniform_indices(idims(), std::max(size_t(1), idims() * mask / 100));
-                                for (size_t i : indices)
-                                {
-                                        m_mdata(o, i) = 1.0;
-                                }
-                        }
-                }
-
-//                for (size_t o = 0; o < odims(); o ++)
-//                {
-//                        string_t mask;
-//                        for (size_t i = 0; i < idims(); i ++)
-//                        {
-//                                mask.append(is_masked(m_mdata(o, i)) ? "1" : "0");
-//                        }
-
-//                        log_info() << "mask [" << (o + 1) << "/" << odims() << "]: " << mask;
-//                }
-        }
-
-        size_t conv_layer_t::mask_count() const
-        {
-                size_t count = 0;
-
-                for (matrix_t::Index i = 0; i < m_mdata.size(); i ++)
-                {
-                        if (convolution::is_masked(m_mdata(i)))
-                        {
-                                count ++;
-                        }
-                }
-
-                return count;
         }
 
         scalar_t* conv_layer_t::save_params(scalar_t* params) const
         {
-                for (size_t o = 0, k = 0; o < odims(); o ++)
-                {
-                        for (size_t i = 0; i < idims(); i ++, k ++)
-                        {
-                                if (convolution::is_masked(m_mdata(o, i)))
-                                {
-                                        auto kmap = m_kdata.plane_vector(k);
-                                        params = tensor::save(kmap, params);
-                                }
-                        }
-                }
-
+                params = tensor::save(m_kdata, params);
                 params = tensor::save(m_bdata, params);
 
                 return params;
@@ -142,18 +73,7 @@ namespace ncv
 
         const scalar_t* conv_layer_t::load_params(const scalar_t* params)
         {
-                for (size_t o = 0, k = 0; o < odims(); o ++)
-                {
-                        for (size_t i = 0; i < idims(); i ++, k ++)
-                        {
-                                if (convolution::is_masked(m_mdata(o, i)))
-                                {
-                                        auto kmap = m_kdata.plane_vector(k);
-                                        params = tensor::load(kmap, params);
-                                }
-                        }
-                }
-
+                params = tensor::load(m_kdata, params);
                 params = tensor::load(m_bdata, params);
 
                 return params;
@@ -161,22 +81,17 @@ namespace ncv
 
         boost::archive::binary_oarchive& conv_layer_t::save(boost::archive::binary_oarchive& oa) const
         {
-                return oa << m_kdata << m_bdata <<  m_mdata;
+                return oa << m_kdata << m_bdata;
         }
 
         boost::archive::binary_iarchive& conv_layer_t::load(boost::archive::binary_iarchive& ia)
         {
-                return ia >> m_kdata >> m_bdata >> m_mdata;
+                return ia >> m_kdata >> m_bdata;
         }
 
         size_t conv_layer_t::psize() const
         {
-                return kparam_size() + m_bdata.size();
-        }
-
-        size_t conv_layer_t::kparam_size() const
-        {
-                return static_cast<size_t>(m_mdata.sum()) * m_kdata.plane_size();
+                return m_kdata.size() + m_bdata.size();
         }
 
         const tensor_t& conv_layer_t::output(const tensor_t& input)
@@ -189,7 +104,6 @@ namespace ncv
                 
                 // convolution
                 convolution::output(
-                        m_mdata.data(),
                         m_idata.data(), idims(),
                         m_kdata.data(), krows(), kcols(),
                         m_odata.data(), odims(), orows(), ocols());
@@ -212,7 +126,6 @@ namespace ncv
                 m_odata.copy_from(output);
                 
                 convolution::ginput(
-                        m_mdata.data(),
                         m_idata.data(), idims(),
                         m_kdata.data(), krows(), kcols(),
                         m_odata.data(), odims(), orows(), ocols());
@@ -230,7 +143,6 @@ namespace ncv
                 
                 // wrt convolution
                 convolution::gparam(
-                        m_mdata.data(),
                         m_idata.data(), idims(),
                         gradient, krows(), kcols(),
                         m_odata.data(), odims(), orows(), ocols());
@@ -238,7 +150,7 @@ namespace ncv
                 // wrt bias
                 for (size_t o = 0; o < odims(); o ++)
                 {
-                        gradient[kparam_size() + o] = m_odata.plane_vector(o).sum();
+                        gradient[m_kdata.size() + o] = m_odata.plane_vector(o).sum();
                 }
         }
 }

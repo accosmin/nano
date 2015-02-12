@@ -70,20 +70,10 @@ int main(int argc, char *argv[])
         const string_t lmodel4 = lmodel3 + "linear:dims=100;act-snorm;";
         const string_t lmodel5 = lmodel4 + "linear:dims=100;act-snorm;";
         
-        string_t cmodel100;
-        cmodel100 = cmodel100 + "conv:dims=16,rows=9,cols=9,mask=100;pool-max;act-snorm;";
-        cmodel100 = cmodel100 + "conv:dims=32,rows=5,cols=5,mask=100;pool-max;act-snorm;";
-        cmodel100 = cmodel100 + "conv:dims=64,rows=3,cols=3,mask=100;act-snorm;";
-
-        string_t cmodel50;
-        cmodel50 = cmodel50 + "conv:dims=16,rows=9,cols=9,mask=50;pool-max;act-snorm;";
-        cmodel50 = cmodel50 + "conv:dims=32,rows=5,cols=5,mask=50;pool-max;act-snorm;";
-        cmodel50 = cmodel50 + "conv:dims=64,rows=3,cols=3,mask=50;act-snorm;";
-
-        string_t cmodel25;
-        cmodel25 = cmodel25 + "conv:dims=16,rows=9,cols=9,mask=25;pool-max;act-snorm;";
-        cmodel25 = cmodel25 + "conv:dims=32,rows=5,cols=5,mask=25;pool-max;act-snorm;";
-        cmodel25 = cmodel25 + "conv:dims=64,rows=3,cols=3,mask=25;act-snorm;";
+        string_t cmodel;
+        cmodel = cmodel + "conv:dims=16,rows=9,cols=9;pool-max;act-snorm;";
+        cmodel = cmodel + "conv:dims=32,rows=5,cols=5;pool-max;act-snorm;";
+        cmodel = cmodel + "conv:dims=64,rows=3,cols=3;act-snorm;";
 
         const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
 
@@ -96,9 +86,7 @@ int main(int argc, char *argv[])
                 lmodel4 + outlayer,
                 lmodel5 + outlayer,
 
-                cmodel100 + outlayer,
-                cmodel50 + outlayer,
-                cmodel25 + outlayer
+                cmodel + outlayer
         };
 
         strings_t cmd_names =
@@ -110,9 +98,7 @@ int main(int argc, char *argv[])
                 "lmodel4",
                 "lmodel5",
 
-                "cmodel100",
-                "cmodel50",
-                "cmodel25"
+                "cmodel"
         };
 
         const rloss_t loss = loss_manager_t::instance().get("logistic");

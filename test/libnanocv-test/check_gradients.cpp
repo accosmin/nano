@@ -10,7 +10,6 @@ namespace test
         namespace
         {
                 const strings_t conv_layer_ids { "", "conv" };
-                const strings_t conv_masks { "25", "50", "100" };
                 const strings_t pool_layer_ids { "", "pool-max", "pool-min", "pool-avg" };
                 const strings_t full_layer_ids { "", "linear" };
                 const strings_t actv_layer_ids { "", "act-unit", "act-tanh", "act-snorm", "act-splus" };
@@ -26,7 +25,6 @@ namespace test
                         const string_t& actv_layer_id,
                         const string_t& pool_layer_id,
                         const string_t& conv_layer_id,
-                        const string_t& conv_mask,
                         const string_t& full_layer_id)
                 {
                         string_t desc;
@@ -38,8 +36,7 @@ namespace test
 
                                 string_t params;
                                 params += "dims=" + text::to_string(rgen());
-                                params += (rgen() % 2 == 0) ? ",rows=2,cols=2," : ",rows=3,cols=3,";
-                                params += "mask=" + conv_mask;
+                                params += (rgen() % 2 == 0) ? ",rows=2,cols=2" : ",rows=3,cols=3";
 
                                 desc += conv_layer_id + ":" + params + ";";
                                 if (l == 0)
@@ -85,20 +82,16 @@ namespace test
                                 {
                                         for (const string_t& conv_layer_id : conv_layer_ids)
                                         {
-                                                for (const string_t& conv_mask : conv_masks)
+                                                for (const string_t& full_layer_id : full_layer_ids)
                                                 {
-                                                        for (const string_t& full_layer_id : full_layer_ids)
-                                                        {
-                                                                const string_t desc = make_model_description(
-                                                                        n_layers,
-                                                                        actv_layer_id,
-                                                                        pool_layer_id,
-                                                                        conv_layer_id,
-                                                                        conv_mask,
-                                                                        full_layer_id);
+                                                        const string_t desc = make_model_description(
+                                                                n_layers,
+                                                                actv_layer_id,
+                                                                pool_layer_id,
+                                                                conv_layer_id,
+                                                                full_layer_id);
 
-                                                                descs.insert(desc);
-                                                        }
+                                                        descs.insert(desc);
                                                 }
                                         }
                                 }

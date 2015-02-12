@@ -11,7 +11,6 @@ namespace ncv
         ///     dims=16[1,256]          - number of convolutions (output dimension)
         ///     rows=8[1,32]            - convolution size
         ///     cols=8[1,32]            - convolution size
-        ///     mask=1[0,100]           - random masking percentage (number of input planes connected per output plane)
         ///
         class conv_layer_t : public layer_t
         {
@@ -19,7 +18,7 @@ namespace ncv
 
                 NANOCV_MAKE_CLONABLE(conv_layer_t,
                                      "convolution layer, "\
-                                     "parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32],mask=100[1,100]")
+                                     "parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
 
                 // constructor
                 explicit conv_layer_t(const string_t& parameters = string_t());
@@ -57,9 +56,9 @@ namespace ncv
                 virtual size_t psize() const override;
 
                 // flops
-                virtual size_t output_flops() const override { return mask_count() * oplane_size() * kplane_size(); }
-                virtual size_t ginput_flops() const override { return mask_count() * oplane_size() * kplane_size(); }
-                virtual size_t gparam_flops() const override { return mask_count() * iplane_size() * oplane_size(); }
+                virtual size_t output_flops() const override { return odims() * idims() * oplane_size() * kplane_size(); }
+                virtual size_t ginput_flops() const override { return odims() * orows() * oplane_size() * kplane_size(); }
+                virtual size_t gparam_flops() const override { return odims() * orows() * iplane_size() * oplane_size(); }
 
         private:
 
@@ -70,11 +69,6 @@ namespace ncv
                 size_t iplane_size() const { return m_idata.plane_size(); }
                 size_t kplane_size() const { return m_kdata.plane_size(); }
 
-                void make_mask();
-                size_t mask_count() const;
-
-                size_t kparam_size() const;
-
         private:
 
                 // attributes
@@ -82,7 +76,5 @@ namespace ncv
                 tensor_t                m_odata;        ///< output buffer:             odims x orows x ocols
                 tensor_t                m_kdata;        ///< convolution kernels:       odims x idims x krows x kcols
                 tensor_t                m_bdata;        ///< convolution bias:          odims x 1 x 1
-
-                matrix_t                m_mdata;        ///< {0, 1} mask buffer:        odims x idims
         };
 }
