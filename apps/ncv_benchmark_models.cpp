@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 
         const size_t cmd_rows = 28;
         const size_t cmd_cols = 28;
-        const size_t cmd_outputs = 10;
+        const size_t cmd_outputs = 9;
         const size_t cmd_min_nthreads = 1;
         const size_t cmd_max_nthreads = ncv::n_threads();
 
