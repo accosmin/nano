@@ -2,8 +2,9 @@
 #define BOOST_TEST_MODULE "test_average"
 
 #include <boost/test/unit_test.hpp>
-#include <numeric>
 #include "libnanocv/optimize/average.hpp"
+#include "libnanocv/util/epsilon.hpp"
+#include "libnanocv/util/abs.hpp"
 
 namespace test
 {
@@ -22,7 +23,7 @@ namespace test
 
                 const test_scalar_t real_average = static_cast<test_scalar_t>(range) / static_cast<test_scalar_t>(2);
 
-                BOOST_CHECK_LE(std::fabs(running_average.value() - real_average), 1e-12);
+                BOOST_CHECK_LE(math::abs(running_average.value() - real_average), math::epsilon1<test_scalar_t>());
         }
 }
 

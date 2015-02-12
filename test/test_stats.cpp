@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_stats"
 
 #include <boost/test/unit_test.hpp>
-#include <numeric>
+#include "libnanocv/util/abs.hpp"
 #include "libnanocv/util/stats.hpp"
 #include "libnanocv/util/random.hpp"
 
@@ -40,7 +40,7 @@ namespace test
                 BOOST_CHECK_LE(std::sqrt(stats.var()), var);
 
                 // check sum
-                BOOST_CHECK_LE(std::fabs(stats.sum() - std::accumulate(values.begin(), values.end(), 0.0)), 1e-8);
+                BOOST_CHECK_LE(math::abs(stats.sum() - std::accumulate(values.begin(), values.end(), 0.0)), 1e-8);
         }
 }
 

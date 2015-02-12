@@ -3,6 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/types.h"
+#include "libnanocv/util/abs.hpp"
 #include "libnanocv/util/timer.h"
 #include "libnanocv/util/stats.hpp"
 #include "libnanocv/util/tabulator.h"
@@ -179,12 +180,12 @@ BOOST_AUTO_TEST_CASE(test_thread_loop)
 
                 // Check accuracy
                 const scalar_t eps = 1e-12;
-                BOOST_CHECK_LE(std::fabs(sum_cpu - sum_cpu), eps);
+                BOOST_CHECK_LE(math::abs(sum_cpu - sum_cpu), eps);
 #ifdef _OPENMP
-                BOOST_CHECK_LE(std::fabs(sum_cpu - sum_omp), eps);
+                BOOST_CHECK_LE(math::abs(sum_cpu - sum_omp), eps);
 #endif
-                BOOST_CHECK_LE(std::fabs(sum_cpu - sum_ncv), eps);
-                BOOST_CHECK_LE(std::fabs(sum_cpu - sum_ncv_loop),  eps);
+                BOOST_CHECK_LE(math::abs(sum_cpu - sum_ncv), eps);
+                BOOST_CHECK_LE(math::abs(sum_cpu - sum_ncv_loop),  eps);
         }
 
         table.print(std::cout);

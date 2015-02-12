@@ -1,4 +1,5 @@
 #include "libnanocv/types.h"
+#include "libnanocv/util/abs.hpp"
 #include "libnanocv/util/timer.h"
 #include "libnanocv/util/logger.h"
 #include "libnanocv/util/stats.hpp"
@@ -24,7 +25,7 @@ bool check(const tvector& a, const tvector& b, const char* error_message)
         ncv::stats_t<scalar_t> stats;
         for (auto i = 0; i < a.size(); i ++)
         {
-                stats(std::fabs(b(i) - a(i)));
+                stats(ncv::math::abs(b(i) - a(i)));
         }
 
         if (stats.max() > eps)
