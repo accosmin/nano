@@ -81,7 +81,7 @@ namespace ncv
                 tensor_t                m_idata;        ///< input buffer:              idims x irows x icols
                 tensor_t                m_odata;        ///< output buffer:             odims x orows x ocols
                 tensor_t                m_kdata;        ///< convolution kernels:       odims x idims x krows x kcols
-                tensor_t                m_bdata;        ///< convolution bias:          odims x orows x ocols
+                tensor_t                m_bdata;        ///< convolution bias:          odims x 1 x 1
 
                 matrix_t                m_mdata;        ///< {0, 1} mask buffer:        odims x idims
         };

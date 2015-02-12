@@ -46,7 +46,7 @@ namespace ncv
                 m_idata.resize(idims, irows, icols);
                 m_odata.resize(odims, orows, ocols);
                 m_kdata.resize(odims * idims, krows, kcols);
-                m_bdata.resize(odims, orows, ocols);
+                m_bdata.resize(odims, 1, 1);
                 m_mdata.resize(odims, idims);
 
                 make_mask();
@@ -195,7 +195,10 @@ namespace ncv
                         m_odata.data(), odims(), orows(), ocols());
 
                 // +bias
-                tensor::make_vector(m_odata.data(), m_odata.size()).noalias() += m_bdata.vector();
+                for (size_t o = 0; o < odims(); o ++)
+                {
+                        m_odata.plane_vector(o).array() += m_bdata.data(o);
+                }
 
                 return m_odata;
         }        
@@ -233,7 +236,10 @@ namespace ncv
                         m_odata.data(), odims(), orows(), ocols());
 
                 // wrt bias
-                tensor::make_vector(gradient + kparam_size(), m_odata.size()) = m_odata.vector();
+                for (size_t o = 0; o < odims(); o ++)
+                {
+                        m_bdata.data(o) = m_odata.plane_vector(o).sum();
+                }
         }
 }
 
