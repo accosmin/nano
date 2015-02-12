@@ -126,6 +126,15 @@ namespace ncv
                                 return tensor::make_matrix(plane_data(i), rows(), cols());
                         }
 
+                        Eigen::Map<tvector> plane_vector(tsize i = 0)
+                        {
+                                return tensor::make_vector(plane_data(i), plane_size());
+                        }
+                        Eigen::Map<const tvector> plane_vector(tsize i = 0) const
+                        {
+                                return tensor::make_vector(plane_data(i), plane_size());
+                        }
+
                         ///
                         /// \brief copy to/from another tensor (of the same size)
                         ///
