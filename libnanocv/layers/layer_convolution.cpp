@@ -129,7 +129,7 @@ namespace ncv
                         {
                                 if (convolution::is_masked(m_mdata(o, i)))
                                 {
-                                        auto kmap = tensor::make_vector(m_kdata.plane_data(k), m_kdata.plane_size());
+                                        auto kmap = m_kdata.plane_vector(k);
                                         params = tensor::save(kmap, params);
                                 }
                         }
@@ -148,7 +148,7 @@ namespace ncv
                         {
                                 if (convolution::is_masked(m_mdata(o, i)))
                                 {
-                                        auto kmap = tensor::make_vector(m_kdata.plane_data(k), m_kdata.plane_size());
+                                        auto kmap = m_kdata.plane_vector(k);
                                         params = tensor::load(kmap, params);
                                 }
                         }
@@ -238,7 +238,7 @@ namespace ncv
                 // wrt bias
                 for (size_t o = 0; o < odims(); o ++)
                 {
-                        m_bdata.data(o) = m_odata.plane_vector(o).sum();
+                        gradient[kparam_size() + o] = m_odata.plane_vector(o).sum();
                 }
         }
 }
