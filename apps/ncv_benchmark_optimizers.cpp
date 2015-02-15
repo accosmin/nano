@@ -24,6 +24,8 @@ void test_optimizer(const task_t& task, ttrainer trainer, const string_t& name, 
 
         const size_t usec = ncv::measure_robustly_usec([&] ()
         {
+//                const timer_t timer;
+
                 sampler_t tsampler(task);
                 tsampler.setup(sampler_t::atype::annotated);
 
@@ -38,7 +40,7 @@ void test_optimizer(const task_t& task, ttrainer trainer, const string_t& name, 
                 terrors(result.m_opt_state.m_terror_avg);
                 verrors(result.m_opt_state.m_verror_avg);
 
-                log_info() << "done (" << name << ") ...";
+//                log_info() << "done (" << name << ") in " << timer.elapsed() << " ...";
 
         }, cmd_trials);
 
