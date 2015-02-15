@@ -192,6 +192,7 @@ namespace ncv
                         switch (optimizer)
                         {
                         case stochastic_optimizer::ADADELTA:
+                                op_lrate(1.0);
                                 break;
 
                         default:
