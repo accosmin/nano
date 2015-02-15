@@ -24,8 +24,6 @@ void test_optimizer(const task_t& task, ttrainer trainer, const string_t& name, 
 
         const size_t usec = ncv::measure_robustly_usec([&] ()
         {
-//                const timer_t timer;
-
                 sampler_t tsampler(task);
                 tsampler.setup(sampler_t::atype::annotated);
 
@@ -39,9 +37,6 @@ void test_optimizer(const task_t& task, ttrainer trainer, const string_t& name, 
 
                 terrors(result.m_opt_state.m_terror_avg);
                 verrors(result.m_opt_state.m_verror_avg);
-
-//                log_info() << "done (" << name << ") in " << timer.elapsed() << " ...";
-
         }, cmd_trials);
 
         table.append(name)
@@ -129,7 +124,7 @@ int main(int argc, char *argv[])
         const size_t cmd_samples = 8 * 1024;
         const size_t cmd_rows = 16;
         const size_t cmd_cols = 16;
-        const size_t cmd_outputs = 4;
+        const size_t cmd_outputs = 8;
 
         synthetic_shapes_task_t task(
                 "rows=" + text::to_string(cmd_rows) + "," +
@@ -162,7 +157,7 @@ int main(int argc, char *argv[])
         };
 
         const strings_t cmd_losses = { "classnll", "logistic" }; //loss_manager_t::instance().ids();
-        const strings_t cmd_criteria = criterion_manager_t::instance().ids();
+        const strings_t cmd_criteria = { "avg" }; //criterion_manager_t::instance().ids();
 
         // vary the model
         for (const string_t& cmd_network : cmd_networks)
