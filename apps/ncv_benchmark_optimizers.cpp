@@ -45,7 +45,7 @@ void test_optimizer(const task_t& task, ttrainer trainer, const string_t& name, 
 }
 
 void test_optimizers(
-        const task_t& task, const model_t& model, const loss_t& loss, const string_t& criterion,
+        const task_t& task, model_t& model, const loss_t& loss, const string_t& criterion,
         const string_t& config_name)
 {
         const size_t cmd_iterations = 32;
@@ -88,6 +88,7 @@ void test_optimizers(
         {
                 test_optimizer(task, [&] (const sampler_t& tsampler, const sampler_t& vsampler)
                 {
+                        model.random_params();
                         return ncv::batch_train(
                                 model, task, tsampler, vsampler, ncv::n_threads(),
                                 loss, criterion, optimizer, cmd_iterations, cmd_epsilon, verbose);
@@ -98,6 +99,7 @@ void test_optimizers(
         {
                 test_optimizer(task, [&] (const sampler_t& tsampler, const sampler_t& vsampler)
                 {
+                        model.random_params();
                         return ncv::minibatch_train(
                                 model, task, tsampler, vsampler, ncv::n_threads(),
                                 loss, criterion, optimizer, cmd_epochs, cmd_epsilon, verbose);
@@ -108,6 +110,7 @@ void test_optimizers(
         {
                 test_optimizer(task, [&] (const sampler_t& tsampler, const sampler_t& vsampler)
                 {
+                        model.random_params();
                         return ncv::stochastic_train(
                                 model, task, tsampler, vsampler, ncv::n_threads(),
                                 loss, criterion, optimizer, cmd_epochs, verbose);
@@ -124,7 +127,7 @@ int main(int argc, char *argv[])
         const size_t cmd_samples = 8 * 1024;
         const size_t cmd_rows = 16;
         const size_t cmd_cols = 16;
-        const size_t cmd_outputs = 8;
+        const size_t cmd_outputs = 9;
 
         synthetic_shapes_task_t task(
                 "rows=" + text::to_string(cmd_rows) + "," +
@@ -136,9 +139,9 @@ int main(int argc, char *argv[])
 	task.describe();
 
         const string_t lmodel0;
-        const string_t lmodel1 = lmodel0 + "linear:dims=32;act-snorm;";
-        const string_t lmodel2 = lmodel1 + "linear:dims=32;act-snorm;";
-        const string_t lmodel3 = lmodel2 + "linear:dims=32;act-snorm;";
+        const string_t lmodel1 = lmodel0 + "linear:dims=16;act-snorm;";
+        const string_t lmodel2 = lmodel1 + "linear:dims=16;act-snorm;";
+        const string_t lmodel3 = lmodel2 + "linear:dims=16;act-snorm;";
 
         string_t cmodel;
         cmodel = cmodel + "conv:dims=8,rows=5,cols=5;pool-max;act-snorm;";
