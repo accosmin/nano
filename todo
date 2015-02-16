@@ -1,19 +1,14 @@
 - design: src/util depends on src/tensor (e.g. random_noise.hpp)
 - design: src/file depends on src/util (e.g. on logger)
-
-- make the stochastic optimizers work in the mini-batch case:
-	- allow the minibatch trainer to use a stochastic optimizer (need to also tune the learning rates)
-	- update the test program to only test the mini-batch optimizers
-
-- update the test program to evaluate the optimizers to call directly trainer-based functions:
-	- use the trainers' implementation
-	- use the synthetic dataset	
-
-	- sort the optimization results by training log-loss, training error, validation error and elapsed time
-
-- nicer way to specify colors than using the current array:
+- design: nicer way to specify colors than using the current array:
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2  # blue
 set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2  # red
+
+- benchmark_models:
+	- keep only the forward/backward timings
+
+- benchmark_optimizers:
+	- may make the synthetic task more difficult (e.g. vary the shapes' position & scale more)
 
 - augment training samples (to reduce overfitting):
 	- new parameter to all tasks: "noisy=off/on"
@@ -23,10 +18,8 @@ set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2  # red
 
 	- ncv_info_task should also be updated to display the noisy training samples
 
-- check the speed improvement if using floats instead of doubles for training MLP0
-
 - more experiments with floats instead of doubles:
-	- check the impact on MLPs and convolutions
+	- 2-2.5 times faster MLPs
 	- are the stochastic methods going to be faster?! (tons of gradient-based linear algebra)
 
 - MAD with index shifts (may speed-up corr2d)
