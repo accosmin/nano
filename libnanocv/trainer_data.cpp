@@ -24,7 +24,7 @@ namespace ncv
 
         void trainer_data_t::setup(size_t batch)
         {
-                // Training: may use all (bath) or a subset (minibatch) of samples
+                // Training: may use all (batch) or a subset (minibatch) of samples
                 if (batch == 0)
                 {
                         m_tsampler.setup(sampler_t::stype::batch);
