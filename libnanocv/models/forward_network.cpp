@@ -288,10 +288,13 @@ namespace ncv
                         model_gparam_mflops += gparam_mflops;
                 }
 
+                const std::streamsize old_precision = std::cout.precision();
+
                 log_info() << "forward network [MFLOPs]"
                            << ": output = " << std::setprecision(3) << model_output_mflops
                            << ", ginput = " << std::setprecision(3) << model_ginput_mflops
-                           << ", gparam = " << std::setprecision(3) << model_gparam_mflops;
+                           << ", gparam = " << std::setprecision(3) << model_gparam_mflops
+                           << std::setprecision(old_precision);
         }
 
         size_t forward_network_t::psize() const
