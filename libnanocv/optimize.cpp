@@ -36,6 +36,41 @@ namespace ncv
                                 (iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
+                case batch_optimizer::CGD_CD:
+                        return  optimize::batch_cgd_cd<opt_problem_t>
+                                (iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
+                                (problem, x0);
+
+                case batch_optimizer::CGD_DY:
+                        return  optimize::batch_cgd_dy<opt_problem_t>
+                                (iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
+                                (problem, x0);
+
+                case batch_optimizer::CGD_FR:
+                        return  optimize::batch_cgd_fr<opt_problem_t>
+                                (iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
+                                (problem, x0);
+
+                case batch_optimizer::CGD_HS:
+                        return  optimize::batch_cgd_hs<opt_problem_t>
+                                (iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
+                                (problem, x0);
+
+                case batch_optimizer::CGD_LS:
+                        return  optimize::batch_cgd_ls<opt_problem_t>
+                                (iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
+                                (problem, x0);
+
+                case batch_optimizer::CGD_N:
+                        return  optimize::batch_cgd_n<opt_problem_t>
+                                (iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
+                                (problem, x0);
+
+                case batch_optimizer::CGD_PR:
+                        return  optimize::batch_cgd_pr<opt_problem_t>
+                                (iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
+                                (problem, x0);
+
                 case batch_optimizer::GD:
                 default:
                         return  optimize::batch_gd<opt_problem_t>

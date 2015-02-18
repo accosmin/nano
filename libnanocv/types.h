@@ -93,8 +93,16 @@ namespace ncv
         enum class batch_optimizer : int
         {
                 GD,                     ///< gradient descent
-                CGD,                    ///< conjugate gradient descent
-                LBFGS                   ///< limited-memory BFGS
+                CGD,                    ///< conjugate gradient descent (default version)
+                LBFGS,                  ///< limited-memory BFGS
+
+                CGD_HS,                 ///< various conjugate gradient descent versions
+                CGD_FR,
+                CGD_PR,
+                CGD_CD,
+                CGD_LS,
+                CGD_DY,
+                CGD_N
         };
 
         ///
@@ -218,7 +226,14 @@ namespace ncv
                         case batch_optimizer::GD:       return "gd";
                         case batch_optimizer::CGD:      return "cgd";
                         case batch_optimizer::LBFGS:    return "lbfgs";
-                        default:                        return "gd";
+                        case batch_optimizer::CGD_HS:   return "cgd-hs";
+                        case batch_optimizer::CGD_FR:   return "cgd-fr";
+                        case batch_optimizer::CGD_PR:   return "cgd-pr";
+                        case batch_optimizer::CGD_CD:   return "cgd-cd";
+                        case batch_optimizer::CGD_LS:   return "cgd-ls";
+                        case batch_optimizer::CGD_DY:   return "cgd-dy";
+                        case batch_optimizer::CGD_N:    return "cgd-n";
+                        default:                        return "lbfgs";
                         }
                 }
 
