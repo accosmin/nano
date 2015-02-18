@@ -12,36 +12,28 @@ namespace ncv
         scalar_t logistic_loss_t::error(const vector_t& targets, const vector_t& scores) const
         {
                 assert(targets.size() == scores.size());
-                
-                size_t errors = 0;
-                for (auto i = 0; i < scores.size(); i ++)
-                {
-                        const scalar_t edge = targets(i) * scores(i);
-                        if (edge <= 0.0)
-                        {
-                                errors ++;
-                        }
-                }
-                
-                return errors;
+
+                const vector_t edges = -targets.array() * scores.array();
+
+                return (edges.array() < scalar_t(0)).count();
         }
 
         scalar_t logistic_loss_t::value(const vector_t& targets, const vector_t& scores) const
         {
                 assert(targets.size() == scores.size());
-                
-                const vector_t edges = (- targets.array() * scores.array()).exp();
-                
-                return std::log1p(edges.sum());
+
+                const vector_t edges = -targets.array() * scores.array();
+
+                return (edges.array().exp() + scalar_t(1)).log().sum();
         }
         
         vector_t logistic_loss_t::vgrad(const vector_t& targets, const vector_t& scores) const
         {
                 assert(targets.size() == scores.size());
                 
-                const vector_t edges = (- targets.array() * scores.array()).exp();
-                
-                return - targets.array() * edges.array() / (1.0 + edges.sum());
+                const vector_t edges = -targets.array() * scores.array();
+
+                return -targets.array() * edges.array().exp() / (edges.array().exp() + scalar_t(1));
         }
 
         indices_t logistic_loss_t::labels(const vector_t& scores) const

@@ -162,7 +162,7 @@ int main(int argc, char *argv[])
                 cmodel + outlayer
         };
 
-        const strings_t cmd_losses = { "classnll" }; //loss_manager_t::instance().ids();
+        const strings_t cmd_losses = { "classnll", "logistic" }; //loss_manager_t::instance().ids();
         const strings_t cmd_criteria = { "avg" }; //criterion_manager_t::instance().ids();
 
         // vary the model
