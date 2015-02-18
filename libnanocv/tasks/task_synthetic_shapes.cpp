@@ -43,7 +43,7 @@ namespace ncv
 
                 rect_t make_rect(coord_t rows, coord_t cols)
                 {
-                        random_t<coord_t> rng(3, std::min(rows / 4, cols / 4));
+                        random_t<coord_t> rng(0, std::min(rows / 4, cols / 4));
 
                         const coord_t dx = rng();
                         const coord_t dy = rng();
