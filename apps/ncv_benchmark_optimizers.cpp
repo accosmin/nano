@@ -13,7 +13,7 @@ template
 <
         typename ttrainer
 >
-void test_optimizer(const task_t& task, ttrainer trainer, const string_t& name, tabulator_t& table)
+void test_optimizer(model_t& model, ttrainer trainer, const string_t& name, tabulator_t& table)
 {
         const size_t cmd_trials = 16;
 
@@ -24,13 +24,9 @@ void test_optimizer(const task_t& task, ttrainer trainer, const string_t& name, 
 
         const size_t usec = ncv::measure_robustly_usec([&] ()
         {
-                sampler_t tsampler(task);
-                tsampler.setup(sampler_t::atype::annotated);
+                model.random_params();
 
-                sampler_t vsampler(task);
-                tsampler.split(80, vsampler);
-
-                const trainer_result_t result = trainer(tsampler, vsampler);
+                const trainer_result_t result = trainer();
 
                 tvalues(result.m_opt_state.m_tvalue);
                 vvalues(result.m_opt_state.m_vvalue);
@@ -45,7 +41,8 @@ void test_optimizer(const task_t& task, ttrainer trainer, const string_t& name, 
 }
 
 void test_optimizers(
-        const task_t& task, model_t& model, const loss_t& loss, const string_t& criterion,
+        const task_t& task, model_t& model, const sampler_t& tsampler, const sampler_t& vsampler,
+        const loss_t& loss, const string_t& criterion,
         const string_t& config_name)
 {
         const size_t cmd_iterations = 32;
@@ -86,9 +83,8 @@ void test_optimizers(
 
         for (batch_optimizer optimizer : batch_optimizers)
         {
-                test_optimizer(task, [&] (const sampler_t& tsampler, const sampler_t& vsampler)
+                test_optimizer(model, [&] ()
                 {
-                        model.random_params();
                         return ncv::batch_train(
                                 model, task, tsampler, vsampler, ncv::n_threads(),
                                 loss, criterion, optimizer, cmd_iterations, cmd_epsilon, verbose);
@@ -97,9 +93,8 @@ void test_optimizers(
 
         for (batch_optimizer optimizer : minibatch_optimizers)
         {
-                test_optimizer(task, [&] (const sampler_t& tsampler, const sampler_t& vsampler)
+                test_optimizer(task, [&] ()
                 {
-                        model.random_params();
                         return ncv::minibatch_train(
                                 model, task, tsampler, vsampler, ncv::n_threads(),
                                 loss, criterion, optimizer, cmd_epochs, cmd_epsilon, verbose);
@@ -108,9 +103,8 @@ void test_optimizers(
 
         for (stochastic_optimizer optimizer : stochastic_optimizers)
         {
-                test_optimizer(task, [&] (const sampler_t& tsampler, const sampler_t& vsampler)
+                test_optimizer(task, [&] ()
                 {
-                        model.random_params();
                         return ncv::stochastic_train(
                                 model, task, tsampler, vsampler, ncv::n_threads(),
                                 loss, criterion, optimizer, cmd_epochs, verbose);
@@ -129,6 +123,7 @@ int main(int argc, char *argv[])
         const size_t cmd_cols = 16;
         const size_t cmd_outputs = 9;
 
+        // create task
         synthetic_shapes_task_t task(
                 "rows=" + text::to_string(cmd_rows) + "," +
                 "cols=" + text::to_string(cmd_cols) + "," +
@@ -138,6 +133,14 @@ int main(int argc, char *argv[])
         task.load("");
 	task.describe();
 
+        // create training & validation samples
+        sampler_t tsampler(task);
+        tsampler.setup(sampler_t::atype::annotated);
+
+        sampler_t vsampler(task);
+        tsampler.split(80, vsampler);
+
+        // construct models
         const string_t lmodel0;
         const string_t lmodel1 = lmodel0 + "linear:dims=16;act-snorm;";
         const string_t lmodel2 = lmodel1 + "linear:dims=16;act-snorm;";
@@ -159,7 +162,7 @@ int main(int argc, char *argv[])
                 cmodel + outlayer
         };
 
-        const strings_t cmd_losses = { "classnll", "logistic" }; //loss_manager_t::instance().ids();
+        const strings_t cmd_losses = { "classnll" }; //loss_manager_t::instance().ids();
         const strings_t cmd_criteria = { "avg" }; //criterion_manager_t::instance().ids();
 
         // vary the model
@@ -184,7 +187,7 @@ int main(int argc, char *argv[])
                         {
                                 log_info() << "<<< running criterion [" << cmd_criterion << "] ...";
 
-                                test_optimizers(task, *model, *loss, cmd_criterion,
+                                test_optimizers(task, *model, tsampler, vsampler, *loss, cmd_criterion,
                                                 "loss [" + cmd_loss + "], criterion [" + cmd_criterion + "]");
                         }
                 }
