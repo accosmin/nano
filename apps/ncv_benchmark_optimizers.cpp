@@ -22,6 +22,8 @@ void test_optimizer(model_t& model, ttrainer trainer, const string_t& name, tabu
         stats_t<scalar_t> terrors;
         stats_t<scalar_t> verrors;
 
+        log_info() << "running " << name << " ...";
+
         const size_t usec = ncv::measure_robustly_usec([&] ()
         {
                 model.random_params();
