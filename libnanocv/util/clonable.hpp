@@ -54,11 +54,11 @@ namespace ncv
         #define NANOCV_MAKE_CLONABLE(base_class, description_text) \
                 virtual robject_t make(const string_t& configuration) const override \
                 { \
-                        return robject_t(new base_class(configuration)); \
+                        return std::make_shared<base_class>(configuration); \
                 } \
                 virtual robject_t clone() const override \
                 { \
-                        return robject_t(new base_class(*this)); \
+                        return std::make_shared<base_class>(*this); \
                 } \
                 virtual string_t description() const override \
                 { \
