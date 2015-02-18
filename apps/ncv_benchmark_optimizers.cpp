@@ -93,7 +93,7 @@ void test_optimizers(
 
         for (batch_optimizer optimizer : minibatch_optimizers)
         {
-                test_optimizer(task, [&] ()
+                test_optimizer(model, [&] ()
                 {
                         return ncv::minibatch_train(
                                 model, task, tsampler, vsampler, ncv::n_threads(),
@@ -103,7 +103,7 @@ void test_optimizers(
 
         for (stochastic_optimizer optimizer : stochastic_optimizers)
         {
-                test_optimizer(task, [&] ()
+                test_optimizer(model, [&] ()
                 {
                         return ncv::stochastic_train(
                                 model, task, tsampler, vsampler, ncv::n_threads(),
