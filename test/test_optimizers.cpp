@@ -73,6 +73,13 @@ namespace test
                 {
                         batch_optimizer::GD,
                         batch_optimizer::CGD,
+//                        batch_optimizer::CGD_CD,
+                        batch_optimizer::CGD_DY,
+//                        batch_optimizer::CGD_FR,
+//                        batch_optimizer::CGD_HS,
+                        batch_optimizer::CGD_LS,
+                        batch_optimizer::CGD_N,
+                        batch_optimizer::CGD_PR,
                         batch_optimizer::LBFGS
                 };
 
