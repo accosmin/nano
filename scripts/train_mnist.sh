@@ -5,7 +5,7 @@ source common_train.sh
 # common parameters
 params=""
 params=${params}${task_mnist}
-params=${params}" --loss logistic --trials 1 --threads ${max_threads}"
+params=${params}" --loss clasnll --trials 10 --threads ${max_threads}"
 
 # models
 conv_max="--model forward-network --model-params "
@@ -32,7 +32,9 @@ mbatch_gd="--trainer minibatch --trainer-params opt=gd,epoch=32,eps=1e-4"
 mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=32,eps=1e-4"
 mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=32,eps=1e-4"
 
-batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,iters=128,eps=1e-4"
+batch_gd="--trainer batch --trainer-params opt=gd,iters=32,eps=1e-4"
+batch_cgd="--trainer batch --trainer-params opt=cgd,iters=32,eps=1e-4"
+batch_lbfgs="--trainer batch --trainer-params opt=lbfgs,iters=32,eps=1e-4"
 
 models="mlp0 mlp1 mlp2 mlp3 conv_max"
 models="mlp0"
@@ -40,7 +42,7 @@ models="mlp0"
 # train models
 for model in ${models}
 do
-        #for trainer in `echo "mbatch_lbfgs batch_lbfgs"`
+        #for trainer in `echo "batch_gd batch_cgd batch_lbfgs"`
         for trainer in `echo "mbatch_gd mbatch_cgd mbatch_lbfgs"`
 	do
                 fn_train ${dir_exp_mnist} ${trainer}_${model} ${params} ${!trainer} ${avg_crit} ${!model}${outlayer}
