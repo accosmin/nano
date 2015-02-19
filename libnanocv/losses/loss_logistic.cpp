@@ -1,5 +1,4 @@
 #include "loss_logistic.h"
-#include "libnanocv/util/math.hpp"
 #include <cassert>
 
 namespace ncv
@@ -13,27 +12,27 @@ namespace ncv
         {
                 assert(targets.size() == scores.size());
 
-                const vector_t edges = -targets.array() * scores.array();
+                const auto edges = targets.array() * scores.array();
 
-                return (edges.array() < scalar_t(0)).count();
+                return (edges < std::numeric_limits<scalar_t>::epsilon()).count();
         }
 
         scalar_t logistic_loss_t::value(const vector_t& targets, const vector_t& scores) const
         {
                 assert(targets.size() == scores.size());
 
-                const vector_t edges = -targets.array() * scores.array();
+                const auto edges_exp = (-targets.array() * scores.array()).exp();
 
-                return (edges.array().exp() + scalar_t(1)).log().sum();
+                return (edges_exp + scalar_t(1)).log().sum();
         }
         
         vector_t logistic_loss_t::vgrad(const vector_t& targets, const vector_t& scores) const
         {
                 assert(targets.size() == scores.size());
                 
-                const vector_t edges = -targets.array() * scores.array();
+                const auto edges_exp = (-targets.array() * scores.array()).exp();
 
-                return -targets.array() * edges.array().exp() / (edges.array().exp() + scalar_t(1));
+                return (-targets.array() * edges_exp) / (edges_exp + scalar_t(1));
         }
 
         indices_t logistic_loss_t::labels(const vector_t& scores) const
