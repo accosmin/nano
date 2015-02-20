@@ -1,5 +1,6 @@
 #include "tabulator.h"
 #include <cassert>
+#include <numeric>
 
 namespace ncv
 {
