@@ -68,7 +68,7 @@ namespace ncv
                         typename tvalue = typename std::remove_const<tvalue_>::type,
                         typename tresult = Eigen::Map<typename matrix_types_t<tvalue>::tmatrix>
                 >
-                tresult make_matrix(tvalue_* data, tsize rows, tsize cols)
+                tresult map_matrix(tvalue_* data, tsize rows, tsize cols)
                 {
                         return tresult(data, rows, cols);
                 }
@@ -83,7 +83,7 @@ namespace ncv
                         typename tvalue = typename std::remove_const<tvalue_>::type,
                         typename tresult = Eigen::Map<const typename matrix_types_t<tvalue>::tmatrix>
                 >
-                tresult make_matrix(const tvalue_* data, tsize rows, tsize cols)
+                tresult map_matrix(const tvalue_* data, tsize rows, tsize cols)
                 {
                         return tresult(data, rows, cols);
                 }

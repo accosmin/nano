@@ -19,10 +19,10 @@ namespace ncv
                         tscalar* odata, tsize osize)
                 {
                         // output
-                        tensor::make_vector(odata, osize).noalias() =
-                                tensor::make_vector(bdata, osize) +
-                                tensor::make_matrix(wdata, osize, isize) *
-                                tensor::make_vector(idata, isize);
+                        tensor::map_vector(odata, osize).noalias() =
+                                tensor::map_vector(bdata, osize) +
+                                tensor::map_matrix(wdata, osize, isize) *
+                                tensor::map_vector(idata, isize);
                 }
 
                 template
@@ -36,9 +36,9 @@ namespace ncv
                         const tscalar* odata, tsize osize)
                 {
                         // input gradient
-                        tensor::make_vector(idata, isize).noalias() =
-                                tensor::make_matrix(wdata, osize, isize).transpose() *
-                                tensor::make_vector(odata, osize);
+                        tensor::map_vector(idata, isize).noalias() =
+                                tensor::map_matrix(wdata, osize, isize).transpose() *
+                                tensor::map_vector(odata, osize);
                 }
 
                 template
@@ -53,12 +53,12 @@ namespace ncv
                         const tscalar* odata, tsize osize)
                 {
                         // bias & weights gradient
-                        tensor::make_vector(gbdata, osize).noalias() =
-                                tensor::make_vector(odata, osize);
+                        tensor::map_vector(gbdata, osize).noalias() =
+                                tensor::map_vector(odata, osize);
 
-                        tensor::make_matrix(gwdata, osize, isize).noalias() =
-                                tensor::make_vector(odata, osize) *
-                                tensor::make_vector(idata, isize).transpose();
+                        tensor::map_matrix(gwdata, osize, isize).noalias() =
+                                tensor::map_vector(odata, osize) *
+                                tensor::map_vector(idata, isize).transpose();
                 }
         }
 }

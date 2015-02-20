@@ -19,11 +19,11 @@ namespace ncv
                         const tsize ocols = (icols + 1) / 2;
                         const tscalar ialpha = 1 / alpha;
 
-                        auto wmap = tensor::make_matrix(wdata, irows, icols);
-                        auto smap = tensor::make_matrix(sdata, orows, ocols);
-                        auto cmap = tensor::make_matrix(cdata, orows, ocols);
-                        auto omap = tensor::make_matrix(odata, orows, ocols);
-                        auto imap = tensor::make_matrix(idata, irows, icols);
+                        auto wmap = tensor::map_matrix(wdata, irows, icols);
+                        auto smap = tensor::map_matrix(sdata, orows, ocols);
+                        auto cmap = tensor::map_matrix(cdata, orows, ocols);
+                        auto omap = tensor::map_matrix(odata, orows, ocols);
+                        auto imap = tensor::map_matrix(idata, irows, icols);
 
                         wmap = (imap.array() * alpha).exp();
 
@@ -54,10 +54,10 @@ namespace ncv
                         const tsize orows = (irows + 1) / 2;
                         const tsize ocols = (icols + 1) / 2;
 
-                        auto wmap = tensor::make_matrix(wdata, irows, icols);
-                        auto smap = tensor::make_matrix(sdata, orows, ocols);
-                        auto gmap = tensor::make_matrix(gdata, orows, ocols);
-                        auto imap = tensor::make_matrix(idata, irows, icols);
+                        auto wmap = tensor::map_matrix(wdata, irows, icols);
+                        auto smap = tensor::map_matrix(sdata, orows, ocols);
+                        auto gmap = tensor::map_matrix(gdata, orows, ocols);
+                        auto imap = tensor::map_matrix(idata, irows, icols);
 
                         for (tsize r = 0, rr = 0; r < irows; r ++, rr = r / 2)
                         {

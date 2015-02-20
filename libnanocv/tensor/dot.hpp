@@ -15,7 +15,7 @@ namespace ncv
                 >
                 tscalar dot_eig(const tscalar* vec1, const tscalar* vec2, int size)
                 {
-                        return tensor::make_vector(vec1, size).dot(tensor::make_vector(vec2, size));
+                        return tensor::map_vector(vec1, size).dot(tensor::map_vector(vec2, size));
                 }
         }
 }

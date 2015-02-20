@@ -201,8 +201,8 @@ namespace ncv
 
                         toeplitz.setRandom();
 
-                        tensor::make_vector(odata.data(), osize)
-                                += toeplitz * tensor::make_vector(idata.data(), isize);
+                        tensor::map_vector(odata.data(), osize)
+                                += toeplitz * tensor::map_vector(idata.data(), isize);
                 }
         }
 }

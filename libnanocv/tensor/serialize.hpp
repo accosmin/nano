@@ -16,7 +16,7 @@ namespace ncv
                 >
                 typename ttensor::Scalar* save(const ttensor& t, typename ttensor::Scalar* data)
                 {
-                        tensor::make_vector(data, t.size()) = tensor::make_vector(t.data(), t.size());
+                        tensor::map_vector(data, t.size()) = tensor::map_vector(t.data(), t.size());
                         return data + t.size();
                 }
 
@@ -29,7 +29,7 @@ namespace ncv
                 >
                 const typename ttensor::Scalar* load(ttensor& t, const typename ttensor::Scalar* data)
                 {
-                        tensor::make_vector(t.data(), t.size()) = tensor::make_vector(data, t.size());
+                        tensor::map_vector(t.data(), t.size()) = tensor::map_vector(data, t.size());
                         return data + t.size();
                 }
         }

@@ -28,13 +28,13 @@ namespace ncv
                         // output
                         for (tsize o = 0, k = 0; o < odims; o ++)
                         {
-                                auto omap = tensor::make_matrix(odata + o * osize, orows, ocols);
+                                auto omap = tensor::map_matrix(odata + o * osize, orows, ocols);
 
                                 omap.setZero();
                                 for (tsize i = 0; i < idims; i ++, k ++)
                                 {
-                                        auto imap = tensor::make_matrix(idata + i * isize, irows, icols);
-                                        auto kmap = tensor::make_matrix(kdata + k * ksize, krows, kcols);
+                                        auto imap = tensor::map_matrix(idata + i * isize, irows, icols);
+                                        auto kmap = tensor::map_matrix(kdata + k * ksize, krows, kcols);
 
                                         ncv::conv2d_dyn(imap, kmap, omap);
                                 }
@@ -59,15 +59,15 @@ namespace ncv
                         const tsize ksize = krows * kcols;
 
                         // input gradient
-                        tensor::make_vector(gidata, idims * isize).setZero();
+                        tensor::map_vector(gidata, idims * isize).setZero();
                         for (tsize o = 0, k = 0; o < odims; o ++)
                         {
-                                auto omap = tensor::make_matrix(odata + o * osize, orows, ocols);
+                                auto omap = tensor::map_matrix(odata + o * osize, orows, ocols);
 
                                 for (tsize i = 0; i < idims; i ++, k ++)
                                 {
-                                        auto gimap = tensor::make_matrix(gidata + i * isize, irows, icols);
-                                        auto kmap = tensor::make_matrix(kdata + k * ksize, krows, kcols);
+                                        auto gimap = tensor::map_matrix(gidata + i * isize, irows, icols);
+                                        auto kmap = tensor::map_matrix(kdata + k * ksize, krows, kcols);
 
                                         ncv::corr2d_dyn(omap, kmap, gimap);
                                 }
@@ -94,12 +94,12 @@ namespace ncv
                         // convolution kernel gradient
                         for (tsize o = 0, k = 0; o < odims; o ++)
                         {
-                                auto omap = tensor::make_matrix(odata + o * osize, orows, ocols);
+                                auto omap = tensor::map_matrix(odata + o * osize, orows, ocols);
 
                                 for (tsize i = 0; i < idims; i ++, k ++)
                                 {
-                                        auto imap = tensor::make_matrix(idata + i * isize, irows, icols);
-                                        auto gkmap = tensor::make_matrix(gkdata + k * ksize, krows, kcols);
+                                        auto imap = tensor::map_matrix(idata + i * isize, irows, icols);
+                                        auto gkmap = tensor::map_matrix(gkdata + k * ksize, krows, kcols);
 
                                         gkmap.setZero();
                                         ncv::conv2d_dyn(imap, omap, gkmap);

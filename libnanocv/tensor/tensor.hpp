@@ -119,20 +119,20 @@ namespace ncv
 
                         Eigen::Map<tmatrix> plane_matrix(tsize i = 0)
                         {
-                                return tensor::make_matrix(plane_data(i), rows(), cols());
+                                return tensor::map_matrix(plane_data(i), rows(), cols());
                         }
                         Eigen::Map<const tmatrix> plane_matrix(tsize i = 0) const
                         {
-                                return tensor::make_matrix(plane_data(i), rows(), cols());
+                                return tensor::map_matrix(plane_data(i), rows(), cols());
                         }
 
                         Eigen::Map<tvector> plane_vector(tsize i = 0)
                         {
-                                return tensor::make_vector(plane_data(i), plane_size());
+                                return tensor::map_vector(plane_data(i), plane_size());
                         }
                         Eigen::Map<const tvector> plane_vector(tsize i = 0) const
                         {
-                                return tensor::make_vector(plane_data(i), plane_size());
+                                return tensor::map_vector(plane_data(i), plane_size());
                         }
 
                         ///
@@ -163,7 +163,7 @@ namespace ncv
                         >
                         void copy_from(const ttscalar* d)
                         {
-                                m_data = tensor::make_vector(d, size());
+                                m_data = tensor::map_vector(d, size());
                         }
                         template
                         <
@@ -171,7 +171,7 @@ namespace ncv
                         >
                         void copy_to(ttscalar* d) const
                         {                                
-                                tensor::make_vector(d, size()) = m_data;
+                                tensor::map_vector(d, size()) = m_data;
                         }
 
                         ///
@@ -204,7 +204,7 @@ namespace ncv
                         >
                         void copy_plane_from(tsize i, const ttscalar* d)
                         {
-                                tensor::make_vector(plane_data(i), plane_size()) = tensor::make_vector(d, plane_size());
+                                tensor::map_vector(plane_data(i), plane_size()) = tensor::map_vector(d, plane_size());
                         }
                         template
                         <
@@ -212,7 +212,7 @@ namespace ncv
                         >
                         void copy_plane_to(tsize i, ttscalar* d) const
                         {
-                                tensor::make_vector(d, plane_size()) = tensor::make_vector(plane_data(i), plane_size());
+                                tensor::map_vector(d, plane_size()) = tensor::map_vector(plane_data(i), plane_size());
                         }
 
                 private:

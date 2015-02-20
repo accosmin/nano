@@ -67,7 +67,7 @@ namespace ncv
                         typename tvalue = typename std::remove_const<tvalue_>::type,
                         typename tresult = Eigen::Map<typename vector_types_t<tvalue>::tvector>
                 >
-                tresult make_vector(tvalue_* data, tsize rows)
+                tresult map_vector(tvalue_* data, tsize rows)
                 {
                         return tresult(data, rows);
                 }
@@ -82,7 +82,7 @@ namespace ncv
                         typename tvalue = typename std::remove_const<tvalue_>::type,
                         typename tresult = Eigen::Map<const typename vector_types_t<tvalue>::tvector>
                 >
-                tresult make_vector(const tvalue_* data, tsize rows)
+                tresult map_vector(const tvalue_* data, tsize rows)
                 {
                         return tresult(data, rows);
                 }

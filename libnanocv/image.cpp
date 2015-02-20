@@ -84,7 +84,7 @@ namespace ncv
                 const coord_t size = rows * cols;
 
                 m_luma.resize(rows, cols);
-                tensor::transform(tensor::make_vector(buffer, size),
+                tensor::transform(tensor::map_vector(buffer, size),
                                   m_luma, [] (char luma) { return static_cast<luma_t>(luma); });
 
                 return setup_luma();
@@ -95,9 +95,9 @@ namespace ncv
                 const coord_t size = rows * cols;
 
                 m_rgba.resize(rows, cols);
-                tensor::transform(tensor::make_vector(buffer + 0 * stride, size),
-                                  tensor::make_vector(buffer + 1 * stride, size),
-                                  tensor::make_vector(buffer + 2 * stride, size),
+                tensor::transform(tensor::map_vector(buffer + 0 * stride, size),
+                                  tensor::map_vector(buffer + 1 * stride, size),
+                                  tensor::map_vector(buffer + 2 * stride, size),
                                   m_rgba, [] (char r, char g, char b) { return color::make_rgba(r, g, b); });
 
                 return setup_rgba();
