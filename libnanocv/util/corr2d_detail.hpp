@@ -1,7 +1,6 @@
 #pragma once
 
 #include "mad.hpp"
-#include <cassert>
 
 namespace ncv
 {

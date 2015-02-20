@@ -259,7 +259,7 @@ BOOST_AUTO_TEST_CASE(test_corr2d)
         const int min_isize = 24;
         const int max_isize = 48;
         const int min_ksize = 5;
-        const int n_tests = 256;
+        const int n_tests = 64;
 
 #ifdef NANOCV_HAVE_OPENCL
         try

@@ -2,6 +2,7 @@
 #include "libnanocv/util/conv2d.hpp"
 #include "libnanocv/util/measure.hpp"
 #include "libnanocv/util/tabulator.h"
+#include "libnanocv/tensor/conv2d.hpp"
 #ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
 #endif
@@ -243,7 +244,7 @@ void test_conv2d(tabulator_t::row_t& row, int isize, int ksize)
         test_cpu(row, ncv::conv2d_dot<matrix_t>, idata, kdata, odata);
         test_cpu(row, ncv::conv2d_mad<matrix_t>, idata, kdata, odata);
         test_cpu(row, ncv::conv2d_dyn<matrix_t>, idata, kdata, odata);
-        test_cpu(row, ncv::conv2d_toe<matrix_t>, idata, kdata, odata);
+        test_cpu(row, ncv::tensor::conv2d_toeplitz<matrix_t>, idata, kdata, odata);
 #if defined(NANOCV_HAVE_OPENCL)
         test_gpu(row, "conv_kernel", idata, kdata, odata);
 #elif defined(NANOCV_HAVE_CUDA)

@@ -2,7 +2,6 @@
 
 #include "dot.hpp"
 #include "mad.hpp"
-#include "libnanocv/tensor/vector.hpp"
 
 namespace ncv
 {
@@ -168,46 +167,6 @@ namespace ncv
                                 default:        conv_mad(idata, kdata, odata, mad<tscalar>); break;
                                 }
                         }
-                }
-
-                template
-                <
-                        typename tmatrixi,
-                        typename tmatrixk = tmatrixi,
-                        typename tmatrixo = tmatrixi,
-                        typename tscalar = typename tmatrixi::Scalar
-                >
-                void conv_toeplitz(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
-                {
-                        const auto orows = odata.rows();
-                        const auto ocols = odata.cols();
-                        const auto osize = odata.size();
-                        const auto krows = kdata.rows();
-                        const auto kcols = kdata.cols();
-                        const auto icols = idata.cols();
-                        const auto isize = idata.size();
-
-                        typename tensor::vector_types_t<tscalar>::tvector toeplitz_rowchunk(krows * icols - ocols + 1);
-                        toeplitz_rowchunk.setZero();
-                        for (auto kr = 0; kr < krows; kr ++)
-                        {
-                                toeplitz_rowchunk.segment(kr * icols, kcols) = kdata.row(kr);
-                        }
-
-                        tmatrixo toeplitz_matrix(osize, isize);
-                        toeplitz_matrix.setZero();
-                        for (auto r = 0; r < orows; r ++)
-                        {
-                                for (auto c = 0; c < ocols; c ++)
-                                {
-                                        toeplitz_matrix
-                                        .row(r * ocols + c)
-                                        .segment(r * icols + c, toeplitz_rowchunk.size()) = toeplitz_rowchunk;
-                                }
-                        }
-
-                        tensor::map_vector(odata.data(), osize)
-                                += toeplitz_matrix * tensor::map_vector(idata.data(), isize);
                 }
         }
 }

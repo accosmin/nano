@@ -7,6 +7,7 @@
 #include "libnanocv/util/close.hpp"
 #include "libnanocv/util/conv2d.hpp"
 #include "libnanocv/util/epsilon.hpp"
+#include "libnanocv/tensor/conv2d.hpp"
 #ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
 #endif
@@ -214,7 +215,7 @@ namespace test
                 const scalar_t convcpu_dot = test_cpu(ncv::conv2d_dot<matrix_t>, idata, kdata, odata);
                 const scalar_t convcpu_mad = test_cpu(ncv::conv2d_mad<matrix_t>, idata, kdata, odata);
                 const scalar_t convcpu_dyn = test_cpu(ncv::conv2d_dyn<matrix_t>, idata, kdata, odata);
-                const scalar_t convcpu_toe = test_cpu(ncv::conv2d_toe<matrix_t>, idata, kdata, odata);
+                const scalar_t convcpu_toe = test_cpu(ncv::tensor::conv2d_toeplitz<matrix_t>, idata, kdata, odata);
         #if defined(NANOCV_HAVE_OPENCL)
                 const scalar_t convgpu    = test_gpu("conv_kernel", idata, kdata, odata);
         #elif defined(NANOCV_HAVE_CUDA)
@@ -254,7 +255,7 @@ BOOST_AUTO_TEST_CASE(test_conv2d)
         const int min_isize = 24;
         const int max_isize = 48;
         const int min_ksize = 5;
-        const int n_tests = 256;
+        const int n_tests = 64;
 
 #ifdef NANOCV_HAVE_OPENCL
         try
