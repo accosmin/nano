@@ -182,27 +182,32 @@ namespace ncv
                         const auto orows = odata.rows();
                         const auto ocols = odata.cols();
                         const auto osize = odata.size();
-
                         const auto krows = kdata.rows();
                         const auto kcols = kdata.cols();
-                        const auto irows = idata.rows();
                         const auto icols = idata.cols();
                         const auto isize = idata.size();
 
-//                        auto toeplitz_row = tensor::vector_types_t<tscalar>::tvector
-
-                        tmatrixo toeplitz(osize, isize);
-                        toeplitz.setZero();
-
-                        for (auto o = 0; o < osize; o ++)
+                        typename tensor::vector_types_t<tscalar>::tvector toeplitz_rowchunk(krows * icols - ocols + 1);
+                        toeplitz_rowchunk.setZero();
+                        for (auto kr = 0; kr < krows; kr ++)
                         {
-
+                                toeplitz_rowchunk.segment(kr * icols, kcols) = kdata.row(kr);
                         }
 
-                        toeplitz.setRandom();
+                        tmatrixo toeplitz_matrix(osize, isize);
+                        toeplitz_matrix.setZero();
+                        for (auto r = 0; r < orows; r ++)
+                        {
+                                for (auto c = 0; c < ocols; c ++)
+                                {
+                                        toeplitz_matrix
+                                        .row(r * ocols + c)
+                                        .segment(r * icols + c, toeplitz_rowchunk.size()) = toeplitz_rowchunk;
+                                }
+                        }
 
                         tensor::map_vector(odata.data(), osize)
-                                += toeplitz * tensor::map_vector(idata.data(), isize);
+                                += toeplitz_matrix * tensor::map_vector(idata.data(), isize);
                 }
         }
 }
