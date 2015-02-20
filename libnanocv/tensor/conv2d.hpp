@@ -17,7 +17,7 @@ namespace ncv
                         typename tmatrixo = tmatrixi,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                void conv2d_toeplitz(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                tmatrixo conv2d_make_toeplitz(const tmatrixi& idata, const tmatrixk& kdata, const tmatrixo& odata)
                 {
                         assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                         assert(idata.cols() + 1 == kdata.cols() + odata.cols());
@@ -49,8 +49,46 @@ namespace ncv
                                 }
                         }
 
-                        tensor::map_vector(odata.data(), osize)
-                                += toeplitz_matrix * tensor::map_vector(idata.data(), isize);
+                        return toeplitz_matrix;
+                }
+
+                ///
+                /// \brief 2D convolution: odata += idata @ kdata (using an already computed Toeplitz matrix)
+                ///
+                template
+                <
+                        typename tmatrixi,
+                        typename tmatrixk = tmatrixi,
+                        typename tmatrixo = tmatrixi,
+                        typename tscalar = typename tmatrixi::Scalar
+                >
+                void conv2d_toeplitz_buffered(const tmatrixi& idata, const tmatrixk& kdata, const tmatrixo& toeplitz, tmatrixo& odata)
+                {
+                        assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                        assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+
+                        const auto osize = odata.size();
+                        const auto isize = idata.size();
+
+                        tensor::map_vector(odata.data(), osize) += toeplitz * tensor::map_vector(idata.data(), isize);
+                }
+
+                ///
+                /// \brief 2D convolution: odata += idata @ kdata (using a Toeplitz matrix computed on the fly)
+                ///
+                template
+                <
+                        typename tmatrixi,
+                        typename tmatrixk = tmatrixi,
+                        typename tmatrixo = tmatrixi,
+                        typename tscalar = typename tmatrixi::Scalar
+                >
+                void conv2d_toeplitz(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                {
+                        assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                        assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+
+                        return conv2d_toeplitz_buffered(idata, kdata, conv2d_make_toeplitz(idata, kdata, odata), odata);
                 }
         }
 }
