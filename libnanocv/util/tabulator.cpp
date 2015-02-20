@@ -50,69 +50,88 @@ namespace ncv
                 }
         }
 
+        std::size_t tabulator_t::border() const
+        {
+                return 4;
+        }
+
+        size_t tabulator_t::name_colsize() const
+        {
+                size_t colsize = 0;
+                for (const row_t& row : m_rows)
+                {
+                        colsize = std::max(colsize, row.name().size());
+                }
+                colsize = std::max(colsize, m_title.size()) + border();
+
+                return colsize;
+        }
+
+        std::vector<std::size_t> tabulator_t::value_colsizes() const
+        {
+                std::vector<std::size_t> colsizes(cols(), 0);
+                for (size_t c = 0; c < cols(); c ++)
+                {
+                        colsizes[c] = std::max(colsizes[c], m_header[c].size());
+                }
+                for (const row_t& row : m_rows)
+                {
+                        for (size_t c = 0; c < std::min(cols(), row.size()); c ++)
+                        {
+                                colsizes[c] = std::max(colsizes[c], row[c].size());
+                        }
+                }
+                for (size_t& colsize : colsizes)
+                {
+                        colsize += border();
+                }
+
+                return colsizes;
+        }
+
         bool tabulator_t::print(std::ostream& os,
                 const char table_delim,
                 const char row_delim, bool use_row_delim) const
         {
-                const size_t border = 4;
-
                 const char col_delim = ' ';
 
-                // size of name column (in characters)
-                size_t name_colsize = 0;
-                for (const row_t& row : m_rows)
-                {
-                        name_colsize = std::max(name_colsize, row.name().size());
-                }
-                name_colsize = std::max(name_colsize, m_title.size());
-                name_colsize += border;
+                // size of name & value columns (in characters)
+                const auto ncolsize = this->name_colsize();
+                const auto vcolsizes = this->value_colsizes();
 
-                // size of value columns (in characters)
-                size_t value_colsize = 0;
-                for (const string_t& colname : m_header.values())
-                {
-                        value_colsize = std::max(value_colsize, colname.size());
-                }
-                for (const row_t& row : m_rows)
-                {
-                        for (const string_t& value : row.values())
-                        {
-                                value_colsize = std::max(value_colsize, value.size());
-                        }
-                }
-                value_colsize += border;
+                const auto rowsize = ncolsize + std::accumulate(vcolsizes.begin(), vcolsizes.end(), size_t(0));
 
                 // display header
-                os << string_t(name_colsize + cols() * value_colsize, table_delim) << std::endl;
+                os << string_t(rowsize, table_delim) << std::endl;
 
-                os << text::resize(m_title, name_colsize);
-                for (const string_t& colname : m_header.values())
+                os << text::resize(m_title, ncolsize);
+                for (size_t c = 0; c < cols(); c ++)
                 {
-                        os << text::resize(col_delim + colname, value_colsize);
+                        os << text::resize(col_delim + m_header[c], vcolsizes[c]);
                 }
                 os << std::endl;
 
-                os << string_t(name_colsize + cols() * value_colsize, row_delim) << std::endl;
+                os << string_t(rowsize, row_delim) << std::endl;
 
                 // display rows
-                for (size_t i = 0; i < m_rows.size(); i ++)
+                for (size_t r = 0; r < m_rows.size(); r ++)
                 {
-                        const row_t& row = m_rows[i];
+                        const row_t& row = m_rows[r];
 
-                        if (i > 0 && i < m_rows.size() && use_row_delim)
+                        if (r > 0 && r < m_rows.size() && use_row_delim)
                         {
-                                os << string_t(name_colsize + cols() * value_colsize, row_delim) << std::endl;
+                                os << string_t(rowsize, row_delim) << std::endl;
                         }
 
-                        os << text::resize(row.name(), name_colsize);
-                        for (const string_t& value : row.values())
+                        os << text::resize(row.name(), ncolsize);
+                        for (size_t c = 0; c < std::min(cols(), row.size()); c ++)
                         {
-                                os << text::resize(col_delim + value, value_colsize);
+                                os << text::resize(col_delim + row[c], vcolsizes[c]);
                         }
                         os << std::endl;
                 }
 
-                os << string_t(name_colsize + cols() * value_colsize, table_delim) << std::endl;
+                os << string_t(rowsize, table_delim) << std::endl;
 
                 return true;
         }

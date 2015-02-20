@@ -45,6 +45,7 @@ namespace ncv
                         /// \brief retrieve the column values
                         ///
                         const strings_t& values() const { return m_values; }
+                        const string_t& operator[](size_t i) const { return m_values[i]; }
 
                         ///
                         /// \brief retrieve the number of columns
@@ -94,6 +95,7 @@ namespace ncv
                         /// \brief retrieve the column values
                         ///
                         const strings_t& values() const { return m_values; }
+                        const string_t& operator[](size_t i) const { return m_values[i]; }
 
                         ///
                         /// \brief retrieve the number of columns
@@ -150,6 +152,21 @@ namespace ncv
                 /// \brief retrieve the (current) number of rows
                 ///
                 std::size_t rows() const { return m_rows.size(); }
+
+                ///
+                /// \brief border size
+                ///
+                std::size_t border() const;
+
+                ///
+                /// \brief compute the size of each value column
+                ///
+                std::vector<std::size_t> value_colsizes() const;
+
+                ///
+                /// \brief compute the size of the name column
+                ///
+                size_t name_colsize() const;
 
         private:
 
