@@ -138,12 +138,13 @@ int main(int argc, char *argv[])
         const size_t cmd_rows = 16;
         const size_t cmd_cols = 16;
         const size_t cmd_outputs = 9;
+        const color_mode cmd_color = color_mode::rgba;
 
         // create task
         synthetic_shapes_task_t task(
                 "rows=" + text::to_string(cmd_rows) + "," +
                 "cols=" + text::to_string(cmd_cols) + "," +
-                "color=luma" + "," +
+                "color=" + text::to_string(cmd_color) + "," +
                 "dims=" + text::to_string(cmd_outputs) + "," +
                 "size=" + text::to_string(cmd_samples));
         task.load("");
