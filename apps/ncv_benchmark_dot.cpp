@@ -38,7 +38,7 @@ void test_dot(size_t size, tabulator_t::row_t& row)
         test_dot(row, ncv::dot_unroll<scalar_t, 6>, vec1, vec2);
         test_dot(row, ncv::dot_unroll<scalar_t, 7>, vec1, vec2);
         test_dot(row, ncv::dot_unroll<scalar_t, 8>, vec1, vec2);
-        test_dot(row, ncv::tensor::dot_eig<scalar_t>, vec1, vec2);
+        test_dot(row, ncv::tensor::dot<scalar_t>, vec1, vec2);
 }
 
 int main(int argc, char* argv[])

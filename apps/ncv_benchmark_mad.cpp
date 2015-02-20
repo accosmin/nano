@@ -42,7 +42,7 @@ void test_mad(size_t size, tabulator_t::row_t& row)
         test_mad(row, ncv::mad_unroll<scalar_t, 6>, vec1, vec2, wei);
         test_mad(row, ncv::mad_unroll<scalar_t, 7>, vec1, vec2, wei);
         test_mad(row, ncv::mad_unroll<scalar_t, 8>, vec1, vec2, wei);
-        test_mad(row, ncv::tensor::mad_eig<scalar_t>, vec1, vec2, wei);
+        test_mad(row, ncv::tensor::mad<scalar_t>, vec1, vec2, wei);
 }
 
 int main(int argc, char* argv[])

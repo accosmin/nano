@@ -13,7 +13,7 @@ namespace ncv
                 <
                         typename tscalar
                 >
-                void mad_eig(const tscalar* idata, tscalar weight, int size, tscalar* odata)
+                void mad(const tscalar* idata, tscalar weight, int size, tscalar* odata)
                 {
                         tensor::map_vector(odata, size) += tensor::map_vector(idata, size) * weight;
                 }
