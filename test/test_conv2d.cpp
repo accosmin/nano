@@ -214,6 +214,7 @@ namespace test
                 const scalar_t convcpu_dot = test_cpu(ncv::conv2d_dot<matrix_t>, idata, kdata, odata);
                 const scalar_t convcpu_mad = test_cpu(ncv::conv2d_mad<matrix_t>, idata, kdata, odata);
                 const scalar_t convcpu_dyn = test_cpu(ncv::conv2d_dyn<matrix_t>, idata, kdata, odata);
+                const scalar_t convcpu_toe = test_cpu(ncv::conv2d_toeplitz<matrix_t>, idata, kdata, odata);
         #if defined(NANOCV_HAVE_OPENCL)
                 const scalar_t convgpu    = test_gpu("conv_kernel", idata, kdata, odata);
         #elif defined(NANOCV_HAVE_CUDA)
@@ -227,6 +228,7 @@ namespace test
                 BOOST_CHECK_LE(math::abs(convcpu_dot - convcpu_eig), epsilon);
                 BOOST_CHECK_LE(math::abs(convcpu_mad - convcpu_eig), epsilon);
                 BOOST_CHECK_LE(math::abs(convcpu_dyn - convcpu_eig), epsilon);
+                BOOST_CHECK_LE(math::abs(convcpu_toe - convcpu_eig), epsilon);
         #if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
                 BOOST_CHECK_LE(math::abs(convgpu     - convcpu_eig), epsilon);
         #endif

@@ -14,7 +14,7 @@ namespace ncv
                         typename tmatrixi = tmatrixo,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                static void corr_cpp(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
+                void corr_cpp(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
                 {
                         const auto orows = odata.rows();
                         const auto ocols = odata.cols();
@@ -50,7 +50,7 @@ namespace ncv
                         typename tmadop,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                static void corr_madk(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata, const tmadop& madop)
+                void corr_madk(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata, const tmadop& madop)
                 {
                         const auto orows = odata.rows();
                         const auto ocols = odata.cols();
@@ -83,7 +83,7 @@ namespace ncv
                         typename tmadop,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                static void corr_mado(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata, const tmadop& madop)
+                void corr_mado(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata, const tmadop& madop)
                 {
                         const auto orows = odata.rows();
                         const auto ocols = odata.cols();
@@ -115,7 +115,7 @@ namespace ncv
                         typename tmatrixi = tmatrixo,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                static void corr_dyn(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
+                void corr_dyn(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
                 {
                         const auto kcols = kdata.cols();
 

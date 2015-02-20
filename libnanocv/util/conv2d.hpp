@@ -100,5 +100,23 @@ namespace ncv
 
                 detail::conv_dyn(idata, kdata, odata);
         }
+
+        ///
+        /// \brief 2D convolution: odata += idata @ kdata (using a Toeplitz matrix)
+        ///
+        template
+        <
+                typename tmatrixi,
+                typename tmatrixk = tmatrixi,
+                typename tmatrixo = tmatrixi,
+                typename tscalar = typename tmatrixi::Scalar
+        >
+        void conv2d_toeplitz(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+        {
+                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+
+                detail::conv_toeplitz(idata, kdata, odata);
+        }
 }
 

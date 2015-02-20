@@ -2,6 +2,7 @@
 
 #include "dot.hpp"
 #include "mad.hpp"
+#include "libnanocv/tensor/vector.hpp"
 
 namespace ncv
 {
@@ -14,7 +15,7 @@ namespace ncv
                         typename tmatrixo = tmatrixi,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                static void conv_cpp(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                void conv_cpp(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
                 {
                         const auto orows = odata.rows();
                         const auto ocols = odata.cols();
@@ -52,7 +53,7 @@ namespace ncv
                         typename tdotop,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                static void conv_dot(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata, const tdotop& dotop)
+                void conv_dot(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata, const tdotop& dotop)
                 {
                         const auto orows = odata.rows();
                         const auto ocols = odata.cols();
@@ -85,7 +86,7 @@ namespace ncv
                         typename tmadop,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                static void conv_mad(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata, const tmadop& madop)
+                void conv_mad(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata, const tmadop& madop)
                 {
                         const auto orows = odata.rows();
                         const auto ocols = odata.cols();
@@ -117,7 +118,7 @@ namespace ncv
                         typename tmatrixo = tmatrixi,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                static void conv_dyn(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                void conv_dyn(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
                 {
                         const auto kcols = kdata.cols();
                         const auto ocols = odata.cols();                        
@@ -167,6 +168,41 @@ namespace ncv
                                 default:        conv_mad(idata, kdata, odata, mad<tscalar>); break;
                                 }
                         }
+                }
+
+                template
+                <
+                        typename tmatrixi,
+                        typename tmatrixk = tmatrixi,
+                        typename tmatrixo = tmatrixi,
+                        typename tscalar = typename tmatrixi::Scalar
+                >
+                void conv_toeplitz(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                {
+                        const auto orows = odata.rows();
+                        const auto ocols = odata.cols();
+                        const auto osize = odata.size();
+
+                        const auto krows = kdata.rows();
+                        const auto kcols = kdata.cols();
+                        const auto irows = idata.rows();
+                        const auto icols = idata.cols();
+                        const auto isize = idata.size();
+
+//                        auto toeplitz_row = tensor::vector_types_t<tscalar>::tvector
+
+                        tmatrixo toeplitz(osize, isize);
+                        toeplitz.setZero();
+
+                        for (auto o = 0; o < osize; o ++)
+                        {
+
+                        }
+
+                        toeplitz.setRandom();
+
+                        tensor::make_vector(odata.data(), osize)
+                                += toeplitz * tensor::make_vector(idata.data(), isize);
                 }
         }
 }
