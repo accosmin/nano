@@ -68,25 +68,37 @@ BOOST_AUTO_TEST_CASE(test_model_io)
                 {
                         model->random_params();
 
-                        const fold_t fold = {0, protocol::test };
+                        const fold_t fold = {0, protocol::test};
 
                         const string_t header = "test [" + text::to_string(t + 1) + "/" + text::to_string(n_tests) + "] ";
                         const string_t path = "./test_model_io.test";
 
-                        // test error before saving
+                        // test error & parameters before saving
                         scalar_t lvalue_before, lerror_before;
                         const size_t lcount_before = ncv::test(task, fold, *loss, *model, lvalue_before, lerror_before);
 
+                        vector_t params(model->psize());
+                        BOOST_CHECK(model->save_params(params));
+
+                        //
                         BOOST_CHECK_EQUAL(model->save(path), true);
                         BOOST_CHECK_EQUAL(model->load(path), true);
+                        //
 
-                        // test error after loading
+                        // test error & parameters after loading
                         scalar_t lvalue_after, lerror_after;
                         const size_t lcount_after = ncv::test(task, fold, *loss, *model, lvalue_after, lerror_after);
 
+                        vector_t xparams(model->psize());
+                        BOOST_CHECK(model->save_params(xparams));
+
+                        // check
                         BOOST_CHECK_EQUAL(lcount_before, lcount_after);
                         BOOST_CHECK_EQUAL(lvalue_before, lvalue_after);
                         BOOST_CHECK_EQUAL(lerror_before, lerror_before);
+
+                        BOOST_CHECK_EQUAL(params.size(), xparams.size());
+                        BOOST_CHECK_LE((params - xparams).lpNorm<Eigen::Infinity>(), 1e-16);
 
                         // cleanup
                         std::remove(path.c_str());

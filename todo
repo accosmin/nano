@@ -4,12 +4,9 @@
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2  # blue
 set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2  # red
 
-- benchmark_models:
-	- keep only the forward/backward timings
-
 - 2D convolution & correlation using Toeplitz matrices
 
-- active the address sanitizer build (clang 3.5 should support it)
+- activate the address sanitizer build (clang 3.5 should support it)
 
 - augment training samples (to reduce overfitting):
 	- new parameter to all tasks: "noisy=off/on"

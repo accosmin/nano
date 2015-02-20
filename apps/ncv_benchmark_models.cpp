@@ -131,48 +131,11 @@ int main(int argc, char *argv[])
                 model->resize(task, true);
 
                 // select random samples
-                samples_t samples;
-                {
-                        const ncv::timer_t timer;
+                sampler_t sampler(task);
+                sampler.setup(sampler_t::stype::uniform, cmd_samples);
+                sampler.setup(sampler_t::atype::annotated);
 
-                        sampler_t sampler(task);
-                        sampler.setup(sampler_t::stype::uniform, cmd_samples);
-                        sampler.setup(sampler_t::atype::annotated);
-
-                        samples = sampler.get();
-
-                        log_info() << "<<< selected [" << samples.size()
-                                   << "] random samples in " << timer.elapsed() << ".";
-                }
-
-                // simulate parameter loading & saving
-                {
-                        const ncv::timer_t timer;
-
-                        vector_t params(model->psize());
-                        vector_t paramsx(model->psize());
-
-                        const size_t tests = 128;
-                        for (size_t t = 0; t < tests; t ++)
-                        {
-                                params.setRandom();
-
-                                model->load_params(params);
-                                model->save_params(paramsx);
-
-                                // also check parameter loading & saving
-                                const scalar_t eps = 1e-12;
-                                const scalar_t err = (params - paramsx).lpNorm<Eigen::Infinity>();
-                                if (err > eps)
-                                {
-                                        log_error() << "loading & saving parameters failed: error = "
-                                                    << err << "/" << eps << "!";
-                                }
-                        }
-
-                        log_info() << "<<< loaded & saved " << tests << " x " << model->psize()
-                                   << " parameters in " << timer.elapsed() << ".";
-                }
+                const samples_t samples = sampler.get();
 
                 // process the samples
                 for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; nthreads ++)
