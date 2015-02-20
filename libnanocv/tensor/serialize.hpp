@@ -40,7 +40,7 @@ namespace boost
         namespace serialization
         {
                 ///
-                /// serialize matrices and vectors
+                /// \brief serialize matrices and vectors
                 ///
                 template
                 <

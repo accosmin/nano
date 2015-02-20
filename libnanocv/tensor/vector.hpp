@@ -9,7 +9,7 @@ namespace ncv
         namespace tensor
         {
                 ///
-                /// vector
+                /// \brief vector types
                 ///
                 template
                 <
@@ -33,7 +33,7 @@ namespace ncv
                 };
 
                 ///
-                /// fixed size vector
+                /// \brief fixed size vector types
                 ///
                 template
                 <
@@ -58,7 +58,7 @@ namespace ncv
                 };
 
                 ///
-                /// map data to vectors
+                /// \brief map non-constant data to vectors
                 ///
                 template
                 <
@@ -73,7 +73,7 @@ namespace ncv
                 }
                 
                 ///
-                /// map data to vectors
+                /// \brief map constant data to vectors
                 ///
                 template
                 <
