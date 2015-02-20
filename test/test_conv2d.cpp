@@ -214,7 +214,7 @@ namespace test
                 const scalar_t convcpu_dot = test_cpu(ncv::conv2d_dot<matrix_t>, idata, kdata, odata);
                 const scalar_t convcpu_mad = test_cpu(ncv::conv2d_mad<matrix_t>, idata, kdata, odata);
                 const scalar_t convcpu_dyn = test_cpu(ncv::conv2d_dyn<matrix_t>, idata, kdata, odata);
-                const scalar_t convcpu_toe = test_cpu(ncv::conv2d_toeplitz<matrix_t>, idata, kdata, odata);
+                const scalar_t convcpu_toe = test_cpu(ncv::conv2d_toe<matrix_t>, idata, kdata, odata);
         #if defined(NANOCV_HAVE_OPENCL)
                 const scalar_t convgpu    = test_gpu("conv_kernel", idata, kdata, odata);
         #elif defined(NANOCV_HAVE_CUDA)

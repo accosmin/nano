@@ -243,6 +243,7 @@ void test_conv2d(tabulator_t::row_t& row, int isize, int ksize)
         test_cpu(row, ncv::conv2d_dot<matrix_t>, idata, kdata, odata);
         test_cpu(row, ncv::conv2d_mad<matrix_t>, idata, kdata, odata);
         test_cpu(row, ncv::conv2d_dyn<matrix_t>, idata, kdata, odata);
+        test_cpu(row, ncv::conv2d_toe<matrix_t>, idata, kdata, odata);
 #if defined(NANOCV_HAVE_OPENCL)
         test_gpu(row, "conv_kernel", idata, kdata, odata);
 #elif defined(NANOCV_HAVE_CUDA)
@@ -276,7 +277,8 @@ int main(int argc, char* argv[])
                                << "cpp [us]"
                                << "dot [us]"
                                << "mad [us]"
-                               << "dyn [us]";
+                               << "dyn [us]"
+                               << "toe [us]";
 #if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
                 table.header() << "gpu [us]";
 #endif
