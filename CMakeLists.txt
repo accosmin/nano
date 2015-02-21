@@ -89,9 +89,9 @@ endif()
 ######################################################################
 
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
-	message("Compiling with GCC ...")
+        message("Compiling with gcc ${CMAKE_CXX_COMPILER_VERSION} ...")
 
-	set(CMAKE_CXX_FLAGS			"-Wall -std=c++11 -march=native -mtune=native ${NANOCV_OPENMP_FLAG}")
+        set(CMAKE_CXX_FLAGS			"-Wall -std=c++11 -march=native -mtune=native ${NANOCV_OPENMP_FLAG}")
 	set(CMAKE_CXX_FLAGS_DEBUG		"-g -Og -fno-omit-frame-pointer")
 	set(CMAKE_CXX_FLAGS_RELEASE             "-O3 -DNDEBUG")         # -DEIGEN_NO_DEBUG")
 	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O2 -g")               # -DEIGEN_NO_DEBUG")
@@ -112,9 +112,9 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
 ######################################################################
 	
 elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-	message("Compiling with CLANG ...")
+        message("Compiling with Clang ${CMAKE_CXX_COMPILER_VERSION} ...")
 
-	set(CMAKE_CXX_FLAGS			"-Wall -std=c++11 -march=native -mtune=native ${NANOCV_OPENMP_FLAG}")
+        set(CMAKE_CXX_FLAGS			"-Wall -std=c++11 -march=native -mtune=native ${NANOCV_OPENMP_FLAG}")
 	set(CMAKE_CXX_FLAGS_DEBUG		"-g -fno-omit-frame-pointer")
 	set(CMAKE_CXX_FLAGS_RELEASE             "-O3 -DNDEBUG")         # -DEIGEN_NO_DEBUG")
 	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O2 -g")               # -DEIGEN_NO_DEBUG")
