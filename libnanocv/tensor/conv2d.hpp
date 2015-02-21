@@ -8,7 +8,7 @@ namespace ncv
         namespace tensor
         {
                 ///
-                /// \brief 2D convolution: odata += idata @ kdata (using a Toeplitz matrix)
+                /// \brief create a Toeplitz matrix to be used for the 2D convolution: odata += idata @ kdata
                 ///
                 template
                 <
