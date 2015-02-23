@@ -26,11 +26,6 @@ namespace ncv
                 ///
                 /// \brief disable copying
                 ///
-                noncopyable_t(noncopyable_t&& other) = delete;
-
-                ///
-                /// \brief disable copying
-                ///
                 noncopyable_t& operator=(const noncopyable_t& other) = delete;
         };
 }
