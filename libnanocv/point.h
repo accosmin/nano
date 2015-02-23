@@ -5,12 +5,6 @@
 namespace ncv
 {
         ///
-        /// \brief image coordinate
-        ///
-        typedef int16_t                 coord_t;
-        typedef int32_t                 area_t;
-
-        ///
         /// \brief 2D point
         ///
         class point_t

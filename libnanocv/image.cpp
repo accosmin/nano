@@ -668,7 +668,6 @@ namespace ncv
                         const coord_t cy = center.y();
 
                         const coord_t radius = (std::min(rect.width(), rect.height()) + 1) / 2;
-                        const coord_t radius2 = radius * radius;
 
                         const coord_t l = std::max(rect.left(), coord_t(0));
                         const coord_t r = std::min(rect.right(), static_cast<coord_t>(data.cols()));
@@ -679,7 +678,7 @@ namespace ncv
                         {
                                 for (coord_t y = t; y < b; y ++)
                                 {
-                                        if (math::square(x - cx) + math::square(y - cy) < radius2)
+                                        if (math::square(x - cx) + math::square(y - cy) < math::square(radius))
                                         {
                                                 data(y, x) = fill_value;
                                         }
@@ -721,11 +720,6 @@ namespace ncv
                         const coord_t radiusx = (rect.width() + 1) / 2;
                         const coord_t radiusy = (rect.height() + 1) / 2;
 
-                        const coord_t radiusx2 = radiusx * radiusx;
-                        const coord_t radiusy2 = radiusy * radiusy;
-
-                        const coord_t radius2 = radiusx2 * radiusy2;
-
                         const coord_t l = std::max(rect.left(), coord_t(0));
                         const coord_t r = std::min(rect.right(), static_cast<coord_t>(data.cols()));
                         const coord_t t = std::max(rect.top(), coord_t(0));
@@ -735,7 +729,9 @@ namespace ncv
                         {
                                 for (coord_t y = t; y < b; y ++)
                                 {
-                                        if (math::square(x - cx) * radiusy2 + math::square(y - cy) * radiusx2 < radius2)
+                                        if (    math::square(x - cx) * math::square(radiusy) +
+                                                math::square(y - cy) * math::square(radiusx) <
+                                                math::square(radiusx * radiusy))
                                         {
                                                 data(y, x) = fill_value;
                                         }
