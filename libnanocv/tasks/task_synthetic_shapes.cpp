@@ -244,16 +244,17 @@ namespace ncv
                                 image_t shape;
 
                                 switch (o)
-                                {
-                                case 1:         shape = make_filled_rect(rows, cols, shape_color); break;
-                                case 2:         shape = make_hollow_rect(rows, cols, shape_color); break;
-                                case 3:         shape = make_filled_ellipse(rows, cols, shape_color); break;
-                                case 4:         shape = make_hollow_ellipse(rows, cols, shape_color); break;
-                                case 5:         shape = make_cross(rows, cols, shape_color); break;
-                                case 6:         shape = make_filled_up_triangle(rows, cols, shape_color); break;
-                                case 7:         shape = make_hollow_up_triangle(rows, cols, shape_color); break;
-                                case 8:         shape = make_filled_down_triangle(rows, cols, shape_color); break;
-                                case 9:         shape = make_hollow_down_triangle(rows, cols, shape_color); break;
+                                {                                
+                                case 1:         shape = image; break;
+                                case 2:         shape = make_filled_rect(rows, cols, shape_color); break;
+                                case 3:         shape = make_hollow_rect(rows, cols, shape_color); break;
+                                case 4:         shape = make_filled_ellipse(rows, cols, shape_color); break;
+                                case 5:         shape = make_hollow_ellipse(rows, cols, shape_color); break;
+                                case 6:         shape = make_cross(rows, cols, shape_color); break;
+                                case 7:         shape = make_filled_up_triangle(rows, cols, shape_color); break;
+                                case 8:         shape = make_hollow_up_triangle(rows, cols, shape_color); break;
+                                case 9:         shape = make_filled_down_triangle(rows, cols, shape_color); break;
+                                case 10:        shape = make_hollow_down_triangle(rows, cols, shape_color); break;
                                 default:        break;
                                 }
 
@@ -266,15 +267,16 @@ namespace ncv
                                 sample_t sample(n_images() - 1, sample_region(0, 0));
                                 switch (o)
                                 {
-                                case 1:         sample.m_label = "filled_rectangle"; break;
-                                case 2:         sample.m_label = "hollow_rectangle"; break;
-                                case 3:         sample.m_label = "filled_ellipse"; break;
-                                case 4:         sample.m_label = "hollow_ellipse"; break;
-                                case 5:         sample.m_label = "cross"; break;
-                                case 6:         sample.m_label = "filled_up_triangle"; break;
-                                case 7:         sample.m_label = "hollow_up_triangle"; break;
-                                case 8:         sample.m_label = "filled_down_triangle"; break;
-                                case 9:         sample.m_label = "hollow_down_triangle"; break;
+                                case 1:         sample.m_label = "background"; break;
+                                case 2:         sample.m_label = "filled_rectangle"; break;
+                                case 3:         sample.m_label = "hollow_rectangle"; break;
+                                case 4:         sample.m_label = "filled_ellipse"; break;
+                                case 5:         sample.m_label = "hollow_ellipse"; break;
+                                case 6:         sample.m_label = "cross"; break;
+                                case 7:         sample.m_label = "filled_up_triangle"; break;
+                                case 8:         sample.m_label = "hollow_up_triangle"; break;
+                                case 9:         sample.m_label = "filled_down_triangle"; break;
+                                case 10:        sample.m_label = "hollow_down_triangle"; break;
                                 default:        sample.m_label = "unkown"; break;
                                 }
 
