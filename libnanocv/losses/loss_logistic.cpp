@@ -3,6 +3,8 @@
 
 namespace ncv
 {
+        static const scalar_t logistic_scale = 1.0 / std::log(2.0);
+
         logistic_loss_t::logistic_loss_t(const string_t& configuration)
                 :       loss_t(configuration)
         {
@@ -23,7 +25,7 @@ namespace ncv
 
                 const auto edges_exp = (-targets.array() * scores.array()).exp();
 
-                return (edges_exp + scalar_t(1)).log().sum();
+                return (edges_exp + scalar_t(1)).log().sum() * logistic_scale;
         }
         
         vector_t logistic_loss_t::vgrad(const vector_t& targets, const vector_t& scores) const
@@ -32,7 +34,7 @@ namespace ncv
                 
                 const auto edges_exp = (-targets.array() * scores.array()).exp();
 
-                return (-targets.array() * edges_exp) / (edges_exp + scalar_t(1));
+                return (-targets.array() * edges_exp) / (edges_exp + scalar_t(1)) * logistic_scale;
         }
 
         indices_t logistic_loss_t::labels(const vector_t& scores) const
