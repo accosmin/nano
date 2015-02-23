@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gauss_kernel.hpp"
+#include "range.hpp"
 
 namespace ncv
 {
@@ -16,8 +17,8 @@ namespace ncv
 
                 typename tvalue = typename tmatrix::Scalar
         >
-        bool gaussian(tmatrix& src, const gauss_kernel_t<tscalar>& kernel,
-                tscalar minv, tscalar maxv, tgetter getter, tsetter setter)
+        bool gaussian(const gauss_kernel_t<tscalar>& kernel, const range_t<tscalar>& range,
+                tmatrix& src, tgetter getter, tsetter setter)
         {
                 const int rows = static_cast<int>(src.rows());
                 const int cols = static_cast<int>(src.cols());
@@ -50,7 +51,7 @@ namespace ncv
                                         v += kernel[k + krad] * buff[cc];
                                 }
 
-                                src(r, c) = setter(src(r, c), math::cast<tvalue>(math::clamp(v, minv, maxv)));
+                                src(r, c) = setter(src(r, c), math::cast<tvalue>(range.clamp(v)));
                         }
                 }
 
@@ -71,7 +72,7 @@ namespace ncv
                                         v += kernel[k + krad] * buff[rr];
                                 }
 
-                                src(r, c) = setter(src(r, c), math::cast<tvalue>(math::clamp(v, minv, maxv)));
+                                src(r, c) = setter(src(r, c), math::cast<tvalue>(range.clamp(v)));
                         }
                 }
 
