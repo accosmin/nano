@@ -21,9 +21,10 @@ namespace ncv
 
                 typename tvalue = typename tmatrix::Scalar
         >
-        bool additive_noise(tscalar offset, tscalar variance,
+        bool additive_noise(
+                tscalar offset, tscalar variance,
                 const gauss_kernel_t<tscalar>& kernel,
-                const range_t<tscalar>& range,
+                const range_t<tscalar>& output_range,
                 tmatrix& src, tgetter getter, tsetter setter)
         {
                 random_t<tscalar> noiser(offset - variance, offset + variance);
@@ -40,7 +41,7 @@ namespace ncv
                 // add the noise map to the input matrix
                 tensor::transform(src, noisemap, src, [&] (tvalue v, tscalar n)
                 {
-                        return setter(v, math::cast<tvalue>(range.clamp(getter(v))));
+                        return setter(v, math::cast<tvalue>(output_range.clamp(getter(v))));
                 });
 
                 // OK
