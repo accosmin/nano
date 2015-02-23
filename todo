@@ -4,6 +4,10 @@
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2  # blue
 set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2  # red
 
+- check why the logistic error decreases so slow on the benchmark application!!!
+
+- faster (but comprehensive) optimization bechmark
+
 - 2D convolution & correlation using Toeplitz matrices
 
 - activate the address sanitizer build (clang 3.5 should support it)
