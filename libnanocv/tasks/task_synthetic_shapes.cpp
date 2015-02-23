@@ -9,7 +9,7 @@ namespace ncv
                 :       task_t(configuration),
                         m_rows(math::clamp(text::from_params<size_t>(configuration, "rows", 32), 16, 48)),
                         m_cols(math::clamp(text::from_params<size_t>(configuration, "cols", 32), 16, 48)),
-                        m_outputs(math::clamp(text::from_params<size_t>(configuration, "dims", 4), 2, 9)),
+                        m_outputs(math::clamp(text::from_params<size_t>(configuration, "dims", 4), 2, 10)),
                         m_folds(1),
                         m_color(text::from_params<color_mode>(configuration, "color", color_mode::rgba)),
                         m_size(math::clamp(text::from_params<size_t>(configuration, "size", 1024), 256, 16 * 1024))
