@@ -39,9 +39,9 @@ namespace ncv
                          [] (tscalar, tscalar v) { return v; });
 
                 // add the noise map to the input matrix
-                tensor::transform(src, noisemap, src, [&] (tvalue v, tscalar n)
+                tensor::transform(src, noisemap, src, [&] (tvalue value, tscalar noise)
                 {
-                        return setter(v, math::cast<tvalue>(output_range.clamp(n + getter(v))));
+                        return setter(value, math::cast<tvalue>(output_range.clamp(noise + getter(value))));
                 });
 
                 // OK
