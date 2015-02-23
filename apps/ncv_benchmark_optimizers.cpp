@@ -47,7 +47,7 @@ void test_optimizers(
         const loss_t& loss, const string_t& criterion,
         const string_t& config_name)
 {
-        const size_t cmd_iterations = 32;
+        const size_t cmd_iterations = 128;
         const size_t cmd_epochs = cmd_iterations;
         const scalar_t cmd_epsilon = 1e-4;
         const bool verbose = false;
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
         const size_t cmd_samples = 8 * 1024;
         const size_t cmd_rows = 16;
         const size_t cmd_cols = 16;
-        const size_t cmd_outputs = 9;
+        const size_t cmd_outputs = 10;
         const color_mode cmd_color = color_mode::rgba;
 
         // create task
