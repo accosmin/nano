@@ -1,11 +1,11 @@
 #pragma once
 
-#include "gauss.hpp"
+#include "gauss_kernel.hpp"
 
 namespace ncv
 {
         ///
-        /// \brief in-place Gaussian filter with having the given standard deviation sigma
+        /// \brief in-place Gaussian filter
         ///
         template
         <
@@ -16,15 +16,13 @@ namespace ncv
 
                 typename tvalue = typename tmatrix::Scalar
         >
-        bool gaussian(tmatrix& src, tscalar sigma, tscalar cutoff,
+        bool gaussian(tmatrix& src, const gauss_kernel_t<tscalar>& kernel,
                 tscalar minv, tscalar maxv, tgetter getter, tsetter setter)
         {
                 const int rows = static_cast<int>(src.rows());
                 const int cols = static_cast<int>(src.cols());
 
                 // construct Gaussian kernel
-                const std::vector<tscalar> kernel = make_gaussian(sigma, cutoff);
-
                 const int ksize = static_cast<int>(kernel.size());
                 const int krad = ksize / 2;
 

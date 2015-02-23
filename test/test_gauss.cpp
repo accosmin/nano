@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_gauss"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/util/gauss.hpp"
+#include "libnanocv/util/gauss_kernel.hpp"
 #include <iostream>
 
 BOOST_AUTO_TEST_CASE(test_gauss)
@@ -14,7 +14,7 @@ BOOST_AUTO_TEST_CASE(test_gauss)
         const std::vector<double> sigmas = { 0.2, 0.5, 0.7, 1.0, 1.5, 2.0, 2.5 };
         const std::vector<double> cutoffs = { 0.001, 0.01, 0.1 };
 
-        const bool normalize = true;
+        const gauss::kernel_normalization normalize = gauss::kernel_normalization::on;
 
         // test various variances
         for (double sigma : sigmas)
@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(test_gauss)
                 // test various cutoffs (skip low values in the kernel)
                 for (double cutoff : cutoffs)
                 {
-                        const std::vector<double> kernel = ncv::make_gaussian(sigma, cutoff, normalize);
+                        const auto kernel = gauss_kernel_t<double>(sigma, cutoff, normalize);
 
                         std::cout << "sigma = " << sigma << ", cutoff = " << cutoff << std::endl;
                         std::cout << "kernel = {";
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(test_gauss)
                         /// \todo more tests!
 
                         // check kernel sum
-                        const double sum = std::accumulate(kernel.begin(), kernel.end(), 0.0);
+                        const double sum = kernel.sum();
                         BOOST_CHECK_LE(sum, 1.0 + 1e-8);
                         BOOST_CHECK_GE(sum, 1.0 - 1e-8);
                 }

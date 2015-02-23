@@ -10,7 +10,7 @@ namespace ncv
         ///
         /// \brief in-place random additive noise [offset - range, offset + range]
         ///
-        /// \note the noise is smoothed with a Gaussian filter having the given sigma
+        /// \note the noise is smoothed with a Gaussian filter
         ///
         template
         <
@@ -21,7 +21,7 @@ namespace ncv
 
                 typename tvalue = typename tmatrix::Scalar
         >
-        bool additive_noise(tmatrix& src, tscalar offset, tscalar range, tscalar sigma, tscalar cutoff,
+        bool additive_noise(tmatrix& src, tscalar offset, tscalar range, const gauss_kernel_t<tscalar>& kernel,
                 tscalar minv, tscalar maxv, tgetter getter, tsetter setter)
         {
                 random_t<tscalar> noiser(offset - range, offset + range);
@@ -31,7 +31,7 @@ namespace ncv
                 tensor::transform(noisemap, noisemap, [&] (tvalue) { return noiser(); });
 
                 // smooth the noise map
-                gaussian(noisemap, sigma, cutoff, noiser.min(), noiser.max(),
+                gaussian(noisemap, kernel, noiser.min(), noiser.max(),
                          [] (tscalar v) { return v; },
                          [] (tscalar, tscalar v) { return v; });
 

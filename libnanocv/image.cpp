@@ -523,31 +523,32 @@ namespace ncv
 
         bool image_t::random_noise(color_channel channel, scalar_t offset, scalar_t range, scalar_t sigma)
         {
-                static const scalar_t cutoff(0.01);
                 static const scalar_t cmin(0);
                 static const scalar_t cmax(255);
+
+                const gauss_kernel_t<scalar_t> kernel(sigma);
 
                 switch (m_mode)
                 {
                 case color_mode::luma:
-                        return additive_noise(m_luma, offset, range, sigma, cutoff, cmin, cmax, color::get_luma, color::set_luma);
+                        return additive_noise(m_luma, offset, range, kernel, cmin, cmax, color::get_luma, color::set_luma);
 
                 case color_mode::rgba:
                         switch (channel)
                         {
                         case color_channel::red:
-                                return additive_noise(m_rgba, offset, range, sigma, cutoff, cmin, cmax, color::get_red, color::set_red);
+                                return additive_noise(m_rgba, offset, range, kernel, cmin, cmax, color::get_red, color::set_red);
 
                         case color_channel::green:
-                                return additive_noise(m_rgba, offset, range, sigma, cutoff, cmin, cmax, color::get_green, color::set_green);
+                                return additive_noise(m_rgba, offset, range, kernel, cmin, cmax, color::get_green, color::set_green);
 
                         case color_channel::blue:
-                                return additive_noise(m_rgba, offset, range, sigma, cutoff, cmin, cmax, color::get_blue, color::set_blue);
+                                return additive_noise(m_rgba, offset, range, kernel, cmin, cmax, color::get_blue, color::set_blue);
 
                         default:
-                                return additive_noise(m_rgba, offset, range, sigma, cutoff, cmin, cmax, color::get_red, color::set_red) &&
-                                       additive_noise(m_rgba, offset, range, sigma, cutoff, cmin, cmax, color::get_green, color::set_green) &&
-                                       additive_noise(m_rgba, offset, range, sigma, cutoff, cmin, cmax, color::get_blue, color::set_blue);
+                                return additive_noise(m_rgba, offset, range, kernel, cmin, cmax, color::get_red, color::set_red) &&
+                                       additive_noise(m_rgba, offset, range, kernel, cmin, cmax, color::get_green, color::set_green) &&
+                                       additive_noise(m_rgba, offset, range, kernel, cmin, cmax, color::get_blue, color::set_blue);
                         }
 
                 default:
@@ -572,31 +573,32 @@ namespace ncv
 
         bool image_t::gauss(color_channel channel, scalar_t sigma)
         {
-                static const scalar_t cutoff(0.01);
                 static const scalar_t cmin(0);
                 static const scalar_t cmax(255);
+
+                const gauss_kernel_t<scalar_t> kernel(sigma);
 
                 switch (m_mode)
                 {
                 case color_mode::luma:
-                        return gaussian(m_luma, sigma, cutoff, cmin, cmax, color::get_luma, color::set_luma);
+                        return gaussian(m_luma, kernel, cmin, cmax, color::get_luma, color::set_luma);
 
                 case color_mode::rgba:
                         switch (channel)
                         {
                         case color_channel::red:
-                                return gaussian(m_rgba, sigma, cutoff, cmin, cmax, color::get_red, color::set_red);
+                                return gaussian(m_rgba, kernel, cmin, cmax, color::get_red, color::set_red);
 
                         case color_channel::green:
-                                return gaussian(m_rgba, sigma, cutoff, cmin, cmax, color::get_green, color::set_green);
+                                return gaussian(m_rgba, kernel, cmin, cmax, color::get_green, color::set_green);
 
                         case color_channel::blue:
-                                return gaussian(m_rgba, sigma, cutoff, cmin, cmax, color::get_blue, color::set_blue);
+                                return gaussian(m_rgba, kernel, cmin, cmax, color::get_blue, color::set_blue);
 
                         default:
-                                return gaussian(m_rgba, sigma, cutoff, cmin, cmax, color::get_red, color::set_red) &&
-                                       gaussian(m_rgba, sigma, cutoff, cmin, cmax, color::get_green, color::set_green) &&
-                                       gaussian(m_rgba, sigma, cutoff, cmin, cmax, color::get_blue, color::set_blue);
+                                return gaussian(m_rgba, kernel, cmin, cmax, color::get_red, color::set_red) &&
+                                       gaussian(m_rgba, kernel, cmin, cmax, color::get_green, color::set_green) &&
+                                       gaussian(m_rgba, kernel, cmin, cmax, color::get_blue, color::set_blue);
                         }
 
                 default:
