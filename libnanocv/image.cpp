@@ -13,6 +13,29 @@ namespace ncv
                 template
                 <
                         typename tmatrix,
+                        typename toperator
+                >
+                bool apply(const rect_t& rect, const tmatrix& data, toperator op)
+                {
+                        const coord_t l = std::max(rect.left(), coord_t(0));
+                        const coord_t r = std::min(rect.right(), static_cast<coord_t>(data.cols()));
+                        const coord_t t = std::max(rect.top(), coord_t(0));
+                        const coord_t b = std::min(rect.bottom(), static_cast<coord_t>(data.rows()));
+
+                        for (coord_t x = l; x < r; x ++)
+                        {
+                                for (coord_t y = t; y < b; y ++)
+                                {
+                                        op(x, y, l, t, r, b);
+                                }
+                        }
+
+                        return true;
+                }
+
+                template
+                <
+                        typename tmatrix,
                         typename tvalue
                 >
                 bool setup_circle(const rect_t& rect, tmatrix& data, tvalue fill_value)
@@ -23,23 +46,13 @@ namespace ncv
 
                         const coord_t radius = (std::min(rect.width(), rect.height()) + 1) / 2;
 
-                        const coord_t l = std::max(rect.left(), coord_t(0));
-                        const coord_t r = std::min(rect.right(), static_cast<coord_t>(data.cols()));
-                        const coord_t t = std::max(rect.top(), coord_t(0));
-                        const coord_t b = std::min(rect.bottom(), static_cast<coord_t>(data.rows()));
-
-                        for (coord_t x = l; x < r; x ++)
+                        return apply(rect, data, [&] (coord_t x, coord_t y, coord_t, coord_t, coord_t, coord_t)
                         {
-                                for (coord_t y = t; y < b; y ++)
+                                if (math::square(x - cx) + math::square(y - cy) < math::square(radius))
                                 {
-                                        if (math::square(x - cx) + math::square(y - cy) < math::square(radius))
-                                        {
-                                                data(y, x) = fill_value;
-                                        }
+                                        data(y, x) = fill_value;
                                 }
-                        }
-
-                        return true;
+                        });
                 }
 
                 template
@@ -56,25 +69,15 @@ namespace ncv
                         const coord_t radiusx = (rect.width() + 1) / 2;
                         const coord_t radiusy = (rect.height() + 1) / 2;
 
-                        const coord_t l = std::max(rect.left(), coord_t(0));
-                        const coord_t r = std::min(rect.right(), static_cast<coord_t>(data.cols()));
-                        const coord_t t = std::max(rect.top(), coord_t(0));
-                        const coord_t b = std::min(rect.bottom(), static_cast<coord_t>(data.rows()));
-
-                        for (coord_t x = l; x < r; x ++)
+                        return apply(rect, data, [&] (coord_t x, coord_t y, coord_t, coord_t, coord_t, coord_t)
                         {
-                                for (coord_t y = t; y < b; y ++)
+                                if (    math::square(x - cx) * math::square(radiusy) +
+                                        math::square(y - cy) * math::square(radiusx) <
+                                        math::square(radiusx * radiusy))
                                 {
-                                        if (    math::square(x - cx) * math::square(radiusy) +
-                                                math::square(y - cy) * math::square(radiusx) <
-                                                math::square(radiusx * radiusy))
-                                        {
-                                                data(y, x) = fill_value;
-                                        }
+                                        data(y, x) = fill_value;
                                 }
-                        }
-
-                        return true;
+                        });
                 }
 
                 template
@@ -87,25 +90,15 @@ namespace ncv
                         const coord_t w = rect.width(), w2 = (w + 1) / 2;
                         const coord_t h = rect.height();
 
-                        const coord_t l = std::max(rect.left(), coord_t(0));
-                        const coord_t r = std::min(rect.right(), static_cast<coord_t>(data.cols()));
-                        const coord_t t = std::max(rect.top(), coord_t(0));
-                        const coord_t b = std::min(rect.bottom(), static_cast<coord_t>(data.rows()));
-
-                        for (coord_t x = l; x < r; x ++)
+                        return apply(rect, data, [&] (coord_t x, coord_t y, coord_t l, coord_t t, coord_t, coord_t)
                         {
                                 const coord_t dy = (h * math::abs(x - l - w2) + w2 - 1) / w2;
 
-                                for (coord_t y = t; y < b; y ++)
+                                if (y - t >= dy)
                                 {
-                                        if (y - t >= dy)
-                                        {
-                                                data(y, x) = fill_value;
-                                        }
+                                        data(y, x) = fill_value;
                                 }
-                        }
-
-                        return true;
+                        });
                 }
 
                 template
@@ -118,25 +111,15 @@ namespace ncv
                         const coord_t w = rect.width(), w2 = (w + 1) / 2;
                         const coord_t h = rect.height();
 
-                        const coord_t l = std::max(rect.left(), coord_t(0));
-                        const coord_t r = std::min(rect.right(), static_cast<coord_t>(data.cols()));
-                        const coord_t t = std::max(rect.top(), coord_t(0));
-                        const coord_t b = std::min(rect.bottom(), static_cast<coord_t>(data.rows()));
-
-                        for (coord_t x = l; x < r; x ++)
+                        return apply(rect, data, [&] (coord_t x, coord_t y, coord_t l, coord_t t, coord_t r, coord_t)
                         {
                                 const coord_t dy = (h * (x < l + w2 ? x - l : r - x) + w2 - 1) / w2;
 
-                                for (coord_t y = t; y < b; y ++)
+                                if (y - t <= dy)
                                 {
-                                        if (y - t <= dy)
-                                        {
-                                                data(y, x) = fill_value;
-                                        }
+                                        data(y, x) = fill_value;
                                 }
-                        }
-
-                        return true;
+                        });
                 }
         }
 
