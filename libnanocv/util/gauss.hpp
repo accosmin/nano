@@ -21,14 +21,16 @@ namespace ncv
         ///
         template
         <
-                typename tscalar,
+                typename _tscalar,
 
                 /// disable for not valid types!
-                typename tvalid_tscalar = typename std::enable_if<std::is_floating_point<tscalar>::value>::type
+                typename tvalid_tscalar = typename std::enable_if<std::is_floating_point<_tscalar>::value>::type
         >
         class gauss_kernel_t
         {
         public:
+
+                typedef _tscalar        tscalar;
 
                 ///
                 /// \brief constructor

@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_gauss"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/util/gauss_kernel.hpp"
+#include "libnanocv/util/gauss.hpp"
 #include <iostream>
 
 BOOST_AUTO_TEST_CASE(test_gauss)

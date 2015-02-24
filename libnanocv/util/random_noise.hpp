@@ -1,7 +1,8 @@
 #pragma once
 
+#include "gauss.hpp"
 #include "random.hpp"
-#include "gaussian.hpp"
+#include "separable_filter.hpp"
 #include "libnanocv/tensor/matrix.hpp"
 #include "libnanocv/tensor/transform.hpp"
 
@@ -34,7 +35,7 @@ namespace ncv
                 tensor::transform(noisemap, noisemap, [&] (tvalue) { return noiser(); });
 
                 // smooth the noise map
-                gaussian(kernel, range_t<tscalar>(noiser.min(), noiser.max()), noisemap,
+                inplace_separable_filter(kernel, range_t<tscalar>(noiser.min(), noiser.max()), noisemap,
                          [] (tscalar v) { return v; },
                          [] (tscalar, tscalar v) { return v; });
 

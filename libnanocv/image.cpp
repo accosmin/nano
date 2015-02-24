@@ -2,13 +2,144 @@
 #include "image_io.h"
 #include "libnanocv/util/math.hpp"
 #include "libnanocv/util/bilinear.hpp"
-#include "libnanocv/util/gaussian.hpp"
 #include "libnanocv/util/random_noise.hpp"
 #include "libnanocv/util/random_translate.hpp"
+#include "libnanocv/util/separable_filter.hpp"
 #include "libnanocv/tensor/transform.hpp"
 
 namespace ncv
 {
+        namespace
+        {
+                template
+                <
+                        typename tmatrix,
+                        typename tvalue
+                >
+                bool setup_circle(const rect_t& rect, tmatrix& data, tvalue fill_value)
+                {
+                        const point_t center = rect.center();
+                        const coord_t cx = center.x();
+                        const coord_t cy = center.y();
+
+                        const coord_t radius = (std::min(rect.width(), rect.height()) + 1) / 2;
+
+                        const coord_t l = std::max(rect.left(), coord_t(0));
+                        const coord_t r = std::min(rect.right(), static_cast<coord_t>(data.cols()));
+                        const coord_t t = std::max(rect.top(), coord_t(0));
+                        const coord_t b = std::min(rect.bottom(), static_cast<coord_t>(data.rows()));
+
+                        for (coord_t x = l; x < r; x ++)
+                        {
+                                for (coord_t y = t; y < b; y ++)
+                                {
+                                        if (math::square(x - cx) + math::square(y - cy) < math::square(radius))
+                                        {
+                                                data(y, x) = fill_value;
+                                        }
+                                }
+                        }
+
+                        return true;
+                }
+
+                template
+                <
+                        typename tmatrix,
+                        typename tvalue
+                >
+                bool setup_ellipse(const rect_t& rect, tmatrix& data, tvalue fill_value)
+                {
+                        const point_t center = rect.center();
+                        const coord_t cx = center.x();
+                        const coord_t cy = center.y();
+
+                        const coord_t radiusx = (rect.width() + 1) / 2;
+                        const coord_t radiusy = (rect.height() + 1) / 2;
+
+                        const coord_t l = std::max(rect.left(), coord_t(0));
+                        const coord_t r = std::min(rect.right(), static_cast<coord_t>(data.cols()));
+                        const coord_t t = std::max(rect.top(), coord_t(0));
+                        const coord_t b = std::min(rect.bottom(), static_cast<coord_t>(data.rows()));
+
+                        for (coord_t x = l; x < r; x ++)
+                        {
+                                for (coord_t y = t; y < b; y ++)
+                                {
+                                        if (    math::square(x - cx) * math::square(radiusy) +
+                                                math::square(y - cy) * math::square(radiusx) <
+                                                math::square(radiusx * radiusy))
+                                        {
+                                                data(y, x) = fill_value;
+                                        }
+                                }
+                        }
+
+                        return true;
+                }
+
+                template
+                <
+                        typename tmatrix,
+                        typename tvalue
+                >
+                bool setup_up_triangle(const rect_t& rect, tmatrix& data, tvalue fill_value)
+                {
+                        const coord_t w = rect.width(), w2 = (w + 1) / 2;
+                        const coord_t h = rect.height();
+
+                        const coord_t l = std::max(rect.left(), coord_t(0));
+                        const coord_t r = std::min(rect.right(), static_cast<coord_t>(data.cols()));
+                        const coord_t t = std::max(rect.top(), coord_t(0));
+                        const coord_t b = std::min(rect.bottom(), static_cast<coord_t>(data.rows()));
+
+                        for (coord_t x = l; x < r; x ++)
+                        {
+                                const coord_t dy = (h * math::abs(x - l - w2) + w2 - 1) / w2;
+
+                                for (coord_t y = t; y < b; y ++)
+                                {
+                                        if (y - t >= dy)
+                                        {
+                                                data(y, x) = fill_value;
+                                        }
+                                }
+                        }
+
+                        return true;
+                }
+
+                template
+                <
+                        typename tmatrix,
+                        typename tvalue
+                >
+                bool setup_down_triangle(const rect_t& rect, tmatrix& data, tvalue fill_value)
+                {
+                        const coord_t w = rect.width(), w2 = (w + 1) / 2;
+                        const coord_t h = rect.height();
+
+                        const coord_t l = std::max(rect.left(), coord_t(0));
+                        const coord_t r = std::min(rect.right(), static_cast<coord_t>(data.cols()));
+                        const coord_t t = std::max(rect.top(), coord_t(0));
+                        const coord_t b = std::min(rect.bottom(), static_cast<coord_t>(data.rows()));
+
+                        for (coord_t x = l; x < r; x ++)
+                        {
+                                const coord_t dy = (h * (x < l + w2 ? x - l : r - x) + w2 - 1) / w2;
+
+                                for (coord_t y = t; y < b; y ++)
+                                {
+                                        if (y - t <= dy)
+                                        {
+                                                data(y, x) = fill_value;
+                                        }
+                                }
+                        }
+
+                        return true;
+                }
+        }
         image_t::image_t(coord_t rows, coord_t cols, color_mode mode)
                 :       m_rows(rows),
                         m_cols(cols),
@@ -577,24 +708,24 @@ namespace ncv
                 switch (m_mode)
                 {
                 case color_mode::luma:
-                        return gaussian(kernel, range, m_luma, color::get_luma, color::set_luma);
+                        return inplace_separable_filter(kernel, range, m_luma, color::get_luma, color::set_luma);
 
                 case color_mode::rgba:
                         switch (channel)
                         {
                         case color_channel::red:
-                                return gaussian(kernel, range, m_rgba, color::get_red, color::set_red);
+                                return inplace_separable_filter(kernel, range, m_rgba, color::get_red, color::set_red);
 
                         case color_channel::green:
-                                return gaussian(kernel, range, m_rgba, color::get_green, color::set_green);
+                                return inplace_separable_filter(kernel, range, m_rgba, color::get_green, color::set_green);
 
                         case color_channel::blue:
-                                return gaussian(kernel, range, m_rgba, color::get_blue, color::set_blue);
+                                return inplace_separable_filter(kernel, range, m_rgba, color::get_blue, color::set_blue);
 
                         default:
-                                return gaussian(kernel, range, m_rgba, color::get_red, color::set_red) &&
-                                       gaussian(kernel, range, m_rgba, color::get_green, color::set_green) &&
-                                       gaussian(kernel, range, m_rgba, color::get_blue, color::set_blue);
+                                return inplace_separable_filter(kernel, range, m_rgba, color::get_red, color::set_red) &&
+                                       inplace_separable_filter(kernel, range, m_rgba, color::get_green, color::set_green) &&
+                                       inplace_separable_filter(kernel, range, m_rgba, color::get_blue, color::set_blue);
                         }
 
                 default:
@@ -652,41 +783,6 @@ namespace ncv
                 return fill(rect, rgba);
         }
 
-        namespace
-        {
-                template
-                <
-                        typename tmatrix,
-                        typename tvalue
-                >
-                bool setup_circle(const rect_t& rect, tmatrix& data, tvalue fill_value)
-                {
-                        const point_t center = rect.center();
-                        const coord_t cx = center.x();
-                        const coord_t cy = center.y();
-
-                        const coord_t radius = (std::min(rect.width(), rect.height()) + 1) / 2;
-
-                        const coord_t l = std::max(rect.left(), coord_t(0));
-                        const coord_t r = std::min(rect.right(), static_cast<coord_t>(data.cols()));
-                        const coord_t t = std::max(rect.top(), coord_t(0));
-                        const coord_t b = std::min(rect.bottom(), static_cast<coord_t>(data.rows()));
-
-                        for (coord_t x = l; x < r; x ++)
-                        {
-                                for (coord_t y = t; y < b; y ++)
-                                {
-                                        if (math::square(x - cx) + math::square(y - cy) < math::square(radius))
-                                        {
-                                                data(y, x) = fill_value;
-                                        }
-                                }
-                        }
-
-                        return true;
-                }
-        }
-
         bool image_t::fill_circle(const rect_t& rect, rgba_t rgba)
         {
                 switch (m_mode)
@@ -702,44 +798,6 @@ namespace ncv
                 }
         }
 
-        namespace
-        {
-                template
-                <
-                        typename tmatrix,
-                        typename tvalue
-                >
-                bool setup_ellipse(const rect_t& rect, tmatrix& data, tvalue fill_value)
-                {
-                        const point_t center = rect.center();
-                        const coord_t cx = center.x();
-                        const coord_t cy = center.y();
-
-                        const coord_t radiusx = (rect.width() + 1) / 2;
-                        const coord_t radiusy = (rect.height() + 1) / 2;
-
-                        const coord_t l = std::max(rect.left(), coord_t(0));
-                        const coord_t r = std::min(rect.right(), static_cast<coord_t>(data.cols()));
-                        const coord_t t = std::max(rect.top(), coord_t(0));
-                        const coord_t b = std::min(rect.bottom(), static_cast<coord_t>(data.rows()));
-
-                        for (coord_t x = l; x < r; x ++)
-                        {
-                                for (coord_t y = t; y < b; y ++)
-                                {
-                                        if (    math::square(x - cx) * math::square(radiusy) +
-                                                math::square(y - cy) * math::square(radiusx) <
-                                                math::square(radiusx * radiusy))
-                                        {
-                                                data(y, x) = fill_value;
-                                        }
-                                }
-                        }
-
-                        return true;
-                }
-        }
-
         bool image_t::fill_ellipse(const rect_t& rect, rgba_t rgba)
         {
                 switch (m_mode)
@@ -752,71 +810,6 @@ namespace ncv
 
                 default:
                         return false;
-                }
-        }
-
-        namespace
-        {
-                template
-                <
-                        typename tmatrix,
-                        typename tvalue
-                >
-                bool setup_up_triangle(const rect_t& rect, tmatrix& data, tvalue fill_value)
-                {
-                        const coord_t w = rect.width(), w2 = (w + 1) / 2;
-                        const coord_t h = rect.height();
-
-                        const coord_t l = std::max(rect.left(), coord_t(0));
-                        const coord_t r = std::min(rect.right(), static_cast<coord_t>(data.cols()));
-                        const coord_t t = std::max(rect.top(), coord_t(0));
-                        const coord_t b = std::min(rect.bottom(), static_cast<coord_t>(data.rows()));
-
-                        for (coord_t x = l; x < r; x ++)
-                        {
-                                const coord_t dy = (h * math::abs(x - l - w2) + w2 - 1) / w2;
-
-                                for (coord_t y = t; y < b; y ++)
-                                {
-                                        if (y - t >= dy)
-                                        {
-                                                data(y, x) = fill_value;
-                                        }
-                                }
-                        }
-
-                        return true;
-                }
-
-                template
-                <
-                        typename tmatrix,
-                        typename tvalue
-                >
-                bool setup_down_triangle(const rect_t& rect, tmatrix& data, tvalue fill_value)
-                {
-                        const coord_t w = rect.width(), w2 = (w + 1) / 2;
-                        const coord_t h = rect.height();
-
-                        const coord_t l = std::max(rect.left(), coord_t(0));
-                        const coord_t r = std::min(rect.right(), static_cast<coord_t>(data.cols()));
-                        const coord_t t = std::max(rect.top(), coord_t(0));
-                        const coord_t b = std::min(rect.bottom(), static_cast<coord_t>(data.rows()));
-
-                        for (coord_t x = l; x < r; x ++)
-                        {
-                                const coord_t dy = (h * (x < l + w2 ? x - l : r - x) + w2 - 1) / w2;
-
-                                for (coord_t y = t; y < b; y ++)
-                                {
-                                        if (y - t <= dy)
-                                        {
-                                                data(y, x) = fill_value;
-                                        }
-                                }
-                        }
-
-                        return true;
                 }
         }
 

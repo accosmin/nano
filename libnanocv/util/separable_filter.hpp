@@ -1,23 +1,24 @@
 #pragma once
 
-#include "gauss_kernel.hpp"
 #include "range.hpp"
+#include <vector>
 
 namespace ncv
 {
         ///
-        /// \brief in-place Gaussian filter
+        /// \brief in-place separable 2D filter
         ///
         template
         <
-                typename tscalar = double,
+                typename tkernel,
                 typename tmatrix,
                 typename tgetter,                       ///< extract value from element (e.g. pixel)
                 typename tsetter,                       ///< set value to element (e.g. pixel)
 
+                typename tscalar = typename tkernel::tscalar,
                 typename tvalue = typename tmatrix::Scalar
         >
-        bool gaussian(const gauss_kernel_t<tscalar>& kernel, const range_t<tscalar>& range,
+        bool inplace_separable_filter(const tkernel& kernel, const range_t<tscalar>& range,
                 tmatrix& src, tgetter getter, tsetter setter)
         {
                 const int rows = static_cast<int>(src.rows());
