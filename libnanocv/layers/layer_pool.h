@@ -12,6 +12,9 @@ namespace ncv
         ///     * avg           - close to zero alpha
         ///     * max           - large positive alpha
         ///
+        /// the soft-min/max/avg approximation is performed like described in:
+        ///     http://www.johndcook.com/blog/2010/01/13/soft-maximum/
+        ///
         class pool_layer_t : public layer_t
         {
         public:

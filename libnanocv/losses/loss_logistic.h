@@ -7,6 +7,9 @@ namespace ncv
         ///
         /// \brief multi-class logistic loss (single & multi-class classification)
         ///
+        /// the soft-max approximation (over the outputs) is performed like described in:
+        ///     http://www.johndcook.com/blog/2010/01/13/soft-maximum/
+        ///
         class logistic_loss_t : public loss_t
         {
         public:

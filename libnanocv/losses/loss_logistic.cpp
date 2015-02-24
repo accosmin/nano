@@ -3,7 +3,9 @@
 
 namespace ncv
 {
-        static const scalar_t logistic_scale = 1.0 / std::log(2.0);
+        // soft-max approximation constant (positive -> soft-max)
+        static const scalar_t beta = 10.0;
+        static const scalar_t ibeta = 1.0 / beta;
 
         logistic_loss_t::logistic_loss_t(const string_t& configuration)
                 :       loss_t(configuration)
@@ -23,18 +25,18 @@ namespace ncv
         {
                 assert(targets.size() == scores.size());
 
-                const auto edges_exp = (-targets.array() * scores.array()).exp();
+                const auto edges_exp = (-beta * targets.array() * scores.array()).exp();
 
-                return (edges_exp + scalar_t(1)).log().sum() * logistic_scale;
+                return ibeta * std::log(1.0 + edges_exp.array().sum());
         }
         
         vector_t logistic_loss_t::vgrad(const vector_t& targets, const vector_t& scores) const
         {
                 assert(targets.size() == scores.size());
                 
-                const auto edges_exp = (-targets.array() * scores.array()).exp();
+                const auto edges_exp = (-beta * targets.array() * scores.array()).exp();
 
-                return (-targets.array() * edges_exp) / (edges_exp + scalar_t(1)) * logistic_scale;
+                return (-targets.array() * edges_exp.array()) / (1.0 + edges_exp.array().sum());
         }
 
         indices_t logistic_loss_t::labels(const vector_t& scores) const
