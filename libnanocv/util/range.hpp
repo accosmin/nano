@@ -9,11 +9,13 @@ namespace ncv
         ///
         template
         <
-                typename tscalar
+                typename tscalar_
         >
         class range_t
         {
         public:
+
+                typedef tscalar_        tscalar;
 
                 ///
                 /// \brief constructor

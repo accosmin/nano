@@ -9,9 +9,7 @@
 namespace ncv
 {
         ///
-        /// \brief in-place random additive noise [offset - variance, offset + variance]
-        ///
-        /// \note the noise is smoothed with a Gaussian filter
+        /// \brief in-place random additive noise, smoothed with the given Gaussian filter
         ///
         template
         <
@@ -23,12 +21,12 @@ namespace ncv
                 typename tvalue = typename tmatrix::Scalar
         >
         bool additive_noise(
-                tscalar offset, tscalar variance,
+                const range_t<tscalar>& noise_range,
                 const gauss_kernel_t<tscalar>& kernel,
                 const range_t<tscalar>& output_range,
                 tmatrix& src, tgetter getter, tsetter setter)
         {
-                random_t<tscalar> noiser(offset - variance, offset + variance);
+                random_t<tscalar> noiser(noise_range.min(), noise_range.max());
 
                 // create random noise map
                 typename tensor::matrix_types_t<tscalar>::tmatrix noisemap(src.rows(), src.cols());

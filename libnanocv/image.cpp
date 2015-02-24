@@ -5,7 +5,6 @@
 #include "libnanocv/util/random_noise.hpp"
 #include "libnanocv/util/random_translate.hpp"
 #include "libnanocv/util/separable_filter.hpp"
-#include "libnanocv/tensor/transform.hpp"
 
 namespace ncv
 {
@@ -140,6 +139,7 @@ namespace ncv
                         return true;
                 }
         }
+
         image_t::image_t(coord_t rows, coord_t cols, color_mode mode)
                 :       m_rows(rows),
                         m_cols(cols),
@@ -654,30 +654,31 @@ namespace ncv
 
         bool image_t::random_noise(color_channel channel, scalar_t offset, scalar_t variance, scalar_t sigma)
         {
-                const gauss_kernel_t<scalar_t> kernel(sigma);
-                const range_t<scalar_t> range(0, 255);
+                const range_t<scalar_t> nrange(offset - variance, offset + variance);
+                const gauss_kernel_t<scalar_t> nkernel(sigma);
+                const range_t<scalar_t> orange(0, 255);
 
                 switch (m_mode)
                 {
                 case color_mode::luma:
-                        return additive_noise(offset, variance, kernel, range, m_luma, color::get_luma, color::set_luma);
+                        return additive_noise(nrange, nkernel, orange, m_luma, color::get_luma, color::set_luma);
 
                 case color_mode::rgba:
                         switch (channel)
                         {
                         case color_channel::red:
-                                return additive_noise(offset, variance, kernel, range, m_rgba, color::get_red, color::set_red);
+                                return additive_noise(nrange, nkernel, orange, m_rgba, color::get_red, color::set_red);
 
                         case color_channel::green:
-                                return additive_noise(offset, variance, kernel, range, m_rgba, color::get_green, color::set_green);
+                                return additive_noise(nrange, nkernel, orange, m_rgba, color::get_green, color::set_green);
 
                         case color_channel::blue:
-                                return additive_noise(offset, variance, kernel, range, m_rgba, color::get_blue, color::set_blue);
+                                return additive_noise(nrange, nkernel, orange, m_rgba, color::get_blue, color::set_blue);
 
                         default:
-                                return additive_noise(offset, variance, kernel, range, m_rgba, color::get_red, color::set_red) &&
-                                       additive_noise(offset, variance, kernel, range, m_rgba, color::get_green, color::set_green) &&
-                                       additive_noise(offset, variance, kernel, range, m_rgba, color::get_blue, color::set_blue);
+                                return additive_noise(nrange, nkernel, orange, m_rgba, color::get_red, color::set_red) &&
+                                       additive_noise(nrange, nkernel, orange, m_rgba, color::get_green, color::set_green) &&
+                                       additive_noise(nrange, nkernel, orange, m_rgba, color::get_blue, color::set_blue);
                         }
 
                 default:

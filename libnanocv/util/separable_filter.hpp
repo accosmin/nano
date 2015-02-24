@@ -10,8 +10,8 @@ namespace ncv
         ///
         template
         <
-                typename tkernel,
-                typename tmatrix,
+                typename tkernel,                       ///< 1D kernel that composes the 2D filter
+                typename tmatrix,                       ///< source data
                 typename tgetter,                       ///< extract value from element (e.g. pixel)
                 typename tsetter,                       ///< set value to element (e.g. pixel)
 
@@ -24,7 +24,6 @@ namespace ncv
                 const int rows = static_cast<int>(src.rows());
                 const int cols = static_cast<int>(src.cols());
 
-                // construct Gaussian kernel
                 const int ksize = static_cast<int>(kernel.size());
                 const int krad = ksize / 2;
 
