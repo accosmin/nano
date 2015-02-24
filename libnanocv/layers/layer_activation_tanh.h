@@ -25,7 +25,7 @@ namespace ncv
         }
 
         ///
-        /// hyperbolic tangent activation function
+        /// \brief hyperbolic tangent activation function
         ///
         class tanh_activation_layer_t : public activation_layer_t
         <

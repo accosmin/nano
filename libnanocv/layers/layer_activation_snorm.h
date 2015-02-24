@@ -25,7 +25,7 @@ namespace ncv
         }
 
         ///
-        /// x/sqrt(1+x^2) activation function
+        /// \brief x/sqrt(1+x^2) activation function
         ///
         class snorm_activation_layer_t : public activation_layer_t
         <

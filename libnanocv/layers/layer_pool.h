@@ -5,7 +5,7 @@
 namespace ncv
 {
         ///
-        /// pooling layer:
+        /// \brief pooling layer:
         ///     down-sample by 2 from a 3x3 neighbouring region using a soft weighting function
         ///     that approximates min/max/avg depending on the <alpha> parameter:
         ///     * min           - large negative alpha
@@ -71,7 +71,7 @@ namespace ncv
         {
         public:
                 
-                NANOCV_MAKE_CLONABLE(pool_max_layer_t, "pooling layer, parameters: alpha=[-100.0,+100.0]")
+                NANOCV_MAKE_CLONABLE(pool_max_layer_t, "soft-max pooling layer")
                 
                 // constructor
                 pool_max_layer_t(const string_t& = string_t())
@@ -84,7 +84,7 @@ namespace ncv
         {
         public:
                 
-                NANOCV_MAKE_CLONABLE(pool_min_layer_t, "pooling layer, parameters: alpha=[-100.0,+100.0]")
+                NANOCV_MAKE_CLONABLE(pool_min_layer_t, "soft-min pooling layer")
                 
                 // constructor
                 pool_min_layer_t(const string_t& = string_t())
@@ -97,7 +97,7 @@ namespace ncv
         {
         public:
                 
-                NANOCV_MAKE_CLONABLE(pool_avg_layer_t, "pooling layer, parameters: alpha=[-100.0,+100.0]")
+                NANOCV_MAKE_CLONABLE(pool_avg_layer_t, "average pooling layer")
                 
                 // constructor
                 pool_avg_layer_t(const string_t& = string_t())

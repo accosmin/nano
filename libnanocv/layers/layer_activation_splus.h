@@ -24,7 +24,7 @@ namespace ncv
         }
 
         ///
-        /// soft-plus (max approximation) activation function
+        /// \brief soft-plus (max approximation) activation function
         ///
         class softplus_activation_layer_t : public activation_layer_t
         <

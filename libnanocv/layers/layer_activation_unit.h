@@ -24,7 +24,7 @@ namespace ncv
         }
 
         ///
-        /// identity activation function
+        /// \brief identity activation function
         ///
         class unit_activation_layer_t : public activation_layer_t
         <
