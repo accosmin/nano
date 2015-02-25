@@ -4,6 +4,16 @@
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2  # blue
 set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2  # red
 
+- improve the line-search methods:
+	- checkout the two methods described in page 59 to initialize the step size
+
+	- may check & compare these methods for GD/CGD/LFBGS
+
+	- remove generic CGD method (keep the variants)
+
+	- expand the unit test to include ellipsoid functions with varying dimensions and 
+		scale factors (to check speed if some dimensions have a significantly larger scale than others)
+
 - check why the logistic error decreases so slow on the benchmark application!!!
 
 - faster (but comprehensive) optimization bechmark
