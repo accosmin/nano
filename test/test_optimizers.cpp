@@ -119,10 +119,11 @@ namespace test
                                 const opt_problem_t grad_problem(fn_size, fn_fval, fn_grad);
 
                                 vector_t fval_gx0, grad_gx0;
-                                fval_problem(x0, fval_gx0);
+                                const scalar_t fx0 = fval_problem(x0, fval_gx0);
                                 grad_problem(x0, grad_gx0);
 
-                                BOOST_CHECK_LE((fval_gx0 - grad_gx0).lpNorm<Eigen::Infinity>(), math::epsilon3<scalar_t>());
+                                BOOST_CHECK_LE((fval_gx0 - grad_gx0).lpNorm<Eigen::Infinity>(),
+                                               math::epsilon2<scalar_t>() * math::abs(fx0));
 
                                 // optimize
                                 const timer_t timer;
@@ -193,6 +194,44 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
                 }
 
                 test::check_problem("sphere", fn_size, fn_fval, fn_grad, solutions);
+        }
+
+        // Ellipse function
+        for (size_t dims = 1; dims <= 32; dims ++)
+        {
+                const opt_opsize_t fn_size = [=] ()
+                {
+                        return dims;
+                };
+
+                const opt_opfval_t fn_fval = [=] (const vector_t& x)
+                {
+                        scalar_t fx = 0;
+                        for (size_t i = 0; i < dims; i ++)
+                        {
+                                fx += x(i) * x(i) * pow(2.0, dims);
+                        }
+
+                        return fx;
+                };
+
+                const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
+                {
+                        gx.resize(dims);
+                        for (size_t i = 0; i < dims; i ++)
+                        {
+                                gx(i) = 2 * x(i) * pow(2.0, dims);
+                        }
+
+                        return fn_fval(x);
+                };
+
+                std::vector<std::pair<vector_t, scalar_t>> solutions;
+                {
+                        solutions.emplace_back(vector_t::Zero(dims), 0);
+                }
+
+                test::check_problem("ellipse" + text::to_string(dims) + "D", fn_size, fn_fval, fn_grad, solutions);
         }
 
         // Rosenbrock function
