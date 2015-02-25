@@ -4,10 +4,13 @@
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/optimize.h"
 #include "libnanocv/util/abs.hpp"
+#include "libnanocv/util/timer.h"
 #include "libnanocv/util/math.hpp"
 #include "libnanocv/util/logger.h"
+#include "libnanocv/util/stats.hpp"
 #include "libnanocv/util/random.hpp"
 #include "libnanocv/util/epsilon.hpp"
+#include "libnanocv/util/tabulator.h"
 
 namespace test
 {
@@ -69,6 +72,19 @@ namespace test
 
                 const size_t dims = fn_size();
 
+                // generate fixed random trials
+                vectors_t x0s;
+                for (size_t t = 0; t < trials; t ++)
+                {
+                        random_t<scalar_t> rgen(-1.0, +1.0);
+
+                        vector_t x0(dims);
+                        rgen(x0.data(), x0.data() + x0.size());
+
+                        x0s.push_back(x0);
+                }
+
+                // optimizers to try
                 const auto optimizers =
                 {
                         batch_optimizer::GD,
@@ -83,42 +99,55 @@ namespace test
                         batch_optimizer::LBFGS
                 };
 
-                for (size_t t = 0; t < trials; t ++)
+                tabulator_t table(problem_name);
+                table.header() << "func" << "grad" << "time [us]" << "func evals" << "grad evals";
+
+                for (batch_optimizer optimizer : optimizers)
                 {
-                        random_t<scalar_t> rgen(-1.0, +1.0);
+                        stats_t<scalar_t> funcs;
+                        stats_t<scalar_t> grads;
+                        stats_t<scalar_t> times;
+                        stats_t<scalar_t> func_evals;
+                        stats_t<scalar_t> grad_evals;
 
-                        vector_t x0(dims);
-                        rgen(x0.data(), x0.data() + x0.size());
-
-                        // check gradient
-                        const opt_problem_t fval_problem(fn_size, fn_fval);
-                        const opt_problem_t grad_problem(fn_size, fn_fval, fn_grad);
-
-                        vector_t fval_gx0, grad_gx0;
-                        fval_problem(x0, fval_gx0);
-                        grad_problem(x0, grad_gx0);
-
-                        BOOST_CHECK_LE((fval_gx0 - grad_gx0).lpNorm<Eigen::Infinity>(), math::epsilon3<scalar_t>());
-
-                        // optimize & check solutions
-                        for (batch_optimizer optimizer : optimizers)
+                        for (size_t t = 0; t < trials; t ++)
                         {
+                                const vector_t& x0 = x0s[t];
+
+                                // check gradient
+                                const opt_problem_t fval_problem(fn_size, fn_fval);
+                                const opt_problem_t grad_problem(fn_size, fn_fval, fn_grad);
+
+                                vector_t fval_gx0, grad_gx0;
+                                fval_problem(x0, fval_gx0);
+                                grad_problem(x0, grad_gx0);
+
+                                BOOST_CHECK_LE((fval_gx0 - grad_gx0).lpNorm<Eigen::Infinity>(), math::epsilon3<scalar_t>());
+
+                                // optimize
+                                const timer_t timer;
+
                                 const opt_state_t state = ncv::minimize(
                                         fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
                                         x0, optimizer, iterations, epsilon, history);
 
-//                                log_info() << "[" << problem_name << ", " << (t + 1) << "/" << trials << ", dims = " << dims << "]"
-//                                           << ", optimizer = " << text::to_string(optimizer)
-//                                           << ", x = " << state.x.transpose()
-//                                           << ", fx = " << state.f
-//                                           << ", gx = " << state.g.lpNorm<Eigen::Infinity>()
-//                                           << ", evals = " << state.m_n_fvals << "/" << state.m_n_grads;
+                                // update stats
+                                funcs(state.f);
+                                grads(state.g.lpNorm<Eigen::Infinity>());
+                                times(timer.microseconds());
+                                func_evals(state.n_fval_calls());
+                                grad_evals(state.n_grad_calls());
 
+                                // check solution
                                 check_solution(problem_name, text::to_string(optimizer), state, solutions);
                         }
 
-//                        log_info();
+                        table.append(text::to_string(optimizer))
+                                << funcs.avg() << grads.avg() << times.avg() << func_evals.avg() << grad_evals.avg();
                 }
+
+                // print stats
+                table.print(std::cout);
         }
 }
 
