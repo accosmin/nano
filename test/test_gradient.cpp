@@ -67,8 +67,7 @@ namespace test
                 };
 
                 // construct optimization problem: analytic gradient and finite difference approximation
-                const opt_problem_t problem_analytic_params(fn_params_size, fn_params_fval, fn_params_grad);
-                const opt_problem_t problem_aproxdif_params(fn_params_size, fn_params_fval);
+                const opt_problem_t problem(fn_params_size, fn_params_fval, fn_params_grad);
 
                 for (size_t t = 0; t < n_tests; t ++)
                 {
@@ -86,12 +85,7 @@ namespace test
                                 irgen(input.data(), input.data() + isize);
                         }
 
-                        vector_t analytic_params_grad, aproxdif_params_grad;
-
-                        problem_analytic_params(params, analytic_params_grad);
-                        problem_aproxdif_params(params, aproxdif_params_grad);
-
-                        const scalar_t delta = (analytic_params_grad - aproxdif_params_grad).lpNorm<Eigen::Infinity>();
+                        const scalar_t delta = problem.grad_accuracy(params);
 
                         // update statistics
                         const thread_pool_t::lock_t lock(test::mutex);

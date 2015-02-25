@@ -40,11 +40,8 @@ namespace test
                         return loss->value(target, output);
                 };
 
-                // construct optimization problem: analytic gradient
-                const opt_problem_t problem_gd(opt_fn_size, opt_fn_fval, opt_fn_grad);
-
-                // construct optimization problem: finite difference approximation of the gradient
-                const opt_problem_t problem_ax(opt_fn_size, opt_fn_fval);
+                // construct optimization problem
+                const opt_problem_t problem(opt_fn_size, opt_fn_fval, opt_fn_grad);
 
                 // check the gradient using random parameters
                 for (size_t t = 0; t < n_tests; t ++)
@@ -54,12 +51,8 @@ namespace test
                         vector_t x(n_dims);
                         rgen(x.data(), x.data() + n_dims);
 
-                        vector_t gx_gd, gx_ax;
-                        BOOST_CHECK_GE(problem_gd(x, gx_gd), 0.0);
-                        BOOST_CHECK_GE(problem_ax(x, gx_ax), 0.0);
-
-                        const scalar_t dgx = (gx_gd - gx_ax).lpNorm<Eigen::Infinity>();
-                        BOOST_CHECK_LE(dgx, math::epsilon2<scalar_t>());
+                        BOOST_CHECK_GE(problem(x), 0.0);
+                        BOOST_CHECK_LE(problem.grad_accuracy(x), math::epsilon3<scalar_t>());
                 }
         }
 }

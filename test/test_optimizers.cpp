@@ -115,15 +115,8 @@ namespace test
                                 const vector_t& x0 = x0s[t];
 
                                 // check gradient
-                                const opt_problem_t fval_problem(fn_size, fn_fval);
-                                const opt_problem_t grad_problem(fn_size, fn_fval, fn_grad);
-
-                                vector_t fval_gx0, grad_gx0;
-                                const scalar_t fx0 = fval_problem(x0, fval_gx0);
-                                grad_problem(x0, grad_gx0);
-
-                                BOOST_CHECK_LE((fval_gx0 - grad_gx0).lpNorm<Eigen::Infinity>(),
-                                               math::epsilon2<scalar_t>() * math::abs(fx0));
+                                const opt_problem_t problem(fn_size, fn_fval, fn_grad);
+                                BOOST_CHECK_LE(problem.grad_accuracy(x0), math::epsilon2<scalar_t>());
 
                                 // optimize
                                 const timer_t timer;

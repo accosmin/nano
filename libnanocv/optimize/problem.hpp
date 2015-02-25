@@ -89,10 +89,19 @@ namespace ncv
                         tscalar operator()(const tvector& x, tvector& g) const { return _f(x, g); }
 
                         ///
-                        /// \brief access functions
+                        /// \brief number of function evalution calls
                         ///
                         tsize n_fval_calls() const { return m_n_fvals; }
+
+                        ///
+                        /// \brief number of function gradient calls
+                        ///
                         tsize n_grad_calls() const { return m_n_grads; }
+
+                        ///
+                        /// \brief compute the gradient accuracy (given vs. finite difference approximation)
+                        ///
+                        tscalar grad_accuracy(const tvector& x) const { return _grad_accuracy(x); }
 
                 private:
 
@@ -125,6 +134,26 @@ namespace ncv
                                 }
                         }
 
+                        // implementation: gradient accuracy
+                        tscalar _grad_accuracy(const tvector& x) const
+                        {
+                                if (m_op_grad)
+                                {
+                                        tvector gx;
+                                        const tscalar fx = m_op_grad(x, gx);
+
+                                        tvector gx_approx;
+                                        eval_grad(x, gx_approx);
+
+                                        return  (gx - gx_approx).template lpNorm<Eigen::Infinity>() /
+                                                (tscalar(1) + std::fabs(fx));
+                                }
+                                else
+                                {
+                                        return tscalar(0);
+                                }
+                        }
+
                         // implementation: approximate gradient (if no analytic gradient provided)
                         void eval_grad(const tvector& x, tvector& g) const
                         {
@@ -144,8 +173,9 @@ namespace ncv
                                         xp(i) += dx;
                                         xn(i) -= dx;
 
-                                        g(i) = static_cast<tscalar>(static_cast<long double>(_f(xp) - _f(xn)) /
-                                                                    static_cast<long double>(xp(i) - xn(i)));
+                                        g(i) = static_cast<tscalar>(
+                                               static_cast<long double>(m_op_fval(xp) - m_op_fval(xn)) /
+                                               static_cast<long double>(xp(i) - xn(i)));
                                 }
                         }
 
