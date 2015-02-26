@@ -4,6 +4,14 @@
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2  # blue
 set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2  # red
 
+- small object to store & update the line-search's initial step:
+	- constant (1.0 for LBFGS)
+	- quadratic interpolation (GD & CGD)
+	
+- small object to do line-search:
+	- armijo: compute step, cstate.update(x, t)
+	- wolfe: compute step, cstate.update(x, t, ft, gt)
+
 - check why the logistic error decreases so slow on the benchmark application!!!
 
 - faster (but comprehensive) optimization bechmark
