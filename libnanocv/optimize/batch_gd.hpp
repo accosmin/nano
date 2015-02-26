@@ -48,6 +48,8 @@ namespace ncv
 
                                 tstate cstate(problem, x0);     // current state
 
+                                tscalar prv_fx = 0;
+
                                 // iterate until convergence
                                 for (tsize i = 0; i < base_t::m_max_iterations; i ++)
                                 {
@@ -62,8 +64,16 @@ namespace ncv
                                         // descent direction
                                         cstate.d = -cstate.g;
 
+                                        // initial line-search step (Nocedal & Wright (numerical optimization 2nd) @ p.59)
+                                        const tscalar dg = cstate.d.dot(cstate.g);
+                                        const tscalar t0 = (i == 0) ?
+                                                           (1.0) :
+                                                           std::min(1.0, 1.01 * 2.0 * (cstate.f - prv_fx) / dg);
+
+                                        prv_fx = cstate.f;
+
                                         // update solution
-                                        const tscalar t = ls_armijo(problem, cstate, base_t::m_wlog);
+                                        const tscalar t = ls_armijo(problem, cstate, base_t::m_wlog, t0);
                                         if (t < std::numeric_limits<tscalar>::epsilon())
                                         {
                                                 base_t::elog("line-search failed for GD!");

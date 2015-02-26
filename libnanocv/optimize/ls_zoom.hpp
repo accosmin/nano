@@ -8,7 +8,7 @@ namespace ncv
         namespace optimize
         {
                 ///
-                /// \brief helper function for the Wolfe-based line-search
+                /// \brief helper function for the Wolfe-based line-search.
                 ///
                 template
                 <

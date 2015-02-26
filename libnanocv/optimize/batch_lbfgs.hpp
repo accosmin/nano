@@ -116,7 +116,8 @@ namespace ncv
                                         cstate.d = -r;
 
                                         // update solution
-                                        const tscalar t = ls_strong_wolfe(problem, cstate, base_t::m_wlog, ft, gt, alpha, beta);
+                                        const tscalar t0 = 1.0;
+                                        const tscalar t = ls_wolfe(problem, cstate, base_t::m_wlog, ft, gt, t0, alpha, beta);
                                         if (t < std::numeric_limits<tscalar>::epsilon())
                                         {
                                                 base_t::elog("line-search failed for LBFGS!");

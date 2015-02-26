@@ -5,6 +5,8 @@
 #include "batch_cgd_steps.hpp"
 #include <cassert>
 
+#include <iostream>
+
 namespace ncv
 {
         namespace optimize
@@ -53,6 +55,7 @@ namespace ncv
 
                                 tscalar ft;
                                 tvector gt;
+                                tscalar prv_fx = 0;
 
                                 const tscalar alpha = tscalar(1e-4);
                                 const tscalar beta = tscalar(0.1);
@@ -78,11 +81,33 @@ namespace ncv
                                         else
                                         {
                                                 const tscalar beta = op_update(pstate, cstate);
-                                                cstate.d = -cstate.g + std::max(static_cast<tscalar>(0), beta) * pstate.d;
+                                                cstate.d = -cstate.g + beta * pstate.d;
                                         }
 
+                                        // force a descent direction (if not provided)
+                                        tscalar dg = cstate.d.dot(cstate.g);
+                                        if (dg > 0)
+                                        {
+                                                cstate.d = -cstate.g;
+                                                dg = -dg;
+                                        }
+
+                                        // initial line-search step (Nocedal & Wright (numerical optimization 2nd) @ p.59)
+                                        const tscalar t0 = (i == 0) ?
+                                                           (1.0) :
+                                                           std::min(1.0, 1.01 * 2.0 * (cstate.f - prv_fx) / dg);
+
+                                        if (t0 < 0)
+                                        {
+                                                std::cout << "t0 = " << t0
+                                                          << ", df = " << (cstate.f - prv_fx)
+                                                          << ", dg = " << dg << std::endl;
+                                        }
+
+                                        prv_fx = cstate.f;
+
                                         // update solution
-                                        const tscalar t = ls_strong_wolfe(problem, cstate, base_t::m_wlog, ft, gt, alpha, beta);
+                                        const tscalar t = ls_wolfe(problem, cstate, base_t::m_wlog, ft, gt, t0, alpha, beta);
                                         if (t < std::numeric_limits<tscalar>::epsilon())
                                         {
                                                 base_t::elog(op_update.ls_failed_message());

@@ -9,7 +9,7 @@ namespace ncv
                 ///
                 /// \brief line-search method to find the scalar that reduces
                 /// the function value (the most) along the direction d: argmin(t) f(x + t * d),
-                /// using the strong Wolfe (sufficient decrease and curvature) conditions
+                /// using the strong Wolfe (sufficient decrease and curvature) conditions.
                 ///
                 template
                 <
@@ -25,8 +25,8 @@ namespace ncv
                         typename telog = typename tproblem::telog,
                         typename tulog = typename tproblem::tulog
                 >
-                tscalar ls_strong_wolfe(const tproblem& problem, tstate& st, const twlog& wlog,
-                        tscalar& ft, tvector& gt,
+                tscalar ls_wolfe(const tproblem& problem, tstate& st, const twlog& wlog,
+                        tscalar& ft, tvector& gt, tscalar _t0,
                         tscalar c1 = 1e-4, tscalar c2 = 0.1, tsize max_iters = 64)
                 {
                         const tscalar dg = descent(st, wlog);
@@ -34,7 +34,7 @@ namespace ncv
                         const tscalar tmax = 1000;
 
                         tscalar t0 = 0, ft0 = std::numeric_limits<tscalar>::max();
-                        tscalar t = 1;
+                        tscalar t = _t0;
 
                         // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
                         for (tsize i = 0; i < max_iters; i ++)
