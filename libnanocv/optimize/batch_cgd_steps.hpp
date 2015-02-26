@@ -13,9 +13,9 @@ namespace ncv
                 ///
                 template
                 <
-                                typename tstate,
-                                typename tscalar = typename tstate::tscalar
-                                >
+                        typename tstate,
+                        typename tscalar = typename tstate::tscalar
+                >
                 struct cgd_step_HS
                 {
                         cgd_step_HS()
@@ -43,9 +43,9 @@ namespace ncv
                 ///
                 template
                 <
-                                typename tstate,
-                                typename tscalar = typename tstate::tscalar
-                                >
+                        typename tstate,
+                        typename tscalar = typename tstate::tscalar
+                >
                 struct cgd_step_FR
                 {
                         cgd_step_FR()
@@ -71,9 +71,9 @@ namespace ncv
                 ///
                 template
                 <
-                                typename tstate,
-                                typename tscalar = typename tstate::tscalar
-                                >
+                        typename tstate,
+                        typename tscalar = typename tstate::tscalar
+                >
                 struct cgd_step_PR
                 {
                         cgd_step_PR()
@@ -100,9 +100,9 @@ namespace ncv
                 ///
                 template
                 <
-                                typename tstate,
-                                typename tscalar = typename tstate::tscalar
-                                >
+                        typename tstate,
+                        typename tscalar = typename tstate::tscalar
+                >
                 struct cgd_step_CD
                 {
                         cgd_step_CD()
@@ -129,9 +129,9 @@ namespace ncv
                 ///
                 template
                 <
-                                typename tstate,
-                                typename tscalar = typename tstate::tscalar
-                                >
+                        typename tstate,
+                        typename tscalar = typename tstate::tscalar
+                >
                 struct cgd_step_LS
                 {
                         cgd_step_LS()
@@ -159,9 +159,9 @@ namespace ncv
                 ///
                 template
                 <
-                                typename tstate,
-                                typename tscalar = typename tstate::tscalar
-                                >
+                        typename tstate,
+                        typename tscalar = typename tstate::tscalar
+                >
                 struct cgd_step_DY
                 {
                         cgd_step_DY()
@@ -189,9 +189,9 @@ namespace ncv
                 ///
                 template
                 <
-                                typename tstate,
-                                typename tscalar = typename tstate::tscalar
-                                >
+                        typename tstate,
+                        typename tscalar = typename tstate::tscalar
+                >
                 struct cgd_step_N
                 {
                         cgd_step_N()
