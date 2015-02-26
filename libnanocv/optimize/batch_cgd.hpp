@@ -92,8 +92,8 @@ namespace ncv
 
                                         // initial line-search step (Nocedal & Wright (numerical optimization 2nd) @ p.59)
                                         const tscalar t0 = (i == 0) ?
-                                                           (1.0) :
-                                                           std::min(1.0, 1.01 * 2.0 * (cstate.f - prv_fx) / dg);
+                                                tscalar(1.0) :
+                                                std::min(tscalar(1.0), tscalar(1.01 * 2.0 * (cstate.f - prv_fx) / dg));
 
                                         prv_fx = cstate.f;
 

@@ -2,6 +2,7 @@
 
 #include "batch_params.hpp"
 #include "ls_armijo.hpp"
+#include "ls_wolfe.hpp"
 #include <cassert>
 
 namespace ncv
@@ -48,10 +49,15 @@ namespace ncv
 
                                 tstate cstate(problem, x0);     // current state
 
+                                tscalar ft;
+                                tvector gt;
                                 tscalar prv_fx = 0;
 
-                                const tscalar alpha = tscalar(0.2);
-                                const tscalar beta = tscalar(0.7);
+//                                const tscalar alpha = tscalar(0.2);
+//                                const tscalar beta = tscalar(0.7);
+
+                                const tscalar alpha = tscalar(1e-4);
+                                const tscalar beta = tscalar(0.1);
 
                                 // iterate until convergence
                                 for (tsize i = 0; i < base_t::m_max_iterations; i ++)
@@ -75,14 +81,23 @@ namespace ncv
 
                                         prv_fx = cstate.f;
 
+//                                        // update solution
+//                                        const tscalar t = ls_armijo(problem, cstate, base_t::m_wlog, t0, alpha, beta);
+//                                        if (t < std::numeric_limits<tscalar>::epsilon())
+//                                        {
+//                                                base_t::elog("line-search failed for GD!");
+//                                                break;
+//                                        }
+//                                        cstate.update(problem, t);
+
                                         // update solution
-                                        const tscalar t = ls_armijo(problem, cstate, base_t::m_wlog, t0, alpha, beta);
+                                        const tscalar t = ls_wolfe(problem, cstate, base_t::m_wlog, ft, gt, t0, alpha, beta);
                                         if (t < std::numeric_limits<tscalar>::epsilon())
                                         {
                                                 base_t::elog("line-search failed for GD!");
                                                 break;
                                         }
-                                        cstate.update(problem, t);
+                                        cstate.update(problem, t, ft, gt);
                                 }
 
                                 return cstate;
