@@ -12,6 +12,10 @@ set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2  # red
 	- armijo: compute step, cstate.update(x, t)
 	- wolfe: compute step, cstate.update(x, t, ft, gt)
 
+- CGD:
+	- check if the conjugation factor (crt + factor * prv) should be also forced to be positive
+		or checked in the cgd_step structure
+
 - check why the logistic error decreases so slow on the benchmark application!!!
 
 - faster (but comprehensive) optimization bechmark
