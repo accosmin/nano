@@ -119,7 +119,7 @@ namespace test
                                 BOOST_CHECK_LE(problem.grad_accuracy(x0), math::epsilon2<scalar_t>());
 
                                 // optimize
-                                const timer_t timer;
+                                const ncv::timer_t timer;
 
                                 const opt_state_t state = ncv::minimize(
                                         fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
