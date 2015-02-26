@@ -5,8 +5,6 @@
 #include "batch_cgd_steps.hpp"
 #include <cassert>
 
-#include <iostream>
-
 namespace ncv
 {
         namespace optimize
@@ -96,13 +94,6 @@ namespace ncv
                                         const tscalar t0 = (i == 0) ?
                                                            (1.0) :
                                                            std::min(1.0, 1.01 * 2.0 * (cstate.f - prv_fx) / dg);
-
-                                        if (t0 < 0)
-                                        {
-                                                std::cout << "t0 = " << t0
-                                                          << ", df = " << (cstate.f - prv_fx)
-                                                          << ", dg = " << dg << std::endl;
-                                        }
 
                                         prv_fx = cstate.f;
 
