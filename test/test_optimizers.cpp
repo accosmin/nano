@@ -16,11 +16,15 @@ namespace test
 {
         using namespace ncv;
 
-        void check_solution(const string_t& problem_name, const string_t& optimizer_name,
+        bool check_solution(const string_t& problem_name, const string_t& optimizer_name,
                 const opt_state_t& state, const std::vector<std::pair<vector_t, scalar_t>>& solutions)
         {
                 // Check convergence
                 BOOST_CHECK_LE(state.g.lpNorm<Eigen::Infinity>(), math::epsilon3<scalar_t>());
+                if (state.g.lpNorm<Eigen::Infinity>() > math::epsilon3<scalar_t>())
+                {
+                        return false;
+                }
 
                 // Find the closest solution
                 size_t best_index = std::string::npos;
@@ -57,6 +61,8 @@ namespace test
 //                                            << "@" << problem_name << "/" << optimizer_name;
 //                        }
                 }
+
+                return true;
         }
 
         void check_problem(
@@ -68,7 +74,7 @@ namespace test
                 const scalar_t epsilon = std::numeric_limits<scalar_t>::epsilon();
                 const size_t history = 6;
 
-                const size_t trials = 256;
+                const size_t trials = 1;//256;
 
                 const size_t dims = fn_size();
 
@@ -81,21 +87,23 @@ namespace test
                         vector_t x0(dims);
                         rgen(x0.data(), x0.data() + x0.size());
 
+                        x0(0) = -0.18754124041896814;
+                        x0(1) = 0.79434529066190662;
+
                         x0s.push_back(x0);
                 }
 
                 // optimizers to try
                 const auto optimizers =
                 {
-                        batch_optimizer::GD,
-                        batch_optimizer::CGD,
+//                        batch_optimizer::GD,
 //                        batch_optimizer::CGD_CD,
 //                        batch_optimizer::CGD_DY,
 //                        batch_optimizer::CGD_FR,
 //                        batch_optimizer::CGD_HS,
-                        batch_optimizer::CGD_LS,
-                        batch_optimizer::CGD_PR,                        
-                        batch_optimizer::CGD_N,
+//                        batch_optimizer::CGD_LS,
+//                        batch_optimizer::CGD_PR,
+//                        batch_optimizer::CGD_N,
                         batch_optimizer::LBFGS
                 };
 
@@ -118,11 +126,28 @@ namespace test
                                 const opt_problem_t problem(fn_size, fn_fval, fn_grad);
                                 BOOST_CHECK_LE(problem.grad_accuracy(x0), math::epsilon2<scalar_t>());
 
+                                const auto op_wlog = [] (const string_t& message)
+                                {
+                                        log_warning() << message;
+                                };
+
+                                const auto op_elog = [] (const string_t& message)
+                                {
+                                        log_error() << message;
+                                };
+
+                                const auto op_ulog = [] (const opt_state_t& state)
+                                {
+                                        std::cout << "f = " << state.f
+                                                  << ", g = " << state.g.lpNorm<Eigen::Infinity>()
+                                                  << ", x = " << state.x.transpose() << std::endl;
+                                };
+
                                 // optimize
                                 const ncv::timer_t timer;
 
                                 const opt_state_t state = ncv::minimize(
-                                        fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
+                                        fn_size, fn_fval, fn_grad, op_wlog, op_elog, op_ulog,
                                         x0, optimizer, iterations, epsilon, history);
 
                                 // update stats
@@ -133,7 +158,10 @@ namespace test
                                 grad_evals(state.n_grad_calls());
 
                                 // check solution
-                                check_solution(problem_name, text::to_string(optimizer), state, solutions);
+                                if (!check_solution(problem_name, text::to_string(optimizer), state, solutions))
+                                {
+                                        std::cout << "x0 = " << x0.transpose() << std::endl;
+                                }
                         }
 
                         table.append(text::to_string(optimizer))
@@ -151,133 +179,133 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
 
         // https://en.wikipedia.org/wiki/Test_functions_for_optimization
 
-        // Sphere function
-        for (size_t dims = 1; dims <= 8; dims ++)
-        {
-                const opt_opsize_t fn_size = [=] ()
-                {
-                        return dims;
-                };
+//        // Sphere function
+//        for (size_t dims = 1; dims <= 16; dims *= 2)
+//        {
+//                const opt_opsize_t fn_size = [=] ()
+//                {
+//                        return dims;
+//                };
 
-                const opt_opfval_t fn_fval = [=] (const vector_t& x)
-                {
-                        scalar_t fx = 0;
-                        for (size_t i = 0; i < dims; i ++)
-                        {
-                                fx += x(i) * x(i);
-                        }
+//                const opt_opfval_t fn_fval = [=] (const vector_t& x)
+//                {
+//                        scalar_t fx = 0;
+//                        for (size_t i = 0; i < dims; i ++)
+//                        {
+//                                fx += x(i) * x(i);
+//                        }
 
-                        return fx;
-                };
+//                        return fx;
+//                };
 
-                const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
-                {
-                        gx.resize(dims);
-                        for (size_t i = 0; i < dims; i ++)
-                        {
-                                gx(i) = 2 * x(i);
-                        }
+//                const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
+//                {
+//                        gx.resize(dims);
+//                        for (size_t i = 0; i < dims; i ++)
+//                        {
+//                                gx(i) = 2 * x(i);
+//                        }
 
-                        return fn_fval(x);
-                };
+//                        return fn_fval(x);
+//                };
 
-                std::vector<std::pair<vector_t, scalar_t>> solutions;
-                {
-                        solutions.emplace_back(vector_t::Zero(dims), 0);
-                }
+//                std::vector<std::pair<vector_t, scalar_t>> solutions;
+//                {
+//                        solutions.emplace_back(vector_t::Zero(dims), 0);
+//                }
 
-                test::check_problem("sphere", fn_size, fn_fval, fn_grad, solutions);
-        }
+//                test::check_problem("sphere", fn_size, fn_fval, fn_grad, solutions);
+//        }
 
-        // Ellipse function
-        for (size_t dims = 1; dims <= 32; dims *= 2)
-        {
-                vector_t weights(dims);
+//        // Ellipse function
+//        for (size_t dims = 1; dims <= 32; dims *= 2)
+//        {
+//                vector_t weights(dims);
 
-                random_t<scalar_t> rng(1.0, 1e+6);
-                rng(weights.data(), weights.data() + weights.size());
+//                random_t<scalar_t> rng(1.0, 1e+6);
+//                rng(weights.data(), weights.data() + weights.size());
 
-                const opt_opsize_t fn_size = [=] ()
-                {
-                        return dims;
-                };
+//                const opt_opsize_t fn_size = [=] ()
+//                {
+//                        return dims;
+//                };
 
-                const opt_opfval_t fn_fval = [=] (const vector_t& x)
-                {
-                        scalar_t fx = 0;
-                        for (size_t i = 0; i < dims; i ++)
-                        {
-                                fx += x(i) * x(i) * weights(i);
-                        }
+//                const opt_opfval_t fn_fval = [=] (const vector_t& x)
+//                {
+//                        scalar_t fx = 0;
+//                        for (size_t i = 0; i < dims; i ++)
+//                        {
+//                                fx += x(i) * x(i) * weights(i);
+//                        }
 
-                        return fx;
-                };
+//                        return fx;
+//                };
 
-                const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
-                {
-                        gx.resize(dims);
-                        for (size_t i = 0; i < dims; i ++)
-                        {
-                                gx(i) = 2.0 * x(i) * weights(i);
-                        }
+//                const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
+//                {
+//                        gx.resize(dims);
+//                        for (size_t i = 0; i < dims; i ++)
+//                        {
+//                                gx(i) = 2.0 * x(i) * weights(i);
+//                        }
 
-                        return fn_fval(x);
-                };
+//                        return fn_fval(x);
+//                };
 
-                std::vector<std::pair<vector_t, scalar_t>> solutions;
-                {
-                        solutions.emplace_back(vector_t::Zero(dims), 0);
-                }
+//                std::vector<std::pair<vector_t, scalar_t>> solutions;
+//                {
+//                        solutions.emplace_back(vector_t::Zero(dims), 0);
+//                }
 
-                test::check_problem("ellipse" + text::to_string(dims) + "D", fn_size, fn_fval, fn_grad, solutions);
-        }
+//                test::check_problem("ellipse" + text::to_string(dims) + "D", fn_size, fn_fval, fn_grad, solutions);
+//        }
 
-        // Rosenbrock function
-        for (size_t dims = 2; dims <= 3; dims ++)
-        {
-                const opt_opsize_t fn_size = [=] ()
-                {
-                        return dims;
-                };
+//        // Rosenbrock function
+//        for (size_t dims = 2; dims <= 3; dims ++)
+//        {
+//                const opt_opsize_t fn_size = [=] ()
+//                {
+//                        return dims;
+//                };
 
-                const opt_opfval_t fn_fval = [=] (const vector_t& x)
-                {
-                        scalar_t fx = 0;
-                        for (size_t i = 0; i + 1 < dims; i ++)
-                        {
-                                fx += 100.0 * math::square(x(i + 1) - x(i) * x(i)) + math::square(x(i) - 1);
-                        }
+//                const opt_opfval_t fn_fval = [=] (const vector_t& x)
+//                {
+//                        scalar_t fx = 0;
+//                        for (size_t i = 0; i + 1 < dims; i ++)
+//                        {
+//                                fx += 100.0 * math::square(x(i + 1) - x(i) * x(i)) + math::square(x(i) - 1);
+//                        }
 
-                        return fx;
-                };
+//                        return fx;
+//                };
 
-                const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
-                {
-                        gx.resize(dims);
-                        gx.setZero();
-                        for (size_t i = 0; i + 1 < dims; i ++)
-                        {
-                                gx(i) += 2.0 * (x(i) - 1);
-                                gx(i) += 100.0 * 2.0 * (x(i + 1) - x(i) * x(i)) * (- 2.0 * x(i));
-                                gx(i + 1) += 100.0 * 2.0 * (x(i + 1) - x(i) * x(i));
-                        }
+//                const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
+//                {
+//                        gx.resize(dims);
+//                        gx.setZero();
+//                        for (size_t i = 0; i + 1 < dims; i ++)
+//                        {
+//                                gx(i) += 2.0 * (x(i) - 1);
+//                                gx(i) += 100.0 * 2.0 * (x(i + 1) - x(i) * x(i)) * (- 2.0 * x(i));
+//                                gx(i + 1) += 100.0 * 2.0 * (x(i + 1) - x(i) * x(i));
+//                        }
 
-                        return fn_fval(x);
-                };
+//                        return fn_fval(x);
+//                };
 
-                std::vector<std::pair<vector_t, scalar_t>> solutions;
-                {
-                        solutions.emplace_back(vector_t::Ones(dims), 0);
-                        if (dims >= 4 && dims <= 7)
-                        {
-                                vector_t x = vector_t::Ones(dims);
-                                x(0) = -1;
-                                solutions.emplace_back(x, 0);
-                        }
-                }
+//                std::vector<std::pair<vector_t, scalar_t>> solutions;
+//                {
+//                        solutions.emplace_back(vector_t::Ones(dims), 0);
+//                        if (dims >= 4 && dims <= 7)
+//                        {
+//                                vector_t x = vector_t::Ones(dims);
+//                                x(0) = -1;
+//                                solutions.emplace_back(x, 0);
+//                        }
+//                }
 
-                test::check_problem("Rosenbrock", fn_size, fn_fval, fn_grad, solutions);
-        }
+//                test::check_problem("Rosenbrock", fn_size, fn_fval, fn_grad, solutions);
+//        }
 
 //        // Beale function
 //        {
@@ -390,80 +418,80 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
 //                test::check_problem("Goldstein-Price", fn_size, fn_fval, fn_grad, solutions);
 //        }
 
-        // Booth function
-        {
-                const opt_opsize_t fn_size = [=] ()
-                {
-                        return 2;
-                };
+//        // Booth function
+//        {
+//                const opt_opsize_t fn_size = [=] ()
+//                {
+//                        return 2;
+//                };
 
-                const opt_opfval_t fn_fval = [=] (const vector_t& x)
-                {
-                        const scalar_t a = x(0), b = x(1);
+//                const opt_opfval_t fn_fval = [=] (const vector_t& x)
+//                {
+//                        const scalar_t a = x(0), b = x(1);
 
-                        const scalar_t u = a + 2 * b - 7;
-                        const scalar_t v = 2 * a + b - 5;
+//                        const scalar_t u = a + 2 * b - 7;
+//                        const scalar_t v = 2 * a + b - 5;
 
-                        return u * u + v * v;
-                };
+//                        return u * u + v * v;
+//                };
 
-                const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
-                {
-                        const scalar_t a = x(0), b = x(1);
+//                const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
+//                {
+//                        const scalar_t a = x(0), b = x(1);
 
-                        const scalar_t u = a + 2 * b - 7;
-                        const scalar_t v = 2 * a + b - 5;
+//                        const scalar_t u = a + 2 * b - 7;
+//                        const scalar_t v = 2 * a + b - 5;
 
-                        gx.resize(2);
-                        gx(0) = 2 * u + 2 * v * 2;
-                        gx(1) = 2 * u * 2 + 2 * v;
+//                        gx.resize(2);
+//                        gx(0) = 2 * u + 2 * v * 2;
+//                        gx(1) = 2 * u * 2 + 2 * v;
 
-                        return fn_fval(x);
-                };
+//                        return fn_fval(x);
+//                };
 
-                std::vector<std::pair<vector_t, scalar_t>> solutions;
-                {
-                        vector_t x(2);
-                        x(0) = 1.0;
-                        x(1) = 3.0;
-                        solutions.emplace_back(x, 0.0);
-                }
+//                std::vector<std::pair<vector_t, scalar_t>> solutions;
+//                {
+//                        vector_t x(2);
+//                        x(0) = 1.0;
+//                        x(1) = 3.0;
+//                        solutions.emplace_back(x, 0.0);
+//                }
 
-                test::check_problem("Booth", fn_size, fn_fval, fn_grad, solutions);
-        }
+//                test::check_problem("Booth", fn_size, fn_fval, fn_grad, solutions);
+//        }
 
-        // Matyas function
-        {
-                const opt_opsize_t fn_size = [=] ()
-                {
-                        return 2;
-                };
+//        // Matyas function
+//        {
+//                const opt_opsize_t fn_size = [=] ()
+//                {
+//                        return 2;
+//                };
 
-                const opt_opfval_t fn_fval = [=] (const vector_t& x)
-                {
-                        const scalar_t a = x(0), b = x(1);
+//                const opt_opfval_t fn_fval = [=] (const vector_t& x)
+//                {
+//                        const scalar_t a = x(0), b = x(1);
 
-                        return 0.26 * (a * a + b * b) - 0.48 * a * b;
-                };
+//                        return 0.26 * (a * a + b * b) - 0.48 * a * b;
+//                };
 
-                const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
-                {
-                        const scalar_t a = x(0), b = x(1);
+//                const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
+//                {
+//                        const scalar_t a = x(0), b = x(1);
 
-                        gx.resize(2);
-                        gx(0) = 0.26 * 2 * a - 0.48 * b;
-                        gx(1) = 0.26 * 2 * b - 0.48 * a;
+//                        gx.resize(2);
+//                        gx(0) = 0.26 * 2 * a - 0.48 * b;
+//                        gx(1) = 0.26 * 2 * b - 0.48 * a;
 
-                        return fn_fval(x);
-                };
+//                        return fn_fval(x);
+//                };
 
-                std::vector<std::pair<vector_t, scalar_t>> solutions;
-                {
-                        solutions.emplace_back(vector_t::Zero(2), 0.0);
-                }
+//                std::vector<std::pair<vector_t, scalar_t>> solutions;
+//                {
+//                        solutions.emplace_back(vector_t::Zero(2), 0.0);
+//                }
 
-                test::check_problem("Matyas", fn_size, fn_fval, fn_grad, solutions);
-        }
+//                test::check_problem("Matyas", fn_size, fn_fval, fn_grad, solutions);
+//        }
 
         // Himmelblau function
         {

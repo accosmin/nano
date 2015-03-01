@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include <iostream>
+
 namespace ncv
 {
         namespace optimize
@@ -29,6 +31,8 @@ namespace ncv
                         // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
                         for (tsize i = 0; i < max_iters; i ++)
                         {
+                                std::cout << "i = " << i << "/" << max_iters << ", t = [" << tlo << ", " << thi << "]\n";
+
                                 const tscalar t = (tlo + thi) / 2;
 
                                 // check sufficient decrease
@@ -59,6 +63,9 @@ namespace ncv
                                 }
                         }
 
+                        std::cout << "ls_zoom ... giving up ..." << std::endl;
+
+                        // OK, give up
                         return 0;
                 }
         }

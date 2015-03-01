@@ -3,6 +3,8 @@
 #include <limits>
 #include "linesearch_zoom.hpp"
 
+#include <iostream>
+
 namespace ncv
 {
         namespace optimize
@@ -41,6 +43,7 @@ namespace ncv
                                 const tscalar t = step(problem, t0, state, ft, gt);
                                 if (t < std::numeric_limits<tscalar>::epsilon())
                                 {
+                                        std::cout << "t = " << t << std::endl;
                                         // failed to find a suitable line-search step
                                         return false;
                                 }
@@ -59,6 +62,8 @@ namespace ncv
                         {
                                 const tscalar dg = state.d.dot(state.g);
 
+                                std::cout << "dg = " << dg << std::endl;
+
                                 tscalar t0 = 0, ft0 = std::numeric_limits<tscalar>::max();
                                 tscalar t = _t0;
 
@@ -67,6 +72,9 @@ namespace ncv
                                 // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
                                 for (tsize i = 0; i < max_iters; i ++)
                                 {
+                                        std::cout << "i = " << i << "/" << max_iters
+                                                  << ", t = " << t << ", t0 = " << t0 << std::endl;
+
                                         // check sufficient decrease
                                         ft = problem(state.x + t * state.d, gt);
                                         if (ft > state.f + m_c1 * t * dg || (ft >= ft0 && i > 0))
@@ -89,11 +97,12 @@ namespace ncv
                                         }
 
                                         t0 = t;
-                                        t = std::min(tmax, t * 3);
                                         ft0 = ft;
+                                        t = std::min(tmax, t * 3);
                                 }
 
                                 // OK, give up
+                                std::cout << "t = " << t << std::endl;
                                 return 0;
                         }
 
