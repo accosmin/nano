@@ -68,7 +68,7 @@ namespace test
                 const scalar_t epsilon = std::numeric_limits<scalar_t>::epsilon();
                 const size_t history = 6;
 
-                const size_t trials = 16;
+                const size_t trials = 256;
 
                 const size_t dims = fn_size();
 
@@ -190,8 +190,13 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
         }
 
         // Ellipse function
-        for (size_t dims = 1; dims <= 32; dims ++)
+        for (size_t dims = 1; dims <= 32; dims *= 2)
         {
+                vector_t weights(dims);
+
+                random_t<scalar_t> rng(1.0, 1e+6);
+                rng(weights.data(), weights.data() + weights.size());
+
                 const opt_opsize_t fn_size = [=] ()
                 {
                         return dims;
@@ -202,7 +207,7 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
                         scalar_t fx = 0;
                         for (size_t i = 0; i < dims; i ++)
                         {
-                                fx += x(i) * x(i) * pow(2.0, dims);
+                                fx += x(i) * x(i) * weights(i);
                         }
 
                         return fx;
@@ -213,7 +218,7 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
                         gx.resize(dims);
                         for (size_t i = 0; i < dims; i ++)
                         {
-                                gx(i) = 2 * x(i) * pow(2.0, dims);
+                                gx(i) = 2.0 * x(i) * weights(i);
                         }
 
                         return fn_fval(x);
