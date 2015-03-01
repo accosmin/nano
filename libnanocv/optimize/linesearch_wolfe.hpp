@@ -57,7 +57,7 @@ namespace ncv
 
                 private:
 
-                        tscalar step(const tproblem& problem, tscalar _t0, const tstate& state,
+                        tscalar step(const tproblem& problem, tscalar t, const tstate& state,
                                 tscalar& ft, tvector& gt, tsize max_iters = 64) const
                         {
                                 const tscalar dg = state.d.dot(state.g);
@@ -65,7 +65,6 @@ namespace ncv
                                 std::cout << "dg = " << dg << std::endl;
 
                                 tscalar t0 = 0, ft0 = std::numeric_limits<tscalar>::max();
-                                tscalar t = _t0;
 
                                 const tscalar tmax = 1000;
 
@@ -79,6 +78,8 @@ namespace ncv
                                         ft = problem(state.x + t * state.d, gt);
                                         if (ft > state.f + m_c1 * t * dg || (ft >= ft0 && i > 0))
                                         {
+                                                std::cout << "ls_zoom - step1" << std::endl;
+
                                                 return ls_zoom(problem, state, ft, gt,
                                                                t0, t, ft0, ft, m_c1, m_c2, max_iters);
                                         }
@@ -92,6 +93,8 @@ namespace ncv
 
                                         if (dg1 >= 0)
                                         {
+                                                std::cout << "ls_zoom - step2" << std::endl;
+
                                                 return ls_zoom(problem, state, ft, gt,
                                                                t, t0, ft, ft0, m_c1, m_c2, max_iters);
                                         }

@@ -31,7 +31,9 @@ namespace ncv
                         // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
                         for (tsize i = 0; i < max_iters; i ++)
                         {
-                                std::cout << "i = " << i << "/" << max_iters << ", t = [" << tlo << ", " << thi << "]\n";
+                                std::cout << "i = " << i << "/" << max_iters
+                                          << ", t = [" << tlo << ", " << thi << "]"
+                                          << ", f = [" << ftlo << ", " << fthi << "]\n";
 
                                 const tscalar t = (tlo + thi) / 2;
 

@@ -139,7 +139,7 @@ namespace ncv
                                 return cstate;
                         }
 
-                        tsize           m_history_size;         ///< number of previous iterations to approxime the Hessian's inverse
+                        tsize   m_history_size; ///< number of previous iterations to approximate the Hessian's inverse
                 };
         }
 }
