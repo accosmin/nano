@@ -1,11 +1,8 @@
 #pragma once
 
 #include "batch_params.hpp"
-#include "linesearch_init_unit.hpp"
 #include "linesearch_init_interp.hpp"
-#include "linesearch_init_consist.hpp"
 #include "linesearch_wolfe.hpp"
-#include "linesearch_armijo.hpp"
 #include <cassert>
 
 namespace ncv
@@ -53,12 +50,9 @@ namespace ncv
                                 tstate cstate(problem, x0);             // current state
 
                                 // line-search initial step length
-//                                linesearch_init_unit<tstate> ls_init;
-//                                linesearch_init_consistency<tstate> ls_init;
                                 linesearch_init_interpolation<tstate> ls_init;
 
                                 // line-search step
-//                                linesearch_armijo<tproblem> ls_step(0.2, 0.7);
                                 linesearch_wolfe<tproblem> ls_step(1e-4, 0.1);
 
                                 // iterate until convergence
