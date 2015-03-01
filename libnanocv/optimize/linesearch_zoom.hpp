@@ -1,6 +1,5 @@
 #pragma once
 
-#include "descent.hpp"
 #include <cmath>
 
 namespace ncv
@@ -18,11 +17,7 @@ namespace ncv
                         typename tscalar = typename tproblem::tscalar,
                         typename tsize = typename tproblem::tsize,
                         typename tvector = typename tproblem::tvector,
-                        typename tstate = typename tproblem::tstate,
-
-                        typename twlog = typename tproblem::twlog,
-                        typename telog = typename tproblem::telog,
-                        typename tulog = typename tproblem::tulog
+                        typename tstate = typename tproblem::tstate
                 >
                 tscalar ls_zoom(const tproblem& problem, const tstate& st,
                         tscalar& ft, tvector& gt,

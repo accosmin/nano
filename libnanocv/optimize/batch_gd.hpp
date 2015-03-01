@@ -1,8 +1,9 @@
 #pragma once
 
 #include "batch_params.hpp"
-#include "ls_armijo.hpp"
-#include "ls_wolfe.hpp"
+#include "linesearch_init.hpp"
+#include "linesearch_wolfe.hpp"
+#include "linesearch_armijo.hpp"
 #include <cassert>
 
 namespace ncv
@@ -47,17 +48,16 @@ namespace ncv
                         {
                                 assert(problem.size() == static_cast<tsize>(x0.size()));
 
-                                tstate cstate(problem, x0);     // current state
+                                tstate cstate(problem, x0);             // current state
 
-                                tscalar ft;
-                                tvector gt;
-                                tscalar prv_fx = 0;
+                                // line-search initial step length
+//                                linesearch_init_unit<tstate> ls_init;
+//                                linesearch_init_consistency<tstate> ls_init;
+                                linesearch_init_interpolation<tstate> ls_init;
 
-//                                const tscalar alpha = tscalar(0.2);
-//                                const tscalar beta = tscalar(0.7);
-
-                                const tscalar alpha = tscalar(1e-4);
-                                const tscalar beta = tscalar(0.1);
+                                // line-search step
+//                                linesearch_armijo<tproblem> ls_step(0.2, 0.7);
+                                linesearch_wolfe<tproblem> ls_step(1e-4, 0.1);
 
                                 // iterate until convergence
                                 for (tsize i = 0; i < base_t::m_max_iterations; i ++)
@@ -73,31 +73,13 @@ namespace ncv
                                         // descent direction
                                         cstate.d = -cstate.g;
 
-                                        // initial line-search step (Nocedal & Wright (numerical optimization 2nd) @ p.59)
-                                        const tscalar dg = cstate.d.dot(cstate.g);
-                                        const tscalar t0 = (i == 0) ?
-                                                tscalar(1.0) :
-                                                std::min(tscalar(1.0), tscalar(1.01 * 2.0 * (cstate.f - prv_fx) / dg));
-
-                                        prv_fx = cstate.f;
-
-//                                        // update solution
-//                                        const tscalar t = ls_armijo(problem, cstate, base_t::m_wlog, t0, alpha, beta);
-//                                        if (t < std::numeric_limits<tscalar>::epsilon())
-//                                        {
-//                                                base_t::elog("line-search failed for GD!");
-//                                                break;
-//                                        }
-//                                        cstate.update(problem, t);
-
-                                        // update solution
-                                        const tscalar t = ls_wolfe(problem, cstate, base_t::m_wlog, ft, gt, t0, alpha, beta);
-                                        if (t < std::numeric_limits<tscalar>::epsilon())
+                                        // line-search
+                                        const tscalar t0 = ls_init.update(cstate);
+                                        if (!ls_step.update(problem, t0, cstate))
                                         {
                                                 base_t::elog("line-search failed for GD!");
                                                 break;
                                         }
-                                        cstate.update(problem, t, ft, gt);
                                 }
 
                                 return cstate;

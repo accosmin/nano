@@ -1,8 +1,9 @@
 #pragma once
 
 #include "batch_params.hpp"
-#include "ls_wolfe.hpp"
 #include "batch_cgd_steps.hpp"
+#include "linesearch_init.hpp"
+#include "linesearch_wolfe.hpp"
 #include <cassert>
 
 namespace ncv
@@ -51,12 +52,11 @@ namespace ncv
                                 tstate cstate(problem, x0);     // current state
                                 tstate pstate = cstate;         // previous state
 
-                                tscalar ft;
-                                tvector gt;
-                                tscalar prv_fx = 0;
+                                // line-search initial step length
+                                linesearch_init_interpolation<tstate> ls_init;
 
-                                const tscalar alpha = tscalar(1e-4);
-                                const tscalar beta = tscalar(0.1);
+                                // line-search step
+                                linesearch_wolfe<tproblem> ls_step(1e-4, 0.1);
 
                                 const tcgd_update op_update;
 
@@ -84,28 +84,22 @@ namespace ncv
 
                                         // force a descent direction (if not provided)
                                         tscalar dg = cstate.d.dot(cstate.g);
-                                        if (dg > 0)
+                                        if (dg > std::numeric_limits<tscalar>::epsilon())
                                         {
+                                                base_t::wlog("not a descent direction!");
                                                 cstate.d = -cstate.g;
                                                 dg = -dg;
                                         }
 
-                                        // initial line-search step (Nocedal & Wright (numerical optimization 2nd) @ p.59)
-                                        const tscalar t0 = (i == 0) ?
-                                                tscalar(1.0) :
-                                                std::min(tscalar(1.0), tscalar(1.01 * 2.0 * (cstate.f - prv_fx) / dg));
+                                        // line-search
+                                        pstate = cstate;
 
-                                        prv_fx = cstate.f;
-
-                                        // update solution
-                                        const tscalar t = ls_wolfe(problem, cstate, base_t::m_wlog, ft, gt, t0, alpha, beta);
-                                        if (t < std::numeric_limits<tscalar>::epsilon())
+                                        const tscalar t0 = ls_init.update(cstate);
+                                        if (!ls_step.update(problem, t0, cstate))
                                         {
                                                 base_t::elog(op_update.ls_failed_message());
                                                 break;
                                         }
-                                        pstate = cstate;
-                                        cstate.update(problem, t, ft, gt);
                                 }
 
                                 return cstate;

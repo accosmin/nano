@@ -1,7 +1,8 @@
 #pragma once
 
 #include "batch_params.hpp"
-#include "ls_wolfe.hpp"
+#include "linesearch_init.hpp"
+#include "linesearch_wolfe.hpp"
 #include <deque>
 #include <vector>
 #include <cassert>
@@ -19,7 +20,7 @@ namespace ncv
                 >
                 struct batch_lbfgs : public batch_params_t<tproblem>
                 {
-                        typedef batch_params_t<tproblem>          base_t;
+                        typedef batch_params_t<tproblem>        base_t;
 
                         typedef typename base_t::tscalar        tscalar;
                         typedef typename base_t::tsize          tsize;
@@ -51,15 +52,16 @@ namespace ncv
                                 assert(problem.size() == static_cast<tsize>(x0.size()));
 
                                 std::deque<tvector> ss, ys;
-                                tstate cstate(problem, x0);     // current state
-                                tstate pstate = cstate;         // previous state
+                                tstate cstate(problem, x0);             // current state
+                                tstate pstate = cstate;                 // previous state
 
                                 tvector q, r;
-                                tscalar ft;
-                                tvector gt;
 
-                                const tscalar alpha = tscalar(1e-4);
-                                const tscalar beta = tscalar(0.9);
+                                // line-search initial step length
+                                linesearch_init_unit<tstate> ls_init;
+
+                                // line-search step
+                                linesearch_wolfe<tproblem> ls_step(1e-4, 0.9);
 
                                 // iterate until convergence
                                 for (tsize i = 0; i < base_t::m_max_iterations; i ++)
@@ -115,16 +117,15 @@ namespace ncv
 
                                         cstate.d = -r;
 
-                                        // update solution
-                                        const tscalar t0 = 1.0;
-                                        const tscalar t = ls_wolfe(problem, cstate, base_t::m_wlog, ft, gt, t0, alpha, beta);
-                                        if (t < std::numeric_limits<tscalar>::epsilon())
+                                        // line-search
+                                        pstate = cstate;
+
+                                        const tscalar t0 = ls_init.update(cstate);
+                                        if (!ls_step.update(problem, t0, cstate))
                                         {
                                                 base_t::elog("line-search failed for LBFGS!");
                                                 break;
                                         }
-                                        pstate = cstate;
-                                        cstate.update(problem, t, ft, gt);
 
                                         ss.push_back(cstate.x - pstate.x);
                                         ys.push_back(cstate.g - pstate.g);
