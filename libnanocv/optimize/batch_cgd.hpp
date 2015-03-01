@@ -83,12 +83,10 @@ namespace ncv
                                         }
 
                                         // force a descent direction (if not provided)
-                                        tscalar dg = cstate.d.dot(cstate.g);
-                                        if (dg > std::numeric_limits<tscalar>::epsilon())
+                                        if (cstate.d.dot(cstate.g) > std::numeric_limits<tscalar>::epsilon())
                                         {
                                                 base_t::wlog("not a descent direction!");
                                                 cstate.d = -cstate.g;
-                                                dg = -dg;
                                         }
 
                                         // line-search
