@@ -1,8 +1,11 @@
 #pragma once
 
 #include "batch_params.hpp"
-#include "linesearch_init.hpp"
+#include "linesearch_init_unit.hpp"
+#include "linesearch_init_interp.hpp"
+#include "linesearch_init_consist.hpp"
 #include "linesearch_wolfe.hpp"
+#include "linesearch_armijo.hpp"
 #include <deque>
 #include <vector>
 #include <cassert>
