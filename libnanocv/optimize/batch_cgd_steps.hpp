@@ -29,7 +29,7 @@ namespace ncv
                                 const auto& gk1 = cstate.g;
                                 const auto yk = gk1 - gk;
 
-                                return gk1.dot(yk) / dk.dot(yk);
+                                return -gk1.dot(yk) / dk.dot(yk);
                         }
 
                         const char* ls_failed_message() const
@@ -175,7 +175,7 @@ namespace ncv
                                 const auto& gk1 = cstate.g;
                                 const auto yk = gk1 - gk;
 
-                                return - gk1.squaredNorm() / dk.dot(yk);
+                                return gk1.squaredNorm() / dk.dot(yk);
                         }
 
                         const char* ls_failed_message() const
