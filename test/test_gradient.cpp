@@ -9,7 +9,7 @@
 #include "libnanocv/util/random.hpp"
 #include "libnanocv/util/epsilon.hpp"
 #include "libnanocv/util/thread_pool.h"
-#include "libnanocv-test/check_gradients.h"
+#include "libnanocv-test/test_models.h"
 
 namespace test
 {
