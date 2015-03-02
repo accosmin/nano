@@ -66,8 +66,24 @@ namespace test
                                 x(1) = -1.0;
                                 solutions.emplace_back(x, 3.0);
                         }
-
-//                        fixme: more local minimas?!
+                        {
+                                vector_t x(2);
+                                x(0) = +1.2;
+                                x(1) = +0.8;
+                                solutions.emplace_back(x, 840.0);
+                        }
+                        {
+                                vector_t x(2);
+                                x(0) = +1.8;
+                                x(1) = +0.2;
+                                solutions.emplace_back(x, 84.0);
+                        }
+                        {
+                                vector_t x(2);
+                                x(0) = -0.6;
+                                x(1) = -0.4;
+                                solutions.emplace_back(x, 30.0);
+                        }
 
                         functions.emplace_back("Goldstein-Price",
                                                fn_size, fn_fval, fn_grad, solutions);
