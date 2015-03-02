@@ -68,7 +68,7 @@ namespace test
                 const scalar_t epsilon = std::numeric_limits<scalar_t>::epsilon();
                 const size_t history = 6;
 
-                const size_t trials = 1;//256;
+                const size_t trials = 1024;
 
                 const size_t dims = fn_size();
 
@@ -80,9 +80,6 @@ namespace test
 
                         vector_t x0(dims);
                         rgen(x0.data(), x0.data() + x0.size());
-
-                        x0(0) = -0.18754124041896814;
-                        x0(1) = 0.79434529066190662;
 
                         x0s.push_back(x0);
                 }
