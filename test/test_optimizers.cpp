@@ -12,6 +12,15 @@
 #include "libnanocv/util/epsilon.hpp"
 #include "libnanocv/util/tabulator.h"
 
+#include "libnanocv-test/test_func_beale.h"
+#include "libnanocv-test/test_func_booth.h"
+#include "libnanocv-test/test_func_sphere.h"
+#include "libnanocv-test/test_func_matyas.h"
+#include "libnanocv-test/test_func_ellipse.h"
+#include "libnanocv-test/test_func_himmelblau.h"
+#include "libnanocv-test/test_func_rosenbrock.h"
+#include "libnanocv-test/test_func_goldstein_price.h"
+
 namespace test
 {
         using namespace ncv;
@@ -142,392 +151,44 @@ namespace test
                 // print stats
                 table.print(std::cout);
         }
+
+        void check_problems(const std::vector<test::function_t>& funcs)
+        {
+                BOOST_CHECK_EQUAL(funcs.empty(), false);
+
+                for (const test::function_t& func : funcs)
+                {
+                        test::check_problem(func.m_name, func.m_opsize, func.m_opfval, func.m_opgrad, func.m_solutions);
+                }
+        }
 }
 
 BOOST_AUTO_TEST_CASE(test_optimizers)
 {
         using namespace ncv;
 
-        // https://en.wikipedia.org/wiki/Test_functions_for_optimization
-
         // Sphere function
-        for (size_t dims = 1; dims <= 16; dims *= 2)
-        {
-                const opt_opsize_t fn_size = [=] ()
-                {
-                        return dims;
-                };
-
-                const opt_opfval_t fn_fval = [=] (const vector_t& x)
-                {
-                        scalar_t fx = 0;
-                        for (size_t i = 0; i < dims; i ++)
-                        {
-                                fx += x(i) * x(i);
-                        }
-
-                        return fx;
-                };
-
-                const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
-                {
-                        gx.resize(dims);
-                        for (size_t i = 0; i < dims; i ++)
-                        {
-                                gx(i) = 2 * x(i);
-                        }
-
-                        return fn_fval(x);
-                };
-
-                std::vector<std::pair<vector_t, scalar_t>> solutions;
-                {
-                        solutions.emplace_back(vector_t::Zero(dims), 0);
-                }
-
-                test::check_problem("sphere", fn_size, fn_fval, fn_grad, solutions);
-        }
+        test::check_problems(test::make_sphere_funcs(16));
 
         // Ellipse function
-        for (size_t dims = 1; dims <= 32; dims *= 2)
-        {
-                vector_t weights(dims);
-
-                random_t<scalar_t> rng(1.0, 1e+6);
-                rng(weights.data(), weights.data() + weights.size());
-
-                const opt_opsize_t fn_size = [=] ()
-                {
-                        return dims;
-                };
-
-                const opt_opfval_t fn_fval = [=] (const vector_t& x)
-                {
-                        scalar_t fx = 0;
-                        for (size_t i = 0; i < dims; i ++)
-                        {
-                                fx += x(i) * x(i) * weights(i);
-                        }
-
-                        return fx;
-                };
-
-                const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
-                {
-                        gx.resize(dims);
-                        for (size_t i = 0; i < dims; i ++)
-                        {
-                                gx(i) = 2.0 * x(i) * weights(i);
-                        }
-
-                        return fn_fval(x);
-                };
-
-                std::vector<std::pair<vector_t, scalar_t>> solutions;
-                {
-                        solutions.emplace_back(vector_t::Zero(dims), 0);
-                }
-
-                test::check_problem("ellipse" + text::to_string(dims) + "D", fn_size, fn_fval, fn_grad, solutions);
-        }
+        test::check_problems(test::make_ellipse_funcs(16));
 
         // Rosenbrock function
-        for (size_t dims = 2; dims <= 3; dims ++)
-        {
-                const opt_opsize_t fn_size = [=] ()
-                {
-                        return dims;
-                };
-
-                const opt_opfval_t fn_fval = [=] (const vector_t& x)
-                {
-                        scalar_t fx = 0;
-                        for (size_t i = 0; i + 1 < dims; i ++)
-                        {
-                                fx += 100.0 * math::square(x(i + 1) - x(i) * x(i)) + math::square(x(i) - 1);
-                        }
-
-                        return fx;
-                };
-
-                const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
-                {
-                        gx.resize(dims);
-                        gx.setZero();
-                        for (size_t i = 0; i + 1 < dims; i ++)
-                        {
-                                gx(i) += 2.0 * (x(i) - 1);
-                                gx(i) += 100.0 * 2.0 * (x(i + 1) - x(i) * x(i)) * (- 2.0 * x(i));
-                                gx(i + 1) += 100.0 * 2.0 * (x(i + 1) - x(i) * x(i));
-                        }
-
-                        return fn_fval(x);
-                };
-
-                std::vector<std::pair<vector_t, scalar_t>> solutions;
-                {
-                        solutions.emplace_back(vector_t::Ones(dims), 0);
-                        if (dims >= 4 && dims <= 7)
-                        {
-                                vector_t x = vector_t::Ones(dims);
-                                x(0) = -1;
-                                solutions.emplace_back(x, 0);
-                        }
-                }
-
-                test::check_problem("Rosenbrock", fn_size, fn_fval, fn_grad, solutions);
-        }
+        test::check_problems(test::make_rosenbrock_funcs());
 
 //        // Beale function
-//        {
-//                const opt_opsize_t fn_size = [=] ()
-//                {
-//                        return 2;
-//                };
-
-//                const opt_opfval_t fn_fval = [=] (const vector_t& x)
-//                {
-//                        const scalar_t a = x(0), b = x(1);
-
-//                        const scalar_t z0 = 1.5 - a + a * b;
-//                        const scalar_t z1 = 2.25 - a + a * b * b;
-//                        const scalar_t z2 = 2.625 - a + a * b * b * b;
-
-//                        return z0 * z0 + z1 * z1 + z2 * z2;
-//                };
-
-//                const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
-//                {
-//                        const scalar_t a = x(0), b = x(1);
-
-//                        const scalar_t z0 = 1.5 - a + a * b;
-//                        const scalar_t z1 = 2.25 - a + a * b * b;
-//                        const scalar_t z2 = 2.625 - a + a * b * b * b;
-
-//                        gx.resize(2);
-//                        gx(0) = 2.0 * (z0 * (-1 + b) + z1 * (-1 + b * b) + z2 * (-1 + b * b * b));
-//                        gx(1) = 2.0 * (z0 * (a) + z1 * (2 * a * b) + z2 * (3 * a * b * b));
-
-//                        return fn_fval(x);
-//                };
-
-//                std::vector<std::pair<vector_t, scalar_t>> solutions;
-//                {
-//                        vector_t x(2);
-//                        x(0) = 3.0;
-//                        x(1) = 0.5;
-//                        solutions.emplace_back(x, 0);
-//                }
-
-//                fixme: more local minimas?!
-
-//                test::check_problem("Beale", fn_size, fn_fval, fn_grad, solutions);
-//        }
+//        test::check_problems(test::make_beale_funcs());
 
 //        // Goldstein-Price function
-//        {
-//                const opt_opsize_t fn_size = [=] ()
-//                {
-//                        return 2;
-//                };
-
-//                const opt_opfval_t fn_fval = [=] (const vector_t& x)
-//                {
-//                        const scalar_t a = x(0), b = x(1);
-
-//                        const scalar_t z0 = 1.0 + a + b;
-//                        const scalar_t z1 = 19 - 14 * a + 3 * a * a - 14 * b + 6 * a * b + 3 * b * b;
-//                        const scalar_t z2 = 2 * a - 3 * b;
-//                        const scalar_t z3 = 18 - 32 * a + 12 * a * a + 48 * b - 36 * a * b + 27 * b * b;
-
-//                        return (1 + z0 * z0 * z1) * (30 + z2 * z2 * z3);
-//                };
-
-//                const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
-//                {
-//                        const scalar_t a = x(0), b = x(1);
-
-//                        const scalar_t z0 = 1.0 + a + b;
-//                        const scalar_t z1 = 19 - 14 * a + 3 * a * a - 14 * b + 6 * a * b + 3 * b * b;
-//                        const scalar_t z2 = 2 * a - 3 * b;
-//                        const scalar_t z3 = 18 - 32 * a + 12 * a * a + 48 * b - 36 * a * b + 27 * b * b;
-
-//                        const scalar_t u = 1 + z0 * z0 * z1;
-//                        const scalar_t v = 30 + z2 * z2 * z3;
-
-//                        const scalar_t z0da = 1;
-//                        const scalar_t z0db = 1;
-
-//                        const scalar_t z1da = -14 + 6 * a + 6 * b;
-//                        const scalar_t z1db = -14 + 6 * a + 6 * b;
-
-//                        const scalar_t z2da = 2;
-//                        const scalar_t z2db = -3;
-
-//                        const scalar_t z3da = -32 + 24 * a - 36 * b;
-//                        const scalar_t z3db = 48 - 36 * a + 54 * b;
-
-//                        gx.resize(2);
-//                        gx(0) = u * (2 * z2 * z2da * z3 + z2 * z2 * z3da) +
-//                                v * (2 * z0 * z0da * z1 + z0 * z0 * z1da);
-//                        gx(1) = u * (2 * z2 * z2db * z3 + z2 * z2 * z3db) +
-//                                v * (2 * z0 * z0db * z1 + z0 * z0 * z1db);
-
-//                        return fn_fval(x);
-//                };
-
-//                std::vector<std::pair<vector_t, scalar_t>> solutions;
-//                {
-//                        vector_t x(2);
-//                        x(0) = +0.0;
-//                        x(1) = -1.0;
-//                        solutions.emplace_back(x, 3.0);
-//                }
-
-//                fixme: more local minimas?!
-
-//                test::check_problem("Goldstein-Price", fn_size, fn_fval, fn_grad, solutions);
-//        }
+//        test::check_problems(test::make_goldstein_price_funcs());
 
         // Booth function
-        {
-                const opt_opsize_t fn_size = [=] ()
-                {
-                        return 2;
-                };
-
-                const opt_opfval_t fn_fval = [=] (const vector_t& x)
-                {
-                        const scalar_t a = x(0), b = x(1);
-
-                        const scalar_t u = a + 2 * b - 7;
-                        const scalar_t v = 2 * a + b - 5;
-
-                        return u * u + v * v;
-                };
-
-                const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
-                {
-                        const scalar_t a = x(0), b = x(1);
-
-                        const scalar_t u = a + 2 * b - 7;
-                        const scalar_t v = 2 * a + b - 5;
-
-                        gx.resize(2);
-                        gx(0) = 2 * u + 2 * v * 2;
-                        gx(1) = 2 * u * 2 + 2 * v;
-
-                        return fn_fval(x);
-                };
-
-                std::vector<std::pair<vector_t, scalar_t>> solutions;
-                {
-                        vector_t x(2);
-                        x(0) = 1.0;
-                        x(1) = 3.0;
-                        solutions.emplace_back(x, 0.0);
-                }
-
-                test::check_problem("Booth", fn_size, fn_fval, fn_grad, solutions);
-        }
+        test::check_problems(test::make_booth_funcs());
 
         // Matyas function
-        {
-                const opt_opsize_t fn_size = [=] ()
-                {
-                        return 2;
-                };
-
-                const opt_opfval_t fn_fval = [=] (const vector_t& x)
-                {
-                        const scalar_t a = x(0), b = x(1);
-
-                        return 0.26 * (a * a + b * b) - 0.48 * a * b;
-                };
-
-                const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
-                {
-                        const scalar_t a = x(0), b = x(1);
-
-                        gx.resize(2);
-                        gx(0) = 0.26 * 2 * a - 0.48 * b;
-                        gx(1) = 0.26 * 2 * b - 0.48 * a;
-
-                        return fn_fval(x);
-                };
-
-                std::vector<std::pair<vector_t, scalar_t>> solutions;
-                {
-                        solutions.emplace_back(vector_t::Zero(2), 0.0);
-                }
-
-                test::check_problem("Matyas", fn_size, fn_fval, fn_grad, solutions);
-        }
+        test::check_problems(test::make_matyas_funcs());
 
         // Himmelblau function
-        {
-                const opt_opsize_t fn_size = [=] ()
-                {
-                        return 2;
-                };
-
-                const opt_opfval_t fn_fval = [=] (const vector_t& x)
-                {
-                        const scalar_t a = x(0), b = x(1);
-
-                        const scalar_t u = a * a + b - 11;
-                        const scalar_t v = a + b * b - 7;
-
-                        return u * u + v * v;
-                };
-
-                const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
-                {
-                        const scalar_t a = x(0), b = x(1);
-
-                        const scalar_t u = a * a + b - 11;
-                        const scalar_t v = a + b * b - 7;
-
-                        gx.resize(2);
-                        gx(0) = 2 * u * 2 * a + 2 * v;
-                        gx(1) = 2 * u + 2 * v * 2 * b;
-
-                        return fn_fval(x);
-                };
-
-                std::vector<std::pair<vector_t, scalar_t>> solutions;
-                {
-                        vector_t x(2);
-                        x(0) = -0.270845;
-                        x(1) = -0.923039;
-                        solutions.emplace_back(x, 181.617);
-                }
-                {
-                        vector_t x(2);
-                        x(0) = 3.0;
-                        x(1) = 2.0;
-                        solutions.emplace_back(x, 0);
-                }
-                {
-                        vector_t x(2);
-                        x(0) = -2.805118;
-                        x(1) = 3.131312;
-                        solutions.emplace_back(x, 0);
-                }
-                {
-                        vector_t x(2);
-                        x(0) = -3.779310;
-                        x(1) = -3.283186;
-                        solutions.emplace_back(x, 0);
-                }
-                {
-                        vector_t x(2);
-                        x(0) = 3.584428;
-                        x(1) = -1.848126;
-                        solutions.emplace_back(x, 0);
-                }
-
-                test::check_problem("Himmelblau", fn_size, fn_fval, fn_grad, solutions);
-        }
+        test::check_problems(test::make_himmelblau_funcs());
 }
 
