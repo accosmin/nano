@@ -13,7 +13,7 @@ namespace test
                 {
                         vector_t weights(dims);
 
-                        random_t<scalar_t> rng(1.0, 1e+8);
+                        random_t<scalar_t> rng(1.0, 1e+6);
                         rng(weights.data(), weights.data() + weights.size());
 
                         const opt_opsize_t fn_size = [=] ()
