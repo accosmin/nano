@@ -16,7 +16,7 @@ namespace ncv
                 <
                         typename tproblem                       ///< optimization problem
                 >
-                struct batch_gd : public batch_params_t<tproblem>
+                struct batch_gd_t : public batch_params_t<tproblem>
                 {
                         typedef batch_params_t<tproblem>        base_t;
 
@@ -31,7 +31,7 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        batch_gd(       tsize max_iterations,
+                        batch_gd_t(     tsize max_iterations,
                                         tscalar epsilon,
                                         const twlog& wlog = twlog(),
                                         const telog& elog = telog(),
@@ -50,10 +50,10 @@ namespace ncv
                                 tstate cstate(problem, x0);             // current state
 
                                 // line-search initial step length
-                                linesearch_init_interpolation<tstate> ls_init;
+                                linesearch_init_interpolation_t<tstate> ls_init;
 
                                 // line-search step
-                                linesearch_wolfe<tproblem> ls_step(1e-4, 0.1);
+                                linesearch_wolfe_t<tproblem> ls_step(1e-4, 0.1);
 
                                 // iterate until convergence
                                 for (tsize i = 0; i < base_t::m_max_iterations; i ++)

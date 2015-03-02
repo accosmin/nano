@@ -16,7 +16,7 @@ namespace ncv
 
                         typename tscalar = typename tstate::tscalar
                 >
-                class linesearch_init_unit
+                class linesearch_init_unit_t
                 {
                 public:
 

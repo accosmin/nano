@@ -18,7 +18,7 @@ namespace ncv
                         typename tcgd_update,                   ///< CGD step update
                         typename tproblem                       ///< optimization problem
                 >
-                struct batch_cgd : public batch_params_t<tproblem>
+                struct batch_cgd_t : public batch_params_t<tproblem>
                 {
                         typedef batch_params_t<tproblem>        base_t;
 
@@ -33,7 +33,7 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        batch_cgd(      tsize max_iterations,
+                        batch_cgd_t(    tsize max_iterations,
                                         tscalar epsilon,
                                         const twlog& wlog = twlog(),
                                         const telog& elog = telog(),
@@ -53,10 +53,10 @@ namespace ncv
                                 tstate pstate = cstate;         // previous state
 
                                 // line-search initial step length
-                                linesearch_init_interpolation<tstate> ls_init;
+                                linesearch_init_interpolation_t<tstate> ls_init;
 
                                 // line-search step
-                                linesearch_wolfe<tproblem> ls_step(1e-4, 0.1);
+                                linesearch_wolfe_t<tproblem> ls_step(1e-4, 0.1);
 
                                 const tcgd_update op_update;
 
@@ -106,25 +106,25 @@ namespace ncv
 
                 // create various CGD algorithms
                 template <typename tproblem>
-                using batch_cgd_hs = batch_cgd<cgd_step_HS<typename tproblem::tstate>, tproblem>;
+                using batch_cgd_hs_t = batch_cgd_t<cgd_step_HS<typename tproblem::tstate>, tproblem>;
 
                 template <typename tproblem>
-                using batch_cgd_fr = batch_cgd<cgd_step_FR<typename tproblem::tstate>, tproblem>;
+                using batch_cgd_fr_t = batch_cgd_t<cgd_step_FR<typename tproblem::tstate>, tproblem>;
 
                 template <typename tproblem>
-                using batch_cgd_pr = batch_cgd<cgd_step_PR<typename tproblem::tstate>, tproblem>;
+                using batch_cgd_pr_t = batch_cgd_t<cgd_step_PR<typename tproblem::tstate>, tproblem>;
 
                 template <typename tproblem>
-                using batch_cgd_cd = batch_cgd<cgd_step_CD<typename tproblem::tstate>, tproblem>;
+                using batch_cgd_cd_t = batch_cgd_t<cgd_step_CD<typename tproblem::tstate>, tproblem>;
 
                 template <typename tproblem>
-                using batch_cgd_ls = batch_cgd<cgd_step_LS<typename tproblem::tstate>, tproblem>;
+                using batch_cgd_ls_t = batch_cgd_t<cgd_step_LS<typename tproblem::tstate>, tproblem>;
 
                 template <typename tproblem>
-                using batch_cgd_dy = batch_cgd<cgd_step_DY<typename tproblem::tstate>, tproblem>;
+                using batch_cgd_dy_t = batch_cgd_t<cgd_step_DY<typename tproblem::tstate>, tproblem>;
 
                 template <typename tproblem>
-                using batch_cgd_n = batch_cgd<cgd_step_N<typename tproblem::tstate>, tproblem>;
+                using batch_cgd_n_t = batch_cgd_t<cgd_step_N<typename tproblem::tstate>, tproblem>;
         }
 }
 

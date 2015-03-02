@@ -21,14 +21,14 @@ namespace ncv
                         typename tvector = typename tproblem::tvector,
                         typename tstate = typename tproblem::tstate
                 >
-                class linesearch_armijo
+                class linesearch_armijo_t
                 {
                 public:
 
                         ///
                         /// \brief constructor
                         ///
-                        linesearch_armijo(tscalar alpha = 0.2, tscalar beta = 0.7)
+                        linesearch_armijo_t(tscalar alpha = 0.2, tscalar beta = 0.7)
                                 :       m_alpha(alpha),
                                         m_beta(beta)
                         {

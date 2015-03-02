@@ -27,53 +27,53 @@ namespace ncv
                 switch (optimizer)
                 {
                 case batch_optimizer::LBFGS:
-                        return  optimize::batch_lbfgs<opt_problem_t>
+                        return  optimize::batch_lbfgs_t<opt_problem_t>
                                 (iterations, epsilon, history_size, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case batch_optimizer::CGD:
-                        return  optimize::batch_cgd_pr<opt_problem_t>
+                        return  optimize::batch_cgd_pr_t<opt_problem_t>
                                 (iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case batch_optimizer::CGD_CD:
-                        return  optimize::batch_cgd_cd<opt_problem_t>
+                        return  optimize::batch_cgd_cd_t<opt_problem_t>
                                 (iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case batch_optimizer::CGD_DY:
-                        return  optimize::batch_cgd_dy<opt_problem_t>
+                        return  optimize::batch_cgd_dy_t<opt_problem_t>
                                 (iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case batch_optimizer::CGD_FR:
-                        return  optimize::batch_cgd_fr<opt_problem_t>
+                        return  optimize::batch_cgd_fr_t<opt_problem_t>
                                 (iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case batch_optimizer::CGD_HS:
-                        return  optimize::batch_cgd_hs<opt_problem_t>
+                        return  optimize::batch_cgd_hs_t<opt_problem_t>
                                 (iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case batch_optimizer::CGD_LS:
-                        return  optimize::batch_cgd_ls<opt_problem_t>
+                        return  optimize::batch_cgd_ls_t<opt_problem_t>
                                 (iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case batch_optimizer::CGD_N:
-                        return  optimize::batch_cgd_n<opt_problem_t>
+                        return  optimize::batch_cgd_n_t<opt_problem_t>
                                 (iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case batch_optimizer::CGD_PR:
-                        return  optimize::batch_cgd_pr<opt_problem_t>
+                        return  optimize::batch_cgd_pr_t<opt_problem_t>
                                 (iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case batch_optimizer::GD:
                 default:
-                        return  optimize::batch_gd<opt_problem_t>
+                        return  optimize::batch_gd_t<opt_problem_t>
                                 (iterations, epsilon, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
                 }
@@ -94,33 +94,33 @@ namespace ncv
                 switch (optimizer)
                 {
                 case stochastic_optimizer::SGA:
-                        return  optimize::stoch_sga<opt_problem_t>
+                        return  optimize::stoch_sga_t<opt_problem_t>
                                 (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case stochastic_optimizer::SIA:
-                        return  optimize::stoch_sia<opt_problem_t>
+                        return  optimize::stoch_sia_t<opt_problem_t>
                                 (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case stochastic_optimizer::AG:
-                        return  optimize::stoch_ag<opt_problem_t>
+                        return  optimize::stoch_ag_t<opt_problem_t>
                                 (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case stochastic_optimizer::ADAGRAD:
-                        return  optimize::stoch_adagrad<opt_problem_t>
+                        return  optimize::stoch_adagrad_t<opt_problem_t>
                                 (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case stochastic_optimizer::ADADELTA:
-                        return  optimize::stoch_adadelta<opt_problem_t>
+                        return  optimize::stoch_adadelta_t<opt_problem_t>
                                 (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case stochastic_optimizer::SG:
                 default:
-                        return  optimize::stoch_sg<opt_problem_t>
+                        return  optimize::stoch_sg_t<opt_problem_t>
                                 (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
                 }

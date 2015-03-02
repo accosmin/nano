@@ -16,11 +16,11 @@ namespace ncv
 
                         typename tscalar = typename tstate::tscalar
                 >
-                class linesearch_init_consistency
+                class linesearch_init_consistency_t
                 {
                 public:
 
-                        linesearch_init_consistency()
+                        linesearch_init_consistency_t()
                                 :       m_first(true),
                                         m_prevt0(1),
                                         m_prevdg(1)

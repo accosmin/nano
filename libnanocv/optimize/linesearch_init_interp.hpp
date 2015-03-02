@@ -18,11 +18,11 @@ namespace ncv
 
                         typename tscalar = typename tstate::tscalar
                 >
-                class linesearch_init_interpolation
+                class linesearch_init_interpolation_t
                 {
                 public:
 
-                        linesearch_init_interpolation()
+                        linesearch_init_interpolation_t()
                                 :       m_first(true),
                                         m_prevf(0)
                         {

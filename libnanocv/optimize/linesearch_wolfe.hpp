@@ -17,14 +17,14 @@ namespace ncv
                         typename tvector = typename tproblem::tvector,
                         typename tstate = typename tproblem::tstate
                 >
-                class linesearch_wolfe
+                class linesearch_wolfe_t
                 {
                 public:
 
                         ///
                         /// \brief constructor
                         ///
-                        linesearch_wolfe(tscalar c1 = 1e-4, tscalar c2 = 0.1)
+                        linesearch_wolfe_t(tscalar c1 = 1e-4, tscalar c2 = 0.1)
                                 :       m_c1(c1),
                                         m_c2(c2)
                         {
