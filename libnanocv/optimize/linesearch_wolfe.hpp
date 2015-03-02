@@ -3,8 +3,6 @@
 #include <limits>
 #include "linesearch_zoom.hpp"
 
-#include <iostream>
-
 namespace ncv
 {
         namespace optimize
@@ -43,7 +41,6 @@ namespace ncv
                                 const tscalar t = step(problem, t0, state, ft, gt);
                                 if (t < std::numeric_limits<tscalar>::epsilon())
                                 {
-                                        std::cout << "t = " << t << std::endl;
                                         // failed to find a suitable line-search step
                                         return false;
                                 }
@@ -62,26 +59,19 @@ namespace ncv
                         {
                                 const tscalar dg = state.d.dot(state.g);
 
-                                std::cout << "dg = " << dg << std::endl;
-
                                 tscalar t0 = 0, ft0 = std::numeric_limits<tscalar>::max();
 
-                                const tscalar tmax = 1000;
+                                const tscalar tmax = 1e+9;
 
                                 // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
                                 for (tsize i = 0; i < max_iters; i ++)
                                 {
-                                        std::cout << "i = " << i << "/" << max_iters
-                                                  << ", t = " << t << ", t0 = " << t0 << std::endl;
-
                                         // check sufficient decrease
                                         ft = problem(state.x + t * state.d, gt);
                                         if (ft > state.f + m_c1 * t * dg || (ft >= ft0 && i > 0))
                                         {
-                                                std::cout << "ls_zoom - step1" << std::endl;
-
-                                                return ls_zoom(problem, state, ft, gt,
-                                                               t0, t, ft0, ft, m_c1, m_c2, max_iters);
+                                                return linesearch_zoom(problem, state, ft, gt,
+                                                       t0, t, ft0, ft, m_c1, m_c2, max_iters);
                                         }
 
                                         // check curvature
@@ -93,10 +83,8 @@ namespace ncv
 
                                         if (dg1 >= 0)
                                         {
-                                                std::cout << "ls_zoom - step2" << std::endl;
-
-                                                return ls_zoom(problem, state, ft, gt,
-                                                               t, t0, ft, ft0, m_c1, m_c2, max_iters);
+                                                return linesearch_zoom(problem, state, ft, gt,
+                                                       t, t0, ft, ft0, m_c1, m_c2, max_iters);
                                         }
 
                                         t0 = t;
@@ -105,7 +93,6 @@ namespace ncv
                                 }
 
                                 // OK, give up
-                                std::cout << "t = " << t << std::endl;
                                 return 0;
                         }
 

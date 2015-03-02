@@ -16,15 +16,11 @@ namespace test
 {
         using namespace ncv;
 
-        bool check_solution(const string_t& problem_name, const string_t& optimizer_name,
+        void check_solution(const string_t& problem_name, const string_t& optimizer_name,
                 const opt_state_t& state, const std::vector<std::pair<vector_t, scalar_t>>& solutions)
         {
                 // Check convergence
                 BOOST_CHECK_LE(state.g.lpNorm<Eigen::Infinity>(), math::epsilon3<scalar_t>());
-                if (state.g.lpNorm<Eigen::Infinity>() > math::epsilon3<scalar_t>())
-                {
-                        return false;
-                }
 
                 // Find the closest solution
                 size_t best_index = std::string::npos;
@@ -61,8 +57,6 @@ namespace test
 //                                            << "@" << problem_name << "/" << optimizer_name;
 //                        }
                 }
-
-                return true;
         }
 
         void check_problem(
@@ -96,14 +90,14 @@ namespace test
                 // optimizers to try
                 const auto optimizers =
                 {
-//                        batch_optimizer::GD,
+                        batch_optimizer::GD,
 //                        batch_optimizer::CGD_CD,
 //                        batch_optimizer::CGD_DY,
 //                        batch_optimizer::CGD_FR,
-//                        batch_optimizer::CGD_HS,
-//                        batch_optimizer::CGD_LS,
-//                        batch_optimizer::CGD_PR,
-//                        batch_optimizer::CGD_N,
+                        batch_optimizer::CGD_HS,
+                        batch_optimizer::CGD_LS,
+                        batch_optimizer::CGD_PR,
+                        batch_optimizer::CGD_N,
                         batch_optimizer::LBFGS
                 };
 
@@ -126,28 +120,11 @@ namespace test
                                 const opt_problem_t problem(fn_size, fn_fval, fn_grad);
                                 BOOST_CHECK_LE(problem.grad_accuracy(x0), math::epsilon2<scalar_t>());
 
-                                const auto op_wlog = [] (const string_t& message)
-                                {
-                                        log_warning() << message;
-                                };
-
-                                const auto op_elog = [] (const string_t& message)
-                                {
-                                        log_error() << message;
-                                };
-
-                                const auto op_ulog = [] (const opt_state_t& state)
-                                {
-                                        std::cout << "f = " << state.f
-                                                  << ", g = " << state.g.lpNorm<Eigen::Infinity>()
-                                                  << ", x = " << state.x.transpose() << std::endl;
-                                };
-
                                 // optimize
                                 const ncv::timer_t timer;
 
                                 const opt_state_t state = ncv::minimize(
-                                        fn_size, fn_fval, fn_grad, op_wlog, op_elog, op_ulog,
+                                        fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
                                         x0, optimizer, iterations, epsilon, history);
 
                                 // update stats
@@ -158,10 +135,7 @@ namespace test
                                 grad_evals(state.n_grad_calls());
 
                                 // check solution
-                                if (!check_solution(problem_name, text::to_string(optimizer), state, solutions))
-                                {
-                                        std::cout << "x0 = " << x0.transpose() << std::endl;
-                                }
+                                check_solution(problem_name, text::to_string(optimizer), state, solutions);
                         }
 
                         table.append(text::to_string(optimizer))

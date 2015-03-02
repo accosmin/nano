@@ -2,8 +2,6 @@
 
 #include <cmath>
 
-#include <iostream>
-
 namespace ncv
 {
         namespace optimize
@@ -21,7 +19,7 @@ namespace ncv
                         typename tvector = typename tproblem::tvector,
                         typename tstate = typename tproblem::tstate
                 >
-                tscalar ls_zoom(const tproblem& problem, const tstate& st,
+                tscalar linesearch_zoom(const tproblem& problem, const tstate& st,
                         tscalar& ft, tvector& gt,
                         tscalar tlo, tscalar thi, tscalar ftlo, tscalar fthi,
                         tscalar c1, tscalar c2, tsize max_iters = 64)
@@ -31,10 +29,6 @@ namespace ncv
                         // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
                         for (tsize i = 0; i < max_iters; i ++)
                         {
-                                std::cout << "i = " << i << "/" << max_iters
-                                          << ", t = [" << tlo << ", " << thi << "]"
-                                          << ", f = [" << ftlo << ", " << fthi << "]\n";
-
                                 const tscalar t = (tlo + thi) / 2;
 
                                 // check sufficient decrease
@@ -64,8 +58,6 @@ namespace ncv
                                         ftlo = ft;
                                 }
                         }
-
-                        std::cout << "ls_zoom ... giving up ..." << std::endl;
 
                         // OK, give up
                         return 0;
