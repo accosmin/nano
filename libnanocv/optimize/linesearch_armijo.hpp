@@ -1,6 +1,7 @@
 #pragma once
 
 #include <limits>
+#include <cassert>
 
 namespace ncv
 {
@@ -55,14 +56,19 @@ namespace ncv
 
                 private:
 
-                        tscalar step(const tproblem& problem, tscalar t0, const tstate& state,
-                                tsize max_iters = 64) const
+                        tscalar step(const tproblem& problem, tscalar t0, const tstate& state) const
                         {
                                 const tscalar dg = state.d.dot(state.g);
+                                const tscalar eps = std::numeric_limits<tscalar>::epsilon();
+
+                                assert(t0 > eps);
+                                assert(dg < tscalar(0));
+                                assert(m_beta > tscalar(0) && m_beta < tscalar(1));
+                                assert(m_alpha > tscalar(0) && m_alpha < tscalar(1));
 
                                 // (Nocedal & Wright (numerical optimization 2nd) @ p.37)
                                 tscalar t = t0;
-                                for (tsize i = 0; i < max_iters; i ++, t = m_beta * t)
+                                for ( ; t > eps; t = m_beta * t)
                                 {
                                         if (problem(state.x + t * state.d) < state.f + t * m_alpha * dg)
                                         {

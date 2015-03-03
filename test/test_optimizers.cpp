@@ -29,7 +29,7 @@ namespace test
                 const opt_state_t& state, const std::vector<std::pair<vector_t, scalar_t>>& solutions)
         {
                 // Check convergence
-//                BOOST_CHECK_LE(state.g.lpNorm<Eigen::Infinity>(), math::epsilon3<scalar_t>());
+                BOOST_CHECK_LE(state.g.lpNorm<Eigen::Infinity>(), math::epsilon3<scalar_t>());
 
                 // Find the closest solution
                 size_t best_index = std::string::npos;
@@ -52,15 +52,15 @@ namespace test
                         const scalar_t dfx = math::abs(state.f - solutions[best_index].second);
                         const scalar_t dx = (state.x - solutions[best_index].first).lpNorm<Eigen::Infinity>();
 
-//                        BOOST_CHECK_LE(dfx, math::epsilon3<scalar_t>());
-//                        BOOST_CHECK_LE(dx, math::epsilon3<scalar_t>());
+                        BOOST_CHECK_LE(dfx, math::epsilon3<scalar_t>());
+                        BOOST_CHECK_LE(dx, math::epsilon3<scalar_t>());
 
-                        if (dx > math::epsilon3<scalar_t>())
-                        {
-                                log_info() << "x = " << state.x.transpose()
-                                           << ", fx = " << state.f
-                                           << ", gx = " << state.g.lpNorm<Eigen::Infinity>();
-                        }
+//                        if (dx > math::epsilon3<scalar_t>())
+//                        {
+//                                log_info() << "x = " << state.x.transpose()
+//                                           << ", fx = " << state.f
+//                                           << ", gx = " << state.g.lpNorm<Eigen::Infinity>();
+//                        }
                 }
         }
 
@@ -92,8 +92,7 @@ namespace test
                 // optimizers to try
                 const auto optimizers =
                 {
-                        batch_optimizer::GD
-//                        ,
+                        batch_optimizer::GD,
 //                        batch_optimizer::CGD_CD,
 //                        batch_optimizer::CGD_DY,
 //                        batch_optimizer::CGD_FR,
@@ -101,17 +100,23 @@ namespace test
 //                        batch_optimizer::CGD_LS,
 //                        batch_optimizer::CGD_PR,
 //                        batch_optimizer::CGD_N,
-//                        batch_optimizer::LBFGS
+                        batch_optimizer::LBFGS
                 };
 
                 tabulator_t table(problem_name);
-                table.header() << "func" << "grad" << "time [us]" << "func evals" << "grad evals";
+                table.header() << "func"
+                               << "grad"
+                               << "time [us]"
+                               << "iterations"
+                               << "func evals"
+                               << "grad evals";
 
                 for (batch_optimizer optimizer : optimizers)
                 {
                         stats_t<scalar_t> funcs;
                         stats_t<scalar_t> grads;
                         stats_t<scalar_t> times;
+                        stats_t<scalar_t> opti_iters;
                         stats_t<scalar_t> func_evals;
                         stats_t<scalar_t> grad_evals;
 
@@ -134,6 +139,7 @@ namespace test
                                 funcs(state.f);
                                 grads(state.g.lpNorm<Eigen::Infinity>());
                                 times(timer.microseconds());
+                                opti_iters(state.n_iterations());
                                 func_evals(state.n_fval_calls());
                                 grad_evals(state.n_grad_calls());
 
@@ -142,7 +148,12 @@ namespace test
                         }
 
                         table.append(text::to_string(optimizer))
-                                << funcs.avg() << grads.avg() << times.avg() << func_evals.avg() << grad_evals.avg();
+                                << funcs.avg()
+                                << grads.avg()
+                                << times.avg()
+                                << opti_iters.avg()
+                                << func_evals.avg()
+                                << grad_evals.avg();
                 }
 
                 // print stats
@@ -164,28 +175,28 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
 {
         using namespace ncv;
 
-//        // Sphere function
-//        test::check_problems(test::make_sphere_funcs(16));
+        // Sphere function
+        test::check_problems(test::make_sphere_funcs(16));
 
-//        // Ellipse function
-//        test::check_problems(test::make_ellipse_funcs(16));
+        // Ellipse function
+        test::check_problems(test::make_ellipse_funcs(16));
 
-//        // Rosenbrock function
-//        test::check_problems(test::make_rosenbrock_funcs());
+        // Rosenbrock function
+        test::check_problems(test::make_rosenbrock_funcs());
 
-        // Beale function
-        test::check_problems(test::make_beale_funcs());
+//        // Beale function
+//        test::check_problems(test::make_beale_funcs());
 
-//        // Goldstein-Price function
-//        test::check_problems(test::make_goldstein_price_funcs());
+        // Goldstein-Price function
+        test::check_problems(test::make_goldstein_price_funcs());
 
-//        // Booth function
-//        test::check_problems(test::make_booth_funcs());
+        // Booth function
+        test::check_problems(test::make_booth_funcs());
 
-//        // Matyas function
-//        test::check_problems(test::make_matyas_funcs());
+        // Matyas function
+        test::check_problems(test::make_matyas_funcs());
 
-//        // Himmelblau function
-//        test::check_problems(test::make_himmelblau_funcs());
+        // Himmelblau function
+        test::check_problems(test::make_himmelblau_funcs());
 }
 

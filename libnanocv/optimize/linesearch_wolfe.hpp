@@ -1,6 +1,7 @@
 #pragma once
 
 #include <limits>
+#include <cassert>
 #include "linesearch_zoom.hpp"
 
 namespace ncv
@@ -61,7 +62,13 @@ namespace ncv
 
                                 tscalar t0 = 0, ft0 = std::numeric_limits<tscalar>::max();
 
-                                const tscalar tmax = 1e+9;
+                                const tscalar eps = std::numeric_limits<tscalar>::epsilon();
+                                const tscalar tmax = tscalar(1) / eps;
+
+                                assert(t0 > eps);
+                                assert(m_c1 < m_c2);
+                                assert(m_c1 > tscalar(0) && m_c1 < tscalar(1));
+                                assert(m_c2 > tscalar(0) && m_c2 < tscalar(1));
 
                                 // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
                                 for (tsize i = 0; i < max_iters; i ++)
