@@ -82,13 +82,6 @@ namespace ncv
                                                 cstate.d = -cstate.g + beta * pstate.d;
                                         }
 
-                                        // force a descent direction (if not provided)
-                                        if (cstate.d.dot(cstate.g) > std::numeric_limits<tscalar>::epsilon())
-                                        {
-                                                base_t::wlog("not a descent direction!");
-                                                cstate.d = -cstate.g;
-                                        }
-
                                         // line-search
                                         pstate = cstate;
 

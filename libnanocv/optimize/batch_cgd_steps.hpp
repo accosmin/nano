@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 namespace ncv
 {
         namespace optimize
@@ -86,7 +88,7 @@ namespace ncv
                                 const auto& gk1 = cstate.g;
                                 const auto yk = gk1 - gk;
 
-                                return gk1.dot(yk) / gk.squaredNorm();
+                                return std::max(gk1.dot(yk) / gk.squaredNorm(), tscalar(0));
                         }
 
                         const char* ls_failed_message() const
