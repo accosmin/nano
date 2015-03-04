@@ -52,17 +52,17 @@ namespace test
                         const scalar_t dfx = math::abs(state.f - solutions[best_index].second);
                         const scalar_t dx = (state.x - solutions[best_index].first).lpNorm<Eigen::Infinity>();
 
-//                        BOOST_CHECK_LE(dfx, math::epsilon3<scalar_t>());
-//                        BOOST_CHECK_LE(dx, math::epsilon3<scalar_t>());
+                        BOOST_CHECK_LE(dfx, math::epsilon3<scalar_t>());
+                        BOOST_CHECK_LE(dx, math::epsilon3<scalar_t>());
 
-                        if (dx > math::epsilon3<scalar_t>())
-                        {
-                                log_info() << "x = (" << state.x.transpose() << ")"
-                                           << ", dx = " << dx
-                                           << ", x0 = (" << solutions[best_index].first.transpose() << ")"
-                                           << ", fx = " << state.f
-                                           << ", gx = " << state.g.lpNorm<Eigen::Infinity>();
-                        }
+//                        if (dx > math::epsilon3<scalar_t>())
+//                        {
+//                                log_info() << "x = (" << state.x.transpose() << ")"
+//                                           << ", dx = " << dx
+//                                           << ", x0 = (" << solutions[best_index].first.transpose() << ")"
+//                                           << ", fx = " << state.f
+//                                           << ", gx = " << state.g.lpNorm<Eigen::Infinity>();
+//                        }
                 }
         }
 
@@ -94,7 +94,7 @@ namespace test
                 // optimizers to try
                 const auto optimizers =
                 {
-//                        batch_optimizer::GD,
+                        batch_optimizer::GD,
 //                        batch_optimizer::CGD_CD,
 //                        batch_optimizer::CGD_DY,
 //                        batch_optimizer::CGD_FR,
@@ -186,11 +186,11 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
         // Rosenbrock function
         test::check_problems(test::make_rosenbrock_funcs());
 
-        // Beale function
-        test::check_problems(test::make_beale_funcs());
+//        // Beale function
+//        test::check_problems(test::make_beale_funcs());
 
-        // Goldstein-Price function
-        test::check_problems(test::make_goldstein_price_funcs());
+//        // Goldstein-Price function
+//        test::check_problems(test::make_goldstein_price_funcs());
 
         // Booth function
         test::check_problems(test::make_booth_funcs());

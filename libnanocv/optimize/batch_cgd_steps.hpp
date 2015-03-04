@@ -26,12 +26,8 @@ namespace ncv
 
                         tscalar operator()(const tstate& pstate, const tstate& cstate) const
                         {
-                                const auto& dk = pstate.d;
-                                const auto& gk = pstate.g;
-                                const auto& gk1 = cstate.g;
-                                const auto yk = gk1 - gk;
-
-                                return -gk1.dot(yk) / dk.dot(yk);
+                                return  -cstate.g.dot(cstate.g - pstate.g) /
+                                        pstate.d.dot(cstate.g - pstate.g);
                         }
 
                         const char* ls_failed_message() const
@@ -56,10 +52,8 @@ namespace ncv
 
                         tscalar operator()(const tstate& pstate, const tstate& cstate) const
                         {
-                                const auto& gk = pstate.g;
-                                const auto& gk1 = cstate.g;
-
-                                return gk1.squaredNorm() / gk.squaredNorm();
+                                return  cstate.g.dot(cstate.g) /
+                                        pstate.g.dot(pstate.g);
                         }
 
                         const char* ls_failed_message() const
@@ -84,11 +78,8 @@ namespace ncv
 
                         tscalar operator()(const tstate& pstate, const tstate& cstate) const
                         {
-                                const auto& gk = pstate.g;
-                                const auto& gk1 = cstate.g;
-                                const auto yk = gk1 - gk;
-
-                                return std::max(gk1.dot(yk) / gk.squaredNorm(), tscalar(0));
+                                return  cstate.g.dot(cstate.g - pstate.g) /
+                                        pstate.g.dot(pstate.g);
                         }
 
                         const char* ls_failed_message() const
@@ -172,12 +163,8 @@ namespace ncv
 
                         tscalar operator()(const tstate& pstate, const tstate& cstate) const
                         {
-                                const auto& dk = pstate.d;
-                                const auto& gk = pstate.g;
-                                const auto& gk1 = cstate.g;
-                                const auto yk = gk1 - gk;
-
-                                return gk1.squaredNorm() / dk.dot(yk);
+                                return  cstate.g.dot(cstate.g) /
+                                        pstate.d.dot(cstate.g - pstate.g);
                         }
 
                         const char* ls_failed_message() const
