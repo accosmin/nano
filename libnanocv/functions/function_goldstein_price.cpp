@@ -1,9 +1,7 @@
 #include "function_goldstein_price.h"
 
-namespace test
+namespace ncv
 {
-        using namespace ncv;
-
         std::vector<function_t> make_goldstein_price_funcs()
         {
                 std::vector<function_t> functions;

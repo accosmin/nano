@@ -1,9 +1,7 @@
 #include "function_beale.h"
 
-namespace test
+namespace ncv
 {
-        using namespace ncv;
-
         std::vector<function_t> make_beale_funcs()
         {
                 std::vector<function_t> functions;

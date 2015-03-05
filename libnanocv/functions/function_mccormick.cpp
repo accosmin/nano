@@ -1,10 +1,8 @@
 #include "function_mccormick.h"
 #include <cmath>
 
-namespace test
+namespace ncv
 {
-        using namespace ncv;
-
         std::vector<function_t> make_mccormick_funcs()
         {
                 std::vector<function_t> functions;

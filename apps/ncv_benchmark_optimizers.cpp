@@ -1,202 +1,155 @@
-#include "libnanocv/nanocv.h"
-#include "libnanocv/tasks/task_synthetic_shapes.h"
-#include "libnanocv/util/thread.h"
-#include "libnanocv/util/measure.hpp"
+#include "libnanocv/optimize.h"
+#include "libnanocv/util/abs.hpp"
+#include "libnanocv/util/timer.h"
+#include "libnanocv/util/math.hpp"
+#include "libnanocv/util/logger.h"
+#include "libnanocv/util/stats.hpp"
+#include "libnanocv/util/random.hpp"
+#include "libnanocv/util/epsilon.hpp"
 #include "libnanocv/util/tabulator.h"
-#include "libnanocv/trainers/batch.h"
-#include "libnanocv/trainers/minibatch.h"
-#include "libnanocv/trainers/stochastic.h"
+
+#include "libnanocv/functions/function_beale.h"
+#include "libnanocv/functions/function_booth.h"
+#include "libnanocv/functions/function_sphere.h"
+#include "libnanocv/functions/function_matyas.h"
+#include "libnanocv/functions/function_ellipse.h"
+#include "libnanocv/functions/function_mccormick.h"
+#include "libnanocv/functions/function_himmelblau.h"
+#include "libnanocv/functions/function_rosenbrock.h"
+#include "libnanocv/functions/function_3hump_camel.h"
+#include "libnanocv/functions/function_goldstein_price.h"
 
 using namespace ncv;
 
-template
-<
-        typename ttrainer
->
-void test_optimizer(model_t& model, ttrainer trainer, const string_t& name, tabulator_t& table)
+void check_problem(
+        const string_t& problem_name,
+        const opt_opsize_t& fn_size, const opt_opfval_t& fn_fval, const opt_opgrad_t& fn_grad,
+        const std::vector<std::pair<vector_t, scalar_t>>& solutions)
 {
-        const size_t cmd_trials = 16;
+        const size_t iterations = 16 * 1024;
+        const scalar_t epsilon = std::numeric_limits<scalar_t>::epsilon();
+        const size_t history = 6;
 
-        stats_t<scalar_t> tvalues;
-        stats_t<scalar_t> vvalues;
-        stats_t<scalar_t> terrors;
-        stats_t<scalar_t> verrors;
+        const size_t trials = 1024;
 
-        log_info() << "<<< running " << name << " ...";
+        const size_t dims = fn_size();
 
-        const size_t usec = ncv::measure_robustly_usec([&] ()
+        // generate fixed random trials
+        vectors_t x0s;
+        for (size_t t = 0; t < trials; t ++)
         {
-                model.random_params();
+                random_t<scalar_t> rgen(-1.0, +1.0);
 
-                const trainer_result_t result = trainer();
+                vector_t x0(dims);
+                rgen(x0.data(), x0.data() + x0.size());
 
-                tvalues(result.m_opt_state.m_tvalue);
-                vvalues(result.m_opt_state.m_vvalue);
+                x0s.push_back(x0);
+        }
 
-                terrors(result.m_opt_state.m_terror_avg);
-                verrors(result.m_opt_state.m_verror_avg);
-        }, cmd_trials);
+        // optimizers to try
+        const auto optimizers =
+        {
+                batch_optimizer::GD,
+                batch_optimizer::CGD_CD,
+                batch_optimizer::CGD_DY,
+                batch_optimizer::CGD_FR,
+                batch_optimizer::CGD_HS,
+                batch_optimizer::CGD_LS,
+                batch_optimizer::CGD_PR,
+                batch_optimizer::CGD_N,
+                batch_optimizer::LBFGS
+        };
 
-        table.append(name)
-                << tvalues.avg() << terrors.avg() << vvalues.avg() << verrors.avg()
-                << (usec / 1000);
+        tabulator_t table(text::resize(problem_name, 16));
+        table.header() << "grad"
+                       << "time [us]"
+                       << "iterations"
+                       << "func evals"
+                       << "grad evals";
+
+        for (batch_optimizer optimizer : optimizers)
+        {
+                stats_t<scalar_t> grads;
+                stats_t<scalar_t> times;
+                stats_t<scalar_t> opti_iters;
+                stats_t<scalar_t> func_evals;
+                stats_t<scalar_t> grad_evals;
+
+                for (size_t t = 0; t < trials; t ++)
+                {
+                        const vector_t& x0 = x0s[t];
+
+                        // optimize
+                        const ncv::timer_t timer;
+
+                        const opt_state_t state = ncv::minimize(
+                                fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
+                                x0, optimizer, iterations, epsilon, history);
+
+                        // update stats
+                        grads(state.g.lpNorm<Eigen::Infinity>());
+                        times(timer.microseconds());
+                        opti_iters(state.n_iterations());
+                        func_evals(state.n_fval_calls());
+                        grad_evals(state.n_grad_calls());
+                }
+
+                table.append(text::to_string(optimizer))
+                        << grads.avg()
+                        << times.avg()
+                        << opti_iters.avg()
+                        << func_evals.avg()
+                        << grad_evals.avg();
+        }
+
+        // print stats
+        table.print(std::cout);
 }
 
-void test_optimizers(
-        const task_t& task, model_t& model, const sampler_t& tsampler, const sampler_t& vsampler,
-        const loss_t& loss, const string_t& criterion)
+void check_problems(const std::vector<ncv::function_t>& funcs)
 {
-        const size_t cmd_iterations = 128;
-        const size_t cmd_epochs = cmd_iterations;
-        const scalar_t cmd_epsilon = 1e-4;
-        const bool verbose = false;
-
-        // batch optimizers
-        const auto batch_optimizers =
+        for (const ncv::function_t& func : funcs)
         {
-                batch_optimizer::GD,
-                batch_optimizer::CGD,
-                batch_optimizer::LBFGS
-        };
-
-        // minibatch optimizers
-        const auto minibatch_optimizers =
-        {
-                batch_optimizer::GD,
-                batch_optimizer::CGD,
-                batch_optimizer::LBFGS
-        };
-
-        // stochastic optimizers
-        const auto stochastic_optimizers =
-        {
-                stochastic_optimizer::SG,
-                stochastic_optimizer::SGA,
-                stochastic_optimizer::SIA,
-                stochastic_optimizer::AG,
-                stochastic_optimizer::ADAGRAD,
-                stochastic_optimizer::ADADELTA
-        };
-
-        // run optimizers and collect results
-        tabulator_t table("optimizer\\");
-        table.header() << "train loss" << "train error" << "valid loss" << "valid error" << "time [msec]";
-
-        for (batch_optimizer optimizer : batch_optimizers)
-        {
-                test_optimizer(model, [&] ()
-                {
-                        return ncv::batch_train(
-                                model, task, tsampler, vsampler, ncv::n_threads(),
-                                loss, criterion, optimizer, cmd_iterations, cmd_epsilon, verbose);
-                }, "batch [" + text::to_string(optimizer) + "]", table);
+                check_problem(func.m_name, func.m_opsize, func.m_opfval, func.m_opgrad, func.m_solutions);
         }
-
-        for (batch_optimizer optimizer : minibatch_optimizers)
-        {
-                test_optimizer(model, [&] ()
-                {
-                        return ncv::minibatch_train(
-                                model, task, tsampler, vsampler, ncv::n_threads(),
-                                loss, criterion, optimizer, cmd_epochs, cmd_epsilon, verbose);
-                }, "minibatch [" + text::to_string(optimizer) + "]", table);
-        }
-
-        for (stochastic_optimizer optimizer : stochastic_optimizers)
-        {
-                test_optimizer(model, [&] ()
-                {
-                        return ncv::stochastic_train(
-                                model, task, tsampler, vsampler, ncv::n_threads(),
-                                loss, criterion, optimizer, cmd_epochs, verbose);
-                }, "stochastic [" + text::to_string(optimizer) + "]", table);
-        }
-
-        table.print(std::cout);
 }
 
 int main(int argc, char *argv[])
 {
-        ncv::init();
+        using namespace ncv;
 
-        const size_t cmd_samples = 8 * 1024;
-        const size_t cmd_rows = 16;
-        const size_t cmd_cols = 16;
-        const size_t cmd_outputs = 10;
-        const color_mode cmd_color = color_mode::rgba;
+        // Sphere function
+        check_problems(ncv::make_sphere_funcs(16));
 
-        // create task
-        synthetic_shapes_task_t task(
-                "rows=" + text::to_string(cmd_rows) + "," +
-                "cols=" + text::to_string(cmd_cols) + "," +
-                "color=" + text::to_string(cmd_color) + "," +
-                "dims=" + text::to_string(cmd_outputs) + "," +
-                "size=" + text::to_string(cmd_samples));
-        task.load("");
-	task.describe();
+        // Ellipse function
+        check_problems(ncv::make_ellipse_funcs(16));
 
-        // create training & validation samples
-        sampler_t tsampler(task);
-        tsampler.setup(sampler_t::atype::annotated);
+        // Rosenbrock function
+        check_problems(ncv::make_rosenbrock_funcs());
 
-        sampler_t vsampler(task);
-        tsampler.split(80, vsampler);
+        // Beale function
+        check_problems(ncv::make_beale_funcs());
 
-        // construct models
-        const string_t lmodel0;
-        const string_t lmodel1 = lmodel0 + "linear:dims=16;act-snorm;";
-        const string_t lmodel2 = lmodel1 + "linear:dims=16;act-snorm;";
-        const string_t lmodel3 = lmodel2 + "linear:dims=16;act-snorm;";
+        // Goldstein-Price function
+        check_problems(ncv::make_goldstein_price_funcs());
 
-        string_t cmodel;
-        cmodel = cmodel + "conv:dims=8,rows=5,cols=5;pool-max;act-snorm;";
-        cmodel = cmodel + "conv:dims=8,rows=3,cols=3;act-snorm;";
+        // Booth function
+        check_problems(ncv::make_booth_funcs());
 
-        const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
+        // Matyas function
+        check_problems(ncv::make_matyas_funcs());
 
-        strings_t cmd_networks =
-        {
-                lmodel0 + outlayer,
-                lmodel1 + outlayer,
-                lmodel2 + outlayer,
-                lmodel3 + outlayer,
+        // Himmelblau function
+        check_problems(ncv::make_himmelblau_funcs());
 
-                cmodel + outlayer
-        };
+        // 3Hump camel function
+        check_problems(ncv::make_3hump_camel_funcs());
 
-        const strings_t cmd_losses = { "logistic" }; //"classnll", //loss_manager_t::instance().ids();
-        const strings_t cmd_criteria = { "avg" }; //criterion_manager_t::instance().ids();
-
-        // vary the model
-        for (const string_t& cmd_network : cmd_networks)
-        {
-                log_info() << "<<< running network [" << cmd_network << "] ...";
-
-                const rmodel_t model = model_manager_t::instance().get("forward-network", cmd_network);
-                assert(model);
-                model->resize(task, true);
-
-                // vary the loss
-                for (const string_t& cmd_loss : cmd_losses)
-                {
-                        log_info() << "<<< running loss [" << cmd_loss << "] ...";
-
-                        const rloss_t loss = loss_manager_t::instance().get(cmd_loss);
-                        assert(loss);
-
-                        // vary the criteria
-                        for (const string_t& cmd_criterion : cmd_criteria)
-                        {
-                                log_info() << "<<< running criterion [" << cmd_criterion << "] ...";
-
-                                test_optimizers(task, *model, tsampler, vsampler, *loss, cmd_criterion);
-                        }
-                }
-
-                log_info();
-        }
+        // McCormick function
+        check_problems(ncv::make_mccormick_funcs());
 
         // OK
         log_info() << done;
         return EXIT_SUCCESS;
 }
+

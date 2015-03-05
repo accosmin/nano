@@ -1,9 +1,7 @@
 #include "function_sphere.h"
 
-namespace test
+namespace ncv
 {
-        using namespace ncv;
-
         std::vector<function_t> make_sphere_funcs(ncv::size_t max_dims)
         {
                 std::vector<function_t> functions;

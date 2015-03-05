@@ -10,7 +10,6 @@
 #include "libnanocv/util/stats.hpp"
 #include "libnanocv/util/random.hpp"
 #include "libnanocv/util/epsilon.hpp"
-#include "libnanocv/util/tabulator.h"
 
 #include "libnanocv/functions/function_beale.h"
 #include "libnanocv/functions/function_booth.h"
@@ -107,23 +106,8 @@ namespace test
                         batch_optimizer::LBFGS
                 };
 
-                tabulator_t table(problem_name);
-                table.header() << "func"
-                               << "grad"
-                               << "time [us]"
-                               << "iterations"
-                               << "func evals"
-                               << "grad evals";
-
                 for (batch_optimizer optimizer : optimizers)
                 {
-                        stats_t<scalar_t> funcs;
-                        stats_t<scalar_t> grads;
-                        stats_t<scalar_t> times;
-                        stats_t<scalar_t> opti_iters;
-                        stats_t<scalar_t> func_evals;
-                        stats_t<scalar_t> grad_evals;
-
                         for (size_t t = 0; t < trials; t ++)
                         {
                                 const vector_t& x0 = x0s[t];
@@ -139,29 +123,10 @@ namespace test
                                         fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
                                         x0, optimizer, iterations, epsilon, history);
 
-                                // update stats
-                                funcs(state.f);
-                                grads(state.g.lpNorm<Eigen::Infinity>());
-                                times(timer.microseconds());
-                                opti_iters(state.n_iterations());
-                                func_evals(state.n_fval_calls());
-                                grad_evals(state.n_grad_calls());
-
                                 // check solution
                                 check_solution(problem_name, text::to_string(optimizer), state, solutions);
                         }
-
-                        table.append(text::to_string(optimizer))
-                                << funcs.avg()
-                                << grads.avg()
-                                << times.avg()
-                                << opti_iters.avg()
-                                << func_evals.avg()
-                                << grad_evals.avg();
                 }
-
-                // print stats
-                table.print(std::cout);
         }
 
         void check_problems(const std::vector<test::function_t>& funcs)

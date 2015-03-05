@@ -1,10 +1,8 @@
 #include "function_ellipse.h"
 #include "libnanocv/util/random.hpp"
 
-namespace test
+namespace ncv
 {
-        using namespace ncv;
-
         std::vector<function_t> make_ellipse_funcs(ncv::size_t max_dims)
         {
                 std::vector<function_t> functions;

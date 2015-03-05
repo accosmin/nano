@@ -1,9 +1,7 @@
 #include "function_3hump_camel.h"
 
-namespace test
+namespace ncv
 {
-        using namespace ncv;
-
         std::vector<function_t> make_3hump_camel_funcs()
         {
                 std::vector<function_t> functions;

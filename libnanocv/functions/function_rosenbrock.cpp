@@ -1,10 +1,8 @@
 #include "function_rosenbrock.h"
 #include "libnanocv/util/math.hpp"
 
-namespace test
+namespace ncv
 {
-        using namespace ncv;
-
         std::vector<function_t> make_rosenbrock_funcs()
         {
                 std::vector<function_t> functions;

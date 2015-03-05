@@ -1,9 +1,7 @@
 #include "function_matyas.h"
 
-namespace test
+namespace ncv
 {
-        using namespace ncv;
-
         std::vector<function_t> make_matyas_funcs()
         {
                 std::vector<function_t> functions;

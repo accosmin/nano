@@ -2,7 +2,7 @@
 
 #include "function.h"
 
-namespace test
+namespace ncv
 {
         ///
         /// \brief create Rosenbrock function tests

@@ -2,7 +2,7 @@
 
 #include "function.h"
 
-namespace test
+namespace ncv
 {
         ///
         /// \brief create three-hump camel function tests

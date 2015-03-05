@@ -2,7 +2,7 @@
 
 #include "libnanocv/types.h"
 
-namespace test
+namespace ncv
 {
         typedef std::pair<ncv::vector_t, ncv::scalar_t>         solution_t;
         typedef std::vector<solution_t>                         solutions_t;
