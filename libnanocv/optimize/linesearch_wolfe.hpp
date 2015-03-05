@@ -78,7 +78,7 @@ namespace ncv
                                         if (ft > state.f + m_c1 * t * dg || (ft >= ft0 && i > 0))
                                         {
                                                 return linesearch_zoom(problem, state, ft, gt,
-                                                       t0, t, ft0, ft, m_c1, m_c2, max_iters);
+                                                       t0, t, ft0, ft, m_c1, m_c2);
                                         }
 
                                         // check curvature
@@ -91,7 +91,7 @@ namespace ncv
                                         if (dg1 >= 0)
                                         {
                                                 return linesearch_zoom(problem, state, ft, gt,
-                                                       t, t0, ft, ft0, m_c1, m_c2, max_iters);
+                                                       t, t0, ft, ft0, m_c1, m_c2);
                                         }
 
                                         t0 = t;

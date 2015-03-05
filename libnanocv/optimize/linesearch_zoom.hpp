@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cmath>
+#include <limits>
+#include <cassert>
 
 namespace ncv
 {
@@ -22,12 +24,17 @@ namespace ncv
                 tscalar linesearch_zoom(const tproblem& problem, const tstate& st,
                         tscalar& ft, tvector& gt,
                         tscalar tlo, tscalar thi, tscalar ftlo, tscalar fthi,
-                        tscalar c1, tscalar c2, tsize max_iters = 64)
+                        tscalar c1, tscalar c2)
                 {
+                        assert(tscalar(0) < c1 && c1 < tscalar(1));
+                        assert(tscalar(0) < c2 && c2 < tscalar(1));
+                        assert(c1 < c2);
+
                         const tscalar dg = st.d.dot(st.g);
+                        const tscalar eps = std::numeric_limits<tscalar>::epsilon();
 
                         // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
-                        for (tsize i = 0; i < max_iters; i ++)
+                        while (std::fabs(tlo - thi) > eps)
                         {
                                 const tscalar t = (tlo + thi) / 2;
 
