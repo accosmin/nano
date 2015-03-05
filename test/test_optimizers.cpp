@@ -20,6 +20,7 @@
 #include "libnanocv-test/test_func_himmelblau.h"
 #include "libnanocv-test/test_func_rosenbrock.h"
 #include "libnanocv-test/test_func_goldstein_price.h"
+#include "libnanocv-test/test_func_3hump_camel.h"
 
 namespace test
 {
@@ -200,5 +201,8 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
 
         // Himmelblau function
         test::check_problems(test::make_himmelblau_funcs());
+
+        // 3Hump camel function
+        test::check_problems(test::make_3hump_camel_funcs());
 }
 
