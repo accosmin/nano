@@ -26,7 +26,7 @@ namespace ncv
 
                         tscalar operator()(const tstate& pstate, const tstate& cstate) const
                         {
-                                return  cstate.g.dot(cstate.g - pstate.g) /
+                                return -cstate.g.dot(cstate.g - pstate.g) /
                                         pstate.d.dot(cstate.g - pstate.g);
                         }
                 };
