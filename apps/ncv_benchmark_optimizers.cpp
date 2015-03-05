@@ -44,8 +44,7 @@ void test_optimizer(model_t& model, ttrainer trainer, const string_t& name, tabu
 
 void test_optimizers(
         const task_t& task, model_t& model, const sampler_t& tsampler, const sampler_t& vsampler,
-        const loss_t& loss, const string_t& criterion,
-        const string_t& config_name)
+        const loss_t& loss, const string_t& criterion)
 {
         const size_t cmd_iterations = 128;
         const size_t cmd_epochs = cmd_iterations;
@@ -57,13 +56,6 @@ void test_optimizers(
         {
                 batch_optimizer::GD,
                 batch_optimizer::CGD,
-//                batch_optimizer::CGD_CD,
-//                batch_optimizer::CGD_DY,
-//                batch_optimizer::CGD_FR,
-//                batch_optimizer::CGD_HS,
-                batch_optimizer::CGD_LS,
-                batch_optimizer::CGD_PR,
-                batch_optimizer::CGD_N,
                 batch_optimizer::LBFGS
         };
 
@@ -72,13 +64,6 @@ void test_optimizers(
         {
                 batch_optimizer::GD,
                 batch_optimizer::CGD,
-//                batch_optimizer::CGD_CD,
-//                batch_optimizer::CGD_DY,
-//                batch_optimizer::CGD_FR,
-//                batch_optimizer::CGD_HS,
-                batch_optimizer::CGD_LS,
-                batch_optimizer::CGD_PR,
-                batch_optimizer::CGD_N,
                 batch_optimizer::LBFGS
         };
 
@@ -204,8 +189,7 @@ int main(int argc, char *argv[])
                         {
                                 log_info() << "<<< running criterion [" << cmd_criterion << "] ...";
 
-                                test_optimizers(task, *model, tsampler, vsampler, *loss, cmd_criterion,
-                                                "loss [" + cmd_loss + "], criterion [" + cmd_criterion + "]");
+                                test_optimizers(task, *model, tsampler, vsampler, *loss, cmd_criterion);
                         }
                 }
 
