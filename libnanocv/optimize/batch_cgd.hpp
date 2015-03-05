@@ -82,13 +82,19 @@ namespace ncv
                                                 cstate.d = -cstate.g + beta * pstate.d;
                                         }
 
+                                        if (cstate.d.dot(cstate.g) > tscalar(0))
+                                        {
+                                                cstate.d = -cstate.g;
+                                                base_t::wlog("not a descent direction (CGD)!");
+                                        }
+
                                         // line-search
                                         pstate = cstate;
 
                                         const tscalar t0 = ls_init.update(cstate);
                                         if (!ls_step.update(problem, t0, cstate))
                                         {
-                                                base_t::elog(op_update.ls_failed_message());
+                                                base_t::elog("line-search failed (CGD)!");
                                                 break;
                                         }
                                 }

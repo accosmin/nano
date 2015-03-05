@@ -73,7 +73,7 @@ namespace ncv
                                         const tscalar t0 = ls_init.update(cstate);
                                         if (!ls_step.update(problem, t0, cstate))
                                         {
-                                                base_t::elog("line-search failed for GD!");
+                                                base_t::elog("line-search failed (GD)!");
                                                 break;
                                         }
                                 }

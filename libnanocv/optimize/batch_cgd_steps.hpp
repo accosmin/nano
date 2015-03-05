@@ -26,13 +26,8 @@ namespace ncv
 
                         tscalar operator()(const tstate& pstate, const tstate& cstate) const
                         {
-                                return  -cstate.g.dot(cstate.g - pstate.g) /
+                                return  cstate.g.dot(cstate.g - pstate.g) /
                                         pstate.d.dot(cstate.g - pstate.g);
-                        }
-
-                        const char* ls_failed_message() const
-                        {
-                                return "line-search failed for CGD-HS!";
                         }
                 };
 
@@ -55,11 +50,6 @@ namespace ncv
                                 return  cstate.g.dot(cstate.g) /
                                         pstate.g.dot(pstate.g);
                         }
-
-                        const char* ls_failed_message() const
-                        {
-                                return "line-search failed for CGD-FR!";
-                        }
                 };
 
                 ///
@@ -78,13 +68,9 @@ namespace ncv
 
                         tscalar operator()(const tstate& pstate, const tstate& cstate) const
                         {
-                                return  cstate.g.dot(cstate.g - pstate.g) /
-                                        pstate.g.dot(pstate.g);
-                        }
-
-                        const char* ls_failed_message() const
-                        {
-                                return "line-search failed for CGD-PR!";
+                                return  std::max(tscalar(0),                    // PR+
+                                        cstate.g.dot(cstate.g - pstate.g) /
+                                        pstate.g.dot(pstate.g));
                         }
                 };
 
@@ -104,16 +90,8 @@ namespace ncv
 
                         tscalar operator()(const tstate& pstate, const tstate& cstate) const
                         {
-                                const auto& dk = pstate.d;
-                                const auto& gk = pstate.g;
-                                const auto& gk1 = cstate.g;
-
-                                return - gk1.squaredNorm() / dk.dot(gk);
-                        }
-
-                        const char* ls_failed_message() const
-                        {
-                                return "line-search failed for CGD-CD!";
+                                return -cstate.g.dot(cstate.g) /
+                                        pstate.d.dot(cstate.g);
                         }
                 };
 
@@ -133,17 +111,8 @@ namespace ncv
 
                         tscalar operator()(const tstate& pstate, const tstate& cstate) const
                         {
-                                const auto& dk = pstate.d;
-                                const auto& gk = pstate.g;
-                                const auto& gk1 = cstate.g;
-                                const auto yk = gk1 - gk;
-
-                                return - gk1.dot(yk) / dk.dot(gk);
-                        }
-
-                        const char* ls_failed_message() const
-                        {
-                                return "line-search failed for CGD-LS!";
+                                return -cstate.g.dot(cstate.g - pstate.g) /
+                                        pstate.d.dot(cstate.g);
                         }
                 };
 
@@ -166,11 +135,6 @@ namespace ncv
                                 return  cstate.g.dot(cstate.g) /
                                         pstate.d.dot(cstate.g - pstate.g);
                         }
-
-                        const char* ls_failed_message() const
-                        {
-                                return "line-search failed for CGD-DY!";
-                        }
                 };
 
                 ///
@@ -189,18 +153,10 @@ namespace ncv
 
                         tscalar operator()(const tstate& pstate, const tstate& cstate) const
                         {
-                                const auto& dk = pstate.d;
-                                const auto& gk = pstate.g;
-                                const auto& gk1 = cstate.g;
-                                const auto yk = gk1 - gk;
-                                const tscalar div = 1 / dk.dot(yk);
+                                const tscalar div = 1 / pstate.d.dot(pstate.g);
 
-                                return (yk - 2 * dk * yk.squaredNorm() * div).dot(gk1 * div);
-                        }
-
-                        const char* ls_failed_message() const
-                        {
-                                return "line-search failed for CGD-N!";
+                                return  (cstate.g - pstate.g - 2 * pstate.d * pstate.g.dot(pstate.g) * div).dot
+                                        (cstate.g * div);
                         }
                 };
         }
