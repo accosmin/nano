@@ -1,4 +1,4 @@
-#include "test_func_sphere.h"
+#include "function_sphere.h"
 
 namespace test
 {

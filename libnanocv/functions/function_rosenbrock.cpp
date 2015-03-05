@@ -1,4 +1,4 @@
-#include "test_func_rosenbrock.h"
+#include "function_rosenbrock.h"
 #include "libnanocv/util/math.hpp"
 
 namespace test

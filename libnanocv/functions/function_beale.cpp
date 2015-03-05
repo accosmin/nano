@@ -1,4 +1,4 @@
-#include "test_func_beale.h"
+#include "function_beale.h"
 
 namespace test
 {

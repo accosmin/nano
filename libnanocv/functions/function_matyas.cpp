@@ -1,4 +1,4 @@
-#include "test_func_matyas.h"
+#include "function_matyas.h"
 
 namespace test
 {

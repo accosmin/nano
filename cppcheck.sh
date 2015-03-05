@@ -14,6 +14,7 @@ dirs=${dirs}" ./libnanocv/losses/"
 dirs=${dirs}" ./libnanocv/models/"
 dirs=${dirs}" ./libnanocv/tasks/"
 dirs=${dirs}" ./libnanocv/trainers/"
+dirs=${dirs}" ./libnanocv/functions/"
 
 log="cppcheck.log"
 

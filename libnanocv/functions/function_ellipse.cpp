@@ -1,4 +1,4 @@
-#include "test_func_ellipse.h"
+#include "function_ellipse.h"
 #include "libnanocv/util/random.hpp"
 
 namespace test

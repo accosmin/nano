@@ -1,4 +1,4 @@
-#include "test_func_goldstein_price.h"
+#include "function_goldstein_price.h"
 
 namespace test
 {

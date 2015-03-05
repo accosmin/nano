@@ -1,6 +1,6 @@
 #pragma once
 
-#include "test_func.h"
+#include "function.h"
 
 namespace test
 {

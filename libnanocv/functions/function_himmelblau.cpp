@@ -1,4 +1,4 @@
-#include "test_func_himmelblau.h"
+#include "function_himmelblau.h"
 
 namespace test
 {

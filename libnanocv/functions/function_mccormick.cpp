@@ -1,10 +1,11 @@
-#include "test_func_booth.h"
+#include "function_mccormick.h"
+#include <cmath>
 
 namespace test
 {
         using namespace ncv;
 
-        std::vector<function_t> make_booth_funcs()
+        std::vector<function_t> make_mccormick_funcs()
         {
                 std::vector<function_t> functions;
 
@@ -18,22 +19,16 @@ namespace test
                         {
                                 const scalar_t a = x(0), b = x(1);
 
-                                const scalar_t u = a + 2 * b - 7;
-                                const scalar_t v = 2 * a + b - 5;
-
-                                return u * u + v * v;
+                                return sin(a + b) + (a - b) * (a - b) - 1.5 * a + 2.5 * b + 1;
                         };
 
                         const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
                         {
                                 const scalar_t a = x(0), b = x(1);
 
-                                const scalar_t u = a + 2 * b - 7;
-                                const scalar_t v = 2 * a + b - 5;
-
                                 gx.resize(2);
-                                gx(0) = 2 * u + 2 * v * 2;
-                                gx(1) = 2 * u * 2 + 2 * v;
+                                gx(0) = cos(a + b) + 2 * (a - b) - 1.5;
+                                gx(1) = cos(a + b) - 2 * (a - b) + 2.5;
 
                                 return fn_fval(x);
                         };
@@ -41,12 +36,12 @@ namespace test
                         std::vector<std::pair<vector_t, scalar_t>> solutions;
                         {
                                 vector_t x(2);
-                                x(0) = 1.0;
-                                x(1) = 3.0;
-                                solutions.emplace_back(x, 0.0);
+                                x(0) = -0.54719;
+                                x(1) = -1.54719;
+                                solutions.emplace_back(x, -1.913223);
                         }
 
-                        functions.emplace_back("Booth",
+                        functions.emplace_back("McCormick",
                                                fn_size, fn_fval, fn_grad, solutions);
                 }
 

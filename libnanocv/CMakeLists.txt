@@ -11,6 +11,7 @@ file(GLOB libnanocv_sources
         tasks/*.*
         models/*.*
         trainers/*.*
+        functions/*.*
         )
 
 if(NANOCV_WITH_OPENCL)

@@ -1,4 +1,4 @@
-#include "test_func_3hump_camel.h"
+#include "function_3hump_camel.h"
 
 namespace test
 {

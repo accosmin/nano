@@ -12,16 +12,16 @@
 #include "libnanocv/util/epsilon.hpp"
 #include "libnanocv/util/tabulator.h"
 
-#include "libnanocv-test/test_func_beale.h"
-#include "libnanocv-test/test_func_booth.h"
-#include "libnanocv-test/test_func_sphere.h"
-#include "libnanocv-test/test_func_matyas.h"
-#include "libnanocv-test/test_func_ellipse.h"
-#include "libnanocv-test/test_func_mccormick.h"
-#include "libnanocv-test/test_func_himmelblau.h"
-#include "libnanocv-test/test_func_rosenbrock.h"
-#include "libnanocv-test/test_func_3hump_camel.h"
-#include "libnanocv-test/test_func_goldstein_price.h"
+#include "libnanocv/functions/function_beale.h"
+#include "libnanocv/functions/function_booth.h"
+#include "libnanocv/functions/function_sphere.h"
+#include "libnanocv/functions/function_matyas.h"
+#include "libnanocv/functions/function_ellipse.h"
+#include "libnanocv/functions/function_mccormick.h"
+#include "libnanocv/functions/function_himmelblau.h"
+#include "libnanocv/functions/function_rosenbrock.h"
+#include "libnanocv/functions/function_3hump_camel.h"
+#include "libnanocv/functions/function_goldstein_price.h"
 
 namespace test
 {
