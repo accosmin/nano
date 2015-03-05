@@ -17,10 +17,11 @@
 #include "libnanocv-test/test_func_sphere.h"
 #include "libnanocv-test/test_func_matyas.h"
 #include "libnanocv-test/test_func_ellipse.h"
+#include "libnanocv-test/test_func_mccormick.h"
 #include "libnanocv-test/test_func_himmelblau.h"
 #include "libnanocv-test/test_func_rosenbrock.h"
-#include "libnanocv-test/test_func_goldstein_price.h"
 #include "libnanocv-test/test_func_3hump_camel.h"
+#include "libnanocv-test/test_func_goldstein_price.h"
 
 namespace test
 {
@@ -187,11 +188,11 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
         // Rosenbrock function
         test::check_problems(test::make_rosenbrock_funcs());
 
-////        // Beale function
-////        test::check_problems(test::make_beale_funcs());
+//        // Beale function
+//        test::check_problems(test::make_beale_funcs());
 
-////        // Goldstein-Price function
-////        test::check_problems(test::make_goldstein_price_funcs());
+//        // Goldstein-Price function
+//        test::check_problems(test::make_goldstein_price_funcs());
 
         // Booth function
         test::check_problems(test::make_booth_funcs());
@@ -204,5 +205,8 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
 
         // 3Hump camel function
         test::check_problems(test::make_3hump_camel_funcs());
+
+//        // McCormick function
+//        test::check_problems(test::make_mccormick_funcs());
 }
 
