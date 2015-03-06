@@ -13,7 +13,7 @@ template
         typename tvector,
         typename tscalar = typename tvector::Scalar
 >
-void test_mad(tabulator_t::row_t& row, top op, const tvector& vec1, const tvector& vec2, tscalar wei)
+static void test_mad(tabulator_t::row_t& row, top op, const tvector& vec1, const tvector& vec2, tscalar wei)
 {
         vector_t cvec1 = vec1;
         vector_t cvec2 = vec2;
@@ -26,7 +26,7 @@ void test_mad(tabulator_t::row_t& row, top op, const tvector& vec1, const tvecto
         }, trials);
 }
 
-void test_mad(size_t size, tabulator_t::row_t& row)
+static void test_mad(size_t size, tabulator_t::row_t& row)
 {
         vector_t vec1(size), vec2(size);
         vec1.setRandom();

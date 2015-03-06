@@ -16,7 +16,7 @@ template
 <
         typename tvector
 >
-bool check(const tvector& a, const tvector& b, const char* error_message)
+static bool check(const tvector& a, const tvector& b, const char* error_message)
 {
         typedef typename tvector::Scalar scalar_t;
 

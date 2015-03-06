@@ -20,7 +20,7 @@ template
         typename tmatrix,
         typename tscalar = typename tmatrix::Scalar
 >
-void test_cpu(tabulator_t::row_t& row, top op, const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
+static void test_cpu(tabulator_t::row_t& row, top op, const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
 {
         const size_t trials = 16;
 

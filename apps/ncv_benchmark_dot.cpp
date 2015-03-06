@@ -13,7 +13,7 @@ template
         typename tvector,
         typename tscalar = typename tvector::Scalar
 >
-void test_dot(tabulator_t::row_t& row, top op, const tvector& vec1, const tvector& vec2)
+static void test_dot(tabulator_t::row_t& row, top op, const tvector& vec1, const tvector& vec2)
 {
         const size_t trials = 16;
 
@@ -24,7 +24,7 @@ void test_dot(tabulator_t::row_t& row, top op, const tvector& vec1, const tvecto
         }, trials);
 }
 
-void test_dot(size_t size, tabulator_t::row_t& row)
+static void test_dot(size_t size, tabulator_t::row_t& row)
 {
         vector_t vec1(size), vec2(size);
         vec1.setRandom();

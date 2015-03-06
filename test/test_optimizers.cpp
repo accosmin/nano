@@ -26,7 +26,7 @@ namespace test
 {
         using namespace ncv;
 
-        void check_solution(const string_t& problem_name, const string_t& optimizer_name,
+        static void check_solution(const string_t& problem_name, const string_t& optimizer_name,
                 const opt_state_t& state, const std::vector<std::pair<vector_t, scalar_t>>& solutions)
         {
                 // Check convergence
@@ -67,7 +67,7 @@ namespace test
                 }
         }
 
-        void check_problem(
+        static void check_problem(
                 const string_t& problem_name,
                 const opt_opsize_t& fn_size, const opt_opfval_t& fn_fval, const opt_opgrad_t& fn_grad,
                 const std::vector<std::pair<vector_t, scalar_t>>& solutions)
@@ -129,7 +129,7 @@ namespace test
                 }
         }
 
-        void check_problems(const std::vector<test::function_t>& funcs)
+        static void check_problems(const std::vector<test::function_t>& funcs)
         {
                 BOOST_CHECK_EQUAL(funcs.empty(), false);
 

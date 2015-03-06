@@ -13,7 +13,7 @@ template
 <
         typename ttrainer
 >
-void test_optimizer(model_t& model, ttrainer trainer, const string_t& name, tabulator_t& table)
+static void test_optimizer(model_t& model, ttrainer trainer, const string_t& name, tabulator_t& table)
 {
         const size_t cmd_trials = 16;
 
@@ -42,7 +42,7 @@ void test_optimizer(model_t& model, ttrainer trainer, const string_t& name, tabu
                 << (usec / 1000);
 }
 
-void test_optimizers(
+static void test_optimizers(
         const task_t& task, model_t& model, const sampler_t& tsampler, const sampler_t& vsampler,
         const loss_t& loss, const string_t& criterion)
 {

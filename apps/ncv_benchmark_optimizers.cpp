@@ -21,7 +21,7 @@
 
 using namespace ncv;
 
-void check_problem(
+static void check_problem(
         const string_t& problem_name,
         const opt_opsize_t& fn_size, const opt_opfval_t& fn_fval, const opt_opgrad_t& fn_grad,
         const std::vector<std::pair<vector_t, scalar_t>>& solutions)
@@ -106,7 +106,7 @@ void check_problem(
         table.print(std::cout);
 }
 
-void check_problems(const std::vector<ncv::function_t>& funcs)
+static void check_problems(const std::vector<ncv::function_t>& funcs)
 {
         for (const ncv::function_t& func : funcs)
         {
