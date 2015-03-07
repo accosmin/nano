@@ -67,6 +67,13 @@ static void check_problem(
                 optimize::ls_initializer::consistent
         };
 
+        const auto ls_criteria =
+        {
+                optimize::ls_criterion::armijo,
+                optimize::ls_criterion::wolfe,
+                optimize::ls_criterion::strong_wolfe
+        };
+
         tabulator_t table(text::resize(problem_name, 32));
         table.header() << "grad"
                        << "time [us]"
@@ -79,6 +86,7 @@ static void check_problem(
 
         for (batch_optimizer optimizer : optimizers)
                 for (optimize::ls_initializer ls_initializer : ls_initializers)
+                        for (optimize::ls_criterion ls_criterion : ls_criteria)
         {
                 stats_t<scalar_t> grads;
                 stats_t<scalar_t> times;
@@ -95,9 +103,7 @@ static void check_problem(
 
                         const opt_state_t state = ncv::minimize(
                                 fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
-                                x0, optimizer, iterations, epsilon,
-                                optimize::ls_criterion::strong_wolfe,
-                                ls_initializer);
+                                x0, optimizer, iterations, epsilon, ls_criterion, ls_initializer);
 
                         // update stats
                         const thread_pool_t::lock_t lock(mutex);
@@ -109,7 +115,9 @@ static void check_problem(
                         grad_evals(state.n_grad_calls());
                 });
 
-                table.append(text::to_string(optimizer) + ":" + text::to_string(ls_initializer))
+                table.append(text::to_string(optimizer) + ":" +
+                             text::to_string(ls_criterion) + ":" +
+                             text::to_string(ls_initializer))
                         << grads.avg()
                         << times.avg()
                         << opti_iters.avg()

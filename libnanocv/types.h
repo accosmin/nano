@@ -281,6 +281,18 @@ namespace ncv
                         default:                                        return "none";
                         }
                 }
+
+                template <>
+                inline string_t to_string(optimize::ls_criterion type)
+                {
+                        switch (type)
+                        {
+                        case optimize::ls_criterion::armijo:            return "armijo";
+                        case optimize::ls_criterion::wolfe:             return "wolfe";
+                        case optimize::ls_criterion::strong_wolfe:      return "strong-wolfe";
+                        default:                                        return "none";
+                        }
+                }
         }
 
         // optimization data types

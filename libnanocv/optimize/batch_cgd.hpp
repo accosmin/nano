@@ -3,7 +3,7 @@
 #include "batch_params.hpp"
 #include "batch_cgd_steps.hpp"
 #include "linesearch_init.hpp"
-#include "linesearch_wolfe.hpp"
+#include "linesearch_backtracking.hpp"
 #include <cassert>
 
 namespace ncv
@@ -58,7 +58,7 @@ namespace ncv
                                 linesearch_init_t<tstate> ls_init(base_t::m_ls_initializer);
 
                                 // line-search step
-                                linesearch_wolfe_t<tproblem> ls_step(1e-4, 0.1);
+                                linesearch_backtracking_t<tproblem> ls_step(base_t::m_ls_criterion, 1e-4, 0.1);
 
                                 const tcgd_update op_update;
 

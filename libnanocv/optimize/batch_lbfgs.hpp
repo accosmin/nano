@@ -2,7 +2,7 @@
 
 #include "batch_params.hpp"
 #include "linesearch_init.hpp"
-#include "linesearch_wolfe.hpp"
+#include "linesearch_backtracking.hpp"
 #include <deque>
 #include <vector>
 #include <cassert>
@@ -63,7 +63,7 @@ namespace ncv
                                 linesearch_init_t<tstate> ls_init(base_t::m_ls_initializer);
 
                                 // line-search step
-                                linesearch_wolfe_t<tproblem> ls_step(1e-4, 0.9);
+                                linesearch_backtracking_t<tproblem> ls_step(base_t::m_ls_criterion, 1e-4, 0.9);
 
                                 // iterate until convergence
                                 for (tsize i = 0; i < base_t::m_max_iterations; i ++)
