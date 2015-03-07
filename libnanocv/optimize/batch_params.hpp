@@ -1,6 +1,7 @@
 #pragma once
 
 #include "params.hpp"
+#include "linesearch.h"
 
 namespace ncv
 {
@@ -28,12 +29,16 @@ namespace ncv
                         ///
                         batch_params_t( tsize max_iterations,
                                         tscalar epsilon,
+                                        ls_criterion lscrit,
+                                        ls_initializer lsinit,
                                         const twlog& wlog = twlog(),
                                         const telog& elog = telog(),
                                         const tulog& ulog = tulog())
                                 :       params_t<tproblem>(wlog, elog, ulog),
                                         m_max_iterations(max_iterations),
-                                        m_epsilon(epsilon)
+                                        m_epsilon(epsilon),
+                                        m_ls_criterion(lscrit),
+                                        m_ls_initializer(lsinit)
                         {
                         }
 
@@ -52,6 +57,9 @@ namespace ncv
 
                         tsize           m_max_iterations;       ///< maximum number of iterations
                         tscalar         m_epsilon;              ///< convergence precision
+
+                        ls_criterion    m_ls_criterion;         ///< line-search criterion
+                        ls_initializer  m_ls_initializer;       ///< line-search step length initialization strategy
                 };
         }
 }

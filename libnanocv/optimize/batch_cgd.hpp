@@ -35,10 +35,12 @@ namespace ncv
                         ///
                         batch_cgd_t(    tsize max_iterations,
                                         tscalar epsilon,
+                                        ls_criterion lscrit,
+                                        ls_initializer lsinit,
                                         const twlog& wlog = twlog(),
                                         const telog& elog = telog(),
                                         const tulog& ulog = tulog())
-                                :       base_t(max_iterations, epsilon, wlog, elog, ulog)
+                                :       base_t(max_iterations, epsilon, lscrit, lsinit, wlog, elog, ulog)
                         {
                         }
 

@@ -35,11 +35,13 @@ namespace ncv
                         ///
                         batch_lbfgs_t(  tsize max_iterations,
                                         tscalar epsilon,
+                                        ls_criterion lscrit,
+                                        ls_initializer lsinit,
                                         tsize history_size,
                                         const twlog& wlog = twlog(),
                                         const telog& elog = telog(),
                                         const tulog& ulog = tulog())
-                                :       base_t(max_iterations, epsilon, wlog, elog, ulog),
+                                :       base_t(max_iterations, epsilon, lscrit, lsinit, wlog, elog, ulog),
                                         m_history_size(history_size)
                         {
                         }

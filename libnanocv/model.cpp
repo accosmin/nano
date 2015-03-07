@@ -160,14 +160,13 @@ namespace ncv
                 const batch_optimizer optimizer = batch_optimizer::LBFGS;
                 const size_t iterations = 256;
                 const scalar_t epsilon = 1e-6;
-                const size_t history_size = 8;
 
                 tensor_t input(idims(), irows(), icols());
                 input.random(random_t<scalar_t>(0.0, 1.0));
 
                 const opt_state_t result = ncv::minimize(
                         fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog_ref,
-                        input.vector(), optimizer, iterations, epsilon, history_size);
+                        input.vector(), optimizer, iterations, epsilon);
 
                 input.copy_from(result.x.data());
 

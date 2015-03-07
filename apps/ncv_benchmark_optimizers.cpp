@@ -28,7 +28,6 @@ static void check_problem(
 {
         const size_t iterations = 16 * 1024;
         const scalar_t epsilon = std::numeric_limits<scalar_t>::epsilon();
-        const size_t history = 6;
 
         const size_t trials = 1024;
 
@@ -84,7 +83,7 @@ static void check_problem(
 
                         const opt_state_t state = ncv::minimize(
                                 fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
-                                x0, optimizer, iterations, epsilon, history);
+                                x0, optimizer, iterations, epsilon);
 
                         // update stats
                         grads(state.g.lpNorm<Eigen::Infinity>());

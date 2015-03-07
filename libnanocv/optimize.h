@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+#include "optimize/linesearch.h"
 
 namespace ncv
 {
@@ -15,7 +16,10 @@ namespace ncv
                 const opt_opelog_t& fn_elog,
                 const opt_opulog_t& fn_ulog,
                 const vector_t& x0,
-                batch_optimizer, size_t iterations, scalar_t epsilon, scalar_t history_size = 6);
+                batch_optimizer, size_t iterations, scalar_t epsilon,
+                optimize::ls_criterion = optimize::ls_criterion::strong_wolfe,
+                optimize::ls_initializer = optimize::ls_initializer::quadratic,
+                size_t history_size = 6);
 
         ///
         /// \brief stochastic optimization
