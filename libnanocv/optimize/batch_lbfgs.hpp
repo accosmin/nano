@@ -1,7 +1,7 @@
 #pragma once
 
 #include "batch_params.hpp"
-#include "linesearch_init_unit.hpp"
+#include "linesearch_init.hpp"
 #include "linesearch_wolfe.hpp"
 #include <deque>
 #include <vector>
@@ -60,7 +60,7 @@ namespace ncv
                                 tvector q, r;
 
                                 // line-search initial step length
-                                linesearch_init_unit_t<tstate> ls_init;
+                                linesearch_init_t<tstate> ls_init(base_t::m_ls_initializer);
 
                                 // line-search step
                                 linesearch_wolfe_t<tproblem> ls_step(1e-4, 0.9);

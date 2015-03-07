@@ -7,6 +7,7 @@
 #include "libnanocv/util/random.hpp"
 #include "libnanocv/util/epsilon.hpp"
 #include "libnanocv/util/tabulator.h"
+#include "libnanocv/util/thread_loop.hpp"
 
 #include "libnanocv/functions/function_beale.h"
 #include "libnanocv/functions/function_booth.h"
@@ -26,7 +27,7 @@ static void check_problem(
         const opt_opsize_t& fn_size, const opt_opfval_t& fn_fval, const opt_opgrad_t& fn_grad,
         const std::vector<std::pair<vector_t, scalar_t>>& solutions)
 {
-        const size_t iterations = 16 * 1024;
+        const size_t iterations = 4 * 1024;
         const scalar_t epsilon = std::numeric_limits<scalar_t>::epsilon();
 
         const size_t trials = 1024;
@@ -59,14 +60,25 @@ static void check_problem(
                 batch_optimizer::LBFGS
         };
 
-        tabulator_t table(text::resize(problem_name, 16));
+        const auto ls_initializers =
+        {
+                optimize::ls_initializer::unit,
+                optimize::ls_initializer::quadratic,
+                optimize::ls_initializer::consistent
+        };
+
+        tabulator_t table(text::resize(problem_name, 32));
         table.header() << "grad"
                        << "time [us]"
                        << "iterations"
                        << "func evals"
                        << "grad evals";
 
+        thread_pool_t pool;
+        thread_pool_t::mutex_t mutex;
+
         for (batch_optimizer optimizer : optimizers)
+                for (optimize::ls_initializer ls_initializer : ls_initializers)
         {
                 stats_t<scalar_t> grads;
                 stats_t<scalar_t> times;
@@ -74,7 +86,7 @@ static void check_problem(
                 stats_t<scalar_t> func_evals;
                 stats_t<scalar_t> grad_evals;
 
-                for (size_t t = 0; t < trials; t ++)
+                thread_loopi(trials, pool, [&] (size_t t)
                 {
                         const vector_t& x0 = x0s[t];
 
@@ -83,17 +95,21 @@ static void check_problem(
 
                         const opt_state_t state = ncv::minimize(
                                 fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
-                                x0, optimizer, iterations, epsilon);
+                                x0, optimizer, iterations, epsilon,
+                                optimize::ls_criterion::strong_wolfe,
+                                ls_initializer);
 
                         // update stats
+                        const thread_pool_t::lock_t lock(mutex);
+
                         grads(state.g.lpNorm<Eigen::Infinity>());
                         times(timer.microseconds());
                         opti_iters(state.n_iterations());
                         func_evals(state.n_fval_calls());
                         grad_evals(state.n_grad_calls());
-                }
+                });
 
-                table.append(text::to_string(optimizer))
+                table.append(text::to_string(optimizer) + ":" + text::to_string(ls_initializer))
                         << grads.avg()
                         << times.avg()
                         << opti_iters.avg()

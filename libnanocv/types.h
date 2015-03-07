@@ -2,6 +2,7 @@
 
 #include "libnanocv/tensor/tensor.hpp"
 #include "optimize/problem.hpp"
+#include "optimize/linesearch.h"
 #include "libnanocv/util/text.h"
 #include <cstdint>
 
@@ -267,6 +268,18 @@ namespace ncv
                         if (string == "var")            return regularizer::variational;
                         throw std::invalid_argument("invalid regularizer <" + string + ">!");
                         return regularizer::none;
+                }
+
+                template <>
+                inline string_t to_string(optimize::ls_initializer type)
+                {
+                        switch (type)
+                        {
+                        case optimize::ls_initializer::unit:            return "ls_init_unit";
+                        case optimize::ls_initializer::quadratic:       return "ls_init_quadratic";
+                        case optimize::ls_initializer::consistent:      return "ls_init_consistent";
+                        default:                                        return "none";
+                        }
                 }
         }
 

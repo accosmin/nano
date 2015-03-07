@@ -1,7 +1,7 @@
 #pragma once
 
 #include "batch_params.hpp"
-#include "linesearch_init_interp.hpp"
+#include "linesearch_init.hpp"
 #include "linesearch_wolfe.hpp"
 #include <cassert>
 
@@ -52,7 +52,7 @@ namespace ncv
                                 tstate cstate(problem, x0);             // current state
 
                                 // line-search initial step length
-                                linesearch_init_interpolation_t<tstate> ls_init;
+                                linesearch_init_t<tstate> ls_init(base_t::m_ls_initializer);
 
                                 // line-search step
                                 linesearch_wolfe_t<tproblem> ls_step(1e-4, 0.1);
