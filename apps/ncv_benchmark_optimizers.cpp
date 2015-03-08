@@ -67,17 +67,24 @@ static void check_problem(
                 optimize::ls_initializer::consistent
         };
 
-        const auto ls_criteria =
+        const std::vector<std::pair<optimize::ls_criterion, optimize::ls_strategy>> ls_criteria_strategies =
         {
-                optimize::ls_criterion::armijo,
-                optimize::ls_criterion::wolfe,
-                optimize::ls_criterion::strong_wolfe
-        };
-
-        const auto ls_strategies =
-        {
-                optimize::ls_strategy::backtracking,
-                optimize::ls_strategy::nocedal
+                {
+                        optimize::ls_criterion::armijo,
+                        optimize::ls_strategy::backtracking
+                },
+                {
+                        optimize::ls_criterion::wolfe,
+                        optimize::ls_strategy::backtracking
+                },
+                {
+                        optimize::ls_criterion::strong_wolfe,
+                        optimize::ls_strategy::backtracking
+                },
+                {
+                        optimize::ls_criterion::strong_wolfe,
+                        optimize::ls_strategy::nocedal
+                }
         };
 
         tabulator_t table(text::resize(problem_name, 32));
@@ -92,9 +99,11 @@ static void check_problem(
 
         for (batch_optimizer optimizer : optimizers)
                 for (optimize::ls_initializer ls_initializer : ls_initializers)
-                        for (optimize::ls_criterion ls_criterion : ls_criteria)
-                                for (optimize::ls_strategy ls_strategy : ls_strategies)
+                        for (auto ls_criterion_strategy : ls_criteria_strategies)
         {
+                const auto ls_criterion = ls_criterion_strategy.first;
+                const auto ls_strategy = ls_criterion_strategy.second;
+
                 stats_t<scalar_t> grads;
                 stats_t<scalar_t> times;
                 stats_t<scalar_t> opti_iters;
@@ -123,9 +132,9 @@ static void check_problem(
                 });
 
                 table.append(text::to_string(optimizer) + "[" +
-                             text::to_string(ls_criterion) + "][" +
                              text::to_string(ls_initializer) + "][" +
-                             text::to_string(ls_strategy) + "]")
+                             text::to_string(ls_strategy) + "][" +
+                             text::to_string(ls_criterion) + "]")
                         << grads.avg()
                         << times.avg()
                         << opti_iters.avg()
