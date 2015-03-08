@@ -31,6 +31,7 @@ namespace ncv
                                         tscalar epsilon,
                                         ls_criterion lscrit,
                                         ls_initializer lsinit,
+                                        ls_strategy lsstrat,
                                         const twlog& wlog = twlog(),
                                         const telog& elog = telog(),
                                         const tulog& ulog = tulog())
@@ -38,7 +39,8 @@ namespace ncv
                                         m_max_iterations(max_iterations),
                                         m_epsilon(epsilon),
                                         m_ls_criterion(lscrit),
-                                        m_ls_initializer(lsinit)
+                                        m_ls_initializer(lsinit),
+                                        m_ls_strategy(lsstrat)
                         {
                         }
 
@@ -60,6 +62,7 @@ namespace ncv
 
                         ls_criterion    m_ls_criterion;         ///< line-search criterion
                         ls_initializer  m_ls_initializer;       ///< line-search step length initialization strategy
+                        ls_strategy     m_ls_strategy;          ///< line-search step length selection strategy
                 };
         }
 }

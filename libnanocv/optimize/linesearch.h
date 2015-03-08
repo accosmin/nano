@@ -4,6 +4,9 @@ namespace ncv
 {
         namespace optimize
         {
+                ///
+                /// \brief criterion to choose the line-search step
+                ///
                 enum class ls_criterion
                 {
                         armijo,                 ///< suficient decrease (Armijo)
@@ -20,6 +23,15 @@ namespace ncv
                         unit,                   ///< 1.0 (useful for quasi-Newton and Newton methods)
                         consistent,             ///< consistent first-order change in the function
                         quadratic               ///< quadratic local interpolation (previous & current position)
+                };
+
+                ///
+                /// \brief line-search strategy
+                ///
+                enum class ls_strategy
+                {
+                        backtracking,           ///< like implemented in libLBFGS
+                        nocedal                 ///< (Nocedal & Wright (numerical optimization 2nd) @ p.60-61)
                 };
         }
 }

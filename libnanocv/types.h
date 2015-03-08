@@ -293,6 +293,17 @@ namespace ncv
                         default:                                        return "none";
                         }
                 }
+
+                template <>
+                inline string_t to_string(optimize::ls_strategy type)
+                {
+                        switch (type)
+                        {
+                        case optimize::ls_strategy::backtracking:       return "backtracking";
+                        case optimize::ls_strategy::nocedal:            return "nocedal";
+                        default:                                        return "none";
+                        }
+                }
         }
 
         // optimization data types
