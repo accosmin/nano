@@ -52,13 +52,13 @@ namespace ncv
                                 const tscalar dg0 = state.d.dot(state.g);
                                 if (dg0 > eps)
                                 {
-                                        return 0;
+                                        return false;
                                 }
 
                                 // check valid initial step
                                 if (t0 < eps)
                                 {
-                                        return 0;
+                                        return false;
                                 }
 
                                 tscalar ft;
