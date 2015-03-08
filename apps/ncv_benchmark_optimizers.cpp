@@ -50,13 +50,13 @@ static void check_problem(
         const auto optimizers =
         {
                 batch_optimizer::GD,
-                batch_optimizer::CGD_CD,
-                batch_optimizer::CGD_DY,
-                batch_optimizer::CGD_FR,
-                batch_optimizer::CGD_HS,
-                batch_optimizer::CGD_LS,
+//                batch_optimizer::CGD_CD,
+//                batch_optimizer::CGD_DY,
+//                batch_optimizer::CGD_FR,
+//                batch_optimizer::CGD_HS,
+//                batch_optimizer::CGD_LS,
                 batch_optimizer::CGD_PR,
-                batch_optimizer::CGD_N,
+//                batch_optimizer::CGD_N,
                 batch_optimizer::LBFGS
         };
 
@@ -74,6 +74,12 @@ static void check_problem(
                 optimize::ls_criterion::strong_wolfe
         };
 
+        const auto ls_strategies =
+        {
+                optimize::ls_strategy::backtracking,
+                optimize::ls_strategy::nocedal
+        };
+
         tabulator_t table(text::resize(problem_name, 32));
         table.header() << "grad"
                        << "time [us]"
@@ -87,6 +93,7 @@ static void check_problem(
         for (batch_optimizer optimizer : optimizers)
                 for (optimize::ls_initializer ls_initializer : ls_initializers)
                         for (optimize::ls_criterion ls_criterion : ls_criteria)
+                                for (optimize::ls_strategy ls_strategy : ls_strategies)
         {
                 stats_t<scalar_t> grads;
                 stats_t<scalar_t> times;
@@ -103,7 +110,7 @@ static void check_problem(
 
                         const opt_state_t state = ncv::minimize(
                                 fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
-                                x0, optimizer, iterations, epsilon, ls_criterion, ls_initializer);
+                                x0, optimizer, iterations, epsilon, ls_criterion, ls_initializer, ls_strategy);
 
                         // update stats
                         const thread_pool_t::lock_t lock(mutex);
@@ -115,9 +122,10 @@ static void check_problem(
                         grad_evals(state.n_grad_calls());
                 });
 
-                table.append(text::to_string(optimizer) + ":" +
-                             text::to_string(ls_criterion) + ":" +
-                             text::to_string(ls_initializer))
+                table.append(text::to_string(optimizer) + "[" +
+                             text::to_string(ls_criterion) + "][" +
+                             text::to_string(ls_initializer) + "][" +
+                             text::to_string(ls_strategy) + "]")
                         << grads.avg()
                         << times.avg()
                         << opti_iters.avg()
@@ -141,11 +149,11 @@ int main(int argc, char *argv[])
 {
         using namespace ncv;
 
-        // Sphere function
-        check_problems(ncv::make_sphere_funcs(16));
+//        // Sphere function
+//        check_problems(ncv::make_sphere_funcs(16));
 
-        // Ellipse function
-        check_problems(ncv::make_ellipse_funcs(16));
+//        // Ellipse function
+//        check_problems(ncv::make_ellipse_funcs(16));
 
         // Rosenbrock function
         check_problems(ncv::make_rosenbrock_funcs());
