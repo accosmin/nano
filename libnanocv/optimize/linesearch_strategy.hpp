@@ -156,6 +156,8 @@ namespace ncv
                         {
                                 tscalar t0 = 0, ft0 = std::numeric_limits<tscalar>::max();
 
+                                /// \todo Armijo, Wolfe & strong-Wolfe conditions
+
                                 // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
                                 for (tsize i = 0; i < max_iters; i ++)
                                 {
@@ -195,6 +197,7 @@ namespace ncv
         //                        while (std::fabs(thi - tlo) > std::numeric_limits<tscalar>::epsilon())
                                 for (size_t i = 0; i < max_iters; i ++)
                                 {
+                                        /// \todo cubic interpolation
                                         const tscalar t = (tlo + thi) / 2;
 
                                         // check sufficient decrease
