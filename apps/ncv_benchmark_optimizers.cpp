@@ -170,26 +170,26 @@ int main(int argc, char *argv[])
         // Rosenbrock function
         check_problems(ncv::make_rosenbrock_funcs());
 
-//        // Beale function
-//        check_problems(ncv::make_beale_funcs());
+        // Beale function
+        check_problems(ncv::make_beale_funcs());
 
-//        // Goldstein-Price function
-//        check_problems(ncv::make_goldstein_price_funcs());
+        // Goldstein-Price function
+        check_problems(ncv::make_goldstein_price_funcs());
 
-//        // Booth function
-//        check_problems(ncv::make_booth_funcs());
+        // Booth function
+        check_problems(ncv::make_booth_funcs());
 
-//        // Matyas function
-//        check_problems(ncv::make_matyas_funcs());
+        // Matyas function
+        check_problems(ncv::make_matyas_funcs());
 
-//        // Himmelblau function
-//        check_problems(ncv::make_himmelblau_funcs());
+        // Himmelblau function
+        check_problems(ncv::make_himmelblau_funcs());
 
-//        // 3Hump camel function
-//        check_problems(ncv::make_3hump_camel_funcs());
+        // 3Hump camel function
+        check_problems(ncv::make_3hump_camel_funcs());
 
-//        // McCormick function
-//        check_problems(ncv::make_mccormick_funcs());
+        // McCormick function
+        check_problems(ncv::make_mccormick_funcs());
 
         // OK
         log_info() << done;
