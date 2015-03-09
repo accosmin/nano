@@ -81,7 +81,8 @@ static void check_problem(
         };
 
         tabulator_t table(text::resize(problem_name, 32));
-        table.header() << "grad"
+        table.header() << "speed"
+                       << "grad"
                        << "time [us]"
                        << "iterations"
                        << "func evals"
@@ -122,16 +123,27 @@ static void check_problem(
                         grad_evals(state.n_grad_calls());
                 });
 
+                const scalar_t speed =
+                        -std::log(std::min(scalar_t(1.0 - epsilon), epsilon + grads.avg())) /
+                        (func_evals.avg() + grad_evals.avg());
+
                 table.append(text::to_string(optimizer) + "[" +
                              text::to_string(ls_initializer) + "][" +
                              text::to_string(ls_strategy) + "][" +
                              text::to_string(ls_criterion) + "]")
+                        << speed
                         << grads.avg()
                         << times.avg()
                         << opti_iters.avg()
                         << func_evals.avg()
                         << grad_evals.avg();
         }
+
+        // sort algorithms by speed
+        table.sort(0, [] (const string_t& speed1, const string_t& speed2)
+        {
+                return text::from_string<scalar_t>(speed1) > text::from_string<scalar_t>(speed2);
+        });
 
         // print stats
         table.print(std::cout);
