@@ -18,7 +18,7 @@ namespace ncv
                 batch_optimizer, size_t iterations, scalar_t epsilon,
                 optimize::ls_criterion = optimize::ls_criterion::strong_wolfe,
                 optimize::ls_initializer = optimize::ls_initializer::quadratic,
-                optimize::ls_strategy = optimize::ls_strategy::nocedal,
+                optimize::ls_strategy = optimize::ls_strategy::interpolation,
                 size_t history_size = 6);
 
         ///

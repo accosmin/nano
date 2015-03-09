@@ -32,7 +32,9 @@ namespace ncv
 
                         tscalar update(const tstate& cstate)
                         {
-                                tscalar t0 = 1;
+                                const tscalar unit = tscalar(1.0);
+
+                                tscalar t0 = unit;
 
                                 switch (m_type)
                                 {
@@ -40,9 +42,8 @@ namespace ncv
                                         {
                                                 const tscalar dg = cstate.d.dot(cstate.g);
 
-                                                t0 = m_first ?
-                                                tscalar(1.0) :
-                                                (m_prevt0 * m_prevdg / dg);
+                                                t0 =    m_first ? unit :
+                                                        (m_prevt0 * m_prevdg / dg);
 
                                                 m_prevdg = dg;
                                                 m_prevt0 = t0;
@@ -53,9 +54,8 @@ namespace ncv
                                         {
                                                 const tscalar dg = cstate.d.dot(cstate.g);
 
-                                                t0 = m_first ?
-                                                tscalar(1.0) :
-                                                std::min(tscalar(1.0), tscalar(1.01 * 2.0 * (cstate.f - m_prevf) / dg));
+                                                t0 =    m_first ? unit :
+                                                        std::min(unit, tscalar(1.01 * 2.0 * (cstate.f - m_prevf) / dg));
 
                                                 m_prevf = cstate.f;
                                         }

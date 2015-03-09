@@ -31,7 +31,7 @@ namespace ncv
                 enum class ls_strategy
                 {
                         backtracking,           ///< like implemented in libLBFGS
-                        nocedal                 ///< (Nocedal & Wright (numerical optimization 2nd) @ p.60-61)
+                        interpolation           ///< (Nocedal & Wright (numerical optimization 2nd) @ p.60-61)
                 };
         }
 }

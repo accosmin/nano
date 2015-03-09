@@ -300,7 +300,7 @@ namespace ncv
                         switch (type)
                         {
                         case optimize::ls_strategy::backtracking:       return "backtracking";
-                        case optimize::ls_strategy::nocedal:            return "nocedal";
+                        case optimize::ls_strategy::interpolation:      return "interpolation";
                         default:                                        return "none";
                         }
                 }

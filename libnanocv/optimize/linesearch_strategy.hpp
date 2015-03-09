@@ -2,7 +2,8 @@
 
 #include <limits>
 #include <cassert>
-#include "linesearch.h"
+#include "linesearch_backtracking.hpp"
+#include "linesearch_interpolation.hpp"
 
 namespace ncv
 {
@@ -55,6 +56,10 @@ namespace ncv
                                         return false;
                                 }
 
+                                const tscalar cmin = +m_c2 * dg0;       // minimum curvature
+                                const tscalar cmax = -m_c2 * dg0;       // maximum curvature
+                                const tscalar dginit = +m_c1 * dg0;     // function decrease
+
                                 // check valid initial step
                                 if (t0 < eps)
                                 {
@@ -64,7 +69,7 @@ namespace ncv
                                 tscalar ft;
                                 tvector gt;
 
-                                const tscalar t = step(problem, t0, tmin, tmax, state, dg0, ft, gt);
+                                const tscalar t = step(problem, t0, tmin, tmax, state, dginit, cmin, cmax, ft, gt);
                                 if (t < std::numeric_limits<tscalar>::epsilon())
                                 {
                                         // failed to find a suitable line-search step
@@ -81,155 +86,22 @@ namespace ncv
                 private:
 
                         tscalar step(const tproblem& problem, tscalar t, const tscalar tmin, const tscalar tmax,
-                                const tstate& state, const tscalar dg0, tscalar& ft, tvector& gt) const
+                                const tstate& state, const tscalar dginit, const tscalar cmin, const tscalar cmax,
+                                tscalar& ft, tvector& gt) const
                         {
                                 switch (m_strategy)
                                 {
                                 case ls_strategy::backtracking:
-                                        return step_backtracking(problem, t, tmin, tmax, state, dg0, ft, gt);
+                                        return ls_backtracking(problem, state, m_criterion,
+                                                               t, tmin, tmax, dginit, cmin, cmax,
+                                                               ft, gt);
 
-                                case ls_strategy::nocedal:
+                                case ls_strategy::interpolation:
                                 default:
-                                        return step_nocedal(problem, t, tmin, tmax, state, dg0, ft, gt);
+                                        return ls_interpolation(problem, state, m_criterion,
+                                                                t, tmin, tmax, dginit, cmin, cmax,
+                                                                ft, gt);
                                 }
-                        }
-
-                        tscalar step_backtracking(const tproblem& problem,
-                                tscalar t, const tscalar tmin, const tscalar tmax,
-                                const tstate& state, const tscalar dg0,
-                                tscalar& ft, tvector& gt, tsize max_iters = 64) const
-                        {
-                                const tscalar dec = 0.5;
-                                const tscalar inc = 2.1;
-
-                                // implementation inspired by libLBFGS
-                                for (tsize i = 0; i < max_iters && t > tmin && t < tmax; i ++)
-                                {
-                                        ft = problem(state.x + t * state.d, gt);
-
-                                        // check Armijo condition
-                                        if (ft > state.f + t * m_c1 * dg0)
-                                        {
-                                                t *= dec;
-                                        }
-                                        else
-                                        {
-                                                if (m_criterion == ls_criterion::armijo)
-                                                {
-                                                        return t;
-                                                }
-
-                                                // check Wolfe condition
-                                                const tscalar dgt = state.d.dot(gt);
-                                                if (dgt < m_c2 * dg0)
-                                                {
-                                                        t *= inc;
-                                                }
-                                                else
-                                                {
-                                                        if (m_criterion == ls_criterion::wolfe)
-                                                        {
-                                                                return t;
-                                                        }
-
-                                                        // check strong Wolfe condition
-                                                        if (dgt > - m_c2 * dg0)
-                                                        {
-                                                                t *= dec;
-                                                        }
-                                                        else
-                                                        {
-                                                                return t;
-                                                        }
-                                                }
-                                        }
-                                }
-
-                                // OK, give up
-                                return 0;
-                        }
-
-                        tscalar step_nocedal(const tproblem& problem,
-                                tscalar t, const tscalar tmin, const tscalar tmax,
-                                const tstate& state, const tscalar dg0,
-                                tscalar& ft, tvector& gt, tsize max_iters = 64) const
-                        {
-                                tscalar t0 = 0, ft0 = std::numeric_limits<tscalar>::max();
-
-                                /// \todo Armijo, Wolfe & strong-Wolfe conditions
-
-                                // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
-                                for (tsize i = 0; i < max_iters; i ++)
-                                {
-                                        // check sufficient decrease
-                                        ft = problem(state.x + t * state.d, gt);
-                                        if (ft > state.f + m_c1 * t * dg0 || (ft >= ft0 && i > 0))
-                                        {
-                                                return ls_zoom(problem, state, dg0, ft, gt, t0, t, ft0, ft);
-                                        }
-
-                                        // check curvature
-                                        const tscalar dg1 = gt.dot(state.d);
-                                        if (std::fabs(dg1) <= -m_c2 * dg0)
-                                        {
-                                                return t;
-                                        }
-
-                                        if (dg1 >= 0)
-                                        {
-                                                return ls_zoom(problem, state, dg0, ft, gt, t, t0, ft, ft0);
-                                        }
-
-                                        t0 = t;
-                                        ft0 = ft;
-                                        t = std::min(tmax, t * 3);
-                                }
-
-                                // OK, give up
-                                return 0;
-                        }
-
-                        tscalar ls_zoom(const tproblem& problem, const tstate& state, const tscalar dg0,
-                                tscalar& ft, tvector& gt,
-                                tscalar tlo, tscalar thi, tscalar ftlo, tscalar fthi, size_t max_iters = 10) const
-                        {
-                                // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
-        //                        while (std::fabs(thi - tlo) > std::numeric_limits<tscalar>::epsilon())
-                                for (size_t i = 0; i < max_iters; i ++)
-                                {
-                                        /// \todo cubic interpolation
-                                        const tscalar t = (tlo + thi) / 2;
-
-                                        // check sufficient decrease
-                                        ft = problem(state.x + t * state.d, gt);
-                                        if (ft > state.f + m_c1 * t * dg0 || ft >= ftlo)
-                                        {
-                                                thi = t;
-                                                fthi = ft;
-                                        }
-
-                                        // check curvature
-                                        else
-                                        {
-                                                const tscalar dg1 = gt.dot(state.d);
-                                                if (std::fabs(dg1) <= -m_c2 * dg0)
-                                                {
-                                                        return t;
-                                                }
-
-                                                if (dg1 * (thi - tlo) >= 0)
-                                                {
-                                                        thi = tlo;
-                                                        fthi = ftlo;
-                                                }
-
-                                                tlo = t;
-                                                ftlo = ft;
-                                        }
-                                }
-
-                                // OK, give up
-                                return 0;
                         }
 
                 private:

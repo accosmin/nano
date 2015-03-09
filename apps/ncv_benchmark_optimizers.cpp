@@ -67,24 +67,17 @@ static void check_problem(
                 optimize::ls_initializer::consistent
         };
 
-        const std::vector<std::pair<optimize::ls_criterion, optimize::ls_strategy>> ls_criteria_strategies =
+        const auto ls_criteria =
         {
-                {
-                        optimize::ls_criterion::armijo,
-                        optimize::ls_strategy::backtracking
-                },
-                {
-                        optimize::ls_criterion::wolfe,
-                        optimize::ls_strategy::backtracking
-                },
-                {
-                        optimize::ls_criterion::strong_wolfe,
-                        optimize::ls_strategy::backtracking
-                },
-                {
-                        optimize::ls_criterion::strong_wolfe,
-                        optimize::ls_strategy::nocedal
-                }
+                optimize::ls_criterion::armijo,
+                optimize::ls_criterion::wolfe,
+                optimize::ls_criterion::strong_wolfe
+        };
+
+        const auto ls_strategies =
+        {
+                optimize::ls_strategy::backtracking,
+                optimize::ls_strategy::interpolation
         };
 
         tabulator_t table(text::resize(problem_name, 32));
@@ -99,11 +92,9 @@ static void check_problem(
 
         for (batch_optimizer optimizer : optimizers)
                 for (optimize::ls_initializer ls_initializer : ls_initializers)
-                        for (auto ls_criterion_strategy : ls_criteria_strategies)
+                        for (optimize::ls_strategy ls_strategy : ls_strategies)
+                                for (optimize::ls_criterion ls_criterion : ls_criteria)
         {
-                const auto ls_criterion = ls_criterion_strategy.first;
-                const auto ls_strategy = ls_criterion_strategy.second;
-
                 stats_t<scalar_t> grads;
                 stats_t<scalar_t> times;
                 stats_t<scalar_t> opti_iters;
@@ -167,26 +158,26 @@ int main(int argc, char *argv[])
         // Rosenbrock function
         check_problems(ncv::make_rosenbrock_funcs());
 
-        // Beale function
-        check_problems(ncv::make_beale_funcs());
+//        // Beale function
+//        check_problems(ncv::make_beale_funcs());
 
-        // Goldstein-Price function
-        check_problems(ncv::make_goldstein_price_funcs());
+//        // Goldstein-Price function
+//        check_problems(ncv::make_goldstein_price_funcs());
 
-        // Booth function
-        check_problems(ncv::make_booth_funcs());
+//        // Booth function
+//        check_problems(ncv::make_booth_funcs());
 
-        // Matyas function
-        check_problems(ncv::make_matyas_funcs());
+//        // Matyas function
+//        check_problems(ncv::make_matyas_funcs());
 
-        // Himmelblau function
-        check_problems(ncv::make_himmelblau_funcs());
+//        // Himmelblau function
+//        check_problems(ncv::make_himmelblau_funcs());
 
-        // 3Hump camel function
-        check_problems(ncv::make_3hump_camel_funcs());
+//        // 3Hump camel function
+//        check_problems(ncv::make_3hump_camel_funcs());
 
-        // McCormick function
-        check_problems(ncv::make_mccormick_funcs());
+//        // McCormick function
+//        check_problems(ncv::make_mccormick_funcs());
 
         // OK
         log_info() << done;
