@@ -21,6 +21,9 @@ namespace ncv
                 {
                 public:
 
+                        ///
+                        /// \brief constructor
+                        ///
                         explicit linesearch_init_t(ls_initializer type)
                                 :       m_type(type),
                                         m_first(true),
@@ -30,6 +33,9 @@ namespace ncv
                         {
                         }
 
+                        ///
+                        /// \brief compute the initial step length
+                        ///
                         tscalar update(const tstate& cstate)
                         {
                                 const tscalar unit = tscalar(1.0);

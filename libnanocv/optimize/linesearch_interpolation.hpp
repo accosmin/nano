@@ -29,7 +29,7 @@ namespace ncv
 //                        while (std::fabs(thi - tlo) > std::numeric_limits<tscalar>::epsilon())
                         for (size_t i = 0; i < max_iters; i ++)
                         {
-                                /// \todo cubic interpolation
+                                /// \todo quadratic, cubic or bisection interpolation
                                 const tscalar t = (tlo + thi) / 2;
 
                                 // check sufficient decrease
@@ -43,13 +43,13 @@ namespace ncv
                                 // check curvature
                                 else
                                 {
-                                        const tscalar dg1 = gt.dot(state.d);
-                                        if (std::fabs(dg1) <= cmax)
+                                        const tscalar dgt = gt.dot(state.d);
+                                        if (std::fabs(dgt) <= cmax)
                                         {
                                                 return t;
                                         }
 
-                                        if (dg1 * (thi - tlo) >= 0)
+                                        if (dgt * (thi - tlo) >= 0)
                                         {
                                                 thi = tlo;
                                                 fthi = ftlo;
@@ -86,24 +86,24 @@ namespace ncv
                         /// \todo Armijo, Wolfe & strong-Wolfe conditions
 
                         // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
-                        for (tsize i = 0; i < max_iters; i ++)
+                        for (tsize i = 1; i <= max_iters; i ++)
                         {
                                 // check sufficient decrease
                                 ft = problem(state.x + t * state.d, gt);
-                                if (ft > state.f + t * dginit || (ft >= ft0 && i > 0))
+                                if (ft > state.f + t * dginit || (ft >= ft0 && i > 1))
                                 {
                                         return ls_zoom(problem, state, criterion,
                                                        dginit, cmin, cmax, ft, gt, t0, t, ft0, ft);
                                 }
 
                                 // check curvature
-                                const tscalar dg1 = gt.dot(state.d);
-                                if (std::fabs(dg1) <= cmax)
+                                const tscalar dgt = gt.dot(state.d);
+                                if (std::fabs(dgt) <= cmax)
                                 {
                                         return t;
                                 }
 
-                                if (dg1 >= 0)
+                                if (dgt >= 0)
                                 {
                                         return ls_zoom(problem, state, criterion,
                                                        dginit, cmin, cmax, ft, gt, t, t0, ft, ft0);

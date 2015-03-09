@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <limits>
 #include <cassert>
 #include "linesearch_backtracking.hpp"
@@ -46,12 +47,12 @@ namespace ncv
                                 assert(m_c2 > tscalar(0) && m_c2 < tscalar(1));
 
                                 const tscalar eps = std::numeric_limits<tscalar>::epsilon();
-                                const tscalar tmin = eps;
+                                const tscalar tmin = std::sqrt(eps);
                                 const tscalar tmax = tscalar(1) / eps;
 
                                 // check descent direction
                                 const tscalar dg0 = state.d.dot(state.g);
-                                if (dg0 > eps)
+                                if (dg0 > -eps)
                                 {
                                         return false;
                                 }
