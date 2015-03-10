@@ -17,7 +17,7 @@ namespace ncv
                         typename tstate = typename tproblem::tstate
                 >
                 tscalar ls_backtracking(const tproblem& problem, const tstate& state,
-                        const ls_criterion criterion,
+                        const ls_strategy strategy,
                         tscalar t, const tscalar tmin, const tscalar tmax,
                         const tscalar dginit, const tscalar cmin, const tscalar cmax,
                         tscalar& ft, tvector& gt)
@@ -38,7 +38,7 @@ namespace ncv
                                 }
                                 else
                                 {
-                                        if (criterion == ls_criterion::armijo)
+                                        if (strategy == ls_strategy::backtrack_armijo)
                                         {
                                                 return t;
                                         }
@@ -51,7 +51,7 @@ namespace ncv
                                         }
                                         else
                                         {
-                                                if (criterion == ls_criterion::wolfe)
+                                                if (strategy == ls_strategy::backtrack_wolfe)
                                                 {
                                                         return t;
                                                 }

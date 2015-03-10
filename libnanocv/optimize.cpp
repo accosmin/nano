@@ -21,7 +21,7 @@ namespace ncv
                 const opt_opulog_t& fn_ulog,
                 const vector_t& x0,
                 batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
-                optimize::ls_criterion lscrit, optimize::ls_initializer lsinit, optimize::ls_strategy lsstrat,
+                optimize::ls_initializer lsinit, optimize::ls_strategy lsstrat,
                 size_t history_size)
         {
                 const opt_problem_t problem(fn_size, fn_fval, fn_grad);
@@ -30,53 +30,53 @@ namespace ncv
                 {
                 case batch_optimizer::LBFGS:
                         return  optimize::batch_lbfgs_t<opt_problem_t>
-                                (iterations, epsilon, lscrit, lsinit, lsstrat, history_size, fn_wlog, fn_elog, fn_ulog)
+                                (iterations, epsilon, lsinit, lsstrat, history_size, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case batch_optimizer::CGD:
                         return  optimize::batch_cgd_pr_t<opt_problem_t>
-                                (iterations, epsilon, lscrit, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
+                                (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case batch_optimizer::CGD_CD:
                         return  optimize::batch_cgd_cd_t<opt_problem_t>
-                                (iterations, epsilon, lscrit, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
+                                (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case batch_optimizer::CGD_DY:
                         return  optimize::batch_cgd_dy_t<opt_problem_t>
-                                (iterations, epsilon, lscrit, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
+                                (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case batch_optimizer::CGD_FR:
                         return  optimize::batch_cgd_fr_t<opt_problem_t>
-                                (iterations, epsilon, lscrit, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
+                                (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case batch_optimizer::CGD_HS:
                         return  optimize::batch_cgd_hs_t<opt_problem_t>
-                                (iterations, epsilon, lscrit, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
+                                (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case batch_optimizer::CGD_LS:
                         return  optimize::batch_cgd_ls_t<opt_problem_t>
-                                (iterations, epsilon, lscrit, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
+                                (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case batch_optimizer::CGD_N:
                         return  optimize::batch_cgd_n_t<opt_problem_t>
-                                (iterations, epsilon, lscrit, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
+                                (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case batch_optimizer::CGD_PR:
                         return  optimize::batch_cgd_pr_t<opt_problem_t>
-                                (iterations, epsilon, lscrit, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
+                                (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
                 case batch_optimizer::GD:
                 default:
                         return  optimize::batch_gd_t<opt_problem_t>
-                                (iterations, epsilon, lscrit, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
+                                (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
                 }
         }

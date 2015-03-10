@@ -33,13 +33,12 @@ namespace ncv
                         ///
                         batch_gd_t(     tsize max_iterations,
                                         tscalar epsilon,
-                                        ls_criterion lscrit,
                                         ls_initializer lsinit,
                                         ls_strategy lsstrat,
                                         const twlog& wlog = twlog(),
                                         const telog& elog = telog(),
                                         const tulog& ulog = tulog())
-                                :       base_t(max_iterations, epsilon, lscrit, lsinit, lsstrat, wlog, elog, ulog)
+                                :       base_t(max_iterations, epsilon, lsinit, lsstrat, wlog, elog, ulog)
                         {
                         }
 
@@ -56,8 +55,7 @@ namespace ncv
                                 linesearch_init_t<tstate> ls_init(base_t::m_ls_initializer);
 
                                 // line-search step
-                                linesearch_strategy_t<tproblem> ls_step(
-                                        base_t::m_ls_criterion, base_t::m_ls_strategy, 1e-4, 0.1);
+                                linesearch_strategy_t<tproblem> ls_step(base_t::m_ls_strategy, 1e-4, 0.1);
 
                                 // iterate until convergence
                                 for (tsize i = 0; i < base_t::m_max_iterations; i ++)

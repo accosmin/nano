@@ -275,21 +275,9 @@ namespace ncv
                 {
                         switch (type)
                         {
-                        case optimize::ls_initializer::unit:            return "ls_init_unit";
-                        case optimize::ls_initializer::quadratic:       return "ls_init_quadratic";
-                        case optimize::ls_initializer::consistent:      return "ls_init_consistent";
-                        default:                                        return "none";
-                        }
-                }
-
-                template <>
-                inline string_t to_string(optimize::ls_criterion type)
-                {
-                        switch (type)
-                        {
-                        case optimize::ls_criterion::armijo:            return "armijo";
-                        case optimize::ls_criterion::wolfe:             return "wolfe";
-                        case optimize::ls_criterion::strong_wolfe:      return "strong-wolfe";
+                        case optimize::ls_initializer::unit:            return "init-unit";
+                        case optimize::ls_initializer::quadratic:       return "init-quadratic";
+                        case optimize::ls_initializer::consistent:      return "init-consistent";
                         default:                                        return "none";
                         }
                 }
@@ -299,7 +287,9 @@ namespace ncv
                 {
                         switch (type)
                         {
-                        case optimize::ls_strategy::backtracking:       return "backtracking";
+                        case optimize::ls_strategy::backtrack_armijo:   return "backtrack-Armijo";
+                        case optimize::ls_strategy::backtrack_wolfe:    return "backtrack-Wolfe";
+                        case optimize::ls_strategy::backtrack_strong_wolfe:   return "backtrack-strong-Wolfe";
                         case optimize::ls_strategy::interpolation:      return "interpolation";
                         default:                                        return "none";
                         }

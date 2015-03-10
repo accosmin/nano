@@ -18,7 +18,7 @@ namespace ncv
                         typename tvector = typename tproblem::tvector,
                         typename tstate = typename tproblem::tstate
                 >
-                tscalar ls_zoom(const tproblem& problem, const tstate& state, const ls_criterion criterion,
+                tscalar ls_zoom(const tproblem& problem, const tstate& state,
                         const tscalar dginit, const tscalar cmin, const tscalar cmax,
                         tscalar& ft, tvector& gt,
                         tscalar tlo, tscalar thi, tscalar ftlo, tscalar fthi)
@@ -74,7 +74,7 @@ namespace ncv
                         typename tvector = typename tproblem::tvector,
                         typename tstate = typename tproblem::tstate
                 >
-                tscalar ls_interpolation(const tproblem& problem, const tstate& state, const ls_criterion criterion,
+                tscalar ls_interpolation(const tproblem& problem, const tstate& state,
                         tscalar t, const tscalar tmin, const tscalar tmax,
                         const tscalar dginit, const tscalar cmin, const tscalar cmax,
                         tscalar& ft, tvector& gt)
@@ -83,8 +83,6 @@ namespace ncv
 
                         tscalar t0 = 0, ft0 = std::numeric_limits<tscalar>::max();
 
-                        /// \todo Armijo, Wolfe & strong-Wolfe conditions
-
                         // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
                         for (tsize i = 1; i <= max_iters; i ++)
                         {
@@ -92,8 +90,7 @@ namespace ncv
                                 ft = problem(state.x + t * state.d, gt);
                                 if (ft > state.f + t * dginit || (ft >= ft0 && i > 1))
                                 {
-                                        return ls_zoom(problem, state, criterion,
-                                                       dginit, cmin, cmax, ft, gt, t0, t, ft0, ft);
+                                        return ls_zoom(problem, state, dginit, cmin, cmax, ft, gt, t0, t, ft0, ft);
                                 }
 
                                 // check curvature
@@ -105,8 +102,7 @@ namespace ncv
 
                                 if (dgt >= 0)
                                 {
-                                        return ls_zoom(problem, state, criterion,
-                                                       dginit, cmin, cmax, ft, gt, t, t0, ft, ft0);
+                                        return ls_zoom(problem, state, dginit, cmin, cmax, ft, gt, t, t0, ft, ft0);
                                 }
 
                                 t0 = t;

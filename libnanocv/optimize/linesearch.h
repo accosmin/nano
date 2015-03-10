@@ -5,16 +5,6 @@ namespace ncv
         namespace optimize
         {
                 ///
-                /// \brief criterion to choose the line-search step
-                ///
-                enum class ls_criterion
-                {
-                        armijo,                 ///< suficient decrease (Armijo)
-                        wolfe,                  ///< & suficient curvature (Wolfe)
-                        strong_wolfe            ///<
-                };
-
-                ///
                 /// \brief initial step length strategy
                 /// (Nocedal & Wright (numerical optimization 2nd) @ p.59)
                 ///
@@ -30,8 +20,12 @@ namespace ncv
                 ///
                 enum class ls_strategy
                 {
-                        backtracking,           ///< like implemented in libLBFGS
-                        interpolation           ///< (Nocedal & Wright (numerical optimization 2nd) @ p.60-61)
+                        backtrack_armijo,       ///< backtracking with sufficient decrease (Armijo)
+                        backtrack_wolfe,        ///< + backtracking with suficient curvature (Wolfe)
+                        backtrack_strong_wolfe, ///< + backtracking with sufficient curvature (strong Wolfe)
+
+                        // (Nocedal & Wright (numerical optimization 2nd) @ p.60-61)
+                        interpolation           ///< strong Wolfe
                 };
         }
 }

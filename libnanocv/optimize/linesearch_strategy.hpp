@@ -27,11 +27,9 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        linesearch_strategy_t(
-                                        ls_criterion criterion, ls_strategy strategy,
+                        linesearch_strategy_t(ls_strategy strategy,
                                         tscalar c1 = 1e-4, tscalar c2 = 0.1)
-                                :       m_criterion(criterion),
-                                        m_strategy(strategy),
+                                :       m_strategy(strategy),
                                         m_c1(c1),
                                         m_c2(c2)
                         {
@@ -92,14 +90,16 @@ namespace ncv
                         {
                                 switch (m_strategy)
                                 {
-                                case ls_strategy::backtracking:
-                                        return ls_backtracking(problem, state, m_criterion,
+                                case ls_strategy::backtrack_armijo:
+                                case ls_strategy::backtrack_wolfe:
+                                case ls_strategy::backtrack_strong_wolfe:
+                                        return ls_backtracking(problem, state, m_strategy,
                                                                t, tmin, tmax, dginit, cmin, cmax,
                                                                ft, gt);
 
                                 case ls_strategy::interpolation:
                                 default:
-                                        return ls_interpolation(problem, state, m_criterion,
+                                        return ls_interpolation(problem, state,
                                                                 t, tmin, tmax, dginit, cmin, cmax,
                                                                 ft, gt);
                                 }
@@ -108,7 +108,6 @@ namespace ncv
                 private:
 
                         // attributes
-                        ls_criterion    m_criterion;    ///<
                         ls_strategy     m_strategy;     ///<
                         tscalar         m_c1;           ///< sufficient decrease rate
                         tscalar         m_c2;           ///< sufficient curvature

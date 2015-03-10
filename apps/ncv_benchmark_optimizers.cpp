@@ -67,16 +67,11 @@ static void check_problem(
                 optimize::ls_initializer::consistent
         };
 
-        const auto ls_criteria =
-        {
-                optimize::ls_criterion::armijo,
-                optimize::ls_criterion::wolfe,
-                optimize::ls_criterion::strong_wolfe
-        };
-
         const auto ls_strategies =
         {
-                optimize::ls_strategy::backtracking,
+                optimize::ls_strategy::backtrack_armijo,
+                optimize::ls_strategy::backtrack_wolfe,
+                optimize::ls_strategy::backtrack_strong_wolfe,
                 optimize::ls_strategy::interpolation
         };
 
@@ -94,7 +89,6 @@ static void check_problem(
         for (batch_optimizer optimizer : optimizers)
                 for (optimize::ls_initializer ls_initializer : ls_initializers)
                         for (optimize::ls_strategy ls_strategy : ls_strategies)
-                                for (optimize::ls_criterion ls_criterion : ls_criteria)
         {
                 stats_t<scalar_t> grads;
                 stats_t<scalar_t> times;
@@ -111,7 +105,7 @@ static void check_problem(
 
                         const opt_state_t state = ncv::minimize(
                                 fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
-                                x0, optimizer, iterations, epsilon, ls_criterion, ls_initializer, ls_strategy);
+                                x0, optimizer, iterations, epsilon, ls_initializer, ls_strategy);
 
                         // update stats
                         const thread_pool_t::lock_t lock(mutex);
@@ -129,8 +123,7 @@ static void check_problem(
 
                 table.append(text::to_string(optimizer) + "[" +
                              text::to_string(ls_initializer) + "][" +
-                             text::to_string(ls_strategy) + "][" +
-                             text::to_string(ls_criterion) + "]")
+                             text::to_string(ls_strategy) + "]")
                         << speed
                         << grads.avg()
                         << times.avg()
@@ -170,8 +163,8 @@ int main(int argc, char *argv[])
         // Rosenbrock function
         check_problems(ncv::make_rosenbrock_funcs());
 
-        // Beale function
-        check_problems(ncv::make_beale_funcs());
+//        // Beale function
+//        check_problems(ncv::make_beale_funcs());
 
         // Goldstein-Price function
         check_problems(ncv::make_goldstein_price_funcs());
