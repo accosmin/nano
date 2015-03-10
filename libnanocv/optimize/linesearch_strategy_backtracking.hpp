@@ -29,7 +29,8 @@ namespace ncv
                         // implementation inspired by libLBFGS
                         for (tsize i = 0; i < max_iters && t > tmin && t < tmax; i ++)
                         {
-                                ft = problem(state.x + t * state.d, gt);
+                                // NB: assume the gradient is (much) slower to compute than the function value!
+                                ft = problem(state.x + t * state.d);
 
                                 // check Armijo condition
                                 if (ft > state.f + t * dginit)
@@ -38,6 +39,9 @@ namespace ncv
                                 }
                                 else
                                 {
+                                        // NB: OK, the gradient is needed now
+                                        ft = problem(state.x + t * state.d, gt);
+
                                         if (strategy == ls_strategy::backtrack_armijo)
                                         {
                                                 return t;
