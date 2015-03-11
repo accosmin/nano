@@ -119,7 +119,7 @@ static void check_problem(
 
                 const scalar_t speed =
                         -std::log(std::min(scalar_t(1.0 - epsilon), epsilon + grads.avg())) /
-                        (func_evals.avg() + grad_evals.avg());
+                        (1 + func_evals.avg() + grad_evals.avg());
 
                 table.append(text::to_string(optimizer) + "[" +
                              text::to_string(ls_initializer) + "][" +

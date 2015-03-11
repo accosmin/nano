@@ -3,8 +3,8 @@
 #include <cmath>
 #include <limits>
 #include <cassert>
-#include "linesearch_strategy_backtracking.hpp"
-#include "linesearch_strategy_interpolation.hpp"
+#include "linesearch_strategy_backtrack.hpp"
+#include "linesearch_strategy_interp.hpp"
 
 namespace ncv
 {

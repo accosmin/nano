@@ -2,7 +2,7 @@
 
 #include <limits>
 #include <algorithm>
-#include "linesearch.h"
+#include "linesearch_interp.hpp"
 
 namespace ncv
 {
@@ -21,16 +21,31 @@ namespace ncv
                 tscalar ls_zoom(const tproblem& problem, const tstate& state,
                         const tscalar dginit, const tscalar cmin, const tscalar cmax,
                         tscalar& ft, tvector& gt,
-                        tscalar tlo, tscalar thi, tscalar ftlo, tscalar fthi)
+                        tscalar tlo, tscalar thi, tscalar ftlo, tscalar fthi,
+                        const tsize max_iters = 64)
                 {
-                        const tsize max_iters = 10;
+                        const tscalar fmax = state.f * 100;
+                        const tscalar fmin = state.f / 100;
 
                         // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
-//                        while (std::fabs(thi - tlo) > std::numeric_limits<tscalar>::epsilon())
-                        for (size_t i = 0; i < max_iters; i ++)
+                        for (size_t i = 1; i <= max_iters; i ++)
                         {
-                                /// \todo quadratic, cubic or bisection interpolation
-                                const tscalar t = (tlo + thi) / 2;
+                                // cubic interpolation (if feasible)
+                                const bool oklo = fmin < ftlo && ftlo < fmax;
+                                const bool okhi = fmin < fthi && fthi < fmax;
+                                const bool mmlo = tlo < thi;
+
+                                const tscalar tt = (oklo && okhi) ?
+                                        ls_interp_cubic(state.f, dginit, tlo < thi ? tlo : thi, ftlo, thi, fthi) :
+                                        ((tlo + thi) / 2);
+
+                                const tscalar tmin = std::min(tlo, thi);
+                                const tscalar tmax = std::max(tlo, thi);
+                                const tscalar teps = (tmax - tmin) / 100;
+
+                                const tscalar t = (tmin + teps < tt && tt < tmax - teps) ? tt : ((tlo + thi) / 2);
+
+                                /// \todo two methods to test (bisection vs. cubic interpolation)
 
                                 // check sufficient decrease
                                 ft = problem(state.x + t * state.d, gt);
@@ -43,6 +58,8 @@ namespace ncv
                                 // check curvature
                                 else
                                 {
+                                        /// \todo check if some gradient evaluations can be saved!?!
+
                                         const tscalar dgt = gt.dot(state.d);
                                         if (std::fabs(dgt) <= cmax)
                                         {
@@ -77,10 +94,8 @@ namespace ncv
                 tscalar ls_interpolation(const tproblem& problem, const tstate& state,
                         tscalar t, const tscalar tmin, const tscalar tmax,
                         const tscalar dginit, const tscalar cmin, const tscalar cmax,
-                        tscalar& ft, tvector& gt)
+                        tscalar& ft, tvector& gt, const tsize max_iters = 10)
                 {
-                        const tsize max_iters = 10;
-
                         tscalar t0 = 0, ft0 = std::numeric_limits<tscalar>::max();
 
                         // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
@@ -88,7 +103,7 @@ namespace ncv
                         {
                                 // check sufficient decrease
                                 ft = problem(state.x + t * state.d, gt);
-                                if (ft > state.f + t * dginit || (ft >= ft0 && i > 1))
+                                if ((ft > state.f + t * dginit) || (ft >= ft0 && i > 1))
                                 {
                                         return ls_zoom(problem, state, dginit, cmin, cmax, ft, gt, t0, t, ft0, ft);
                                 }
