@@ -72,7 +72,8 @@ static void check_problem(
                 optimize::ls_strategy::backtrack_armijo,
                 optimize::ls_strategy::backtrack_wolfe,
                 optimize::ls_strategy::backtrack_strong_wolfe,
-                optimize::ls_strategy::interpolation
+                optimize::ls_strategy::interpolation_bisection,
+                optimize::ls_strategy::interpolation_cubic
         };
 
         tabulator_t table(text::resize(problem_name, 32));

@@ -97,9 +97,10 @@ namespace ncv
                                                                t, tmin, tmax, dginit, cmin, cmax,
                                                                ft, gt);
 
-                                case ls_strategy::interpolation:
+                                case ls_strategy::interpolation_bisection:
+                                case ls_strategy::interpolation_cubic:
                                 default:
-                                        return ls_interpolation(problem, state,
+                                        return ls_interpolation(problem, state, m_strategy,
                                                                 t, tmin, tmax, dginit, cmin, cmax,
                                                                 ft, gt);
                                 }
