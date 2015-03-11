@@ -34,13 +34,16 @@ namespace ncv
                                 const bool oklo = fmin < ftlo && ftlo < fmax;
                                 const bool okhi = fmin < fthi && fthi < fmax;
 
-                                const tscalar tt = (oklo && okhi) ?
-                                        ls_interp_cubic(state.f, dginit, tlo, ftlo, thi, fthi) :
-                                        ((tlo + thi) / 2);
-
                                 const tscalar tmin = std::min(tlo, thi);
                                 const tscalar tmax = std::max(tlo, thi);
                                 const tscalar teps = (tmax - tmin) / 100;
+
+                                const tscalar fmin = tlo < thi ? ftlo : fthi;
+                                const tscalar fmax = tlo > thi ? ftlo : fthi;
+
+                                const tscalar tt = (oklo && okhi) ?
+                                        ls_interp_cubic(state.f, dginit, tmin, fmin, tmax, fmax) :
+                                        ((tlo + thi) / 2);
 
                                 const tscalar t = (tmin + teps < tt && tt < tmax - teps) ? tt : ((tlo + thi) / 2);
 
