@@ -1,10 +1,9 @@
 #pragma once
 
-#include <cmath>
 #include <limits>
 #include <cassert>
-#include "linesearch_strategy_backtrack.hpp"
-#include "linesearch_strategy_interp.hpp"
+#include "linesearch_strategy_backtracking.hpp"
+#include "linesearch_strategy_interpolation.hpp"
 
 namespace ncv
 {
@@ -55,10 +54,6 @@ namespace ncv
                                         return false;
                                 }
 
-                                const tscalar cmin = +m_c2 * dg0;       // minimum curvature
-                                const tscalar cmax = -m_c2 * dg0;       // maximum curvature
-                                const tscalar dginit = +m_c1 * dg0;     // function decrease
-
                                 // check valid initial step
                                 if (t0 < eps)
                                 {
@@ -68,7 +63,7 @@ namespace ncv
                                 tscalar ft;
                                 tvector gt;
 
-                                const tscalar t = step(problem, t0, tmin, tmax, state, dginit, cmin, cmax, ft, gt);
+                                const tscalar t = step(problem, t0, tmin, tmax, state, dg0, ft, gt);
                                 if (t < std::numeric_limits<tscalar>::epsilon())
                                 {
                                         // failed to find a suitable line-search step
@@ -85,7 +80,7 @@ namespace ncv
                 private:
 
                         tscalar step(const tproblem& problem, tscalar t, const tscalar tmin, const tscalar tmax,
-                                const tstate& state, const tscalar dginit, const tscalar cmin, const tscalar cmax,
+                                const tstate& state, const tscalar dg0,
                                 tscalar& ft, tvector& gt) const
                         {
                                 switch (m_strategy)
@@ -94,14 +89,14 @@ namespace ncv
                                 case ls_strategy::backtrack_wolfe:
                                 case ls_strategy::backtrack_strong_wolfe:
                                         return ls_backtracking(problem, state, m_strategy,
-                                                               t, tmin, tmax, dginit, cmin, cmax,
+                                                               t, tmin, tmax, dg0, m_c1, m_c2,
                                                                ft, gt);
 
                                 case ls_strategy::interpolation_bisection:
                                 case ls_strategy::interpolation_cubic:
                                 default:
                                         return ls_interpolation(problem, state, m_strategy,
-                                                                t, tmin, tmax, dginit, cmin, cmax,
+                                                                t, tmin, tmax, dg0, m_c1, m_c2,
                                                                 ft, gt);
                                 }
                         }

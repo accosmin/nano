@@ -19,10 +19,9 @@ namespace ncv
                 tscalar ls_backtracking(const tproblem& problem, const tstate& state,
                         const ls_strategy strategy,
                         tscalar t, const tscalar tmin, const tscalar tmax,
-                        const tscalar dginit, const tscalar cmin, const tscalar cmax,
-                        tscalar& ft, tvector& gt)
+                        const tscalar dg0, const tscalar c1, const tscalar c2,
+                        tscalar& ft, tvector& gt, tsize max_iters = 64)
                 {
-                        const tsize max_iters = 64;
                         const tscalar decrement = 0.5;
                         const tscalar increment = 2.1;
 
@@ -33,7 +32,7 @@ namespace ncv
                                 ft = problem(state.x + t * state.d);
 
                                 // check Armijo condition
-                                if (ft > state.f + t * dginit)
+                                if (ft > state.f + t * c1 * dg0)
                                 {
                                         t *= decrement;
                                 }
@@ -49,7 +48,7 @@ namespace ncv
 
                                         // check Wolfe condition
                                         const tscalar dgt = state.d.dot(gt);
-                                        if (dgt < cmin)
+                                        if (dgt < +c2 * dg0)
                                         {
                                                 t *= increment;
                                         }
@@ -61,7 +60,7 @@ namespace ncv
                                                 }
 
                                                 // check strong Wolfe condition
-                                                if (dgt > cmax)
+                                                if (dgt > -c2 * dg0)
                                                 {
                                                         t *= decrement;
                                                 }
