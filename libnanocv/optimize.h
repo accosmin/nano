@@ -17,7 +17,7 @@ namespace ncv
                 const vector_t& x0,
                 batch_optimizer, size_t iterations, scalar_t epsilon,
                 optimize::ls_initializer = optimize::ls_initializer::quadratic,
-                optimize::ls_strategy = optimize::ls_strategy::backtrack_wolfe,
+                optimize::ls_strategy = optimize::ls_strategy::interpolation_cubic,
                 size_t history_size = 6);
 
         ///
