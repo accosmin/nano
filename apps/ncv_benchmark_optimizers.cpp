@@ -20,7 +20,11 @@
 #include "libnanocv/functions/function_3hump_camel.h"
 #include "libnanocv/functions/function_goldstein_price.h"
 
+#include <map>
+
 using namespace ncv;
+
+std::map<string_t, stats_t<scalar_t>> optimizer_speeds;
 
 static void check_problem(
         const string_t& problem_name,
@@ -118,19 +122,27 @@ static void check_problem(
                         grad_evals(state.n_grad_calls());
                 });
 
+                // optimization speed: convergence / #iterations
                 const scalar_t speed =
                         -std::log(std::min(scalar_t(1.0 - epsilon), epsilon + grads.avg())) /
                         (1 + func_evals.avg() + 2 * grad_evals.avg());
 
-                table.append(text::to_string(optimizer) + "[" +
-                             text::to_string(ls_initializer) + "][" +
-                             text::to_string(ls_strategy) + "]")
+                // update per-problem table
+                const string_t name =
+                        text::to_string(optimizer) + "[" +
+                        text::to_string(ls_initializer) + "][" +
+                        text::to_string(ls_strategy) + "]";
+
+                table.append(name)
                         << speed
                         << grads.avg()
                         << times.avg()
                         << opti_iters.avg()
                         << func_evals.avg()
                         << grad_evals.avg();
+
+                // update global statistics
+                optimizer_speeds[name](speed);
         }
 
         // sort algorithms by speed
@@ -184,6 +196,29 @@ int main(int argc, char *argv[])
 
         // McCormick function
         check_problems(ncv::make_mccormick_funcs());
+
+        // show global statistics
+        tabulator_t table("optimizer\\speed");
+        table.header() << "avg"
+                       << "min"
+                       << "max"
+                       << "stdev";
+
+        for (const auto& it : optimizer_speeds)
+        {
+                const string_t& name = it.first;
+                const stats_t<scalar_t>& stats = it.second;
+
+                table.append(name) << stats.avg() << stats.min() << stats.max() << stats.stdev();
+        }
+
+        // sort algorithms by speed
+        table.sort(0, [] (const string_t& speed1, const string_t& speed2)
+        {
+                return text::from_string<scalar_t>(speed1) > text::from_string<scalar_t>(speed2);
+        });
+
+        table.print(std::cout);
 
         // OK
         log_info() << done;
