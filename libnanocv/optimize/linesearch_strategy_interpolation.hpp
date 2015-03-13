@@ -21,7 +21,7 @@ namespace ncv
                         const ls_strategy strategy,
                         tscalar t, const tscalar tmin, const tscalar tmax,
                         const tscalar dg0, const tscalar c1, const tscalar c2,
-                        tscalar& ft, tvector& gt, const tsize max_iters = 10)
+                        tscalar& ft, tvector& gt, const tsize max_iters = 64)
                 {
                         tscalar tprev = 0, fprev = state.f, dgprev = dg0;
 
