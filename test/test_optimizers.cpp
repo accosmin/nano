@@ -30,7 +30,7 @@ namespace test
                 const opt_state_t& state, const std::vector<std::pair<vector_t, scalar_t>>& solutions)
         {
                 // Check convergence
-                BOOST_CHECK_LE(state.g.lpNorm<Eigen::Infinity>(), math::epsilon2<scalar_t>());
+                BOOST_CHECK_LE(state.g.lpNorm<Eigen::Infinity>(), math::epsilon3<scalar_t>());
 
                 // Find the closest solution
                 size_t best_index = std::string::npos;
@@ -53,12 +53,13 @@ namespace test
                         const scalar_t dfx = math::abs(state.f - solutions[best_index].second);
                         const scalar_t dx = (state.x - solutions[best_index].first).lpNorm<Eigen::Infinity>();
 
-                        BOOST_CHECK_LE(dfx, math::epsilon2<scalar_t>());
-                        BOOST_CHECK_LE(dx, math::epsilon2<scalar_t>());
+                        BOOST_CHECK_LE(dfx, math::epsilon3<scalar_t>());
+                        BOOST_CHECK_LE(dx, math::epsilon3<scalar_t>());
 
-//                        if (dx > math::epsilon2<scalar_t>())
+//                        if (dx > math::epsilon3<scalar_t>())
 //                        {
-//                                log_info() << "x = (" << state.x.transpose() << ")"
+//                                log_info() << problem_name
+//                                           << ", x = (" << state.x.transpose() << ")"
 //                                           << ", dx = " << dx
 //                                           << ", x0 = (" << solutions[best_index].first.transpose() << ")"
 //                                           << ", fx = " << state.f
@@ -75,7 +76,7 @@ namespace test
                 const size_t iterations = 128 * 1024;
                 const scalar_t epsilon = std::numeric_limits<scalar_t>::epsilon();
 
-                const size_t trials = 1024;
+                const size_t trials = 8 * 1024;
 
                 const size_t dims = fn_size();
 
@@ -94,14 +95,14 @@ namespace test
                 // optimizers to try
                 const auto optimizers =
                 {
-                        batch_optimizer::GD,
-//                        batch_optimizer::CGD_CD,
-//                        batch_optimizer::CGD_DY,
-//                        batch_optimizer::CGD_FR,
-                        batch_optimizer::CGD_HS,
-//                        batch_optimizer::CGD_LS,
-                        batch_optimizer::CGD_PR,
-                        batch_optimizer::CGD_N,
+//                        batch_optimizer::GD,
+////                        batch_optimizer::CGD_CD,
+////                        batch_optimizer::CGD_DY,
+////                        batch_optimizer::CGD_FR,
+//                        batch_optimizer::CGD_HS,
+////                        batch_optimizer::CGD_LS,
+//                        batch_optimizer::CGD_PR,
+//                        batch_optimizer::CGD_N,
                         batch_optimizer::LBFGS
                 };
 
@@ -116,8 +117,6 @@ namespace test
                                 BOOST_CHECK_LE(problem.grad_accuracy(x0), math::epsilon2<scalar_t>());
 
                                 // optimize
-                                const ncv::timer_t timer;
-
                                 const opt_state_t state = ncv::minimize(
                                         fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
                                         x0, optimizer, iterations, epsilon);
@@ -167,8 +166,8 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
         // Himmelblau function
         test::check_problems(test::make_himmelblau_funcs());
 
-        // 3Hump camel function
-        test::check_problems(test::make_3hump_camel_funcs());
+//        // 3Hump camel function
+//        test::check_problems(test::make_3hump_camel_funcs());
 
 //        // McCormick function
 //        test::check_problems(test::make_mccormick_funcs());
