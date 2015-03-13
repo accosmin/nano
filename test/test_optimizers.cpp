@@ -30,7 +30,7 @@ namespace test
                 const opt_state_t& state, const std::vector<std::pair<vector_t, scalar_t>>& solutions)
         {
                 // Check convergence
-                BOOST_CHECK_LE(state.g.lpNorm<Eigen::Infinity>(), math::epsilon3<scalar_t>());
+                BOOST_CHECK_LE(state.g.lpNorm<Eigen::Infinity>(), math::epsilon2<scalar_t>());
 
                 // Find the closest solution
                 size_t best_index = std::string::npos;
@@ -53,10 +53,10 @@ namespace test
                         const scalar_t dfx = math::abs(state.f - solutions[best_index].second);
                         const scalar_t dx = (state.x - solutions[best_index].first).lpNorm<Eigen::Infinity>();
 
-                        BOOST_CHECK_LE(dfx, math::epsilon3<scalar_t>());
-                        BOOST_CHECK_LE(dx, math::epsilon3<scalar_t>());
+                        BOOST_CHECK_LE(dfx, math::epsilon2<scalar_t>());
+                        BOOST_CHECK_LE(dx, math::epsilon2<scalar_t>());
 
-//                        if (dx > math::epsilon3<scalar_t>())
+//                        if (dx > math::epsilon2<scalar_t>())
 //                        {
 //                                log_info() << "x = (" << state.x.transpose() << ")"
 //                                           << ", dx = " << dx
@@ -113,7 +113,7 @@ namespace test
 
                                 // check gradient
                                 const opt_problem_t problem(fn_size, fn_fval, fn_grad);
-                                BOOST_CHECK_LE(problem.grad_accuracy(x0), math::epsilon3<scalar_t>());
+                                BOOST_CHECK_LE(problem.grad_accuracy(x0), math::epsilon2<scalar_t>());
 
                                 // optimize
                                 const ncv::timer_t timer;

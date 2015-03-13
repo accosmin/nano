@@ -52,7 +52,7 @@ namespace test
                         rgen(x.data(), x.data() + n_dims);
 
                         BOOST_CHECK_GE(problem(x), 0.0);
-                        BOOST_CHECK_LE(problem.grad_accuracy(x), math::epsilon3<scalar_t>());
+                        BOOST_CHECK_LE(problem.grad_accuracy(x), math::epsilon1<scalar_t>());
                 }
         }
 }

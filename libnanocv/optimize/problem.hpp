@@ -157,8 +157,11 @@ namespace ncv
                         // implementation: approximate gradient (if no analytic gradient provided)
                         void eval_grad(const tvector& x, tvector& g) const
                         {
+                                // accuracy epsilon as defined in:
+                                // Nocedal & Wright (numerical optimization 2nd) notations @ p.197)
+                                const tscalar dx = std::cbrt(tscalar(10) * std::numeric_limits<tscalar>::epsilon());
+
                                 const tsize n = size();
-                                const tscalar dx = std::sqrt(tscalar(10) * std::numeric_limits<tscalar>::epsilon());
 
                                 tvector xp = x, xn = x;
 
@@ -173,9 +176,7 @@ namespace ncv
                                         xp(i) += dx;
                                         xn(i) -= dx;
 
-                                        g(i) = static_cast<tscalar>(
-                                               static_cast<long double>(m_op_fval(xp) - m_op_fval(xn)) /
-                                               static_cast<long double>(xp(i) - xn(i)));
+                                        g(i) = (m_op_fval(xp) - m_op_fval(xn)) / (xp(i) - xn(i));
                                 }
                         }
 
