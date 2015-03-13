@@ -53,13 +53,13 @@ static void check_problem(
         // optimizers to try
         const auto optimizers =
         {
-                batch_optimizer::GD,
+//                batch_optimizer::GD,
 //                batch_optimizer::CGD_CD,
 //                batch_optimizer::CGD_DY,
 //                batch_optimizer::CGD_FR,
 //                batch_optimizer::CGD_HS,
 //                batch_optimizer::CGD_LS,
-                batch_optimizer::CGD_PR,
+//                batch_optimizer::CGD_PR,
 //                batch_optimizer::CGD_N,
                 batch_optimizer::LBFGS
         };
@@ -82,7 +82,8 @@ static void check_problem(
 
         tabulator_t table(text::resize(problem_name, 32));
         table.header() << "speed"
-                       << "grad"
+                       << "grad-avg"
+                       << "grad-max"
                        << "time [us]"
                        << "iterations"
                        << "func evals"
@@ -136,6 +137,7 @@ static void check_problem(
                 table.append(name)
                         << speed
                         << grads.avg()
+                        << grads.max()
                         << times.avg()
                         << opti_iters.avg()
                         << func_evals.avg()
@@ -197,28 +199,28 @@ int main(int argc, char *argv[])
         // McCormick function
         check_problems(ncv::make_mccormick_funcs());
 
-        // show global statistics
-        tabulator_t table("optimizer\\speed");
-        table.header() << "avg"
-                       << "min"
-                       << "max"
-                       << "stdev";
+//        // show global statistics
+//        tabulator_t table("optimizer\\speed");
+//        table.header() << "avg"
+//                       << "min"
+//                       << "max"
+//                       << "stdev";
 
-        for (const auto& it : optimizer_speeds)
-        {
-                const string_t& name = it.first;
-                const stats_t<scalar_t>& stats = it.second;
+//        for (const auto& it : optimizer_speeds)
+//        {
+//                const string_t& name = it.first;
+//                const stats_t<scalar_t>& stats = it.second;
 
-                table.append(name) << stats.avg() << stats.min() << stats.max() << stats.stdev();
-        }
+//                table.append(name) << stats.avg() << stats.min() << stats.max() << stats.stdev();
+//        }
 
-        // sort algorithms by speed
-        table.sort(0, [] (const string_t& speed1, const string_t& speed2)
-        {
-                return text::from_string<scalar_t>(speed1) > text::from_string<scalar_t>(speed2);
-        });
+//        // sort algorithms by speed
+//        table.sort(0, [] (const string_t& speed1, const string_t& speed2)
+//        {
+//                return text::from_string<scalar_t>(speed1) > text::from_string<scalar_t>(speed2);
+//        });
 
-        table.print(std::cout);
+//        table.print(std::cout);
 
         // OK
         log_info() << done;
