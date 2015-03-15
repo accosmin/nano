@@ -111,8 +111,8 @@ static void check_problem(
 
         tabulator_t table(text::resize(problem_name, 32));
         table.header() << "speed"
-                       << "grad-avg"
                        << "time [us]"
+                       << "grad-avg"
                        << "fails3"
                        << "fails2"
                        << "fails1"

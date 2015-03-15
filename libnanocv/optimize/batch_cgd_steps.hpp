@@ -24,10 +24,10 @@ namespace ncv
                         {
                         }
 
-                        tscalar operator()(const tstate& pstate, const tstate& cstate) const
+                        tscalar operator()(const tstate& prev, const tstate& curr) const
                         {
-                                return -cstate.g.dot(cstate.g - pstate.g) /
-                                        pstate.d.dot(cstate.g - pstate.g);
+                                return  curr.g.dot(curr.g - prev.g) /
+                                        prev.d.dot(curr.g - prev.g);
                         }
                 };
 
@@ -45,10 +45,10 @@ namespace ncv
                         {
                         }
 
-                        tscalar operator()(const tstate& pstate, const tstate& cstate) const
+                        tscalar operator()(const tstate& prev, const tstate& curr) const
                         {
-                                return  cstate.g.dot(cstate.g) /
-                                        pstate.g.dot(pstate.g);
+                                return  curr.g.squaredNorm() /
+                                        prev.g.squaredNorm();
                         }
                 };
 
@@ -66,11 +66,11 @@ namespace ncv
                         {
                         }
 
-                        tscalar operator()(const tstate& pstate, const tstate& cstate) const
+                        tscalar operator()(const tstate& prev, const tstate& curr) const
                         {
                                 return  std::max(tscalar(0),                    // PR+
-                                        cstate.g.dot(cstate.g - pstate.g) /
-                                        pstate.g.dot(pstate.g));
+                                        curr.g.dot(curr.g - prev.g) /
+                                        prev.g.squaredNorm());
                         }
                 };
 
@@ -88,10 +88,10 @@ namespace ncv
                         {
                         }
 
-                        tscalar operator()(const tstate& pstate, const tstate& cstate) const
+                        tscalar operator()(const tstate& prev, const tstate& curr) const
                         {
-                                return -cstate.g.dot(cstate.g) /
-                                        pstate.d.dot(cstate.g);
+                                return -curr.g.squaredNorm() /
+                                        prev.d.dot(prev.g);
                         }
                 };
 
@@ -109,10 +109,10 @@ namespace ncv
                         {
                         }
 
-                        tscalar operator()(const tstate& pstate, const tstate& cstate) const
+                        tscalar operator()(const tstate& prev, const tstate& curr) const
                         {
-                                return -cstate.g.dot(cstate.g - pstate.g) /
-                                        pstate.d.dot(cstate.g);
+                                return -curr.g.dot(curr.g - prev.g) /
+                                        prev.d.dot(prev.g);
                         }
                 };
 
@@ -130,10 +130,10 @@ namespace ncv
                         {
                         }
 
-                        tscalar operator()(const tstate& pstate, const tstate& cstate) const
+                        tscalar operator()(const tstate& prev, const tstate& curr) const
                         {
-                                return  cstate.g.dot(cstate.g) /
-                                        pstate.d.dot(cstate.g - pstate.g);
+                                return  curr.g.squaredNorm() /
+                                        prev.d.dot(curr.g - prev.g);
                         }
                 };
 
@@ -151,12 +151,12 @@ namespace ncv
                         {
                         }
 
-                        tscalar operator()(const tstate& pstate, const tstate& cstate) const
+                        tscalar operator()(const tstate& prev, const tstate& curr) const
                         {
-                                const tscalar div = 1 / pstate.d.dot(pstate.g);
+                                const tscalar div = 1 / prev.d.dot(curr.g - prev.g);
 
-                                return  (cstate.g - pstate.g - 2 * pstate.d * pstate.g.dot(pstate.g) * div).dot
-                                        (cstate.g * div);
+                                return  (curr.g - prev.g - 2 * prev.d * (curr.g - prev.g).squaredNorm() * div).dot
+                                        (curr.g * div);
                         }
                 };
         }
