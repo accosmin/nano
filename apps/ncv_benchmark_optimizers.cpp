@@ -33,7 +33,7 @@ static void check_problem(
         const std::vector<std::pair<vector_t, scalar_t>>& solutions)
 {
         const size_t iterations = 4 * 1024;
-        const scalar_t epsilon = std::numeric_limits<scalar_t>::epsilon();
+        const scalar_t epsilon = math::epsilon0<scalar_t>();
 
         const size_t trials = 1024;
 
@@ -83,10 +83,11 @@ static void check_problem(
 
         tabulator_t table(text::resize(problem_name, 32));
         table.header() << "speed"
-                       << "grad-avg"
-                       << "grad-min"
-                       << "grad-max"
+                       << "grad"
                        << "time [us]"
+                       << "fails3"
+                       << "fails2"
+                       << "fails1"
                        << "iterations"
                        << "func evals"
                        << "grad evals";
@@ -100,6 +101,7 @@ static void check_problem(
         {
                 stats_t<scalar_t> grads;
                 stats_t<scalar_t> times;
+                stats_t<scalar_t> fails1, fails2, fails3;
                 stats_t<scalar_t> opti_iters;
                 stats_t<scalar_t> func_evals;
                 stats_t<scalar_t> grad_evals;
@@ -115,14 +117,20 @@ static void check_problem(
                                 fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
                                 x0, optimizer, iterations, epsilon, ls_initializer, ls_strategy);
 
+                        const scalar_t gnorm = state.g.lpNorm<Eigen::Infinity>();
+
                         // update stats
                         const thread_pool_t::lock_t lock(mutex);
 
-                        grads(state.g.lpNorm<Eigen::Infinity>());
+                        grads(gnorm);
                         times(timer.microseconds());
                         opti_iters(state.n_iterations());
                         func_evals(state.n_fval_calls());
                         grad_evals(state.n_grad_calls());
+
+                        fails1(gnorm > math::epsilon1<scalar_t>() ? 1.0 : 0.0);
+                        fails2(gnorm > math::epsilon2<scalar_t>() ? 1.0 : 0.0);
+                        fails3(gnorm > math::epsilon3<scalar_t>() ? 1.0 : 0.0);
                 });
 
                 // optimization speed: convergence / #iterations
@@ -139,9 +147,10 @@ static void check_problem(
                 table.append(name)
                         << speed
                         << grads.avg()
-                        << grads.min()
-                        << grads.max()
                         << times.avg()
+                        << fails3.sum()
+                        << fails2.sum()
+                        << fails1.sum()
                         << opti_iters.avg()
                         << func_evals.avg()
                         << grad_evals.avg();
