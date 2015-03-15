@@ -4,6 +4,7 @@
 #include "libnanocv/util/math.hpp"
 #include "libnanocv/util/logger.h"
 #include "libnanocv/util/stats.hpp"
+#include "libnanocv/util/clamp.hpp"
 #include "libnanocv/util/random.hpp"
 #include "libnanocv/util/epsilon.hpp"
 #include "libnanocv/util/tabulator.h"
@@ -83,6 +84,7 @@ static void check_problem(
         tabulator_t table(text::resize(problem_name, 32));
         table.header() << "speed"
                        << "grad-avg"
+                       << "grad-min"
                        << "grad-max"
                        << "time [us]"
                        << "iterations"
@@ -125,7 +127,7 @@ static void check_problem(
 
                 // optimization speed: convergence / #iterations
                 const scalar_t speed =
-                        -std::log(std::min(scalar_t(1.0 - epsilon), epsilon + grads.avg())) /
+                        -std::log(math::clamp(grads.avg(), epsilon, 1.0 - epsilon)) /
                         (1 + func_evals.avg() + 2 * grad_evals.avg());
 
                 // update per-problem table
@@ -137,6 +139,7 @@ static void check_problem(
                 table.append(name)
                         << speed
                         << grads.avg()
+                        << grads.min()
                         << grads.max()
                         << times.avg()
                         << opti_iters.avg()
@@ -173,7 +176,7 @@ int main(int argc, char *argv[])
 //        check_problems(ncv::make_sphere_funcs(16));
 
 //        // Ellipse function
-//        check_problems(ncv::make_ellipse_funcs(16));
+//        check_problems(ncv::make_ellipse_funcs(26));
 
         // Rosenbrock function
         check_problems(ncv::make_rosenbrock_funcs());

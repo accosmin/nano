@@ -1,6 +1,7 @@
 #pragma once
 
 #include "linesearch.h"
+#include <cmath>
 
 namespace ncv
 {
@@ -30,6 +31,11 @@ namespace ncv
                         {
                                 // NB: assume the gradient is (much) slower to compute than the function value!
                                 ft = problem(state.x + t * state.d);
+                                if (!std::isfinite(ft))
+                                {
+                                        // poorly scaled problem?!
+                                        return 0.0;
+                                }
 
                                 // check Armijo condition
                                 if (ft > state.f + t * c1 * dg0)

@@ -30,6 +30,11 @@ namespace ncv
                         {
                                 // check sufficient decrease
                                 ft = problem(state.x + t * state.d, gt);
+                                if (!std::isfinite(ft))
+                                {
+                                        // poorly scaled problem?!
+                                        return 0.0;
+                                }
                                 const tscalar dgt = gt.dot(state.d);
 
                                 if ((ft > state.f + t * c1 * dg0) || (ft >= fprev && i > 1))
