@@ -82,14 +82,14 @@ static void check_problem(
         // optimizers to try
         const auto optimizers =
         {
-//                batch_optimizer::GD,
-//                batch_optimizer::CGD_CD,
-//                batch_optimizer::CGD_DY,
-//                batch_optimizer::CGD_FR,
-//                batch_optimizer::CGD_HS,
-//                batch_optimizer::CGD_LS,
-//                batch_optimizer::CGD_PR,
-//                batch_optimizer::CGD_N,
+                batch_optimizer::GD,
+                batch_optimizer::CGD_CD,
+                batch_optimizer::CGD_DY,
+                batch_optimizer::CGD_FR,
+                batch_optimizer::CGD_HS,
+                batch_optimizer::CGD_LS,
+                batch_optimizer::CGD_PR,
+                batch_optimizer::CGD_N,
                 batch_optimizer::LBFGS
         };
 

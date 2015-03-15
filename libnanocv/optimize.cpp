@@ -37,7 +37,7 @@ namespace ncv
                 case batch_optimizer::CGD_N:
                 case batch_optimizer::CGD_PR:
                         return minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog, x0, optimizer, iterations, epsilon,
-                                        optimize::ls_initializer::quadratic, optimize::ls_strategy::backtrack_wolfe);
+                                        optimize::ls_initializer::quadratic, optimize::ls_strategy::interpolation_cubic);
 
                 case batch_optimizer::GD:
                 default:
