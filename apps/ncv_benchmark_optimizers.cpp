@@ -22,10 +22,38 @@
 #include "libnanocv/functions/function_goldstein_price.h"
 
 #include <map>
+#include <tuple>
 
 using namespace ncv;
 
-std::map<string_t, stats_t<scalar_t>> optimizer_speeds;
+struct optimizer_stat_t
+{
+        stats_t<scalar_t>       m_time;
+        stats_t<scalar_t>       m_fails3;
+        stats_t<scalar_t>       m_fails2;
+        stats_t<scalar_t>       m_fails1;
+        stats_t<scalar_t>       m_iterations;
+        stats_t<scalar_t>       m_func_evals;
+        stats_t<scalar_t>       m_grad_evals;
+};
+
+std::map<string_t, optimizer_stat_t> optimizer_stats;
+
+static void sort_desc(tabulator_t& table, size_t column)
+{
+        table.sort(column, [] (const string_t& value1, const string_t& value2)
+        {
+                return text::from_string<scalar_t>(value1) > text::from_string<scalar_t>(value2);
+        });
+}
+
+static void sort_asc(tabulator_t& table, size_t column)
+{
+        table.sort(column, [] (const string_t& value1, const string_t& value2)
+        {
+                return text::from_string<scalar_t>(value1) < text::from_string<scalar_t>(value2);
+        });
+}
 
 static void check_problem(
         const string_t& problem_name,
@@ -83,14 +111,14 @@ static void check_problem(
 
         tabulator_t table(text::resize(problem_name, 32));
         table.header() << "speed"
-                       << "grad"
+                       << "grad-avg"
                        << "time [us]"
                        << "fails3"
                        << "fails2"
                        << "fails1"
                        << "iterations"
-                       << "func evals"
-                       << "grad evals";
+                       << "#func calls"
+                       << "#grad calls";
 
         thread_pool_t pool;
         thread_pool_t::mutex_t mutex;
@@ -146,8 +174,8 @@ static void check_problem(
 
                 table.append(name)
                         << speed
-                        << grads.avg()
                         << times.avg()
+                        << grads.avg()
                         << fails3.sum()
                         << fails2.sum()
                         << fails1.sum()
@@ -156,16 +184,18 @@ static void check_problem(
                         << grad_evals.avg();
 
                 // update global statistics
-                optimizer_speeds[name](speed);
+                optimizer_stat_t& stat = optimizer_stats[name];
+                stat.m_time(times.avg());
+                stat.m_fails3(fails3.sum());
+                stat.m_fails2(fails2.sum());
+                stat.m_fails1(fails1.sum());
+                stat.m_iterations(opti_iters.avg());
+                stat.m_func_evals(func_evals.avg());
+                stat.m_grad_evals(grad_evals.avg());
         }
 
-        // sort algorithms by speed
-        table.sort(0, [] (const string_t& speed1, const string_t& speed2)
-        {
-                return text::from_string<scalar_t>(speed1) > text::from_string<scalar_t>(speed2);
-        });
-
         // print stats
+        sort_desc(table, 0);
         table.print(std::cout);
 }
 
@@ -211,28 +241,32 @@ int main(int argc, char *argv[])
         // McCormick function
         check_problems(ncv::make_mccormick_funcs());
 
-//        // show global statistics
-//        tabulator_t table("optimizer\\speed");
-//        table.header() << "avg"
-//                       << "min"
-//                       << "max"
-//                       << "stdev";
+        // show global statistics
+        tabulator_t table("optimizer");
+        table.header() << "time [us]"
+                       << "fails3"
+                       << "fails2"
+                       << "fails1"
+                       << "iterations"
+                       << "#func calls"
+                       << "#grad calls";
 
-//        for (const auto& it : optimizer_speeds)
-//        {
-//                const string_t& name = it.first;
-//                const stats_t<scalar_t>& stats = it.second;
+        for (const auto& it : optimizer_stats)
+        {
+                const string_t& name = it.first;
+                const optimizer_stat_t& stat = it.second;
 
-//                table.append(name) << stats.avg() << stats.min() << stats.max() << stats.stdev();
-//        }
+                table.append(name) << stat.m_time.sum()
+                                   << stat.m_fails3.sum()
+                                   << stat.m_fails2.sum()
+                                   << stat.m_fails1.sum()
+                                   << stat.m_iterations.sum()
+                                   << stat.m_func_evals.sum()
+                                   << stat.m_grad_evals.sum();
+        }
 
-//        // sort algorithms by speed
-//        table.sort(0, [] (const string_t& speed1, const string_t& speed2)
-//        {
-//                return text::from_string<scalar_t>(speed1) > text::from_string<scalar_t>(speed2);
-//        });
-
-//        table.print(std::cout);
+        sort_asc(table, 1);
+        table.print(std::cout);
 
         // OK
         log_info() << done;
