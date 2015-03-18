@@ -1,5 +1,5 @@
 #include "trainer_data.h"
-#include "accumulator.h"
+#include "../accumulator.h"
 
 namespace ncv
 {

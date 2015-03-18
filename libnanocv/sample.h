@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rect.h"
+#include "protocol.h"
 
 namespace ncv
 {

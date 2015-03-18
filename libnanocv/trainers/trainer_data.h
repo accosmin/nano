@@ -1,7 +1,7 @@
 #pragma once
 
-#include "types.h"
-#include "sampler.h"
+#include "../optimizer.h"
+#include "../sampler.h"
 
 namespace ncv
 {

@@ -1,4 +1,4 @@
-#include "libnanocv/optimize.h"
+#include "libnanocv/minimize.h"
 #include "libnanocv/math/abs.hpp"
 #include "libnanocv/util/timer.h"
 #include "libnanocv/math/math.hpp"

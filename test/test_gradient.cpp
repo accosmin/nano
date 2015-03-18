@@ -3,6 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/nanocv.h"
+#include "libnanocv/optimizer.h"
 #include "libnanocv/accumulator.h"
 #include "libnanocv/util/logger.h"
 #include "libnanocv/math/close.hpp"

@@ -3,7 +3,7 @@
 #include "util/timer.h"
 #include "util/random.hpp"
 #include "losses/loss_square.h"
-#include "optimize.h"
+#include "minimize.h"
 #include "task.h"
 #include <fstream>
 

@@ -5,7 +5,7 @@
 #include "../util/log_search.hpp"
 #include "../util/timer.h"
 #include "../thread/pool.h"
-#include "../optimize.h"
+#include "../minimize.h"
 
 namespace ncv
 {

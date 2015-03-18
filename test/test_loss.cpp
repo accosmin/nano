@@ -5,6 +5,7 @@
 #include "libnanocv/nanocv.h"
 #include "libnanocv/util/random.hpp"
 #include "libnanocv/math/epsilon.hpp"
+#include "libnanocv/optimizer.h"
 
 namespace test
 {

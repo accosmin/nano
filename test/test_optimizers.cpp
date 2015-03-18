@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_optimizers"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/optimize.h"
+#include "libnanocv/minimize.h"
 #include "libnanocv/math/abs.hpp"
 #include "libnanocv/util/timer.h"
 #include "libnanocv/math/math.hpp"

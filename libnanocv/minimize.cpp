@@ -1,4 +1,4 @@
-#include "optimize.h"
+#include "minimize.h"
 #include "optimize/batch_gd.hpp"
 #include "optimize/batch_cgd.hpp"
 #include "optimize/batch_lbfgs.hpp"
