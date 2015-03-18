@@ -2,6 +2,7 @@
 
 #include "../model.h"
 #include "../layer.h"
+#include "../string.h"
 
 namespace ncv
 {

@@ -1,4 +1,5 @@
 #include "libnanocv/minimize.h"
+#include "libnanocv/tabulator.h"
 #include "libnanocv/math/abs.hpp"
 #include "libnanocv/util/timer.h"
 #include "libnanocv/math/math.hpp"
@@ -7,7 +8,6 @@
 #include "libnanocv/math/clamp.hpp"
 #include "libnanocv/util/random.hpp"
 #include "libnanocv/math/epsilon.hpp"
-#include "libnanocv/util/tabulator.h"
 #include "libnanocv/thread/parallel.hpp"
 
 #include "libnanocv/functions/function_beale.h"

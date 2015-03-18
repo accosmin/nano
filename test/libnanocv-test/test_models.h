@@ -1,6 +1,7 @@
 #pragma once
 
-#include "libnanocv/types.h"
+#include "libnanocv/color.h"
+#include "libnanocv/string.h"
 
 namespace test
 {

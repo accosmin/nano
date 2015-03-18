@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_log_search"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/types.h"
+#include "libnanocv/scalar.h"
 #include "libnanocv/math/abs.hpp"
 #include "libnanocv/util/random.hpp"
 #include "libnanocv/math/epsilon.hpp"

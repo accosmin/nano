@@ -1,6 +1,6 @@
-#include "libnanocv/types.h"
+#include "libnanocv/tensor.h"
+#include "libnanocv/tabulator.h"
 #include "libnanocv/util/mad.hpp"
-#include "libnanocv/util/tabulator.h"
 #include "libnanocv/util/measure.hpp"
 #include "libnanocv/tensor/mad.hpp"
 #include <iostream>

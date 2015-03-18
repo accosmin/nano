@@ -1,7 +1,8 @@
-#include "libnanocv/types.h"
+#include "libnanocv/tensor.h"
+#include "libnanocv/string.h"
+#include "libnanocv/tabulator.h"
 #include "libnanocv/util/corr2d.hpp"
 #include "libnanocv/util/measure.hpp"
-#include "libnanocv/util/tabulator.h"
 #ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
 #endif

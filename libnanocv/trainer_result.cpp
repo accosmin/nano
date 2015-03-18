@@ -1,4 +1,5 @@
 #include "trainer_result.h"
+#include "text.h"
 
 namespace ncv
 {

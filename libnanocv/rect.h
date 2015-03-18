@@ -1,7 +1,8 @@
 #pragma once
 
 #include "point.h"
-#include "types.h"
+#include "scalar.h"
+#include <iosfwd>
 
 namespace ncv
 {

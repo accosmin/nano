@@ -1,7 +1,7 @@
 #pragma once
 
 #include "util/manager.hpp"
-#include "types.h"
+#include "tensor.h"
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 

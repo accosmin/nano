@@ -1,7 +1,7 @@
 #pragma once
 
 #include "util/manager.hpp"
-#include "types.h"
+#include "tensor.h"
 
 namespace ncv
 {

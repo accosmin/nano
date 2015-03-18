@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_mad"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/types.h"
+#include "libnanocv/tensor.h"
 #include "libnanocv/util/mad.hpp"
 #include "libnanocv/math/abs.hpp"
 #include "libnanocv/math/epsilon.hpp"

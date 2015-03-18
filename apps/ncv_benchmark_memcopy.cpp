@@ -1,4 +1,5 @@
-#include "libnanocv/types.h"
+#include "libnanocv/text.h"
+#include "libnanocv/tensor.h"
 #include "libnanocv/math/abs.hpp"
 #include "libnanocv/util/timer.h"
 #include "libnanocv/util/logger.h"

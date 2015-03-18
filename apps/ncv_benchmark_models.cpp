@@ -1,10 +1,10 @@
 #include "libnanocv/nanocv.h"
 #include "libnanocv/sampler.h"
+#include "libnanocv/tabulator.h"
 #include "libnanocv/accumulator.h"
 #include "libnanocv/util/timer.h"
 #include "libnanocv/util/logger.h"
 #include "libnanocv/thread/thread.h"
-#include "libnanocv/util/tabulator.h"
 #include "libnanocv/tasks/task_synthetic_shapes.h"
 #include <boost/program_options.hpp>
 

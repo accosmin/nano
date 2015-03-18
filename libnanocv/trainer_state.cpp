@@ -1,4 +1,5 @@
 #include "trainer_state.h"
+#include "text.h"
 #include <fstream>
 
 namespace ncv

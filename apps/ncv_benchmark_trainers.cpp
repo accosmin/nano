@@ -1,11 +1,11 @@
 #include "libnanocv/nanocv.h"
-#include "libnanocv/tasks/task_synthetic_shapes.h"
-#include "libnanocv/thread/thread.h"
+#include "libnanocv/tabulator.h"
 #include "libnanocv/util/measure.hpp"
-#include "libnanocv/util/tabulator.h"
+#include "libnanocv/thread/thread.h"
 #include "libnanocv/trainers/batch.h"
 #include "libnanocv/trainers/minibatch.h"
 #include "libnanocv/trainers/stochastic.h"
+#include "libnanocv/tasks/task_synthetic_shapes.h"
 
 using namespace ncv;
 

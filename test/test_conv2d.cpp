@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_conv2d"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/types.h"
+#include "libnanocv/tensor.h"
 #include "libnanocv/util/logger.h"
 #include "libnanocv/math/close.hpp"
 #include "libnanocv/util/conv2d.hpp"

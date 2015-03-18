@@ -2,7 +2,8 @@
 
 #include "optimize/problem.hpp"
 #include "optimize/linesearch.h"
-#include "types.h"
+#include "text.h"
+#include "tensor.h"
 
 namespace ncv
 {
@@ -61,7 +62,7 @@ namespace ncv
         namespace text
         {
                 template <>
-                inline string_t to_string(stochastic_optimizer type)
+                inline std::string to_string(stochastic_optimizer type)
                 {
                         switch (type)
                         {
@@ -76,7 +77,7 @@ namespace ncv
                 }
 
                 template <>
-                inline stochastic_optimizer from_string<stochastic_optimizer>(const string_t& string)
+                inline stochastic_optimizer from_string<stochastic_optimizer>(const std::string& string)
                 {
                         if (string == "sg")             return stochastic_optimizer::SG;
                         if (string == "sga")            return stochastic_optimizer::SGA;
@@ -89,7 +90,7 @@ namespace ncv
                 }
 
                 template <>
-                inline string_t to_string(batch_optimizer type)
+                inline std::string to_string(batch_optimizer type)
                 {
                         switch (type)
                         {
@@ -108,7 +109,7 @@ namespace ncv
                 }
 
                 template <>
-                inline batch_optimizer from_string<batch_optimizer>(const string_t& string)
+                inline batch_optimizer from_string<batch_optimizer>(const std::string& string)
                 {
                         if (string == "gd")             return batch_optimizer::GD;
                         if (string == "cgd")            return batch_optimizer::CGD;
@@ -125,7 +126,7 @@ namespace ncv
                 }
 
                 template <>
-                inline string_t to_string(optimize::ls_initializer type)
+                inline std::string to_string(optimize::ls_initializer type)
                 {
                         switch (type)
                         {
@@ -137,7 +138,7 @@ namespace ncv
                 }
 
                 template <>
-                inline string_t to_string(optimize::ls_strategy type)
+                inline std::string to_string(optimize::ls_strategy type)
                 {
                         switch (type)
                         {

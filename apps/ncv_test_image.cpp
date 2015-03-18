@@ -1,4 +1,5 @@
 #include "libnanocv/image.h"
+#include "libnanocv/string.h"
 #include "libnanocv/util/measure.hpp"
 #include <boost/program_options.hpp>
 

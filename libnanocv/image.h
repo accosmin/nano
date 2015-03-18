@@ -1,7 +1,8 @@
 #pragma once
 
-#include "color.h"
 #include "rect.h"
+#include "color.h"
+#include "tensor.h"
 
 namespace ncv
 {
@@ -29,14 +30,14 @@ namespace ncv
                 ///
                 /// \brief load image from disk
                 ///
-                bool load_rgba(const string_t& path);
-                bool load_luma(const string_t& path);
+                bool load_rgba(const std::string& path);
+                bool load_luma(const std::string& path);
                 
                 ///
                 /// \brief load image from encoded buffer, using the filename's extension as a hint to the image type
                 ///
-                bool load_rgba(const string_t& name, const char* buffer, size_t buffer_size);
-                bool load_luma(const string_t& name, const char* buffer, size_t buffer_size);
+                bool load_rgba(const std::string& name, const char* buffer, size_t buffer_size);
+                bool load_luma(const std::string& name, const char* buffer, size_t buffer_size);
 
                 ///
                 /// \brief load image from decoded buffer
@@ -57,7 +58,7 @@ namespace ncv
                 ///
                 /// \brief save image to disk
                 ///
-                bool save(const string_t& path) const;
+                bool save(const std::string& path) const;
 
                 ///
                 /// \brief save image to scaled [0, 1] tensor

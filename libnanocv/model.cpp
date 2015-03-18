@@ -3,8 +3,9 @@
 #include "util/timer.h"
 #include "util/random.hpp"
 #include "losses/loss_square.h"
-#include "minimize.h"
 #include "task.h"
+#include "minimize.h"
+#include "placeholders.h"
 #include <fstream>
 
 namespace ncv

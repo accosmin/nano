@@ -1,6 +1,6 @@
 #pragma once
 
-#include "util/text.h"
+#include "text.h"
 #include <stdexcept>
 
 namespace ncv

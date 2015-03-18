@@ -1,5 +1,6 @@
 #include "rect.h"
 #include <algorithm>
+#include <iostream>
 
 namespace ncv
 {

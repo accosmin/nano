@@ -1,7 +1,8 @@
 #include "layer_convolution.h"
+#include "../text.h"
 #include "../util/logger.h"
-#include "../math/clamp.hpp"
 #include "../util/random.hpp"
+#include "../math/clamp.hpp"
 #include "../tensor/serialize.hpp"
 #include "convolution.hpp"
 

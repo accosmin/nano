@@ -1,6 +1,9 @@
 #pragma once
 
-#include "types.h"
+#include "string.h"
+#include "scalar.h"
+#include <limits>
+#include <cmath>
 
 namespace ncv
 {
@@ -38,8 +41,7 @@ namespace ncv
                 return v1 < v2;
         }
         
-        typedef std::vector
-        <trainer_state_t>               trainer_states_t;
+        typedef std::vector<trainer_state_t>    trainer_states_t;
 
         ///
         /// \brief save optimization states to text file

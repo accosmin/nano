@@ -9,6 +9,7 @@
 #include "optimize/stoch_adagrad.hpp"
 #include "optimize/stoch_adadelta.hpp"
 #include "util/logger.h"
+#include "string.h"
 
 namespace ncv
 {

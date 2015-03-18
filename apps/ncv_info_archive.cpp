@@ -1,4 +1,4 @@
-#include "libnanocv/types.h"
+#include "libnanocv/string.h"
 #include "libnanocv/util/timer.h"
 #include "libnanocv/util/logger.h"
 #include "libnanocv/file/archive.h"

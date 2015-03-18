@@ -1,8 +1,10 @@
 #pragma once
 
-#include "types.h"
+#include "text.h"
+#include "scalar.h"
 #include "math/cast.hpp"
 #include "math/clamp.hpp"
+#include "tensor/tensor.hpp"
 #include <cstdint>
 
 namespace ncv
@@ -18,6 +20,30 @@ namespace ncv
         // grayscale
         typedef uint8_t                                                         luma_t;
         typedef tensor::matrix_types_t<luma_t>::tmatrix                         luma_matrix_t;
+
+        ///
+        /// \brief color channels
+        ///
+        enum class color_channel
+        {
+                red = 0,                // R
+                green,                  // G
+                blue,                   // B
+                luma,                   // Y/L
+                rgba,                   // RGBA
+                cielab_l,               // CIELab L
+                cielab_a,               // CIELab a
+                cielab_b                // CIELab b
+        };
+
+        ///
+        /// \brief color processing mode methods
+        ///
+        enum class color_mode
+        {
+                luma,                   ///< process only grayscale color channel
+                rgba                    ///< process red, green & blue color channels
+        };
 
         // manipulate colors
         namespace color
@@ -119,6 +145,62 @@ namespace ncv
                         case color_channel::cielab_b:   return 94.4825;
                         default:                        return 255.0;
                         }
+                }
+        }
+
+        // string cast for enumerations
+        namespace text
+        {
+                template <>
+                inline std::string to_string(color_mode mode)
+                {
+                        switch (mode)
+                        {
+                        case color_mode::luma:          return "luma";
+                        case color_mode::rgba:          return "rgba";
+                        default:                        return "luma";
+                        }
+                }
+
+                template <>
+                inline color_mode from_string<color_mode>(const std::string& string)
+                {
+                        if (string == "luma")           return color_mode::luma;
+                        if (string == "rgba")           return color_mode::rgba;
+                        throw std::invalid_argument("invalid color mode <" + string + ">!");
+                        return color_mode::luma;
+                }
+
+                template <>
+                inline std::string to_string(color_channel type)
+                {
+                        switch (type)
+                        {
+                        case color_channel::red:        return "red";
+                        case color_channel::green:      return "green";
+                        case color_channel::blue:       return "blue";
+                        case color_channel::luma:       return "luma";
+                        case color_channel::rgba:       return "rgba";
+                        case color_channel::cielab_l:   return "cielab_l";
+                        case color_channel::cielab_a:   return "cielab_a";
+                        case color_channel::cielab_b:   return "cielab_b";
+                        default:                        return "luma";
+                        }
+                }
+
+                template <>
+                inline color_channel from_string<color_channel>(const std::string& string)
+                {
+                        if (string == "red")            return color_channel::red;
+                        if (string == "green")          return color_channel::green;
+                        if (string == "blue")           return color_channel::blue;
+                        if (string == "luma")           return color_channel::luma;
+                        if (string == "rgba")           return color_channel::rgba;
+                        if (string == "cielab_l")       return color_channel::cielab_l;
+                        if (string == "cielab_a")       return color_channel::cielab_a;
+                        if (string == "cielab_b")       return color_channel::cielab_b;
+                        throw std::invalid_argument("Invalid color channel <" + string + ">!");
+                        return color_channel::luma;
                 }
         }
 }
