@@ -1,9 +1,9 @@
 #include "libnanocv/types.h"
-#include "libnanocv/util/abs.hpp"
+#include "libnanocv/math/abs.hpp"
 #include "libnanocv/util/timer.h"
 #include "libnanocv/util/logger.h"
 #include "libnanocv/util/stats.hpp"
-#include "libnanocv/util/thread_loop.hpp"
+#include "libnanocv/thread/parallel.hpp"
 #ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
 #endif

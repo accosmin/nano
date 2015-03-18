@@ -1,8 +1,8 @@
 #pragma once
 
-#include "libnanocv/util/conv2d.hpp"
-#include "libnanocv/util/corr2d.hpp"
-#include "libnanocv/tensor/matrix.hpp"
+#include "../util/conv2d.hpp"
+#include "../util/corr2d.hpp"
+#include "../tensor/matrix.hpp"
 
 namespace ncv
 {

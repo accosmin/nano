@@ -1,5 +1,5 @@
 #include "loss_classnll.h"
-#include "libnanocv/util/math.hpp"
+#include "../math/math.hpp"
 #include <cassert>
 
 namespace ncv

@@ -1,5 +1,5 @@
 #include "function_ellipse.h"
-#include "libnanocv/util/random.hpp"
+#include "../util/random.hpp"
 
 namespace ncv
 {

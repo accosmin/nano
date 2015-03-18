@@ -1,7 +1,7 @@
 #pragma once
 
-#include "libnanocv/layer.h"
-#include "libnanocv/tensor/transform.hpp"
+#include "../layer.h"
+#include "../tensor/transform.hpp"
 
 namespace ncv
 {

@@ -1,7 +1,7 @@
 #include "archive.h"
 #include "bzip.h"
 #include "gzip.h"
-#include "libnanocv/util/logger.h"
+#include "../util/logger.h"
 #include <archive.h>
 #include <archive_entry.h>
 #include <boost/algorithm/string.hpp>

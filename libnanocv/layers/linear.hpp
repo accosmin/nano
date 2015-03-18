@@ -1,7 +1,7 @@
 #pragma once
 
-#include "libnanocv/tensor/vector.hpp"
-#include "libnanocv/tensor/matrix.hpp"
+#include "../tensor/vector.hpp"
+#include "../tensor/matrix.hpp"
 
 namespace ncv
 {

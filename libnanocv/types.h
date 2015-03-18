@@ -1,10 +1,9 @@
 #pragma once
 
-#include "libnanocv/tensor/tensor.hpp"
+#include "tensor/tensor.hpp"
 #include "optimize/problem.hpp"
 #include "optimize/linesearch.h"
-#include "libnanocv/util/text.h"
-#include <cstdint>
+#include "util/text.h"
 
 namespace ncv
 {
@@ -42,10 +41,33 @@ namespace ncv
         using std::placeholders::_3;
         using std::placeholders::_4;
 
+        // optimization data types
+        typedef std::function
+        <size_t(void)>                                          opt_opsize_t;
+        typedef std::function
+        <scalar_t(const vector_t&)>                             opt_opfval_t;
+        typedef std::function
+        <scalar_t(const vector_t&, vector_t&)>                  opt_opgrad_t;
+
+        typedef optimize::problem_t
+        <
+                scalar_t,
+                size_t,
+                opt_opsize_t,
+                opt_opfval_t,
+                opt_opgrad_t
+        >                                                       opt_problem_t;
+
+        typedef opt_problem_t::tstate                           opt_state_t;
+
+        typedef opt_problem_t::twlog                            opt_opwlog_t;
+        typedef opt_problem_t::telog                            opt_opelog_t;
+        typedef opt_problem_t::tulog                            opt_opulog_t;
+
         ///
         /// \brief color channels
         ///
-        enum class color_channel : int
+        enum class color_channel
         {
                 red = 0,                // R
                 green,                  // G
@@ -60,7 +82,7 @@ namespace ncv
         ///
         /// \brief color processing mode methods
         ///
-        enum class color_mode : int
+        enum class color_mode
         {
                 luma,                   ///< process only grayscale color channel
                 rgba                    ///< process red, green & blue color channels
@@ -69,7 +91,7 @@ namespace ncv
         ///
         /// \brief machine learning protocols
         ///
-        enum class protocol : int
+        enum class protocol
         {
                 train = 0,              ///< training
                 test                    ///< testing
@@ -78,7 +100,7 @@ namespace ncv
         ///
         /// \brief stochastic optimization methods
         ///
-        enum class stochastic_optimizer : int
+        enum class stochastic_optimizer
         {
                 SG,                     ///< stochastic gradient
                 SGA,                    ///< stochastic gradient averaging
@@ -91,7 +113,7 @@ namespace ncv
         ///
         /// \brief batch optimization methods
         ///
-        enum class batch_optimizer : int
+        enum class batch_optimizer
         {
                 GD,                     ///< gradient descent
                 CGD,                    ///< conjugate gradient descent (default version)
@@ -109,7 +131,7 @@ namespace ncv
         ///
         /// \brief regularization methods
         ///
-        enum class regularizer : int
+        enum class regularizer
         {
                 none = 0,               ///< no regularization term
                 l2norm,                 ///< L2-norm regularization
@@ -244,6 +266,13 @@ namespace ncv
                         if (string == "gd")             return batch_optimizer::GD;
                         if (string == "cgd")            return batch_optimizer::CGD;
                         if (string == "lbfgs")          return batch_optimizer::LBFGS;
+                        if (string == "cgd-hs")         return batch_optimizer::CGD_HS;
+                        if (string == "cgd-fr")         return batch_optimizer::CGD_FR;
+                        if (string == "cgd-pr")         return batch_optimizer::CGD_PR;
+                        if (string == "cgd-cd")         return batch_optimizer::CGD_CD;
+                        if (string == "cgd-ls")         return batch_optimizer::CGD_LS;
+                        if (string == "cgd-dy")         return batch_optimizer::CGD_DY;
+                        if (string == "cgd-n")          return batch_optimizer::CGD_N;
                         throw std::invalid_argument("invalid batch optimizer <" + string + ">!");
                         return batch_optimizer::GD;
                 }
@@ -296,26 +325,6 @@ namespace ncv
                         }
                 }
         }
-
-        // optimization data types
-        typedef std::function<size_t(void)>                             opt_opsize_t;
-        typedef std::function<scalar_t(const vector_t&)>                opt_opfval_t;
-        typedef std::function<scalar_t(const vector_t&, vector_t&)>     opt_opgrad_t;
-
-        typedef optimize::problem_t
-        <
-                scalar_t,
-                size_t,
-                opt_opsize_t,
-                opt_opfval_t,
-                opt_opgrad_t
-        >                                                               opt_problem_t;
-
-        typedef opt_problem_t::tstate                                   opt_state_t;
-
-        typedef opt_problem_t::twlog                                    opt_opwlog_t;
-        typedef opt_problem_t::telog                                    opt_opelog_t;
-        typedef opt_problem_t::tulog                                    opt_opulog_t;
 }
 
 

@@ -2,7 +2,7 @@
 
 #include "model.h"
 #include "sample.h"
-#include "libnanocv/util/stats.hpp"
+#include "util/stats.hpp"
 
 namespace ncv
 {        

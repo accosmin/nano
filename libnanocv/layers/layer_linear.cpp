@@ -1,7 +1,7 @@
 #include "layer_linear.h"
-#include "libnanocv/util/clamp.hpp"
-#include "libnanocv/util/random.hpp"
-#include "libnanocv/tensor/serialize.hpp"
+#include "../math/clamp.hpp"
+#include "../util/random.hpp"
+#include "../tensor/serialize.hpp"
 #include "linear.hpp"
 
 namespace ncv

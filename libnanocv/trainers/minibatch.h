@@ -1,7 +1,7 @@
 #pragma once
 
-#include "libnanocv/trainer_data.h"
-#include "libnanocv/trainer_result.h"
+#include "../trainer_data.h"
+#include "../trainer_result.h"
 
 namespace ncv
 {

@@ -4,8 +4,8 @@
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/types.h"
 #include "libnanocv/util/dot.hpp"
-#include "libnanocv/util/abs.hpp"
-#include "libnanocv/util/epsilon.hpp"
+#include "libnanocv/math/abs.hpp"
+#include "libnanocv/math/epsilon.hpp"
 #include "libnanocv/tensor/dot.hpp"
 
 namespace test

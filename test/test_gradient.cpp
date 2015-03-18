@@ -5,10 +5,10 @@
 #include "libnanocv/nanocv.h"
 #include "libnanocv/accumulator.h"
 #include "libnanocv/util/logger.h"
-#include "libnanocv/util/close.hpp"
+#include "libnanocv/math/close.hpp"
 #include "libnanocv/util/random.hpp"
-#include "libnanocv/util/epsilon.hpp"
-#include "libnanocv/util/thread_pool.h"
+#include "libnanocv/math/epsilon.hpp"
+#include "libnanocv/thread/pool.h"
 #include "libnanocv-test/test_models.h"
 
 namespace test

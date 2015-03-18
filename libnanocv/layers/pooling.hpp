@@ -1,6 +1,6 @@
 #pragma once
 
-#include "libnanocv/tensor/matrix.hpp"
+#include "../tensor/matrix.hpp"
 
 namespace ncv
 {

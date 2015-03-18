@@ -1,5 +1,5 @@
 #include "layer_pool.h"
-#include "libnanocv/util/clamp.hpp"
+#include "../math/clamp.hpp"
 #include "pooling.hpp"
 
 namespace ncv

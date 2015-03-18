@@ -1,8 +1,8 @@
 #include "task_norb.h"
-#include "libnanocv/util/logger.h"
-#include "libnanocv/file/archive.h"
-#include "libnanocv/file/stream.h"
-#include "libnanocv/loss.h"
+#include "../util/logger.h"
+#include "../file/archive.h"
+#include "../file/stream.h"
+#include "../loss.h"
 
 namespace ncv
 {

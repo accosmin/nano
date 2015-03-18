@@ -3,8 +3,8 @@
 #include "gauss.hpp"
 #include "random.hpp"
 #include "separable_filter.hpp"
-#include "libnanocv/tensor/matrix.hpp"
-#include "libnanocv/tensor/transform.hpp"
+#include "../tensor/matrix.hpp"
+#include "../tensor/transform.hpp"
 
 namespace ncv
 {

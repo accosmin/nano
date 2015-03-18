@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <algorithm>
-#include "libnanocv/util/random.hpp"
+#include "random.hpp"
 
 namespace ncv
 {

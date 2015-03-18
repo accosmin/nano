@@ -1,6 +1,6 @@
 #pragma once
 
-#include "libnanocv/util/manager.hpp"
+#include "util/manager.hpp"
 #include "types.h"
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>

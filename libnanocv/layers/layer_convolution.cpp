@@ -1,9 +1,8 @@
 #include "layer_convolution.h"
-#include "libnanocv/util/logger.h"
-#include "libnanocv/util/clamp.hpp"
-#include "libnanocv/util/random.hpp"
-#include "libnanocv/util/sampling.hpp"
-#include "libnanocv/tensor/serialize.hpp"
+#include "../util/logger.h"
+#include "../math/clamp.hpp"
+#include "../util/random.hpp"
+#include "../tensor/serialize.hpp"
 #include "convolution.hpp"
 
 namespace ncv

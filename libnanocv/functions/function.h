@@ -1,6 +1,6 @@
 #pragma once
 
-#include "libnanocv/types.h"
+#include "../types.h"
 
 namespace ncv
 {

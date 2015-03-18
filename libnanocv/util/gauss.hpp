@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cast.hpp"
+#include "../math/cast.hpp"
 #include <vector>
 #include <type_traits>
 #include <numeric>

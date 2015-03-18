@@ -8,7 +8,7 @@
 #include "optimize/stoch_sia.hpp"
 #include "optimize/stoch_adagrad.hpp"
 #include "optimize/stoch_adadelta.hpp"
-#include "libnanocv/util/logger.h"
+#include "util/logger.h"
 
 namespace ncv
 {

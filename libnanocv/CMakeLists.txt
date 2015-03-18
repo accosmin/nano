@@ -3,13 +3,15 @@ file(GLOB libnanocv_sources
         *.*
         file/*.*
         util/*.*
+        math/*.*
+        tasks/*.*
         tensor/*.*
-        optimize/*.*
-        criteria/*.*
         losses/*.*
         layers/*.*
-        tasks/*.*
         models/*.*
+        thread/*.*
+        optimize/*.*
+        criteria/*.*
         trainers/*.*
         functions/*.*
         )

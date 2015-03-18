@@ -1,6 +1,6 @@
 #include "libnanocv/nanocv.h"
 #include "libnanocv/tasks/task_synthetic_shapes.h"
-#include "libnanocv/util/thread.h"
+#include "libnanocv/thread/thread.h"
 #include "libnanocv/util/measure.hpp"
 #include "libnanocv/util/tabulator.h"
 #include "libnanocv/trainers/batch.h"

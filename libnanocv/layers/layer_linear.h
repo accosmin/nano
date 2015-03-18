@@ -1,6 +1,6 @@
 #pragma once
 
-#include "libnanocv/layer.h"
+#include "../layer.h"
 
 namespace ncv
 {

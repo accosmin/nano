@@ -1,11 +1,11 @@
 #include "batch.h"
-#include "libnanocv/accumulator.h"
-#include "libnanocv/sampler.h"
-#include "libnanocv/util/logger.h"
-#include "libnanocv/util/log_search.hpp"
-#include "libnanocv/util/thread.h"
-#include "libnanocv/util/timer.h"
-#include "libnanocv/optimize.h"
+#include "../accumulator.h"
+#include "../sampler.h"
+#include "../util/logger.h"
+#include "../util/log_search.hpp"
+#include "../util/timer.h"
+#include "../thread/thread.h"
+#include "../optimize.h"
 
 namespace ncv
 {

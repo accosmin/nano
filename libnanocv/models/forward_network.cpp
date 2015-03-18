@@ -1,8 +1,8 @@
 #include "forward_network.h"
-#include "libnanocv/util/logger.h"
-#include "libnanocv/util/math.hpp"
-#include "libnanocv/util/cast.hpp"
-#include "libnanocv/tensor/serialize.hpp"
+#include "../util/logger.h"
+#include "../math/math.hpp"
+#include "../math/cast.hpp"
+#include "../tensor/serialize.hpp"
 #include <iomanip>
 
 namespace ncv

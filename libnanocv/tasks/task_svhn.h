@@ -1,7 +1,7 @@
 #pragma once
 
-#include "libnanocv/task.h"
-#include "libnanocv/file/base.h"
+#include "../task.h"
+#include "../file/base.h"
 
 namespace ncv
 {

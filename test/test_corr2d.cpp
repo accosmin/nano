@@ -4,9 +4,9 @@
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/types.h"
 #include "libnanocv/util/logger.h"
-#include "libnanocv/util/close.hpp"
+#include "libnanocv/math/close.hpp"
 #include "libnanocv/util/corr2d.hpp"
-#include "libnanocv/util/epsilon.hpp"
+#include "libnanocv/math/epsilon.hpp"
 #ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"
 #endif

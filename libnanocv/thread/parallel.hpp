@@ -1,6 +1,6 @@
 #pragma once
 
-#include "thread_pool.h"
+#include "pool.h"
 
 namespace ncv
 {

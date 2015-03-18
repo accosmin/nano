@@ -4,11 +4,11 @@
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/tasks/task_synthetic_shapes.h"
 #include "libnanocv/nanocv.h"
-#include "libnanocv/util/abs.hpp"
+#include "libnanocv/math/abs.hpp"
 #include "libnanocv/util/timer.h"
 #include "libnanocv/util/logger.h"
-#include "libnanocv/util/epsilon.hpp"
-#include "libnanocv/util/thread.h"
+#include "libnanocv/math/epsilon.hpp"
+#include "libnanocv/thread/thread.h"
 #include "libnanocv/accumulator.h"
 
 namespace test

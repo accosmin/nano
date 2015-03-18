@@ -3,11 +3,11 @@
 
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/types.h"
-#include "libnanocv/util/abs.hpp"
+#include "libnanocv/math/abs.hpp"
 #include "libnanocv/util/timer.h"
 #include "libnanocv/util/stats.hpp"
 #include "libnanocv/util/tabulator.h"
-#include "libnanocv/util/thread_loop.hpp"
+#include "libnanocv/thread/parallel.hpp"
 #include <iostream>
 #include <numeric>
 

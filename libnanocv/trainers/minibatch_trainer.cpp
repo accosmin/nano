@@ -1,9 +1,9 @@
 #include "minibatch_trainer.h"
-#include "libnanocv/util/logger.h"
-#include "libnanocv/util/math.hpp"
+#include "../model.h"
+#include "../sampler.h"
+#include "../util/logger.h"
+#include "../math/math.hpp"
 #include "minibatch.h"
-#include "libnanocv/model.h"
-#include "libnanocv/sampler.h"
 
 namespace ncv
 {

@@ -3,13 +3,13 @@
 
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/optimize.h"
-#include "libnanocv/util/abs.hpp"
+#include "libnanocv/math/abs.hpp"
 #include "libnanocv/util/timer.h"
-#include "libnanocv/util/math.hpp"
+#include "libnanocv/math/math.hpp"
 #include "libnanocv/util/logger.h"
 #include "libnanocv/util/stats.hpp"
 #include "libnanocv/util/random.hpp"
-#include "libnanocv/util/epsilon.hpp"
+#include "libnanocv/math/epsilon.hpp"
 
 #include "libnanocv/functions/function_beale.h"
 #include "libnanocv/functions/function_booth.h"

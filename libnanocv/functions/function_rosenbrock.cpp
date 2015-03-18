@@ -1,5 +1,5 @@
 #include "function_rosenbrock.h"
-#include "libnanocv/util/math.hpp"
+#include "../math/math.hpp"
 
 namespace ncv
 {

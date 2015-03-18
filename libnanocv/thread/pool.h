@@ -1,7 +1,7 @@
 #pragma once
 
 #include "thread.h"
-#include "noncopyable.hpp"
+#include "../util/noncopyable.hpp"
 #include <vector>
 #include <condition_variable>
 #include <deque>
@@ -27,7 +27,7 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                thread_pool_t(size_t nthreads = 0);
+                explicit thread_pool_t(size_t nthreads = 0);
 
                 ///
                 /// \brief destructor

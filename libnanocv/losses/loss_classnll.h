@@ -1,6 +1,6 @@
 #pragma once
 
-#include "libnanocv/loss.h"
+#include "../loss.h"
 
 namespace ncv
 {

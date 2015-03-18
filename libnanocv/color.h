@@ -1,8 +1,9 @@
 #pragma once
 
 #include "types.h"
-#include "libnanocv/util/cast.hpp"
-#include "libnanocv/util/clamp.hpp"
+#include "math/cast.hpp"
+#include "math/clamp.hpp"
+#include <cstdint>
 
 namespace ncv
 {
@@ -36,7 +37,7 @@ namespace ncv
 
                 inline luma_t make_luma(rgba_t r, rgba_t g, rgba_t b)
                 {
-                        return static_cast<luma_t>((r * 11 + g * 16 + b * 5) / 32);
+                        return math::cast<luma_t>((r * 11 + g * 16 + b * 5) / 32);
                 }
                 inline luma_t make_luma(rgba_t rgba)
                 {

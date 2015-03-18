@@ -3,8 +3,8 @@
 
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/optimize/average.hpp"
-#include "libnanocv/util/epsilon.hpp"
-#include "libnanocv/util/abs.hpp"
+#include "libnanocv/math/epsilon.hpp"
+#include "libnanocv/math/abs.hpp"
 
 namespace test
 {

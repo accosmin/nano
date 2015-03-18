@@ -61,7 +61,7 @@ namespace ncv
                 
         private:
 
-                typedef std::mt19937                                    gen_t;
+                typedef std::mt19937_64                                 gen_t;
 
                 typedef typename std::conditional
                 <

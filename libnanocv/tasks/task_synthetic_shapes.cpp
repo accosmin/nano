@@ -1,7 +1,7 @@
 #include "task_synthetic_shapes.h"
-#include "libnanocv/loss.h"
-#include "libnanocv/util/math.hpp"
-#include "libnanocv/util/random.hpp"
+#include "../loss.h"
+#include "../math/math.hpp"
+#include "../util/random.hpp"
 
 namespace ncv
 {
