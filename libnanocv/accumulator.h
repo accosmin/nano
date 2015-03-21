@@ -5,9 +5,6 @@
 
 namespace ncv
 {
-        struct accumulator_impl_t;
-        typedef std::shared_ptr<accumulator_impl_t> raccumulator_impl_t;
-
         ///
         /// \brief cumulate sample evaluations (loss value, error and gradient)
         ///
@@ -84,6 +81,7 @@ namespace ncv
         private:
 
                 // attributes
-                raccumulator_impl_t     m_impl;
+                struct impl_t;
+                std::shared_ptr<impl_t> m_impl;
         };
 }

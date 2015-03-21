@@ -5,11 +5,11 @@
 
 namespace ncv
 {
-        struct accumulator_impl_t
+        struct accumulator_t::impl_t
         {
                 // constructor
-                accumulator_impl_t(const model_t& model, size_t nthreads, const string_t& criterion_name,
-                                   criterion_t::type type, scalar_t lambda)
+                impl_t(const model_t& model, size_t nthreads, const string_t& criterion_name,
+                                criterion_t::type type, scalar_t lambda)
                         :       m_pool(nthreads),
                                 m_cache(criterion_manager_t::instance().get(criterion_name))
                 {
@@ -38,7 +38,7 @@ namespace ncv
 
         accumulator_t::accumulator_t(const model_t& model, size_t nthreads,
                                      const string_t& criterion_name, criterion_t::type type, scalar_t lambda)
-                :       m_impl(new accumulator_impl_t(model, nthreads, criterion_name, type, lambda))
+                :       m_impl(new accumulator_t::impl_t(model, nthreads, criterion_name, type, lambda))
         {
         }
 
