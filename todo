@@ -4,11 +4,9 @@
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2  # blue
 set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2  # red
 
-- check why the logistic error decreases so slow on the benchmark application!!!
-
-- faster (but comprehensive) optimization bechmark
-
-- 2D convolution & correlation using Toeplitz matrices
+- faster mini-batch & stochastic trainers:
+	- the minibatch is much slower than batch (3-5 times)
+	- the stochastic is slower, but also produces much worse models
 
 - activate the address sanitizer build (clang 3.5 should support it)
 
@@ -19,20 +17,6 @@ set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2  # red
 	- translation, scale, various deformations
 
 	- ncv_info_task should also be updated to display the noisy training samples
-
-- more experiments with floats instead of doubles:
-	- 2-2.5 times faster MLPs
-	- are the stochastic methods going to be faster?! (tons of gradient-based linear algebra)
-
-- MAD with index shifts (may speed-up corr2d)
-
-- test program to assess the speed of the 3D convolution/correlation operations
-
-- faster convolution:
- 	- build a toeplitz matrix, then the convolution becomes a matrix multiplication:
-		- http://en.wikipedia.org/wiki/Toeplitz_matrix
-
-        - check if any improvement if using a 3D convolution    
 
 - GTSD dataset support (after 0.1 release):
 	- create both classification and detection tasks
@@ -51,6 +35,5 @@ set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2  # red
 
 - feature visualization & image generation (after 0.1 release)
 
-- thread_loop with states should use std::future to obtain the returned values (e.g. gradient & loss value)
 	
 
