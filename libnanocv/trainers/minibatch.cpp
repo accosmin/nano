@@ -166,7 +166,7 @@ namespace ncv
                         const size_t min_batch = 16 * ncv::n_threads();
                         const size_t max_batch = 16 * min_batch;
 
-                        const indices_t batch_iterations = { 1, 2, 4, 8 };
+                        const indices_t batch_iterations = { 4, 8 };
 
                         scalar_t opt_state = std::numeric_limits<scalar_t>::max();
                         size_t opt_batch = min_batch;
