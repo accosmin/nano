@@ -12,7 +12,9 @@ using namespace ncv;
 static string_t stats_to_string(const stats_t<scalar_t>& stats)
 {
         return  text::to_string(stats.avg())
-                + " [" + text::to_string(stats.min()) + ", " + text::to_string(stats.max()) + "]";
+                + " [" + text::to_string(stats.min())
+                + ", " + text::to_string(stats.max())
+                + "]";
 }
 
 template
@@ -53,8 +55,9 @@ static void test_optimizers(
         const task_t& task, model_t& model, const sampler_t& tsampler, const sampler_t& vsampler,
         const loss_t& loss, const string_t& criterion)
 {
-        const size_t cmd_iterations = 128;
-        const size_t cmd_epochs = cmd_iterations;
+        const size_t cmd_iterations = 64;
+        const size_t cmd_minibatch_epochs = cmd_iterations / 8;         // NB: because of 8 iterations / batch!
+        const size_t cmd_stochastic_epochs = cmd_iterations;
         const scalar_t cmd_epsilon = 1e-4;
         const bool verbose = false;
 
@@ -99,25 +102,25 @@ static void test_optimizers(
                 }, "batch [" + text::to_string(optimizer) + "]", table);
         }
 
-//        for (batch_optimizer optimizer : minibatch_optimizers)
-//        {
-//                test_optimizer(model, [&] ()
-//                {
-//                        return ncv::minibatch_train(
-//                                model, task, tsampler, vsampler, ncv::n_threads(),
-//                                loss, criterion, optimizer, cmd_epochs, cmd_epsilon, verbose);
-//                }, "minibatch [" + text::to_string(optimizer) + "]", table);
-//        }
+        for (batch_optimizer optimizer : minibatch_optimizers)
+        {
+                test_optimizer(model, [&] ()
+                {
+                        return ncv::minibatch_train(
+                                model, task, tsampler, vsampler, ncv::n_threads(),
+                                loss, criterion, optimizer, cmd_minibatch_epochs, cmd_epsilon, verbose);
+                }, "minibatch [" + text::to_string(optimizer) + "]", table);
+        }
 
-//        for (stochastic_optimizer optimizer : stochastic_optimizers)
-//        {
-//                test_optimizer(model, [&] ()
-//                {
-//                        return ncv::stochastic_train(
-//                                model, task, tsampler, vsampler, ncv::n_threads(),
-//                                loss, criterion, optimizer, cmd_epochs, verbose);
-//                }, "stochastic [" + text::to_string(optimizer) + "]", table);
-//        }
+        for (stochastic_optimizer optimizer : stochastic_optimizers)
+        {
+                test_optimizer(model, [&] ()
+                {
+                        return ncv::stochastic_train(
+                                model, task, tsampler, vsampler, ncv::n_threads(),
+                                loss, criterion, optimizer, cmd_stochastic_epochs, verbose);
+                }, "stochastic [" + text::to_string(optimizer) + "]", table);
+        }
 
         table.print(std::cout);
 }
@@ -130,7 +133,7 @@ int main(int argc, char *argv[])
         const size_t cmd_rows = 16;
         const size_t cmd_cols = 16;
         const size_t cmd_outputs = 10;
-        const color_mode cmd_color = color_mode::rgba;
+        const color_mode cmd_color = color_mode::luma;
 
         // create task
         synthetic_shapes_task_t task(
@@ -164,11 +167,11 @@ int main(int argc, char *argv[])
         strings_t cmd_networks =
         {
                 lmodel0 + outlayer,
-//                lmodel1 + outlayer,
-//                lmodel2 + outlayer,
-//                lmodel3 + outlayer,
+                lmodel1 + outlayer,
+                lmodel2 + outlayer,
+                lmodel3 + outlayer,
 
-//                cmodel + outlayer
+                cmodel + outlayer
         };
 
         const strings_t cmd_losses = { "classnll" }; //logistic" }; //"classnll", //loss_manager_t::instance().ids();
