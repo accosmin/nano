@@ -11,28 +11,37 @@ namespace ncv
 {
         namespace detail
         {
-                ///
-                /// \brief restore the original sampler at destruction
-                ///
-                struct sampler_backup_t
+                static void setup_minibatch(sampler_t& orig_tsampler, size_t tsize, trainer_data_t& data)
                 {
-                        sampler_backup_t(trainer_data_t& data, size_t tsize)
-                                :       m_data(data),
-                                        m_tsampler_orig(data.m_tsampler)
+                        // FIXED random subset of training samples
+                        orig_tsampler.setup(sampler_t::stype::uniform, tsize);
+                        data.m_tsampler = sampler_t(orig_tsampler.get());
+                }
+
+                static void reset_minibatch(sampler_t& orig_tsampler, trainer_data_t& data)
+                {
+                        // all available training samples
+                        orig_tsampler.setup(sampler_t::stype::batch);
+                        data.m_tsampler = orig_tsampler;
+                }
+
+                template
+                <
+                        typename toperator
+                >
+                static void train(trainer_data_t& data, size_t epoch_size, size_t batch, const toperator& op)
+                {
+                        sampler_t orig_tsampler = data.m_tsampler;
+
+                        for (size_t i = 0; i < epoch_size; i ++)
                         {
-                                // FIXED random subset of training samples
-                                data.m_tsampler.setup(sampler_t::stype::uniform, tsize);
-                                data.m_tsampler = sampler_t(data.m_tsampler.get());
+                                setup_minibatch(orig_tsampler, batch, data);
+
+                                op();
                         }
 
-                        ~sampler_backup_t()
-                        {
-                                m_data.m_tsampler = m_tsampler_orig;
-                        }
-
-                        trainer_data_t&         m_data;
-                        const sampler_t         m_tsampler_orig;
-                };
+                        reset_minibatch(orig_tsampler, data);
+                }
 
                 static scalar_t tune(
                         trainer_data_t& data,
@@ -56,16 +65,14 @@ namespace ncv
 
                         for (size_t epoch = 1; epoch <= epochs; epoch ++)
                         {
-                                for (size_t i = 0; i < epoch_size; i ++)
+                                train(data, epoch_size, batch, [&] ()
                                 {
-                                        const sampler_backup_t sampler_data(data, batch);
-
                                         const opt_state_t state = ncv::minimize(
                                                 fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
                                                 x, optimizer, iterations, epsilon);
 
                                         x = state.x;
-                                }
+                                });
                         }
 
                         // OK, cumulate the loss value
@@ -79,11 +86,11 @@ namespace ncv
                         batch_optimizer optimizer,
                         size_t epochs, size_t batch, size_t iterations, scalar_t epsilon, bool verbose)
                 {
-                        trainer_result_t result;
-
                         const ncv::timer_t timer;
 
                         const size_t epoch_size = (data.m_tsampler.size() + batch - 1) / batch;
+
+                        trainer_result_t result;
 
                         // construct the optimization problem
                         auto fn_size = ncv::make_opsize(data);
@@ -99,16 +106,14 @@ namespace ncv
 
                         for (size_t epoch = 1; epoch <= epochs; epoch ++)
                         {
-                                for (size_t i = 0; i < epoch_size; i ++)
+                                train(data, epoch_size, batch, [&] ()
                                 {
-                                        const sampler_backup_t sampler_data(data, batch);
-
                                         const opt_state_t state = ncv::minimize(
                                                 fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
                                                 x, optimizer, iterations, epsilon);
 
                                         x = state.x;
-                                }
+                                });
 
                                 // training samples: loss value
                                 data.m_lacc.reset(x);
