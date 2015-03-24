@@ -120,7 +120,7 @@ namespace test
                         random_t<size_t> rand(2, 16);
                         const size_t n_threads = 1 + (rand() % 2);
 
-                        accumulator_t acc_params(model, n_threads, criterion, criterion_t::type::vgrad, 1.0);
+                        accumulator_t acc_params(model, n_threads, criterion, criterion_t::type::vgrad, 0.1);
                         test_grad_params(header + "[criterion = " + criterion + "]", loss_id, model, acc_params);
                 }
         }

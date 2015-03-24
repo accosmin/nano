@@ -164,14 +164,15 @@ int main(int argc, char *argv[])
 
         const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
 
+
         strings_t cmd_networks =
         {
                 lmodel0 + outlayer,
-                lmodel1 + outlayer,
-                lmodel2 + outlayer,
-                lmodel3 + outlayer,
+//                lmodel1 + outlayer,
+//                lmodel2 + outlayer,
+//                lmodel3 + outlayer,
 
-                cmodel + outlayer
+//                cmodel + outlayer
         };
 
         const strings_t cmd_losses = { "classnll" }; //logistic" }; //"classnll", //loss_manager_t::instance().ids();

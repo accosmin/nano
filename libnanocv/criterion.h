@@ -123,6 +123,16 @@ namespace ncv
                 ///
                 virtual void accumulate(const criterion_t& other) = 0;
 
+                ///
+                /// \brief loss term's weight
+                ///
+                scalar_t lweight() const { return lambda(); }
+
+                ///
+                /// \brief regularizer term's weight
+                ///
+                scalar_t rweight() const { return 1.0 - lambda(); }
+
         private:
 
                 ///

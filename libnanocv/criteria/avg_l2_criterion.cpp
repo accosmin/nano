@@ -29,14 +29,14 @@ namespace ncv
         
         scalar_t avg_l2_criterion_t::value() const
         {
-                return  avg_criterion_t::value() +
-                        0.5 * lambda() * params().squaredNorm() / psize();
+                return  lweight() * (avg_criterion_t::value()) +
+                        rweight() * (0.5 * params().squaredNorm() / psize());
         }
 
         vector_t avg_l2_criterion_t::vgrad() const
         {
-                return  avg_criterion_t::vgrad() +
-                        lambda() * params() / psize();
+                return  lweight() * (avg_criterion_t::vgrad()) +
+                        rweight() * (params() / psize());
         }
 
         bool avg_l2_criterion_t::can_regularize() const
