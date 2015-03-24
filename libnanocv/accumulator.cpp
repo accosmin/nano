@@ -42,6 +42,12 @@ namespace ncv
         {
         }
 
+        scalar_t accumulator_t::set_lambda(scalar_t lambda)
+        {
+                m_impl->m_cache->reset(math::clamp(lambda, 0.0, 1.0));
+                return this->lambda();
+        }
+
         void accumulator_t::reset(const vector_t& params)
         {
                 m_impl->m_cache->reset(params);

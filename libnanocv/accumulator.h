@@ -19,6 +19,11 @@ namespace ncv
                               const string_t& criterion_name, criterion_t::type, scalar_t lambda = 0.0);
 
                 ///
+                /// \brief change the regularization weight
+                ///
+                scalar_t set_lambda(scalar_t lambda);
+
+                ///
                 /// \brief reset statistics and settings
                 ///
                 void reset();
