@@ -57,7 +57,7 @@ static void test_optimizers(
 {
         const size_t cmd_iterations = 64;
         const size_t cmd_minibatch_epochs = cmd_iterations / 8;         // NB: because of 8 iterations / batch!
-        const size_t cmd_stochastic_epochs = cmd_iterations;
+//        const size_t cmd_stochastic_epochs = cmd_iterations;
         const scalar_t cmd_epsilon = 1e-4;
         const bool verbose = false;
 
@@ -77,15 +77,21 @@ static void test_optimizers(
                 batch_optimizer::LBFGS
         };
 
-        // stochastic optimizers
-        const auto stochastic_optimizers =
+//        // stochastic optimizers
+//        const auto stochastic_optimizers =
+//        {
+//                stochastic_optimizer::SG,
+//                stochastic_optimizer::SGA,
+//                stochastic_optimizer::SIA,
+//                stochastic_optimizer::AG,
+//                stochastic_optimizer::ADAGRAD,
+//                stochastic_optimizer::ADADELTA
+//        };
+
+        const auto reg_tuners =
         {
-                stochastic_optimizer::SG,
-                stochastic_optimizer::SGA,
-                stochastic_optimizer::SIA,
-                stochastic_optimizer::AG,
-                stochastic_optimizer::ADAGRAD,
-                stochastic_optimizer::ADADELTA
+//                reg_tuning::log10_search,
+                reg_tuning::continuation
         };
 
         // run optimizers and collect results
@@ -104,23 +110,26 @@ static void test_optimizers(
 
         for (batch_optimizer optimizer : minibatch_optimizers)
         {
-                test_optimizer(model, [&] ()
+                for (reg_tuning tuner : reg_tuners)
                 {
-                        return ncv::minibatch_train(
-                                model, task, tsampler, vsampler, ncv::n_threads(),
-                                loss, criterion, optimizer, cmd_minibatch_epochs, cmd_epsilon, verbose);
-                }, "minibatch [" + text::to_string(optimizer) + "]", table);
+                        test_optimizer(model, [&] ()
+                        {
+                                return ncv::minibatch_train(
+                                        model, task, tsampler, vsampler, ncv::n_threads(),
+                                        loss, criterion, optimizer, cmd_minibatch_epochs, cmd_epsilon, tuner, verbose);
+                        }, "minibatch [" + text::to_string(tuner) + "] [" + text::to_string(optimizer) + "]", table);
+                }
         }
 
-        for (stochastic_optimizer optimizer : stochastic_optimizers)
-        {
-                test_optimizer(model, [&] ()
-                {
-                        return ncv::stochastic_train(
-                                model, task, tsampler, vsampler, ncv::n_threads(),
-                                loss, criterion, optimizer, cmd_stochastic_epochs, verbose);
-                }, "stochastic [" + text::to_string(optimizer) + "]", table);
-        }
+//        for (stochastic_optimizer optimizer : stochastic_optimizers)
+//        {
+//                test_optimizer(model, [&] ()
+//                {
+//                        return ncv::stochastic_train(
+//                                model, task, tsampler, vsampler, ncv::n_threads(),
+//                                loss, criterion, optimizer, cmd_stochastic_epochs, verbose);
+//                }, "stochastic [" + text::to_string(optimizer) + "]", table);
+//        }
 
         table.print(std::cout);
 }
@@ -168,15 +177,15 @@ int main(int argc, char *argv[])
         strings_t cmd_networks =
         {
                 lmodel0 + outlayer,
-//                lmodel1 + outlayer,
-//                lmodel2 + outlayer,
-//                lmodel3 + outlayer,
+                lmodel1 + outlayer,
+                lmodel2 + outlayer,
+                lmodel3 + outlayer,
 
-//                cmodel + outlayer
+                cmodel + outlayer
         };
 
-        const strings_t cmd_losses = { "classnll" }; //logistic" }; //"classnll", //loss_manager_t::instance().ids();
-        const strings_t cmd_criteria = { "avg" }; //criterion_manager_t::instance().ids();
+        const strings_t cmd_losses = { "classnll" }; //logistic" }; //loss_manager_t::instance().ids();
+        const strings_t cmd_criteria = criterion_manager_t::instance().ids();
 
         // vary the model
         for (const string_t& cmd_network : cmd_networks)

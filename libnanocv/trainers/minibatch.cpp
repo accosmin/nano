@@ -1,4 +1,4 @@
-#include "batch.h"
+#include "minibatch.h"
 #include "../accumulator.h"
 #include "../sampler.h"
 #include "../util/logger.h"
@@ -25,11 +25,30 @@ namespace ncv
                         data.m_tsampler = orig_tsampler;
                 }
 
+                static scalar_t make_var_lambda(reg_tuning tuner, size_t epochs, size_t epoch_size)
+                {
+                        switch (tuner)
+                        {
+                        case reg_tuning::continuation:
+                                return scalar_t(1.0) / scalar_t(epochs * epoch_size);
+
+                        case reg_tuning::log10_search:
+                        default:
+                                return 0.0;
+                        }
+                }
+
+                static size_t make_epoch_size(const trainer_data_t& data, size_t batch)
+                {
+                        return (data.m_tsampler.size() + batch - 1) / batch;
+                }
+
                 template
                 <
                         typename toperator
                 >
-                static void train(trainer_data_t& data, size_t epoch_size, size_t batch, const toperator& op)
+                static void train(trainer_data_t& data, size_t epoch_size, size_t batch, scalar_t var_lambda,
+                        const toperator& op)
                 {
                         sampler_t orig_tsampler = data.m_tsampler;
 
@@ -37,58 +56,24 @@ namespace ncv
                         {
                                 setup_minibatch(orig_tsampler, batch, data);
 
+                                const scalar_t lambda = data.m_lacc.lambda();
+                                data.m_lacc.set_lambda(lambda + var_lambda);
+                                data.m_gacc.set_lambda(lambda + var_lambda);
+
                                 op();
                         }
 
                         reset_minibatch(orig_tsampler, data);
                 }
 
-                static scalar_t tune(
-                        trainer_data_t& data,
-                        batch_optimizer optimizer,
-                        size_t batch, size_t iterations, scalar_t epsilon)
-                {
-                        const size_t epochs = 1;
-                        const size_t epoch_size = (data.m_tsampler.size() + batch - 1) / batch;
-
-                        // construct the optimization problem
-                        auto fn_size = ncv::make_opsize(data);
-                        auto fn_fval = ncv::make_opfval(data);
-                        auto fn_grad = ncv::make_opgrad(data);
-
-                        auto fn_wlog = nullptr;
-                        auto fn_elog = nullptr;
-                        auto fn_ulog = nullptr;
-
-                        // optimize the model
-                        vector_t x = data.m_x0;
-
-                        for (size_t epoch = 1; epoch <= epochs; epoch ++)
-                        {
-                                train(data, epoch_size, batch, [&] ()
-                                {
-                                        const opt_state_t state = ncv::minimize(
-                                                fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
-                                                x, optimizer, iterations, epsilon);
-
-                                        x = state.x;
-                                });
-                        }
-
-                        // OK, cumulate the loss value
-                        data.m_lacc.reset(x);
-                        data.m_lacc.update(data.m_task, data.m_tsampler.all(), data.m_loss);
-                        return data.m_lacc.value();
-                }
-
                 static trainer_result_t train(
                         trainer_data_t& data,
                         batch_optimizer optimizer,
-                        size_t epochs, size_t batch, size_t iterations, scalar_t epsilon, bool verbose)
+                        size_t epochs, size_t epoch_size, size_t batch, size_t iterations, scalar_t epsilon,
+                        scalar_t var_lambda,
+                        bool verbose)
                 {
                         const ncv::timer_t timer;
-
-                        const size_t epoch_size = (data.m_tsampler.size() + batch - 1) / batch;
 
                         trainer_result_t result;
 
@@ -106,7 +91,7 @@ namespace ncv
 
                         for (size_t epoch = 1; epoch <= epochs; epoch ++)
                         {
-                                train(data, epoch_size, batch, [&] ()
+                                train(data, epoch_size, batch, var_lambda, [&] ()
                                 {
                                         const opt_state_t state = ncv::minimize(
                                                 fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
@@ -154,7 +139,7 @@ namespace ncv
         trainer_result_t minibatch_train(
                 const model_t& model, const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, const string_t& criterion,
-                batch_optimizer optimizer, size_t epochs, scalar_t epsilon,
+                batch_optimizer optimizer, size_t epochs, scalar_t epsilon, reg_tuning tuner,
                 bool verbose)
         {
                 vector_t x0;
@@ -173,7 +158,7 @@ namespace ncv
 
                         const indices_t batch_iterations = { 4, 8 };
 
-                        scalar_t opt_state = std::numeric_limits<scalar_t>::max();
+                        trainer_result_t opt_result;
                         size_t opt_batch = min_batch;
                         size_t opt_iterations = 4;
 
@@ -184,20 +169,28 @@ namespace ncv
                                 {
                                         const ncv::timer_t timer;
 
-                                        const scalar_t state =
-                                                detail::tune(data, optimizer, batch, iterations, epsilon);
+                                        const size_t epochs = 1;
+                                        const size_t epoch_size = detail::make_epoch_size(data, batch);
+                                        const scalar_t var_lambda = detail::make_var_lambda(tuner, epochs, epoch_size);
+
+                                        const trainer_result_t result =
+                                                detail::train(data, optimizer, epochs, epoch_size, batch,
+                                                              iterations, epsilon, var_lambda, false);
+
+                                        const trainer_state_t& state = result.m_opt_state;
 
                                         if (verbose)
                                         log_info()
-                                                << "[tuning: loss = " << state
+                                                << "[tuning: train = " << state.m_tvalue << "/" << state.m_terror_avg
+                                                << ", valid = " << state.m_vvalue << "/" << state.m_verror_avg
                                                 << ", batch = " << batch
                                                 << ", iters = " << iterations
                                                 << ", lambda = " << data.m_lacc.lambda()
                                                 << "] done in " << timer.elapsed() << ".";
 
-                                        if (state < opt_state)
+                                        if (result < opt_result)
                                         {
-                                                opt_state = state;
+                                                opt_result = result;
                                                 opt_batch = batch;
                                                 opt_iterations = iterations;
                                         }
@@ -205,13 +198,25 @@ namespace ncv
                         }
 
                         // train the model using the tuned parameters
-                        return detail::train(data, optimizer, epochs, opt_batch, opt_iterations, epsilon, verbose);
+                        const size_t epoch_size = detail::make_epoch_size(data, opt_batch);
+                        const scalar_t var_lambda = detail::make_var_lambda(tuner, epochs, epoch_size);
+
+                        return detail::train(data, optimizer, epochs, epoch_size, opt_batch,
+                                             opt_iterations, epsilon, var_lambda, verbose);
                 };
 
                 // tune the regularization factor (if needed)
                 if (accumulator_t::can_regularize(criterion))
                 {
-                        return log10_min_search(op, -6.0, +0.0, 0.2, 4).first;
+                        switch (tuner)
+                        {
+                        case reg_tuning::continuation:
+                                return op(0.0);
+
+                        case reg_tuning::log10_search:
+                        default:
+                                return log10_min_search(op, -6.0, +0.0, 0.2, 4).first;
+                        }
                 }
 
                 else

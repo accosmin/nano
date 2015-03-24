@@ -46,10 +46,13 @@ namespace ncv
                 const batch_optimizer optimizer = text::from_string<batch_optimizer>
                                 (text::from_params<string_t>(configuration(), "opt", "gd"));
 
+                const reg_tuning tuner = text::from_string<reg_tuning>
+                                (text::from_params<string_t>(configuration(), "reg", "log10-search"));
+
                 // train the model
                 const trainer_result_t result = ncv::minibatch_train(
                         model, task, tsampler, vsampler, nthreads,
-                        loss, criterion, optimizer, epochs, epsilon);
+                        loss, criterion, optimizer, epochs, epsilon, tuner);
 
                 log_info() << "optimum [train = " << result.m_opt_state.m_tvalue << "/" << result.m_opt_state.m_terror_avg
                            << ", valid = " << result.m_opt_state.m_vvalue << "/" << result.m_opt_state.m_verror_avg
