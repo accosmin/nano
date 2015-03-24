@@ -19,8 +19,9 @@ namespace ncv
         public:
 
                 NANOCV_MAKE_CLONABLE(synthetic_shapes_task_t,
-                                     "synthetic task to classify geometric shapes, "\
-                                     "rows=32[16,48],cols=32[16,48],dims=4[2,10],color=rgba[,luma],size=1024[256,16*1024]")
+                                     "synthetic task (shape classification), "\
+                                     "parameters: rows=32[16,48],cols=32[16,48],dims=4[2,10],"\
+                                     "color=rgba[,luma],size=1024[256,16*1024]")
 
                 // constructor
                 explicit synthetic_shapes_task_t(const string_t& configuration = string_t());
