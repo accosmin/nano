@@ -25,6 +25,12 @@ namespace ncv
                         data.m_tsampler = orig_tsampler;
                 }
 
+                static void set_lambda(trainer_data_t& data, scalar_t lambda)
+                {
+                        data.m_lacc.set_lambda(lambda);
+                        data.m_gacc.set_lambda(lambda);
+                }
+
                 static scalar_t make_var_lambda(reg_tuning tuner, size_t epochs, size_t epoch_size)
                 {
                         switch (tuner)
@@ -57,8 +63,7 @@ namespace ncv
                                 setup_minibatch(orig_tsampler, batch, data);
 
                                 const scalar_t lambda = data.m_lacc.lambda();
-                                data.m_lacc.set_lambda(lambda + var_lambda);
-                                data.m_gacc.set_lambda(lambda + var_lambda);
+                                detail::set_lambda(data, lambda + var_lambda);
 
                                 op();
                         }
@@ -70,12 +75,14 @@ namespace ncv
                         trainer_data_t& data,
                         batch_optimizer optimizer,
                         size_t epochs, size_t epoch_size, size_t batch, size_t iterations, scalar_t epsilon,
-                        scalar_t var_lambda,
+                        scalar_t lambda, scalar_t var_lambda,
                         bool verbose)
                 {
                         const ncv::timer_t timer;
 
                         trainer_result_t result;
+
+                        detail::set_lambda(data, lambda);
 
                         // construct the optimization problem
                         auto fn_size = ncv::make_opsize(data);
@@ -169,13 +176,14 @@ namespace ncv
                                 {
                                         const ncv::timer_t timer;
 
-                                        const size_t epochs = 1;
                                         const size_t epoch_size = detail::make_epoch_size(data, batch);
                                         const scalar_t var_lambda = detail::make_var_lambda(tuner, epochs, epoch_size);
 
+                                        const size_t epochs = 1;
+
                                         const trainer_result_t result =
                                                 detail::train(data, optimizer, epochs, epoch_size, batch,
-                                                              iterations, epsilon, var_lambda, false);
+                                                              iterations, epsilon, lambda, var_lambda, false);
 
                                         const trainer_state_t& state = result.m_opt_state;
 
@@ -202,7 +210,7 @@ namespace ncv
                         const scalar_t var_lambda = detail::make_var_lambda(tuner, epochs, epoch_size);
 
                         return detail::train(data, optimizer, epochs, epoch_size, opt_batch,
-                                             opt_iterations, epsilon, var_lambda, verbose);
+                                             opt_iterations, epsilon, lambda, var_lambda, verbose);
                 };
 
                 // tune the regularization factor (if needed)

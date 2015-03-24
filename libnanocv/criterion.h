@@ -126,12 +126,12 @@ namespace ncv
                 ///
                 /// \brief loss term's weight
                 ///
-                scalar_t lweight() const { return lambda(); }
+                scalar_t lweight() const { return 1.0 - lambda(); }
 
                 ///
                 /// \brief regularizer term's weight
                 ///
-                scalar_t rweight() const { return 1.0 - lambda(); }
+                scalar_t rweight() const { return lambda(); }
 
         private:
 
