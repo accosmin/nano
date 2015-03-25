@@ -25,21 +25,13 @@ namespace ncv
                         data.m_tsampler = orig_tsampler;
                 }
 
-                static scalar_t make_var_lambda(bool can_regularize, reg_tuning tuner, size_t epochs, size_t epoch_size)
+                static scalar_t make_var_lambda(reg_tuning tuner, size_t epochs, size_t epoch_size)
                 {
                         switch (tuner)
                         {
                         case reg_tuning::continuation:
-                                if (can_regularize)
-                                {
-                                        return scalar_t(1.0) / scalar_t(epochs * epoch_size);
-                                }
-                                else
-                                {
-                                        return 0.0;
-                                }
+                                return scalar_t(1.0) / scalar_t(epochs * epoch_size);
 
-                        case reg_tuning::log10_search:
                         default:
                                 return 0.0;
                         }
@@ -152,7 +144,12 @@ namespace ncv
                 vector_t x0;
                 model.save_params(x0);
 
+                // no tuning for non-regularized criteria
                 const bool can_regularize = accumulator_t::can_regularize(criterion);
+                if (!can_regularize)
+                {
+                        tuner = reg_tuning::none;
+                }
 
                 // operator to train for a given regularization factor
                 const auto op = [&] (scalar_t lambda)
@@ -179,8 +176,7 @@ namespace ncv
                                         const ncv::timer_t timer;
 
                                         const size_t epoch_size = detail::make_epoch_size(data, batch);
-                                        const scalar_t var_lambda = detail::make_var_lambda(
-                                                can_regularize, tuner, epochs, epoch_size);
+                                        const scalar_t var_lambda = detail::make_var_lambda(tuner, epochs, epoch_size);
 
                                         const size_t epochs = 1;
 
@@ -210,28 +206,21 @@ namespace ncv
 
                         // train the model using the tuned parameters
                         const size_t epoch_size = detail::make_epoch_size(data, opt_batch);
-                        const scalar_t var_lambda = detail::make_var_lambda(can_regularize, tuner, epochs, epoch_size);
+                        const scalar_t var_lambda = detail::make_var_lambda(tuner, epochs, epoch_size);
 
                         return detail::train(data, optimizer, epochs, epoch_size, opt_batch,
                                              opt_iterations, epsilon, lambda, var_lambda, verbose);
                 };
 
                 // tune the regularization factor (if needed)
-                if (can_regularize)
+                switch (tuner)
                 {
-                        switch (tuner)
-                        {
-                        case reg_tuning::continuation:
-                                return op(0.0);
+                case reg_tuning::log10_search:
+                        return log10_min_search(op, -6.0, +0.0, 0.2, 4).first;
 
-                        case reg_tuning::log10_search:
-                        default:
-                                return log10_min_search(op, -6.0, +0.0, 0.2, 4).first;
-                        }
-                }
-
-                else
-                {
+                case reg_tuning::continuation:
+                case reg_tuning::none:
+                default:
                         return op(0.0);
                 }
         }
