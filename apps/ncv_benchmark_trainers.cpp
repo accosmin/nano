@@ -1,5 +1,6 @@
 #include "libnanocv/nanocv.h"
 #include "libnanocv/tabulator.h"
+#include "libnanocv/accumulator.h"
 #include "libnanocv/util/measure.hpp"
 #include "libnanocv/thread/thread.h"
 #include "libnanocv/trainers/batch.h"
@@ -23,7 +24,7 @@ template
 >
 static void test_optimizer(model_t& model, ttrainer trainer, const string_t& name, tabulator_t& table)
 {
-        const size_t cmd_trials = 16;
+        const size_t cmd_trials = 1;//6;
 
         stats_t<scalar_t> tvalues;
         stats_t<scalar_t> vvalues;
@@ -53,27 +54,30 @@ static void test_optimizer(model_t& model, ttrainer trainer, const string_t& nam
 
 static void test_optimizers(
         const task_t& task, model_t& model, const sampler_t& tsampler, const sampler_t& vsampler,
-        const loss_t& loss, const string_t& criterion)
+        const loss_t& loss, const string_t& criterion, tabulator_t& table)
 {
-        const size_t cmd_iterations = 64;
+        const size_t cmd_iterations = 128;
         const size_t cmd_minibatch_epochs = cmd_iterations / 8;         // NB: because of 8 iterations / batch!
 //        const size_t cmd_stochastic_epochs = cmd_iterations;
         const scalar_t cmd_epsilon = 1e-4;
+
+        const size_t n_threads = ncv::n_threads();
+        const bool can_regularize = accumulator_t::can_regularize(criterion);
         const bool verbose = false;
 
         // batch optimizers
         const auto batch_optimizers =
         {
-                batch_optimizer::GD,
-                batch_optimizer::CGD,
+//                batch_optimizer::GD,
+//                batch_optimizer::CGD,
                 batch_optimizer::LBFGS
         };
 
         // minibatch optimizers
         const auto minibatch_optimizers =
         {
-                batch_optimizer::GD,
-                batch_optimizer::CGD,
+//                batch_optimizer::GD,
+//                batch_optimizer::CGD,
                 batch_optimizer::LBFGS
         };
 
@@ -88,36 +92,39 @@ static void test_optimizers(
 //                stochastic_optimizer::ADADELTA
 //        };
 
+        // regularization weight's tuning methods
         const auto reg_tuners =
         {
+                reg_tuning::none,
                 reg_tuning::log10_search,
                 reg_tuning::continuation
         };
 
-        // run optimizers and collect results
-        tabulator_t table("optimizer\\");
-        table.header() << "train loss" << "train error" << "valid loss" << "valid error" << "time [msec]";
+        const string_t basename = "[" + text::to_string(criterion) + "] ";
 
+        // run optimizers and collect results
         for (batch_optimizer optimizer : batch_optimizers)
         {
                 test_optimizer(model, [&] ()
                 {
                         return ncv::batch_train(
-                                model, task, tsampler, vsampler, ncv::n_threads(),
+                                model, task, tsampler, vsampler, n_threads,
                                 loss, criterion, optimizer, cmd_iterations, cmd_epsilon, verbose);
-                }, "batch [" + text::to_string(optimizer) + "]", table);
+                }, basename + "batch-" + text::to_string(optimizer), table);
         }
 
         for (batch_optimizer optimizer : minibatch_optimizers)
         {
                 for (reg_tuning tuner : reg_tuners)
+                        if (    (!can_regularize && tuner == reg_tuning::none) ||
+                                (can_regularize && tuner != reg_tuning::none))
                 {
                         test_optimizer(model, [&] ()
                         {
                                 return ncv::minibatch_train(
-                                        model, task, tsampler, vsampler, ncv::n_threads(),
+                                        model, task, tsampler, vsampler, n_threads,
                                         loss, criterion, optimizer, cmd_minibatch_epochs, cmd_epsilon, tuner, verbose);
-                        }, "minibatch [" + text::to_string(tuner) + "] [" + text::to_string(optimizer) + "]", table);
+                        }, basename + "minibatch-" + text::to_string(optimizer) + "-" + text::to_string(tuner), table);
                 }
         }
 
@@ -126,12 +133,10 @@ static void test_optimizers(
 //                test_optimizer(model, [&] ()
 //                {
 //                        return ncv::stochastic_train(
-//                                model, task, tsampler, vsampler, ncv::n_threads(),
+//                                model, task, tsampler, vsampler, n_threads,
 //                                loss, criterion, optimizer, cmd_stochastic_epochs, verbose);
-//                }, "stochastic [" + text::to_string(optimizer) + "]", table);
+//                }, basename + "stochastic-" + text::to_string(optimizer), table);
 //        }
-
-        table.print(std::cout);
 }
 
 int main(int argc, char *argv[])
@@ -204,13 +209,19 @@ int main(int argc, char *argv[])
                         const rloss_t loss = loss_manager_t::instance().get(cmd_loss);
                         assert(loss);
 
+                        tabulator_t table("optimizer\\");
+                        table.header() << "train loss" << "train error" << "valid loss" << "valid error" << "time [msec]";
+
                         // vary the criteria
                         for (const string_t& cmd_criterion : cmd_criteria)
                         {
                                 log_info() << "<<< running criterion [" << cmd_criterion << "] ...";
 
-                                test_optimizers(task, *model, tsampler, vsampler, *loss, cmd_criterion);
+                                test_optimizers(task, *model, tsampler, vsampler, *loss, cmd_criterion, table);
                         }
+
+                        // show results
+                        table.print(std::cout);
                 }
 
                 log_info();
