@@ -125,7 +125,7 @@ namespace ncv
                                 result.update(x, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var,
                                               epoch, scalars_t({ static_cast<scalar_t>(batch),
                                                                  static_cast<scalar_t>(iterations),
-                                                                 data.m_lacc.lambda() }));
+                                                                 lambda }));
 
                                 if (verbose)
                                 log_info()
