@@ -39,7 +39,7 @@ namespace ncv
                 << text::resize("valid-loss", colsize) << delim
                 << text::resize("valid-error-average", colsize) << delim
                 << text::resize("valid-error-variance", colsize) << delim
-                << "\n";
+                << std::endl;
 
                 // optimization states
                 for (const trainer_state_t& state : states)
@@ -51,7 +51,7 @@ namespace ncv
                         << text::resize(text::to_string(state.m_vvalue), colsize) << delim
                         << text::resize(text::to_string(state.m_verror_avg), colsize) << delim
                         << text::resize(text::to_string(state.m_verror_var), colsize) << delim
-                        << "\n";
+                        << std::endl;
                 }
 
                 return ofs.good();
