@@ -51,7 +51,7 @@ namespace test
                 // optimization problem (wrt parameters & inputs): function value
                 auto fn_params_fval = [&] (const vector_t& x)
                 {
-                        acc_params.reset(x);
+                        acc_params.set_params(x);
                         acc_params.update(inputs, targets, loss);
 
                         return acc_params.value();
@@ -60,7 +60,7 @@ namespace test
                 // optimization problem (wrt parameters & inputs): function value & gradient
                 auto fn_params_grad = [&] (const vector_t& x, vector_t& gx)
                 {
-                        acc_params.reset(x);
+                        acc_params.set_params(x);
                         acc_params.update(inputs, targets, loss);
 
                         gx = acc_params.vgrad();

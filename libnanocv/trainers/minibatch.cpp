@@ -25,12 +25,6 @@ namespace ncv
                         data.m_tsampler = orig_tsampler;
                 }
 
-                static void set_lambda(trainer_data_t& data, scalar_t lambda)
-                {
-                        data.m_lacc.set_lambda(lambda);
-                        data.m_gacc.set_lambda(lambda);
-                }
-
                 static scalar_t make_var_lambda(reg_tuning tuner, size_t epochs, size_t epoch_size)
                 {
                         switch (tuner)
@@ -62,8 +56,7 @@ namespace ncv
                         {
                                 setup_minibatch(orig_tsampler, batch, data);
 
-                                const scalar_t lambda = data.m_lacc.lambda();
-                                detail::set_lambda(data, lambda + var_lambda);
+                                data.set_lambda(data.lambda() + var_lambda);
 
                                 op();
                         }
@@ -82,7 +75,7 @@ namespace ncv
 
                         trainer_result_t result;
 
-                        detail::set_lambda(data, lambda);
+                        data.set_lambda(lambda);
 
                         // construct the optimization problem
                         auto fn_size = ncv::make_opsize(data);
@@ -108,14 +101,14 @@ namespace ncv
                                 });
 
                                 // training samples: loss value
-                                data.m_lacc.reset(x);
+                                data.m_lacc.set_params(x);
                                 data.m_lacc.update(data.m_task, data.m_tsampler.all(), data.m_loss);
                                 const scalar_t tvalue = data.m_lacc.value();
                                 const scalar_t terror_avg = data.m_lacc.avg_error();
                                 const scalar_t terror_var = data.m_lacc.var_error();
 
                                 // validation samples: loss value
-                                data.m_lacc.reset(x);
+                                data.m_lacc.set_params(x);
                                 data.m_lacc.update(data.m_task, data.m_vsampler.get(), data.m_loss);
                                 const scalar_t vvalue = data.m_lacc.value();
                                 const scalar_t verror_avg = data.m_lacc.avg_error();

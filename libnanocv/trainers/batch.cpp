@@ -31,7 +31,7 @@ namespace ncv
                                 const scalar_t terror_var = data.m_gacc.var_error();
 
                                 // validation samples: loss value
-                                data.m_lacc.reset(state.x);
+                                data.m_lacc.set_params(state.x);
                                 data.m_lacc.update(data.m_task, data.m_vsampler.get(), data.m_loss);
                                 const scalar_t vvalue = data.m_lacc.value();
                                 const scalar_t verror_avg = data.m_lacc.avg_error();

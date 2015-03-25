@@ -19,15 +19,19 @@ namespace ncv
                               const string_t& criterion_name, criterion_t::type, scalar_t lambda = 0.0);
 
                 ///
-                /// \brief change the regularization weight
-                ///
-                scalar_t set_lambda(scalar_t lambda);
-
-                ///
-                /// \brief reset statistics and settings
+                /// \brief reset statistics (keeps parameters)
                 ///
                 void reset();
-                void reset(const vector_t& params);
+
+                ///
+                /// \brief change parameters (and resets statistics)
+                ///
+                void set_params(const vector_t& params);
+
+                ///
+                /// \brief change the regularization weight (keeps parameters)
+                ///
+                scalar_t set_lambda(scalar_t lambda);
 
                 ///
                 /// \brief update statistics with a new sample

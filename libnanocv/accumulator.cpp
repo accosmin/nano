@@ -42,21 +42,6 @@ namespace ncv
         {
         }
 
-        scalar_t accumulator_t::set_lambda(scalar_t lambda)
-        {
-                m_impl->m_cache->reset(math::clamp(lambda, 0.0, 1.0));
-                return this->lambda();
-        }
-
-        void accumulator_t::reset(const vector_t& params)
-        {
-                m_impl->m_cache->reset(params);
-                for (const rcriterion_t& cache : m_impl->m_caches)
-                {
-                        cache->reset(params);
-                }
-        }
-
         void accumulator_t::reset()
         {
                 m_impl->m_cache->reset();
@@ -64,7 +49,22 @@ namespace ncv
                 {
                         cache->reset();
                 }
-        }       
+        }
+
+        scalar_t accumulator_t::set_lambda(scalar_t lambda)
+        {
+                m_impl->m_cache->reset(math::clamp(lambda, 0.0, 1.0));
+                return this->lambda();
+        }
+
+        void accumulator_t::set_params(const vector_t& params)
+        {
+                m_impl->m_cache->reset(params);
+                for (const rcriterion_t& cache : m_impl->m_caches)
+                {
+                        cache->reset(params);
+                }
+        }
 
         void accumulator_t::update(const task_t& task, const sample_t& sample, const loss_t& loss)
         {

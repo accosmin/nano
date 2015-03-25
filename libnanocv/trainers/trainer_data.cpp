@@ -19,10 +19,10 @@ namespace ncv
                         m_lacc(lacc),
                         m_gacc(gacc)
         {
-                setup(batch);
+                set_batch(batch);
         }
 
-        void trainer_data_t::setup(size_t batch)
+        void trainer_data_t::set_batch(size_t batch)
         {
                 // Training: may use all (batch) or a subset (minibatch) of samples
                 if (batch == 0)
@@ -38,6 +38,17 @@ namespace ncv
                 m_vsampler.setup(sampler_t::stype::batch);
         }
 
+        void trainer_data_t::set_lambda(scalar_t lambda)
+        {
+                m_lacc.set_lambda(lambda);
+                m_gacc.set_lambda(lambda);
+        }
+
+        scalar_t trainer_data_t::lambda() const
+        {
+                return m_lacc.lambda();
+        }
+
         opt_opsize_t make_opsize(const trainer_data_t& data)
         {
                 return [&] ()
@@ -50,7 +61,7 @@ namespace ncv
         {
                 return [&] (const vector_t& x)
                 {
-                        data.m_lacc.reset(x);
+                        data.m_lacc.set_params(x);
                         data.m_lacc.update(data.m_task, data.m_tsampler.get(), data.m_loss);
 
                         return data.m_lacc.value();
@@ -61,7 +72,7 @@ namespace ncv
         {
                 return [&] (const vector_t& x, vector_t& gx)
                 {
-                        data.m_gacc.reset(x);
+                        data.m_gacc.set_params(x);
                         data.m_gacc.update(data.m_task, data.m_tsampler.get(), data.m_loss);
 
                         gx = data.m_gacc.vgrad();

@@ -29,7 +29,17 @@ namespace ncv
                 ///
                 /// \brief set the training using the given batch size (=0 implies using all samples)
                 ///
-                void setup(size_t batch);
+                void set_batch(size_t batch);
+
+                ///
+                /// \brief change the regularization weight
+                ///
+                void set_lambda(scalar_t lambda);
+
+                ///
+                /// \brief get the regularization weight
+                ///
+                scalar_t lambda() const;
                 
                 // attributes
                 const task_t&           m_task;                 ///< 
