@@ -97,7 +97,15 @@ namespace ncv
                         ///
                         bool converged(tscalar epsilon) const
                         {
-                                return (g.template lpNorm<Eigen::Infinity>()) < epsilon * (1.0 + std::fabs(f));
+                                return convergence_criteria() < epsilon;
+                        }
+
+                        ///
+                        /// \brief convergence criteria: relative gradient
+                        ///
+                        tscalar convergence_criteria() const
+                        {
+                                return (g.template lpNorm<Eigen::Infinity>()) / (1.0 + std::fabs(f));
                         }
 
                         // access functions
