@@ -165,7 +165,7 @@ namespace ncv
                 };
 
                 ///
-                /// \brief CGD update parameters (Dai and Yuan, 2001, page 21 - DY + HS)
+                /// \brief CGD update parameters (Dai and Yuan, 2001, page 21 - second survey)
                 ///
                 template
                 <
@@ -184,6 +184,27 @@ namespace ncv
                                 const tscalar hs = cgd_step_HS<tstate>()(prev, curr);
 
                                 return std::max(tscalar(0), std::min(dy, hs));
+                        }
+                };
+
+                ///
+                /// \brief CGD update parameters (Dai, 2002, page 22 - second survey)
+                ///
+                template
+                <
+                        typename tstate,
+                        typename tscalar = typename tstate::tscalar
+                >
+                struct cgd_step_DYCD
+                {
+                        cgd_step_DYCD()
+                        {
+                        }
+
+                        tscalar operator()(const tstate& prev, const tstate& curr) const
+                        {
+                                return  curr.g.squaredNorm() /
+                                        std::max(prev.d.dot(curr.g - prev.g), -prev.d.dot(prev.g));
                         }
                 };
         }

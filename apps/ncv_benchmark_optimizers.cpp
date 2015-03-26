@@ -90,6 +90,7 @@ static void check_problem(
                 batch_optimizer::CGD_LS,
                 batch_optimizer::CGD_PR,
                 batch_optimizer::CGD_N,
+                batch_optimizer::CGD_DYCD,
                 batch_optimizer::CGD_DYHS,
                 batch_optimizer::LBFGS
         };
