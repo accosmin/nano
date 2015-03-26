@@ -113,7 +113,7 @@ namespace ncv
                 using batch_cgd_fr_t = batch_cgd_t<cgd_step_FR<typename tproblem::tstate>, tproblem>;
 
                 template <typename tproblem>
-                using batch_cgd_pr_t = batch_cgd_t<cgd_step_PR<typename tproblem::tstate>, tproblem>;
+                using batch_cgd_prp_t = batch_cgd_t<cgd_step_PRP<typename tproblem::tstate>, tproblem>;
 
                 template <typename tproblem>
                 using batch_cgd_cd_t = batch_cgd_t<cgd_step_CD<typename tproblem::tstate>, tproblem>;

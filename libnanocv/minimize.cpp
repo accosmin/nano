@@ -36,7 +36,7 @@ namespace ncv
                 case batch_optimizer::CGD_HS:
                 case batch_optimizer::CGD_LS:
                 case batch_optimizer::CGD_N:
-                case batch_optimizer::CGD_PR:
+                case batch_optimizer::CGD_PRP:
                 case batch_optimizer::CGD_DYHS:
                         return minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog, x0, optimizer, iterations, epsilon,
                                         optimize::ls_initializer::quadratic, optimize::ls_strategy::interpolation_cubic);
@@ -70,7 +70,7 @@ namespace ncv
                                 (problem, x0);
 
                 case batch_optimizer::CGD:
-                        return  optimize::batch_cgd_pr_t<opt_problem_t>
+                        return  optimize::batch_cgd_prp_t<opt_problem_t>
                                 (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
@@ -104,8 +104,8 @@ namespace ncv
                                 (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
-                case batch_optimizer::CGD_PR:
-                        return  optimize::batch_cgd_pr_t<opt_problem_t>
+                case batch_optimizer::CGD_PRP:
+                        return  optimize::batch_cgd_prp_t<opt_problem_t>
                                 (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 

@@ -51,7 +51,7 @@ namespace ncv
 
                 CGD_HS,                 ///< various conjugate gradient descent versions
                 CGD_FR,
-                CGD_PR,
+                CGD_PRP,
                 CGD_CD,
                 CGD_LS,
                 CGD_DY,
@@ -101,7 +101,7 @@ namespace ncv
                         case batch_optimizer::LBFGS:    return "lbfgs";
                         case batch_optimizer::CGD_HS:   return "cgd-hs";
                         case batch_optimizer::CGD_FR:   return "cgd-fr";
-                        case batch_optimizer::CGD_PR:   return "cgd-pr";
+                        case batch_optimizer::CGD_PRP:  return "cgd-prp";
                         case batch_optimizer::CGD_CD:   return "cgd-cd";
                         case batch_optimizer::CGD_LS:   return "cgd-ls";
                         case batch_optimizer::CGD_DY:   return "cgd-dy";
@@ -120,7 +120,7 @@ namespace ncv
                         if (string == "lbfgs")          return batch_optimizer::LBFGS;
                         if (string == "cgd-hs")         return batch_optimizer::CGD_HS;
                         if (string == "cgd-fr")         return batch_optimizer::CGD_FR;
-                        if (string == "cgd-pr")         return batch_optimizer::CGD_PR;
+                        if (string == "cgd-prp")        return batch_optimizer::CGD_PRP;
                         if (string == "cgd-cd")         return batch_optimizer::CGD_CD;
                         if (string == "cgd-ls")         return batch_optimizer::CGD_LS;
                         if (string == "cgd-dy")         return batch_optimizer::CGD_DY;

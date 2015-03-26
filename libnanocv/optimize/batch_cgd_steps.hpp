@@ -7,15 +7,15 @@ namespace ncv
         namespace optimize
         {
                 // these variations have been implemented following:
-                //      "A survey of nonlinear conjugate gradient methods"
+                //      (1) "A survey of nonlinear conjugate gradient methods"
                 //      by William W. Hager and Hongchao Zhang
                 //
                 // and
-                //      "Nonlinear Conjugate Gradient Methods"
+                //      (2) "Nonlinear Conjugate Gradient Methods"
                 //      by Yu-Hong Dai
 
                 ///
-                /// \brief CGD update parameters (Hestenes and Stiefel, 1952)
+                /// \brief CGD update parameters (Hestenes and Stiefel, 1952 - see (1))
                 ///
                 template
                 <
@@ -36,7 +36,7 @@ namespace ncv
                 };
 
                 ///
-                /// \brief CGD update parameters (Fletcher and Reeves, 1964)
+                /// \brief CGD update parameters (Fletcher and Reeves, 1964 - see (1))
                 ///
                 template
                 <
@@ -57,29 +57,29 @@ namespace ncv
                 };
 
                 ///
-                /// \brief CGD update parameters (Polak and Ribiere, 1969)
+                /// \brief CGD update parameters (Polak and Ribiere, 1969 - see (1))
                 ///
                 template
                 <
                         typename tstate,
                         typename tscalar = typename tstate::tscalar
                 >
-                struct cgd_step_PR
+                struct cgd_step_PRP
                 {
-                        cgd_step_PR()
+                        cgd_step_PRP()
                         {
                         }
 
                         tscalar operator()(const tstate& prev, const tstate& curr) const
                         {
-                                return  std::max(tscalar(0),                    // PR+
+                                return  std::max(tscalar(0),                    // PRP(+)
                                         curr.g.dot(curr.g - prev.g) /
                                         prev.g.squaredNorm());
                         }
                 };
 
                 ///
-                /// \brief CGD update parameters (Fletcher - Conjugate Descent, 1987)
+                /// \brief CGD update parameters (Fletcher - Conjugate Descent, 1987 - see (1))
                 ///
                 template
                 <
@@ -100,7 +100,7 @@ namespace ncv
                 };
 
                 ///
-                /// \brief CGD update parameters (Liu and Storey, 1991)
+                /// \brief CGD update parameters (Liu and Storey, 1991 - see (1))
                 ///
                 template
                 <
@@ -121,7 +121,7 @@ namespace ncv
                 };
 
                 ///
-                /// \brief CGD update parameters (Dai and Yuan, 1999)
+                /// \brief CGD update parameters (Dai and Yuan, 1999 - see (1))
                 ///
                 template
                 <
@@ -142,7 +142,7 @@ namespace ncv
                 };
 
                 ///
-                /// \brief CGD update parameters (Hager and Zhang, 2005)
+                /// \brief CGD update parameters (Hager and Zhang, 2005 - see (1))
                 ///
                 template
                 <
@@ -165,7 +165,7 @@ namespace ncv
                 };
 
                 ///
-                /// \brief CGD update parameters (Dai and Yuan, 2001, page 21 - second survey)
+                /// \brief CGD update parameters (Dai and Yuan, 2001  - see (2), page 21)
                 ///
                 template
                 <
@@ -188,7 +188,7 @@ namespace ncv
                 };
 
                 ///
-                /// \brief CGD update parameters (Dai, 2002, page 22 - second survey)
+                /// \brief CGD update parameters (Dai, 2002 - see (2), page 22)
                 ///
                 template
                 <
