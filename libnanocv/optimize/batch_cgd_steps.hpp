@@ -157,10 +157,17 @@ namespace ncv
 
                         tscalar operator()(const tstate& prev, const tstate& curr) const
                         {
-                                const tscalar div = 1 / prev.d.dot(curr.g - prev.g);
+                                const auto y = curr.g - prev.g;
+                                const tscalar div = +1 / prev.d.dot(y);
 
-                                return  (curr.g - prev.g - 2 * prev.d * (curr.g - prev.g).squaredNorm() * div).dot
-                                        (curr.g * div);
+                                const tscalar pd2 = prev.d.template lpNorm<2>();
+                                const tscalar pg2 = prev.g.template lpNorm<2>();
+                                const tscalar eta = -1 / (pd2 * std::min(tscalar(0.01), pg2));
+
+                                // N+ (see modification in
+                                //      "A NEW CONJUGATE GRADIENT METHOD WITH GUARANTEED DESCENT AND AN EFFICIENT LINE SEARCH")
+                                return  std::max(eta,
+                                                 div * (y - 2 * prev.d * y.squaredNorm() * div).dot(curr.g));
                         }
                 };
 
