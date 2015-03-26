@@ -142,7 +142,7 @@ namespace ncv
                 };
 
                 ///
-                /// \brief CGD update parameters (Hager and Zhang, 2005 - see (1))
+                /// \brief CGD update parameters (Hager and Zhang, 2005 - see (1)) aka CG_DESCENT
                 ///
                 template
                 <
