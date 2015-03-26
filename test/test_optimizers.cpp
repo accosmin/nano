@@ -102,7 +102,7 @@ namespace test
 //                        batch_optimizer::CGD_HS,
 //                        batch_optimizer::CGD_LS,
 //                        batch_optimizer::CGD_DYCD,
-//                        batch_optimizer::CGD_DYHS,
+                        batch_optimizer::CGD_DYHS,
                         batch_optimizer::CGD_PR,
                         batch_optimizer::CGD_N,
                         batch_optimizer::LBFGS
