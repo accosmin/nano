@@ -61,24 +61,24 @@ static void test_optimizers(
 //        const size_t cmd_stochastic_epochs = cmd_iterations;
         const scalar_t cmd_epsilon = 1e-4;
 
-        const size_t n_threads = ncv::n_threads();
         const bool can_regularize = accumulator_t::can_regularize(criterion);
+        const size_t n_threads = 2;//ncv::n_threads();
         const bool verbose = false;
 
-        // batch optimizers
-        const auto batch_optimizers =
-        {
-//                batch_optimizer::GD,
+//        // batch optimizers
+//        const auto batch_optimizers =
+//        {
+////                batch_optimizer::GD,
 //                batch_optimizer::CGD,
-                batch_optimizer::LBFGS
-        };
+////                batch_optimizer::LBFGS
+//        };
 
         // minibatch optimizers
         const auto minibatch_optimizers =
         {
 //                batch_optimizer::GD,
-//                batch_optimizer::CGD,
-                batch_optimizer::LBFGS
+                batch_optimizer::CGD,
+//                batch_optimizer::LBFGS
         };
 
 //        // stochastic optimizers
@@ -96,22 +96,22 @@ static void test_optimizers(
         const auto reg_tuners =
         {
                 reg_tuning::none,
-                reg_tuning::log10_search,
+//                reg_tuning::log10_search,
                 reg_tuning::continuation
         };
 
         const string_t basename = "[" + text::to_string(criterion) + "] ";
 
         // run optimizers and collect results
-        for (batch_optimizer optimizer : batch_optimizers)
-        {
-                test_optimizer(model, [&] ()
-                {
-                        return ncv::batch_train(
-                                model, task, tsampler, vsampler, n_threads,
-                                loss, criterion, optimizer, cmd_iterations, cmd_epsilon, verbose);
-                }, basename + "batch-" + text::to_string(optimizer), table);
-        }
+//        for (batch_optimizer optimizer : batch_optimizers)
+//        {
+//                test_optimizer(model, [&] ()
+//                {
+//                        return ncv::batch_train(
+//                                model, task, tsampler, vsampler, n_threads,
+//                                loss, criterion, optimizer, cmd_iterations, cmd_epsilon, verbose);
+//                }, basename + "batch-" + text::to_string(optimizer), table);
+//        }
 
         for (batch_optimizer optimizer : minibatch_optimizers)
         {
@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
         const size_t cmd_rows = 16;
         const size_t cmd_cols = 16;
         const size_t cmd_outputs = 10;
-        const color_mode cmd_color = color_mode::luma;
+        const color_mode cmd_color = color_mode::rgba;
 
         // create task
         synthetic_shapes_task_t task(
@@ -177,7 +177,6 @@ int main(int argc, char *argv[])
         cmodel = cmodel + "conv:dims=8,rows=3,cols=3;act-snorm;";
 
         const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
-
 
         strings_t cmd_networks =
         {
@@ -215,8 +214,6 @@ int main(int argc, char *argv[])
                         // vary the criteria
                         for (const string_t& cmd_criterion : cmd_criteria)
                         {
-                                log_info() << "<<< running criterion [" << cmd_criterion << "] ...";
-
                                 test_optimizers(task, *model, tsampler, vsampler, *loss, cmd_criterion, table);
                         }
 

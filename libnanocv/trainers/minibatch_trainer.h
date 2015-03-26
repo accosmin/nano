@@ -11,7 +11,7 @@ namespace ncv
         ///     opt=gd[,lbfgs,cgd]              - optimization method
         ///     epoch=16[1,1024]                - #epochs (~ #samples)
         ///     eps=1e-4[1e-8,1e-3]             - convergence
-        ///     reg=log10-search[,continuation] - method to tune the regularization term
+        ///     reg=tune[,cont]                 - method to tune the regularization term
         ///
         class minibatch_trainer_t : public trainer_t
         {
@@ -19,7 +19,7 @@ namespace ncv
 
                 NANOCV_MAKE_CLONABLE(minibatch_trainer_t,
                                      "parameters: opt=gd[,lbfgs,cgd],epoch=16[1,1024],eps=1e-4[1e-8,1e-3],"\
-                                     "reg=log10-search[,continuation]")
+                                     "reg=tune[,cont]")
 
                 // constructor
                 minibatch_trainer_t(const string_t& parameters = string_t());

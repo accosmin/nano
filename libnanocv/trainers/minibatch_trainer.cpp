@@ -44,10 +44,10 @@ namespace ncv
                 const scalar_t epsilon = math::clamp(text::from_params<scalar_t>(configuration(), "eps", 1e-4), 1e-8, 1e-3);
 
                 const batch_optimizer optimizer = text::from_string<batch_optimizer>
-                                (text::from_params<string_t>(configuration(), "opt", "gd"));
+                        (text::from_params<string_t>(configuration(), "opt", "gd"));
 
                 const reg_tuning tuner = text::from_string<reg_tuning>
-                                (text::from_params<string_t>(configuration(), "reg", "log10-search"));
+                        (text::from_params<string_t>(configuration(), "reg", text::to_string(reg_tuning::log10_search)));
 
                 // train the model
                 const trainer_result_t result = ncv::minibatch_train(

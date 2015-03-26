@@ -23,8 +23,8 @@ namespace ncv
                 {
                         switch (type)
                         {
-                        case reg_tuning::log10_search:  return "log10-search";
-                        case reg_tuning::continuation:  return "continuation";
+                        case reg_tuning::log10_search:  return "tune";
+                        case reg_tuning::continuation:  return "cont";
                         default:                        return "none";
                         }
                 }
@@ -33,8 +33,8 @@ namespace ncv
                 inline reg_tuning from_string<reg_tuning>(const std::string& string)
                 {
                         if (string == "none")           return reg_tuning::none;
-                        if (string == "log10-search")   return reg_tuning::log10_search;
-                        if (string == "continuation")   return reg_tuning::continuation;
+                        if (string == "tune")           return reg_tuning::log10_search;
+                        if (string == "cont")           return reg_tuning::continuation;
                         throw std::invalid_argument("invalid regularization tuning <" + string + ">!");
                         return reg_tuning::none;
                 }

@@ -9,28 +9,29 @@
 
 namespace ncv
 {
-        namespace detail
+        namespace
         {
-                static void setup_minibatch(sampler_t& orig_tsampler, size_t tsize, trainer_data_t& data)
+                void setup_minibatch(sampler_t& orig_tsampler, size_t tsize, trainer_data_t& data)
                 {
                         // FIXED random subset of training samples
                         orig_tsampler.setup(sampler_t::stype::uniform, tsize);
                         data.m_tsampler = sampler_t(orig_tsampler.get());
                 }
 
-                static void reset_minibatch(sampler_t& orig_tsampler, trainer_data_t& data)
+                void reset_minibatch(sampler_t& orig_tsampler, trainer_data_t& data)
                 {
                         // all available training samples
                         orig_tsampler.setup(sampler_t::stype::batch);
                         data.m_tsampler = orig_tsampler;
                 }
 
-                static scalar_t make_var_lambda(reg_tuning tuner, size_t epochs, size_t epoch_size)
+                static scalar_t make_dlambda(reg_tuning tuner, size_t epochs, size_t epoch_size,
+                        scalar_t lambda0, scalar_t lambdaN)
                 {
                         switch (tuner)
                         {
                         case reg_tuning::continuation:
-                                return scalar_t(1.0) / scalar_t(epochs * epoch_size);
+                                return (lambda0 - lambdaN) / scalar_t(epochs * epoch_size);
 
                         default:
                                 return 0.0;
@@ -46,7 +47,7 @@ namespace ncv
                 <
                         typename toperator
                 >
-                static void train(trainer_data_t& data, size_t epoch_size, size_t batch, scalar_t var_lambda,
+                void train(trainer_data_t& data, size_t epoch_size, size_t batch, scalar_t dlambda,
                         const toperator& op)
                 {
                         sampler_t orig_tsampler = data.m_tsampler;
@@ -55,7 +56,7 @@ namespace ncv
                         {
                                 setup_minibatch(orig_tsampler, batch, data);
 
-                                data.set_lambda(data.lambda() + var_lambda);
+                                data.set_lambda(data.lambda() - dlambda);
 
                                 op();
                         }
@@ -67,7 +68,7 @@ namespace ncv
                         trainer_data_t& data,
                         batch_optimizer optimizer,
                         size_t epochs, size_t epoch_size, size_t batch, size_t iterations, scalar_t epsilon,
-                        scalar_t lambda, scalar_t var_lambda,
+                        scalar_t lambda, scalar_t dlambda,
                         bool verbose)
                 {
                         const ncv::timer_t timer;
@@ -90,7 +91,7 @@ namespace ncv
 
                         for (size_t epoch = 1; epoch <= epochs; epoch ++)
                         {
-                                train(data, epoch_size, batch, var_lambda, [&] ()
+                                train(data, epoch_size, batch, dlambda, [&] ()
                                 {
                                         const opt_state_t state = ncv::minimize(
                                                 fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
@@ -144,6 +145,9 @@ namespace ncv
                 vector_t x0;
                 model.save_params(x0);
 
+                const scalar_t lambda0 = 1.0;
+                const scalar_t lambdaN = 0.0;
+
                 // no tuning for non-regularized criteria
                 const bool can_regularize = accumulator_t::can_regularize(criterion);
                 if (!can_regularize)
@@ -175,14 +179,14 @@ namespace ncv
                                 {
                                         const ncv::timer_t timer;
 
-                                        const size_t epoch_size = detail::make_epoch_size(data, batch);
-                                        const scalar_t var_lambda = detail::make_var_lambda(tuner, epochs, epoch_size);
+                                        const size_t epoch_size = make_epoch_size(data, batch);
+                                        const scalar_t dlambda = make_dlambda(tuner, epochs, epoch_size, lambda, lambdaN);
 
                                         const size_t epochs = 1;
 
                                         const trainer_result_t result =
-                                                detail::train(data, optimizer, epochs, epoch_size, batch,
-                                                              iterations, epsilon, lambda, var_lambda, false);
+                                                train(data, optimizer, epochs, epoch_size, batch,
+                                                              iterations, epsilon, lambda, dlambda, false);
 
                                         const trainer_state_t& state = result.m_opt_state;
 
@@ -205,11 +209,11 @@ namespace ncv
                         }
 
                         // train the model using the tuned parameters
-                        const size_t epoch_size = detail::make_epoch_size(data, opt_batch);
-                        const scalar_t var_lambda = detail::make_var_lambda(tuner, epochs, epoch_size);
+                        const size_t epoch_size = make_epoch_size(data, opt_batch);
+                        const scalar_t dlambda = make_dlambda(tuner, epochs, epoch_size, lambda, lambdaN);
 
-                        return detail::train(data, optimizer, epochs, epoch_size, opt_batch,
-                                             opt_iterations, epsilon, lambda, var_lambda, verbose);
+                        return train(data, optimizer, epochs, epoch_size, opt_batch,
+                                             opt_iterations, epsilon, lambda, dlambda, verbose);
                 };
 
                 // tune the regularization factor (if needed)
@@ -219,6 +223,8 @@ namespace ncv
                         return log10_min_search(op, -6.0, +0.0, 0.2, 4).first;
 
                 case reg_tuning::continuation:
+                        return op(lambda0);
+
                 case reg_tuning::none:
                 default:
                         return op(0.0);
