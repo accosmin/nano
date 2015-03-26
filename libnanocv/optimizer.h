@@ -55,7 +55,8 @@ namespace ncv
                 CGD_CD,
                 CGD_LS,
                 CGD_DY,
-                CGD_N
+                CGD_N,
+                CGD_DYHS
         };
 
         // string cast for enumerations
@@ -104,6 +105,7 @@ namespace ncv
                         case batch_optimizer::CGD_LS:   return "cgd-ls";
                         case batch_optimizer::CGD_DY:   return "cgd-dy";
                         case batch_optimizer::CGD_N:    return "cgd-n";
+                        case batch_optimizer::CGD_DYHS: return "cgd-dyhs";
                         default:                        return "lbfgs";
                         }
                 }
@@ -121,6 +123,7 @@ namespace ncv
                         if (string == "cgd-ls")         return batch_optimizer::CGD_LS;
                         if (string == "cgd-dy")         return batch_optimizer::CGD_DY;
                         if (string == "cgd-n")          return batch_optimizer::CGD_N;
+                        if (string == "cgd-dyhs")       return batch_optimizer::CGD_DYHS;
                         throw std::invalid_argument("invalid batch optimizer <" + string + ">!");
                         return batch_optimizer::GD;
                 }

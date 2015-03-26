@@ -6,9 +6,13 @@ namespace ncv
 {
         namespace optimize
         {
-                // these variations have been implemented following
+                // these variations have been implemented following:
                 //      "A survey of nonlinear conjugate gradient methods"
                 //      by William W. Hager and Hongchao Zhang
+                //
+                // and
+                //      "Nonlinear Conjugate Gradient Methods"
+                //      by Yu-Hong Dai
 
                 ///
                 /// \brief CGD update parameters (Hestenes and Stiefel, 1952)
@@ -157,6 +161,29 @@ namespace ncv
 
                                 return  (curr.g - prev.g - 2 * prev.d * (curr.g - prev.g).squaredNorm() * div).dot
                                         (curr.g * div);
+                        }
+                };
+
+                ///
+                /// \brief CGD update parameters (Dai and Yuan, 2001, page 21 - DY + HS)
+                ///
+                template
+                <
+                        typename tstate,
+                        typename tscalar = typename tstate::tscalar
+                >
+                struct cgd_step_DYHS
+                {
+                        cgd_step_DYHS()
+                        {
+                        }
+
+                        tscalar operator()(const tstate& prev, const tstate& curr) const
+                        {
+                                const tscalar dy = cgd_step_DY<tstate>()(prev, curr);
+                                const tscalar hs = cgd_step_HS<tstate>()(prev, curr);
+
+                                return std::max(tscalar(0), std::min(dy, hs));
                         }
                 };
         }

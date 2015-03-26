@@ -24,7 +24,7 @@ template
 >
 static void test_optimizer(model_t& model, ttrainer trainer, const string_t& name, tabulator_t& table)
 {
-        const size_t cmd_trials = 1;//6;
+        const size_t cmd_trials = 16;
 
         stats_t<scalar_t> tvalues;
         stats_t<scalar_t> vvalues;
@@ -62,16 +62,16 @@ static void test_optimizers(
         const scalar_t cmd_epsilon = 1e-4;
 
         const bool can_regularize = accumulator_t::can_regularize(criterion);
-        const size_t n_threads = 2;//ncv::n_threads();
+        const size_t n_threads = ncv::n_threads();
         const bool verbose = false;
 
-//        // batch optimizers
-//        const auto batch_optimizers =
-//        {
-////                batch_optimizer::GD,
-//                batch_optimizer::CGD,
-////                batch_optimizer::LBFGS
-//        };
+        // batch optimizers
+        const auto batch_optimizers =
+        {
+//                batch_optimizer::GD,
+                batch_optimizer::CGD,
+//                batch_optimizer::LBFGS
+        };
 
         // minibatch optimizers
         const auto minibatch_optimizers =
@@ -96,22 +96,22 @@ static void test_optimizers(
         const auto reg_tuners =
         {
                 reg_tuning::none,
-//                reg_tuning::log10_search,
+                reg_tuning::log10_search,
                 reg_tuning::continuation
         };
 
         const string_t basename = "[" + text::to_string(criterion) + "] ";
 
         // run optimizers and collect results
-//        for (batch_optimizer optimizer : batch_optimizers)
-//        {
-//                test_optimizer(model, [&] ()
-//                {
-//                        return ncv::batch_train(
-//                                model, task, tsampler, vsampler, n_threads,
-//                                loss, criterion, optimizer, cmd_iterations, cmd_epsilon, verbose);
-//                }, basename + "batch-" + text::to_string(optimizer), table);
-//        }
+        for (batch_optimizer optimizer : batch_optimizers)
+        {
+                test_optimizer(model, [&] ()
+                {
+                        return ncv::batch_train(
+                                model, task, tsampler, vsampler, n_threads,
+                                loss, criterion, optimizer, cmd_iterations, cmd_epsilon, verbose);
+                }, basename + "batch-" + text::to_string(optimizer), table);
+        }
 
         for (batch_optimizer optimizer : minibatch_optimizers)
         {

@@ -126,6 +126,9 @@ namespace ncv
 
                 template <typename tproblem>
                 using batch_cgd_n_t = batch_cgd_t<cgd_step_N<typename tproblem::tstate>, tproblem>;
+
+                template <typename tproblem>
+                using batch_cgd_dyhs_t = batch_cgd_t<cgd_step_DYHS<typename tproblem::tstate>, tproblem>;
         }
 }
 
