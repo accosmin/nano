@@ -39,7 +39,7 @@ namespace ncv
                                 {
                                 case ls_strategy::interpolation_cubic:
                                         t = ls_cubic(steplo, stephi);
-                                        if (tmin + teps < t && t < tmax - teps)
+                                        if (std::isfinite(t) && tmin + teps < t && t < tmax - teps)
                                         {
                                                 break;
                                         }
@@ -47,7 +47,7 @@ namespace ncv
 
                                 case ls_strategy::interpolation_bisection:
                                 default:
-                                        t = (steplo.alpha() + stephi.alpha()) / 2;
+                                        t = 0.33 * tmin + 0.67 * tmax;
                                         break;
                                 }
 
