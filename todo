@@ -4,6 +4,11 @@
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2  # blue
 set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2  # red
 
+- more robust interpolation-based line-search:
+	- it fails for a single dataset
+
+- quard minimizer to choose the candidate
+
 - faster mini-batch & stochastic trainers:
 	- the minibatch is much slower than batch (3-5 times)
 	- the stochastic is slower, but also produces much worse models
