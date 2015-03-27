@@ -26,7 +26,10 @@ namespace ncv
 
                         // (Nocedal & Wright (numerical optimization 2nd) @ p.60-61) - strong Wolfe only
                         interpolation_bisection,        ///< bisection for zooming
-                        interpolation_cubic             ///< cubic interpolation for zooming
+                        interpolation_cubic,            ///< cubic interpolation for zooming
+
+                        // (Hager & Zhang, 2005) - regular and approximate Wolfe only
+                        cg_descent                      ///< CG_DESCENT
                 };
         }
 }

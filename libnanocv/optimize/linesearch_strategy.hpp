@@ -2,6 +2,7 @@
 
 #include <limits>
 #include <cassert>
+#include "linesearch_strategy_cgdescent.hpp"
 #include "linesearch_strategy_backtracking.hpp"
 #include "linesearch_strategy_interpolation.hpp"
 
@@ -44,8 +45,6 @@ namespace ncv
                                 assert(m_c2 > tscalar(0) && m_c2 < tscalar(1));
 
                                 const tscalar eps = std::numeric_limits<tscalar>::epsilon();
-                                const tscalar tmin = std::sqrt(eps);
-                                const tscalar tmax = tscalar(1) / eps;
 
                                 // check descent direction
                                 const tscalar dg0 = state.d.dot(state.g);
@@ -60,10 +59,10 @@ namespace ncv
                                         return false;
                                 }
 
-                                tscalar ft;
-                                tvector gt;
+                                ls_step_t<tproblem> step0(problem, state);
+                                ls_step_t<tproblem> stept(problem, state);
 
-                                const tscalar t = step(problem, t0, tmin, tmax, state, dg0, ft, gt);
+                                const tscalar t = step(problem, step0, t0, stept);
                                 if (t < std::numeric_limits<tscalar>::epsilon())
                                 {
                                         // failed to find a suitable line-search step
@@ -72,32 +71,30 @@ namespace ncv
                                 else
                                 {
                                         // OK, update the current state
-                                        state.update(problem, t, ft, gt);
+                                        state.update(problem, t, stept.func(), stept.grad());
                                         return true;
                                 }
                         }
 
                 private:
 
-                        tscalar step(const tproblem& problem, tscalar t, const tscalar tmin, const tscalar tmax,
-                                const tstate& state, const tscalar dg0,
-                                tscalar& ft, tvector& gt) const
+                        tscalar step(const tproblem& problem, const ls_step_t<tproblem>& step0,
+                                tscalar t, ls_step_t<tproblem>& stept) const
                         {
                                 switch (m_strategy)
                                 {
                                 case ls_strategy::backtrack_armijo:
                                 case ls_strategy::backtrack_wolfe:
                                 case ls_strategy::backtrack_strong_wolfe:
-                                        return ls_backtracking(problem, state, m_strategy,
-                                                               t, tmin, tmax, dg0, m_c1, m_c2,
-                                                               ft, gt);
+                                        return ls_backtracking(problem, step0, m_strategy, m_c1, m_c2, t, stept);
+
+                                case ls_strategy::cg_descent:
+                                        return ls_cgdescent(problem, step0, m_strategy, m_c1, m_c2, t, stept);
 
                                 case ls_strategy::interpolation_bisection:
                                 case ls_strategy::interpolation_cubic:
                                 default:
-                                        return ls_interpolation(problem, state, m_strategy,
-                                                                t, tmin, tmax, dg0, m_c1, m_c2,
-                                                                ft, gt);
+                                        return ls_interpolation(problem, step0, m_strategy, m_c1, m_c2, t, stept);
                                 }
                         }
 

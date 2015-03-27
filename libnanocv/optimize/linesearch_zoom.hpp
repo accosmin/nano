@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include "linesearch.h"
+#include "linesearch_step.hpp"
 #include "linesearch_cubic.hpp"
 
 namespace ncv
@@ -18,17 +19,13 @@ namespace ncv
                         typename tvector = typename tproblem::tvector,
                         typename tstate = typename tproblem::tstate
                 >
-                tscalar ls_zoom(const tproblem& problem, const tstate& state,
-                        const ls_strategy strategy,
-                        const tscalar dg0, const tscalar c1, const tscalar c2,
-                        tscalar& ft, tvector& gt,
-                        tscalar tlo, tscalar flo, tscalar glo,
-                        tscalar thi, tscalar fhi, tscalar ghi,
+                tscalar ls_zoom(const tproblem& problem, const ls_step_t<tproblem>& step0,
+                        const ls_strategy strategy, const tscalar c1, const tscalar c2,
+                        ls_step_t<tproblem> steplo,
+                        ls_step_t<tproblem> stephi,
+                        ls_step_t<tproblem>& stept,
                         const tsize max_iters = 64)
                 {
-                        const tscalar fmax = state.f * 100;
-                        const tscalar fmin = state.f / 100;
-
                         // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
                         for (size_t i = 1; i <= max_iters; i ++)
                         {
@@ -39,21 +36,17 @@ namespace ncv
                                 case ls_strategy::interpolation_cubic:
                                         {
                                                 // cubic interpolation (if feasible)
-                                                const bool oklo = fmin < flo && flo < fmax;
-                                                const bool okhi = fmin < fhi && fhi < fmax;
-
-                                                const tscalar tmin = std::min(tlo, thi);
-                                                const tscalar tmax = std::max(tlo, thi);
+                                                const tscalar tmin = std::min(steplo.alpha(), stephi.alpha());
+                                                const tscalar tmax = std::max(steplo.alpha(), stephi.alpha());
                                                 const tscalar teps = (tmax - tmin) / 100;
 
-                                                if (oklo && okhi)
+                                                const tscalar tc = ls_cubic(
+                                                        steplo.alpha(), steplo.phi(), steplo.gphi(),
+                                                        stephi.alpha(), stephi.phi(), stephi.gphi());
+                                                if (tmin + teps < tc && tc < tmax - teps)
                                                 {
-                                                        const tscalar tc = ls_cubic(tlo, flo, glo, thi, fhi, ghi);
-                                                        if (tmin + teps < tc && tc < tmax - teps)
-                                                        {
-                                                                t = tc;
-                                                                break;
-                                                        }
+                                                        t = tc;
+                                                        break;
                                                 }
                                         }
                                         // fallthrough!
@@ -62,45 +55,37 @@ namespace ncv
                                 default:
                                         {
                                                 // bisection
-                                                t = (tlo + thi) / 2;
+                                                t = (steplo.alpha() + stephi.alpha()) / 2;
                                         }
                                         break;
                                 }
 
                                 // check sufficient decrease
-                                ft = problem(state.x + t * state.d, gt);
-                                if (!std::isfinite(ft))
+                                if (!stept.reset_with_grad(t))
                                 {
                                         // poorly scaled problem?!
                                         return 0.0;
                                 }
-                                const tscalar dgt = gt.dot(state.d);
 
-                                if (ft > state.f + t * c1 * dg0 || ft >= flo)
+                                if (!stept.has_armijo(step0, c1) || stept.func() >= steplo.func())
                                 {
-                                        thi = t;
-                                        fhi = ft;
-                                        ghi = dgt;
+                                        stephi = stept;
                                 }
 
                                 // check curvature
                                 else
                                 {
-                                        if (std::fabs(dgt) <= -c2 * dg0)
+                                        if (stept.has_strong_wolfe(step0, c2))
                                         {
-                                                return t;
+                                                return stept.setup();
                                         }
 
-                                        if (dgt * (thi - tlo) >= 0)
+                                        if (stept.gphi() * (stephi.alpha() - steplo.alpha()) >= 0)
                                         {
-                                                thi = tlo;
-                                                fhi = flo;
-                                                ghi = glo;
+                                                stephi = steplo;
                                         }
 
-                                        tlo = t;
-                                        flo = ft;
-                                        glo = dgt;
+                                        steplo = stept;
                                 }
                         }
 

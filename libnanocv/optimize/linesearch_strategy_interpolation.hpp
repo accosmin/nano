@@ -1,6 +1,5 @@
 #pragma once
 
-#include <limits>
 #include "linesearch_zoom.hpp"
 
 namespace ncv
@@ -17,48 +16,41 @@ namespace ncv
                         typename tvector = typename tproblem::tvector,
                         typename tstate = typename tproblem::tstate
                 >
-                tscalar ls_interpolation(const tproblem& problem, const tstate& state,
-                        const ls_strategy strategy,
-                        tscalar t, const tscalar tmin, const tscalar tmax,
-                        const tscalar dg0, const tscalar c1, const tscalar c2,
-                        tscalar& ft, tvector& gt, const tsize max_iters = 64)
+                tscalar ls_interpolation(const tproblem& problem, const ls_step_t<tproblem>& step0,
+                        const ls_strategy strategy, const tscalar c1, const tscalar c2,
+                        tscalar t, ls_step_t<tproblem>& stept, tsize max_iters = 64)
                 {
-                        tscalar tprev = 0, fprev = state.f, dgprev = dg0;
+                        // previous step
+                        ls_step_t<tproblem> stepp = step0;
 
                         // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
                         for (tsize i = 1; i <= max_iters; i ++)
                         {
                                 // check sufficient decrease
-                                ft = problem(state.x + t * state.d, gt);
-                                if (!std::isfinite(ft))
+                                if (!stept.reset_with_grad(t))
                                 {
                                         // poorly scaled problem?!
-                                        return 0.0;
+                                        return 0;
                                 }
-                                const tscalar dgt = gt.dot(state.d);
 
-                                if ((ft > state.f + t * c1 * dg0) || (ft >= fprev && i > 1))
+                                if (!stept.has_armijo(step0, c1) || (stept.func() >= stepp.func() && i > 1))
                                 {
-                                        return ls_zoom(problem, state, strategy, dg0, c1, c2, ft, gt,
-                                                       tprev, fprev, dgprev, t, ft, dgt);
+                                        return ls_zoom(problem, step0, strategy, c1, c2, stepp, stept, stept);
                                 }
 
                                 // check curvature
-                                if (std::fabs(dgt) <= -c2 * dg0)
+                                if (stept.has_strong_wolfe(step0, c2))
                                 {
-                                        return t;
+                                        return stept.setup();
                                 }
 
-                                if (dgt >= 0)
+                                if (stept.gphi() >= tscalar(0))
                                 {
-                                        return ls_zoom(problem, state, strategy, dg0, c1, c2, ft, gt,
-                                                       t, ft, dgt, tprev, fprev, dgprev);
+                                        return ls_zoom(problem, step0, strategy, c1, c2, stept, stepp, stept);
                                 }
 
-                                tprev = t;
-                                fprev = ft;
-                                dgprev = dgt;
-                                t = std::min(tmax, t * 3);
+                                stepp = stept;
+                                t = std::min(ls_step_t<tproblem>::maximum(), t * 3);
                         }
 
                         // OK, give up
