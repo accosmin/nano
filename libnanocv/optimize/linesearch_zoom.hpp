@@ -40,9 +40,7 @@ namespace ncv
                                                 const tscalar tmax = std::max(steplo.alpha(), stephi.alpha());
                                                 const tscalar teps = (tmax - tmin) / 100;
 
-                                                const tscalar tc = ls_cubic(
-                                                        steplo.alpha(), steplo.phi(), steplo.gphi(),
-                                                        stephi.alpha(), stephi.phi(), stephi.gphi());
+                                                const tscalar tc = ls_cubic(steplo, stephi);
                                                 if (tmin + teps < tc && tc < tmax - teps)
                                                 {
                                                         t = tc;

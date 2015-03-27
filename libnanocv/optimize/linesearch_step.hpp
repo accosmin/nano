@@ -16,7 +16,7 @@ namespace ncv
                         typename tproblem,
 
                         // dependent types
-                        typename tscalar = typename tproblem::tscalar,
+                        typename tscalar_ = typename tproblem::tscalar,
                         typename tsize = typename tproblem::tsize,
                         typename tvector = typename tproblem::tvector,
                         typename tstate = typename tproblem::tstate
@@ -24,6 +24,8 @@ namespace ncv
                 class ls_step_t
                 {
                 public:
+
+                        typedef tscalar_        tscalar;
 
                         ///
                         /// \brief constructor
@@ -122,6 +124,16 @@ namespace ncv
                                 setup();        // NB: make sure the gradient is computed
                                 return  gphi() >= +c2 * step0.gphi() &&
                                         gphi() <= -c2 * step0.gphi();
+                        }
+
+                        ///
+                        /// \brief check if the current step satisfies the approximate Wolfe condition (sufficient curvature)
+                        ///
+                        bool has_approx_wolfe(const ls_step_t& step0, const tscalar c2, const tscalar epsilon)
+                        {
+                                setup();        // NB: make sure the gradient is computed
+                                return  gphi() >= +c2 * step0.gphi() &&
+                                        phi() <= step0.phi() + epsilon * std::fabs(step0.phi());
                         }
 
                         ///

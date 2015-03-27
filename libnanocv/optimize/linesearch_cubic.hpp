@@ -7,24 +7,26 @@ namespace ncv
         namespace optimize
         {
                 ///
-                /// \brief cubic interpolation in the [alpha0, alpha1] interval
+                /// \brief cubic interpolation in the [step0, step1] line-search interval
                 ///     (Nocedal & Wright (numerical optimization 2nd) @ p.59)
                 ///
                 template
                 <
-                        typename tscalar
+                        typename tstep,
+
+                        typename tscalar = typename tstep::tscalar
                 >
-                tscalar ls_cubic(
-                        const tscalar alpha0, const tscalar phi_alpha0, const tscalar gphi_alpha0,
-                        const tscalar alpha1, const tscalar phi_alpha1, const tscalar gphi_alpha1)
+                tscalar ls_cubic(const tstep& step0, const tstep& step1)
                 {
-                        const tscalar sign = (alpha1 > alpha0) ? 1 : -1;
+                        const tscalar sign = (step1.alpha() > step0.alpha()) ? 1 : -1;
 
-                        const tscalar d1 = gphi_alpha0 + gphi_alpha1 - 3 * (phi_alpha0 - phi_alpha1) / (alpha0 - alpha1);
-                        const tscalar d2 = sign * std::sqrt(d1 * d1 - gphi_alpha0 * gphi_alpha1);
+                        const tscalar d0 = (step0.phi() - step1.phi()) / (step0.alpha() - step1.alpha());
+                        const tscalar d1 = step0.gphi() + step1.gphi() - 3 * d0;
+                        const tscalar d2 = sign * std::sqrt(d1 * d1 - step0.gphi() * step1.gphi());
 
-                        return alpha1 - (alpha1 - alpha0) * (gphi_alpha1 + d2 - d1) /
-                                        (gphi_alpha1 - gphi_alpha0 + 2 * d2);
+                        return  step1.alpha() -
+                                (step1.alpha() - step0.alpha()) * (step1.gphi() + d2 - d1) /
+                                (step1.gphi() - step0.gphi() + 2 * d2);
                 }
         }
 }

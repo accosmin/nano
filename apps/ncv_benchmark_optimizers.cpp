@@ -109,7 +109,7 @@ static void check_problem(
                 optimize::ls_strategy::backtrack_strong_wolfe,
                 optimize::ls_strategy::interpolation_bisection,
                 optimize::ls_strategy::interpolation_cubic,
-//                optimize::ls_strategy::cg_descent
+                optimize::ls_strategy::cg_descent
         };
 
         tabulator_t table(text::resize(problem_name, 32));
