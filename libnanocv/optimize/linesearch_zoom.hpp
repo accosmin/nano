@@ -12,14 +12,10 @@ namespace ncv
                 template
                 <
                         typename tproblem,
-
-                        // dependent types
                         typename tscalar = typename tproblem::tscalar,
-                        typename tsize = typename tproblem::tsize,
-                        typename tvector = typename tproblem::tvector,
-                        typename tstate = typename tproblem::tstate
+                        typename tsize = typename tproblem::tsize
                 >
-                tscalar ls_zoom(const tproblem& problem, const ls_step_t<tproblem>& step0,
+                tscalar ls_zoom(
                         const ls_strategy strategy, const tscalar c1, const tscalar c2,
                         ls_step_t<tproblem> steplo,
                         ls_step_t<tproblem> stephi,
@@ -33,7 +29,7 @@ namespace ncv
 
                                 const tscalar tmin = std::min(steplo.alpha(), stephi.alpha());
                                 const tscalar tmax = std::max(steplo.alpha(), stephi.alpha());
-                                const tscalar teps = step0.minimum();
+                                const tscalar teps = stept.minimum();
 
                                 switch (strategy)
                                 {
@@ -58,7 +54,7 @@ namespace ncv
                                         return 0.0;
                                 }
 
-                                if (!stept.has_armijo(step0, c1) || stept.func() >= steplo.func())
+                                if (!stept.has_armijo(c1) || stept.phi() >= steplo.phi())
                                 {
                                         stephi = stept;
                                 }
@@ -66,7 +62,7 @@ namespace ncv
                                 // check curvature
                                 else
                                 {
-                                        if (stept.has_strong_wolfe(step0, c2))
+                                        if (stept.has_strong_wolfe(c2))
                                         {
                                                 return stept.setup();
                                         }

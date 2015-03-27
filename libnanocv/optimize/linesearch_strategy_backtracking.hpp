@@ -10,14 +10,10 @@ namespace ncv
                 template
                 <
                         typename tproblem,
-
-                        // dependent types
                         typename tscalar = typename tproblem::tscalar,
-                        typename tsize = typename tproblem::tsize,
-                        typename tvector = typename tproblem::tvector,
-                        typename tstate = typename tproblem::tstate
+                        typename tsize = typename tproblem::tsize
                 >
-                tscalar ls_backtracking(const tproblem& problem, const ls_step_t<tproblem>& step0,
+                tscalar ls_backtracking(
                         const ls_strategy strategy, const tscalar c1, const tscalar c2,
                         tscalar t, ls_step_t<tproblem>& stept, tsize max_iters = 64)
                 {
@@ -35,7 +31,7 @@ namespace ncv
                                 }
 
                                 // check Armijo condition
-                                if (!stept.has_armijo(step0, c1))
+                                if (!stept.has_armijo(c1))
                                 {
                                         t *= decrement;
                                 }
@@ -47,7 +43,7 @@ namespace ncv
                                         }
 
                                         // check Wolfe condition
-                                        if (!stept.has_wolfe(step0, c2))
+                                        if (!stept.has_wolfe(c2))
                                         {
                                                 t *= increment;
                                         }
@@ -59,7 +55,7 @@ namespace ncv
                                                 }
 
                                                 // check strong Wolfe condition
-                                                if (!stept.has_strong_wolfe(step0, c2))
+                                                if (!stept.has_strong_wolfe(c2))
                                                 {
                                                         t *= decrement;
                                                 }

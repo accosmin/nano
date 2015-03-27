@@ -17,7 +17,7 @@ namespace ncv
 
                         // dependent types
                         typename tscalar_ = typename tproblem::tscalar,
-                        typename tsize = typename tproblem::tsize,
+                        typename tsize_ = typename tproblem::tsize,
                         typename tvector = typename tproblem::tvector,
                         typename tstate = typename tproblem::tstate
                 >
@@ -26,6 +26,7 @@ namespace ncv
                 public:
 
                         typedef tscalar_        tscalar;
+                        typedef tsize_          tsize;
 
                         ///
                         /// \brief constructor
@@ -33,10 +34,11 @@ namespace ncv
                         ls_step_t(const tproblem& problem, const tstate& state)
                                 :       m_problem(problem),
                                         m_state(state),
+                                        m_gphi0(state.d.dot(state.g)),
                                         m_alpha(0),
                                         m_func(state.f),
                                         m_grad(state.g),
-                                        m_gphi(state.g.dot(state.d))
+                                        m_gphi(m_gphi0)
                         {
                         }
 
@@ -102,38 +104,38 @@ namespace ncv
                         ///
                         /// \brief check if the current step satisfies the Armijo condition (sufficient decrease)
                         ///
-                        bool has_armijo(const ls_step_t& step0, const tscalar c1) const
+                        bool has_armijo(const tscalar c1) const
                         {
-                                return phi() < step0.phi() + alpha() * c1 * step0.gphi();
+                                return phi() < phi0() + alpha() * c1 * gphi0();
                         }
 
                         ///
                         /// \brief check if the current step satisfies the Wolfe condition (sufficient curvature)
                         ///
-                        bool has_wolfe(const ls_step_t& step0, const tscalar c2)
+                        bool has_wolfe(const tscalar c2)
                         {
                                 setup();        // NB: make sure the gradient is computed
-                                return gphi() >= +c2 * step0.gphi();
+                                return gphi() >= +c2 * gphi0();
                         }
 
                         ///
                         /// \brief check if the current step satisfies the strong Wolfe condition (sufficient curvature)
                         ///
-                        bool has_strong_wolfe(const ls_step_t& step0, const tscalar c2)
+                        bool has_strong_wolfe(const tscalar c2)
                         {
                                 setup();        // NB: make sure the gradient is computed
-                                return  gphi() >= +c2 * step0.gphi() &&
-                                        gphi() <= -c2 * step0.gphi();
+                                return  gphi() >= +c2 * gphi0() &&
+                                        gphi() <= -c2 * gphi0();
                         }
 
                         ///
                         /// \brief check if the current step satisfies the approximate Wolfe condition (sufficient curvature)
                         ///
-                        bool has_approx_wolfe(const ls_step_t& step0, const tscalar c2, const tscalar epsilon)
+                        bool has_approx_wolfe(const tscalar c2, const tscalar epsilon)
                         {
                                 setup();        // NB: make sure the gradient is computed
-                                return  gphi() >= +c2 * step0.gphi() &&
-                                        phi() <= step0.phi() + epsilon * std::fabs(step0.phi());
+                                return  gphi() >= +c2 * gphi0() &&
+                                        phi() <= phi0() + epsilon * std::fabs(phi0());
                         }
 
                         ///
@@ -147,9 +149,19 @@ namespace ncv
                         tscalar phi() const { return m_func; }
 
                         ///
+                        /// \brief initial function value
+                        ///
+                        tscalar phi0() const { return m_state.get().f; }
+
+                        ///
                         /// \brief current line-search function gradient
                         ///
                         tscalar gphi() const { return m_gphi; }
+
+                        ///
+                        /// \brief initial line-search function gradient
+                        ///
+                        tscalar gphi0() const { return m_gphi0; }
 
                         ///
                         /// \brief currrent function value
@@ -166,6 +178,8 @@ namespace ncv
                         // attributes
                         std::reference_wrapper<const tproblem>  m_problem;
                         std::reference_wrapper<const tstate>    m_state;        ///< starting state for line-search
+                        tscalar         m_gphi0;
+
                         tscalar         m_alpha;                ///< line-search step (current estimate)
                         tscalar         m_func;                 ///< function value at alpha
                         tvector         m_grad;                 ///< function gradient at alpha

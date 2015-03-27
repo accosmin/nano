@@ -139,7 +139,7 @@ namespace ncv
                         case optimize::ls_initializer::unit:            return "init-unit";
                         case optimize::ls_initializer::quadratic:       return "init-quadratic";
                         case optimize::ls_initializer::consistent:      return "init-consistent";
-                        default:                                        return "none";
+                        default:                                        return "???";
                         }
                 }
 
@@ -153,7 +153,8 @@ namespace ncv
                         case optimize::ls_strategy::backtrack_strong_wolfe:     return "backtrack-strong-Wolfe";
                         case optimize::ls_strategy::interpolation_bisection:    return "interp-bisection";
                         case optimize::ls_strategy::interpolation_cubic:        return "interp-cubic";
-                        default:                                        return "none";
+                        case optimize::ls_strategy::cg_descent:         return "cgdescent";
+                        default:                                        return "???";
                         }
                 }
         }

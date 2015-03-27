@@ -59,10 +59,9 @@ namespace ncv
                                         return false;
                                 }
 
-                                ls_step_t<tproblem> step0(problem, state);
                                 ls_step_t<tproblem> stept(problem, state);
 
-                                const tscalar t = step(problem, step0, t0, stept);
+                                const tscalar t = step(t0, stept);
                                 if (t < std::numeric_limits<tscalar>::epsilon())
                                 {
                                         // failed to find a suitable line-search step
@@ -78,23 +77,22 @@ namespace ncv
 
                 private:
 
-                        tscalar step(const tproblem& problem, const ls_step_t<tproblem>& step0,
-                                tscalar t, ls_step_t<tproblem>& stept) const
+                        tscalar step(tscalar t, ls_step_t<tproblem>& stept) const
                         {
                                 switch (m_strategy)
                                 {
                                 case ls_strategy::backtrack_armijo:
                                 case ls_strategy::backtrack_wolfe:
                                 case ls_strategy::backtrack_strong_wolfe:
-                                        return ls_backtracking(problem, step0, m_strategy, m_c1, m_c2, t, stept);
+                                        return ls_backtracking<tproblem>(m_strategy, m_c1, m_c2, t, stept);
 
                                 case ls_strategy::cg_descent:
-                                        return ls_cgdescent(problem, step0, m_strategy, m_c1, m_c2, t, stept);
+                                        return ls_cgdescent<tproblem>(m_strategy, m_c1, m_c2, t, stept);
 
                                 case ls_strategy::interpolation_bisection:
                                 case ls_strategy::interpolation_cubic:
                                 default:
-                                        return ls_interpolation(problem, step0, m_strategy, m_c1, m_c2, t, stept);
+                                        return ls_interpolation<tproblem>(m_strategy, m_c1, m_c2, t, stept);
                                 }
                         }
 
