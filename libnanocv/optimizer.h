@@ -152,6 +152,7 @@ namespace ncv
                         case optimize::ls_strategy::backtrack_wolfe:    return "backtrack-Wolfe";
                         case optimize::ls_strategy::backtrack_strong_wolfe:     return "backtrack-strong-Wolfe";
                         case optimize::ls_strategy::interpolation_bisection:    return "interp-bisection";
+                        case optimize::ls_strategy::interpolation_secant:       return "interp-secant";
                         case optimize::ls_strategy::interpolation_cubic:        return "interp-cubic";
                         default:                                        return "none";
                         }
