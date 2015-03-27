@@ -4,7 +4,6 @@
 #include "linesearch.h"
 #include "linesearch_step.hpp"
 #include "linesearch_cubic.hpp"
-#include "linesearch_secant.hpp"
 
 namespace ncv
 {
@@ -34,20 +33,12 @@ namespace ncv
 
                                 const tscalar tmin = std::min(steplo.alpha(), stephi.alpha());
                                 const tscalar tmax = std::max(steplo.alpha(), stephi.alpha());
-                                const tscalar teps = (tmax - tmin) / 100;
+                                const tscalar teps = step0.minimum();
 
                                 switch (strategy)
                                 {
                                 case ls_strategy::interpolation_cubic:
                                         t = ls_cubic(steplo, stephi);
-                                        if (tmin + teps < t && t < tmax - teps)
-                                        {
-                                                break;
-                                        }
-                                        // fallthrough!
-
-                                case ls_strategy::interpolation_secant:
-                                        t = ls_secant(steplo, stephi);
                                         if (tmin + teps < t && t < tmax - teps)
                                         {
                                                 break;
