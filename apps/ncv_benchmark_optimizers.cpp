@@ -29,11 +29,9 @@ using namespace ncv;
 struct optimizer_stat_t
 {
         stats_t<scalar_t>       m_time;
-        stats_t<scalar_t>       m_fails_2;
         stats_t<scalar_t>       m_fails_3;
-        stats_t<scalar_t>       m_fails_4;
-        stats_t<scalar_t>       m_fails_5;
         stats_t<scalar_t>       m_fails_6;
+        stats_t<scalar_t>       m_fails_9;
         stats_t<scalar_t>       m_iterations;
         stats_t<scalar_t>       m_func_evals;
         stats_t<scalar_t>       m_grad_evals;
@@ -110,18 +108,17 @@ static void check_problem(
                 optimize::ls_strategy::backtrack_wolfe,
                 optimize::ls_strategy::backtrack_strong_wolfe,
                 optimize::ls_strategy::interpolation_bisection,
-                optimize::ls_strategy::interpolation_cubic
+                optimize::ls_strategy::interpolation_cubic,
+                optimize::ls_strategy::cg_descent
         };
 
         tabulator_t table(text::resize(problem_name, 32));
         table.header() << "speed"
                        << "time [us]"
                        << "|grad|"
-                       << "#>e-2"
                        << "#>e-3"
-                       << "#>e-4"
-                       << "#>e-5"
                        << "#>e-6"
+                       << "#>e-9"
                        << "iters"
                        << "#funcs"
                        << "#grads";
@@ -135,11 +132,9 @@ static void check_problem(
         {
                 stats_t<scalar_t> grads;
                 stats_t<scalar_t> times;
-                stats_t<scalar_t> fails_2;
                 stats_t<scalar_t> fails_3;
-                stats_t<scalar_t> fails_4;
-                stats_t<scalar_t> fails_5;
                 stats_t<scalar_t> fails_6;
+                stats_t<scalar_t> fails_9;
                 stats_t<scalar_t> opti_iters;
                 stats_t<scalar_t> func_evals;
                 stats_t<scalar_t> grad_evals;
@@ -167,11 +162,9 @@ static void check_problem(
                         func_evals(state.n_fval_calls());
                         grad_evals(state.n_grad_calls());
 
-                        fails_2(convc > 1e-2 ? 1.0 : 0.0);
                         fails_3(convc > 1e-3 ? 1.0 : 0.0);
-                        fails_4(convc > 1e-4 ? 1.0 : 0.0);
-                        fails_5(convc > 1e-5 ? 1.0 : 0.0);
                         fails_6(convc > 1e-6 ? 1.0 : 0.0);
+                        fails_9(convc > 1e-9 ? 1.0 : 0.0);
                 });
 
                 // optimization speed: convergence / #iterations
@@ -189,11 +182,9 @@ static void check_problem(
                         << speed
                         << times.avg()
                         << grads.avg()
-                        << static_cast<int>(fails_2.sum())
                         << static_cast<int>(fails_3.sum())
-                        << static_cast<int>(fails_4.sum())
-                        << static_cast<int>(fails_5.sum())
                         << static_cast<int>(fails_6.sum())
+                        << static_cast<int>(fails_9.sum())
                         << opti_iters.avg()
                         << func_evals.avg()
                         << grad_evals.avg();
@@ -201,11 +192,9 @@ static void check_problem(
                 // update global statistics
                 optimizer_stat_t& stat = optimizer_stats[name];
                 stat.m_time(times.avg());
-                stat.m_fails_2(fails_2.sum());
                 stat.m_fails_3(fails_3.sum());
-                stat.m_fails_4(fails_4.sum());
-                stat.m_fails_5(fails_5.sum());
                 stat.m_fails_6(fails_6.sum());
+                stat.m_fails_9(fails_9.sum());
                 stat.m_iterations(opti_iters.avg());
                 stat.m_func_evals(func_evals.avg());
                 stat.m_grad_evals(grad_evals.avg());
@@ -261,11 +250,9 @@ int main(int argc, char *argv[])
         // show global statistics
         tabulator_t table("optimizer");
         table.header() << "time [us]"
-                       << ">e-2"
                        << ">e-3"
-                       << ">e-4"
-                       << ">e-5"
                        << ">e-6"
+                       << ">e-9"
                        << "iters"
                        << "#funcs"
                        << "#grads";
@@ -276,11 +263,9 @@ int main(int argc, char *argv[])
                 const optimizer_stat_t& stat = it.second;
 
                 table.append(name) << stat.m_time.sum()
-                                   << static_cast<int>(stat.m_fails_2.sum())
                                    << static_cast<int>(stat.m_fails_3.sum())
-                                   << static_cast<int>(stat.m_fails_4.sum())
-                                   << static_cast<int>(stat.m_fails_5.sum())
                                    << static_cast<int>(stat.m_fails_6.sum())
+                                   << static_cast<int>(stat.m_fails_9.sum())
                                    << stat.m_iterations.sum()
                                    << stat.m_func_evals.sum()
                                    << stat.m_grad_evals.sum();
