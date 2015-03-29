@@ -15,12 +15,13 @@
 #include "libnanocv/functions/function_booth.h"
 #include "libnanocv/functions/function_sphere.h"
 #include "libnanocv/functions/function_matyas.h"
-#include "libnanocv/functions/function_ellipse.h"
+#include "libnanocv/functions/function_ellipsoid.h"
 #include "libnanocv/functions/function_mccormick.h"
 #include "libnanocv/functions/function_himmelblau.h"
 #include "libnanocv/functions/function_rosenbrock.h"
 #include "libnanocv/functions/function_3hump_camel.h"
 #include "libnanocv/functions/function_goldstein_price.h"
+#include "libnanocv/functions/function_rotated_ellipsoid.h"
 
 namespace test
 {
@@ -147,8 +148,11 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
         // Sphere function
         test::check_problems(test::make_sphere_funcs(16));
 
-        // Ellipse function
-        test::check_problems(test::make_ellipse_funcs(16));
+        // Ellipsoid function
+        test::check_problems(test::make_ellipsoid_funcs(16));
+
+        // Rotated ellipsoid function
+        test::check_problems(test::make_rotated_ellipsoid_funcs(16));
 
         // Rosenbrock function
         test::check_problems(test::make_rosenbrock_funcs());
