@@ -24,7 +24,8 @@ namespace ncv
                         tscalar t;
 
                         // Nocedal & Wright (numerical optimization 2nd), p.60
-                        for (size_t i = 1; i <= max_iters; i ++)
+                        for (   size_t i = 1; i <= max_iters &&
+                                std::fabs(steplo.alpha() - stephi.alpha()) > stept.minimum(); i ++)
                         {
                                 const tscalar tmin = std::min(steplo.alpha(), stephi.alpha());
                                 const tscalar tmax = std::max(steplo.alpha(), stephi.alpha());
