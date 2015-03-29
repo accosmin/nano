@@ -17,7 +17,7 @@ namespace ncv
                 >
                 std::pair<tstep, tstep> cgdescent_update(tstep a, tstep b, tstep c,
                         const tscalar epsilon, const tscalar theta,
-                        const tsize max_iters = 64)
+                        const tsize max_iters = 128)
                 {
                         const tscalar depsilon = a.phi0() + epsilon * std::fabs(a.phi0());
 
@@ -42,7 +42,7 @@ namespace ncv
                                 b = c;
 
                                 // NB: we are using <c> as the <d> from the original paper!
-                                for (size_t i = 1; i <= max_iters; i ++)
+                                for (size_t i = 1; i <= max_iters && b.alpha() - a.alpha() > a.minimum(); i ++)
                                 {
                                         c.reset_with_grad((1 - theta) * a.alpha() + theta * b.alpha());
 

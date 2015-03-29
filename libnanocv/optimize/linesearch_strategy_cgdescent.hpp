@@ -4,8 +4,6 @@
 #include "linesearch_step.hpp"
 #include "linesearch_cgdescent_secant2.hpp"
 
-#include <iostream>
-
 namespace ncv
 {
         namespace optimize
@@ -18,7 +16,7 @@ namespace ncv
                 >
                 tstep ls_cgdescent(
                         const ls_strategy, const tscalar c1, const tscalar c2,
-                        const tstep& step0, const tscalar t0, const tsize max_iters = 64)
+                        const tstep& step0, const tscalar t0, const tsize max_iters = 128)
                 {
                         const tscalar epsilon = tscalar(1e-6);
                         const tscalar theta = tscalar(0.5);
@@ -31,27 +29,12 @@ namespace ncv
                         // CG_DESCENT (Hager & Zhang 2005, p. 15)
                         for (tsize i = 0; i < max_iters && (b.alpha() - a.alpha()) > a.minimum(); i ++)
                         {
-                                std::cout << "i = " << i
-                                          << ", [a, b] = [" << a.alpha()
-                                          << " (" << a.has_armijo(c1)
-                                          << ", " << a.has_wolfe(c2)
-                                          << ", " << a.has_approx_wolfe(c1, c2, epsilon) << ")"
-                                          << ", " << b.alpha()
-                                          << " (" << b.has_armijo(c1)
-                                          << ", " << b.has_wolfe(c2)
-                                          << ", " << b.has_approx_wolfe(c1, c2, epsilon) << ")"
-                                          << "], phi = [" << a.phi() << ", " << b.phi()
-                                          << "]/" << a.phi0() << "/" << b.phi0()
-                                          << ", grad = " << step0.grad().template lpNorm<Eigen::Infinity>() << std::endl;
-
                                 // check Armijo+Wolfe or approximate Wolfe condition
                                 if (b.phi() < a.phi())
                                 {
                                         if (    (b.has_armijo(c1) && b.has_wolfe(c2)) ||
                                                 (b.has_approx_wolfe(c1, c2, epsilon)))
                                         {
-                                                std::cout << ">>> " << b.alpha() << std::endl;
-
                                                 return b.setup();
                                         }
                                 }
@@ -61,9 +44,7 @@ namespace ncv
                                         if (    (a.has_armijo(c1) && a.has_wolfe(c2)) ||
                                                 (a.has_approx_wolfe(c1, c2, epsilon)))
                                         {
-                                                std::cout << ">>> " << a.alpha() << std::endl;
-
-                                                return a.setup();
+                                                 return a.setup();
                                         }
                                 }
 

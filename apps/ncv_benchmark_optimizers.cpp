@@ -39,13 +39,13 @@ struct optimizer_stat_t
 
 std::map<string_t, optimizer_stat_t> optimizer_stats;
 
-static void sort_desc(tabulator_t& table, size_t column)
-{
-        table.sort(column, [] (const string_t& value1, const string_t& value2)
-        {
-                return text::from_string<scalar_t>(value1) > text::from_string<scalar_t>(value2);
-        });
-}
+//static void sort_desc(tabulator_t& table, size_t column)
+//{
+//        table.sort(column, [] (const string_t& value1, const string_t& value2)
+//        {
+//                return text::from_string<scalar_t>(value1) > text::from_string<scalar_t>(value2);
+//        });
+//}
 
 static void sort_asc(tabulator_t& table, size_t column)
 {
@@ -63,7 +63,7 @@ static void check_problem(
         const size_t iterations = 4 * 1024;
         const scalar_t epsilon = math::epsilon0<scalar_t>();
 
-        const size_t trials = 1;//024;
+        const size_t trials = 1024;
 
         const size_t dims = fn_size();
 
@@ -75,9 +75,6 @@ static void check_problem(
 
                 vector_t x0(dims);
                 rgen(x0.data(), x0.data() + x0.size());
-
-                x0(0) = 0.722543;
-                x0(1) = 0.955097;
 
                 x0s.push_back(x0);
         }
@@ -91,27 +88,27 @@ static void check_problem(
 //                batch_optimizer::CGD_FR,
 //                batch_optimizer::CGD_HS,
 //                batch_optimizer::CGD_LS,
-//                batch_optimizer::CGD_PRP,
+                batch_optimizer::CGD_PRP,
                 batch_optimizer::CGD_N,
-//                batch_optimizer::CGD_DYCD,
-//                batch_optimizer::CGD_DYHS,
-//                batch_optimizer::LBFGS
+                batch_optimizer::CGD_DYCD,
+                batch_optimizer::CGD_DYHS,
+                batch_optimizer::LBFGS
         };
 
         const auto ls_initializers =
         {
                 optimize::ls_initializer::unit,
-                optimize::ls_initializer::quadratic,
-                optimize::ls_initializer::consistent
+//                optimize::ls_initializer::quadratic,
+//                optimize::ls_initializer::consistent
         };
 
         const auto ls_strategies =
         {
-//                optimize::ls_strategy::backtrack_armijo,
-//                optimize::ls_strategy::backtrack_wolfe,
-//                optimize::ls_strategy::backtrack_strong_wolfe,
-//                optimize::ls_strategy::interpolation_bisection,
-//                optimize::ls_strategy::interpolation_cubic,
+                optimize::ls_strategy::backtrack_armijo,
+                optimize::ls_strategy::backtrack_wolfe,
+                optimize::ls_strategy::backtrack_strong_wolfe,
+                optimize::ls_strategy::interpolation_bisection,
+                optimize::ls_strategy::interpolation_cubic,
                 optimize::ls_strategy::cg_descent
         };
 
@@ -122,7 +119,7 @@ static void check_problem(
                        << "#>e-3"
                        << "#>e-6"
                        << "#>e-9"
-                       << "iters"
+                       << "#iters"
                        << "#funcs"
                        << "#grads";
 
@@ -204,7 +201,9 @@ static void check_problem(
         }
 
         // print stats
-        sort_desc(table, 0);
+        sort_asc(table, 5);
+        sort_asc(table, 4);
+        sort_asc(table, 3);
         table.print(std::cout);
 }
 
@@ -226,26 +225,26 @@ int main(int argc, char *argv[])
 //        // Ellipse function
 //        check_problems(ncv::make_ellipse_funcs(16));
 
-//        // Rosenbrock function
-//        check_problems(ncv::make_rosenbrock_funcs(7));
+        // Rosenbrock function
+        check_problems(ncv::make_rosenbrock_funcs(7));
 
-//        // Beale function
-//        check_problems(ncv::make_beale_funcs());
+        // Beale function
+        check_problems(ncv::make_beale_funcs());
 
-//        // Goldstein-Price function
-//        check_problems(ncv::make_goldstein_price_funcs());
+        // Goldstein-Price function
+        check_problems(ncv::make_goldstein_price_funcs());
 
-//        // Booth function
-//        check_problems(ncv::make_booth_funcs());
+        // Booth function
+        check_problems(ncv::make_booth_funcs());
 
-//        // Matyas function
-//        check_problems(ncv::make_matyas_funcs());
+        // Matyas function
+        check_problems(ncv::make_matyas_funcs());
 
-//        // Himmelblau function
-//        check_problems(ncv::make_himmelblau_funcs());
+        // Himmelblau function
+        check_problems(ncv::make_himmelblau_funcs());
 
-//        // 3Hump camel function
-//        check_problems(ncv::make_3hump_camel_funcs());
+        // 3Hump camel function
+        check_problems(ncv::make_3hump_camel_funcs());
 
         // McCormick function
         check_problems(ncv::make_mccormick_funcs());
@@ -253,10 +252,10 @@ int main(int argc, char *argv[])
         // show global statistics
         tabulator_t table("optimizer");
         table.header() << "time [us]"
-                       << ">e-3"
-                       << ">e-6"
-                       << ">e-9"
-                       << "iters"
+                       << "#>e-3"
+                       << "#>e-6"
+                       << "#>e-9"
+                       << "#iters"
                        << "#funcs"
                        << "#grads";
 
@@ -274,6 +273,8 @@ int main(int argc, char *argv[])
                                    << stat.m_grad_evals.sum();
         }
 
+        sort_asc(table, 3);
+        sort_asc(table, 2);
         sort_asc(table, 1);
         table.print(std::cout);
 
