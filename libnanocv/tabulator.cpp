@@ -30,7 +30,7 @@ namespace ncv
         {
                 if (col < cols())
                 {
-                        std::sort(m_rows.begin(), m_rows.end(), [&] (const row_t& row1, const row_t& row2)
+                        std::stable_sort(m_rows.begin(), m_rows.end(), [&] (const row_t& row1, const row_t& row2)
                         {
                                 assert(col < row1.size());
                                 assert(row1.size() == cols());
