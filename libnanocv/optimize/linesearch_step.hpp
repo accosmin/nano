@@ -195,6 +195,18 @@ namespace ncv
                         tvector         m_grad;                 ///< function gradient at alpha
                         tscalar         m_gphi;                 ///< line-search function gradient at alpha
                 };
+
+                ///
+                /// \brief compare two line-search step (based on the function value)
+                ///
+                template
+                <
+                        typename tproblem
+                >
+                bool operator<(const ls_step_t<tproblem>& step1, const ls_step_t<tproblem>& step2)
+                {
+                        return step1.phi() < step2.phi();
+                }
         }
 }
 

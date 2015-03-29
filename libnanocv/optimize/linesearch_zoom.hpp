@@ -76,7 +76,7 @@ namespace ncv
                         }
 
                         // NOK, give up
-                        return stept.phi() < step0.phi() ? stept : step0;
+                        return std::min(stept, step0);
                 }
         }
 }

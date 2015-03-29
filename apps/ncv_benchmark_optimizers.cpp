@@ -88,10 +88,10 @@ static void check_problem(
 //                batch_optimizer::CGD_FR,
 //                batch_optimizer::CGD_HS,
 //                batch_optimizer::CGD_LS,
-                batch_optimizer::CGD_PRP,
-                batch_optimizer::CGD_N,
-                batch_optimizer::CGD_DYCD,
-                batch_optimizer::CGD_DYHS,
+//                batch_optimizer::CGD_PRP,
+//                batch_optimizer::CGD_N,
+//                batch_optimizer::CGD_DYCD,
+//                batch_optimizer::CGD_DYHS,
                 batch_optimizer::LBFGS
         };
 

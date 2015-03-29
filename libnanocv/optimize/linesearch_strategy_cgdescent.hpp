@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include "linesearch.h"
 #include "linesearch_step.hpp"
 #include "linesearch_cgdescent_secant2.hpp"
@@ -67,14 +68,7 @@ namespace ncv
                         }
 
                         // NOK, give up
-                        if (a.phi() < b.phi())
-                        {
-                                return a.phi() < a.phi0() ? a : step0;
-                        }
-                        else
-                        {
-                                return b.phi() < b.phi0() ? b : step0;
-                        }
+                        return std::min(std::min(a, b), step0);
                 }
         }
 }
