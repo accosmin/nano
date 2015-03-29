@@ -1,6 +1,5 @@
 #pragma once
 
-#include <limits>
 #include <cassert>
 #include "linesearch_strategy_cgdescent.hpp"
 #include "linesearch_strategy_backtracking.hpp"
@@ -59,10 +58,10 @@ namespace ncv
                                         return false;
                                 }
 
-                                ls_step_t<tproblem> stept(problem, state);
+                                ls_step_t<tproblem> step0(problem, state);
 
-                                const tscalar t = step(t0, stept);
-                                if (t < std::numeric_limits<tscalar>::epsilon())
+                                const ls_step_t<tproblem> step = get_step(step0, t0);
+                                if (!step)
                                 {
                                         // failed to find a suitable line-search step
                                         return false;
@@ -70,29 +69,29 @@ namespace ncv
                                 else
                                 {
                                         // OK, update the current state
-                                        state.update(problem, t, stept.func(), stept.grad());
+                                        state.update(problem, step.alpha(), step.func(), step.grad());
                                         return true;
                                 }
                         }
 
                 private:
 
-                        tscalar step(tscalar t, ls_step_t<tproblem>& stept) const
+                        ls_step_t<tproblem> get_step(const ls_step_t<tproblem>& step0, const tscalar t0) const
                         {
                                 switch (m_strategy)
                                 {
                                 case ls_strategy::backtrack_armijo:
                                 case ls_strategy::backtrack_wolfe:
                                 case ls_strategy::backtrack_strong_wolfe:
-                                        return ls_backtracking<tproblem>(m_strategy, m_c1, m_c2, t, stept);
+                                        return ls_backtracking(m_strategy, m_c1, m_c2, step0, t0);
 
                                 case ls_strategy::cg_descent:
-                                        return ls_cgdescent<tproblem>(m_strategy, m_c1, m_c2, t, stept);
+                                        return ls_cgdescent(m_strategy, m_c1, m_c2, step0, t0);
 
                                 case ls_strategy::interpolation_bisection:
                                 case ls_strategy::interpolation_cubic:
                                 default:
-                                        return ls_interpolation<tproblem>(m_strategy, m_c1, m_c2, t, stept);
+                                        return ls_interpolation(m_strategy, m_c1, m_c2, step0, t0);
                                 }
                         }
 

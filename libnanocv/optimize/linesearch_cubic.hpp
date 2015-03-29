@@ -8,7 +8,7 @@ namespace ncv
         {
                 ///
                 /// \brief cubic interpolation in the [step0, step1] line-search interval
-                ///     (Nocedal & Wright (numerical optimization 2nd) @ p.59)
+                ///     Nocedal & Wright (numerical optimization 2nd), p.59
                 ///
                 template
                 <

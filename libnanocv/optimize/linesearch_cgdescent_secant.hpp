@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 namespace ncv
 {
         namespace optimize
@@ -13,12 +15,18 @@ namespace ncv
                 >
                 tstep cgdescent_secant(const tstep& a, const tstep& b)
                 {
-                        tstep c = a;
-                        c.reset_with_grad(
-                                (a.alpha() * b.gphi() - b.alpha() * a.gphi()) /
-                                (b.gphi() - a.gphi()));
-
-                        return c;
+                        const auto t =  (a.alpha() * b.gphi() - b.alpha() * a.gphi()) /
+                                        (b.gphi() - a.gphi());
+                        if (std::isfinite(t))
+                        {
+                                tstep c = a;
+                                c.reset_with_grad(t);
+                                return c;
+                        }
+                        else
+                        {
+                                return a;
+                        }
                 }
         }
 }

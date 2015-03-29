@@ -16,7 +16,7 @@ namespace ncv
                         typename tsize = typename tstep::tsize
                 >
                 std::pair<tstep, tstep> cgdescent_update(tstep a, tstep b, tstep c,
-                        tscalar epsilon, tscalar theta,
+                        const tscalar epsilon, const tscalar theta,
                         const tsize max_iters = 64)
                 {
                         const tscalar depsilon = a.phi0() + epsilon * std::fabs(a.phi0());
@@ -32,7 +32,7 @@ namespace ncv
                                 return std::make_pair(a, c);
                         }
 
-                        else if (c.gphi() < 0 && c.phi() <= depsilon)
+                        else if (c.phi() <= depsilon)
                         {
                                 return std::make_pair(c, b);
                         }
@@ -51,7 +51,7 @@ namespace ncv
                                                 return std::make_pair(a, c);
                                         }
 
-                                        else if (c.gphi() < 0 && c.phi() <= depsilon)
+                                        else if (c.phi() <= depsilon)
                                         {
                                                 a = c;
                                         }

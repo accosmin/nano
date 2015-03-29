@@ -89,7 +89,7 @@ namespace ncv
                         ///
                         /// \brief setup all required information (if not already)
                         ///
-                        tscalar setup()
+                        ls_step_t& setup()
                         {
                                 if (!std::isfinite(m_gphi))
                                 {
@@ -98,7 +98,7 @@ namespace ncv
                                         m_gphi = m_grad.dot(m_state.get().d);
                                 }
 
-                                return alpha();
+                                return *this;
                         }
 
                         ///
@@ -106,7 +106,7 @@ namespace ncv
                         ///
                         bool has_armijo(const tscalar c1) const
                         {
-                                return phi() < phi0() + alpha() * c1 * gphi0();
+                                return phi() <= phi0() + alpha() * c1 * gphi0();
                         }
 
                         ///
@@ -130,11 +130,13 @@ namespace ncv
 
                         ///
                         /// \brief check if the current step satisfies the approximate Wolfe condition (sufficient curvature)
+                        /// (see CG_DESCENT)
                         ///
-                        bool has_approx_wolfe(const tscalar c2, const tscalar epsilon)
+                        bool has_approx_wolfe(const tscalar c1, const tscalar c2, const tscalar epsilon)
                         {
                                 setup();        // NB: make sure the gradient is computed
-                                return  gphi() >= +c2 * gphi0() &&
+                                return  (2 * c1 - 1) * gphi0() >= gphi() &&
+                                        gphi() >= +c2 * gphi0() &&
                                         phi() <= phi0() + epsilon * std::fabs(phi0());
                         }
 
@@ -172,6 +174,14 @@ namespace ncv
                         /// \brief current gradient
                         ///
                         const tvector& grad() const { return m_grad; }
+
+                        ///
+                        /// \brief check if valid step
+                        ///
+                        operator bool() const
+                        {
+                                return alpha() > std::numeric_limits<tscalar>::epsilon();
+                        }
 
                 private:
 

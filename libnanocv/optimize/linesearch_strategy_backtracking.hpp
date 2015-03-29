@@ -9,29 +9,31 @@ namespace ncv
         {
                 template
                 <
-                        typename tproblem,
-                        typename tscalar = typename tproblem::tscalar,
-                        typename tsize = typename tproblem::tsize
+                        typename tstep,
+                        typename tscalar = typename tstep::tscalar,
+                        typename tsize = typename tstep::tsize
                 >
-                tscalar ls_backtracking(
+                tstep ls_backtracking(
                         const ls_strategy strategy, const tscalar c1, const tscalar c2,
-                        tscalar t, ls_step_t<tproblem>& stept, tsize max_iters = 64)
+                        const tstep& step0, const tscalar t0, const tsize max_iters = 64)
                 {
                         const tscalar decrement = 0.5;
                         const tscalar increment = 2.1;
+
+                        tstep step(step0);
+                        tscalar t = t0;
 
                         // implementation inspired by libLBFGS
                         for (tsize i = 0; i < max_iters; i ++)
                         {
                                 // NB: assume the gradient is (much) slower to compute than the function value!
-                                if (!stept.reset_no_grad(t))
+                                if (!step.reset_no_grad(t))
                                 {
-                                        // poorly scaled problem?!
-                                        return 0.0;
+                                        break;
                                 }
 
                                 // check Armijo condition
-                                if (!stept.has_armijo(c1))
+                                if (!step.has_armijo(c1))
                                 {
                                         t *= decrement;
                                 }
@@ -39,11 +41,11 @@ namespace ncv
                                 {
                                         if (strategy == ls_strategy::backtrack_armijo)
                                         {
-                                                return stept.setup();
+                                                return step.setup();
                                         }
 
                                         // check Wolfe condition
-                                        if (!stept.has_wolfe(c2))
+                                        if (!step.has_wolfe(c2))
                                         {
                                                 t *= increment;
                                         }
@@ -51,24 +53,24 @@ namespace ncv
                                         {
                                                 if (strategy == ls_strategy::backtrack_wolfe)
                                                 {
-                                                        return stept.setup();
+                                                        return step.setup();
                                                 }
 
                                                 // check strong Wolfe condition
-                                                if (!stept.has_strong_wolfe(c2))
+                                                if (!step.has_strong_wolfe(c2))
                                                 {
                                                         t *= decrement;
                                                 }
                                                 else
                                                 {
-                                                        return stept.setup();
+                                                        return step.setup();
                                                 }
                                         }
                                 }
                         }
 
-                        // OK, give up
-                        return 0;
+                        // NOK, give up
+                        return step.phi() < step0.phi() ? step : step0;
                 }
         }
 }

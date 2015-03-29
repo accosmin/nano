@@ -9,7 +9,7 @@ namespace ncv
         {
                 ///
                 /// \brief initial step length
-                ///     (Nocedal & Wright (numerical optimization 2nd) @ p.59)
+                ///     Nocedal & Wright (numerical optimization 2nd), p.59
                 ///
                 template
                 <

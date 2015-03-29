@@ -11,22 +11,21 @@ namespace ncv
         {
                 template
                 <
-                        typename tproblem,
-                        typename tscalar = typename tproblem::tscalar,
-                        typename tsize = typename tproblem::tsize
+                        typename tstep,
+                        typename tscalar = typename tstep::tscalar,
+                        typename tsize = typename tstep::tsize
                 >
-                tscalar ls_zoom(
+                tstep ls_zoom(
                         const ls_strategy strategy, const tscalar c1, const tscalar c2,
-                        ls_step_t<tproblem> steplo,
-                        ls_step_t<tproblem> stephi,
-                        ls_step_t<tproblem>& stept,
+                        const tstep& step0, tstep steplo, tstep stephi,
                         const tsize max_iters = 64)
                 {
-                        // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
+                        tstep stept(step0);
+                        tscalar t;
+
+                        // Nocedal & Wright (numerical optimization 2nd), p.60
                         for (size_t i = 1; i <= max_iters; i ++)
                         {
-                                tscalar t;
-
                                 const tscalar tmin = std::min(steplo.alpha(), stephi.alpha());
                                 const tscalar tmax = std::max(steplo.alpha(), stephi.alpha());
                                 const tscalar teps = stept.minimum();
@@ -50,8 +49,7 @@ namespace ncv
                                 // check sufficient decrease
                                 if (!stept.reset_with_grad(t))
                                 {
-                                        // poorly scaled problem?!
-                                        return 0.0;
+                                        return step0;
                                 }
 
                                 if (!stept.has_armijo(c1) || stept.phi() >= steplo.phi())
@@ -76,8 +74,8 @@ namespace ncv
                                 }
                         }
 
-                        // OK, give up
-                        return 0;
+                        // NOK, give up
+                        return stept.phi() < step0.phi() ? stept : step0;
                 }
         }
 }

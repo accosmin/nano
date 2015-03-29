@@ -8,34 +8,33 @@ namespace ncv
         {
                 template
                 <
-                        typename tproblem,
-
-                        // dependent types
-                        typename tscalar = typename tproblem::tscalar,
-                        typename tsize = typename tproblem::tsize,
-                        typename tvector = typename tproblem::tvector,
-                        typename tstate = typename tproblem::tstate
+                        typename tstep,
+                        typename tscalar = typename tstep::tscalar,
+                        typename tsize = typename tstep::tsize
                 >
-                tscalar ls_interpolation(
+                tstep ls_interpolation(
                         const ls_strategy strategy, const tscalar c1, const tscalar c2,
-                        tscalar t, ls_step_t<tproblem>& stept, tsize max_iters = 64)
+                        const tstep& step0, const tscalar t0, const tsize max_iters = 64)
                 {
                         // previous step
-                        ls_step_t<tproblem> stepp = stept;
+                        tstep stepp = step0;
 
-                        // (Nocedal & Wright (numerical optimization 2nd) @ p.60)
+                        // current step
+                        tstep stept = step0;
+                        tscalar t = t0;
+
+                        // Nocedal & Wright (numerical optimization 2nd, p.60
                         for (tsize i = 1; i <= max_iters; i ++)
                         {
                                 // check sufficient decrease
                                 if (!stept.reset_with_grad(t))
                                 {
-                                        // poorly scaled problem?!
-                                        return 0;
+                                        break;
                                 }
 
                                 if (!stept.has_armijo(c1) || (stept.func() >= stepp.func() && i > 1))
                                 {
-                                        return ls_zoom(strategy, c1, c2, stepp, stept, stept);
+                                        return ls_zoom(strategy, c1, c2, step0, stepp, stept);
                                 }
 
                                 // check curvature
@@ -46,15 +45,15 @@ namespace ncv
 
                                 if (stept.gphi() >= tscalar(0))
                                 {
-                                        return ls_zoom(strategy, c1, c2, stept, stepp, stept);
+                                        return ls_zoom(strategy, c1, c2, step0, stept, stepp);
                                 }
 
                                 stepp = stept;
-                                t = std::min(ls_step_t<tproblem>::maximum(), t * 3);
+                                t = std::min(stept.maximum(), t * 3);
                         }
 
-                        // OK, give up
-                        return 0;
+                        // NOK, give up
+                        return stept.phi() < step0.phi() ? stept : step0;
                 }
         }
 }
