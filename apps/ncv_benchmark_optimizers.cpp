@@ -27,6 +27,8 @@
 
 using namespace ncv;
 
+const size_t trials = 1024;
+
 struct optimizer_stat_t
 {
         stats_t<scalar_t>       m_time;
@@ -60,10 +62,8 @@ static void check_problem(
         const opt_opsize_t& fn_size, const opt_opfval_t& fn_fval, const opt_opgrad_t& fn_grad,
         const std::vector<std::pair<vector_t, scalar_t>>&)
 {
-        const size_t iterations = 4 * 1024;
+        const size_t iterations = 1024;
         const scalar_t epsilon = 1e-6;
-
-        const size_t trials = 1024;
 
         const size_t dims = fn_size();
 
@@ -82,15 +82,15 @@ static void check_problem(
         // optimizers to try
         const auto optimizers =
         {
-//                batch_optimizer::GD,
-//                batch_optimizer::CGD_CD,
-//                batch_optimizer::CGD_DY,
-//                batch_optimizer::CGD_FR,
-//                batch_optimizer::CGD_HS,
-//                batch_optimizer::CGD_LS,
+                batch_optimizer::GD,
+                batch_optimizer::CGD_CD,
+                batch_optimizer::CGD_DY,
+                batch_optimizer::CGD_FR,
+                batch_optimizer::CGD_HS,
+                batch_optimizer::CGD_LS,
                 batch_optimizer::CGD_PRP,
                 batch_optimizer::CGD_N,
-//                batch_optimizer::CGD_DYCD,
+                batch_optimizer::CGD_DYCD,
                 batch_optimizer::CGD_DYHS,
                 batch_optimizer::LBFGS
         };
@@ -104,10 +104,10 @@ static void check_problem(
 
         const auto ls_strategies =
         {
-//                optimize::ls_strategy::backtrack_armijo,
+                optimize::ls_strategy::backtrack_armijo,
                 optimize::ls_strategy::backtrack_wolfe,
-//                optimize::ls_strategy::backtrack_strong_wolfe,
-//                optimize::ls_strategy::interpolation_bisection,
+                optimize::ls_strategy::backtrack_strong_wolfe,
+                optimize::ls_strategy::interpolation_bisection,
                 optimize::ls_strategy::interpolation_cubic,
                 optimize::ls_strategy::cg_descent
         };
@@ -187,6 +187,7 @@ static void check_problem(
 
         // print stats
         sort_asc(table, 0);
+        sort_asc(table, 3);
         table.print(std::cout);
 }
 
@@ -214,11 +215,11 @@ int main(int argc, char *argv[])
         // Rosenbrock function
         check_problems(ncv::make_rosenbrock_funcs(7));
 
-        // Beale function
-        check_problems(ncv::make_beale_funcs());
+//        // Beale function
+//        check_problems(ncv::make_beale_funcs());
 
-        // Goldstein-Price function
-        check_problems(ncv::make_goldstein_price_funcs());
+//        // Goldstein-Price function
+//        check_problems(ncv::make_goldstein_price_funcs());
 
         // Booth function
         check_problems(ncv::make_booth_funcs());
@@ -237,7 +238,8 @@ int main(int argc, char *argv[])
 
         // show global statistics
         tabulator_t table("optimizer");
-        table.header() << "time [us]"
+        table.header() << "cost"
+                       << "time [us]"
                        << "|grad|/|fval|"
                        << "#fails"
                        << "#iters"
@@ -249,7 +251,8 @@ int main(int argc, char *argv[])
                 const string_t& name = it.first;
                 const optimizer_stat_t& stat = it.second;
 
-                table.append(name) << stat.m_time.sum()
+                table.append(name) << static_cast<int>(stat.m_fvals.sum() + 2 * stat.m_grads.sum())
+                                   << stat.m_time.sum()
                                    << stat.m_crits.avg()
                                    << static_cast<int>(stat.m_fails.sum())
                                    << stat.m_iters.sum()
@@ -257,7 +260,8 @@ int main(int argc, char *argv[])
                                    << stat.m_grads.sum();
         }
 
-        sort_asc(table, 2);
+        sort_asc(table, 0);
+        sort_asc(table, 3);
         table.print(std::cout);
 
         // OK
