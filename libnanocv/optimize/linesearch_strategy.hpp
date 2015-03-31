@@ -12,8 +12,6 @@ namespace ncv
                 template
                 <
                         typename tproblem,
-
-                        // dependent types
                         typename tscalar = typename tproblem::tscalar,
                         typename tsize = typename tproblem::tsize,
                         typename tvector = typename tproblem::tvector,

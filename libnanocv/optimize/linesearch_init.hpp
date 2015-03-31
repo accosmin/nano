@@ -14,7 +14,6 @@ namespace ncv
                 template
                 <
                         typename tstate,
-
                         typename tscalar = typename tstate::tscalar
                 >
                 class linesearch_init_t

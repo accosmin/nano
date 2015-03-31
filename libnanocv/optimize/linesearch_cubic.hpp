@@ -13,7 +13,6 @@ namespace ncv
                 template
                 <
                         typename tstep,
-
                         typename tscalar = typename tstep::tscalar
                 >
                 tscalar ls_cubic(const tstep& step0, const tstep& step1)
