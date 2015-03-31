@@ -52,8 +52,6 @@ namespace ncv
                                 c.reset_with_grad(t0);
                                 std::tie(a, b) = cgdescent_bracket(step0, c, epsilon, theta, ro);
 
-//                                b.reset_with_grad(t0);
-
                                 for (tsize i = 0; i < max_iters && ((a) || (b)) && (b.alpha() - a.alpha()) > a.minimum(); i ++)
                                 {
                                         // check Armijo+Wolfe or approximate Wolfe condition

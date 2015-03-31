@@ -20,8 +20,6 @@ namespace ncv
                         const tscalar epsilon,
                         const tscalar theta)
                 {
-                        const tscalar depsilon = a.phi0() + epsilon * std::fabs(a.phi0());
-
                         if (c.alpha() <= a.alpha() || c.alpha() >= b.alpha())
                         {
                                 return std::make_pair(a, b);
@@ -32,7 +30,7 @@ namespace ncv
                                 return std::make_pair(a, c);
                         }
 
-                        else if (c.phi() <= depsilon)
+                        else if (c.phi() <= c.approx_phi(epsilon))
                         {
                                 return std::make_pair(c, b);
                         }

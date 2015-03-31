@@ -17,6 +17,7 @@ namespace ncv
                 {
                         const auto t =  (a.alpha() * b.gphi() - b.alpha() * a.gphi()) /
                                         (b.gphi() - a.gphi());
+
                         if (std::isfinite(t))
                         {
                                 tstep c = a;

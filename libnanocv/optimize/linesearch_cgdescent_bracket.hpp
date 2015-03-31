@@ -3,8 +3,6 @@
 #include <vector>
 #include "linesearch_cgdescent_updateU.hpp"
 
-//#include <iostream>
-
 namespace ncv
 {
         namespace optimize
@@ -24,24 +22,14 @@ namespace ncv
                         const tscalar ro,
                         const tsize max_iters = 16)
                 {
-                        const tscalar depsilon = c.phi0() + epsilon * std::fabs(c.phi0());
-
                         std::vector<tstep> steps;
                         for (tsize i = 0; i <= max_iters && c; i ++)
                         {
-//                                std::cout << "bracket [i = " << i
-//                                          << "]: c = " << c.alpha()
-//                                          << ", phi = " << c.phi() << "/" << depsilon
-//                                          << ", gphi = " << c.gphi() << std::endl;
-
                                 if (c.gphi() >= 0)
                                 {
                                         for (auto it = steps.rbegin(); it != steps.rend(); ++ it)
                                         {
-//                                                std::cout << "bracket [i = " << i << "]: c = " << c.alpha()
-//                                                          << ", it = " << it->alpha() << std::endl;
-
-                                                if (it->phi() <= epsilon)
+                                                if (it->phi() <= it->approx_phi(epsilon))
                                                 {
                                                         return std::make_pair(*it, c);
                                                 }
@@ -50,7 +38,7 @@ namespace ncv
                                         return std::make_pair(step0, c);
                                 }
 
-                                if (c.gphi() < 0 && c.phi() > depsilon)
+                                if (c.gphi() < 0 && c.phi() > c.approx_phi(epsilon))
                                 {
                                         return cgdescent_updateU(step0, step0, c, epsilon, theta);
                                 }

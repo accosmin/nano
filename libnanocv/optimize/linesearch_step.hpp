@@ -130,14 +130,23 @@ namespace ncv
 
                         ///
                         /// \brief check if the current step satisfies the approximate Wolfe condition (sufficient curvature)
-                        /// (see CG_DESCENT)
+                        ///     see CG_DESCENT
                         ///
                         bool has_approx_wolfe(const tscalar c1, const tscalar c2, const tscalar epsilon)
                         {
                                 setup();        // NB: make sure the gradient is computed
                                 return  (2 * c1 - 1) * gphi0() >= gphi() &&
                                         gphi() >= +c2 * gphi0() &&
-                                        phi() <= phi0() + epsilon * std::fabs(phi0());
+                                        phi() <= approx_phi(epsilon);
+                        }
+
+                        ///
+                        /// \brief approximate function value
+                        ///     see CG_DESCENT
+                        ///
+                        tscalar approx_phi(const tscalar epsilon) const
+                        {
+                                return phi0() + epsilon * std::fabs(phi0());
                         }
 
                         ///

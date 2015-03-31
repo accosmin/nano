@@ -21,8 +21,6 @@ namespace ncv
                         const tscalar theta,
                         const tsize max_iters = 128)
                 {
-                        const tscalar depsilon = a.phi0() + epsilon * std::fabs(a.phi0());
-
                         for (tsize i = 0; i < max_iters && (b.alpha() - a.alpha()) > a.minimum(); i ++)
                         {
                                 tstep c(step0);
@@ -33,7 +31,7 @@ namespace ncv
                                         return std::make_pair(a, c);
                                 }
 
-                                else if (c.phi() <= depsilon)
+                                else if (c.phi() <= c.approx_phi(epsilon))
                                 {
                                         a = c;
                                 }
