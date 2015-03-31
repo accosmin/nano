@@ -180,7 +180,9 @@ namespace ncv
                         ///
                         operator bool() const
                         {
-                                return alpha() > std::numeric_limits<tscalar>::epsilon();
+                                return  std::isfinite(phi()) &&
+                                        std::isfinite(gphi()) &&
+                                        alpha() > std::numeric_limits<tscalar>::epsilon();
                         }
 
                 private:
