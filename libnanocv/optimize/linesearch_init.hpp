@@ -62,6 +62,17 @@ namespace ncv
                                         {
                                                 t0 = unit;
                                         }
+
+                                        // also, keep track of previous direction
+                                        switch (m_type)
+                                        {
+                                        case ls_initializer::consistent:
+                                                m_prevdg = cstate.d.dot(cstate.g);
+                                                break;
+
+                                        default:
+                                                break;
+                                        }
                                 }
 
                                 else
@@ -72,22 +83,18 @@ namespace ncv
                                                 {
                                                         const tscalar dg = cstate.d.dot(cstate.g);
 
-                                                        t0 =    m_first ? unit :
-                                                                (m_prevt0 * m_prevdg / dg);
+                                                        t0 = (m_prevt0 * m_prevdg / dg);
 
                                                         m_prevdg = dg;
-                                                        m_prevt0 = t0;
                                                 }
                                                 break;
 
                                         case ls_initializer::quadratic:
                                                 {
                                                         const tscalar dg = cstate.d.dot(cstate.g);
+                                                        const tscalar ro = tscalar(1.01 * 2.0);
 
-                                                        t0 =    m_first ? unit :
-                                                                std::min(unit, tscalar(1.01 * 2.0 * (cstate.f - m_prevf) / dg));
-
-                                                        m_prevf = cstate.f;
+                                                        t0 = std::min(unit, ro * (cstate.f - m_prevf) / dg);
                                                 }
                                                 break;
 
@@ -98,8 +105,10 @@ namespace ncv
                                         }
                                 }
 
-                                // OK
+                                // OK, keep track of previous function value & step length
                                 m_first = false;
+                                m_prevf = cstate.f;
+                                m_prevt0 = t0;
                                 return t0;
                         }
 
