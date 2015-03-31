@@ -82,16 +82,16 @@ static void check_problem(
         // optimizers to try
         const auto optimizers =
         {
-                batch_optimizer::GD,
-                batch_optimizer::CGD_CD,
-                batch_optimizer::CGD_DY,
-                batch_optimizer::CGD_FR,
-                batch_optimizer::CGD_HS,
-                batch_optimizer::CGD_LS,
-                batch_optimizer::CGD_PRP,
-                batch_optimizer::CGD_N,
-                batch_optimizer::CGD_DYCD,
-                batch_optimizer::CGD_DYHS,
+//                batch_optimizer::GD,
+//                batch_optimizer::CGD_CD,
+//                batch_optimizer::CGD_DY,
+//                batch_optimizer::CGD_FR,
+//                batch_optimizer::CGD_HS,
+//                batch_optimizer::CGD_LS,
+//                batch_optimizer::CGD_PRP,
+//                batch_optimizer::CGD_N,
+//                batch_optimizer::CGD_DYCD,
+//                batch_optimizer::CGD_DYHS,
                 batch_optimizer::LBFGS
         };
 
@@ -138,6 +138,15 @@ static void check_problem(
                 thread_loopi(trials, pool, [&] (size_t t)
                 {
                         const vector_t& x0 = x0s[t];
+
+                        // check gradients
+                        const opt_problem_t problem(fn_size, fn_fval, fn_grad);
+                        if (problem.grad_accuracy(x0) > math::epsilon2<scalar_t>())
+                        {
+                                const thread_pool_t::lock_t lock(mutex);
+
+                                log_error() << "invalid gradient for problem " << problem_name << "!";
+                        }
 
                         // optimize
                         const ncv::timer_t timer;
