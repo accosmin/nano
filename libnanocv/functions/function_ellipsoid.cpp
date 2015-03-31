@@ -11,7 +11,7 @@ namespace ncv
                 {
                         vector_t weights(dims);
 
-                        random_t<scalar_t> rng(1.0, 1e+6);
+                        random_t<scalar_t> rng(1.0, 1e+3);
                         rng(weights.data(), weights.data() + weights.size());
 
                         const opt_opsize_t fn_size = [=] ()

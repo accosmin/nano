@@ -74,9 +74,8 @@ namespace test
                 const opt_opsize_t& fn_size, const opt_opfval_t& fn_fval, const opt_opgrad_t& fn_grad,
                 const std::vector<std::pair<vector_t, scalar_t>>& solutions)
         {
-                const size_t iterations = 4 * 1024;
-                const scalar_t epsilon = std::numeric_limits<scalar_t>::epsilon();
-
+                const size_t iterations = 64 * 1024;
+                const scalar_t epsilon = math::epsilon2<scalar_t>();
                 const size_t trials = 8 * 1024;
 
                 const size_t dims = fn_size();
@@ -96,16 +95,8 @@ namespace test
                 // optimizers to try
                 const auto optimizers =
                 {
-//                        batch_optimizer::GD,
-//                        batch_optimizer::CGD_CD,
-//                        batch_optimizer::CGD_DY,
-//                        batch_optimizer::CGD_FR,
-//                        batch_optimizer::CGD_HS,
-//                        batch_optimizer::CGD_LS,
-//                        batch_optimizer::CGD_DYCD,
-                        batch_optimizer::CGD_DYHS,
-                        batch_optimizer::CGD_PRP,
-                        batch_optimizer::CGD_N,
+                        batch_optimizer::GD,
+                        batch_optimizer::CGD,
                         batch_optimizer::LBFGS
                 };
 

@@ -116,7 +116,7 @@ namespace ncv
                 inline batch_optimizer from_string<batch_optimizer>(const std::string& string)
                 {
                         if (string == "gd")             return batch_optimizer::GD;
-                        if (string == "cgd")            return batch_optimizer::CGD;
+                        if (string == "cgd")            return batch_optimizer::CGD_N;
                         if (string == "lbfgs")          return batch_optimizer::LBFGS;
                         if (string == "cgd-hs")         return batch_optimizer::CGD_HS;
                         if (string == "cgd-fr")         return batch_optimizer::CGD_FR;
