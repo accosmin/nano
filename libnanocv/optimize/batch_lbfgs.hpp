@@ -77,7 +77,7 @@ namespace ncv
                                         }
 
                                         // descent direction
-                                        //      (LBFGS - Nocedal & Wright (numerical optimization 2nd) notations @ p.178)
+                                        //      (see "Numerical optimization", Nocedal & Wright, 2nd edition, p.178)
                                         q = cstate.g;
 
                                         typename std::deque<tvector>::const_reverse_iterator itr_s = ss.rbegin();
@@ -122,7 +122,7 @@ namespace ncv
                                         // line-search
                                         pstate = cstate;
 
-                                        const tscalar t0 = ls_init.update(cstate);
+                                        const tscalar t0 = ls_init(cstate);
                                         if (!ls_step.update(problem, t0, cstate))
                                         {
                                                 base_t::elog("line-search failed (LBFGS)!");

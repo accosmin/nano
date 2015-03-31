@@ -9,6 +9,10 @@ namespace ncv
 {
         namespace optimize
         {
+                ///
+                /// \brief zoom-in in the bracketed interval,
+                ///     see "Numerical optimization", Nocedal & Wright, 2nd edition, p.60
+                ///
                 template
                 <
                         typename tstep,
@@ -23,7 +27,6 @@ namespace ncv
                         tstep stept(step0);
                         tscalar t;
 
-                        // Nocedal & Wright (numerical optimization 2nd), p.60
                         for (   size_t i = 1; i <= max_iters &&
                                 std::fabs(steplo.alpha() - stephi.alpha()) > stept.minimum(); i ++)
                         {

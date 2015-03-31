@@ -158,7 +158,7 @@ namespace ncv
                         void eval_grad(const tvector& x, tvector& g) const
                         {
                                 // accuracy epsilon as defined in:
-                                // Nocedal & Wright (numerical optimization 2nd) notations @ p.197)
+                                //      see "Numerical optimization", Nocedal & Wright, 2nd edition, p.197
                                 const tscalar dx = std::cbrt(tscalar(10) * std::numeric_limits<tscalar>::epsilon());
 
                                 const tsize n = size();

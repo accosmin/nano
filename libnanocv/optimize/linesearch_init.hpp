@@ -8,8 +8,8 @@ namespace ncv
         namespace optimize
         {
                 ///
-                /// \brief initial step length
-                ///     Nocedal & Wright (numerical optimization 2nd), p.59
+                /// \brief heuristics to initialize the step length,
+                ///     see "Numerical optimization", Nocedal & Wright, 2nd edition, p.59
                 ///
                 template
                 <
@@ -36,7 +36,7 @@ namespace ncv
                         ///
                         /// \brief compute the initial step length
                         ///
-                        tscalar update(const tstate& cstate)
+                        tscalar operator()(const tstate& cstate)
                         {
                                 const tscalar unit = tscalar(1.0);
 

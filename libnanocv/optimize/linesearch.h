@@ -6,7 +6,7 @@ namespace ncv
         {
                 ///
                 /// \brief initial step length strategy
-                /// (Nocedal & Wright (numerical optimization 2nd) @ p.59)
+                ///     see "Numerical optimization", Nocedal & Wright, 2nd edition, p.59
                 ///
                 enum class ls_initializer
                 {
@@ -24,11 +24,11 @@ namespace ncv
                         backtrack_wolfe,                ///< + backtracking with suficient curvature (Wolfe)
                         backtrack_strong_wolfe,         ///< + backtracking with sufficient curvature (strong Wolfe)
 
-                        // (Nocedal & Wright (numerical optimization 2nd) @ p.60-61) - strong Wolfe only
+                        // see "Numerical optimization", Nocedal & Wright, 2nd edition, p.60-61 - strong Wolfe only
                         interpolation_bisection,        ///< bisection for zooming
                         interpolation_cubic,            ///< cubic interpolation for zooming
 
-                        // (Hager & Zhang, 2005) - regular and approximate Wolfe only
+                        // see CG_DESCENT, Hager & Zhang, 2005 - regular and approximate Wolfe only
                         cg_descent                      ///< CG_DESCENT
                 };
         }
