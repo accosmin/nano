@@ -42,34 +42,60 @@ namespace ncv
 
                                 tscalar t0 = unit;
 
-                                switch (m_type)
+                                if (m_first)
                                 {
-                                case ls_initializer::consistent:
+                                        // following CG_DESCENT's initial procedure ...
+                                        const tscalar phi0(0.01);
+
+                                        const tscalar xnorm = cstate.x.template lpNorm<Eigen::Infinity>();
+                                        const tscalar fnorm = std::fabs(cstate.f);
+
+                                        if (xnorm > 0)
                                         {
-                                                const tscalar dg = cstate.d.dot(cstate.g);
-
-                                                t0 =    m_first ? unit :
-                                                        (m_prevt0 * m_prevdg / dg);
-
-                                                m_prevdg = dg;
-                                                m_prevt0 = t0;
+                                                t0 = phi0 * xnorm / cstate.g.template lpNorm<Eigen::Infinity>();
                                         }
-                                        break;
-
-                                case ls_initializer::quadratic:
+                                        else if (fnorm > 0)
                                         {
-                                                const tscalar dg = cstate.d.dot(cstate.g);
-
-                                                t0 =    m_first ? unit :
-                                                        std::min(unit, tscalar(1.01 * 2.0 * (cstate.f - m_prevf) / dg));
-
-                                                m_prevf = cstate.f;
+                                                t0 = phi0 * fnorm / cstate.g.squaredNorm();
                                         }
-                                        break;
+                                        else
+                                        {
+                                                t0 = unit;
+                                        }
+                                }
 
-                                case ls_initializer::unit:
-                                default:
-                                        break;
+                                else
+                                {
+                                        switch (m_type)
+                                        {
+                                        case ls_initializer::consistent:
+                                                {
+                                                        const tscalar dg = cstate.d.dot(cstate.g);
+
+                                                        t0 =    m_first ? unit :
+                                                                (m_prevt0 * m_prevdg / dg);
+
+                                                        m_prevdg = dg;
+                                                        m_prevt0 = t0;
+                                                }
+                                                break;
+
+                                        case ls_initializer::quadratic:
+                                                {
+                                                        const tscalar dg = cstate.d.dot(cstate.g);
+
+                                                        t0 =    m_first ? unit :
+                                                                std::min(unit, tscalar(1.01 * 2.0 * (cstate.f - m_prevf) / dg));
+
+                                                        m_prevf = cstate.f;
+                                                }
+                                                break;
+
+                                        case ls_initializer::unit:
+                                        default:
+                                                t0 = unit;
+                                                break;
+                                        }
                                 }
 
                                 // OK

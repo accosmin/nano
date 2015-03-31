@@ -82,12 +82,12 @@ static void check_problem(
         // optimizers to try
         const auto optimizers =
         {
-                batch_optimizer::GD,
-                batch_optimizer::CGD_CD,
-                batch_optimizer::CGD_DY,
-                batch_optimizer::CGD_FR,
-                batch_optimizer::CGD_HS,
-                batch_optimizer::CGD_LS,
+//                batch_optimizer::GD,
+//                batch_optimizer::CGD_CD,
+//                batch_optimizer::CGD_DY,
+//                batch_optimizer::CGD_FR,
+//                batch_optimizer::CGD_HS,
+//                batch_optimizer::CGD_LS,
                 batch_optimizer::CGD_PRP,
                 batch_optimizer::CGD_N,
                 batch_optimizer::CGD_DYCD,
@@ -104,11 +104,11 @@ static void check_problem(
 
         const auto ls_strategies =
         {
-                optimize::ls_strategy::backtrack_armijo,
-                optimize::ls_strategy::backtrack_wolfe,
-                optimize::ls_strategy::backtrack_strong_wolfe,
-                optimize::ls_strategy::interpolation_bisection,
-                optimize::ls_strategy::interpolation_cubic,
+//                optimize::ls_strategy::backtrack_armijo,
+//                optimize::ls_strategy::backtrack_wolfe,
+//                optimize::ls_strategy::backtrack_strong_wolfe,
+//                optimize::ls_strategy::interpolation_bisection,
+//                optimize::ls_strategy::interpolation_cubic,
                 optimize::ls_strategy::cg_descent
         };
 

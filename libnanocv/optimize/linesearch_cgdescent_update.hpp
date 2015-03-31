@@ -1,6 +1,6 @@
 #pragma once
 
-#include <utility>
+#include "linesearch_cgdescent_updateU.hpp"
 
 namespace ncv
 {
@@ -15,13 +15,13 @@ namespace ncv
                         typename tscalar = typename tstep::tscalar,
                         typename tsize = typename tstep::tsize
                 >
-                std::pair<tstep, tstep> cgdescent_update(tstep a, tstep b, tstep c,
-                        const tscalar epsilon, const tscalar theta,
-                        const tsize max_iters = 128)
+                std::pair<tstep, tstep> cgdescent_update(const tstep& step0,
+                        const tstep& a, const tstep& b, tstep c,
+                        const tscalar epsilon,
+                        const tscalar theta)
                 {
                         const tscalar depsilon = a.phi0() + epsilon * std::fabs(a.phi0());
 
-                        // (Hager & Zhang 2005, p. 13)
                         if (c.alpha() <= a.alpha() || c.alpha() >= b.alpha())
                         {
                                 return std::make_pair(a, b);
@@ -39,32 +39,8 @@ namespace ncv
 
                         else
                         {
-                                b = c;
-
-                                // NB: we are using <c> as the <d> from the original paper!
-                                for (size_t i = 1; i <= max_iters && b.alpha() - a.alpha() > a.minimum(); i ++)
-                                {
-                                        c.reset_with_grad((1 - theta) * a.alpha() + theta * b.alpha());
-
-                                        if (c.gphi() >= 0)
-                                        {
-                                                return std::make_pair(a, c);
-                                        }
-
-                                        else if (c.phi() <= depsilon)
-                                        {
-                                                a = c;
-                                        }
-
-                                        else
-                                        {
-                                                b = c;
-                                        }
-                                }
+                                return cgdescent_updateU(step0, a, c, epsilon, theta);
                         }
-
-                        // OK, give up
-                        return std::make_pair(a, b);
                 }
         }
 }

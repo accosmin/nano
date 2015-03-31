@@ -58,7 +58,7 @@ static void test_optimizers(
 {
         const size_t cmd_iterations = 128;
         const size_t cmd_minibatch_epochs = cmd_iterations / 8;         // NB: because of 8 iterations / batch!
-//        const size_t cmd_stochastic_epochs = cmd_iterations;
+//        const size_t cmd_stochastic_epochs = cmd_iterations * 8;        // NB: because of slow noisy optimization!
         const scalar_t cmd_epsilon = 1e-4;
 
         const bool can_regularize = accumulator_t::can_regularize(criterion);
@@ -68,17 +68,17 @@ static void test_optimizers(
         // batch optimizers
         const auto batch_optimizers =
         {
-//                batch_optimizer::GD,
+                batch_optimizer::GD,
                 batch_optimizer::CGD,
-//                batch_optimizer::LBFGS
+                batch_optimizer::LBFGS
         };
 
         // minibatch optimizers
         const auto minibatch_optimizers =
         {
-//                batch_optimizer::GD,
+                batch_optimizer::GD,
                 batch_optimizer::CGD,
-//                batch_optimizer::LBFGS
+                batch_optimizer::LBFGS
         };
 
 //        // stochastic optimizers
@@ -168,13 +168,13 @@ int main(int argc, char *argv[])
 
         // construct models
         const string_t lmodel0;
-        const string_t lmodel1 = lmodel0 + "linear:dims=16;act-snorm;";
-        const string_t lmodel2 = lmodel1 + "linear:dims=16;act-snorm;";
+        const string_t lmodel1 = lmodel0 + "linear:dims=64;act-snorm;";
+        const string_t lmodel2 = lmodel1 + "linear:dims=32;act-snorm;";
         const string_t lmodel3 = lmodel2 + "linear:dims=16;act-snorm;";
 
         string_t cmodel;
-        cmodel = cmodel + "conv:dims=8,rows=5,cols=5;pool-max;act-snorm;";
-        cmodel = cmodel + "conv:dims=8,rows=3,cols=3;act-snorm;";
+        cmodel = cmodel + "conv:dims=16,rows=5,cols=5;pool-max;act-snorm;";
+        cmodel = cmodel + "conv:dims=16,rows=3,cols=3;act-snorm;";
 
         const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
 

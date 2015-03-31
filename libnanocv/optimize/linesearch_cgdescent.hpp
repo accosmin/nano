@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include "linesearch.h"
-#include "linesearch_step.hpp"
+#include "linesearch_cgdescent_bracket.hpp"
 #include "linesearch_cgdescent_secant2.hpp"
 
 namespace ncv
@@ -43,14 +43,18 @@ namespace ncv
                                 const tscalar epsilon = tscalar(1e-6),
                                 const tscalar theta = tscalar(0.5),
                                 const tscalar gamma = tscalar(0.66),
+                                const tscalar ro = tscalar(5.0),
                                 const tsize max_iters = 128) const
                         {
-                                tstep a(step0);
-                                tstep b(step0);
-                                b.reset_with_grad(t0);
+                                tstep a(step0), b(step0), c(step0);
 
-                                // CG_DESCENT (Hager & Zhang 2005, p. 15)
-                                for (tsize i = 0; i < max_iters && (b.alpha() - a.alpha()) > a.minimum(); i ++)
+                                // bracket the initial step size
+                                c.reset_with_grad(t0);
+                                std::tie(a, b) = cgdescent_bracket(step0, c, epsilon, theta, ro);
+
+//                                b.reset_with_grad(t0);
+
+                                for (tsize i = 0; i < max_iters && ((a) || (b)) && (b.alpha() - a.alpha()) > a.minimum(); i ++)
                                 {
                                         // check Armijo+Wolfe or approximate Wolfe condition
                                         if (b.phi() < a.phi())
@@ -73,14 +77,14 @@ namespace ncv
 
                                         // secant interpolation
                                         tstep A(a), B(a);
-                                        std::tie(A, B) = cgdescent_secant2(a, b, epsilon, theta);
+                                        std::tie(A, B) = cgdescent_secant2(step0, a, b, epsilon, theta);
 
                                         // update search interval
                                         if ((B.alpha() - A.alpha()) > gamma * (b.alpha() - a.alpha()))
                                         {
                                                 tstep c(a);
                                                 c.reset_with_grad((A.alpha() + B.alpha()) / 2);
-                                                std::tie(a, b) = cgdescent_update(A, B, c, epsilon, theta);
+                                                std::tie(a, b) = cgdescent_update(step0, A, B, c, epsilon, theta);
                                         }
                                         else
                                         {
