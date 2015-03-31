@@ -9,10 +9,8 @@ namespace ncv
         namespace optimize
         {
                 ///
-                /// \brief stochastic AdaDelta
-                ///
-                /// NB: "ADADELTA: An Adaptive Learning Rate Method"
-                ///     - Matthew D. Zeiler
+                /// \brief stochastic AdaDelta,
+                ///     see "ADADELTA: An Adaptive Learning Rate Method", by Matthew D. Zeiler
                 ///
                 template
                 <

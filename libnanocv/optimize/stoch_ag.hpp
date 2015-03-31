@@ -9,10 +9,11 @@ namespace ncv
         {
                 ///
                 /// \brief stochastic Nesterov's accelerated gradient (descent)
+                ///     see "Introductory Lectures on Convex Optimization. A Basic Course",
+                ///     by Yu. Nesterov
                 ///
-                /// NB: Yu. Nesterov, "Introductory Lectures on Convex Optimization. A Basic Course"
-                /// NB: http://calculus.subwiki.org/wiki/Nesterov%27s_accelerated_gradient_descent_with_constant_learning_rate_for_a_quadratic_function_of_one_variable
-                /// NB: http://stronglyconvex.com/blog/accelerated-gradient-descent.html
+                ///     see http://calculus.subwiki.org/wiki/Nesterov%27s_accelerated_gradient_descent_with_constant_learning_rate_for_a_quadratic_function_of_one_variable
+                ///     see http://stronglyconvex.com/blog/accelerated-gradient-descent.html
                 ///
                 template
                 <

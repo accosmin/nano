@@ -10,9 +10,8 @@ namespace ncv
         {
                 ///
                 /// \brief stochastic iterative average gradient (descent)
-                ///
-                /// NB: "Minimizing Finite Sums with the Stochastic Average Gradient"
-                ///     - Mark Schmidth, Nicolas Le Roux, Francis Bach
+                ///     see "Minimizing Finite Sums with the Stochastic Average Gradient",
+                ///     by Mark Schmidth, Nicolas Le Roux, Francis Bach
                 ///
                 template
                 <
