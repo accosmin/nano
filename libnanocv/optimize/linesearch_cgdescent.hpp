@@ -63,22 +63,10 @@ namespace ncv
                                         ((a) || (b)) && (b.alpha() - a.alpha()) > a.minimum(); i ++)
                                 {
                                         // check Armijo+Wolfe or approximate Wolfe condition
-                                        if (b.phi() < a.phi())
+                                        if (    (a.has_armijo(c1) && a.has_wolfe(c2)) ||
+                                                (a.has_approx_wolfe(c1, c2, epsilon)))
                                         {
-                                                if (    (b.has_armijo(c1) && b.has_wolfe(c2)) ||
-                                                        (b.has_approx_wolfe(c1, c2, epsilon)))
-                                                {
-                                                        return b.setup();
-                                                }
-                                        }
-
-                                        else
-                                        {
-                                                if (    (a.has_armijo(c1) && a.has_wolfe(c2)) ||
-                                                        (a.has_approx_wolfe(c1, c2, epsilon)))
-                                                {
-                                                         return a.setup();
-                                                }
+                                                 return a.setup();
                                         }
 
                                         // secant interpolation
@@ -100,7 +88,7 @@ namespace ncv
                                 }
 
                                 // NOK, give up
-                                return std::min(std::min(a, b), step0);
+                                return std::min(a, step0);
                         }
                 };
         }
