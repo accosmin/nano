@@ -95,7 +95,7 @@ static void check_problem(
 //                optimize::ls_strategy::backtrack_wolfe,
 //                optimize::ls_strategy::backtrack_strong_wolfe,
 //                optimize::ls_strategy::interpolation_bisection,
-//                optimize::ls_strategy::interpolation_cubic,
+                optimize::ls_strategy::interpolation_cubic,
                 optimize::ls_strategy::cg_descent
         };
 
@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
 {
         using namespace ncv;
 
-        check_problems(ncv::make_beale_funcs());
+//        check_problems(ncv::make_beale_funcs());
         check_problems(ncv::make_booth_funcs());
         check_problems(ncv::make_matyas_funcs());
         check_problems(ncv::make_trid_funcs(128));
@@ -210,7 +210,7 @@ int main(int argc, char *argv[])
         check_problems(ncv::make_3hump_camel_funcs());
         check_problems(ncv::make_dixon_price_funcs(128));
         check_problems(ncv::make_sum_squares_funcs(128));
-        check_problems(ncv::make_goldstein_price_funcs());
+//        check_problems(ncv::make_goldstein_price_funcs());
         check_problems(ncv::make_rotated_ellipsoid_funcs(128));
 
         // show global statistics
