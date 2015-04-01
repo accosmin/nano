@@ -30,7 +30,7 @@
 
 using namespace ncv;
 
-const size_t trials = 128;
+const size_t trials = 1024;
 
 struct optimizer_stat_t
 {
