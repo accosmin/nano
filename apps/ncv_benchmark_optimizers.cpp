@@ -44,29 +44,13 @@ struct optimizer_stat_t
 
 std::map<string_t, optimizer_stat_t> optimizer_stats;
 
-//static void sort_desc(tabulator_t& table, size_t column)
-//{
-//        table.sort(column, [] (const string_t& value1, const string_t& value2)
-//        {
-//                return text::from_string<scalar_t>(value1) > text::from_string<scalar_t>(value2);
-//        });
-//}
-
-static void sort_asc(tabulator_t& table, size_t column)
-{
-        table.sort(column, [] (const string_t& value1, const string_t& value2)
-        {
-                return text::from_string<scalar_t>(value1) < text::from_string<scalar_t>(value2);
-        });
-}
-
 static void check_problem(
         const string_t& problem_name,
         const opt_opsize_t& fn_size, const opt_opfval_t& fn_fval, const opt_opgrad_t& fn_grad,
         const std::vector<std::pair<vector_t, scalar_t>>&)
 {
         const size_t iterations = 1024;
-        const scalar_t epsilon = math::epsilon2<scalar_t>();
+        const scalar_t epsilon = 1e-6;
 
         const size_t dims = fn_size();
 
@@ -107,11 +91,11 @@ static void check_problem(
 
         const auto ls_strategies =
         {
-                optimize::ls_strategy::backtrack_armijo,
-                optimize::ls_strategy::backtrack_wolfe,
-                optimize::ls_strategy::backtrack_strong_wolfe,
-                optimize::ls_strategy::interpolation_bisection,
-                optimize::ls_strategy::interpolation_cubic,
+//                optimize::ls_strategy::backtrack_armijo,
+//                optimize::ls_strategy::backtrack_wolfe,
+//                optimize::ls_strategy::backtrack_strong_wolfe,
+//                optimize::ls_strategy::interpolation_bisection,
+//                optimize::ls_strategy::interpolation_cubic,
                 optimize::ls_strategy::cg_descent
         };
 
@@ -156,7 +140,7 @@ static void check_problem(
 
                         const opt_state_t state = ncv::minimize(
                                 fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
-                                x0, optimizer, iterations, 1e-2 * epsilon, ls_initializer, ls_strategy);
+                                x0, optimizer, iterations, epsilon, ls_initializer, ls_strategy);
 
                         const scalar_t crit = state.convergence_criteria();
 
@@ -169,7 +153,7 @@ static void check_problem(
                         fvals(state.n_fval_calls());
                         grads(state.n_grad_calls());
 
-                        fails(crit > epsilon ? 1.0 : 0.0);
+                        fails(!state.converged(epsilon) ? 1.0 : 0.0);
                 });
 
                 // update per-problem table
@@ -198,8 +182,7 @@ static void check_problem(
         }
 
         // print stats
-        sort_asc(table, 0);
-        sort_asc(table, 3);
+        table.sort_as_number_ascending(3);
         table.print(std::cout);
 }
 
@@ -254,8 +237,7 @@ int main(int argc, char *argv[])
                                    << stat.m_grads.sum();
         }
 
-        sort_asc(table, 0);
-        sort_asc(table, 3);
+        table.sort_as_number_ascending(3);
         table.print(std::cout);
 
         // OK

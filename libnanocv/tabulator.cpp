@@ -26,7 +26,7 @@ namespace ncv
                 return *m_rows.rbegin();
         }
 
-        bool tabulator_t::sort(size_t col, comparator_t comp)
+        bool tabulator_t::sort(size_t col, const comparator_t& comp)
         {
                 if (col < cols())
                 {
@@ -49,6 +49,22 @@ namespace ncv
                         // invalid index
                         return false;
                 }
+        }
+
+        bool tabulator_t::sort_as_number_ascending(size_t col)
+        {
+                return sort(col, [] (const string_t& value1, const string_t& value2)
+                {
+                        return text::from_string<double>(value1) < text::from_string<double>(value2);
+                });
+        }
+
+        bool tabulator_t::sort_as_number_descending(size_t col)
+        {
+                return sort(col, [] (const string_t& value1, const string_t& value2)
+                {
+                        return text::from_string<double>(value1) > text::from_string<double>(value2);
+                });
         }
 
         std::size_t tabulator_t::border() const

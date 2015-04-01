@@ -132,7 +132,17 @@ namespace ncv
                 ///
                 /// \brief sort the table by the given column and using the given comparison operator
                 ///
-                bool sort(size_t col, comparator_t comp);
+                bool sort(size_t col, const comparator_t& comp);
+
+                ///
+                /// \brief sort ascendingly (transforming to numeric values)
+                ///
+                bool sort_as_number_ascending(size_t col);
+
+                ///
+                /// \brief sort descendingly (transforming to numeric values)
+                ///
+                bool sort_as_number_descending(size_t col);
 
                 ///
                 /// \brief pretty-print its content
