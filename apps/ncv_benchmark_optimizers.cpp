@@ -49,7 +49,7 @@ static void check_problem(
         const opt_opsize_t& fn_size, const opt_opfval_t& fn_fval, const opt_opgrad_t& fn_grad,
         const std::vector<std::pair<vector_t, scalar_t>>&)
 {
-        const size_t iterations = 128;
+        const size_t iterations = 1024;
         const scalar_t epsilon = 1e-6;
 
         const size_t dims = fn_size();
