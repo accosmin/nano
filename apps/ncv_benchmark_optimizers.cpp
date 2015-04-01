@@ -91,10 +91,10 @@ static void check_problem(
 //                batch_optimizer::CGD_FR,
 //                batch_optimizer::CGD_HS,
 //                batch_optimizer::CGD_LS,
-//                batch_optimizer::CGD_PRP,
-//                batch_optimizer::CGD_N,
-//                batch_optimizer::CGD_DYCD,
-//                batch_optimizer::CGD_DYHS,
+                batch_optimizer::CGD_PRP,
+                batch_optimizer::CGD_N,
+                batch_optimizer::CGD_DYCD,
+                batch_optimizer::CGD_DYHS,
                 batch_optimizer::LBFGS
         };
 
@@ -218,20 +218,20 @@ int main(int argc, char *argv[])
         check_problems(ncv::make_beale_funcs());
         check_problems(ncv::make_booth_funcs());
         check_problems(ncv::make_matyas_funcs());
-        check_problems(ncv::make_trid_funcs(32));
-        check_problems(ncv::make_sphere_funcs(8));
-        check_problems(ncv::make_powell_funcs(32));
+        check_problems(ncv::make_trid_funcs(1024));
+        check_problems(ncv::make_sphere_funcs(1024));
+        check_problems(ncv::make_powell_funcs(1024));
         check_problems(ncv::make_mccormick_funcs());
         check_problems(ncv::make_himmelblau_funcs());
         check_problems(ncv::make_rosenbrock_funcs(7));
         check_problems(ncv::make_3hump_camel_funcs());
-        check_problems(ncv::make_dixon_price_funcs(32));
-        check_problems(ncv::make_sum_squares_funcs(16));
+        check_problems(ncv::make_dixon_price_funcs(1024));
+        check_problems(ncv::make_sum_squares_funcs(1024));
         check_problems(ncv::make_goldstein_price_funcs());
-        check_problems(ncv::make_rotated_ellipsoid_funcs(32));
+        check_problems(ncv::make_rotated_ellipsoid_funcs(1024));
 
         // show global statistics
-        tabulator_t table("optimizer");
+        tabulator_t table(text::resize("optimizer", 32));
         table.header() << "cost"
                        << "time [us]"
                        << "|grad|/|fval|"
