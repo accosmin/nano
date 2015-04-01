@@ -66,7 +66,7 @@ static void check_problem(
         const std::vector<std::pair<vector_t, scalar_t>>&)
 {
         const size_t iterations = 1024;
-        const scalar_t epsilon = 1e-6;
+        const scalar_t epsilon = math::epsilon2<scalar_t>();
 
         const size_t dims = fn_size();
 
@@ -156,7 +156,7 @@ static void check_problem(
 
                         const opt_state_t state = ncv::minimize(
                                 fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
-                                x0, optimizer, iterations, 0.2 * epsilon, ls_initializer, ls_strategy);
+                                x0, optimizer, iterations, 1e-2 * epsilon, ls_initializer, ls_strategy);
 
                         const scalar_t crit = state.convergence_criteria();
 

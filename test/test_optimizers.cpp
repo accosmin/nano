@@ -11,15 +11,18 @@
 #include "libnanocv/util/random.hpp"
 #include "libnanocv/math/epsilon.hpp"
 
+#include "libnanocv/functions/function_trid.h"
 #include "libnanocv/functions/function_beale.h"
 #include "libnanocv/functions/function_booth.h"
 #include "libnanocv/functions/function_sphere.h"
 #include "libnanocv/functions/function_matyas.h"
+#include "libnanocv/functions/function_powell.h"
 #include "libnanocv/functions/function_mccormick.h"
 #include "libnanocv/functions/function_himmelblau.h"
 #include "libnanocv/functions/function_rosenbrock.h"
 #include "libnanocv/functions/function_3hump_camel.h"
 #include "libnanocv/functions/function_sum_squares.h"
+#include "libnanocv/functions/function_dixon_price.h"
 #include "libnanocv/functions/function_goldstein_price.h"
 #include "libnanocv/functions/function_rotated_ellipsoid.h"
 
@@ -76,7 +79,7 @@ namespace test
         {
                 const size_t iterations = 64 * 1024;
                 const scalar_t epsilon = math::epsilon2<scalar_t>();
-                const size_t trials = 8 * 1024;
+                const size_t trials = 1024;
 
                 const size_t dims = fn_size();
 
@@ -113,7 +116,7 @@ namespace test
                                 // optimize
                                 const opt_state_t state = ncv::minimize(
                                         fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
-                                        x0, optimizer, iterations, epsilon);
+                                        x0, optimizer, iterations, 1e-2 * epsilon);
 
                                 // check solution
                                 check_solution(problem_name, text::to_string(optimizer), state, solutions);
@@ -136,25 +139,19 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
 {
         using namespace ncv;
 
-        // Sphere function
-        test::check_problems(test::make_sphere_funcs(16));
-
-        // Sum of squares function
-        test::check_problems(test::make_sum_squares_funcs(16));
-
-        // Rotated ellipsoid function
-        test::check_problems(test::make_rotated_ellipsoid_funcs(16));
-
-        // Rosenbrock function
-        test::check_problems(test::make_rosenbrock_funcs());
-
-        // Booth function
-        test::check_problems(test::make_booth_funcs());
-
-        // Matyas function
-        test::check_problems(test::make_matyas_funcs());
-
-        // Himmelblau function
-        test::check_problems(test::make_himmelblau_funcs());
+//        test::check_problems(ncv::make_beale_funcs());
+        test::check_problems(ncv::make_booth_funcs());
+        test::check_problems(ncv::make_matyas_funcs());
+//        test::check_problems(ncv::make_trid_funcs(32));
+        test::check_problems(ncv::make_sphere_funcs(8));
+//        test::check_problems(ncv::make_powell_funcs(32));
+//        test::check_problems(ncv::make_mccormick_funcs());
+        test::check_problems(ncv::make_himmelblau_funcs());
+//        test::check_problems(ncv::make_rosenbrock_funcs(7));
+//        test::check_problems(ncv::make_3hump_camel_funcs());
+//        test::check_problems(ncv::make_dixon_price_funcs(32));
+        test::check_problems(ncv::make_sum_squares_funcs(32));
+//        test::check_problems(ncv::make_goldstein_price_funcs());
+        test::check_problems(ncv::make_rotated_ellipsoid_funcs(32));
 }
 
