@@ -46,7 +46,7 @@ namespace ncv
 
                                 case ls_strategy::interpolation_bisection:
                                 default:
-                                        t = 0.33 * tmin + 0.67 * tmax;
+                                        t = (steplo.alpha() + stephi.alpha()) / 2;
                                         break;
                                 }
 
