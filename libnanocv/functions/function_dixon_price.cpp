@@ -25,7 +25,7 @@ namespace ncv
                                         }
                                         else
                                         {
-                                                fx += i * math::square(2.0 * math::square(x(i)) - x(i - 1));
+                                                fx += (i + 1) * math::square(2.0 * math::square(x(i)) - x(i - 1));
                                         }
                                 }
 
@@ -44,7 +44,7 @@ namespace ncv
                                         }
                                         else
                                         {
-                                                const scalar_t delta = i * 2.0 * (2.0 * math::square(x(i)) - x(i - 1));
+                                                const scalar_t delta = (i + 1) * 2.0 * (2.0 * math::square(x(i)) - x(i - 1));
 
                                                 gx(i) += delta * 4.0 * x(i);
                                                 gx(i - 1) += - delta;

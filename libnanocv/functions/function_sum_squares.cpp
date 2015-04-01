@@ -18,7 +18,7 @@ namespace ncv
                                 scalar_t fx = 0;
                                 for (size_t i = 0; i < dims; i ++)
                                 {
-                                        fx += i * x(i) * x(i);
+                                        fx += (i + 1) * x(i) * x(i);
                                 }
 
                                 return fx;
@@ -29,7 +29,7 @@ namespace ncv
                                 gx.resize(dims);
                                 for (size_t i = 0; i < dims; i ++)
                                 {
-                                        gx(i) = 2.0 * i * x(i);
+                                        gx(i) = 2.0 * (i + 1) * x(i);
                                 }
 
                                 return fn_fval(x);
