@@ -144,7 +144,7 @@ namespace ncv
                         ///
                         tscalar approx_phi(const tscalar epsilon) const
                         {
-                                return phi0() + epsilon * std::fabs(phi0());
+                                return phi0() + epsilon;
                         }
 
                         ///

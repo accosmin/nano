@@ -30,7 +30,7 @@
 
 using namespace ncv;
 
-const size_t trials = 1024;
+const size_t trials = 128;
 
 struct optimizer_stat_t
 {
@@ -49,7 +49,7 @@ static void check_problem(
         const opt_opsize_t& fn_size, const opt_opfval_t& fn_fval, const opt_opgrad_t& fn_grad,
         const std::vector<std::pair<vector_t, scalar_t>>&)
 {
-        const size_t iterations = 1024;
+        const size_t iterations = 128;
         const scalar_t epsilon = 1e-6;
 
         const size_t dims = fn_size();
@@ -201,17 +201,17 @@ int main(int argc, char *argv[])
         check_problems(ncv::make_beale_funcs());
         check_problems(ncv::make_booth_funcs());
         check_problems(ncv::make_matyas_funcs());
-        check_problems(ncv::make_trid_funcs(1024));
-        check_problems(ncv::make_sphere_funcs(1024));
-        check_problems(ncv::make_powell_funcs(1024));
+        check_problems(ncv::make_trid_funcs(128));
+        check_problems(ncv::make_sphere_funcs(128));
+        check_problems(ncv::make_powell_funcs(128));
         check_problems(ncv::make_mccormick_funcs());
         check_problems(ncv::make_himmelblau_funcs());
         check_problems(ncv::make_rosenbrock_funcs(7));
         check_problems(ncv::make_3hump_camel_funcs());
-        check_problems(ncv::make_dixon_price_funcs(1024));
-        check_problems(ncv::make_sum_squares_funcs(1024));
+        check_problems(ncv::make_dixon_price_funcs(128));
+        check_problems(ncv::make_sum_squares_funcs(128));
         check_problems(ncv::make_goldstein_price_funcs());
-        check_problems(ncv::make_rotated_ellipsoid_funcs(1024));
+        check_problems(ncv::make_rotated_ellipsoid_funcs(128));
 
         // show global statistics
         tabulator_t table(text::resize("optimizer", 32));

@@ -31,6 +31,9 @@ namespace ncv
                         /// \brief constructor
                         ///
                         linesearch_cgdescent_t()
+                                :       m_sumQ(0),
+                                        m_sumC(0),
+                                        m_approx(false)
                         {
                         }
 
@@ -43,6 +46,8 @@ namespace ncv
                                 const tscalar epsilon = tscalar(1e-6),
                                 const tscalar theta = tscalar(0.5),
                                 const tscalar gamma = tscalar(0.66),
+                                const tscalar delta = tscalar(0.7),
+                                const tscalar omega = tscalar(1e-3),
                                 const tscalar ro = tscalar(5.0),
                                 const tsize max_iters = 128) const
                         {
@@ -59,26 +64,34 @@ namespace ncv
                                         b = c;
                                 }
 
+                                // estimate an upper bound of the function value
+                                // (to be used for the approximate Wolfe condition)
+                                m_sumQ = 1 + m_sumQ * delta;
+                                m_sumC = m_sumC + (std::fabs(step0.phi0()) - m_sumC) / m_sumQ;
+
+                                const tscalar approx_epsilon = epsilon * m_sumC;
+
+                                //
                                 for (   tsize i = 0; i < max_iters &&
                                         ((a) || (b)) && (b.alpha() - a.alpha()) > a.minimum(); i ++)
                                 {
                                         // check Armijo+Wolfe or approximate Wolfe condition
-                                        if (    (a.has_armijo(c1) && a.has_wolfe(c2)) ||
-                                                (a.has_approx_wolfe(c1, c2, epsilon)))
+                                        if (    (!m_approx && a.has_armijo(c1) && a.has_wolfe(c2)) ||
+                                                (m_approx && a.has_approx_wolfe(c1, c2, approx_epsilon)))
                                         {
-                                                 return a.setup();
+                                                 return update(a.setup(), omega);
                                         }
 
                                         // secant interpolation
                                         tstep A(a), B(a);
-                                        std::tie(A, B) = cgdescent_secant2(step0, a, b, epsilon, theta);
+                                        std::tie(A, B) = cgdescent_secant2(step0, a, b, approx_epsilon, theta);
 
                                         // update search interval
                                         if ((B.alpha() - A.alpha()) > gamma * (b.alpha() - a.alpha()))
                                         {
                                                 tstep c(a);
                                                 c.reset_with_grad((A.alpha() + B.alpha()) / 2);
-                                                std::tie(a, b) = cgdescent_update(step0, A, B, c, epsilon, theta);
+                                                std::tie(a, b) = cgdescent_update(step0, A, B, c, approx_epsilon, theta);
                                         }
                                         else
                                         {
@@ -88,8 +101,31 @@ namespace ncv
                                 }
 
                                 // NOK, give up
-                                return std::min(a, step0);
+                                return update(std::min(a, step0), omega);
                         }
+
+                private:
+
+                        tstep update(const tstep& step, const tscalar omega) const
+                        {
+                                if (step)
+                                {
+                                        // decide if to switch permanently to the approximate Wolfe conditions
+                                        if (!m_approx)
+                                        {
+                                                m_approx = std::fabs(step.phi() - step.phi0()) <= omega * m_sumC;
+                                        }
+                                }
+
+                                return step;
+                        }
+
+                private:
+
+                        // attributes
+                        mutable tscalar         m_sumQ;         ///<
+                        mutable tscalar         m_sumC;         ///<
+                        mutable bool            m_approx;       ///< use permanently the approximate Wolfe condition?
                 };
         }
 }
