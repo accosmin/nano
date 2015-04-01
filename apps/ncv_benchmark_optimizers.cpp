@@ -10,15 +10,18 @@
 #include "libnanocv/math/epsilon.hpp"
 #include "libnanocv/thread/parallel.hpp"
 
+#include "libnanocv/functions/function_trid.h"
 #include "libnanocv/functions/function_beale.h"
 #include "libnanocv/functions/function_booth.h"
 #include "libnanocv/functions/function_sphere.h"
 #include "libnanocv/functions/function_matyas.h"
-#include "libnanocv/functions/function_ellipsoid.h"
+#include "libnanocv/functions/function_powell.h"
 #include "libnanocv/functions/function_mccormick.h"
 #include "libnanocv/functions/function_himmelblau.h"
 #include "libnanocv/functions/function_rosenbrock.h"
 #include "libnanocv/functions/function_3hump_camel.h"
+#include "libnanocv/functions/function_sum_squares.h"
+#include "libnanocv/functions/function_dixon_price.h"
 #include "libnanocv/functions/function_goldstein_price.h"
 #include "libnanocv/functions/function_rotated_ellipsoid.h"
 
@@ -145,7 +148,7 @@ static void check_problem(
                         {
                                 const thread_pool_t::lock_t lock(mutex);
 
-                                log_error() << "invalid gradient for problem " << problem_name << "!";
+                                log_error() << "invalid gradient for problem [" << problem_name << "]!";
                         }
 
                         // optimize
@@ -153,7 +156,7 @@ static void check_problem(
 
                         const opt_state_t state = ncv::minimize(
                                 fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
-                                x0, optimizer, iterations, epsilon, ls_initializer, ls_strategy);
+                                x0, optimizer, iterations, 0.2 * epsilon, ls_initializer, ls_strategy);
 
                         const scalar_t crit = state.convergence_criteria();
 
@@ -212,38 +215,20 @@ int main(int argc, char *argv[])
 {
         using namespace ncv;
 
-//        // Sphere function
-//        check_problems(ncv::make_sphere_funcs(16));
-
-//        // Ellipsoid function
-//        check_problems(ncv::make_ellipsoid_funcs(16));
-
-//        // Rotated ellipsoid function
-//        check_problems(ncv::make_rotated_ellipsoid_funcs(1024));
-
-        // Rosenbrock function
-        check_problems(ncv::make_rosenbrock_funcs(7));
-
-//        // Beale function
-//        check_problems(ncv::make_beale_funcs());
-
-//        // Goldstein-Price function
-//        check_problems(ncv::make_goldstein_price_funcs());
-
-        // Booth function
+        check_problems(ncv::make_beale_funcs());
         check_problems(ncv::make_booth_funcs());
-
-        // Matyas function
         check_problems(ncv::make_matyas_funcs());
-
-        // Himmelblau function
-        check_problems(ncv::make_himmelblau_funcs());
-
-        // 3Hump camel function
-        check_problems(ncv::make_3hump_camel_funcs());
-
-        // McCormick function
+        check_problems(ncv::make_trid_funcs(32));
+        check_problems(ncv::make_sphere_funcs(8));
+        check_problems(ncv::make_powell_funcs(32));
         check_problems(ncv::make_mccormick_funcs());
+        check_problems(ncv::make_himmelblau_funcs());
+        check_problems(ncv::make_rosenbrock_funcs(7));
+        check_problems(ncv::make_3hump_camel_funcs());
+        check_problems(ncv::make_dixon_price_funcs(32));
+        check_problems(ncv::make_sum_squares_funcs(16));
+        check_problems(ncv::make_goldstein_price_funcs());
+        check_problems(ncv::make_rotated_ellipsoid_funcs(32));
 
         // show global statistics
         tabulator_t table("optimizer");

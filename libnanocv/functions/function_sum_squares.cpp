@@ -1,19 +1,13 @@
-#include "function_ellipsoid.h"
-#include "../util/random.hpp"
+#include "function_sum_squares.h"
 
 namespace ncv
 {
-        std::vector<function_t> make_ellipsoid_funcs(ncv::size_t max_dims)
+        std::vector<function_t> make_sum_squares_funcs(ncv::size_t max_dims)
         {
                 std::vector<function_t> functions;
 
-                for (size_t dims = 1; dims <= max_dims; dims *= 2)
+                for (size_t dims = 2; dims <= max_dims; dims *= 2)
                 {
-                        vector_t weights(dims);
-
-                        random_t<scalar_t> rng(1.0, 1e+3);
-                        rng(weights.data(), weights.data() + weights.size());
-
                         const opt_opsize_t fn_size = [=] ()
                         {
                                 return dims;
@@ -24,7 +18,7 @@ namespace ncv
                                 scalar_t fx = 0;
                                 for (size_t i = 0; i < dims; i ++)
                                 {
-                                        fx += x(i) * x(i) * weights(i);
+                                        fx += i * x(i) * x(i);
                                 }
 
                                 return fx;
@@ -35,7 +29,7 @@ namespace ncv
                                 gx.resize(dims);
                                 for (size_t i = 0; i < dims; i ++)
                                 {
-                                        gx(i) = 2.0 * x(i) * weights(i);
+                                        gx(i) = 2.0 * i * x(i);
                                 }
 
                                 return fn_fval(x);
@@ -46,7 +40,7 @@ namespace ncv
                                 solutions.emplace_back(vector_t::Zero(dims), 0);
                         }
 
-                        functions.emplace_back("ellipsoid" + text::to_string(dims) + "D",
+                        functions.emplace_back("sum squares" + text::to_string(dims) + "D",
                                                fn_size, fn_fval, fn_grad, solutions);
                 }
 

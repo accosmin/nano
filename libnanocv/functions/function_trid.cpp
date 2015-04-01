@@ -1,8 +1,9 @@
-#include "function_rotated_ellipsoid.h"
+#include "function_trid.h"
+#include "../math/math.hpp"
 
 namespace ncv
 {
-        std::vector<function_t> make_rotated_ellipsoid_funcs(ncv::size_t max_dims)
+        std::vector<function_t> make_trid_funcs(ncv::size_t max_dims)
         {
                 std::vector<function_t> functions;
 
@@ -18,10 +19,11 @@ namespace ncv
                                 scalar_t fx = 0;
                                 for (size_t i = 0; i < dims; i ++)
                                 {
-                                        for (size_t j = 0; j <= i; j ++)
-                                        {
-                                                fx += x(j) * x(j);
-                                        }
+                                        fx += math::square(x(i) - 1.0);
+                                }
+                                for (size_t i = 1; i < dims; i ++)
+                                {
+                                        fx -= x(i) * x(i - 1);
                                 }
 
                                 return fx;
@@ -33,10 +35,12 @@ namespace ncv
                                 gx.setZero();
                                 for (size_t i = 0; i < dims; i ++)
                                 {
-                                        for (size_t j = 0; j <= i; j ++)
-                                        {
-                                                gx(j) += 2.0 * x(j);
-                                        }
+                                        gx(i) += 2.0 * (x(i) - 1.0);
+                                }
+                                for (size_t i = 1; i < dims; i ++)
+                                {
+                                        gx(i) -= x(i - 1);
+                                        gx(i - 1) -= x(i);
                                 }
 
                                 return fn_fval(x);
@@ -44,10 +48,10 @@ namespace ncv
 
                         std::vector<std::pair<vector_t, scalar_t>> solutions;
                         {
-                                solutions.emplace_back(vector_t::Zero(dims), 0);
+                                /// \todo
                         }
 
-                        functions.emplace_back("rotated ellipsoid" + text::to_string(dims) + "D",
+                        functions.emplace_back("Trid" + text::to_string(dims) + "D",
                                                fn_size, fn_fval, fn_grad, solutions);
                 }
 

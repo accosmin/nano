@@ -15,11 +15,11 @@
 #include "libnanocv/functions/function_booth.h"
 #include "libnanocv/functions/function_sphere.h"
 #include "libnanocv/functions/function_matyas.h"
-#include "libnanocv/functions/function_ellipsoid.h"
 #include "libnanocv/functions/function_mccormick.h"
 #include "libnanocv/functions/function_himmelblau.h"
 #include "libnanocv/functions/function_rosenbrock.h"
 #include "libnanocv/functions/function_3hump_camel.h"
+#include "libnanocv/functions/function_sum_squares.h"
 #include "libnanocv/functions/function_goldstein_price.h"
 #include "libnanocv/functions/function_rotated_ellipsoid.h"
 
@@ -48,7 +48,7 @@ namespace test
                 }
 
                 // Check accuracy
-                BOOST_CHECK_LE(best_index, solutions.size());
+                BOOST_CHECK_LT(best_index, solutions.size());
                 if (best_index < solutions.size())
                 {
                         const scalar_t dfx = math::abs(state.f - solutions[best_index].second);
@@ -139,20 +139,14 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
         // Sphere function
         test::check_problems(test::make_sphere_funcs(16));
 
-        // Ellipsoid function
-        test::check_problems(test::make_ellipsoid_funcs(16));
+        // Sum of squares function
+        test::check_problems(test::make_sum_squares_funcs(16));
 
         // Rotated ellipsoid function
         test::check_problems(test::make_rotated_ellipsoid_funcs(16));
 
         // Rosenbrock function
         test::check_problems(test::make_rosenbrock_funcs());
-
-//        // Beale function
-//        test::check_problems(test::make_beale_funcs());
-
-//        // Goldstein-Price function
-//        test::check_problems(test::make_goldstein_price_funcs());
 
         // Booth function
         test::check_problems(test::make_booth_funcs());
@@ -162,11 +156,5 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
 
         // Himmelblau function
         test::check_problems(test::make_himmelblau_funcs());
-
-//        // 3Hump camel function
-//        test::check_problems(test::make_3hump_camel_funcs());
-
-//        // McCormick function
-//        test::check_problems(test::make_mccormick_funcs());
 }
 
