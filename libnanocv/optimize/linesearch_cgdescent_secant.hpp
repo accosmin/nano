@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <limits>
 
 namespace ncv
 {
@@ -15,19 +16,20 @@ namespace ncv
                 >
                 tstep cgdescent_secant(const tstep& a, const tstep& b)
                 {
-                        const auto t =  (a.alpha() * b.gphi() - b.alpha() * a.gphi()) /
-                                        (b.gphi() - a.gphi());
+                        const auto div = b.gphi() - a.gphi();
 
-                        if (std::isfinite(t))
+                        if (std::fabs(div) > std::numeric_limits<typename tstep::tscalar>::epsilon())
                         {
-                                tstep c = a;
-                                c.reset_with_grad(t);
-                                return c;
+                                const auto t = (a.alpha() * b.gphi() - b.alpha() * a.gphi()) / div;
+                                if (std::isfinite(t))
+                                {
+                                        tstep c = a;
+                                        c.reset_with_grad(t);
+                                        return c;
+                                }
                         }
-                        else
-                        {
-                                return a;
-                        }
+
+                        return a;
                 }
         }
 }
