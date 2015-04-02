@@ -34,7 +34,6 @@ namespace ncv
                                         m_state(state),
                                         m_gphi0(state.d.dot(state.g)),
                                         m_alpha(0),
-                                        m_finite(true),
                                         m_func(state.f),
                                         m_grad(state.g),
                                         m_gphi(m_gphi0)
@@ -54,21 +53,19 @@ namespace ncv
                         ///
                         /// \brief change the line-search step
                         ///
-                        void reset(const tscalar alpha)
+                        bool reset(const tscalar alpha)
                         {
-                                m_alpha = alpha;
-                                m_finite = true;
-                                m_func = std::numeric_limits<tscalar>::infinity();
-                                m_gphi = std::numeric_limits<tscalar>::infinity();
-                        }
-
-                        ///
-                        /// \brief make sure the step is completely specified
-                        ///
-                        ls_step_t setup() const
-                        {
-                                m_gphi = gphi();
-                                return *this;
+                                if (!std::isfinite(alpha))
+                                {
+                                        return false;
+                                }
+                                else
+                                {
+                                        m_alpha = alpha;
+                                        m_func = m_problem.get()(m_state.get().x + m_alpha * m_state.get().d, m_grad);
+                                        m_gphi = m_grad.dot(m_state.get().d);
+                                        return std::isfinite(phi()) && std::isfinite(gphi());
+                                }
                         }
 
                         ///
@@ -115,7 +112,7 @@ namespace ncv
                         ///
                         /// \brief current function value
                         ///
-                        tscalar phi() const { return _phi(); }
+                        tscalar phi() const { return m_func; }
 
                         ///
                         /// \brief approximate function value (see CG_DESCENT)
@@ -133,7 +130,7 @@ namespace ncv
                         ///
                         /// \brief current line-search function gradient
                         ///
-                        tscalar gphi() const { return _gphi(); }
+                        tscalar gphi() const { return m_gphi; }
 
                         ///
                         /// \brief initial line-search function gradient
@@ -155,32 +152,9 @@ namespace ncv
                         ///
                         operator bool() const
                         {
-                                return  m_finite &&
-                                        std::isfinite(alpha()) &&
-                                        alpha() > std::numeric_limits<tscalar>::epsilon();
-                        }
-
-                private:
-
-                        tscalar _phi() const
-                        {
-                                if (m_finite && !std::isfinite(m_func))
-                                {
-                                        m_func = m_problem.get()(m_state.get().x + m_alpha * m_state.get().d);
-                                        m_finite = std::isfinite(m_func);
-                                }
-                                return m_func;
-                        }
-
-                        tscalar _gphi() const
-                        {
-                                if (m_finite && !std::isfinite(m_gphi))
-                                {
-                                        m_func = m_problem.get()(m_state.get().x + m_alpha * m_state.get().d, m_grad);
-                                        m_gphi = m_grad.dot(m_state.get().d);
-                                        m_finite = std::isfinite(m_gphi);
-                                }
-                                return m_gphi;
+                                return  std::isfinite(alpha()) &&
+                                        std::isfinite(phi()) &&
+                                        std::isfinite(gphi());
                         }
 
                 private:
@@ -188,13 +162,12 @@ namespace ncv
                         // attributes
                         std::reference_wrapper<const tproblem>  m_problem;
                         std::reference_wrapper<const tstate>    m_state;        ///< starting state for line-search
-                        tscalar                 m_gphi0;
+                        tscalar         m_gphi0;
 
-                        tscalar                 m_alpha;                ///< line-search step (current estimate)
-                        mutable bool            m_finite;               ///< finite function value & gradient?!
-                        mutable tscalar         m_func;                 ///< function value at alpha
-                        mutable tvector         m_grad;                 ///< function gradient at alpha
-                        mutable tscalar         m_gphi;                 ///< line-search function gradient at alpha
+                        tscalar         m_alpha;                ///< line-search step (current estimate)
+                        tscalar         m_func;                 ///< function value at alpha
+                        tvector         m_grad;                 ///< function gradient at alpha
+                        tscalar         m_gphi;                 ///< line-search function gradient at alpha
                 };
 
                 ///

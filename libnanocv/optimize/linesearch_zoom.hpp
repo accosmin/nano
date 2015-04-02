@@ -50,7 +50,10 @@ namespace ncv
                                 }
 
                                 // check sufficient decrease
-                                stept.reset(t);
+                                if (!stept.reset(t))
+                                {
+                                        return step0;
+                                }
 
                                 if (!stept.has_armijo(c1) || stept.phi() >= steplo.phi())
                                 {
@@ -62,7 +65,7 @@ namespace ncv
                                 {
                                         if (stept.has_strong_wolfe(c2))
                                         {
-                                                return stept.setup();
+                                                return stept;
                                         }
 
                                         if (stept.gphi() * (stephi.alpha() - steplo.alpha()) >= 0)

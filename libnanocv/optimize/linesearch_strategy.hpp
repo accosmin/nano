@@ -60,7 +60,7 @@ namespace ncv
                                 tstep step0(problem, state);
 
                                 const tstep step = get_step(step0, t0);
-                                if (!step)
+                                if (!step || !(step < step0))
                                 {
                                         // failed to find a suitable line-search step
                                         return false;

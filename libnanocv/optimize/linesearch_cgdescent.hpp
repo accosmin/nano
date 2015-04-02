@@ -77,7 +77,7 @@ namespace ncv
                                         if (    (!m_approx && a.has_armijo(c1) && a.has_wolfe(c2)) ||
                                                 (m_approx && a.has_approx_wolfe(c1, c2, approx_epsilon)))
                                         {
-                                                 return update(a.setup(), omega);
+                                                 return update(a, omega);
                                         }
 
                                         // secant interpolation
@@ -87,7 +87,6 @@ namespace ncv
                                         // update search interval
                                         if ((B.alpha() - A.alpha()) > gamma * (b.alpha() - a.alpha()))
                                         {
-                                                tstep c(a);
                                                 c.reset((A.alpha() + B.alpha()) / 2);
                                                 std::tie(a, b) = cgdescent_update(step0, A, B, c, approx_epsilon, theta);
                                         }
@@ -99,7 +98,7 @@ namespace ncv
                                 }
 
                                 // NOK, give up
-                                return update(std::min(a.setup(), step0), omega);
+                                return update(std::min(a, step0), omega);
                         }
 
                 private:

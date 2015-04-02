@@ -46,7 +46,10 @@ namespace ncv
                                 else
                                 {
                                         steps.push_back(c);
-                                        c.reset(ro * c.alpha());
+                                        if (!c.reset(ro * c.alpha()))
+                                        {
+
+                                        }
                                 }
                         }
 

@@ -44,7 +44,10 @@ namespace ncv
 
                                 for (tsize i = 0; i < max_iters; i ++)
                                 {
-                                        step.reset(t);
+                                        if (!step.reset(t))
+                                        {
+                                                return step0;
+                                        }
 
                                         // check Armijo condition
                                         if (!step.has_armijo(c1))
@@ -55,7 +58,7 @@ namespace ncv
                                         {
                                                 if (strategy == ls_strategy::backtrack_armijo)
                                                 {
-                                                        return step.setup();
+                                                        return step;
                                                 }
 
                                                 // check Wolfe condition
@@ -67,7 +70,7 @@ namespace ncv
                                                 {
                                                         if (strategy == ls_strategy::backtrack_wolfe)
                                                         {
-                                                                return step.setup();
+                                                                return step;
                                                         }
 
                                                         // check strong Wolfe condition
@@ -77,14 +80,14 @@ namespace ncv
                                                         }
                                                         else
                                                         {
-                                                                return step.setup();
+                                                                return step;
                                                         }
                                                 }
                                         }
                                 }
 
                                 // NOK, give up
-                                return std::min(step.setup(), step0);
+                                return step0;
                         }
                 };
         }

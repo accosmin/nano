@@ -45,7 +45,10 @@ namespace ncv
                                 for (tsize i = 1; i <= max_iters; i ++)
                                 {
                                         // check sufficient decrease
-                                        stept.reset(t);
+                                        if (!stept.reset(t))
+                                        {
+                                                return step0;
+                                        }
 
                                         if (!stept.has_armijo(c1) || (stept.func() >= stepp.func() && i > 1))
                                         {
@@ -55,7 +58,7 @@ namespace ncv
                                         // check curvature
                                         if (stept.has_strong_wolfe(c2))
                                         {
-                                                return stept.setup();
+                                                return stept;
                                         }
 
                                         if (stept.gphi() >= tscalar(0))
@@ -68,7 +71,7 @@ namespace ncv
                                 }
 
                                 // NOK, give up
-                                return std::min(stept.setup(), step0);
+                                return step0;
                         }
                 };
         }

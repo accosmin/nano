@@ -20,7 +20,7 @@ namespace ncv
                         const tscalar epsilon,
                         const tscalar theta)
                 {
-                        if (c.alpha() <= a.alpha() || c.alpha() >= b.alpha())
+                        if (!c || c.alpha() <= a.alpha() || c.alpha() >= b.alpha())
                         {
                                 return std::make_pair(a, b);
                         }
