@@ -104,13 +104,10 @@ namespace ncv
 
                         tstep update(const tstep& step, const tscalar omega) const
                         {
-                                if (step)
+                                // decide if to switch permanently to the approximate Wolfe conditions
+                                if (step && !m_approx)
                                 {
-                                        // decide if to switch permanently to the approximate Wolfe conditions
-                                        if (!m_approx)
-                                        {
-                                                m_approx = std::fabs(step.phi() - step.phi0()) <= omega * m_sumC;
-                                        }
+                                        m_approx = std::fabs(step.phi() - step.phi0()) <= omega * m_sumC;
                                 }
 
                                 return step;
