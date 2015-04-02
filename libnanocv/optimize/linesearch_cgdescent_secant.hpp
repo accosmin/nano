@@ -21,8 +21,14 @@ namespace ncv
                                        (b.gphi() - a.gphi());
 
                         tstep c = a;
-                        c.reset(t);
-                        return c;
+                        if (!c.reset(t))
+                        {
+                                return a;
+                        }
+                        else
+                        {
+                                return c;
+                        }
                 }
         }
 }

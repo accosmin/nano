@@ -48,7 +48,7 @@ namespace ncv
                                 const tscalar delta = tscalar(0.7),
                                 const tscalar omega = tscalar(1e-3),
                                 const tscalar ro = tscalar(5.0),
-                                const tsize max_iters = 128) const
+                                const tsize max_iters = 32) const
                         {
                                 tstep a(step0), b(step0), c(step0);
 
@@ -57,7 +57,7 @@ namespace ncv
                                 std::tie(a, b) = cgdescent_bracket(step0, c, epsilon, theta, ro);
 
                                 // reset to the original interval [0, t0) if bracketing fails
-                                if ((!a) || (!b))
+                                if ((!a) || (!b) || std::fabs(a.alpha() - b.alpha()) < epsilon)
                                 {
                                         a = step0;
                                         b = c;
@@ -70,8 +70,7 @@ namespace ncv
 
                                 const tscalar approx_epsilon = epsilon * m_sumC;
 
-                                for (tsize i = 0; i < max_iters &&
-                                        ((a) || (b)) && (b.alpha() - a.alpha()) > a.minimum(); i ++)
+                                for (tsize i = 0; i < max_iters && a && b; i ++)
                                 {
                                         // check Armijo+Wolfe or approximate Wolfe condition
                                         if (    (!m_approx && a.has_armijo(c1) && a.has_wolfe(c2)) ||
@@ -98,7 +97,7 @@ namespace ncv
                                 }
 
                                 // NOK, give up
-                                return update(std::min(a, step0), omega);
+                                return step0;
                         }
 
                 private:

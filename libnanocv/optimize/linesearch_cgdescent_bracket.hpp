@@ -20,7 +20,7 @@ namespace ncv
                         const tscalar epsilon,
                         const tscalar theta,
                         const tscalar ro,
-                        const tsize max_iters = 16)
+                        const tsize max_iters = 32)
                 {
                         std::vector<tstep> steps;
                         for (tsize i = 0; i <= max_iters && c; i ++)
@@ -46,15 +46,12 @@ namespace ncv
                                 else
                                 {
                                         steps.push_back(c);
-                                        if (!c.reset(ro * c.alpha()))
-                                        {
-
-                                        }
+                                        c.reset(ro * c.alpha());
                                 }
                         }
 
                         // NOK, give up
-                        return std::make_pair(step0, step0);
+                        return std::make_pair(c, c);
                 }
         }
 }
