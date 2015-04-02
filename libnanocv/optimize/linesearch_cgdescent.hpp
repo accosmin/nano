@@ -56,12 +56,12 @@ namespace ncv
                                 c.reset(t0);
                                 std::tie(a, b) = cgdescent_bracket(step0, c, epsilon, theta, ro);
 
-//                                // reset to the original interval [0, t0) if bracketing fails
-//                                if ((!a) || (!b))
-//                                {
-//                                        a = step0;
-//                                        b = c;
-//                                }
+                                // reset to the original interval [0, t0) if bracketing fails
+                                if ((!a) || (!b))
+                                {
+                                        a = step0;
+                                        b = c;
+                                }
 
                                 // estimate an upper bound of the function value
                                 // (to be used for the approximate Wolfe condition)
@@ -70,7 +70,6 @@ namespace ncv
 
                                 const tscalar approx_epsilon = epsilon * m_sumC;
 
-                                //
                                 for (tsize i = 0; i < max_iters; i ++)
                                 {
                                         // check Armijo+Wolfe or approximate Wolfe condition

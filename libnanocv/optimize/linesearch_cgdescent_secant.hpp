@@ -17,21 +17,21 @@ namespace ncv
                 >
                 tstep cgdescent_secant(const tstep& a, const tstep& b)
                 {
-                        const auto div = b.gphi() - a.gphi();
+                        tstep c = a;
+                        c.reset(a.alpha() - 1);
 
+                        const auto div = b.gphi() - a.gphi();
                         if (std::fabs(div) > std::numeric_limits<tscalar>::epsilon())
                         {
                                 const auto t = (a.alpha() * b.gphi() - b.alpha() * a.gphi()) / div;
 
                                 if (std::isfinite(t))
                                 {
-                                        tstep c = a;
                                         c.reset(t);
-                                        return c;
                                 }
                         }
 
-                        return a;
+                        return c;
                 }
         }
 }
