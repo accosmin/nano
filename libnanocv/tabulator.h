@@ -21,6 +21,12 @@ namespace ncv
                              const string_t&)
                 >                                       comparator_t;
 
+                enum class sorting
+                {
+                        ascending,
+                        descending
+                };
+
                 ///
                 /// \brief a header in the table
                 ///
@@ -135,14 +141,9 @@ namespace ncv
                 bool sort(size_t col, const comparator_t& comp);
 
                 ///
-                /// \brief sort ascendingly (transforming to numeric values)
+                /// \brief sort by transforming to numeric values the given column
                 ///
-                bool sort_as_number_ascending(size_t col);
-
-                ///
-                /// \brief sort descendingly (transforming to numeric values)
-                ///
-                bool sort_as_number_descending(size_t col);
+                bool sort_as_number(size_t col, sorting mode);
 
                 ///
                 /// \brief pretty-print its content

@@ -182,7 +182,7 @@ static void check_problem(
         }
 
         // print stats
-        table.sort_as_number_ascending(2);
+        table.sort_as_number(2, tabulator_t::sorting::ascending);
         table.print(std::cout);
 }
 
@@ -237,7 +237,7 @@ int main(int argc, char *argv[])
                                    << stat.m_grads.sum();
         }
 
-        table.sort_as_number_ascending(2);
+        table.sort_as_number(2, tabulator_t::sorting::ascending);
         table.print(std::cout);
 
         // OK

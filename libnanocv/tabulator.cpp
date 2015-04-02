@@ -51,20 +51,25 @@ namespace ncv
                 }
         }
 
-        bool tabulator_t::sort_as_number_ascending(size_t col)
+        bool tabulator_t::sort_as_number(size_t col, sorting mode)
         {
-                return sort(col, [] (const string_t& value1, const string_t& value2)
+                switch (mode)
                 {
-                        return text::from_string<double>(value1) < text::from_string<double>(value2);
-                });
-        }
+                case sorting::ascending:
+                        return sort(col, [] (const string_t& value1, const string_t& value2)
+                        {
+                                return text::from_string<double>(value1) < text::from_string<double>(value2);
+                        });
 
-        bool tabulator_t::sort_as_number_descending(size_t col)
-        {
-                return sort(col, [] (const string_t& value1, const string_t& value2)
-                {
-                        return text::from_string<double>(value1) > text::from_string<double>(value2);
-                });
+                case sorting::descending:
+                        return sort(col, [] (const string_t& value1, const string_t& value2)
+                        {
+                                return text::from_string<double>(value1) > text::from_string<double>(value2);
+                        });
+
+                default:
+                        return false;
+                }
         }
 
         std::size_t tabulator_t::border() const
