@@ -70,7 +70,8 @@ namespace ncv
 
                                 const tscalar approx_epsilon = epsilon * m_sumC;
 
-                                for (tsize i = 0; i < max_iters; i ++)
+                                for (tsize i = 0; i < max_iters &&
+                                        ((a) || (b)) && (b.alpha() - a.alpha()) > a.minimum(); i ++)
                                 {
                                         // check Armijo+Wolfe or approximate Wolfe condition
                                         if (    (!m_approx && a.has_armijo(c1) && a.has_wolfe(c2)) ||
@@ -98,7 +99,7 @@ namespace ncv
                                 }
 
                                 // NOK, give up
-                                return step0;
+                                return update(std::min(a.setup(), step0), omega);
                         }
 
                 private:

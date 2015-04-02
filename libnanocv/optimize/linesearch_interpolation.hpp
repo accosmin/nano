@@ -68,12 +68,8 @@ namespace ncv
                                 }
 
                                 // NOK, give up
-                                return step0;
+                                return std::min(stept.setup(), step0);
                         }
-
-                private:
-
-
                 };
         }
 }

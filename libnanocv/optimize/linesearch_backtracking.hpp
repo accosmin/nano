@@ -84,7 +84,7 @@ namespace ncv
                                 }
 
                                 // NOK, give up
-                                return step0;
+                                return std::min(step.setup(), step0);
                         }
                 };
         }
