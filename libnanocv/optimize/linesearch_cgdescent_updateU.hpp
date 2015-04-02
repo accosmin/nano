@@ -24,7 +24,7 @@ namespace ncv
                         for (tsize i = 0; i < max_iters && (b.alpha() - a.alpha()) > a.minimum(); i ++)
                         {
                                 tstep c(step0);
-                                c.reset_with_grad((1 - theta) * a.alpha() + theta * b.alpha());
+                                c.reset((1 - theta) * a.alpha() + theta * b.alpha());
 
                                 if (c.gphi() >= 0)
                                 {

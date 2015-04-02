@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm>
 #include "linesearch.h"
 #include "linesearch_cgdescent_bracket.hpp"
 #include "linesearch_cgdescent_secant2.hpp"
@@ -54,15 +53,15 @@ namespace ncv
                                 tstep a(step0), b(step0), c(step0);
 
                                 // bracket the initial step size
-                                c.reset_with_grad(t0);
+                                c.reset(t0);
                                 std::tie(a, b) = cgdescent_bracket(step0, c, epsilon, theta, ro);
 
-                                // reset to the original interval [0, t0) if bracketing fails
-                                if ((!a) || (!b))
-                                {
-                                        a = step0;
-                                        b = c;
-                                }
+//                                // reset to the original interval [0, t0) if bracketing fails
+//                                if ((!a) || (!b))
+//                                {
+//                                        a = step0;
+//                                        b = c;
+//                                }
 
                                 // estimate an upper bound of the function value
                                 // (to be used for the approximate Wolfe condition)
@@ -72,8 +71,7 @@ namespace ncv
                                 const tscalar approx_epsilon = epsilon * m_sumC;
 
                                 //
-                                for (   tsize i = 0; i < max_iters &&
-                                        ((a) || (b)) && (b.alpha() - a.alpha()) > a.minimum(); i ++)
+                                for (tsize i = 0; i < max_iters; i ++)
                                 {
                                         // check Armijo+Wolfe or approximate Wolfe condition
                                         if (    (!m_approx && a.has_armijo(c1) && a.has_wolfe(c2)) ||
@@ -90,7 +88,7 @@ namespace ncv
                                         if ((B.alpha() - A.alpha()) > gamma * (b.alpha() - a.alpha()))
                                         {
                                                 tstep c(a);
-                                                c.reset_with_grad((A.alpha() + B.alpha()) / 2);
+                                                c.reset((A.alpha() + B.alpha()) / 2);
                                                 std::tie(a, b) = cgdescent_update(step0, A, B, c, approx_epsilon, theta);
                                         }
                                         else
@@ -101,7 +99,7 @@ namespace ncv
                                 }
 
                                 // NOK, give up
-                                return update(std::min(a, step0), omega);
+                                return step0;
                         }
 
                 private:

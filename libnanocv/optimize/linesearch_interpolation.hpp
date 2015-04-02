@@ -45,10 +45,7 @@ namespace ncv
                                 for (tsize i = 1; i <= max_iters; i ++)
                                 {
                                         // check sufficient decrease
-                                        if (!stept.reset_with_grad(t))
-                                        {
-                                                break;
-                                        }
+                                        stept.reset(t);
 
                                         if (!stept.has_armijo(c1) || (stept.func() >= stepp.func() && i > 1))
                                         {
@@ -71,7 +68,7 @@ namespace ncv
                                 }
 
                                 // NOK, give up
-                                return std::min(stept, step0);
+                                return step0;
                         }
 
                 private:

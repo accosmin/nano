@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm>
 #include "linesearch.h"
 #include "linesearch_step.hpp"
 #include "linesearch_cubic.hpp"
@@ -51,10 +50,7 @@ namespace ncv
                                 }
 
                                 // check sufficient decrease
-                                if (!stept.reset_with_grad(t))
-                                {
-                                        return step0;
-                                }
+                                stept.reset(t);
 
                                 if (!stept.has_armijo(c1) || stept.phi() >= steplo.phi())
                                 {
@@ -79,7 +75,7 @@ namespace ncv
                         }
 
                         // NOK, give up
-                        return std::min(stept, step0);
+                        return step0;
                 }
         }
 }

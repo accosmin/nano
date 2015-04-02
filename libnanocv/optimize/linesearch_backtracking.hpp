@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm>
 #include "linesearch.h"
 #include "linesearch_step.hpp"
 
@@ -45,11 +44,7 @@ namespace ncv
 
                                 for (tsize i = 0; i < max_iters; i ++)
                                 {
-                                        // NB: assume the gradient is (much) slower to compute than the function value!
-                                        if (!step.reset_no_grad(t))
-                                        {
-                                                break;
-                                        }
+                                        step.reset(t);
 
                                         // check Armijo condition
                                         if (!step.has_armijo(c1))
@@ -89,7 +84,7 @@ namespace ncv
                                 }
 
                                 // NOK, give up
-                                return std::min(step, step0);
+                                return step0;
                         }
                 };
         }

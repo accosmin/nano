@@ -23,7 +23,7 @@ namespace ncv
                         const tsize max_iters = 16)
                 {
                         std::vector<tstep> steps;
-                        for (tsize i = 0; i <= max_iters && c; i ++)
+                        for (tsize i = 0; i <= max_iters; i ++)
                         {
                                 if (c.gphi() >= 0)
                                 {
@@ -46,7 +46,7 @@ namespace ncv
                                 else
                                 {
                                         steps.push_back(c);
-                                        c.reset_with_grad(ro * c.alpha());
+                                        c.reset(ro * c.alpha());
                                 }
                         }
 
