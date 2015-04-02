@@ -15,8 +15,7 @@ namespace ncv
                         typename tscalar = typename tstep::tscalar,
                         typename tsize = typename tstep::tsize
                 >
-                std::pair<tstep, tstep> cgdescent_update(const tstep& step0,
-                        const tstep& a, const tstep& b, tstep c,
+                std::pair<tstep, tstep> cgdescent_update(const tstep& a, const tstep& b, tstep c,
                         const tscalar epsilon,
                         const tscalar theta)
                 {
@@ -37,7 +36,7 @@ namespace ncv
 
                         else
                         {
-                                return cgdescent_updateU(step0, a, c, epsilon, theta);
+                                return cgdescent_updateU(a, c, epsilon, theta);
                         }
                 }
         }

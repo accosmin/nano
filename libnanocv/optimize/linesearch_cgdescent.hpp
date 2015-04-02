@@ -9,7 +9,7 @@ namespace ncv
         namespace optimize
         {
                 ///
-                /// \brief CG_DESCENT following:
+                /// \brief CG_DESCENT:
                 ///     see "A new conjugate gradient method with guaranteed descent and an efficient line search",
                 ///     by William W. Hager & HongChao Zhang, 2005
                 ///
@@ -81,13 +81,13 @@ namespace ncv
 
                                         // secant interpolation
                                         tstep A(a), B(a);
-                                        std::tie(A, B) = cgdescent_secant2(step0, a, b, approx_epsilon, theta);
+                                        std::tie(A, B) = cgdescent_secant2(a, b, approx_epsilon, theta);
 
                                         // update search interval
                                         if ((B.alpha() - A.alpha()) > gamma * (b.alpha() - a.alpha()))
                                         {
                                                 c.reset((A.alpha() + B.alpha()) / 2);
-                                                std::tie(a, b) = cgdescent_update(step0, A, B, c, approx_epsilon, theta);
+                                                std::tie(a, b) = cgdescent_update(A, B, c, approx_epsilon, theta);
                                         }
                                         else
                                         {

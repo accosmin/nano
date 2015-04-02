@@ -40,7 +40,7 @@ namespace ncv
 
                                 if (c.gphi() < 0 && c.phi() > c.approx_phi(epsilon))
                                 {
-                                        return cgdescent_updateU(step0, step0, c, epsilon, theta);
+                                        return cgdescent_updateU(step0, c, epsilon, theta);
                                 }
 
                                 else
