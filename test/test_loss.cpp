@@ -3,9 +3,9 @@
 
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/nanocv.h"
-#include "libnanocv/util/random.hpp"
-#include "libnanocv/math/epsilon.hpp"
+#include "libnanocv/random.hpp"
 #include "libnanocv/optimizer.h"
+#include "libnanocv/math/epsilon.hpp"
 
 namespace test
 {

@@ -3,7 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/color.h"
-#include "libnanocv/util/logger.h"
+#include "libnanocv/logger.h"
 
 BOOST_AUTO_TEST_CASE(test_color_cielab)
 {

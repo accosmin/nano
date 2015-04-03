@@ -6,7 +6,6 @@
 #include "trainer.h"
 #include "version.h"
 #include "criterion.h"
-#include "util/arch.h"
 
 namespace ncv
 {

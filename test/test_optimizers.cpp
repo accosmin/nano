@@ -2,13 +2,13 @@
 #define BOOST_TEST_MODULE "test_optimizers"
 
 #include <boost/test/unit_test.hpp>
+#include "libnanocv/timer.h"
+#include "libnanocv/logger.h"
+#include "libnanocv/stats.hpp"
+#include "libnanocv/random.hpp"
 #include "libnanocv/minimize.h"
 #include "libnanocv/math/abs.hpp"
-#include "libnanocv/util/timer.h"
 #include "libnanocv/math/math.hpp"
-#include "libnanocv/util/logger.h"
-#include "libnanocv/util/stats.hpp"
-#include "libnanocv/util/random.hpp"
 #include "libnanocv/math/epsilon.hpp"
 
 #include "libnanocv/functions/function_trid.h"

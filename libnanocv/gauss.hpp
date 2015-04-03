@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../math/cast.hpp"
 #include <vector>
-#include <type_traits>
 #include <numeric>
+#include <type_traits>
+#include "math/cast.hpp"
 
 namespace ncv
 {

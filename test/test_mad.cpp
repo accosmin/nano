@@ -3,7 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/tensor.h"
-#include "libnanocv/util/mad.hpp"
+#include "libnanocv/mad.hpp"
 #include "libnanocv/math/abs.hpp"
 #include "libnanocv/math/epsilon.hpp"
 #include "libnanocv/tensor/mad.hpp"

@@ -1,10 +1,10 @@
 #include "task_svhn.h"
-#include "../math/math.hpp"
-#include "../util/logger.h"
-#include "../file/gzip.h"
-#include "../file/mat5.h"
 #include "../loss.h"
 #include "../color.h"
+#include "../logger.h"
+#include "../file/gzip.h"
+#include "../file/mat5.h"
+#include "../math/math.hpp"
 #include <fstream>
 #include <memory>
 

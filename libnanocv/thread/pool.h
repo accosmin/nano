@@ -1,11 +1,11 @@
 #pragma once
 
 #include "thread.h"
-#include "../util/arch.h"
-#include "../util/noncopyable.hpp"
+#include "../arch.h"
+#include "../noncopyable.hpp"
+#include <deque>
 #include <vector>
 #include <condition_variable>
-#include <deque>
 
 namespace ncv
 {

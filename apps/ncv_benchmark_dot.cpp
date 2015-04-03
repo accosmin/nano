@@ -1,7 +1,7 @@
+#include "libnanocv/dot.hpp"
 #include "libnanocv/tensor.h"
 #include "libnanocv/tabulator.h"
-#include "libnanocv/util/dot.hpp"
-#include "libnanocv/util/measure.hpp"
+#include "libnanocv/measure.hpp"
 #include "libnanocv/tensor/dot.hpp"
 #include <iostream>
 

@@ -4,7 +4,7 @@
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/nanocv.h"
 #include "libnanocv/tester.h"
-#include "libnanocv/util/logger.h"
+#include "libnanocv/logger.h"
 #include "libnanocv/tasks/task_synthetic_shapes.h"
 #include <cstdio>
 

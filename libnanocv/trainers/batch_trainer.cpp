@@ -1,8 +1,8 @@
 #include "batch_trainer.h"
-#include "../util/logger.h"
-#include "../math/math.hpp"
 #include "../model.h"
+#include "../logger.h"
 #include "../sampler.h"
+#include "../math/math.hpp"
 #include "batch.h"
 
 namespace ncv

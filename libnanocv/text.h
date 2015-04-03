@@ -1,9 +1,9 @@
 #pragma once
 
+#include "arch.h"
 #include <vector>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
-#include "util/arch.h"
 
 namespace ncv
 {

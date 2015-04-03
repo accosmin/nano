@@ -1,5 +1,6 @@
 #pragma once
 
+#include "arch.h"
 #include "geom.h"
 
 namespace ncv
@@ -7,7 +8,7 @@ namespace ncv
         ///
         /// \brief 2D point
         ///
-        class point_t
+        class NANOCV_DLL_PUBLIC point_t
         {
         public:
 

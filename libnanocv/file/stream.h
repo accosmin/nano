@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../util/noncopyable.hpp"
-#include <utility>
 #include <string>
+#include <utility>
+#include "../noncopyable.hpp"
 
 namespace ncv
 {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "util/arch.h"
 #include "optimizer.h"
 
 namespace ncv

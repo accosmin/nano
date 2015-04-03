@@ -1,9 +1,9 @@
 #include "task_cifar100.h"
-#include "../math/cast.hpp"
-#include "../util/logger.h"
-#include "../file/archive.h"
-#include "../file/stream.h"
 #include "../loss.h"
+#include "../logger.h"
+#include "../file/stream.h"
+#include "../math/cast.hpp"
+#include "../file/archive.h"
 
 namespace ncv
 {

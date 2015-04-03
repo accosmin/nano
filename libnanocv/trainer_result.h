@@ -1,9 +1,8 @@
 #pragma once
 
-#include "tensor.h"
-#include "util/arch.h"
-#include "trainer_state.h"
 #include <map>
+#include "tensor.h"
+#include "trainer_state.h"
 
 namespace ncv
 {

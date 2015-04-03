@@ -1,7 +1,7 @@
 #pragma once
 
-#include "tensor/tensor.hpp"
 #include "scalar.h"
+#include "tensor/tensor.hpp"
 
 namespace ncv
 {

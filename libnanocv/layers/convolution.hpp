@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../util/conv2d.hpp"
-#include "../util/corr2d.hpp"
+#include "../conv2d.hpp"
+#include "../corr2d.hpp"
 #include "../tensor/matrix.hpp"
 
 namespace ncv

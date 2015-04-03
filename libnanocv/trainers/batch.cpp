@@ -1,10 +1,10 @@
 #include "batch.h"
-#include "../accumulator.h"
+#include "../timer.h"
+#include "../logger.h"
 #include "../sampler.h"
-#include "../util/logger.h"
-#include "../util/log_search.hpp"
-#include "../util/timer.h"
 #include "../minimize.h"
+#include "../accumulator.h"
+#include "../log_search.hpp"
 
 namespace ncv
 {

@@ -1,8 +1,7 @@
 #pragma once
 
 #include "image.h"
-#include "util/arch.h"
-#include "util/manager.hpp"
+#include "manager.hpp"
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 

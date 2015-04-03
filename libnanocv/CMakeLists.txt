@@ -2,7 +2,6 @@
 file(GLOB libnanocv_sources
         *.*
         file/*.*
-        util/*.*
         math/*.*
         tasks/*.*
         tensor/*.*

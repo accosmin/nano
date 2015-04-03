@@ -1,8 +1,7 @@
 #pragma once
 
-#include "../optimizer.h"
 #include "../string.h"
-#include "../util/arch.h"
+#include "../optimizer.h"
 
 namespace ncv
 {

@@ -1,9 +1,9 @@
 #include "libnanocv/tensor.h"
 #include "libnanocv/string.h"
+#include "libnanocv/conv2d.hpp"
+#include "libnanocv/measure.hpp"
 #include "libnanocv/tabulator.h"
 #include "libnanocv/placeholders.h"
-#include "libnanocv/util/conv2d.hpp"
-#include "libnanocv/util/measure.hpp"
 #include "libnanocv/tensor/conv2d.hpp"
 #ifdef NANOCV_HAVE_OPENCL
 #include "opencl/opencl.h"

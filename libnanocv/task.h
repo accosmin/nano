@@ -1,9 +1,8 @@
 #pragma once
 
-#include "util/arch.h"
-#include "util/manager.hpp"
 #include "image.h"
 #include "sample.h"
+#include "manager.hpp"
 
 namespace ncv
 {

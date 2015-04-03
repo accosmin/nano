@@ -1,7 +1,7 @@
 #include "layer_linear.h"
 #include "../text.h"
+#include "../random.hpp"
 #include "../math/clamp.hpp"
-#include "../util/random.hpp"
 #include "../tensor/serialize.hpp"
 #include "linear.hpp"
 

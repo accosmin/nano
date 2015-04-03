@@ -1,10 +1,10 @@
 #include "image.h"
 #include "image_io.h"
 #include "math/math.hpp"
-#include "util/bilinear.hpp"
-#include "util/random_noise.hpp"
-#include "util/random_translate.hpp"
-#include "util/separable_filter.hpp"
+#include "bilinear.hpp"
+#include "random_noise.hpp"
+#include "random_translate.hpp"
+#include "separable_filter.hpp"
 
 namespace ncv
 {

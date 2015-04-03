@@ -1,7 +1,7 @@
 #include "libnanocv/nanocv.h"
+#include "libnanocv/measure.hpp"
 #include "libnanocv/tabulator.h"
 #include "libnanocv/accumulator.h"
-#include "libnanocv/util/measure.hpp"
 #include "libnanocv/thread/thread.h"
 #include "libnanocv/trainers/batch.h"
 #include "libnanocv/trainers/minibatch.h"

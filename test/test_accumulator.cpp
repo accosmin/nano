@@ -3,10 +3,10 @@
 
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/tasks/task_synthetic_shapes.h"
+#include "libnanocv/timer.h"
+#include "libnanocv/logger.h"
 #include "libnanocv/nanocv.h"
 #include "libnanocv/math/abs.hpp"
-#include "libnanocv/util/timer.h"
-#include "libnanocv/util/logger.h"
 #include "libnanocv/math/epsilon.hpp"
 #include "libnanocv/thread/thread.h"
 #include "libnanocv/accumulator.h"

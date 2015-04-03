@@ -1,7 +1,7 @@
 #include "task_synthetic_shapes.h"
 #include "../loss.h"
+#include "../random.hpp"
 #include "../math/math.hpp"
-#include "../util/random.hpp"
 
 namespace ncv
 {

@@ -3,13 +3,13 @@
 
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/nanocv.h"
+#include "libnanocv/logger.h"
+#include "libnanocv/random.hpp"
 #include "libnanocv/optimizer.h"
 #include "libnanocv/accumulator.h"
-#include "libnanocv/util/logger.h"
-#include "libnanocv/math/close.hpp"
-#include "libnanocv/util/random.hpp"
-#include "libnanocv/math/epsilon.hpp"
 #include "libnanocv/thread/pool.h"
+#include "libnanocv/math/close.hpp"
+#include "libnanocv/math/epsilon.hpp"
 #include "libnanocv-test/test_models.h"
 
 namespace test

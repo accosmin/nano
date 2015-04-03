@@ -2,9 +2,9 @@
 
 #include "gauss.hpp"
 #include "random.hpp"
+#include "tensor/matrix.hpp"
+#include "tensor/transform.hpp"
 #include "separable_filter.hpp"
-#include "../tensor/matrix.hpp"
-#include "../tensor/transform.hpp"
 
 namespace ncv
 {

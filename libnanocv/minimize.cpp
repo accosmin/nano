@@ -8,7 +8,7 @@
 #include "liboptimize/stoch_sia.hpp"
 #include "liboptimize/stoch_adagrad.hpp"
 #include "liboptimize/stoch_adadelta.hpp"
-#include "util/logger.h"
+#include "logger.h"
 #include "string.h"
 
 namespace ncv

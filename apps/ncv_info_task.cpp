@@ -1,5 +1,5 @@
 #include "libnanocv/nanocv.h"
-#include "libnanocv/util/measure.hpp"
+#include "libnanocv/measure.hpp"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])

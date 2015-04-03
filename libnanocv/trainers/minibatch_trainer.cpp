@@ -1,9 +1,9 @@
 #include "minibatch_trainer.h"
-#include "../model.h"
-#include "../sampler.h"
-#include "../util/logger.h"
-#include "../math/math.hpp"
 #include "minibatch.h"
+#include "../model.h"
+#include "../logger.h"
+#include "../sampler.h"
+#include "../math/math.hpp"
 
 namespace ncv
 {

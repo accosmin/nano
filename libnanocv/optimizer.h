@@ -1,9 +1,9 @@
 #pragma once
 
-#include "liboptimize/problem.hpp"
-#include "liboptimize/linesearch.h"
 #include "text.h"
 #include "tensor.h"
+#include "liboptimize/problem.hpp"
+#include "liboptimize/linesearch.h"
 
 namespace ncv
 {

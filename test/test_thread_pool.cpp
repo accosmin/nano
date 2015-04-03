@@ -2,9 +2,9 @@
 #define BOOST_TEST_MODULE "test_thread_pool"
 
 #include <boost/test/unit_test.hpp>
+#include "libnanocv/logger.h"
+#include "libnanocv/random.hpp"
 #include "libnanocv/thread/pool.h"
-#include "libnanocv/util/logger.h"
-#include "libnanocv/util/random.hpp"
 
 BOOST_AUTO_TEST_CASE(test_thread_pool)
 {
