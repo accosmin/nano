@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
         using namespace ncv;
 
         // prepare object string-based selection
-        const strings_t model_ids = model_manager_t::instance().ids();
+        const strings_t model_ids = ncv::get_models().ids();
 
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
         const size_t cmd_save_group_cols = math::clamp(po_vm["save-group-cols"].as<size_t>(), 1, 128);
 
         // create model
-        const rmodel_t rmodel = model_manager_t::instance().get(cmd_model);
+        const rmodel_t rmodel = ncv::get_models().get(cmd_model);
 
         // load model
         ncv::measure_critical_and_log(

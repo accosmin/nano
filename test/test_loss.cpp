@@ -13,7 +13,7 @@ namespace test
 
         void check_grad(const string_t& loss_id, size_t n_dims, size_t n_tests)
         {
-                const rloss_t loss = loss_manager_t::instance().get(loss_id);
+                const rloss_t loss = ncv::get_losses().get(loss_id);
 
                 const vector_t target = ncv::class_target(n_dims / 2, n_dims);
 
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(test_loss)
 
         using namespace ncv;
 
-        const strings_t loss_ids = loss_manager_t::instance().ids();
+        const strings_t loss_ids = ncv::get_losses().ids();
 
         const size_t cmd_min_dims = 2;
         const size_t cmd_max_dims = 10;

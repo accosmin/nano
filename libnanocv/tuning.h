@@ -12,7 +12,7 @@ namespace ncv
         {
                 none,
                 log10_search,           ///< branch and bound search on the log10 scale
-                continuation            ///< continuation methods (smooth to
+                continuation            ///< continuation methods (aka homotopy maps)
         };
 
         // string cast for enumerations

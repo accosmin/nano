@@ -31,7 +31,7 @@ namespace test
                 const size_t n_tests = 16;
                 const size_t n_samples = rand();
 
-                const rloss_t rloss = loss_manager_t::instance().get(loss_id);
+                const rloss_t rloss = ncv::get_losses().get(loss_id);
                 const loss_t& loss = *rloss;
 
                 const size_t psize = model.psize();
@@ -114,7 +114,7 @@ namespace test
         void test_grad_params(const string_t& header, const string_t& loss_id, const model_t& model)
         {
                 // check all criteria
-                const strings_t criteria = criterion_manager_t::instance().ids();
+                const strings_t criteria = ncv::get_criteria().ids();
                 for (const string_t& criterion : criteria)
                 {
                         random_t<size_t> rand(2, 16);
@@ -131,7 +131,7 @@ namespace test
 
                 const size_t n_tests = 16;
 
-                const rloss_t rloss = loss_manager_t::instance().get(loss_id);
+                const rloss_t rloss = ncv::get_losses().get(loss_id);
                 const loss_t& loss = *rloss;
 
                 const size_t psize = model.psize();
@@ -242,7 +242,7 @@ BOOST_AUTO_TEST_CASE(test_gradient)
                         }
 
                         // create model
-                        const rmodel_t model = model_manager_t::instance().get("forward-network", desc);
+                        const rmodel_t model = ncv::get_models().get("forward-network", desc);
                         BOOST_CHECK_EQUAL(model.operator bool(), true);
                         {
                                 const thread_pool_t::lock_t lock(test::mutex);

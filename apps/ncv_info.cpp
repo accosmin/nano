@@ -28,12 +28,12 @@ int main(int argc, char *argv[])
 {
         ncv::init();
 
-        print("loss",           ncv::loss_manager_t::instance());
-        print("task",           ncv::task_manager_t::instance());
-        print("layer",          ncv::layer_manager_t::instance());
-        print("model",          ncv::model_manager_t::instance());
-        print("trainer",        ncv::trainer_manager_t::instance());
-        print("criterion",      ncv::criterion_manager_t::instance());
+        print("loss",           ncv::get_losses());
+        print("task",           ncv::get_tasks());
+        print("layer",          ncv::get_layers());
+        print("model",          ncv::get_models());
+        print("trainer",        ncv::get_trainers());
+        print("criterion",      ncv::get_criteria());
 
         // OK
         ncv::log_info() << ncv::done;

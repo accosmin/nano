@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 
         ncv::init();
 
-        const strings_t task_ids = task_manager_t::instance().ids();
+        const strings_t task_ids = ncv::get_tasks().ids();
 
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
         const size_t cmd_save_group_cols = math::clamp(po_vm["save-group-cols"].as<size_t>(), 1, 128);
 
         // create task
-        const rtask_t rtask = task_manager_t::instance().get(cmd_task, cmd_task_params);
+        const rtask_t rtask = ncv::get_tasks().get(cmd_task, cmd_task_params);
 
         // load task data
         ncv::measure_critical_and_log(

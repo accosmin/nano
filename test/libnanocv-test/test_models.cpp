@@ -98,7 +98,7 @@ namespace test
                         }
                 }
 
-                const strings_t loss_ids = loss_manager_t::instance().ids();
+                const strings_t loss_ids = ncv::get_losses().ids();
 
                 // create the <model description, loss id> configuration
                 std::vector<std::pair<ncv::string_t, ncv::string_t> > result;

@@ -14,13 +14,15 @@ namespace ncv
         ///
         /// \brief stores registered prototypes
         ///
-        typedef manager_t<trainer_t>                    trainer_manager_t;
-        typedef trainer_manager_t::robject_t            rtrainer_t;
+        typedef manager_t<trainer_t>            trainer_manager_t;
+        typedef trainer_manager_t::robject_t    rtrainer_t;
+
+        NANOCV_DLL_PUBLIC trainer_manager_t& get_trainers();
                 
         ///
         /// \brief generic trainer: optimizes a model on a given task
         ///
-        class trainer_t : public clonable_t<trainer_t>
+        class NANOCV_DLL_PUBLIC trainer_t : public clonable_t<trainer_t>
         {
         public:
 

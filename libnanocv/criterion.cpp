@@ -5,6 +5,11 @@
 
 namespace ncv
 {        
+        criterion_manager_t& get_criteria()
+        {
+                return criterion_manager_t::instance();
+        }
+
         criterion_t::criterion_t(const string_t& configuration)
                 :       clonable_t<criterion_t>(configuration),
                         m_lambda(0.0),

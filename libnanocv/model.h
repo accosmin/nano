@@ -7,6 +7,7 @@
 
 namespace ncv
 {
+        class task_t;
         class model_t;
 
         ///
@@ -15,7 +16,7 @@ namespace ncv
         typedef manager_t<model_t>              model_manager_t;
         typedef model_manager_t::robject_t      rmodel_t;
 
-        class task_t;
+        NANOCV_DLL_PUBLIC model_manager_t& get_models();
 
         ///
         /// \brief generic model used for computing:

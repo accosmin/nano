@@ -28,17 +28,17 @@ int main(int argc, char *argv[])
         ncv::init();
 
         // prepare object string-based selection
-        const strings_t task_ids = task_manager_t::instance().ids();
-        const strings_t loss_ids = loss_manager_t::instance().ids();
+        const strings_t task_ids = ncv::get_tasks().ids();
+        const strings_t loss_ids = ncv::get_losses().ids();
 
-        const strings_t model_ids = model_manager_t::instance().ids();
-        const strings_t model_descriptions = model_manager_t::instance().descriptions();
+        const strings_t model_ids = ncv::get_models().ids();
+        const strings_t model_descriptions = ncv::get_models().descriptions();
 
-        const strings_t trainer_ids = trainer_manager_t::instance().ids();
-        const strings_t trainer_descriptions = trainer_manager_t::instance().descriptions();
+        const strings_t trainer_ids = ncv::get_trainers().ids();
+        const strings_t trainer_descriptions = ncv::get_trainers().descriptions();
 
-        const strings_t criterion_ids = criterion_manager_t::instance().ids();
-        const strings_t criterion_descriptions = criterion_manager_t::instance().descriptions();
+        const strings_t criterion_ids = ncv::get_criteria().ids();
+        const strings_t criterion_descriptions = ncv::get_criteria().descriptions();
 
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
         const string_t cmd_output = po_vm["output"].as<string_t>();
 
         // create task
-        const rtask_t rtask = task_manager_t::instance().get(cmd_task, cmd_task_params);
+        const rtask_t rtask = ncv::get_tasks().get(cmd_task, cmd_task_params);
 
         // load task data
         ncv::measure_critical_and_log(
@@ -127,13 +127,13 @@ int main(int argc, char *argv[])
         rtask->describe();
 
         // create loss
-        const rloss_t rloss = loss_manager_t::instance().get(cmd_loss);
+        const rloss_t rloss = ncv::get_losses().get(cmd_loss);
 
         // create model
-        const rmodel_t rmodel = model_manager_t::instance().get(cmd_model, cmd_model_params);
+        const rmodel_t rmodel = ncv::get_models().get(cmd_model, cmd_model_params);
 
         // create trainer
-        const rtrainer_t rtrainer = trainer_manager_t::instance().get(cmd_trainer, cmd_trainer_params);
+        const rtrainer_t rtrainer = ncv::get_trainers().get(cmd_trainer, cmd_trainer_params);
 
         // train & test models
         std::map<scalar_t, std::tuple<rmodel_t, trainer_states_t>> models;

@@ -145,8 +145,8 @@ namespace ncv
                 vector_t x0;
                 model.save_params(x0);
 
-                const scalar_t lambda0 = 1.0;
-                const scalar_t lambdaN = 0.0;
+                const scalar_t lambda0 = 0.99;
+                const scalar_t lambdaN = 0.00;
 
                 // no tuning for non-regularized criteria
                 const bool can_regularize = accumulator_t::can_regularize(criterion);

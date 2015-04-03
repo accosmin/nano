@@ -5,6 +5,11 @@
 
 namespace ncv
 {
+        task_manager_t& get_tasks()
+        {
+                return task_manager_t::instance();
+        }
+
         void print(const string_t& header, const samples_t& samples)
         {
                 const strings_t labels = ncv::labels(samples);

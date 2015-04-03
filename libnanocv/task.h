@@ -6,12 +6,15 @@
 
 namespace ncv
 {
+        class task_t;
+
         ///
         /// \brief manage tasks (register new ones, query and clone them)
         ///
-        class task_t;
-        typedef manager_t<task_t>                       task_manager_t;
-        typedef task_manager_t::robject_t               rtask_t;
+        typedef manager_t<task_t>               task_manager_t;
+        typedef task_manager_t::robject_t       rtask_t;
+
+        NANOCV_DLL_PUBLIC task_manager_t& get_tasks();
 
         ///
         /// \brief describe the given samples

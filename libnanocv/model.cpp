@@ -10,6 +10,11 @@
 
 namespace ncv
 {
+        model_manager_t& get_models()
+        {
+                return model_manager_t::instance();
+        }
+
         model_t::model_t(const string_t& parameters)
                 :       clonable_t<model_t>(parameters),
                         m_rows(0),

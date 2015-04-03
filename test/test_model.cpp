@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(test_model_io)
                 cmodel + outlayer
         };
 
-        const rloss_t loss = loss_manager_t::instance().get("logistic");
+        const rloss_t loss = ncv::get_losses().get("logistic");
         BOOST_CHECK_EQUAL(loss.operator bool(), true);
 
         for (const string_t& cmd_network : cmd_networks)
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(test_model_io)
                 log_info() << "<<< running network [" << cmd_network << "] ...";
 
                 // create feed-forward network
-                const rmodel_t model = model_manager_t::instance().get("forward-network", cmd_network);
+                const rmodel_t model = ncv::get_models().get("forward-network", cmd_network);
                 BOOST_CHECK_EQUAL(model.operator bool(), true);
                 BOOST_CHECK_EQUAL(model->resize(task, false), true);
                 BOOST_CHECK_EQUAL(model->irows(), task.irows());

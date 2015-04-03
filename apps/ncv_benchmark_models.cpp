@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
                 "cmodel"
         };
 
-        const rloss_t loss = loss_manager_t::instance().get("logistic");
+        const rloss_t loss = ncv::get_losses().get("logistic");
         assert(loss);
 
         // construct tables to compare models
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
                 log_info() << "<<< running network [" << cmd_network << "] ...";
 
                 // create feed-forward network
-                const rmodel_t model = model_manager_t::instance().get("forward-network", cmd_network);
+                const rmodel_t model = ncv::get_models().get("forward-network", cmd_network);
                 assert(model);
                 model->resize(task, true);
 

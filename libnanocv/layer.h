@@ -1,5 +1,6 @@
 #pragma once
 
+#include "arch.h"
 #include "tensor.h"
 #include "manager.hpp"
 #include <boost/archive/binary_iarchive.hpp>
@@ -16,10 +17,12 @@ namespace ncv
         typedef layer_manager_t::robject_t              rlayer_t;
         typedef std::vector<rlayer_t>                   rlayers_t;
 
+        NANOCV_DLL_PUBLIC layer_manager_t& get_layers();
+
         ///
         /// \brief process a set of inputs of size (irows, icols) and produces a set of outputs of size (orows, ocols)
         ///
-        class layer_t : public clonable_t<layer_t>
+        class NANOCV_DLL_PUBLIC layer_t : public clonable_t<layer_t>
         {
         public:
 

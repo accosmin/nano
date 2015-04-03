@@ -11,8 +11,10 @@ namespace ncv
         ///
         /// \brief stores registered prototypes
         ///
-        typedef manager_t<loss_t>                       loss_manager_t;
-        typedef loss_manager_t::robject_t               rloss_t;
+        typedef manager_t<loss_t>               loss_manager_t;
+        typedef loss_manager_t::robject_t       rloss_t;
+
+        NANOCV_DLL_PUBLIC loss_manager_t& get_losses();
 
         ///
         /// \brief target value of the positive class

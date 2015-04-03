@@ -65,13 +65,13 @@ static void test_optimizers(
         const size_t n_threads = ncv::n_threads();
         const bool verbose = false;
 
-        // batch optimizers
-        const auto batch_optimizers =
-        {
-                batch_optimizer::GD,
-                batch_optimizer::CGD,
-                batch_optimizer::LBFGS
-        };
+//        // batch optimizers
+//        const auto batch_optimizers =
+//        {
+//                batch_optimizer::GD,
+//                batch_optimizer::CGD,
+//                batch_optimizer::LBFGS
+//        };
 
         // minibatch optimizers
         const auto minibatch_optimizers =
@@ -102,16 +102,16 @@ static void test_optimizers(
 
         const string_t basename = "[" + text::to_string(criterion) + "] ";
 
-        // run optimizers and collect results
-        for (batch_optimizer optimizer : batch_optimizers)
-        {
-                test_optimizer(model, [&] ()
-                {
-                        return ncv::batch_train(
-                                model, task, tsampler, vsampler, n_threads,
-                                loss, criterion, optimizer, cmd_iterations, cmd_epsilon, verbose);
-                }, basename + "batch-" + text::to_string(optimizer), table);
-        }
+//        // run optimizers and collect results
+//        for (batch_optimizer optimizer : batch_optimizers)
+//        {
+//                test_optimizer(model, [&] ()
+//                {
+//                        return ncv::batch_train(
+//                                model, task, tsampler, vsampler, n_threads,
+//                                loss, criterion, optimizer, cmd_iterations, cmd_epsilon, verbose);
+//                }, basename + "batch-" + text::to_string(optimizer), table);
+//        }
 
         for (batch_optimizer optimizer : minibatch_optimizers)
         {
@@ -188,15 +188,15 @@ int main(int argc, char *argv[])
                 cmodel + outlayer
         };
 
-        const strings_t cmd_losses = { "classnll" }; //logistic" }; //loss_manager_t::instance().ids();
-        const strings_t cmd_criteria = criterion_manager_t::instance().ids();
+        const strings_t cmd_losses = { "classnll" }; //logistic" }; //ncv::get_losses().ids();
+        const strings_t cmd_criteria = ncv::get_criteria().ids();
 
         // vary the model
         for (const string_t& cmd_network : cmd_networks)
         {
                 log_info() << "<<< running network [" << cmd_network << "] ...";
 
-                const rmodel_t model = model_manager_t::instance().get("forward-network", cmd_network);
+                const rmodel_t model = ncv::get_models().get("forward-network", cmd_network);
                 assert(model);
                 model->resize(task, true);
 
@@ -205,7 +205,7 @@ int main(int argc, char *argv[])
                 {
                         log_info() << "<<< running loss [" << cmd_loss << "] ...";
 
-                        const rloss_t loss = loss_manager_t::instance().get(cmd_loss);
+                        const rloss_t loss = ncv::get_losses().get(cmd_loss);
                         assert(loss);
 
                         tabulator_t table("optimizer\\");
