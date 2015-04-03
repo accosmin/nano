@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util/arch.h"
 #include "optimizer.h"
 
 namespace ncv
@@ -7,7 +8,7 @@ namespace ncv
         ///
         /// \brief batch optimization
         ///
-        opt_state_t minimize(
+        NANOCV_DLL_PUBLIC opt_state_t minimize(
                 const opt_opsize_t& fn_size,
                 const opt_opfval_t& fn_fval,
                 const opt_opgrad_t& fn_grad,
@@ -20,7 +21,7 @@ namespace ncv
         ///
         /// \brief batch optimization (can detail the line-search parameters)
         ///
-        opt_state_t minimize(
+        NANOCV_DLL_PUBLIC opt_state_t minimize(
                 const opt_opsize_t& fn_size,
                 const opt_opfval_t& fn_fval,
                 const opt_opgrad_t& fn_grad,
@@ -36,7 +37,7 @@ namespace ncv
         ///
         /// \brief stochastic optimization
         ///
-        opt_state_t minimize(
+        NANOCV_DLL_PUBLIC opt_state_t minimize(
                 const opt_opsize_t& fn_size,
                 const opt_opfval_t& fn_fval,
                 const opt_opgrad_t& fn_grad,

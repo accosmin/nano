@@ -7,5 +7,5 @@ namespace ncv
         ///
         /// \brief create Trid function tests
         ///
-        std::vector<function_t> make_trid_funcs(ncv::size_t max_dims = 32);
+        NANOCV_DLL_PUBLIC std::vector<function_t> make_trid_funcs(ncv::size_t max_dims = 32);
 }

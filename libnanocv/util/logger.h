@@ -1,5 +1,6 @@
 #pragma once
 
+#include "arch.h"
 #include <iostream>
 
 namespace ncv
@@ -7,7 +8,7 @@ namespace ncv
         ///
         /// \brief logging object that can use any std::ostream (standard streaming & text files)
         ///
-        class logger_t
+        class NANOCV_DLL_PUBLIC logger_t
         {
         public:
 

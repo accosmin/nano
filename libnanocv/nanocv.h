@@ -1,21 +1,22 @@
 #pragma once
 
-#include "version.h"
 #include "loss.h"
 #include "layer.h"
 #include "model.h"
 #include "trainer.h"
+#include "version.h"
 #include "criterion.h"
+#include "util/arch.h"
 
 namespace ncv
 {
         ///
         /// \brief current version
         ///
-        string_t version();
+        NANOCV_DLL_PUBLIC string_t version();
 
         ///
         /// \brief initialize library (setup flags, register default objects ...)
         ///
-        void init();
+        NANOCV_DLL_PUBLIC void init();
 }

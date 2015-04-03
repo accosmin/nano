@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util/arch.h"
 #include "util/manager.hpp"
 #include "tensor.h"
 
@@ -31,7 +32,7 @@ namespace ncv
         ///
         /// \brief target value for multi-class single-label classification problems with [n_labels] classes
         ///
-        vector_t class_target(size_t ilabel, size_t n_labels);
+        NANOCV_DLL_PUBLIC vector_t class_target(size_t ilabel, size_t n_labels);
 
         ///
         /// \brief generic multivariate loss function of two parameters:
@@ -41,7 +42,7 @@ namespace ncv
         /// the loss function upper-bounds/approximates
         /// the true (usually non-smooth) error function to minimize.
         ///
-        class loss_t : public clonable_t<loss_t>
+        class NANOCV_DLL_PUBLIC loss_t : public clonable_t<loss_t>
         {
         public:
 

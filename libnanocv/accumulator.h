@@ -1,6 +1,7 @@
 #pragma once
 
 #include "criterion.h"
+#include "util/arch.h"
 #include "util/stats.hpp"
 
 namespace ncv
@@ -8,7 +9,7 @@ namespace ncv
         ///
         /// \brief cumulate sample evaluations (loss value, error and gradient)
         ///
-        class accumulator_t : private noncopyable_t
+        class NANOCV_DLL_PUBLIC accumulator_t : private noncopyable_t
         {
         public:
 

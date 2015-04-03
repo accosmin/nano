@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util/arch.h"
 #include "string.h"
 #include "scalar.h"
 #include <limits>
@@ -10,7 +11,7 @@ namespace ncv
         ///
         /// \brief training state
         ///
-        struct trainer_state_t
+        struct NANOCV_DLL_PUBLIC trainer_state_t
         {
                 ///
                 /// \brief constructor
@@ -46,6 +47,6 @@ namespace ncv
         ///
         /// \brief save optimization states to text file
         ///
-        bool save(const string_t& path, const trainer_states_t& states);
+        NANOCV_DLL_PUBLIC bool save(const string_t& path, const trainer_states_t& states);
 }
 

@@ -3,6 +3,7 @@
 #include <vector>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
+#include "util/arch.h"
 
 namespace ncv
 {
@@ -23,8 +24,8 @@ namespace ncv
                 ///
                 /// \brief align a string to fill the given size
                 ///
-                std::string resize(const std::string& str, std::size_t size,
-                                   align alignment = align::left, char fill_char = ' ');
+                NANOCV_DLL_PUBLIC std::string resize(const std::string& str, std::size_t size,
+                        align alignment = align::left, char fill_char = ' ');
 
                 ///
                 /// \brief cast to string for built-in types

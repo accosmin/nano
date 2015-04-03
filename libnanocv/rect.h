@@ -2,6 +2,7 @@
 
 #include "point.h"
 #include "scalar.h"
+#include "util/arch.h"
 #include <iosfwd>
 
 namespace ncv
@@ -9,7 +10,7 @@ namespace ncv
         ///
         /// \brief 2D rectangle
         ///
-        class rect_t
+        class NANOCV_DLL_PUBLIC rect_t
         {
         public:
 
@@ -53,27 +54,27 @@ namespace ncv
         ///
         /// \brief intersect two rectangles
         ///
-        rect_t operator&(const rect_t& rect1, const rect_t& rect2);
+        NANOCV_DLL_PUBLIC rect_t operator&(const rect_t& rect1, const rect_t& rect2);
 
         ///
         /// \brief union with another rectangle
         ///
-        rect_t operator|(const rect_t& rect1, const rect_t& rect2);
+        NANOCV_DLL_PUBLIC rect_t operator|(const rect_t& rect1, const rect_t& rect2);
 
         ///
         /// \brief [0, 1] overlap between two rectangle (aka Jaccard distance)
         ///
-        scalar_t overlap(const rect_t& rect1, const rect_t& rect2);
+        NANOCV_DLL_PUBLIC scalar_t overlap(const rect_t& rect1, const rect_t& rect2);
 
         ///
         /// \brief compare two rectangles
         ///
-        bool operator==(const rect_t& rect1, const rect_t& rect2);
+        NANOCV_DLL_PUBLIC bool operator==(const rect_t& rect1, const rect_t& rect2);
 
         ///
         /// \brief stream a rectangle
         ///
-        std::ostream& operator<<(std::ostream& s, const rect_t& rect);
+        NANOCV_DLL_PUBLIC std::ostream& operator<<(std::ostream& s, const rect_t& rect);
 }
 
 

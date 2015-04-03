@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util/arch.h"
 #include "util/manager.hpp"
 #include "image.h"
 #include "sample.h"
@@ -16,14 +17,14 @@ namespace ncv
         ///
         /// \brief describe the given samples
         ///
-        void print(const string_t& header, const samples_t& samples);
+        NANOCV_DLL_PUBLIC void print(const string_t& header, const samples_t& samples);
 
         ///
         /// \brief generic computer vision task consisting of a set of (annotated) images
         /// and a protocol (training + testing).
         /// samples for training & testing models can be drawn from these image.
         ///
-        class task_t : public clonable_t<task_t>
+        class NANOCV_DLL_PUBLIC task_t : public clonable_t<task_t>
 	{
         public:
 

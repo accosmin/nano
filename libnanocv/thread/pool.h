@@ -1,6 +1,7 @@
 #pragma once
 
 #include "thread.h"
+#include "../util/arch.h"
 #include "../util/noncopyable.hpp"
 #include <vector>
 #include <condition_variable>
@@ -14,7 +15,7 @@ namespace ncv
         ///
         /// NB: this is heavily copied/inspired by http://progsch.net/wordpress/?p=81
         ///
-        class thread_pool_t : private noncopyable_t
+        class NANOCV_DLL_PUBLIC thread_pool_t : private noncopyable_t
         {
         public:
 

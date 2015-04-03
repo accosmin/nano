@@ -1,12 +1,13 @@
 #pragma once
 
+#include "arch.h"
 #include <chrono>
 #include <ratio>
 #include <string>
 
 namespace ncv
 {
-        class timer_t
+        class NANOCV_DLL_PUBLIC timer_t
         {
         public:
 

@@ -1,7 +1,8 @@
 #pragma once
 
-#include "trainer_state.h"
 #include "tensor.h"
+#include "util/arch.h"
+#include "trainer_state.h"
 #include <map>
 
 namespace ncv
@@ -23,7 +24,7 @@ namespace ncv
         ///
         /// \brief track the current/optimum model state
         ///
-        struct trainer_result_t
+        struct NANOCV_DLL_PUBLIC trainer_result_t
         {
                 ///
                 /// \brief constructor

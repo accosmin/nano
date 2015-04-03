@@ -1,7 +1,8 @@
 #pragma once
 
-#include "util/manager.hpp"
 #include "image.h"
+#include "util/arch.h"
+#include "util/manager.hpp"
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 
@@ -22,7 +23,7 @@ namespace ncv
         ///     - the output for an image patch
         //      - its parameters gradient
         ///
-        class model_t : public clonable_t<model_t>
+        class NANOCV_DLL_PUBLIC model_t : public clonable_t<model_t>
         {
         public:
 

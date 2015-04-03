@@ -91,10 +91,10 @@ static void check_problem(
 
         const auto ls_strategies =
         {
-                optimize::ls_strategy::backtrack_armijo,
-                optimize::ls_strategy::backtrack_wolfe,
-                optimize::ls_strategy::backtrack_strong_wolfe,
-                optimize::ls_strategy::interpolation_bisection,
+//                optimize::ls_strategy::backtrack_armijo,
+//                optimize::ls_strategy::backtrack_wolfe,
+//                optimize::ls_strategy::backtrack_strong_wolfe,
+//                optimize::ls_strategy::interpolation_bisection,
                 optimize::ls_strategy::interpolation_cubic,
                 optimize::ls_strategy::cg_descent
         };
