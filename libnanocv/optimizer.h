@@ -1,7 +1,7 @@
 #pragma once
 
-#include "optimize/problem.hpp"
-#include "optimize/linesearch.h"
+#include "liboptimize/problem.hpp"
+#include "liboptimize/linesearch.h"
 #include "text.h"
 #include "tensor.h"
 

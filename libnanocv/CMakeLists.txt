@@ -54,8 +54,8 @@ install(TARGETS
         DESTINATION lib)
 
 # install headers
-install(DIRECTORY ${nanocv_SOURCE_DIR}/src/
-        DESTINATION include/nanocv
+install(DIRECTORY ${nanocv_SOURCE_DIR}/libnanocv/
+        DESTINATION include/libnanocv
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
 
 
