@@ -31,7 +31,7 @@ namespace ncv
                         {
                                 const tscalar tmin = std::min(steplo.alpha(), stephi.alpha());
                                 const tscalar tmax = std::max(steplo.alpha(), stephi.alpha());
-                                const tscalar teps = stept.minimum();
+                                const tscalar teps = (tmax - tmin) / 20;//stept.minimum();
 
                                 switch (strategy)
                                 {
