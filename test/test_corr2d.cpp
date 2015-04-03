@@ -7,10 +7,10 @@
 #include "libnanocv/corr2d.hpp"
 #include "libnanocv/math/close.hpp"
 #include "libnanocv/math/epsilon.hpp"
-#ifdef NANOCV_HAVE_OPENCL
-#include "opencl/opencl.h"
+#ifdef NANOCV_WITH_OPENCL
+#include "libnanocv/opencl/opencl.h"
 #endif
-#ifdef NANOCV_HAVE_CUDA
+#ifdef NANOCV_WITH_CUDA
 #include "cuda/cuda.h"
 #include "cuda/conv2d.h"
 #endif
@@ -34,7 +34,7 @@ namespace test
                 return odata.sum();
         }
 
-        #ifdef NANOCV_HAVE_OPENCL
+        #ifdef NANOCV_WITH_OPENCL
 
         const std::string conv_program_source = R"xxx(
 
@@ -82,9 +82,9 @@ namespace test
         >
         tscalar test_gpu(
                 const char* kernel_name, const char* name,
-                const std::vector<tmatrix>& idatas, const tmatrix& kdata, std::vector<tmatrix>& odatas)
+                const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
         {
-                ocl::manager_t& theocl = ocl::manager_t::instance();
+                ocl::manager_t& theocl = ocl::get_manager();
 
                 const cl::Context context = theocl.make_context();
                 const cl::CommandQueue queue = theocl.make_command_queue(context);
@@ -93,19 +93,19 @@ namespace test
 
                 const int krows = static_cast<int>(kdata.rows());
                 const int kcols = static_cast<int>(kdata.cols());
-                const int orows = static_cast<int>(odatas[0].rows());
-                const int ocols = static_cast<int>(odatas[0].cols());
+                const int orows = static_cast<int>(odata.rows());
+                const int ocols = static_cast<int>(odata.cols());
 
-                const size_t mem_idata = idatas[0].size() * sizeof(tscalar);
+                const size_t mem_idata = idata.size() * sizeof(tscalar);
                 const size_t mem_kdata = kdata.size() * sizeof(tscalar);
-                const size_t mem_odata = odatas[0].size() * sizeof(tscalar);
+                const size_t mem_odata = odata.size() * sizeof(tscalar);
 
-                // create buffers once
+                // create buffers
                 const cl::Buffer ibuffer = theocl.make_buffer(context, mem_idata, CL_MEM_READ_ONLY);
                 const cl::Buffer kbuffer = theocl.make_buffer(context, mem_kdata, CL_MEM_READ_ONLY);
                 const cl::Buffer obuffer = theocl.make_buffer(context, mem_odata, CL_MEM_WRITE_ONLY);
 
-                // setup kernel buffers once
+                // setup kernel buffers
                 kernel.setArg(0, ibuffer);
                 kernel.setArg(1, kbuffer);
                 kernel.setArg(2, sizeof(int), (void*)&krows);
@@ -115,38 +115,18 @@ namespace test
                 // transfer constants
                 queue.enqueueWriteBuffer(kbuffer, CL_TRUE, 0, mem_kdata, kdata.data());
 
-                ncv::stats_t<double, size_t> proc_stats;
+                // compute
+                queue.enqueueWriteBuffer(ibuffer, CL_TRUE, 0, mem_idata, idata.data());
+                queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(ocols, orows), cl::NDRange(ocols, orows));
+                queue.finish();
+                queue.enqueueReadBuffer(obuffer, CL_TRUE, 0, mem_odata, odata.data());
 
-                // run multiple tests
-                for (size_t t = 0; t < tests; t ++)
-                {
-                        zero_matrices(odatas);
-
-                        const ncv::timer_t timer;
-                        for (size_t i = 0; i < idatas.size(); i ++)
-                        {
-                                queue.enqueueWriteBuffer(ibuffer, CL_TRUE, 0, mem_idata, idatas[i].data());
-
-                                queue.enqueueNDRangeKernel(kernel, cl::NullRange,
-                                                           cl::NDRange(ocols, orows),
-                                                           cl::NDRange(ocols, orows));
-                                queue.finish();
-
-                                queue.enqueueReadBuffer(obuffer, CL_TRUE, 0, mem_odata, odatas[i].data());
-                        }
-
-                        proc_stats(timer.miliseconds());
-                }
-
-                const size_t milis = static_cast<size_t>(proc_stats.min());
-                std::cout << name << "= " << text::resize(text::to_string(milis), 4, align::right) << "ms  ";
-
-                return sum_matrices(odatas);
+                return odata.sum();
         }
 
         #endif
 
-        #ifdef NANOCV_HAVE_CUDA
+        #ifdef NANOCV_WITH_CUDA
 
         template
         <
@@ -222,9 +202,9 @@ namespace test
                 const scalar_t corrcpu_mdk = test_cpu(ncv::corr2d_mdk<matrix_t>, odata, kdata, idata);
                 const scalar_t corrcpu_mdo = test_cpu(ncv::corr2d_mdo<matrix_t>, odata, kdata, idata);
                 const scalar_t corrcpu_dyn = test_cpu(ncv::corr2d_dyn<matrix_t>, odata, kdata, idata);
-        #if defined(NANOCV_HAVE_OPENCL)
+        #if defined(NANOCV_WITH_OPENCL)
                 const scalar_t corrgpu   = test_gpu("corr_kernel", "gpu", odata, kdata, idata);
-        #elif NANOCV_HAVE_CUDA
+        #elif NANOCV_WITH_CUDA
                 const scalar_t corrgpu   = test_gpu(cuda::corr2d<scalar_t>, odata, kdata, idata);
         #endif
 
@@ -236,7 +216,7 @@ namespace test
                 BOOST_CHECK_LE(math::abs(corrcpu_mdk - corrcpu_egb), epsilon);
                 BOOST_CHECK_LE(math::abs(corrcpu_mdo - corrcpu_egb), epsilon);
                 BOOST_CHECK_LE(math::abs(corrcpu_dyn - corrcpu_egb), epsilon);
-        #if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
+        #if defined(NANOCV_WITH_OPENCL) || defined(NANOCV_WITH_CUDA)
                 BOOST_CHECK_LE(math::abs(corrgpu     - corrcpu_egb), epsilon);
         #endif
         }
@@ -244,15 +224,17 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_corr2d)
 {
-#ifdef NANOCV_HAVE_OPENCL
-        if (!ocl::manager_t::instance().valid())
+        using namespace ncv;
+
+#ifdef NANOCV_WITH_OPENCL
+        if (!ocl::get_manager().valid())
         {
                 BOOST_CHECK_EQUAL(true, false);
                 exit(EXIT_FAILURE);
         }
 #endif
 
-#ifdef NANOCV_HAVE_CUDA
+#ifdef NANOCV_WITH_CUDA
         cuda::print_info();
 #endif
 
@@ -261,7 +243,7 @@ BOOST_AUTO_TEST_CASE(test_corr2d)
         const int min_ksize = 5;
         const int n_tests = 64;
 
-#ifdef NANOCV_HAVE_OPENCL
+#ifdef NANOCV_WITH_OPENCL
         try
 #endif
         {
@@ -277,7 +259,7 @@ BOOST_AUTO_TEST_CASE(test_corr2d)
                 }
         }
 
-#ifdef NANOCV_HAVE_OPENCL
+#ifdef NANOCV_WITH_OPENCL
         catch (cl::Error& e)
         {
                 log_error() << "OpenCL fatal error: <" << e.what() << "> (" << ocl::error_string(e.err()) << ")!";

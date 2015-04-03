@@ -5,16 +5,19 @@
 #include "libnanocv/tabulator.h"
 #include "libnanocv/placeholders.h"
 #include "libnanocv/tensor/conv2d.hpp"
-#ifdef NANOCV_HAVE_OPENCL
-#include "opencl/opencl.h"
+#ifdef NANOCV_WITH_OPENCL
+#include "libnanocv/opencl/opencl.h"
 #endif
-#ifdef NANOCV_HAVE_CUDA
+#ifdef NANOCV_WITH_CUDA
 #include "cuda/cuda.h"
 #include "cuda/conv2d.h"
 #endif
 #include <iostream>
 
 using namespace ncv;
+
+
+const size_t trials = 16;
 
 template
 <
@@ -24,17 +27,14 @@ template
 >
 static void test_cpu(tabulator_t::row_t& row, top op, const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
 {
-        const size_t trials = 16;
-
         row << ncv::measure_robustly_usec([&] ()
         {
                 odata.setZero();
                 op(idata, kdata, odata);
-
         }, trials);
 }
 
-#ifdef NANOCV_HAVE_OPENCL
+#ifdef NANOCV_WITH_OPENCL
 
 const std::string conv_program_source = R"xxx(
 
@@ -105,11 +105,9 @@ template
         typename tmatrix,
         typename tscalar = typename tmatrix::Scalar
 >
-tscalar test_gpu(
-        const char* kernel_name, const char* name,
-        const std::vector<tmatrix>& idatas, const tmatrix& kdata, std::vector<tmatrix>& odatas)
+void test_gpu(tabulator_t::row_t& row, const char* kernel_name, const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
 {
-        ocl::manager_t& theocl = ocl::manager_t::instance();
+        ocl::manager_t& theocl = ocl::get_manager();
 
         const cl::Context context = theocl.make_context();
         const cl::CommandQueue queue = theocl.make_command_queue(context);
@@ -118,12 +116,12 @@ tscalar test_gpu(
 
         const int krows = static_cast<int>(kdata.rows());
         const int kcols = static_cast<int>(kdata.cols());
-        const int orows = static_cast<int>(odatas[0].rows());
-        const int ocols = static_cast<int>(odatas[0].cols());
+        const int orows = static_cast<int>(odata.rows());
+        const int ocols = static_cast<int>(odata.cols());
 
-        const size_t mem_idata = idatas[0].size() * sizeof(tscalar);
+        const size_t mem_idata = idata.size() * sizeof(tscalar);
         const size_t mem_kdata = kdata.size() * sizeof(tscalar);
-        const size_t mem_odata = odatas[0].size() * sizeof(tscalar);
+        const size_t mem_odata = odata.size() * sizeof(tscalar);
 
         // create buffers once
         const cl::Buffer ibuffer = theocl.make_buffer(context, mem_idata, CL_MEM_READ_ONLY);
@@ -140,38 +138,21 @@ tscalar test_gpu(
         // transfer constants
         queue.enqueueWriteBuffer(kbuffer, CL_TRUE, 0, mem_kdata, kdata.data());
 
-        ncv::stats_t<double, size_t> proc_stats;
-
-        // run multiple tests
-        for (size_t t = 0; t < tests; t ++)
+        // compute
+        row << ncv::measure_robustly_usec([&] ()
         {
-                zero_matrices(odatas);
+                odata.setZero();
 
-                const ncv::timer_t timer;
-                for (size_t i = 0; i < idatas.size(); i ++)
-                {
-                        queue.enqueueWriteBuffer(ibuffer, CL_TRUE, 0, mem_idata, idatas[i].data());
-
-                        queue.enqueueNDRangeKernel(kernel, cl::NullRange,
-                                                   cl::NDRange(ocols, orows),
-                                                   cl::NDRange(ocols, orows));
-                        queue.finish();
-
-                        queue.enqueueReadBuffer(obuffer, CL_TRUE, 0, mem_odata, odatas[i].data());
-                }
-
-                proc_stats(timer.miliseconds());
-        }
-
-        const size_t milis = static_cast<size_t>(proc_stats.min());
-        std::cout << name << "= " << text::resize(text::to_string(milis), 4, align::right) << "ms  ";
-
-        return sum_matrices(odatas);
+                queue.enqueueWriteBuffer(ibuffer, CL_TRUE, 0, mem_idata, idata.data());
+                queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(ocols, orows), cl::NDRange(ocols, orows));
+                queue.finish();
+                queue.enqueueReadBuffer(obuffer, CL_TRUE, 0, mem_odata, odata.data());
+        }, trials);
 }
 
 #endif
 
-#ifdef NANOCV_HAVE_CUDA
+#ifdef NANOCV_WITH_CUDA
 
 template
 <
@@ -250,23 +231,23 @@ void test_conv2d(tabulator_t::row_t& row, int isize, int ksize)
         test_cpu(row, ncv::conv2d_dyn<matrix_t>, idata, kdata, odata);
         test_cpu(row, ncv::tensor::conv2d_toeplitz<matrix_t>, idata, kdata, odata);
         test_cpu(row, std::bind(ncv::tensor::conv2d_toeplitz_buffered<matrix_t>, ncv::_1, ncv::_2, std::cref(tdata), _3), idata, kdata, odata);
-#if defined(NANOCV_HAVE_OPENCL)
+#if defined(NANOCV_WITH_OPENCL)
         test_gpu(row, "conv_kernel", idata, kdata, odata);
-#elif defined(NANOCV_HAVE_CUDA)
+#elif defined(NANOCV_WITH_CUDA)
         test_gpu(row, cuda::conv2d<scalar_t>, idata, kdata, odata);
 #endif
 }
 
 int main(int argc, char* argv[])
 {
-#ifdef NANOCV_HAVE_OPENCL
-        if (!ocl::manager_t::instance().valid())
+#ifdef NANOCV_WITH_OPENCL
+        if (!ncv::ocl::get_manager().valid())
         {
                 exit(EXIT_FAILURE);
         }
 #endif
 
-#ifdef NANOCV_HAVE_CUDA
+#ifdef NANOCV_WITH_CUDA
         cuda::print_info();
 #endif
 
@@ -274,7 +255,7 @@ int main(int argc, char* argv[])
         const int max_isize = 48;
         const int min_ksize = 5;
 
-#ifdef NANOCV_HAVE_OPENCL
+#ifdef NANOCV_WITH_OPENCL
         try
 #endif
         {
@@ -286,7 +267,7 @@ int main(int argc, char* argv[])
                                << "dyn [us]"
                                << "toe [us]"
                                << "toe (buff) [us]";
-#if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
+#if defined(NANOCV_WITH_OPENCL) || defined(NANOCV_WITH_CUDA)
                 table.header() << "gpu [us]";
 #endif
 
@@ -311,7 +292,7 @@ int main(int argc, char* argv[])
                 }
         }
 
-#ifdef NANOCV_HAVE_OPENCL
+#ifdef NANOCV_WITH_OPENCL
         catch (cl::Error& e)
         {
                 log_error() << "OpenCL fatal error: <" << e.what() << "> (" << ocl::error_string(e.err()) << ")!";

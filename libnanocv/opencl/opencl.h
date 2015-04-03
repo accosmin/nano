@@ -1,29 +1,37 @@
-#ifndef NANOCV_OPENCL_H
-#define NANOCV_OPENCL_H
+#pragma once
 
 #define __CL_ENABLE_EXCEPTIONS
 
 #if defined(__APPLE__) || defined(__MACOSX)
-#include <OpenCL/cl.h>
+#include <OpenCL/cl.hpp>        // NB: may need to manually install/copy the C++ wrapper from kronos' website!
 #else
 #include <CL/cl.hpp>
 #endif
 
-#include "common/singleton.hpp"
+#include <vector>
+#include "../arch.h"
+#include "../singleton.hpp"
 
 namespace ncv
 {
         namespace ocl
         {                
+                class manager_t;
+
+                ///
+                /// \brief access OpenCL resources
+                ///
+                NANOCV_DLL_PUBLIC manager_t& get_manager();
+
                 ///
                 /// \brief map the given OpenCL error code to a string
                 ///
-                const char* error_string(cl_int error);
+                NANOCV_DLL_PUBLIC const char* error_string(cl_int error);
 
                 ///
                 /// \brief load text file (e.g. program/kernel source)
                 ///
-                std::string load_text_file(const std::string& filepath);
+                NANOCV_DLL_PUBLIC std::string load_text_file(const std::string& filepath);
 
                 ///
                 /// \brief byte size
@@ -40,7 +48,7 @@ namespace ncv
                 ///
                 /// \brief OpenCL instance: platform information, manages devices, command queue, kernels and buffers.
                 ///
-                class manager_t : public singleton_t<manager_t>
+                class NANOCV_DLL_PUBLIC manager_t : public singleton_t<manager_t>
                 {
                 public:
 
@@ -73,4 +81,3 @@ namespace ncv
         }
 }
 
-#endif // NANOCV_OPENCL_H

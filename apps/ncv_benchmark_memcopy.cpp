@@ -5,10 +5,10 @@
 #include "libnanocv/tensor.h"
 #include "libnanocv/math/abs.hpp"
 #include "libnanocv/thread/parallel.hpp"
-#ifdef NANOCV_HAVE_OPENCL
-#include "opencl/opencl.h"
+#ifdef NANOCV_WITH_OPENCL
+#include "libnanocv/opencl/opencl.h"
 #endif
-#ifdef NANOCV_HAVE_CUDA
+#ifdef NANOCV_WITH_CUDA
 #include "cuda/cuda.h"
 #include "cuda/vector.hpp"
 #endif
@@ -46,10 +46,10 @@ int main(int argc, char *argv[])
 {
         using namespace ncv;
 
-#ifdef NANOCV_HAVE_OPENCL
+#ifdef NANOCV_WITH_OPENCL
         try
         {
-                ocl::manager_t& theocl = ocl::manager_t::instance();
+                ocl::manager_t& theocl = ocl::get_manager();
 
                 if (!theocl.valid())
                 {
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
                 const cl::CommandQueue queue = theocl.make_command_queue(context);
 #endif
 
-#ifdef NANOCV_HAVE_CUDA
+#ifdef NANOCV_WITH_CUDA
                 cuda::print_info();
 #endif
 
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
                 // try various data sizes
                 for (size_t size = minsize; size <= maxsize; size *= 2)
                 {
-#if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
+#if defined(NANOCV_WITH_OPENCL) || defined(NANOCV_WITH_CUDA)
                         ncv::stats_t<double, size_t> send_stats;        // send inputs to gpu
                         ncv::stats_t<double, size_t> read_stats;        // read results from gpu
 #endif
@@ -83,14 +83,14 @@ int main(int argc, char *argv[])
                         ncv::tensor::vector_types_t<double>::tvector a; a.resize(size);
                         ncv::tensor::vector_types_t<double>::tvector b; b.resize(size);
 
-#ifdef NANOCV_HAVE_OPENCL
+#ifdef NANOCV_WITH_OPENCL
                         const size_t array_size = size * sizeof(double);
 
                         const cl::Buffer abuffer = theocl.make_buffer(context, array_size, CL_MEM_READ_WRITE);
 
 #endif
 
-#ifdef NANOCV_HAVE_CUDA
+#ifdef NANOCV_WITH_CUDA
                         cuda::vector_t<double> d_abuffer(size);
 #endif
 
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
                                 a.setRandom();
                                 b.setRandom();
 
-#ifdef NANOCV_HAVE_OPENCL
+#ifdef NANOCV_WITH_OPENCL
                                 // GPU - copy to device
                                 timer.start();
                                 {
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
                                 check(a, b, "GPU processing failed: incorrect result!");
 #endif
 
-#ifdef NANOCV_HAVE_CUDA
+#ifdef NANOCV_WITH_CUDA
                                 // GPU - copy to device
                                 timer.start();
                                 {
@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
                                 mcpu_stats(timer.microseconds());
                         }
 
-#if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
+#if defined(NANOCV_WITH_OPENCL) || defined(NANOCV_WITH_CUDA)
                         const size_t time_send = static_cast<size_t>(0.5 + send_stats.sum() / 1000);
                         const size_t time_read = static_cast<size_t>(0.5 + read_stats.sum() / 1000);
 #endif
@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
                         // results
                         log_info() << "SIZE [" << text::resize(text::to_string(size / 1024), 4, align::right) << "K] x "
                                    << "TIMES [" << text::resize(text::to_string(tests), 0, align::right) << "]: "
-#if defined(NANOCV_HAVE_OPENCL) || defined(NANOCV_HAVE_CUDA)
+#if defined(NANOCV_WITH_OPENCL) || defined(NANOCV_WITH_CUDA)
                                    << "sendGPU= " << text::resize(text::to_string(time_send), 8, align::right) << "ms, "
                                    << "readGPU= " << text::resize(text::to_string(time_read), 8, align::right) << "ms, "
 #endif
@@ -177,7 +177,7 @@ int main(int argc, char *argv[])
                                    << "multCPU= " << text::resize(text::to_string(time_mcpu), 8, align::right) << "ms";
                 }
 
-#ifdef NANOCV_HAVE_OPENCL
+#ifdef NANOCV_WITH_OPENCL
         }
 
         catch (cl::Error& e)

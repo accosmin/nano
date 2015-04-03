@@ -1,11 +1,16 @@
 #include "opencl.h"
-#include "io/logger.h"
+#include "../logger.h"
 #include <fstream>
 #include <sstream>
 #include <cassert>
 
 namespace ncv
 {
+        ocl::manager_t& ocl::get_manager()
+        {
+                return ocl::manager_t::instance();
+        }
+
         ocl::manager_t::manager_t()
         {
                 try

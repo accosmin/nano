@@ -96,7 +96,7 @@ static void test_optimizers(
         const auto reg_tuners =
         {
                 reg_tuning::none,
-                reg_tuning::log10_search,
+//                reg_tuning::log10_search,
                 reg_tuning::continuation
         };
 

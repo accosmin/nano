@@ -42,7 +42,7 @@ include_directories(SYSTEM ${LibArchive_INCLUDE_DIRS})
 
 # OpenCL
 if(NANOCV_WITH_OPENCL)
-        find_package(OpenCL 1.1 REQUIRED)
+        find_package(OpenCL QUIET REQUIRED)
         if(OpenCL_FOUND)
                 include_directories(SYSTEM ${OpenCL_INCLUDE_DIRS})
                 add_definitions(-DNANOCV_WITH_OPENCL)
