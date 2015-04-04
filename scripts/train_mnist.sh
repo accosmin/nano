@@ -28,13 +28,9 @@ stoch_sia="--trainer stochastic --trainer-params opt=sia,epoch=32"
 stoch_adagrad="--trainer stochastic --trainer-params opt=adagrad,epoch=32"
 stoch_adadelta="--trainer stochastic --trainer-params opt=adadelta,epoch=32"
 
-mbatch_tune_gd="--trainer minibatch --trainer-params opt=gd,epoch=32,eps=1e-4,reg=tune"
-mbatch_tune_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=32,eps=1e-4,reg=tune"
-mbatch_tune_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=32,eps=1e-4,reg=tune"
-
-mbatch_cont_gd="--trainer minibatch --trainer-params opt=gd,epoch=32,eps=1e-4,reg=cont"
-mbatch_cont_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=32,eps=1e-4,reg=cont"
-mbatch_cont_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=32,eps=1e-4,reg=cont"
+mbatch_gd="--trainer minibatch --trainer-params opt=gd,epoch=32,eps=1e-4"
+mbatch_cgd="--trainer minibatch --trainer-params opt=cgd,epoch=32,eps=1e-4"
+mbatch_lbfgs="--trainer minibatch --trainer-params opt=lbfgs,epoch=32,eps=1e-4"
 
 batch_gd="--trainer batch --trainer-params opt=gd,iters=32,eps=1e-4"
 batch_cgd="--trainer batch --trainer-params opt=cgd,iters=32,eps=1e-4"
@@ -46,7 +42,7 @@ models="mlp0 mlp1 mlp2 mlp3 conv_max"
 for model in ${models}
 do
         #for trainer in `echo "batch_gd batch_cgd batch_lbfgs"`
-        for trainer in `echo "mbatch_cont_gd mbatch_cont_cgd mbatch_cont_lbfgs"`
+        for trainer in `echo "mbatch_gd mbatch_cgd mbatch_lbfgs"`
 	do
                 fn_train ${dir_exp_mnist} ${trainer}_${model} ${params} ${!trainer} ${avg_crit} ${!model}${outlayer}
 		fn_train ${dir_exp_mnist} ${trainer}_${model}_l2n ${params} ${!trainer} ${l2n_crit} ${!model}${outlayer}

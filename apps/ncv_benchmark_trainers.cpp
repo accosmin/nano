@@ -61,7 +61,6 @@ static void test_optimizers(
 //        const size_t cmd_stochastic_epochs = cmd_iterations * 8;        // NB: because of slow noisy optimization!
         const scalar_t cmd_epsilon = 1e-4;
 
-        const bool can_regularize = accumulator_t::can_regularize(criterion);
         const size_t n_threads = ncv::n_threads();
         const bool verbose = false;
 
@@ -92,14 +91,6 @@ static void test_optimizers(
 //                stochastic_optimizer::ADADELTA
 //        };
 
-        // regularization weight's tuning methods
-        const auto reg_tuners =
-        {
-                reg_tuning::none,
-//                reg_tuning::log10_search,
-                reg_tuning::continuation
-        };
-
         const string_t basename = "[" + text::to_string(criterion) + "] ";
 
 //        // run optimizers and collect results
@@ -115,17 +106,12 @@ static void test_optimizers(
 
         for (batch_optimizer optimizer : minibatch_optimizers)
         {
-                for (reg_tuning tuner : reg_tuners)
-                        if (    (!can_regularize && tuner == reg_tuning::none) ||
-                                (can_regularize && tuner != reg_tuning::none))
+                test_optimizer(model, [&] ()
                 {
-                        test_optimizer(model, [&] ()
-                        {
-                                return ncv::minibatch_train(
-                                        model, task, tsampler, vsampler, n_threads,
-                                        loss, criterion, optimizer, cmd_minibatch_epochs, cmd_epsilon, tuner, verbose);
-                        }, basename + "minibatch-" + text::to_string(optimizer) + "-" + text::to_string(tuner), table);
-                }
+                        return ncv::minibatch_train(
+                                model, task, tsampler, vsampler, n_threads,
+                                loss, criterion, optimizer, cmd_minibatch_epochs, cmd_epsilon, verbose);
+                }, basename + "minibatch-" + text::to_string(optimizer), table);
         }
 
 //        for (stochastic_optimizer optimizer : stochastic_optimizers)
