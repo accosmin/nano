@@ -6,6 +6,7 @@
 #include "../accumulator.h"
 #include "../log_search.hpp"
 #include "../thread/thread.h"
+#include <tuple>
 
 namespace ncv
 {
@@ -25,7 +26,7 @@ namespace ncv
                         data.m_tsampler = orig_tsampler;
                 }
 
-                static size_t make_epoch_size(const trainer_data_t& data, size_t batch)
+                size_t make_epoch_size(const trainer_data_t& data, size_t batch)
                 {
                         return (data.m_tsampler.size() + batch - 1) / batch;
                 }
@@ -47,17 +48,17 @@ namespace ncv
                         reset_minibatch(orig_tsampler, data);
                 }
 
-                static trainer_result_t train(
+                trainer_result_t train(
                         trainer_data_t& data,
                         batch_optimizer optimizer,
-                        size_t epochs, size_t epoch_size, size_t batch, size_t iterations, scalar_t epsilon,
-                        scalar_t lambda, bool verbose)
+                        size_t epochs, size_t batch, size_t iterations, scalar_t epsilon,
+                        bool verbose)
                 {
                         const ncv::timer_t timer;
 
                         trainer_result_t result;
 
-                        data.set_lambda(lambda);
+                        const size_t epoch_size = make_epoch_size(data, batch);
 
                         // construct the optimization problem
                         auto fn_size = ncv::make_opsize(data);
@@ -100,7 +101,7 @@ namespace ncv
                                 result.update(x, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var,
                                               epoch, scalars_t({ static_cast<scalar_t>(batch),
                                                                  static_cast<scalar_t>(iterations),
-                                                                 lambda }));
+                                                                 data.lambda() }));
 
                                 if (verbose)
                                 log_info()
@@ -110,31 +111,16 @@ namespace ncv
                                         << ", epoch = " << epoch << "/" << epochs
                                         << ", batch = " << batch
                                         << ", iters = " << iterations
-                                        << ", lambda = " << data.m_lacc.lambda()
+                                        << ", lambda = " << data.lambda()
                                         << "] done in " << timer.elapsed() << ".";
                         }
 
                         return result;
                 }
-        }
 
-        trainer_result_t minibatch_train(
-                const model_t& model,
-                const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
-                const loss_t& loss, const string_t& criterion,
-                batch_optimizer optimizer, size_t epochs, scalar_t epsilon, bool verbose)
-        {
-                vector_t x0;
-                model.save_params(x0);
-
-                // operator to train for a given regularization factor
-                const auto op = [&] (scalar_t lambda)
+                std::tuple<trainer_result_t, size_t, size_t> tune_minibatch(
+                        trainer_data_t& data, batch_optimizer optimizer, scalar_t epsilon, bool verbose)
                 {
-                        accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value, lambda);
-                        accumulator_t gacc(model, nthreads, criterion, criterion_t::type::vgrad, lambda);
-
-                        trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
-
                         const size_t min_batch = 16 * ncv::n_threads();
                         const size_t max_batch = 16 * min_batch;
 
@@ -151,12 +137,9 @@ namespace ncv
                                 {
                                         const ncv::timer_t timer;
 
-                                        const size_t epoch_size = make_epoch_size(data, batch);
                                         const size_t epochs = 1;
-
                                         const trainer_result_t result =
-                                                train(data, optimizer, epochs, epoch_size, batch,
-                                                              iterations, epsilon, lambda, false);
+                                                train(data, optimizer, epochs, batch, iterations, epsilon, false);
 
                                         const trainer_state_t& state = result.m_opt_state;
 
@@ -166,7 +149,7 @@ namespace ncv
                                                 << ", valid = " << state.m_vvalue << "/" << state.m_verror_avg
                                                 << ", batch = " << batch
                                                 << ", iters = " << iterations
-                                                << ", lambda = " << data.m_lacc.lambda()
+                                                << ", lambda = " << data.lambda()
                                                 << "] done in " << timer.elapsed() << ".";
 
                                         if (result < opt_result)
@@ -178,21 +161,66 @@ namespace ncv
                                 }
                         }
 
-                        // train the model using the tuned parameters
-                        const size_t epoch_size = make_epoch_size(data, opt_batch);
+                        // OK
+                        return std::make_tuple(opt_result, opt_batch, opt_iterations);
+                }
 
-                        return train(data, optimizer, epochs, epoch_size, opt_batch,
-                                             opt_iterations, epsilon, lambda, verbose);
-                };
+                std::tuple<trainer_result_t, size_t, size_t, scalar_t> tune_lambda(
+                        trainer_data_t& data, batch_optimizer optimizer, scalar_t epsilon, bool verbose)
+                {
+                        const auto op = [&] (scalar_t lambda)
+                        {
+                                data.set_lambda(lambda);
+
+                                return tune_minibatch(data, optimizer, epsilon, verbose);
+                        };
+
+                        const auto ret = log10_min_search(op, -6.0, +0.0, 0.5, 4);
+
+                        return std::make_tuple(std::get<0>(ret.first),
+                                               std::get<1>(ret.first),
+                                               std::get<2>(ret.first),
+                                               ret.second);
+                }
+        }
+
+        trainer_result_t minibatch_train(
+                const model_t& model,
+                const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
+                const loss_t& loss, const string_t& criterion,
+                batch_optimizer optimizer, size_t epochs, scalar_t epsilon, bool verbose)
+        {
+                vector_t x0;
+                model.save_params(x0);
+
+                // setup acumulators
+                accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value);
+                accumulator_t gacc(model, nthreads, criterion, criterion_t::type::vgrad);
+
+                trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
 
                 // tune the regularization factor (if needed)
                 if (accumulator_t::can_regularize(criterion))
                 {
-                       return log10_min_search(op, -6.0, +0.0, 0.2, 4).first;
+                        const auto ret = tune_lambda(data, optimizer, epsilon, verbose);
+
+                        const size_t opt_batch = std::get<1>(ret);
+                        const size_t opt_iterations = std::get<2>(ret);
+                        const size_t opt_lambda = std::get<3>(ret);
+
+                        data.set_lambda(opt_lambda);
+
+                        return train(data, optimizer, epochs, opt_batch, opt_iterations, epsilon, verbose);
                 }
+
                 else
                 {
-                        return op(0.0);
+                        const auto ret = tune_minibatch(data, optimizer, epsilon, verbose);
+
+                        const size_t opt_batch = std::get<1>(ret);
+                        const size_t opt_iterations = std::get<2>(ret);
+
+                        return train(data, optimizer, epochs, opt_batch, opt_iterations, epsilon, verbose);
                 }
         }
 }
