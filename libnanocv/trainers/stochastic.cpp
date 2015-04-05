@@ -148,10 +148,7 @@ namespace ncv
                         const auto op = [&] (scalar_t alpha)
                         {
                                 const auto ret = tune_batch_decay(data, optimizer, alpha, verbose);
-                                return std::make_tuple(std::get<0>(ret),
-                                                       std::get<1>(ret),
-                                                       std::get<2>(ret),
-                                                       alpha);
+                                return std::tuple_cat(ret, std::make_tuple(alpha));
                         };
 
                         // tune the learning rate (if possible)
@@ -176,11 +173,7 @@ namespace ncv
                                 data.set_lambda(lambda);
 
                                 const auto ret = tune_batch_decay_lrate(data, optimizer, verbose);
-                                return std::make_tuple(std::get<0>(ret),
-                                                       std::get<1>(ret),
-                                                       std::get<2>(ret),
-                                                       std::get<3>(ret),
-                                                       lambda);
+                                return std::tuple_cat(ret, std::make_tuple(lambda));
                         };
 
                         if (data.m_lacc.can_regularize())
@@ -204,8 +197,8 @@ namespace ncv
                 model.save_params(x0);
 
                 // setup accumulators
-                accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value, 0.0);
-                accumulator_t gacc(model, nthreads, criterion, criterion_t::type::vgrad, 0.0);
+                accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value);
+                accumulator_t gacc(model, nthreads, criterion, criterion_t::type::vgrad);
 
                 trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
 

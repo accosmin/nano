@@ -120,7 +120,8 @@ namespace ncv
 
                 // <result, batch size, iterations per batch>
                 std::tuple<trainer_result_t, size_t, size_t> tune_minibatch(
-                        trainer_data_t& data, batch_optimizer optimizer, scalar_t epsilon, bool verbose)
+                        trainer_data_t& data, batch_optimizer optimizer, scalar_t epsilon,
+                        bool verbose)
                 {
                         const size_t min_batch = 16 * ncv::n_threads();
                         const size_t max_batch = 16 * min_batch;
@@ -175,10 +176,7 @@ namespace ncv
                                 data.set_lambda(lambda);
 
                                 const auto ret = tune_minibatch(data, optimizer, epsilon, verbose);
-                                return std::make_tuple(std::get<0>(ret),
-                                                       std::get<1>(ret),
-                                                       std::get<2>(ret),
-                                                       lambda);
+                                return std::tuple_cat(ret, std::make_tuple(lambda));
                         };
 
                         if (data.m_lacc.can_regularize())
@@ -212,7 +210,7 @@ namespace ncv
 
                 const size_t opt_batch = std::get<1>(ret);
                 const size_t opt_iterations = std::get<2>(ret);
-                const size_t opt_lambda = std::get<3>(ret);
+                const scalar_t opt_lambda = std::get<3>(ret);
 
                 data.set_lambda(opt_lambda);
 
