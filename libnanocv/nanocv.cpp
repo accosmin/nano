@@ -51,43 +51,43 @@ namespace ncv
                 Eigen::initParallel();
 
                 // register losses
-                loss_manager_t::instance().add("square", square_loss_t());
-                loss_manager_t::instance().add("cauchy", cauchy_loss_t());
-                loss_manager_t::instance().add("logistic", logistic_loss_t());
-                loss_manager_t::instance().add("classnll", classnll_loss_t());
+                ncv::get_losses().add("square", square_loss_t());
+                ncv::get_losses().add("cauchy", cauchy_loss_t());
+                ncv::get_losses().add("logistic", logistic_loss_t());
+                ncv::get_losses().add("classnll", classnll_loss_t());
 
                 // register tasks
-                task_manager_t::instance().add("mnist", mnist_task_t());
-                task_manager_t::instance().add("cifar10", cifar10_task_t());
-                task_manager_t::instance().add("cifar100", cifar100_task_t());
-                task_manager_t::instance().add("stl10", stl10_task_t());
-                task_manager_t::instance().add("svhn", svhn_task_t());
-                task_manager_t::instance().add("norb", norb_task_t());
-                task_manager_t::instance().add("syn-shapes", synthetic_shapes_task_t());
+                ncv::get_tasks().add("mnist", mnist_task_t());
+                ncv::get_tasks().add("cifar10", cifar10_task_t());
+                ncv::get_tasks().add("cifar100", cifar100_task_t());
+                ncv::get_tasks().add("stl10", stl10_task_t());
+                ncv::get_tasks().add("svhn", svhn_task_t());
+                ncv::get_tasks().add("norb", norb_task_t());
+                ncv::get_tasks().add("syn-shapes", synthetic_shapes_task_t());
 
                 // register layers
-                layer_manager_t::instance().add("act-unit", unit_activation_layer_t());
-                layer_manager_t::instance().add("act-tanh", tanh_activation_layer_t());
-                layer_manager_t::instance().add("act-snorm", snorm_activation_layer_t());
-                layer_manager_t::instance().add("act-splus", softplus_activation_layer_t());
-                layer_manager_t::instance().add("linear", linear_layer_t());                
-                layer_manager_t::instance().add("conv", conv_layer_t());
-                layer_manager_t::instance().add("pool-max", pool_max_layer_t());
-                layer_manager_t::instance().add("pool-min", pool_min_layer_t());
-                layer_manager_t::instance().add("pool-avg", pool_avg_layer_t());
+                ncv::get_layers().add("act-unit", unit_activation_layer_t());
+                ncv::get_layers().add("act-tanh", tanh_activation_layer_t());
+                ncv::get_layers().add("act-snorm", snorm_activation_layer_t());
+                ncv::get_layers().add("act-splus", softplus_activation_layer_t());
+                ncv::get_layers().add("linear", linear_layer_t());
+                ncv::get_layers().add("conv", conv_layer_t());
+                ncv::get_layers().add("pool-max", pool_max_layer_t());
+                ncv::get_layers().add("pool-min", pool_min_layer_t());
+                ncv::get_layers().add("pool-avg", pool_avg_layer_t());
 
                 // register models
-                model_manager_t::instance().add("forward-network", forward_network_t());
+                ncv::get_models().add("forward-network", forward_network_t());
 
                 // register trainers
-                trainer_manager_t::instance().add("batch", batch_trainer_t());
-                trainer_manager_t::instance().add("minibatch", minibatch_trainer_t());
-                trainer_manager_t::instance().add("stochastic", stochastic_trainer_t());
+                ncv::get_trainers().add("batch", batch_trainer_t());
+                ncv::get_trainers().add("minibatch", minibatch_trainer_t());
+                ncv::get_trainers().add("stochastic", stochastic_trainer_t());
                 
                 // register criteria
-                criterion_manager_t::instance().add("avg", avg_criterion_t());
-                criterion_manager_t::instance().add("l2n-reg", avg_l2_criterion_t());
-                criterion_manager_t::instance().add("var-reg", avg_var_criterion_t());
+                ncv::get_criteria().add("avg", avg_criterion_t());
+                ncv::get_criteria().add("l2n-reg", avg_l2_criterion_t());
+                ncv::get_criteria().add("var-reg", avg_var_criterion_t());
         }
 }
 	

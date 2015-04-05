@@ -224,7 +224,7 @@ namespace ncv
                         const string_t layer_id = layer_tokens[0];
                         const string_t layer_params = layer_tokens.size() == 2 ? layer_tokens[1] : string_t();
 
-                        const rlayer_t layer = layer_manager_t::instance().get(layer_id, layer_params);
+                        const rlayer_t layer = ncv::get_layers().get(layer_id, layer_params);
                         if (!layer)
                         {
                                 const string_t message = "invalid layer id <" + layer_id + ">!";
