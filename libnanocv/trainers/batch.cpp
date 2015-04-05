@@ -39,7 +39,7 @@ namespace ncv
 
                                 // update the optimum state
                                 result.update(state.x, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var,
-                                              ++ iteration, scalars_t({ data.m_lacc.lambda() }));
+                                              ++ iteration, scalars_t({ data.lambda() }));
 
                                 if (verbose)
                                 log_info()
@@ -48,7 +48,7 @@ namespace ncv
                                         << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
                                         << ", gnorm = " << state.g.lpNorm<Eigen::Infinity>()
                                         << ", epoch = " << iteration
-                                        << ", lambda = " << data.m_lacc.lambda()
+                                        << ", lambda = " << data.lambda()
                                         << ", calls = " << state.n_fval_calls() << "/" << state.n_grad_calls()
                                         << "] done in " << timer.elapsed() << ".";
                         };

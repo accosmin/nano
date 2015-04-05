@@ -85,6 +85,7 @@ namespace ncv
                 /// \brief check if the criterion has a regularization term to tune
                 ///
                 static bool can_regularize(const string_t& criterion);
+                bool can_regularize() const;
 
         private:
 

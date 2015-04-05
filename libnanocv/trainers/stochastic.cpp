@@ -4,46 +4,18 @@
 #include "../sampler.h"
 #include "../minimize.h"
 #include "../accumulator.h"
-#include "../thread/pool.h"
 #include "../log_search.hpp"
+#include "../thread/thread.h"
+#include <tuple>
 
 namespace ncv
 {
-        namespace detail
+        namespace
         {
-                static scalar_t tune(
+                trainer_result_t train(
                         trainer_data_t& data,
-                        stochastic_optimizer optimizer, size_t batch, scalar_t alpha0, scalar_t decay)
-                {
-                        data.set_batch(batch);
-
-                        const size_t epochs = 1;
-                        const size_t epoch_size = (data.m_tsampler.size() + batch - 1) / batch;
-
-                        // construct the optimization problem
-                        auto fn_size = ncv::make_opsize(data);
-                        auto fn_fval = ncv::make_opfval(data);
-                        auto fn_grad = ncv::make_opgrad(data);
-
-                        auto fn_wlog = nullptr;
-                        auto fn_elog = nullptr;
-                        auto fn_ulog = nullptr;
-
-                        // optimize the model
-                        const opt_state_t state = ncv::minimize(
-                                fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
-                                data.m_x0, optimizer, epochs, epoch_size, alpha0, decay);
-
-                        // OK, cumulate the loss value
-                        data.m_lacc.set_params(state.x);
-                        data.m_lacc.update(data.m_task, data.m_tsampler.all(), data.m_loss);
-                        return data.m_lacc.value();
-                }
-
-                static trainer_result_t train(
-                        trainer_data_t& data,
-                        stochastic_optimizer optimizer, size_t batch, size_t epochs, scalar_t alpha0, scalar_t decay,
-                        thread_pool_t::mutex_t& mutex, bool verbose)
+                        stochastic_optimizer optimizer, size_t epochs, size_t batch, scalar_t alpha0, scalar_t decay,
+                        bool verbose)
                 {
                         trainer_result_t result;
 
@@ -80,10 +52,8 @@ namespace ncv
                                 epoch ++;
 
                                 // OK, update the optimum solution
-                                const thread_pool_t::lock_t lock(mutex);
-
                                 result.update(state.x, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var,
-                                              epoch, scalars_t({ alpha0, decay, data.m_lacc.lambda() }));
+                                              epoch, scalars_t({ alpha0, decay, data.lambda() }));
 
                                 if (verbose)
                                 log_info()
@@ -94,132 +64,161 @@ namespace ncv
                                         << ", batch = " << batch
                                         << ", alpha = " << alpha0
                                         << ", decay = " << decay
-                                        << ", lambda = " << data.m_lacc.lambda()
+                                        << ", lambda = " << data.lambda()
                                         << "] done in " << timer.elapsed() << ".";
                         };
 
-                        // optimize the model
+                        // OK, optimize the model
                         ncv::minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
                                       data.m_x0, optimizer, epochs, epoch_size, alpha0, decay);
 
-                        // OK
                         return result;
                 }
-        }
 
-        trainer_result_t stochastic_train(
-                const model_t& model, const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
-                const loss_t& loss, const string_t& criterion,
-                stochastic_optimizer optimizer, size_t epochs,
-                bool verbose)
-        {
-                thread_pool_t::mutex_t mutex;
-
-                vector_t x0;
-                model.save_params(x0);
-
-                // operator to train for a given regularization factor
-                const auto op = [&] (scalar_t lambda)
+                // <result, batch size, decay rate>
+                std::tuple<trainer_result_t, size_t, scalar_t> tune_batch_decay(
+                        trainer_data_t& data,
+                        stochastic_optimizer optimizer, scalar_t alpha,
+                        bool verbose)
                 {
-                        scalar_t opt_state = std::numeric_limits<scalar_t>::max();
-                        scalar_t opt_alpha = 1.00;
+                        trainer_result_t opt_result;
                         scalar_t opt_decay = 0.50;
                         size_t opt_batch = 0;
 
-                        // operator to tune the learning rate
-                        const auto op_lrate = [&] (scalar_t alpha)
+                        // tune the decay rate (if possible)
+                        scalars_t decays;
+                        switch (optimizer)
                         {
-                                accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value, lambda);
-                                accumulator_t gacc(model, nthreads, criterion, criterion_t::type::vgrad, lambda);
+                        case stochastic_optimizer::AG:
+                        case stochastic_optimizer::ADAGRAD:
+                        case stochastic_optimizer::ADADELTA:
+                                decays = { 1.00 };
+                                break;
 
-                                trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
+                        default:
+                                decays = { 0.0, 0.10, 0.20, 0.50, 0.75, 1.00 };
+                                break;
+                        }
 
-                                // tune the decay rate (if possible)
-                                scalars_t decays;
-                                switch (optimizer)
+                        for (scalar_t decay : decays)
+                        {
+                                // tune the batch size
+                                const size_t min_batch = 16 * ncv::n_threads();
+                                const size_t max_batch = 16 * min_batch;
+
+                                for (size_t batch = min_batch; batch <= max_batch; batch *= 2)
                                 {
-                                case stochastic_optimizer::AG:
-                                case stochastic_optimizer::ADAGRAD:
-                                case stochastic_optimizer::ADADELTA:
-                                        decays = { 1.00 };
-                                        break;
+                                        const ncv::timer_t timer;
 
-                                default:
-                                        decays = { 0.0, 0.10, 0.20, 0.50, 0.75, 1.00 };
-                                        break;
-                                }
+                                        const size_t epochs = 1;
+                                        const trainer_result_t result = train(
+                                                data, optimizer, epochs, batch, alpha, decay, false);
 
-                                std::set<std::tuple<scalar_t, scalar_t, size_t>> states;
-                                for (scalar_t decay : decays)
-                                {                                        
-                                        // tune the batch size
-                                        const size_t min_batch = 16 * ncv::n_threads();
-                                        const size_t max_batch = 16 * min_batch;
+                                        const trainer_state_t& state = result.m_opt_state;
 
-                                        for (size_t batch = min_batch; batch <= max_batch; batch *= 2)
+                                        if (verbose)
+                                        log_info()
+                                                << "[tuning: train = " << state.m_tvalue << "/" << state.m_terror_avg
+                                                << ", valid = " << state.m_vvalue << "/" << state.m_verror_avg
+                                                << ", batch = " << batch
+                                                << ", alpha = " << alpha
+                                                << ", decay = " << decay
+                                                << ", lambda = " << data.lambda()
+                                                << "] done in " << timer.elapsed() << ".";
+
+                                        if (result < opt_result)
                                         {
-                                                const ncv::timer_t timer;
-
-                                                const scalar_t state = detail::tune(data, optimizer, batch, alpha, decay);
-
-                                                const thread_pool_t::lock_t lock(mutex);
-
-                                                if (verbose)
-                                                log_info()
-                                                        << "[tuning: loss = " << state
-                                                        << ", batch = " << batch
-                                                        << ", alpha = " << alpha
-                                                        << ", decay = " << decay
-                                                        << ", lambda = " << data.m_lacc.lambda()
-                                                        << "] done in " << timer.elapsed() << ".";
-
-                                                states.insert(std::make_tuple(state, decay, batch));
+                                                opt_result = result;
+                                                opt_batch = batch;
+                                                opt_decay = decay;
                                         }
                                 }
+                        }
 
-                                if (std::get<0>(*states.begin()) < opt_state)
-                                {
-                                        opt_alpha = alpha;
-                                        opt_state = std::get<0>(*states.begin());
-                                        opt_decay = std::get<1>(*states.begin());
-                                        opt_batch = std::get<2>(*states.begin());
-                                }
+                        // OK
+                        return std::make_tuple(opt_result, opt_batch, opt_decay);
+                }
 
-                                return std::get<0>(*states.begin());
+                // <result, batch size, decay rate, learning rate>
+                std::tuple<trainer_result_t, size_t, scalar_t, scalar_t> tune_batch_decay_lrate(
+                        trainer_data_t& data,
+                        stochastic_optimizer optimizer,
+                        bool verbose)
+                {
+                        const auto op = [&] (scalar_t alpha)
+                        {
+                                const auto ret = tune_batch_decay(data, optimizer, alpha, verbose);
+                                return std::make_tuple(std::get<0>(ret),
+                                                       std::get<1>(ret),
+                                                       std::get<2>(ret),
+                                                       alpha);
                         };
 
                         // tune the learning rate (if possible)
                         switch (optimizer)
                         {
                         case stochastic_optimizer::ADADELTA:
-                                op_lrate(1.0);
-                                break;
+                                return op(1.0);
 
                         default:
-                                log10_min_search(op_lrate, -4.0, +2.0, 0.2, 4);
-                                break;
+                                return log10_min_search(op, -4.0, +2.0, 0.5, 4).first;
                         }
+                }
 
-                        // train the model using the tuned parameters
+                // <result, batch size, decay rate, learning rate, regularization weight>
+                std::tuple<trainer_result_t, size_t, scalar_t, scalar_t, scalar_t> tune_lambda(
+                        trainer_data_t& data,
+                        stochastic_optimizer optimizer,
+                        bool verbose)
+                {
+                        const auto op = [&] (scalar_t lambda)
                         {
-                                accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value, lambda);
-                                accumulator_t gacc(model, nthreads, criterion, criterion_t::type::vgrad, lambda);
+                                data.set_lambda(lambda);
 
-                                trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
+                                const auto ret = tune_batch_decay_lrate(data, optimizer, verbose);
+                                return std::make_tuple(std::get<0>(ret),
+                                                       std::get<1>(ret),
+                                                       std::get<2>(ret),
+                                                       std::get<3>(ret),
+                                                       lambda);
+                        };
 
-                                return detail::train(data, optimizer, opt_batch, epochs, opt_alpha, opt_decay, mutex, verbose);
+                        if (data.m_lacc.can_regularize())
+                        {
+                                return log10_min_search(op, -6.0, +0.0, 0.5, 4).first;
                         }
-                };
+                        else
+                        {
+                                return op(0.0);
+                        }
+                }
+        }
+
+        trainer_result_t stochastic_train(
+                const model_t& model,
+                const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
+                const loss_t& loss, const string_t& criterion,
+                stochastic_optimizer optimizer, size_t epochs, bool verbose)
+        {
+                vector_t x0;
+                model.save_params(x0);
+
+                // setup accumulators
+                accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value, 0.0);
+                accumulator_t gacc(model, nthreads, criterion, criterion_t::type::vgrad, 0.0);
+
+                trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
 
                 // tune the regularization factor (if needed)
-                if (accumulator_t::can_regularize(criterion))
-                {
-                        return log10_min_search(op, -6.0, +0.0, 0.2, 4).first;
-                }
+                const auto ret = tune_lambda(data, optimizer, verbose);
 
-                else
-                {
-                        return op(0.0);
-                }
+                const size_t opt_batch = std::get<1>(ret);
+                const scalar_t opt_decay = std::get<2>(ret);
+                const scalar_t opt_alpha = std::get<3>(ret);
+                const scalar_t opt_lambda = std::get<4>(ret);
+
+                data.set_lambda(opt_lambda);
+
+                return train(data, optimizer, epochs, opt_batch, opt_alpha, opt_decay, verbose);
         }
 }

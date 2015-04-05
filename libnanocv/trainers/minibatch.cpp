@@ -118,6 +118,7 @@ namespace ncv
                         return result;
                 }
 
+                // <result, batch size, iterations per batch>
                 std::tuple<trainer_result_t, size_t, size_t> tune_minibatch(
                         trainer_data_t& data, batch_optimizer optimizer, scalar_t epsilon, bool verbose)
                 {
@@ -165,6 +166,7 @@ namespace ncv
                         return std::make_tuple(opt_result, opt_batch, opt_iterations);
                 }
 
+                // <result, batch size, iterations per batch, regularization weight>
                 std::tuple<trainer_result_t, size_t, size_t, scalar_t> tune_lambda(
                         trainer_data_t& data, batch_optimizer optimizer, scalar_t epsilon, bool verbose)
                 {
@@ -172,15 +174,21 @@ namespace ncv
                         {
                                 data.set_lambda(lambda);
 
-                                return tune_minibatch(data, optimizer, epsilon, verbose);
+                                const auto ret = tune_minibatch(data, optimizer, epsilon, verbose);
+                                return std::make_tuple(std::get<0>(ret),
+                                                       std::get<1>(ret),
+                                                       std::get<2>(ret),
+                                                       lambda);
                         };
 
-                        const auto ret = log10_min_search(op, -6.0, +0.0, 0.5, 4);
-
-                        return std::make_tuple(std::get<0>(ret.first),
-                                               std::get<1>(ret.first),
-                                               std::get<2>(ret.first),
-                                               ret.second);
+                        if (data.m_lacc.can_regularize())
+                        {
+                                return log10_min_search(op, -6.0, +0.0, 0.5, 4).first;
+                        }
+                        else
+                        {
+                                return op(0.0);
+                        }
                 }
         }
 
@@ -200,28 +208,15 @@ namespace ncv
                 trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
 
                 // tune the regularization factor (if needed)
-                if (accumulator_t::can_regularize(criterion))
-                {
-                        const auto ret = tune_lambda(data, optimizer, epsilon, verbose);
+                const auto ret = tune_lambda(data, optimizer, epsilon, verbose);
 
-                        const size_t opt_batch = std::get<1>(ret);
-                        const size_t opt_iterations = std::get<2>(ret);
-                        const size_t opt_lambda = std::get<3>(ret);
+                const size_t opt_batch = std::get<1>(ret);
+                const size_t opt_iterations = std::get<2>(ret);
+                const size_t opt_lambda = std::get<3>(ret);
 
-                        data.set_lambda(opt_lambda);
+                data.set_lambda(opt_lambda);
 
-                        return train(data, optimizer, epochs, opt_batch, opt_iterations, epsilon, verbose);
-                }
-
-                else
-                {
-                        const auto ret = tune_minibatch(data, optimizer, epsilon, verbose);
-
-                        const size_t opt_batch = std::get<1>(ret);
-                        const size_t opt_iterations = std::get<2>(ret);
-
-                        return train(data, optimizer, epochs, opt_batch, opt_iterations, epsilon, verbose);
-                }
+                return train(data, optimizer, epochs, opt_batch, opt_iterations, epsilon, verbose);
         }
 }
 	

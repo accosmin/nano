@@ -192,5 +192,10 @@ namespace ncv
         {
                 return ncv::get_criteria().get(criterion)->can_regularize();
         }
+
+        bool accumulator_t::can_regularize() const
+        {
+                return m_impl->m_cache->can_regularize();
+        }
 }
 	
