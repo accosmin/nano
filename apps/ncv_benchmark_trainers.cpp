@@ -44,6 +44,8 @@ static void test_optimizer(model_t& model, ttrainer trainer, const string_t& nam
 
                 terrors(result.m_opt_state.m_terror_avg);
                 verrors(result.m_opt_state.m_verror_avg);
+
+                log_info() << "<<< --- optimum = {" << text::concatenate(result.m_opt_config) << "}.";
         }, cmd_trials);
 
         table.append(name)
@@ -62,7 +64,7 @@ static void test_optimizers(
         const scalar_t cmd_epsilon = 1e-4;
 
         const size_t n_threads = ncv::n_threads();
-        const bool verbose = true;
+        const bool verbose = false;
 
 //        // batch optimizers
 //        const auto batch_optimizers =
