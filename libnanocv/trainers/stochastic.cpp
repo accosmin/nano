@@ -53,7 +53,10 @@ namespace ncv
 
                                 // OK, update the optimum solution
                                 result.update(state.x, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var,
-                                              epoch, scalars_t({ alpha0, decay, data.lambda() }));
+                                              epoch, scalars_t({ static_cast<scalar_t>(batch),
+                                                                 alpha0,
+                                                                 decay,
+                                                                 data.lambda() }));
 
                                 if (verbose)
                                 log_info()
