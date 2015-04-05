@@ -12,12 +12,13 @@ namespace ncv
                 template
                 <
                         typename tvalue,
-                        typename tscalar
+                        typename tscalar,
+                        typename tsize
                 >
-                void update_range(const tvalue& optimum, tscalar varlog, tscalar& minlog, tscalar& maxlog)
+                void update_range(const tvalue& optimum, tscalar varlog, tsize splits, tscalar& minlog, tscalar& maxlog)
                 {
-                        minlog = optimum.second - varlog;
-                        maxlog = optimum.second + varlog;
+                        minlog = optimum.second - varlog * tscalar(splits - 1) / tscalar(splits);
+                        maxlog = optimum.second + varlog * tscalar(splits - 1) / tscalar(splits);
                 }
 
                 template
@@ -85,7 +86,7 @@ namespace ncv
                                 history.insert(value);
                         }
                         
-                        min_search_detail::update_range(*history.begin(), varlog, minlog, maxlog);
+                        min_search_detail::update_range(*history.begin(), varlog, splits, minlog, maxlog);
                 }
 
                 return history.empty() ? tvalue() : min_search_detail::make_result(*history.begin());
@@ -142,7 +143,7 @@ namespace ncv
                         // synchronize per search step
                         pool.wait();
                         
-                        min_search_detail::update_range(*history.begin(), varlog, minlog, maxlog);
+                        min_search_detail::update_range(*history.begin(), varlog, splits, minlog, maxlog);
                 }
                 
                 return history.empty() ? tvalue() : min_search_detail::make_result(*history.begin());
