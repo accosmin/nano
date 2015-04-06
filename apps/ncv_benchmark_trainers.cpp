@@ -38,14 +38,16 @@ static void test_optimizer(model_t& model, ttrainer trainer, const string_t& nam
                 model.random_params();
 
                 const trainer_result_t result = trainer();
+                const trainer_state_t& state = result.m_opt_state;
 
-                tvalues(result.m_opt_state.m_tvalue);
-                vvalues(result.m_opt_state.m_vvalue);
+                tvalues(state.m_tvalue);
+                vvalues(state.m_vvalue);
 
-                terrors(result.m_opt_state.m_terror_avg);
-                verrors(result.m_opt_state.m_verror_avg);
+                terrors(state.m_terror_avg);
+                verrors(state.m_verror_avg);
 
-                log_info() << "<<< --- optimum = {" << text::concatenate(result.m_opt_config) << "}.";
+                log_info() << "<<< --- optimum config = {" << text::concatenate(result.m_opt_config)
+                           << "}, error " << state.m_terror_avg << "/" << state.m_verror_avg << ".";
         }, cmd_trials);
 
         table.append(name)
