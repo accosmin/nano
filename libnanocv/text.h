@@ -24,7 +24,7 @@ namespace ncv
                 ///
                 /// \brief align a string to fill the given size
                 ///
-                NANOCV_DLL_PUBLIC std::string resize(const std::string& str, std::size_t size,
+                NANOCV_PUBLIC std::string resize(const std::string& str, std::size_t size,
                         align alignment = align::left, char fill_char = ' ');
 
                 ///

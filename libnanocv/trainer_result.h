@@ -23,7 +23,7 @@ namespace ncv
         ///
         /// \brief track the current/optimum model state
         ///
-        struct NANOCV_DLL_PUBLIC trainer_result_t
+        struct NANOCV_PUBLIC trainer_result_t
         {
                 ///
                 /// \brief constructor

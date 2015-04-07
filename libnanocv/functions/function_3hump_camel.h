@@ -9,5 +9,5 @@ namespace ncv
         ///
         /// https://en.wikipedia.org/wiki/Test_functions_for_optimization
         ///
-        NANOCV_DLL_PUBLIC std::vector<function_t> make_3hump_camel_funcs();
+        NANOCV_PUBLIC std::vector<function_t> make_3hump_camel_funcs();
 }

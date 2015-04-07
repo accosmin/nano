@@ -70,7 +70,7 @@ namespace ncv
                         return make_luma(get_red(rgba), get_green(rgba), get_blue(rgba));
                 }
 
-                NANOCV_DLL_PUBLIC cielab_t make_cielab(rgba_t rgba);
+                NANOCV_PUBLIC cielab_t make_cielab(rgba_t rgba);
 
                 // RGBA encoding (R, G, B, A, CIELab)
                 inline rgba_t make_rgba(rgba_t r, rgba_t g, rgba_t b, rgba_t a = 255)
@@ -82,7 +82,7 @@ namespace ncv
                         return make_rgba(l, l, l, a);
                 }
 
-                NANOCV_DLL_PUBLIC rgba_t make_rgba(const cielab_t& cielab);
+                NANOCV_PUBLIC rgba_t make_rgba(const cielab_t& cielab);
 
                 // interpolate luma
                 inline luma_t luma_mixer(

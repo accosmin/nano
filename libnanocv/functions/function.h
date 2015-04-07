@@ -11,7 +11,7 @@ namespace ncv
         ///
         /// \brief test optimization problem
         ///
-        struct NANOCV_DLL_PUBLIC function_t
+        struct NANOCV_PUBLIC function_t
         {
                 function_t(const string_t& name = string_t(),
                            const opt_opsize_t& opsize = opt_opsize_t(),

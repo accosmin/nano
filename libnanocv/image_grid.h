@@ -7,7 +7,7 @@ namespace ncv
         ///
         /// \brief create an RGBA image composed from fixed-size RGBA patches disposed in a grid
         ///
-        class NANOCV_DLL_PUBLIC image_grid_t
+        class NANOCV_PUBLIC image_grid_t
         {
         public:
 

@@ -7,5 +7,5 @@ namespace ncv
         ///
         /// \brief create Dixon-Price function tests
         ///
-        NANOCV_DLL_PUBLIC std::vector<function_t> make_dixon_price_funcs(ncv::size_t max_dims = 32);
+        NANOCV_PUBLIC std::vector<function_t> make_dixon_price_funcs(ncv::size_t max_dims = 32);
 }

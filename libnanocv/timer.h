@@ -7,7 +7,7 @@
 
 namespace ncv
 {
-        class NANOCV_DLL_PUBLIC timer_t
+        class NANOCV_PUBLIC timer_t
         {
         public:
 

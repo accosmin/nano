@@ -16,14 +16,14 @@ namespace ncv
         typedef manager_t<model_t>              model_manager_t;
         typedef model_manager_t::robject_t      rmodel_t;
 
-        NANOCV_DLL_PUBLIC model_manager_t& get_models();
+        NANOCV_PUBLIC model_manager_t& get_models();
 
         ///
         /// \brief generic model used for computing:
         ///     - the output for an image patch
         //      - its parameters gradient
         ///
-        class NANOCV_DLL_PUBLIC model_t : public clonable_t<model_t>
+        class NANOCV_PUBLIC model_t : public clonable_t<model_t>
         {
         public:
 

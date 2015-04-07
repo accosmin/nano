@@ -14,7 +14,7 @@ namespace ncv
         ///     color=rgba[,luma]       - color mode
         ///     size=1024[256,16*1024]  - number of samples (training + validation)
         ///
-        class NANOCV_DLL_PUBLIC synthetic_shapes_task_t : public task_t
+        class NANOCV_PUBLIC synthetic_shapes_task_t : public task_t
         {
         public:
 

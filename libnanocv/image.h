@@ -13,7 +13,7 @@ namespace ncv
         ///     - loading and saving from and to files
         ///     - scaling to [0, 1] tensors
         ///
-        class NANOCV_DLL_PUBLIC image_t
+        class NANOCV_PUBLIC image_t
         {
         public:
 

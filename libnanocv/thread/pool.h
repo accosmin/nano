@@ -15,7 +15,7 @@ namespace ncv
         ///
         /// NB: this is heavily copied/inspired by http://progsch.net/wordpress/?p=81
         ///
-        class NANOCV_DLL_PUBLIC thread_pool_t : private noncopyable_t
+        class NANOCV_PUBLIC thread_pool_t : private noncopyable_t
         {
         public:
 

@@ -9,5 +9,5 @@ namespace ncv
         ///
         /// https://en.wikipedia.org/wiki/Test_functions_for_optimization
         ///
-        NANOCV_DLL_PUBLIC std::vector<function_t> make_rosenbrock_funcs(ncv::size_t max_dims = 3);
+        NANOCV_PUBLIC std::vector<function_t> make_rosenbrock_funcs(ncv::size_t max_dims = 3);
 }

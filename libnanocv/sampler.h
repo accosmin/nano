@@ -11,7 +11,7 @@ namespace ncv
         /// and a protocol (training + testing).
         /// samples for training & testing models can be drawn from these image.
         ///
-        class NANOCV_DLL_PUBLIC sampler_t
+        class NANOCV_PUBLIC sampler_t
 	{
         public:
 

@@ -8,7 +8,7 @@ namespace ncv
         ///
         /// \brief 2D point
         ///
-        class NANOCV_DLL_PUBLIC point_t
+        class NANOCV_PUBLIC point_t
         {
         public:
 

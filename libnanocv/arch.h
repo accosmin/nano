@@ -12,17 +12,17 @@
 // export symbols in shared libraries
 #if defined _WIN32 || defined __CYGWIN__
         #ifdef __GNUC__
-                #define NANOCV_DLL_PUBLIC __attribute__ ((dllexport))
+                #define NANOCV_PUBLIC __attribute__ ((dllexport))
         #else
-                #define NANOCV_DLL_PUBLIC __declspec(dllexport) // Note: actually gcc seems to also supports this syntax.
+                #define NANOCV_PUBLIC __declspec(dllexport) // Note: actually gcc seems to also supports this syntax.
         #endif
-        #define NANOCV_DLL_LOCAL
+        #define NANOCV_PRIVATE
 #else
         #if __GNUC__ >= 4
-                #define NANOCV_DLL_PUBLIC __attribute__ ((visibility ("default")))
-                #define NANOCV_DLL_LOCAL  __attribute__ ((visibility ("hidden")))
+                #define NANOCV_PUBLIC __attribute__ ((visibility ("default")))
+                #define NANOCV_PRIVATE  __attribute__ ((visibility ("hidden")))
         #else
-                #define NANOCV_DLL_PUBLIC
-                #define NANOCV_DLL_LOCAL
+                #define NANOCV_PUBLIC
+                #define NANOCV_PRIVATE
         #endif
 #endif

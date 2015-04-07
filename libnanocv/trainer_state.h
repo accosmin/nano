@@ -11,7 +11,7 @@ namespace ncv
         ///
         /// \brief training state
         ///
-        struct NANOCV_DLL_PUBLIC trainer_state_t
+        struct NANOCV_PUBLIC trainer_state_t
         {
                 ///
                 /// \brief constructor
@@ -47,6 +47,6 @@ namespace ncv
         ///
         /// \brief save optimization states to text file
         ///
-        NANOCV_DLL_PUBLIC bool save(const string_t& path, const trainer_states_t& states);
+        NANOCV_PUBLIC bool save(const string_t& path, const trainer_states_t& states);
 }
 

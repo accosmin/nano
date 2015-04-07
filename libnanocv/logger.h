@@ -8,7 +8,7 @@ namespace ncv
         ///
         /// \brief logging object that can use any std::ostream (standard streaming & text files)
         ///
-        class NANOCV_DLL_PUBLIC logger_t
+        class NANOCV_PUBLIC logger_t
         {
         public:
 

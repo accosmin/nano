@@ -11,7 +11,7 @@ namespace ncv
         ///
         /// \brief evaluate a model (compute the average loss value & error)
         ///
-        NANOCV_DLL_PUBLIC size_t test(const task_t& task, const fold_t& fold, const loss_t& loss, const model_t& model,
+        NANOCV_PUBLIC size_t test(const task_t& task, const fold_t& fold, const loss_t& loss, const model_t& model,
                 scalar_t& lvalue, scalar_t& lerror);
 }
 

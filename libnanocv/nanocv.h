@@ -12,10 +12,10 @@ namespace ncv
         ///
         /// \brief current version
         ///
-        NANOCV_DLL_PUBLIC string_t version();
+        NANOCV_PUBLIC string_t version();
 
         ///
         /// \brief initialize library (setup flags, register default objects ...)
         ///
-        NANOCV_DLL_PUBLIC void init();
+        NANOCV_PUBLIC void init();
 }

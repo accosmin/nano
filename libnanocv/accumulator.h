@@ -7,7 +7,7 @@ namespace ncv
         ///
         /// \brief cumulate sample evaluations (loss value, error and gradient)
         ///
-        class NANOCV_DLL_PUBLIC accumulator_t : private noncopyable_t
+        class NANOCV_PUBLIC accumulator_t : private noncopyable_t
         {
         public:
 

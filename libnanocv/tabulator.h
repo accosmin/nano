@@ -8,7 +8,7 @@ namespace ncv
         ///
         /// \brief collects & formats for ASCII display tabular data
         ///
-        class NANOCV_DLL_PUBLIC tabulator_t
+        class NANOCV_PUBLIC tabulator_t
         {
         public:
 
