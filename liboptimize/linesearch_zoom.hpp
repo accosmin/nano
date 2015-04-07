@@ -3,6 +3,8 @@
 #include "linesearch.h"
 #include "linesearch_step.hpp"
 #include "linesearch_cubic.hpp"
+#include "linesearch_bisection.hpp"
+#include "linesearch_quadratic.hpp"
 
 namespace ncv
 {
