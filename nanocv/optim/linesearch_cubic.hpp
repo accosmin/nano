@@ -22,7 +22,7 @@ namespace ncv
                         const tscalar x1 = step1.alpha(), f1 = step1.phi(), g1 = step1.gphi();
 
                         tscalar a, b, c, d;
-                        optim::cubic(x0, f0, g0, x1, f1, g1, &a, &b, &c, &d);
+                        optim::cubic(x0, f0, g0, x1, f1, g1, a, b, c, d);
 
                         // OK, return minimum
                         const tscalar sign = (step1.alpha() > step0.alpha()) ? 1 : -1;

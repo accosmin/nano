@@ -24,10 +24,12 @@ namespace ncv
                         const tscalar x1 = step1.alpha(), f1 = step1.phi();
 
                         tscalar a, b, c;
-                        optim::quadratic(x0, f0, g0, x1, f1, &a, &b, &c);
+                        optim::quadratic(x0, f0, g0, x1, f1, a, b, c);
 
-                        // OK, return minimum
-                        return -b / (2 * a);
+                        tscalar min;
+                        optim::quadratic_extremum(a, b, c, min);
+
+                        return min;
                 }
         }
 }
