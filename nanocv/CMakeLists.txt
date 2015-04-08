@@ -1,8 +1,9 @@
 # build library
-file(GLOB libnanocv_sources
+file(GLOB nanocv_sources
         *.*
         file/*.*
         math/*.*
+        optim/*.*
         tasks/*.*
         tensor/*.*
         losses/*.*
@@ -16,10 +17,10 @@ file(GLOB libnanocv_sources
         )
 
 if(NANOCV_WITH_OPENCL)
-        file(GLOB libnanocv_opencl_sources
+        file(GLOB nanocv_opencl_sources
                 opencl/*.*
         )
-        set(libnanocv_sources "${libnanocv_sources};${libnanocv_opencl_sources}")
+        set(nanocv_sources "${nanocv_sources};${nanocv_opencl_sources}")
 endif()
 
 set(libs "${libs};${Boost_SERIALIZATION_LIBRARY}")
@@ -35,26 +36,26 @@ if(NANOCV_WITH_OPENCL)
         set(libs "${libs};${OpenCL_LIBRARIES}")
 endif()
 
-add_library(libnanocv SHARED ${libnanocv_sources})
-target_link_libraries(libnanocv ${libs})
+add_library(nanocv SHARED ${nanocv_sources})
+target_link_libraries(nanocv ${libs})
 
 if(NANOCV_WITH_CUDA)
-        file(GLOB libnanocv_cuda_sources
+        file(GLOB nanocv_cuda_sources
                 cuda/*.*
         )
 
-        cuda_add_library(libnanocv_cuda STATIC ${libnanocv_cuda_sources})
-        target_link_libraries(libnanocv libnanocv_cuda)
+        cuda_add_library(nanocv_cuda STATIC ${nanocv_cuda_sources})
+        target_link_libraries(nanocv nanocv_cuda)
 endif()
 
 # install library
 install(TARGETS
-        libnanocv
+        nanocv
         DESTINATION lib)
 
 # install headers
-install(DIRECTORY ${nanocv_SOURCE_DIR}/libnanocv/
-        DESTINATION include/libnanocv
+install(DIRECTORY ${nanocv_SOURCE_DIR}/nanocv/
+        DESTINATION include/nanocv
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
 
 

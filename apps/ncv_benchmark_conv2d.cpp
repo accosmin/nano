@@ -1,12 +1,12 @@
-#include "libnanocv/tensor.h"
-#include "libnanocv/string.h"
-#include "libnanocv/conv2d.hpp"
-#include "libnanocv/measure.hpp"
-#include "libnanocv/tabulator.h"
-#include "libnanocv/placeholders.h"
-#include "libnanocv/tensor/conv2d.hpp"
+#include "nanocv/tensor.h"
+#include "nanocv/string.h"
+#include "nanocv/conv2d.hpp"
+#include "nanocv/measure.hpp"
+#include "nanocv/tabulator.h"
+#include "nanocv/placeholders.h"
+#include "nanocv/tensor/conv2d.hpp"
 #ifdef NANOCV_WITH_OPENCL
-#include "libnanocv/opencl/opencl.h"
+#include "nanocv/opencl/opencl.h"
 #endif
 #ifdef NANOCV_WITH_CUDA
 #include "cuda/cuda.h"

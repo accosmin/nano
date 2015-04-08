@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_random_index"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/random.hpp"
+#include "nanocv/random.hpp"
 
 BOOST_AUTO_TEST_CASE(test_random)
 {

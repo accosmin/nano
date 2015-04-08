@@ -2,8 +2,8 @@
 #define BOOST_TEST_MODULE "test_range"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/range.hpp"
-#include "libnanocv/random.hpp"
+#include "nanocv/range.hpp"
+#include "nanocv/random.hpp"
 
 namespace test
 {

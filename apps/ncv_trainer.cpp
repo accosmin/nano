@@ -1,6 +1,6 @@
-#include "libnanocv/nanocv.h"
-#include "libnanocv/tester.h"
-#include "libnanocv/measure.hpp"
+#include "nanocv/nanocv.h"
+#include "nanocv/tester.h"
+#include "nanocv/measure.hpp"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 

@@ -2,8 +2,8 @@
 
 #include "text.h"
 #include "tensor.h"
-#include "liboptimize/problem.hpp"
-#include "liboptimize/linesearch.h"
+#include "optim/problem.hpp"
+#include "optim/linesearch.h"
 
 namespace ncv
 {

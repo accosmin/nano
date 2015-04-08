@@ -1,5 +1,5 @@
-#include "libnanocv/nanocv.h"
-#include "libnanocv/logger.h"
+#include "nanocv/nanocv.h"
+#include "nanocv/logger.h"
 
 using namespace ncv;
 

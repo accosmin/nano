@@ -2,15 +2,15 @@
 #define BOOST_TEST_MODULE "test_gradient"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/nanocv.h"
-#include "libnanocv/logger.h"
-#include "libnanocv/random.hpp"
-#include "libnanocv/optimizer.h"
-#include "libnanocv/accumulator.h"
-#include "libnanocv/thread/pool.h"
-#include "libnanocv/math/close.hpp"
-#include "libnanocv/math/epsilon.hpp"
-#include "libnanocv-test/test_models.h"
+#include "nanocv/nanocv.h"
+#include "nanocv/logger.h"
+#include "nanocv/random.hpp"
+#include "nanocv/optimizer.h"
+#include "nanocv/accumulator.h"
+#include "nanocv/thread/pool.h"
+#include "nanocv/math/close.hpp"
+#include "nanocv/math/epsilon.hpp"
+#include "nanocv-test/test_models.h"
 
 namespace test
 {

@@ -2,12 +2,12 @@
 #define BOOST_TEST_MODULE "test_log_search"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/scalar.h"
-#include "libnanocv/random.hpp"
-#include "libnanocv/math/abs.hpp"
-#include "libnanocv/thread/pool.h"
-#include "libnanocv/log_search.hpp"
-#include "libnanocv/math/epsilon.hpp"
+#include "nanocv/scalar.h"
+#include "nanocv/random.hpp"
+#include "nanocv/math/abs.hpp"
+#include "nanocv/thread/pool.h"
+#include "nanocv/log_search.hpp"
+#include "nanocv/math/epsilon.hpp"
 
 namespace test
 {

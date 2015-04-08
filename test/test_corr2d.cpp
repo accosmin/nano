@@ -2,13 +2,13 @@
 #define BOOST_TEST_MODULE "test_corr2d"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/tensor.h"
-#include "libnanocv/logger.h"
-#include "libnanocv/corr2d.hpp"
-#include "libnanocv/math/close.hpp"
-#include "libnanocv/math/epsilon.hpp"
+#include "nanocv/tensor.h"
+#include "nanocv/logger.h"
+#include "nanocv/corr2d.hpp"
+#include "nanocv/math/close.hpp"
+#include "nanocv/math/epsilon.hpp"
 #ifdef NANOCV_WITH_OPENCL
-#include "libnanocv/opencl/opencl.h"
+#include "nanocv/opencl/opencl.h"
 #endif
 #ifdef NANOCV_WITH_CUDA
 #include "cuda/cuda.h"

@@ -1,8 +1,8 @@
-#include "libnanocv/mad.hpp"
-#include "libnanocv/tensor.h"
-#include "libnanocv/tabulator.h"
-#include "libnanocv/measure.hpp"
-#include "libnanocv/tensor/mad.hpp"
+#include "nanocv/mad.hpp"
+#include "nanocv/tensor.h"
+#include "nanocv/tabulator.h"
+#include "nanocv/measure.hpp"
+#include "nanocv/tensor/mad.hpp"
 #include <iostream>
 
 using namespace ncv;

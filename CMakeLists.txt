@@ -161,8 +161,7 @@ message("-----------------------------------------------------------------------
 
 include_directories(./)
 
-add_subdirectory(liboptimize)
-add_subdirectory(libnanocv)
+add_subdirectory(nanocv)
 add_subdirectory(apps)
 add_subdirectory(test)
 

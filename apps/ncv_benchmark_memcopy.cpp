@@ -1,12 +1,12 @@
-#include "libnanocv/text.h"
-#include "libnanocv/timer.h"
-#include "libnanocv/logger.h"
-#include "libnanocv/stats.hpp"
-#include "libnanocv/tensor.h"
-#include "libnanocv/math/abs.hpp"
-#include "libnanocv/thread/parallel.hpp"
+#include "nanocv/text.h"
+#include "nanocv/timer.h"
+#include "nanocv/logger.h"
+#include "nanocv/stats.hpp"
+#include "nanocv/tensor.h"
+#include "nanocv/math/abs.hpp"
+#include "nanocv/thread/parallel.hpp"
 #ifdef NANOCV_WITH_OPENCL
-#include "libnanocv/opencl/opencl.h"
+#include "nanocv/opencl/opencl.h"
 #endif
 #ifdef NANOCV_WITH_CUDA
 #include "cuda/cuda.h"
