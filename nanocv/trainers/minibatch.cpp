@@ -50,7 +50,7 @@ namespace ncv
 
                 trainer_result_t train(
                         trainer_data_t& data,
-                        batch_optimizer optimizer,
+                        optim::batch_optimizer optimizer,
                         size_t epochs, size_t batch, size_t iterations, scalar_t epsilon,
                         bool verbose)
                 {
@@ -120,7 +120,7 @@ namespace ncv
 
                 // <result, batch size, iterations per batch>
                 std::tuple<trainer_result_t, size_t, size_t> tune_minibatch(
-                        trainer_data_t& data, batch_optimizer optimizer, scalar_t epsilon,
+                        trainer_data_t& data, optim::batch_optimizer optimizer, scalar_t epsilon,
                         bool verbose)
                 {
                         const size_t min_batch = 16 * ncv::n_threads();
@@ -169,7 +169,7 @@ namespace ncv
 
                 // <result, batch size, iterations per batch, regularization weight>
                 std::tuple<trainer_result_t, size_t, size_t, scalar_t> tune_lambda(
-                        trainer_data_t& data, batch_optimizer optimizer, scalar_t epsilon, bool verbose)
+                        trainer_data_t& data, optim::batch_optimizer optimizer, scalar_t epsilon, bool verbose)
                 {
                         const auto op = [&] (scalar_t lambda)
                         {
@@ -194,7 +194,7 @@ namespace ncv
                 const model_t& model,
                 const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, const string_t& criterion,
-                batch_optimizer optimizer, size_t epochs, scalar_t epsilon, bool verbose)
+                optim::batch_optimizer optimizer, size_t epochs, scalar_t epsilon, bool verbose)
         {
                 vector_t x0;
                 model.save_params(x0);

@@ -6,7 +6,7 @@
 
 namespace ncv
 {
-        namespace optimize
+        namespace optim
         {
                 ///
                 /// \brief [a, b] line-search interval double secant update (see CG_DESCENT)

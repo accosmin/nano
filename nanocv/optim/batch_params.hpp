@@ -1,11 +1,11 @@
 #pragma once
 
 #include "params.hpp"
-#include "linesearch.h"
+#include "types.h"
 
 namespace ncv
 {
-        namespace optimize
+        namespace optim
         {
                 ///
                 /// \brief common parameters for batch optimization

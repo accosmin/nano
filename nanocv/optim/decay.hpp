@@ -5,7 +5,7 @@
 
 namespace ncv
 {
-        namespace optimize
+        namespace optim
         {
                 ///
                 /// \brief compute the current learning rate as a function of:

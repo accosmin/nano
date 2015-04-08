@@ -4,7 +4,7 @@
 
 namespace ncv
 {
-        namespace optimize
+        namespace optim
         {
                 ///
                 /// \brief interpolation-based line-search,

@@ -5,7 +5,7 @@
 
 namespace ncv
 {
-        namespace optimize
+        namespace optim
         {
                 ///
                 /// \brief bracket the initial line-search step length (see CG_DESCENT)

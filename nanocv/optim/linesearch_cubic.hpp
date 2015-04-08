@@ -4,7 +4,7 @@
 
 namespace ncv
 {
-        namespace optimize
+        namespace optim
         {
                 ///
                 /// \brief cubic interpolation in the [step0, step1] line-search interval

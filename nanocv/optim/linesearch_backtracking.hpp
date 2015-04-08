@@ -1,11 +1,11 @@
 #pragma once
 
-#include "linesearch.h"
+#include "types.h"
 #include "linesearch_step.hpp"
 
 namespace ncv
 {
-        namespace optimize
+        namespace optim
         {
                 ///
                 /// \brief backtracking line-search,

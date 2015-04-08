@@ -1,11 +1,11 @@
 #pragma once
 
-#include "linesearch.h"
+#include "types.h"
 #include <algorithm>
 
 namespace ncv
 {
-        namespace optimize
+        namespace optim
         {
                 ///
                 /// \brief heuristics to initialize the step length,

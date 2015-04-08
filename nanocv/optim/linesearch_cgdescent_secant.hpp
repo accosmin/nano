@@ -5,7 +5,7 @@
 
 namespace ncv
 {
-        namespace optimize
+        namespace optim
         {
                 ///
                 /// \brief [a, b] line-search interval secant interpolation (see CG_DESCENT)

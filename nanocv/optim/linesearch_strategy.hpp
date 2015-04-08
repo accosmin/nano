@@ -7,7 +7,7 @@
 
 namespace ncv
 {
-        namespace optimize
+        namespace optim
         {
                 template
                 <

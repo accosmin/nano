@@ -43,7 +43,7 @@ namespace ncv
                 const size_t epochs = math::clamp(text::from_params<size_t>(configuration(), "epoch", 16), 1, 1024);
                 const scalar_t epsilon = math::clamp(text::from_params<scalar_t>(configuration(), "eps", 1e-4), 1e-8, 1e-3);
 
-                const batch_optimizer optimizer = text::from_string<batch_optimizer>
+                const optim::batch_optimizer optimizer = text::from_string<optim::batch_optimizer>
                         (text::from_params<string_t>(configuration(), "opt", "gd"));
 
                 // train the model

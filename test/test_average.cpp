@@ -14,7 +14,7 @@ namespace test
         {
                 typedef double test_scalar_t;
 
-                optimize::average_scalar<test_scalar_t> running_average;
+                optim::average_scalar<test_scalar_t> running_average;
 
                 for (size_t i = 0; i <= range; i ++)
                 {

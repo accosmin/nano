@@ -7,7 +7,7 @@
 
 namespace ncv
 {
-        namespace optimize
+        namespace optim
         {
                 ///
                 /// \brief describes a multivariate optimization problem

@@ -163,7 +163,7 @@ namespace ncv
                 // assembly optimization problem & optimize the input
                 const opt_opulog_t fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer));
 
-                const batch_optimizer optimizer = batch_optimizer::LBFGS;
+                const optim::batch_optimizer optimizer = optim::batch_optimizer::LBFGS;
                 const size_t iterations = 256;
                 const scalar_t epsilon = 1e-6;
 

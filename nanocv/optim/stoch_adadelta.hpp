@@ -6,7 +6,7 @@
 
 namespace ncv
 {
-        namespace optimize
+        namespace optim
         {
                 ///
                 /// \brief stochastic AdaDelta,

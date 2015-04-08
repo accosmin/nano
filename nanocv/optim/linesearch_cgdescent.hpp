@@ -1,12 +1,12 @@
 #pragma once
 
-#include "linesearch.h"
+#include "types.h"
 #include "linesearch_cgdescent_bracket.hpp"
 #include "linesearch_cgdescent_secant2.hpp"
 
 namespace ncv
 {
-        namespace optimize
+        namespace optim
         {
                 ///
                 /// \brief CG_DESCENT:

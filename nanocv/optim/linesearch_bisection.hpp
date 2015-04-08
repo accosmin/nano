@@ -2,7 +2,7 @@
 
 namespace ncv
 {
-        namespace optimize
+        namespace optim
         {
                 ///
                 /// \brief bisection interpolation in the [step0, step1] line-search interval

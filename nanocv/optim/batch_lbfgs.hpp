@@ -9,7 +9,7 @@
 
 namespace ncv
 {
-        namespace optimize
+        namespace optim
         {
                 ///
                 /// \brief limited memory bfgs (l-bfgs)

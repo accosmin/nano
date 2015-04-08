@@ -69,34 +69,34 @@ static void check_problem(
         // optimizers to try
         const auto optimizers =
         {
-//                batch_optimizer::GD,
-//                batch_optimizer::CGD_CD,
-//                batch_optimizer::CGD_DY,
-//                batch_optimizer::CGD_FR,
-//                batch_optimizer::CGD_HS,
-//                batch_optimizer::CGD_LS,
-                batch_optimizer::CGD_DYCD,
-                batch_optimizer::CGD_DYHS,
-                batch_optimizer::CGD_PRP,
-                batch_optimizer::CGD_N,
-                batch_optimizer::LBFGS
+//                optim::batch_optimizer::GD,
+//                optim::batch_optimizer::CGD_CD,
+//                optim::batch_optimizer::CGD_DY,
+//                optim::batch_optimizer::CGD_FR,
+//                optim::batch_optimizer::CGD_HS,
+//                optim::batch_optimizer::CGD_LS,
+                optim::batch_optimizer::CGD_DYCD,
+                optim::batch_optimizer::CGD_DYHS,
+                optim::batch_optimizer::CGD_PRP,
+                optim::batch_optimizer::CGD_N,
+                optim::batch_optimizer::LBFGS
         };
 
         const auto ls_initializers =
         {
-                optimize::ls_initializer::unit,
-                optimize::ls_initializer::quadratic,
-                optimize::ls_initializer::consistent
+                optim::ls_initializer::unit,
+                optim::ls_initializer::quadratic,
+                optim::ls_initializer::consistent
         };
 
         const auto ls_strategies =
         {
-//                optimize::ls_strategy::backtrack_armijo,
-//                optimize::ls_strategy::backtrack_wolfe,
-//                optimize::ls_strategy::backtrack_strong_wolfe,
-//                optimize::ls_strategy::interpolation_bisection,
-                optimize::ls_strategy::interpolation_cubic,
-                optimize::ls_strategy::cg_descent
+//                optim::ls_strategy::backtrack_armijo,
+//                optim::ls_strategy::backtrack_wolfe,
+//                optim::ls_strategy::backtrack_strong_wolfe,
+//                optim::ls_strategy::interpolation_bisection,
+                optim::ls_strategy::interpolation_cubic,
+                optim::ls_strategy::cg_descent
         };
 
         tabulator_t table(text::resize(problem_name, 32));
@@ -111,9 +111,9 @@ static void check_problem(
         thread_pool_t pool;
         thread_pool_t::mutex_t mutex;
 
-        for (batch_optimizer optimizer : optimizers)
-                for (optimize::ls_initializer ls_initializer : ls_initializers)
-                        for (optimize::ls_strategy ls_strategy : ls_strategies)
+        for (optim::batch_optimizer optimizer : optimizers)
+                for (optim::ls_initializer ls_initializer : ls_initializers)
+                        for (optim::ls_strategy ls_strategy : ls_strategies)
         {
                 stats_t<scalar_t> times;
                 stats_t<scalar_t> crits;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "linesearch.h"
+#include "types.h"
 #include "linesearch_step.hpp"
 #include "linesearch_cubic.hpp"
 #include "linesearch_bisection.hpp"
@@ -8,7 +8,7 @@
 
 namespace ncv
 {
-        namespace optimize
+        namespace optim
         {
                 ///
                 /// \brief zoom-in in the bracketed interval,

@@ -2,7 +2,7 @@
 
 namespace ncv
 {
-        namespace optimize
+        namespace optim
         {
                 ///
                 /// \brief common parameters for batch optimization

@@ -71,34 +71,34 @@ static void test_optimizers(
 //        // batch optimizers
 //        const auto batch_optimizers =
 //        {
-//                batch_optimizer::GD,
-//                batch_optimizer::CGD,
-//                batch_optimizer::LBFGS
+//                optim::batch_optimizer::GD,
+//                optim::batch_optimizer::CGD,
+//                optim::batch_optimizer::LBFGS
 //        };
 
         // minibatch optimizers
         const auto minibatch_optimizers =
         {
-                batch_optimizer::GD,
-                batch_optimizer::CGD,
-                batch_optimizer::LBFGS
+                optim::batch_optimizer::GD,
+                optim::batch_optimizer::CGD,
+                optim::batch_optimizer::LBFGS
         };
 
         // stochastic optimizers
-        const auto stochastic_optimizers =
+        const auto stoch_optimizers =
         {
-                stochastic_optimizer::SG,
-                stochastic_optimizer::SGA,
-                stochastic_optimizer::SIA,
-                stochastic_optimizer::AG,
-                stochastic_optimizer::ADAGRAD,
-                stochastic_optimizer::ADADELTA
+                optim::stoch_optimizer::SG,
+                optim::stoch_optimizer::SGA,
+                optim::stoch_optimizer::SIA,
+                optim::stoch_optimizer::AG,
+                optim::stoch_optimizer::ADAGRAD,
+                optim::stoch_optimizer::ADADELTA
         };
 
         const string_t basename = "[" + text::to_string(criterion) + "] ";
 
 //        // run optimizers and collect results
-//        for (batch_optimizer optimizer : batch_optimizers)
+//        for (optim::batch_optimizer optimizer : batch_optimizers)
 //        {
 //                test_optimizer(model, [&] ()
 //                {
@@ -108,7 +108,7 @@ static void test_optimizers(
 //                }, basename + "batch-" + text::to_string(optimizer), table);
 //        }
 
-        for (batch_optimizer optimizer : minibatch_optimizers)
+        for (optim::batch_optimizer optimizer : minibatch_optimizers)
         {
                 test_optimizer(model, [&] ()
                 {
@@ -118,7 +118,7 @@ static void test_optimizers(
                 }, basename + "minibatch-" + text::to_string(optimizer), table);
         }
 
-        for (stochastic_optimizer optimizer : stochastic_optimizers)
+        for (optim::stoch_optimizer optimizer : stoch_optimizers)
         {
                 test_optimizer(model, [&] ()
                 {

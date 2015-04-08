@@ -14,7 +14,7 @@ namespace ncv
         {
                 trainer_result_t train(
                         trainer_data_t& data,
-                        stochastic_optimizer optimizer, size_t epochs, size_t batch, scalar_t alpha0, scalar_t decay,
+                        optim::stoch_optimizer optimizer, size_t epochs, size_t batch, scalar_t alpha0, scalar_t decay,
                         bool verbose)
                 {
                         trainer_result_t result;
@@ -81,7 +81,7 @@ namespace ncv
                 // <result, batch size, decay rate>
                 std::tuple<trainer_result_t, size_t, scalar_t> tune_batch_decay(
                         trainer_data_t& data,
-                        stochastic_optimizer optimizer, scalar_t alpha,
+                        optim::stoch_optimizer optimizer, scalar_t alpha,
                         bool verbose)
                 {
                         trainer_result_t opt_result;
@@ -92,9 +92,9 @@ namespace ncv
                         scalars_t decays;
                         switch (optimizer)
                         {
-                        case stochastic_optimizer::AG:
-                        case stochastic_optimizer::ADAGRAD:
-                        case stochastic_optimizer::ADADELTA:
+                        case optim::stoch_optimizer::AG:
+                        case optim::stoch_optimizer::ADAGRAD:
+                        case optim::stoch_optimizer::ADADELTA:
                                 decays = { 1.00 };
                                 break;
 
@@ -145,7 +145,7 @@ namespace ncv
                 // <result, batch size, decay rate, learning rate>
                 std::tuple<trainer_result_t, size_t, scalar_t, scalar_t> tune_batch_decay_lrate(
                         trainer_data_t& data,
-                        stochastic_optimizer optimizer,
+                        optim::stoch_optimizer optimizer,
                         bool verbose)
                 {
                         const auto op = [&] (scalar_t alpha)
@@ -157,7 +157,7 @@ namespace ncv
                         // tune the learning rate (if possible)
                         switch (optimizer)
                         {
-                        case stochastic_optimizer::ADADELTA:
+                        case optim::stoch_optimizer::ADADELTA:
                                 return op(1.0);
 
                         default:
@@ -168,7 +168,7 @@ namespace ncv
                 // <result, batch size, decay rate, learning rate, regularization weight>
                 std::tuple<trainer_result_t, size_t, scalar_t, scalar_t, scalar_t> tune_lambda(
                         trainer_data_t& data,
-                        stochastic_optimizer optimizer,
+                        optim::stoch_optimizer optimizer,
                         bool verbose)
                 {
                         const auto op = [&] (scalar_t lambda)
@@ -194,7 +194,7 @@ namespace ncv
                 const model_t& model,
                 const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, const string_t& criterion,
-                stochastic_optimizer optimizer, size_t epochs, bool verbose)
+                optim::stoch_optimizer optimizer, size_t epochs, bool verbose)
         {
                 vector_t x0;
                 model.save_params(x0);
