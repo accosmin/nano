@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 namespace ncv
 {
         namespace optim
@@ -29,9 +31,8 @@ namespace ncv
                         ///     [x0, f0 = f(x0), g0 = f'(x0)]
                         ///     [x1, f1 = f(x1)]
                         ///
-                        quadratic(
-                                const tscalar x0, const tscalar f0, const tscalar g0,
-                                const tscalar x1, const tscalar f1)
+                        quadratic(const tscalar x0, const tscalar f0, const tscalar g0,
+                                  const tscalar x1, const tscalar f1)
                         {
                                 m_a = (g0 - (f0 - f1) / (x0 - x1)) / (x0 - x1);
                                 m_b = g0 - 2 * m_a * x0;
@@ -60,6 +61,16 @@ namespace ncv
                         tscalar gradient(const tscalar x) const
                         {
                                 return 2 * m_a * x + m_b;
+                        }
+
+                        ///
+                        /// \brief check validity
+                        ///
+                        operator bool() const
+                        {
+                                return  std::isfinite(m_a) &&
+                                        std::isfinite(m_b) &&
+                                        std::isfinite(m_c);
                         }
 
                         ///

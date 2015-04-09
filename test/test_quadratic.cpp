@@ -22,6 +22,7 @@ BOOST_AUTO_TEST_CASE(test_quadratic)
                 const double b = rnd();
                 const double c = rnd();
                 const optim::quadratic<double> q(a, b, c);
+                BOOST_CHECK(q);
 
                 const double x0 = rnd();
                 const double f0 = q.value(x0);
@@ -32,15 +33,19 @@ BOOST_AUTO_TEST_CASE(test_quadratic)
 
                 // check interpolation
                 const optim::quadratic<double> iq(x0, f0, g0, x1, f1);
+                if (!iq)
+                {
+                        continue;
+                }
 
                 BOOST_CHECK_LE(math::abs(f0 - iq.value(x0)), math::epsilon0<double>());
                 BOOST_CHECK_LE(math::abs(g0 - iq.gradient(x0)), math::epsilon0<double>());
 
                 BOOST_CHECK_LE(math::abs(f1 - iq.value(x1)), math::epsilon0<double>());
 
-//                BOOST_CHECK_LE(math::abs(a - ia), math::epsilon1<double>());
-//                BOOST_CHECK_LE(math::abs(b - ib), math::epsilon1<double>());
-//                BOOST_CHECK_LE(math::abs(c - ic), math::epsilon1<double>());
+//                BOOST_CHECK_LE(math::abs(q.a() - iq.a()), math::epsilon1<double>());
+//                BOOST_CHECK_LE(math::abs(q.b() - iq.b()), math::epsilon1<double>());
+//                BOOST_CHECK_LE(math::abs(q.c() - iq.c()), math::epsilon1<double>());
 
                 // check extremum
                 double extremum;
