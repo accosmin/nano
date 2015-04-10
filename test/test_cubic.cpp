@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_CASE(test_cubic)
 {
         using namespace ncv;
 
-        const size_t tests = 1;//327;
+        const size_t tests = 1327;
 
         for (size_t t = 0; t < tests; t ++)
         {

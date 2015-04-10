@@ -35,7 +35,7 @@ namespace ncv
                         cubic(  const tscalar x0, const tscalar f0, const tscalar g0,
                                 const tscalar x1, const tscalar f1, const tscalar g1)
                         {
-                                m_a = ((g0 + g1) / 2 - (f0 - f1) / (x0 - x1)) / (x0 * x0 + x0 * x1 + x1 * x1);
+                                m_a = ((g0 + g1) - 2 * (f0 - f1) / (x0 - x1)) / (x0 * x0 - 2 * x0 * x1 + x1 * x1);
                                 m_b = ((g0 - g1) / (x0 - x1) - 3 * m_a * (x0 + x1)) / 2;
                                 m_c = g0 - 2 * m_b * x0 - 3 * m_a * x0 * x0;
                                 m_d = f0 - m_c * x0 - m_b * x0 * x0 - m_a * x0 * x0 * x0;
