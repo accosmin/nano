@@ -4,7 +4,7 @@
 #include <boost/test/unit_test.hpp>
 #include "nanocv/math/abs.hpp"
 #include "nanocv/math/epsilon.hpp"
-#include "nanocv/optim/average.hpp"
+#include "nanocv/math/average_scalar.hpp"
 
 namespace test
 {
@@ -14,7 +14,7 @@ namespace test
         {
                 typedef double test_scalar_t;
 
-                optim::average_scalar<test_scalar_t> running_average;
+                math::average_scalar<test_scalar_t> running_average;
 
                 for (size_t i = 0; i <= range; i ++)
                 {

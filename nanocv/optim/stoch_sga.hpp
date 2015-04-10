@@ -1,7 +1,7 @@
 #pragma once
 
 #include "stoch_params.hpp"
-#include "average.hpp"
+#include "../math/average_vector.hpp"
 #include <cassert>
 
 namespace ncv
@@ -54,7 +54,7 @@ namespace ncv
                                 tstate cstate(problem, x0);
 
                                 // running-weighted-averaged gradient
-                                average_vector<tscalar, tvector> gavg(x0.size());
+                                math::average_vector<tscalar, tvector> gavg(x0.size());
 
                                 for (tsize e = 0, k = 1; e < base_t::m_epochs; e ++)
                                 {

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "cubic.hpp"
-#include <cmath>
+#include "../math/cubic.hpp"
 
 namespace ncv
 {
@@ -21,7 +20,7 @@ namespace ncv
                         const tscalar x0 = step0.alpha(), f0 = step0.phi(), g0 = step0.gphi();
                         const tscalar x1 = step1.alpha(), f1 = step1.phi(), g1 = step1.gphi();
 
-                        const optim::cubic<tscalar> c(x0, f0, g0, x1, f1, g1);
+                        const math::cubic<tscalar> c(x0, f0, g0, x1, f1, g1);
 
                         // OK, return minimum
                         const tscalar sign = (step1.alpha() > step0.alpha()) ? 1 : -1;

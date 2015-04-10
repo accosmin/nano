@@ -4,7 +4,7 @@
 
 namespace ncv
 {
-        namespace optim
+        namespace math
         {
                 ///
                 /// \brief quadratic: a x^2 + b x + c

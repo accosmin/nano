@@ -5,7 +5,7 @@
 #include "nanocv/random.hpp"
 #include "nanocv/math/abs.hpp"
 #include "nanocv/math/epsilon.hpp"
-#include "nanocv/optim/quadratic.hpp"
+#include "nanocv/math/quadratic.hpp"
 
 BOOST_AUTO_TEST_CASE(test_quadratic)
 {
@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE(test_quadratic)
                 const double a = rnd();
                 const double b = rnd();
                 const double c = rnd();
-                const optim::quadratic<double> q(a, b, c);
+                const math::quadratic<double> q(a, b, c);
                 BOOST_CHECK(q);
 
                 const double x0 = rnd();
@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(test_quadratic)
                 const double f1 = q.value(x1);
 
                 // check interpolation
-                const optim::quadratic<double> iq(x0, f0, g0, x1, f1);
+                const math::quadratic<double> iq(x0, f0, g0, x1, f1);
                 if (!iq)
                 {
                         continue;
@@ -51,10 +51,18 @@ BOOST_AUTO_TEST_CASE(test_quadratic)
                 double extremum;
                 iq.extremum(extremum);
 
-                const size_t etests = 135;
+                if (!std::isfinite(extremum))
+                {
+                        continue;
+                }
+
+                BOOST_CHECK_LE(math::abs(iq.gradient(extremum)), math::epsilon0<double>());
+
+                const size_t etests = 1843;
                 for (size_t e = 0; e < etests; e ++)
                 {
-                        BOOST_CHECK_GE(iq.a() * (iq.value(rnd()) - iq.value(extremum)), 0.0);
+                        BOOST_CHECK_GE(math::abs(iq.gradient(rnd())),
+                                       math::abs(iq.gradient(extremum)));
                 }
         }
 }

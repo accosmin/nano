@@ -4,7 +4,7 @@
 
 namespace ncv
 {
-        namespace optim
+        namespace math
         {
                 ///
                 /// \brief cubic: a x^3 + b x^2 + c x + d
@@ -46,11 +46,11 @@ namespace ncv
                         ///
                         void extremum(tscalar& min1, tscalar& min2) const
                         {
-                                const tscalar d1 = -2 * m_b;
-                                const tscalar d2 = std::sqrt(4 * m_b * m_b - 12 * m_a * m_c);
+                                const tscalar d1 = -m_b;
+                                const tscalar d2 = std::sqrt(m_b * m_b - 3 * m_a * m_c);
 
-                                min1 = (d1 - d2) / (6 * m_a);
-                                min2 = (d1 + d2) / (6 * m_a);
+                                min1 = (d1 - d2) / (3 * m_a);
+                                min2 = (d1 + d2) / (3 * m_a);
                         }
 
                         ///
