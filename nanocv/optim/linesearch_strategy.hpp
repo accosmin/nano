@@ -87,8 +87,7 @@ namespace ncv
                                 case ls_strategy::cg_descent:
                                         return m_ls_cgdescent(m_strategy, m_c1, m_c2, step0, t0);
 
-                                case ls_strategy::interpolation_bisection:
-                                case ls_strategy::interpolation_cubic:
+                                case ls_strategy::interpolation:
                                 default:
                                         return m_ls_interpolation(m_strategy, m_c1, m_c2, step0, t0);
                                 }

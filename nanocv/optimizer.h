@@ -41,7 +41,7 @@ namespace ncv
                         case optim::stoch_optimizer::AG:           return "ag";
                         case optim::stoch_optimizer::ADAGRAD:      return "adagrad";
                         case optim::stoch_optimizer::ADADELTA:     return "adadelta";
-                        default:                                        return "????";
+                        default:                                   return "????";
                         }
                 }
 
@@ -118,8 +118,7 @@ namespace ncv
                         case optim::ls_strategy::backtrack_armijo:              return "backtrack-Armijo";
                         case optim::ls_strategy::backtrack_wolfe:               return "backtrack-Wolfe";
                         case optim::ls_strategy::backtrack_strong_wolfe:        return "backtrack-strong-Wolfe";
-                        case optim::ls_strategy::interpolation_bisection:       return "interp-bisection";
-                        case optim::ls_strategy::interpolation_cubic:           return "interp-cubic";
+                        case optim::ls_strategy::interpolation:                 return "interp";
                         case optim::ls_strategy::cg_descent:                    return "cgdescent";
                         default:                                                return "????";
                         }

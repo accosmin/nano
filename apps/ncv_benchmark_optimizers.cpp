@@ -75,7 +75,7 @@ static void check_problem(
 //                optim::batch_optimizer::CGD_FR,
 //                optim::batch_optimizer::CGD_HS,
 //                optim::batch_optimizer::CGD_LS,
-                optim::batch_optimizer::CGD_DYCD,
+//                optim::batch_optimizer::CGD_DYCD,
                 optim::batch_optimizer::CGD_DYHS,
                 optim::batch_optimizer::CGD_PRP,
                 optim::batch_optimizer::CGD_N,
@@ -91,11 +91,10 @@ static void check_problem(
 
         const auto ls_strategies =
         {
-//                optim::ls_strategy::backtrack_armijo,
-//                optim::ls_strategy::backtrack_wolfe,
-//                optim::ls_strategy::backtrack_strong_wolfe,
-//                optim::ls_strategy::interpolation_bisection,
-                optim::ls_strategy::interpolation_cubic,
+                optim::ls_strategy::backtrack_armijo,
+                optim::ls_strategy::backtrack_wolfe,
+                optim::ls_strategy::backtrack_strong_wolfe,
+                optim::ls_strategy::interpolation,
                 optim::ls_strategy::cg_descent
         };
 

@@ -5,6 +5,7 @@
 #include "linesearch_cubic.hpp"
 #include "linesearch_bisection.hpp"
 #include "linesearch_quadratic.hpp"
+#include <vector>
 
 namespace ncv
 {
@@ -31,24 +32,34 @@ namespace ncv
                         for (   size_t i = 1; i <= max_iters &&
                                 std::fabs(steplo.alpha() - stephi.alpha()) > stept.minimum(); i ++)
                         {
+                                // try various interpolation methods
+                                const auto tb = ls_bisection(steplo, stephi);
+                                const auto tq = ls_quadratic(steplo, stephi);
+                                const auto tc = ls_cubic(steplo, stephi);
+
+                                std::vector<tscalar> trials;
+                                trials.push_back(tb);
+                                trials.push_back(tq);
+                                trials.push_back(tc.first);
+                                trials.push_back(tc.second);
+
+                                // choose the valid interpolation step closest to the minimum value step
                                 const tscalar tmin = std::min(steplo.alpha(), stephi.alpha());
                                 const tscalar tmax = std::max(steplo.alpha(), stephi.alpha());
-                                const tscalar teps = stept.minimum();
+                                const tscalar teps = (tmax - tmin) / 20;
 
-                                switch (strategy)
+                                tscalar best_dist = std::numeric_limits<tscalar>::max();
+                                for (const auto tt : trials)
                                 {
-                                case ls_strategy::interpolation_cubic:
-                                        t = ls_cubic(steplo, stephi);
-                                        if (std::isfinite(t) && tmin + teps < t && t < tmax - teps)
+                                        if (std::isfinite(tt) && tmin + teps < tt && tt < tmax - teps)
                                         {
-                                                break;
+                                                const tscalar dist = std::fabs(tt - steplo.alpha());
+                                                if (dist < best_dist)
+                                                {
+                                                        best_dist = dist;
+                                                        t = tt;
+                                                }
                                         }
-                                        // fallthrough!
-
-                                case ls_strategy::interpolation_bisection:
-                                default:
-                                        t = (steplo.alpha() + stephi.alpha()) / 2;
-                                        break;
                                 }
 
                                 // check sufficient decrease

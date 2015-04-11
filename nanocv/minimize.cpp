@@ -27,7 +27,7 @@ namespace ncv
                 {
                 case optim::batch_optimizer::LBFGS:
                         return minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog, x0, optimizer, iterations, epsilon,
-                                        optim::ls_initializer::unit, optim::ls_strategy::interpolation_cubic);
+                                        optim::ls_initializer::unit, optim::ls_strategy::interpolation);
 
                 case optim::batch_optimizer::CGD:
                 case optim::batch_optimizer::CGD_CD:
@@ -40,7 +40,7 @@ namespace ncv
                 case optim::batch_optimizer::CGD_DYCD:
                 case optim::batch_optimizer::CGD_DYHS:
                         return minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog, x0, optimizer, iterations, epsilon,
-                                        optim::ls_initializer::quadratic, optim::ls_strategy::interpolation_cubic);
+                                        optim::ls_initializer::quadratic, optim::ls_strategy::interpolation);
 
                 case optim::batch_optimizer::GD:
                 default:

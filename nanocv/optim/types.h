@@ -58,8 +58,7 @@ namespace ncv
                         backtrack_strong_wolfe,         ///< + backtracking with sufficient curvature (strong Wolfe)
 
                         // see "Numerical optimization", Nocedal & Wright, 2nd edition, p.60-61 - strong Wolfe only
-                        interpolation_bisection,        ///< bisection for zooming
-                        interpolation_cubic,            ///< cubic interpolation for zooming
+                        interpolation,                  ///< bisection/quadratic/cubic for zooming
 
                         // see CG_DESCENT, Hager & Zhang, 2005 - regular and approximate Wolfe only
                         cg_descent                      ///< CG_DESCENT
