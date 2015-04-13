@@ -37,6 +37,8 @@ namespace ncv
                                 const auto tq = ls_quadratic(steplo, stephi);
                                 const auto tc = ls_cubic(steplo, stephi);
 
+				t = tb;
+
                                 std::vector<tscalar> trials;
                                 trials.push_back(tb);
                                 trials.push_back(tq);
