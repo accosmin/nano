@@ -6,8 +6,6 @@ project(nanocv)
 # external dependencies
 ######################################################################
 
-option(NANOCV_WITH_CUDA         "build with CUDA as dependency"                         OFF)
-option(NANOCV_WITH_OPENCL       "build with OpenCL as dependency"                       OFF)
 option(NANOCV_WITH_ASAN         "build with address sanitizer suppport (debug, gcc)"    OFF)
 option(NANOCV_WITH_LSAN         "build with leak sanitizer suppport (debug, gcc)"       OFF)
 option(NANOCV_WITH_TSAN         "build with thread sanitizer suppport (debug, gcc)"     OFF)
@@ -39,29 +37,6 @@ include_directories(SYSTEM ${IL_INCLUDE_DIR})
 # LibArchive
 find_package(LibArchive REQUIRED)
 include_directories(SYSTEM ${LibArchive_INCLUDE_DIRS})
-
-# OpenCL
-if(NANOCV_WITH_OPENCL)
-        find_package(OpenCL QUIET REQUIRED)
-        if(OpenCL_FOUND)
-                include_directories(SYSTEM ${OpenCL_INCLUDE_DIRS})
-                add_definitions(-DNANOCV_WITH_OPENCL)
-        else(OpenCL_FOUND)
-                message(FATAL_ERROR "Cannot find OpenCL libraries!")
-        endif()
-endif()
-
-# CUDA
-if(NANOCV_WITH_CUDA)
-        find_package(CUDA QUIET REQUIRED)
-        if(CUDA_FOUND)
-                set(CUDA_PROPAGATE_HOST_FLAGS OFF)
-                set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-O3 -gencode arch=compute_20,code=sm_20)
-                add_definitions(-DNANOCV_WITH_CUDA)
-        else(CUDA_FOUND)
-                message(FATAL_ERROR "Cannot find CUDA libraries!")
-        endif()
-endif()
 
 # OpenMP
 find_package(OpenMP QUIET)
@@ -151,8 +126,6 @@ message("-----------------------------------------------------------------------
 message("ASAN                          " "${NANOCV_WITH_ASAN}")
 message("LSAN                          " "${NANOCV_WITH_LSAN}")
 message("TSAN                          " "${NANOCV_WITH_TSAN}")
-message("CUDA                          " "${NANOCV_WITH_CUDA}")
-message("OPENCL                        " "${NANOCV_WITH_OPENCL}")
 message("------------------------------------------------------------------------------" "")
 
 ######################################################################

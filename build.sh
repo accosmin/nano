@@ -5,9 +5,6 @@ build_type="Release"
 install_dir="/usr/local/"
 install="OFF"
 
-cuda_flag="OFF"
-opencl_flag="OFF"
-
 asan_flag="OFF"
 lsan_flag="OFF"
 tsan_flag="OFF"
@@ -20,8 +17,6 @@ function usage
 	echo -e "\t--build-type         <build type [Release/Debug]>    default=${build_type}"
 	echo -e "\t--install-dir        <installation directory>        default=${install_dir}" 
 	echo -e "\t--install            <install [ON/OFF] Release only> default=${install}" 
-	echo -e "\t--cuda               <CUDA flag [ON/OFF]>            default=${cuda_flag}"
-	echo -e "\t--opencl             <OpenCL flag [ON/OFF]>          default=${opencl_flag}"
 	echo -e "\t--asan               <address sanitizer [ON/OFF]>    default=${asan_flag}"
 	echo -e "\t--lsan               <leak sanitizer [ON/OFF]>       default=${lsan_flag}"
 	echo -e "\t--tsan               <thread sanitizer [ON/OFF]>     default=${tsan_flag}"
@@ -43,12 +38,6 @@ do
                                 ;;
         	--install)	shift
                                 install=$1
-                                ;;
-        	--cuda)		shift
-                                cuda_flag=$1
-                                ;;
-        	--opencl)	shift
-                                opencl_flag=$1
                                 ;;
         	--asan)		shift
                                 asan_flag=$1
@@ -87,8 +76,6 @@ rm -rf *
 # setup cmake
 cmake_params=""
 cmake_params=${cmake_params}" -DCMAKE_BUILD_TYPE=${build_type}"
-cmake_params=${cmake_params}" -DNANOCV_WITH_CUDA=${cuda_flag}"
-cmake_params=${cmake_params}" -DNANOCV_WITH_OPENCL=${opencl_flag}"
 cmake_params=${cmake_params}" -DNANOCV_WITH_ASAN=${asan_flag}"
 cmake_params=${cmake_params}" -DNANOCV_WITH_LSAN=${lsan_flag}"
 cmake_params=${cmake_params}" -DNANOCV_WITH_TSAN=${tsan_flag}"
