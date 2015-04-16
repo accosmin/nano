@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../conv2d.hpp"
-#include "../corr2d.hpp"
+#include "../math/conv2d.hpp"
+#include "../math/corr2d.hpp"
 #include "../tensor/matrix.hpp"
 
 namespace ncv
@@ -36,7 +36,7 @@ namespace ncv
                                         auto imap = tensor::map_matrix(idata + i * isize, irows, icols);
                                         auto kmap = tensor::map_matrix(kdata + k * ksize, krows, kcols);
 
-                                        ncv::conv2d_dyn(imap, kmap, omap);
+                                        math::conv2d_dyn(imap, kmap, omap);
                                 }
                         }
                 }
@@ -69,7 +69,7 @@ namespace ncv
                                         auto gimap = tensor::map_matrix(gidata + i * isize, irows, icols);
                                         auto kmap = tensor::map_matrix(kdata + k * ksize, krows, kcols);
 
-                                        ncv::corr2d_dyn(omap, kmap, gimap);
+                                        math::corr2d_dyn(omap, kmap, gimap);
                                 }
                         }
                 }
@@ -102,7 +102,7 @@ namespace ncv
                                         auto gkmap = tensor::map_matrix(gkdata + k * ksize, krows, kcols);
 
                                         gkmap.setZero();
-                                        ncv::conv2d_dyn(imap, omap, gkmap);
+                                        math::conv2d_dyn(imap, omap, gkmap);
                                 }
                         }
                 }

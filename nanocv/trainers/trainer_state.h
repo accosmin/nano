@@ -1,8 +1,8 @@
 #pragma once
 
-#include "arch.h"
-#include "string.h"
-#include "scalar.h"
+#include "../arch.h"
+#include "../string.h"
+#include "../scalar.h"
 #include <limits>
 #include <cmath>
 

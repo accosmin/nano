@@ -1,5 +1,5 @@
 #include "function_rosenbrock.h"
-#include "../math/math.hpp"
+#include "../math/numeric.hpp"
 
 namespace ncv
 {

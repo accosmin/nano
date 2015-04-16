@@ -3,7 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include "nanocv/color.h"
-#include "nanocv/random.hpp"
+#include "nanocv/math/random.hpp"
 
 BOOST_AUTO_TEST_CASE(test_color_rgba)
 {

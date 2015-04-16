@@ -4,11 +4,11 @@
 #include <boost/test/unit_test.hpp>
 #include "nanocv/timer.h"
 #include "nanocv/logger.h"
-#include "nanocv/stats.hpp"
-#include "nanocv/random.hpp"
 #include "nanocv/minimize.h"
 #include "nanocv/math/abs.hpp"
-#include "nanocv/math/math.hpp"
+#include "nanocv/math/stats.hpp"
+#include "nanocv/math/random.hpp"
+#include "nanocv/math/numeric.hpp"
 #include "nanocv/math/epsilon.hpp"
 
 #include "nanocv/functions/function_trid.h"

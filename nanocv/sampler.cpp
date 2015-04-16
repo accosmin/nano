@@ -1,6 +1,6 @@
 #include "sampler.h"
 #include "task.h"
-#include "sampling.hpp"
+#include "math/usampling.hpp"
 #include <algorithm>
 
 namespace ncv
@@ -73,7 +73,7 @@ namespace ncv
         sampler_t& sampler_t::split(size_t percentage, sampler_t& other)
         {
                 samples_t tsamples, vsamples;
-                ncv::uniform_split(m_samples, percentage, tsamples, vsamples);
+                math::usplit(m_samples, percentage, tsamples, vsamples);
 
                 m_samples = tsamples;
                 other.m_samples = vsamples;
@@ -93,7 +93,7 @@ namespace ncv
                         break;
 
                 case stype::uniform:
-                        samples = ncv::uniform_sample(m_samples, m_ssize);
+                        samples = math::usample(m_samples, m_ssize);
                         std::sort(samples.begin(), samples.end());
                         break;
                 }

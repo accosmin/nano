@@ -2,8 +2,8 @@
 #define BOOST_TEST_MODULE "test_dot"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/dot.hpp"
 #include "nanocv/tensor.h"
+#include "nanocv/math/dot.hpp"
 #include "nanocv/math/abs.hpp"
 #include "nanocv/math/epsilon.hpp"
 #include "nanocv/tensor/dot.hpp"
@@ -32,14 +32,14 @@ namespace test
                 vec1.array() *= scalar_t(1) / std::cbrt(scalar_t(size));
                 vec2.array() *= scalar_t(1) / std::cbrt(scalar_t(size));
 
-                const scalar_t dot    = test_dot(ncv::dot<scalar_t>, vec1, vec2);
-                const scalar_t dotul2 = test_dot(ncv::dot_unroll<scalar_t, 2>, vec1, vec2);
-                const scalar_t dotul3 = test_dot(ncv::dot_unroll<scalar_t, 3>, vec1, vec2);
-                const scalar_t dotul4 = test_dot(ncv::dot_unroll<scalar_t, 4>, vec1, vec2);
-                const scalar_t dotul5 = test_dot(ncv::dot_unroll<scalar_t, 5>, vec1, vec2);
-                const scalar_t dotul6 = test_dot(ncv::dot_unroll<scalar_t, 6>, vec1, vec2);
-                const scalar_t dotul7 = test_dot(ncv::dot_unroll<scalar_t, 7>, vec1, vec2);
-                const scalar_t dotul8 = test_dot(ncv::dot_unroll<scalar_t, 8>, vec1, vec2);
+                const scalar_t dot    = test_dot(ncv::math::dot<scalar_t>, vec1, vec2);
+                const scalar_t dotul2 = test_dot(ncv::math::dot_unroll<scalar_t, 2>, vec1, vec2);
+                const scalar_t dotul3 = test_dot(ncv::math::dot_unroll<scalar_t, 3>, vec1, vec2);
+                const scalar_t dotul4 = test_dot(ncv::math::dot_unroll<scalar_t, 4>, vec1, vec2);
+                const scalar_t dotul5 = test_dot(ncv::math::dot_unroll<scalar_t, 5>, vec1, vec2);
+                const scalar_t dotul6 = test_dot(ncv::math::dot_unroll<scalar_t, 6>, vec1, vec2);
+                const scalar_t dotul7 = test_dot(ncv::math::dot_unroll<scalar_t, 7>, vec1, vec2);
+                const scalar_t dotul8 = test_dot(ncv::math::dot_unroll<scalar_t, 8>, vec1, vec2);
                 const scalar_t doteig = test_dot(ncv::tensor::dot<scalar_t>, vec1, vec2);
 
                 BOOST_CHECK_LE(math::abs(dot - dot), math::epsilon1<scalar_t>());

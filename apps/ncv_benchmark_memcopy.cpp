@@ -1,9 +1,9 @@
 #include "nanocv/text.h"
 #include "nanocv/timer.h"
 #include "nanocv/logger.h"
-#include "nanocv/stats.hpp"
 #include "nanocv/tensor.h"
 #include "nanocv/math/abs.hpp"
+#include "nanocv/math/stats.hpp"
 #include "nanocv/thread/parallel.hpp"
 
 template

@@ -2,8 +2,8 @@
 #define BOOST_TEST_MODULE "test_quadratic"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/random.hpp"
 #include "nanocv/math/abs.hpp"
+#include "nanocv/math/random.hpp"
 #include "nanocv/math/epsilon.hpp"
 #include "nanocv/math/quadratic.hpp"
 
@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE(test_quadratic)
                 const double a = rnd();
                 const double b = rnd();
                 const double c = rnd();
-                const math::quadratic<double> q(a, b, c);
+                const quadratic<double> q(a, b, c);
                 BOOST_CHECK(q);
 
                 const double x0 = rnd();
@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(test_quadratic)
                 const double f1 = q.value(x1);
 
                 // check interpolation
-                const math::quadratic<double> iq(x0, f0, g0, x1, f1);
+                const quadratic<double> iq(x0, f0, g0, x1, f1);
                 if (!iq)
                 {
                         continue;

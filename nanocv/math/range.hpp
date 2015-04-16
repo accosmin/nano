@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math/clamp.hpp"
+#include "clamp.hpp"
 
 namespace ncv
 {

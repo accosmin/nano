@@ -4,7 +4,7 @@
 #include "../logger.h"
 #include "../file/gzip.h"
 #include "../file/mat5.h"
-#include "../math/math.hpp"
+#include "../math/numeric.hpp"
 #include <fstream>
 #include <memory>
 

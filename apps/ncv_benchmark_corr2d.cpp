@@ -1,8 +1,8 @@
 #include "nanocv/tensor.h"
 #include "nanocv/string.h"
-#include "nanocv/corr2d.hpp"
 #include "nanocv/tabulator.h"
 #include "nanocv/measure.hpp"
+#include "nanocv/math/corr2d.hpp"
 #include <iostream>
 
 using namespace ncv;
@@ -40,12 +40,12 @@ void test_corr2d(tabulator_t::row_t& row, int isize, int ksize)
         kdata /= ksize;
         odata /= osize;
 
-        test_cpu(row, ncv::corr2d_egb<matrix_t>, odata, kdata, idata);
-        test_cpu(row, ncv::corr2d_egr<matrix_t>, odata, kdata, idata);
-        test_cpu(row, ncv::corr2d_cpp<matrix_t>, odata, kdata, idata);
-        test_cpu(row, ncv::corr2d_mdk<matrix_t>, odata, kdata, idata);
-        test_cpu(row, ncv::corr2d_mdo<matrix_t>, odata, kdata, idata);
-        test_cpu(row, ncv::corr2d_dyn<matrix_t>, odata, kdata, idata);
+        test_cpu(row, ncv::math::corr2d_egb<matrix_t>, odata, kdata, idata);
+        test_cpu(row, ncv::math::corr2d_egr<matrix_t>, odata, kdata, idata);
+        test_cpu(row, ncv::math::corr2d_cpp<matrix_t>, odata, kdata, idata);
+        test_cpu(row, ncv::math::corr2d_mdk<matrix_t>, odata, kdata, idata);
+        test_cpu(row, ncv::math::corr2d_mdo<matrix_t>, odata, kdata, idata);
+        test_cpu(row, ncv::math::corr2d_dyn<matrix_t>, odata, kdata, idata);
 }
 
 int main(int argc, char* argv[])

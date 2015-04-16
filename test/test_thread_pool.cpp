@@ -3,8 +3,8 @@
 
 #include <boost/test/unit_test.hpp>
 #include "nanocv/logger.h"
-#include "nanocv/random.hpp"
 #include "nanocv/thread/pool.h"
+#include "nanocv/math/random.hpp"
 
 BOOST_AUTO_TEST_CASE(test_thread_pool)
 {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "random.hpp"
 #include "bilinear.hpp"
+#include "math/random.hpp"
 
 namespace ncv
 {

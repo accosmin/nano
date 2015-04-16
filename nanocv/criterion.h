@@ -2,7 +2,7 @@
 
 #include "model.h"
 #include "sample.h"
-#include "stats.hpp"
+#include "math/stats.hpp"
 
 namespace ncv
 {        

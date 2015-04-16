@@ -127,44 +127,44 @@ namespace ncv
                         {
                                 switch (kcols)
                                 {
-                                case 1:         conv_dot(idata, kdata, odata, dot<tscalar, 1>); break;
-                                case 2:         conv_dot(idata, kdata, odata, dot<tscalar, 2>); break;
-                                case 3:         conv_dot(idata, kdata, odata, dot<tscalar, 3>); break;
-                                case 4:         conv_dot(idata, kdata, odata, dot<tscalar, 4>); break;
-                                case 5:         conv_dot(idata, kdata, odata, dot<tscalar, 5>); break;
-                                case 6:         conv_dot(idata, kdata, odata, dot<tscalar, 6>); break;
-                                case 7:         conv_dot(idata, kdata, odata, dot<tscalar, 7>); break;
-                                case 8:         conv_dot(idata, kdata, odata, dot<tscalar, 8>); break;
-                                case 9:         conv_dot(idata, kdata, odata, dot<tscalar, 9>); break;
-                                case 10:        conv_dot(idata, kdata, odata, dot<tscalar, 10>); break;
-                                case 11:        conv_dot(idata, kdata, odata, dot<tscalar, 11>); break;
-                                case 12:        conv_dot(idata, kdata, odata, dot<tscalar, 12>); break;
-                                case 13:        conv_dot(idata, kdata, odata, dot<tscalar, 13>); break;
-                                case 14:        conv_dot(idata, kdata, odata, dot<tscalar, 14>); break;
-                                case 15:        conv_dot(idata, kdata, odata, dot<tscalar, 15>); break;
-                                default:        conv_dot(idata, kdata, odata, dot<tscalar>); break;
+                                case 1:         conv_dot(idata, kdata, odata, math::dot<tscalar, 1>); break;
+                                case 2:         conv_dot(idata, kdata, odata, math::dot<tscalar, 2>); break;
+                                case 3:         conv_dot(idata, kdata, odata, math::dot<tscalar, 3>); break;
+                                case 4:         conv_dot(idata, kdata, odata, math::dot<tscalar, 4>); break;
+                                case 5:         conv_dot(idata, kdata, odata, math::dot<tscalar, 5>); break;
+                                case 6:         conv_dot(idata, kdata, odata, math::dot<tscalar, 6>); break;
+                                case 7:         conv_dot(idata, kdata, odata, math::dot<tscalar, 7>); break;
+                                case 8:         conv_dot(idata, kdata, odata, math::dot<tscalar, 8>); break;
+                                case 9:         conv_dot(idata, kdata, odata, math::dot<tscalar, 9>); break;
+                                case 10:        conv_dot(idata, kdata, odata, math::dot<tscalar, 10>); break;
+                                case 11:        conv_dot(idata, kdata, odata, math::dot<tscalar, 11>); break;
+                                case 12:        conv_dot(idata, kdata, odata, math::dot<tscalar, 12>); break;
+                                case 13:        conv_dot(idata, kdata, odata, math::dot<tscalar, 13>); break;
+                                case 14:        conv_dot(idata, kdata, odata, math::dot<tscalar, 14>); break;
+                                case 15:        conv_dot(idata, kdata, odata, math::dot<tscalar, 15>); break;
+                                default:        conv_dot(idata, kdata, odata, math::dot<tscalar>); break;
                                 }
                         }
                         else
                         {
                                 switch (ocols)
                                 {
-                                case 1:         conv_mad(idata, kdata, odata, mad<tscalar, 1>); break;
-                                case 2:         conv_mad(idata, kdata, odata, mad<tscalar, 2>); break;
-                                case 3:         conv_mad(idata, kdata, odata, mad<tscalar, 3>); break;
-                                case 4:         conv_mad(idata, kdata, odata, mad<tscalar, 4>); break;
-                                case 5:         conv_mad(idata, kdata, odata, mad<tscalar, 5>); break;
-                                case 6:         conv_mad(idata, kdata, odata, mad<tscalar, 6>); break;
-                                case 7:         conv_mad(idata, kdata, odata, mad<tscalar, 7>); break;
-                                case 8:         conv_mad(idata, kdata, odata, mad<tscalar, 8>); break;
-                                case 9:         conv_mad(idata, kdata, odata, mad<tscalar, 9>); break;
-                                case 10:        conv_mad(idata, kdata, odata, mad<tscalar, 10>); break;
-                                case 11:        conv_mad(idata, kdata, odata, mad<tscalar, 11>); break;
-                                case 12:        conv_mad(idata, kdata, odata, mad<tscalar, 12>); break;
-                                case 13:        conv_mad(idata, kdata, odata, mad<tscalar, 13>); break;
-                                case 14:        conv_mad(idata, kdata, odata, mad<tscalar, 14>); break;
-                                case 15:        conv_mad(idata, kdata, odata, mad<tscalar, 15>); break;
-                                default:        conv_mad(idata, kdata, odata, mad<tscalar>); break;
+                                case 1:         conv_mad(idata, kdata, odata, math::mad<tscalar, 1>); break;
+                                case 2:         conv_mad(idata, kdata, odata, math::mad<tscalar, 2>); break;
+                                case 3:         conv_mad(idata, kdata, odata, math::mad<tscalar, 3>); break;
+                                case 4:         conv_mad(idata, kdata, odata, math::mad<tscalar, 4>); break;
+                                case 5:         conv_mad(idata, kdata, odata, math::mad<tscalar, 5>); break;
+                                case 6:         conv_mad(idata, kdata, odata, math::mad<tscalar, 6>); break;
+                                case 7:         conv_mad(idata, kdata, odata, math::mad<tscalar, 7>); break;
+                                case 8:         conv_mad(idata, kdata, odata, math::mad<tscalar, 8>); break;
+                                case 9:         conv_mad(idata, kdata, odata, math::mad<tscalar, 9>); break;
+                                case 10:        conv_mad(idata, kdata, odata, math::mad<tscalar, 10>); break;
+                                case 11:        conv_mad(idata, kdata, odata, math::mad<tscalar, 11>); break;
+                                case 12:        conv_mad(idata, kdata, odata, math::mad<tscalar, 12>); break;
+                                case 13:        conv_mad(idata, kdata, odata, math::mad<tscalar, 13>); break;
+                                case 14:        conv_mad(idata, kdata, odata, math::mad<tscalar, 14>); break;
+                                case 15:        conv_mad(idata, kdata, odata, math::mad<tscalar, 15>); break;
+                                default:        conv_mad(idata, kdata, odata, math::mad<tscalar>); break;
                                 }
                         }
                 }

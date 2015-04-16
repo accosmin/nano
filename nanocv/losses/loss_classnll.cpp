@@ -1,5 +1,5 @@
 #include "loss_classnll.h"
-#include "../math/math.hpp"
+#include "../math/numeric.hpp"
 #include <cassert>
 
 namespace ncv

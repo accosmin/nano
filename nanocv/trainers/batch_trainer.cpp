@@ -2,7 +2,7 @@
 #include "../model.h"
 #include "../logger.h"
 #include "../sampler.h"
-#include "../math/math.hpp"
+#include "../math/numeric.hpp"
 #include "batch.h"
 
 namespace ncv

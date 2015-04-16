@@ -4,8 +4,8 @@
 #include <boost/test/unit_test.hpp>
 #include "nanocv/tensor.h"
 #include "nanocv/logger.h"
-#include "nanocv/corr2d.hpp"
 #include "nanocv/math/close.hpp"
+#include "nanocv/math/corr2d.hpp"
 #include "nanocv/math/epsilon.hpp"
 
 namespace test
@@ -43,12 +43,12 @@ namespace test
                 kdata /= ksize;
                 odata /= osize;
 
-                const scalar_t corrcpu_egb = test_cpu(ncv::corr2d_egb<matrix_t>, odata, kdata, idata);
-                const scalar_t corrcpu_egr = test_cpu(ncv::corr2d_egr<matrix_t>, odata, kdata, idata);
-                const scalar_t corrcpu_cpp = test_cpu(ncv::corr2d_cpp<matrix_t>, odata, kdata, idata);
-                const scalar_t corrcpu_mdk = test_cpu(ncv::corr2d_mdk<matrix_t>, odata, kdata, idata);
-                const scalar_t corrcpu_mdo = test_cpu(ncv::corr2d_mdo<matrix_t>, odata, kdata, idata);
-                const scalar_t corrcpu_dyn = test_cpu(ncv::corr2d_dyn<matrix_t>, odata, kdata, idata);
+                const scalar_t corrcpu_egb = test_cpu(ncv::math::corr2d_egb<matrix_t>, odata, kdata, idata);
+                const scalar_t corrcpu_egr = test_cpu(ncv::math::corr2d_egr<matrix_t>, odata, kdata, idata);
+                const scalar_t corrcpu_cpp = test_cpu(ncv::math::corr2d_cpp<matrix_t>, odata, kdata, idata);
+                const scalar_t corrcpu_mdk = test_cpu(ncv::math::corr2d_mdk<matrix_t>, odata, kdata, idata);
+                const scalar_t corrcpu_mdo = test_cpu(ncv::math::corr2d_mdo<matrix_t>, odata, kdata, idata);
+                const scalar_t corrcpu_dyn = test_cpu(ncv::math::corr2d_dyn<matrix_t>, odata, kdata, idata);
 
                 const scalar_t epsilon = math::epsilon1<scalar_t>();
 

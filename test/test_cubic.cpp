@@ -2,9 +2,9 @@
 #define BOOST_TEST_MODULE "test_cubic"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/random.hpp"
 #include "nanocv/math/abs.hpp"
 #include "nanocv/math/cubic.hpp"
+#include "nanocv/math/random.hpp"
 #include "nanocv/math/epsilon.hpp"
 
 BOOST_AUTO_TEST_CASE(test_cubic)
@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(test_cubic)
                 const double b = rnd();
                 const double c = rnd();
                 const double d = rnd();
-                const math::cubic<double> q(a, b, c, d);
+                const cubic<double> q(a, b, c, d);
                 BOOST_CHECK(q);
 
                 const double x0 = rnd();
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(test_cubic)
                 const double g1 = q.gradient(x1);
 
                 // check interpolation
-                const math::cubic<double> iq(x0, f0, g0, x1, f1, g1);
+                const cubic<double> iq(x0, f0, g0, x1, f1, g1);
                 if (!iq)
                 {
                         continue;

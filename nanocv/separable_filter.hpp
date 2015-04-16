@@ -1,6 +1,6 @@
 #pragma once
 
-#include "range.hpp"
+#include "math/range.hpp"
 #include <vector>
 
 namespace ncv

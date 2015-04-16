@@ -3,7 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include "nanocv/tensor.h"
-#include "nanocv/mad.hpp"
+#include "nanocv/math/mad.hpp"
 #include "nanocv/math/abs.hpp"
 #include "nanocv/math/epsilon.hpp"
 #include "nanocv/tensor/mad.hpp"
@@ -36,14 +36,14 @@ namespace test
 
                 scalar_t wei = vec1(0) + vec2(3);
 
-                const scalar_t mad    = test_mad(ncv::mad<scalar_t>, vec1, vec2, wei);
-                const scalar_t madul2 = test_mad(ncv::mad_unroll<scalar_t, 2>, vec1, vec2, wei);
-                const scalar_t madul3 = test_mad(ncv::mad_unroll<scalar_t, 3>, vec1, vec2, wei);
-                const scalar_t madul4 = test_mad(ncv::mad_unroll<scalar_t, 4>, vec1, vec2, wei);
-                const scalar_t madul5 = test_mad(ncv::mad_unroll<scalar_t, 5>, vec1, vec2, wei);
-                const scalar_t madul6 = test_mad(ncv::mad_unroll<scalar_t, 6>, vec1, vec2, wei);
-                const scalar_t madul7 = test_mad(ncv::mad_unroll<scalar_t, 7>, vec1, vec2, wei);
-                const scalar_t madul8 = test_mad(ncv::mad_unroll<scalar_t, 8>, vec1, vec2, wei);
+                const scalar_t mad    = test_mad(ncv::math::mad<scalar_t>, vec1, vec2, wei);
+                const scalar_t madul2 = test_mad(ncv::math::mad_unroll<scalar_t, 2>, vec1, vec2, wei);
+                const scalar_t madul3 = test_mad(ncv::math::mad_unroll<scalar_t, 3>, vec1, vec2, wei);
+                const scalar_t madul4 = test_mad(ncv::math::mad_unroll<scalar_t, 4>, vec1, vec2, wei);
+                const scalar_t madul5 = test_mad(ncv::math::mad_unroll<scalar_t, 5>, vec1, vec2, wei);
+                const scalar_t madul6 = test_mad(ncv::math::mad_unroll<scalar_t, 6>, vec1, vec2, wei);
+                const scalar_t madul7 = test_mad(ncv::math::mad_unroll<scalar_t, 7>, vec1, vec2, wei);
+                const scalar_t madul8 = test_mad(ncv::math::mad_unroll<scalar_t, 8>, vec1, vec2, wei);
                 const scalar_t madeig = test_mad(ncv::tensor::mad<scalar_t>, vec1, vec2, wei);
 
                 const scalar_t epsilon = math::epsilon1<scalar_t>();

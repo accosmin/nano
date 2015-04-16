@@ -121,22 +121,22 @@ namespace ncv
                         // decode at run-time the kernel size
                         switch (kcols)
                         {
-                        case 1:         corr_madk(odata, kdata, idata, mad<tscalar, 1>); break;
-                        case 2:         corr_madk(odata, kdata, idata, mad<tscalar, 2>); break;
-                        case 3:         corr_madk(odata, kdata, idata, mad<tscalar, 3>); break;
-                        case 4:         corr_madk(odata, kdata, idata, mad<tscalar, 4>); break;
-                        case 5:         corr_madk(odata, kdata, idata, mad<tscalar, 5>); break;
-                        case 6:         corr_madk(odata, kdata, idata, mad<tscalar, 6>); break;
-                        case 7:         corr_madk(odata, kdata, idata, mad<tscalar, 7>); break;
-                        case 8:         corr_madk(odata, kdata, idata, mad<tscalar, 8>); break;
-                        case 9:         corr_madk(odata, kdata, idata, mad<tscalar, 9>); break;
-                        case 10:        corr_madk(odata, kdata, idata, mad<tscalar, 10>); break;
-                        case 11:        corr_madk(odata, kdata, idata, mad<tscalar, 11>); break;
-                        case 12:        corr_madk(odata, kdata, idata, mad<tscalar, 12>); break;
-                        case 13:        corr_madk(odata, kdata, idata, mad<tscalar, 13>); break;
-                        case 14:        corr_madk(odata, kdata, idata, mad<tscalar, 14>); break;
-                        case 15:        corr_madk(odata, kdata, idata, mad<tscalar, 15>); break;
-                        default:        corr_madk(odata, kdata, idata, mad<tscalar>); break;
+                        case 1:         corr_madk(odata, kdata, idata, math::mad<tscalar, 1>); break;
+                        case 2:         corr_madk(odata, kdata, idata, math::mad<tscalar, 2>); break;
+                        case 3:         corr_madk(odata, kdata, idata, math::mad<tscalar, 3>); break;
+                        case 4:         corr_madk(odata, kdata, idata, math::mad<tscalar, 4>); break;
+                        case 5:         corr_madk(odata, kdata, idata, math::mad<tscalar, 5>); break;
+                        case 6:         corr_madk(odata, kdata, idata, math::mad<tscalar, 6>); break;
+                        case 7:         corr_madk(odata, kdata, idata, math::mad<tscalar, 7>); break;
+                        case 8:         corr_madk(odata, kdata, idata, math::mad<tscalar, 8>); break;
+                        case 9:         corr_madk(odata, kdata, idata, math::mad<tscalar, 9>); break;
+                        case 10:        corr_madk(odata, kdata, idata, math::mad<tscalar, 10>); break;
+                        case 11:        corr_madk(odata, kdata, idata, math::mad<tscalar, 11>); break;
+                        case 12:        corr_madk(odata, kdata, idata, math::mad<tscalar, 12>); break;
+                        case 13:        corr_madk(odata, kdata, idata, math::mad<tscalar, 13>); break;
+                        case 14:        corr_madk(odata, kdata, idata, math::mad<tscalar, 14>); break;
+                        case 15:        corr_madk(odata, kdata, idata, math::mad<tscalar, 15>); break;
+                        default:        corr_madk(odata, kdata, idata, math::mad<tscalar>); break;
                         }
                 }
         }

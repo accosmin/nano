@@ -1,7 +1,7 @@
 #pragma once
 
 #include "gauss.hpp"
-#include "random.hpp"
+#include "math/random.hpp"
 #include "tensor/matrix.hpp"
 #include "tensor/transform.hpp"
 #include "separable_filter.hpp"

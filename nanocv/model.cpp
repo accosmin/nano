@@ -2,9 +2,9 @@
 #include "task.h"
 #include "timer.h"
 #include "logger.h"
-#include "random.hpp"
 #include "minimize.h"
 #include "placeholders.h"
+#include "math/random.hpp"
 #include "losses/loss_square.h"
 #include <fstream>
 

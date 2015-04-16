@@ -5,9 +5,9 @@
 #include "nanocv/timer.h"
 #include "nanocv/scalar.h"
 #include "nanocv/string.h"
-#include "nanocv/stats.hpp"
 #include "nanocv/tabulator.h"
 #include "nanocv/math/abs.hpp"
+#include "nanocv/math/stats.hpp"
 #include "nanocv/thread/parallel.hpp"
 #include <iostream>
 #include <numeric>

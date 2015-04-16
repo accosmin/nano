@@ -1,6 +1,6 @@
 #include "forward_network.h"
 #include "../logger.h"
-#include "../math/math.hpp"
+#include "../math/numeric.hpp"
 #include "../math/cast.hpp"
 #include "../tensor/serialize.hpp"
 #include <iomanip>

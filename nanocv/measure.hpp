@@ -2,7 +2,7 @@
 
 #include "logger.h"
 #include "timer.h"
-#include "stats.hpp"
+#include "math/stats.hpp"
 #include <cstdlib>
 
 namespace ncv

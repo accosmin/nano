@@ -1,6 +1,6 @@
 #include "image.h"
 #include "image_io.h"
-#include "math/math.hpp"
+#include "math/numeric.hpp"
 #include "bilinear.hpp"
 #include "random_noise.hpp"
 #include "random_translate.hpp"

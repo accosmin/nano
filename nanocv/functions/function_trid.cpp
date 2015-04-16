@@ -1,5 +1,5 @@
 #include "function_trid.h"
-#include "../math/math.hpp"
+#include "../math/numeric.hpp"
 
 namespace ncv
 {

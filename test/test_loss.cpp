@@ -3,8 +3,8 @@
 
 #include <boost/test/unit_test.hpp>
 #include "nanocv/nanocv.h"
-#include "nanocv/random.hpp"
 #include "nanocv/optimizer.h"
+#include "nanocv/math/random.hpp"
 #include "nanocv/math/epsilon.hpp"
 
 namespace test

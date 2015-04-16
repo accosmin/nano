@@ -4,8 +4,8 @@
 #include <boost/test/unit_test.hpp>
 #include "nanocv/tensor.h"
 #include "nanocv/logger.h"
-#include "nanocv/conv2d.hpp"
 #include "nanocv/math/close.hpp"
+#include "nanocv/math/conv2d.hpp"
 #include "nanocv/math/epsilon.hpp"
 #include "nanocv/tensor/conv2d.hpp"
 
@@ -44,11 +44,11 @@ namespace test
                 kdata /= ksize;
                 odata /= osize;
 
-                const scalar_t convcpu_eig = test_cpu(ncv::conv2d_eig<matrix_t>, idata, kdata, odata);
-                const scalar_t convcpu_cpp = test_cpu(ncv::conv2d_cpp<matrix_t>, idata, kdata, odata);
-                const scalar_t convcpu_dot = test_cpu(ncv::conv2d_dot<matrix_t>, idata, kdata, odata);
-                const scalar_t convcpu_mad = test_cpu(ncv::conv2d_mad<matrix_t>, idata, kdata, odata);
-                const scalar_t convcpu_dyn = test_cpu(ncv::conv2d_dyn<matrix_t>, idata, kdata, odata);
+                const scalar_t convcpu_eig = test_cpu(ncv::math::conv2d_eig<matrix_t>, idata, kdata, odata);
+                const scalar_t convcpu_cpp = test_cpu(ncv::math::conv2d_cpp<matrix_t>, idata, kdata, odata);
+                const scalar_t convcpu_dot = test_cpu(ncv::math::conv2d_dot<matrix_t>, idata, kdata, odata);
+                const scalar_t convcpu_mad = test_cpu(ncv::math::conv2d_mad<matrix_t>, idata, kdata, odata);
+                const scalar_t convcpu_dyn = test_cpu(ncv::math::conv2d_dyn<matrix_t>, idata, kdata, odata);
                 const scalar_t convcpu_toe = test_cpu(ncv::tensor::conv2d_toeplitz<matrix_t>, idata, kdata, odata);
 
                 const scalar_t epsilon = math::epsilon1<scalar_t>();

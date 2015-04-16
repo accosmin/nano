@@ -3,10 +3,10 @@
 
 #include <boost/test/unit_test.hpp>
 #include "nanocv/scalar.h"
-#include "nanocv/random.hpp"
-#include "nanocv/math/abs.hpp"
 #include "nanocv/thread/pool.h"
 #include "nanocv/log_search.hpp"
+#include "nanocv/math/abs.hpp"
+#include "nanocv/math/random.hpp"
 #include "nanocv/math/epsilon.hpp"
 
 namespace test
