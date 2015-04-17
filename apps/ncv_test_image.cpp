@@ -1,6 +1,6 @@
-#include "nanocv/image.h"
 #include "nanocv/string.h"
 #include "nanocv/measure.hpp"
+#include "nanocv/vision/image.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])

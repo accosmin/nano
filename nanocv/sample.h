@@ -3,7 +3,7 @@
 #include "string.h"
 #include "tensor.h"
 #include "protocol.h"
-#include "geom/rect.h"
+#include "vision/rect.h"
 
 namespace ncv
 {

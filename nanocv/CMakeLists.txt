@@ -3,9 +3,9 @@ file(GLOB nanocv_sources
         *.*
         file/*.*
         math/*.*
-        geom/*.*
         optim/*.*
         tasks/*.*
+        vision/*.*
         tensor/*.*
         losses/*.*
         layers/*.*

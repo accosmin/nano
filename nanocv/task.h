@@ -1,8 +1,8 @@
 #pragma once
 
-#include "image.h"
 #include "sample.h"
 #include "manager.hpp"
+#include "vision/image.h"
 
 namespace ncv
 {

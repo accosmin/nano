@@ -1,7 +1,7 @@
 #include "task.h"
 #include "logger.h"
 #include "sampler.h"
-#include "image_grid.h"
+#include "vision/image_grid.h"
 
 namespace ncv
 {

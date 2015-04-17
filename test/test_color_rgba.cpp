@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_color_rgba"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/color.h"
+#include "nanocv/vision/color.h"
 #include "nanocv/math/random.hpp"
 
 BOOST_AUTO_TEST_CASE(test_color_rgba)

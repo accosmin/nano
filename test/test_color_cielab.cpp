@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_color_cielab"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/color.h"
+#include "nanocv/vision/color.h"
 #include "nanocv/logger.h"
 
 BOOST_AUTO_TEST_CASE(test_color_cielab)

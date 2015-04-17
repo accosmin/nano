@@ -1,9 +1,9 @@
 #include "task_svhn.h"
 #include "../loss.h"
-#include "../color.h"
 #include "../logger.h"
 #include "../file/gzip.h"
 #include "../file/mat5.h"
+#include "../vision/color.h"
 #include "../math/numeric.hpp"
 #include <fstream>
 #include <memory>

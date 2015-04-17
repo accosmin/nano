@@ -1,10 +1,10 @@
 #pragma once
 
-#include "text.h"
-#include "scalar.h"
-#include "math/cast.hpp"
-#include "math/clamp.hpp"
-#include "tensor/tensor.hpp"
+#include "../text.h"
+#include "../scalar.h"
+#include "../math/cast.hpp"
+#include "../math/clamp.hpp"
+#include "../tensor/tensor.hpp"
 #include <cstdint>
 
 namespace ncv
