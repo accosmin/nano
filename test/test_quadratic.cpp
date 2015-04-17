@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE(test_quadratic)
                 const double a = rnd();
                 const double b = rnd();
                 const double c = rnd();
-                const quadratic<double> q(a, b, c);
+                const quadratic_t<double> q(a, b, c);
                 BOOST_CHECK(q);
 
                 const double x0 = rnd();
@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(test_quadratic)
                 const double f1 = q.value(x1);
 
                 // check interpolation
-                const quadratic<double> iq(x0, f0, g0, x1, f1);
+                const quadratic_t<double> iq(x0, f0, g0, x1, f1);
                 if (!iq)
                 {
                         continue;

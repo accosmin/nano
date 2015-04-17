@@ -11,13 +11,13 @@ namespace ncv
         <
                 typename tscalar
         >
-        class quadratic
+        class quadratic_t
         {
         public:
                 ///
                 /// \brief constructor
                 ///
-                quadratic(const tscalar a, const tscalar b, const tscalar c)
+                quadratic_t(const tscalar a, const tscalar b, const tscalar c)
                         :       m_a(a),
                           m_b(b),
                           m_c(c)
@@ -29,8 +29,8 @@ namespace ncv
                 ///     [x0, f0 = f(x0), g0 = f'(x0)]
                 ///     [x1, f1 = f(x1)]
                 ///
-                quadratic(const tscalar x0, const tscalar f0, const tscalar g0,
-                          const tscalar x1, const tscalar f1)
+                quadratic_t(const tscalar x0, const tscalar f0, const tscalar g0,
+                            const tscalar x1, const tscalar f1)
                 {
                         m_a = (g0 - (f0 - f1) / (x0 - x1)) / (x0 - x1);
                         m_b = g0 - 2 * m_a * x0;

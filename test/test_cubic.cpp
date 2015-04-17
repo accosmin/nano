@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(test_cubic)
                 const double b = rnd();
                 const double c = rnd();
                 const double d = rnd();
-                const cubic<double> q(a, b, c, d);
+                const cubic_t<double> q(a, b, c, d);
                 BOOST_CHECK(q);
 
                 const double x0 = rnd();
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(test_cubic)
                 const double g1 = q.gradient(x1);
 
                 // check interpolation
-                const cubic<double> iq(x0, f0, g0, x1, f1, g1);
+                const cubic_t<double> iq(x0, f0, g0, x1, f1, g1);
                 if (!iq)
                 {
                         continue;

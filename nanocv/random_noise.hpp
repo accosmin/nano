@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gauss.hpp"
+#include "math/gauss.hpp"
 #include "math/random.hpp"
 #include "tensor/matrix.hpp"
 #include "tensor/transform.hpp"

@@ -54,7 +54,7 @@ namespace ncv
                                 tstate cstate(problem, x0);
 
                                 // running-weighted-averaged gradient
-                                math::average_vector<tscalar, tvector> gavg(x0.size());
+                                average_vector_t<tscalar, tvector> gavg(x0.size());
 
                                 for (tsize e = 0, k = 1; e < base_t::m_epochs; e ++)
                                 {

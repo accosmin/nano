@@ -3,7 +3,7 @@
 #include <vector>
 #include <numeric>
 #include <type_traits>
-#include "math/cast.hpp"
+#include "cast.hpp"
 
 namespace ncv
 {

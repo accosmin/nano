@@ -11,13 +11,13 @@ namespace ncv
         <
                 typename tscalar
         >
-        class cubic
+        class cubic_t
         {
         public:
                 ///
                 /// \brief constructor
                 ///
-                cubic(const tscalar a, const tscalar b, const tscalar c, const tscalar d)
+                cubic_t(const tscalar a, const tscalar b, const tscalar c, const tscalar d)
                         :       m_a(a),
                                 m_b(b),
                                 m_c(c),
@@ -30,7 +30,7 @@ namespace ncv
                 ///     [x0, f0 = f(x0), g0 = f'(x0)]
                 ///     [x1, f1 = f(x1), g1 = f'(x1)]
                 ///
-                cubic(  const tscalar x0, const tscalar f0, const tscalar g0,
+                cubic_t(const tscalar x0, const tscalar f0, const tscalar g0,
                         const tscalar x1, const tscalar f1, const tscalar g1)
                 {
                         m_a = ((g0 + g1) - 2 * (f0 - f1) / (x0 - x1)) / (x0 * x0 - 2 * x0 * x1 + x1 * x1);
