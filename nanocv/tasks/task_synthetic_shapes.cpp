@@ -7,12 +7,12 @@ namespace ncv
 {
         synthetic_shapes_task_t::synthetic_shapes_task_t(const string_t& configuration)
                 :       task_t(configuration),
-                        m_rows(math::clamp(text::from_params<size_t>(configuration, "rows", 32), 16, 48)),
-                        m_cols(math::clamp(text::from_params<size_t>(configuration, "cols", 32), 16, 48)),
+                        m_rows(math::clamp(text::from_params<size_t>(configuration, "rows", 32), 16, 128)),
+                        m_cols(math::clamp(text::from_params<size_t>(configuration, "cols", 32), 16, 128)),
                         m_outputs(math::clamp(text::from_params<size_t>(configuration, "dims", 4), 2, 10)),
                         m_folds(1),
                         m_color(text::from_params<color_mode>(configuration, "color", color_mode::rgba)),
-                        m_size(math::clamp(text::from_params<size_t>(configuration, "size", 1024), 256, 16 * 1024))
+                        m_size(math::clamp(text::from_params<size_t>(configuration, "size", 1024), 256, 64 * 1024))
         {
         }
 

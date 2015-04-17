@@ -8,11 +8,11 @@ namespace ncv
         /// \brief synthetic task to detect random bright geometric shapes overimposed on random images
         ///
         /// parameters:
-        ///     rows=32[16,48]          - patch size in pixels (rows)
-        ///     cols=32[16,48]          - patch size in pixels (columns)
+        ///     rows=32[16,128]         - patch size in pixels (rows)
+        ///     cols=32[16,128]         - patch size in pixels (columns)
         ///     dims=4[2,10]            - number of outputs (= shape index in an image)
         ///     color=rgba[,luma]       - color mode
-        ///     size=1024[256,16*1024]  - number of samples (training + validation)
+        ///     size=1024[256,64*1024]  - number of samples (training + validation)
         ///
         class NANOCV_PUBLIC synthetic_shapes_task_t : public task_t
         {
@@ -20,8 +20,8 @@ namespace ncv
 
                 NANOCV_MAKE_CLONABLE(synthetic_shapes_task_t,
                                      "synthetic task (shape classification), "\
-                                     "parameters: rows=32[16,48],cols=32[16,48],dims=4[2,10],"\
-                                     "color=rgba[,luma],size=1024[256,16*1024]")
+                                     "parameters: rows=32[16,128],cols=32[16,128],dims=4[2,10],"\
+                                     "color=rgba[,luma],size=1024[256,64*1024]")
 
                 // constructor
                 explicit synthetic_shapes_task_t(const string_t& configuration = string_t());
