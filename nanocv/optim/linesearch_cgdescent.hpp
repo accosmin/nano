@@ -1,8 +1,8 @@
 #pragma once
 
-#include "types.h"
-#include "linesearch_cgdescent_bracket.hpp"
-#include "linesearch_cgdescent_secant2.hpp"
+#include <cmath>
+#include <limits>
+#include <utility>
 
 namespace ncv
 {
@@ -54,7 +54,7 @@ namespace ncv
 
                                 // bracket the initial step size
                                 c.reset(t0);
-                                std::tie(a, b) = cgdescent_bracket(step0, c, epsilon, theta, ro);
+                                std::tie(a, b) = bracket(step0, c, epsilon, theta, ro);
 
                                 // reset to the original interval [0, t0) if bracketing fails
                                 if ((!a) || (!b) || std::fabs(a.alpha() - b.alpha()) < epsilon)
@@ -76,18 +76,18 @@ namespace ncv
                                         if (    (!m_approx && a.has_armijo(c1) && a.has_wolfe(c2)) ||
                                                 (m_approx && a.has_approx_wolfe(c1, c2, approx_epsilon)))
                                         {
-                                                 return update(a, omega);
+                                                 return finalize(a, omega);
                                         }
 
                                         // secant interpolation
                                         tstep A(a), B(a);
-                                        std::tie(A, B) = cgdescent_secant2(a, b, approx_epsilon, theta);
+                                        std::tie(A, B) = secant2(a, b, approx_epsilon, theta);
 
                                         // update search interval
                                         if ((B.alpha() - A.alpha()) > gamma * (b.alpha() - a.alpha()))
                                         {
                                                 c.reset((A.alpha() + B.alpha()) / 2);
-                                                std::tie(a, b) = cgdescent_update(A, B, c, approx_epsilon, theta);
+                                                std::tie(a, b) = update(A, B, c, approx_epsilon, theta);
                                         }
                                         else
                                         {
@@ -102,7 +102,7 @@ namespace ncv
 
                 private:
 
-                        tstep update(const tstep& step, const tscalar omega) const
+                        tstep finalize(const tstep& step, const tscalar omega) const
                         {
                                 // decide if to switch permanently to the approximate Wolfe conditions
                                 if (step && !m_approx)
@@ -111,6 +111,155 @@ namespace ncv
                                 }
 
                                 return step;
+                        }
+
+                        ///
+                        /// \brief bracket the initial line-search step length (see CG_DESCENT)
+                        ///
+                        std::pair<tstep, tstep> bracket(const tstep& step0, tstep c,
+                                const tscalar epsilon,
+                                const tscalar theta,
+                                const tscalar ro,
+                                const tsize max_iters = 32) const
+                        {
+                                std::vector<tstep> steps;
+                                for (tsize i = 0; i <= max_iters && c; i ++)
+                                {
+                                        if (c.gphi() >= 0)
+                                        {
+                                                for (auto it = steps.rbegin(); it != steps.rend(); ++ it)
+                                                {
+                                                        if (it->phi() <= it->approx_phi(epsilon))
+                                                        {
+                                                                return std::make_pair(*it, c);
+                                                        }
+                                                }
+
+                                                return std::make_pair(step0, c);
+                                        }
+
+                                        if (c.gphi() < 0 && c.phi() > c.approx_phi(epsilon))
+                                        {
+                                                return updateU(step0, c, epsilon, theta);
+                                        }
+
+                                        else
+                                        {
+                                                steps.push_back(c);
+                                                c.reset(ro * c.alpha());
+                                        }
+                                }
+
+                                // NOK, give up
+                                return std::make_pair(c, c);
+                        }
+
+                        ///
+                        /// \brief [a, b] line-search interval secant interpolation (see CG_DESCENT)
+                        ///
+                        tstep secant(const tstep& a, const tstep& b) const
+                        {
+                                const auto t = (a.alpha() * b.gphi() - b.alpha() * a.gphi()) /
+                                               (b.gphi() - a.gphi());
+
+                                tstep c = a;
+                                if (!c.reset(t))
+                                {
+                                        return a;
+                                }
+                                else
+                                {
+                                        return c;
+                                }
+                        }
+
+                        ///
+                        /// \brief [a, b] line-search interval double secant update (see CG_DESCENT)
+                        ///
+                        std::pair<tstep, tstep> secant2(const tstep& a, const tstep& b,
+                                const tscalar epsilon,
+                                const tscalar theta) const
+                        {
+                                const tstep c = secant(a, b);
+
+                                tstep A(a), B(b);
+                                std::tie(A, B) = update(a, b, c, epsilon, theta);
+
+                                if (std::fabs(c.alpha() - A.alpha()) < std::numeric_limits<tscalar>::epsilon())
+                                {
+                                        return update(A, B, secant(a, A), epsilon, theta);
+                                }
+
+                                else if (std::fabs(c.alpha() - B.alpha()) < std::numeric_limits<tscalar>::epsilon())
+                                {
+                                        return update(A, B, secant(b, B), epsilon, theta);
+                                }
+
+                                else
+                                {
+                                        return std::make_pair(A, B);
+                                }
+                        }
+
+                        ///
+                        /// \brief [a, b] line-search interval update (see CG_DESCENT)
+                        ///
+                        std::pair<tstep, tstep> update(const tstep& a, const tstep& b, tstep c,
+                                const tscalar epsilon,
+                                const tscalar theta) const
+                        {
+                                if (!c || c.alpha() <= a.alpha() || c.alpha() >= b.alpha())
+                                {
+                                        return std::make_pair(a, b);
+                                }
+
+                                else if (c.gphi() >= 0)
+                                {
+                                        return std::make_pair(a, c);
+                                }
+
+                                else if (c.phi() <= c.approx_phi(epsilon))
+                                {
+                                        return std::make_pair(c, b);
+                                }
+
+                                else
+                                {
+                                        return updateU(a, c, epsilon, theta);
+                                }
+                        }
+
+                        ///
+                        /// \brief [a, b] line-search interval update (see CG_DESCENT)
+                        ///
+                        std::pair<tstep, tstep> updateU(tstep a, tstep b,
+                                const tscalar epsilon,
+                                const tscalar theta,
+                                const tsize max_iters = 128) const
+                        {
+                                tstep c(a);
+                                for (tsize i = 0; i < max_iters && (b.alpha() - a.alpha()) > a.minimum(); i ++)
+                                {
+                                        c.reset((1 - theta) * a.alpha() + theta * b.alpha());
+
+                                        if (c.gphi() >= 0)
+                                        {
+                                                return std::make_pair(a, c);
+                                        }
+
+                                        else if (c.phi() <= c.approx_phi(epsilon))
+                                        {
+                                                a = c;
+                                        }
+
+                                        else
+                                        {
+                                                b = c;
+                                        }
+                                }
+
+                                // NOK, give up
+                                return std::make_pair(c, c);
                         }
 
                 private:
