@@ -2,6 +2,7 @@
 
 #include "geom.h"
 #include "../arch.h"
+#include <iosfwd>
 
 namespace ncv
 {
@@ -45,14 +46,7 @@ namespace ncv
         ///
         /// \brief stream a point
         ///
-        template
-        <
-                typename tstreamer
-        >
-        tstreamer& operator<<(tstreamer& s, const point_t& point)
-        {
-                return s << "{POINT: (" << point.x() << ", " << point.y() << "}";
-        }
+        NANOCV_PUBLIC std::ostream& operator<<(std::ostream& s, const point_t& point);
 }
 
 

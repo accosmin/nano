@@ -1,4 +1,5 @@
 #include "rect.h"
+#include <iostream>
 #include <algorithm>
 
 namespace ncv
@@ -45,6 +46,13 @@ namespace ncv
                         rect1.width() == rect2.width() &&
                         rect1.height() == rect2.height();
         }
+
+        std::ostream& operator<<(std::ostream& s, const rect_t& rect)
+        {
+                return s << "{RECT: top-left = (" << rect.left() << ", " << rect.top()
+                         << "), size = " << rect.width() << "x" << rect.height() << "}";
+        }
 }
+
 
 

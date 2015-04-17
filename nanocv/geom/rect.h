@@ -72,15 +72,7 @@ namespace ncv
         ///
         /// \brief stream a rectangle
         ///
-        template
-        <
-                typename tstreamer
-        >
-        tstreamer& operator<<(tstreamer& s, const rect_t& rect)
-        {
-                return s << "{RECT: top-left = (" << rect.left() << ", " << rect.top()
-                         << "), size = " << rect.width() << "x" << rect.height() << "}";
-        }
+        NANOCV_PUBLIC std::ostream& operator<<(std::ostream& s, const rect_t& rect);
 }
 
 
