@@ -1,7 +1,7 @@
 #pragma once
 
-#include "arch.h"
 #include "geom.h"
+#include "../arch.h"
 
 namespace ncv
 {

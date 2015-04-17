@@ -3,6 +3,7 @@ file(GLOB nanocv_sources
         *.*
         file/*.*
         math/*.*
+        geom/*.*
         optim/*.*
         tasks/*.*
         tensor/*.*

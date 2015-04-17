@@ -1,6 +1,5 @@
 #include "rect.h"
 #include <algorithm>
-#include <iostream>
 
 namespace ncv
 {
@@ -33,7 +32,7 @@ namespace ncv
                 return rect_t(left, top, right - left, bottom - top);
         }
 
-        scalar_t overlap(const rect_t& rect1, const rect_t& rect2)
+        double overlap(const rect_t& rect1, const rect_t& rect2)
         {
                 return ((rect1 & rect2).area() + 1.0) /
                        ((rect1 | rect2).area() + 1.0);
@@ -45,12 +44,6 @@ namespace ncv
                         rect1.top() == rect2.top() &&
                         rect1.width() == rect2.width() &&
                         rect1.height() == rect2.height();
-        }
-
-        std::ostream& operator<<(std::ostream& s, const rect_t& rect)
-        {
-                return s << "{RECT: top-left = (" << rect.left() << ", " << rect.top()
-                         << "), size = " << rect.width() << "x" << rect.height() << "}";
         }
 }
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "rect.h"
 #include "color.h"
 #include "tensor.h"
+#include "geom/rect.h"
 
 namespace ncv
 {

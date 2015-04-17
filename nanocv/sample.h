@@ -1,9 +1,9 @@
 #pragma once
 
-#include "rect.h"
 #include "string.h"
 #include "tensor.h"
 #include "protocol.h"
+#include "geom/rect.h"
 
 namespace ncv
 {

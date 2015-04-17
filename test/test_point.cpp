@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_point"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/point.h"
+#include "nanocv/geom/point.h"
 
 namespace test
 {

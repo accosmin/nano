@@ -1,8 +1,6 @@
 #pragma once
 
-#include <iosfwd>
 #include "point.h"
-#include "scalar.h"
 
 namespace ncv
 {
@@ -63,7 +61,7 @@ namespace ncv
         ///
         /// \brief [0, 1] overlap between two rectangle (aka Jaccard distance)
         ///
-        NANOCV_PUBLIC scalar_t overlap(const rect_t& rect1, const rect_t& rect2);
+        NANOCV_PUBLIC double overlap(const rect_t& rect1, const rect_t& rect2);
 
         ///
         /// \brief compare two rectangles
@@ -73,7 +71,15 @@ namespace ncv
         ///
         /// \brief stream a rectangle
         ///
-        NANOCV_PUBLIC std::ostream& operator<<(std::ostream& s, const rect_t& rect);
+        template
+        <
+                typename tstreamer
+        >
+        tstreamer& operator<<(tstreamer& s, const rect_t& rect)
+        {
+                return s << "{RECT: top-left = (" << rect.left() << ", " << rect.top()
+                         << "), size = " << rect.width() << "x" << rect.height() << "}";
+        }
 }
 
 
