@@ -1,8 +1,8 @@
 #include "layer_linear.h"
-#include "../text.h"
-#include "../math/clamp.hpp"
-#include "../math/random.hpp"
-#include "../tensor/serialize.hpp"
+#include "nanocv/text.h"
+#include "nanocv/math/clamp.hpp"
+#include "nanocv/math/random.hpp"
+#include "nanocv/tensor/serialize.hpp"
 #include "linear.hpp"
 
 namespace ncv

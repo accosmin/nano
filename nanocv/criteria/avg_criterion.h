@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../criterion.h"
+#include "nanocv/criterion.h"
 
 namespace ncv
 {        

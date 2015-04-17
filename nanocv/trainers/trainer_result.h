@@ -1,7 +1,7 @@
 #pragma once
 
 #include <map>
-#include "../tensor.h"
+#include "nanocv/tensor.h"
 #include "trainer_state.h"
 
 namespace ncv

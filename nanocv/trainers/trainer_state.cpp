@@ -1,5 +1,5 @@
 #include "trainer_state.h"
-#include "../text.h"
+#include "nanocv/text.h"
 #include <fstream>
 
 namespace ncv

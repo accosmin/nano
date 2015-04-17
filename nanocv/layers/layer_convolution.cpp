@@ -1,9 +1,9 @@
 #include "layer_convolution.h"
-#include "../text.h"
-#include "../logger.h"
-#include "../math/clamp.hpp"
-#include "../math/random.hpp"
-#include "../tensor/serialize.hpp"
+#include "nanocv/text.h"
+#include "nanocv/logger.h"
+#include "nanocv/math/clamp.hpp"
+#include "nanocv/math/random.hpp"
+#include "nanocv/tensor/serialize.hpp"
 #include "convolution.hpp"
 
 namespace ncv

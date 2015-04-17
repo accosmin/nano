@@ -1,5 +1,5 @@
 #include "trainer_result.h"
-#include "../text.h"
+#include "nanocv/text.h"
 
 namespace ncv
 {

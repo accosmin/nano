@@ -1,8 +1,8 @@
 #include "task_norb.h"
-#include "../loss.h"
-#include "../logger.h"
-#include "../file/stream.h"
-#include "../file/archive.h"
+#include "nanocv/loss.h"
+#include "nanocv/logger.h"
+#include "nanocv/file/stream.h"
+#include "nanocv/file/archive.h"
 
 namespace ncv
 {

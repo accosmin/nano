@@ -1,6 +1,6 @@
 #include "color.h"
-#include "../math/numeric.hpp"
-#include "../math/cast.hpp"
+#include "nanocv/math/numeric.hpp"
+#include "nanocv/math/cast.hpp"
 
 namespace ncv
 {

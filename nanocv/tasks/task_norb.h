@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../task.h"
+#include "nanocv/task.h"
 
 namespace ncv
 {

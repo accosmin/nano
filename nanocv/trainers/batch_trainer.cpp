@@ -1,8 +1,8 @@
 #include "batch_trainer.h"
-#include "../model.h"
-#include "../logger.h"
-#include "../sampler.h"
-#include "../math/numeric.hpp"
+#include "nanocv/model.h"
+#include "nanocv/logger.h"
+#include "nanocv/sampler.h"
+#include "nanocv/math/numeric.hpp"
 #include "batch.h"
 
 namespace ncv

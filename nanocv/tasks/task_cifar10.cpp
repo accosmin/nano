@@ -1,9 +1,9 @@
 #include "task_cifar10.h"
-#include "../loss.h"
-#include "../logger.h"
-#include "../math/cast.hpp"
-#include "../file/stream.h"
-#include "../file/archive.h"
+#include "nanocv/loss.h"
+#include "nanocv/logger.h"
+#include "nanocv/math/cast.hpp"
+#include "nanocv/file/stream.h"
+#include "nanocv/file/archive.h"
 
 namespace ncv
 {

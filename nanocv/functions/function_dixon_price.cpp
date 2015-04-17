@@ -1,5 +1,5 @@
 #include "function_dixon_price.h"
-#include "../math/numeric.hpp"
+#include "nanocv/math/numeric.hpp"
 
 namespace ncv
 {

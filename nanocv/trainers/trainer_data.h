@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../optimizer.h"
-#include "../sampler.h"
+#include "nanocv/optimizer.h"
+#include "nanocv/sampler.h"
 
 namespace ncv
 {

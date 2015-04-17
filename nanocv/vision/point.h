@@ -1,7 +1,7 @@
 #pragma once
 
 #include "geom.h"
-#include "../arch.h"
+#include "nanocv/arch.h"
 #include <iosfwd>
 
 namespace ncv

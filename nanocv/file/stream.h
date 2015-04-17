@@ -2,7 +2,7 @@
 
 #include <string>
 #include <utility>
-#include "../noncopyable.hpp"
+#include "nanocv/noncopyable.hpp"
 
 namespace ncv
 {

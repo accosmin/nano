@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../layer.h"
-#include "../placeholders.h"
-#include "../tensor/transform.hpp"
+#include "nanocv/layer.h"
+#include "nanocv/placeholders.h"
+#include "nanocv/tensor/transform.hpp"
 
 namespace ncv
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../arch.h"
+#include "nanocv/arch.h"
 
 namespace ncv
 {        

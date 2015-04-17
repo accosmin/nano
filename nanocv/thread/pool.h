@@ -1,8 +1,8 @@
 #pragma once
 
 #include "thread.h"
-#include "../arch.h"
-#include "../noncopyable.hpp"
+#include "nanocv/arch.h"
+#include "nanocv/noncopyable.hpp"
 #include <deque>
 #include <vector>
 #include <condition_variable>

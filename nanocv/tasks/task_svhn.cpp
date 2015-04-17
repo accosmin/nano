@@ -1,10 +1,10 @@
 #include "task_svhn.h"
-#include "../loss.h"
-#include "../logger.h"
-#include "../file/gzip.h"
-#include "../file/mat5.h"
-#include "../vision/color.h"
-#include "../math/numeric.hpp"
+#include "nanocv/loss.h"
+#include "nanocv/logger.h"
+#include "nanocv/file/gzip.h"
+#include "nanocv/file/mat5.h"
+#include "nanocv/vision/color.h"
+#include "nanocv/math/numeric.hpp"
 #include <fstream>
 #include <memory>
 

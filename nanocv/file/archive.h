@@ -1,7 +1,7 @@
 #pragma once
 
 #include "base.h"
-#include "../arch.h"
+#include "nanocv/arch.h"
 
 namespace ncv
 {

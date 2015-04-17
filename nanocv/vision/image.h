@@ -2,7 +2,7 @@
 
 #include "rect.h"
 #include "color.h"
-#include "../tensor.h"
+#include "nanocv/tensor.h"
 
 namespace ncv
 {

@@ -1,5 +1,5 @@
 #include "function_powell.h"
-#include "../math/numeric.hpp"
+#include "nanocv/math/numeric.hpp"
 
 namespace ncv
 {

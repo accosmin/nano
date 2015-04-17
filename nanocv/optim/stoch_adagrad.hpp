@@ -1,7 +1,7 @@
 #pragma once
 
 #include "stoch_params.hpp"
-#include "../math/average_vector.hpp"
+#include "nanocv/math/average_vector.hpp"
 #include <cassert>
 
 namespace ncv

@@ -1,7 +1,7 @@
 #include "layer_pool.h"
 #include "pooling.hpp"
-#include "../text.h"
-#include "../math/clamp.hpp"
+#include "nanocv/text.h"
+#include "nanocv/math/clamp.hpp"
 
 namespace ncv
 {
