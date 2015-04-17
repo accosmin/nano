@@ -1,6 +1,7 @@
 #pragma once
 
 #include "point.h"
+#include "../scalar.h"
 
 namespace ncv
 {
@@ -61,7 +62,7 @@ namespace ncv
         ///
         /// \brief [0, 1] overlap between two rectangle (aka Jaccard distance)
         ///
-        NANOCV_PUBLIC double overlap(const rect_t& rect1, const rect_t& rect2);
+        NANOCV_PUBLIC scalar_t overlap(const rect_t& rect1, const rect_t& rect2);
 
         ///
         /// \brief compare two rectangles

@@ -32,10 +32,10 @@ namespace ncv
                 return rect_t(left, top, right - left, bottom - top);
         }
 
-        double overlap(const rect_t& rect1, const rect_t& rect2)
+        scalar_t overlap(const rect_t& rect1, const rect_t& rect2)
         {
-                return ((rect1 & rect2).area() + 1.0) /
-                       ((rect1 | rect2).area() + 1.0);
+                return static_cast<scalar_t>((rect1 & rect2).area() + 1.0) /
+                       static_cast<scalar_t>((rect1 | rect2).area() + 1.0);
         }
 
         bool operator==(const rect_t& rect1, const rect_t& rect2)
