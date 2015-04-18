@@ -1,10 +1,10 @@
 #pragma once
 
-#include "math/gauss.hpp"
-#include "math/random.hpp"
-#include "tensor/matrix.hpp"
-#include "tensor/transform.hpp"
-#include "separable_filter.hpp"
+#include "filter.hpp"
+#include "nanocv/math/gauss.hpp"
+#include "nanocv/math/random.hpp"
+#include "nanocv/tensor/matrix.hpp"
+#include "nanocv/tensor/transform.hpp"
 
 namespace ncv
 {

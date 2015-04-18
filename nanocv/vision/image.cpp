@@ -1,11 +1,11 @@
 #include "io.h"
 #include "image.h"
-#include "draw.hpp"
-#include "nanocv/bilinear.hpp"
+#include "noise.hpp"
+#include "shapes.hpp"
+#include "filter.hpp"
+#include "bilinear.hpp"
+#include "translate.hpp"
 #include "nanocv/math/numeric.hpp"
-#include "nanocv/random_noise.hpp"
-#include "nanocv/random_translate.hpp"
-#include "nanocv/separable_filter.hpp"
 
 namespace ncv
 {

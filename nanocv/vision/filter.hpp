@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math/range.hpp"
+#include "nanocv/math/range.hpp"
 #include <vector>
 
 namespace ncv
