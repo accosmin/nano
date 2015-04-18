@@ -55,8 +55,8 @@ namespace ncv
 
                 rect_t make_interior_rect(const rect_t& rect)
                 {
-                        random_t<coord_t> rngx(3, rect.width() / 4);
-                        random_t<coord_t> rngy(3, rect.height() / 4);
+                        random_t<coord_t> rngx(1 + (rect.width() + 7) / 8, (rect.width() + 3) / 4);
+                        random_t<coord_t> rngy(1 + (rect.height() + 7) / 8, (rect.height() + 3) / 4);
 
                         const coord_t dx = rngx();
                         const coord_t dy = rngy();
@@ -71,9 +71,11 @@ namespace ncv
 
                 rect_t make_vertical_interior_rect(const rect_t& rect)
                 {
-                        const coord_t dx = (rect.width() + 2) / 3;
+                        random_t<coord_t> rng((rect.width() + 3) / 4, (rect.width() + 2) / 3);
+
+                        const coord_t dx = rng();
                         const coord_t dy = 0;
-                        const coord_t dw = (rect.width() + 2) / 3;
+                        const coord_t dw = rng();
                         const coord_t dh = 0;
 
                         return rect_t(rect.left() + dx,
@@ -84,10 +86,12 @@ namespace ncv
 
                 rect_t make_horizontal_interior_rect(const rect_t& rect)
                 {
+                        random_t<coord_t> rng((rect.height() + 3) / 4, (rect.height() + 2) / 3);
+
                         const coord_t dx = 0;
-                        const coord_t dy = (rect.height() + 2) / 3;
+                        const coord_t dy = rng();
                         const coord_t dw = 0;
-                        const coord_t dh = (rect.height() + 2) / 3;
+                        const coord_t dh = rng();
 
                         return rect_t(rect.left() + dx,
                                       rect.top() + dy,
@@ -214,7 +218,7 @@ namespace ncv
                 random_t<size_t> rng_protocol(1, 10);
                 random_t<size_t> rng_output(1, osize());
 
-                random_t<scalar_t> rng_gauss(scalar_t(1.0), scalar_t(4.0));
+                random_t<scalar_t> rng_gauss(scalar_t(1.0), scalar_t(3.0));
 
                 const coord_t rows = static_cast<coord_t>(irows());
                 const coord_t cols = static_cast<coord_t>(icols());
@@ -238,7 +242,7 @@ namespace ncv
                                 // generate random image background
                                 image_t image(irows(), icols(), color());
                                 image.fill(back_color);
-                                image.random_noise(color_channel::rgba, -50.0, +50.0, rng_gauss());
+                                image.random_noise(color_channel::rgba, -80.0, +80.0, rng_gauss());
 
                                 // generate random shapes
                                 image_t shape;
