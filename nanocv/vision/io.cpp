@@ -1,6 +1,6 @@
-#include "image_io.h"
-#include <IL/il.h>
+#include "io.h"
 #include <map>
+#include <IL/il.h>
 
 namespace ncv
 {
