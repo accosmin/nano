@@ -60,21 +60,21 @@ static void test_optimizers(
         const task_t& task, model_t& model, const sampler_t& tsampler, const sampler_t& vsampler,
         const loss_t& loss, const string_t& criterion, tabulator_t& table)
 {
-        const size_t cmd_iterations = 128;
-        const size_t cmd_minibatch_epochs = cmd_iterations / 8;         // NB: because of 8 iterations / batch!
-        const size_t cmd_stochastic_epochs = cmd_iterations;            // NB: because of slow noisy optimization!
+        const size_t cmd_iterations = 32;
+        const size_t cmd_minibatch_epochs = cmd_iterations;
+        const size_t cmd_stochastic_epochs = cmd_iterations;
         const scalar_t cmd_epsilon = 1e-4;
 
         const size_t n_threads = ncv::n_threads();
         const bool verbose = false;
 
-//        // batch optimizers
-//        const auto batch_optimizers =
-//        {
-//                optim::batch_optimizer::GD,
-//                optim::batch_optimizer::CGD,
-//                optim::batch_optimizer::LBFGS
-//        };
+        // batch optimizers
+        const auto batch_optimizers =
+        {
+                optim::batch_optimizer::GD,
+                optim::batch_optimizer::CGD,
+                optim::batch_optimizer::LBFGS
+        };
 
         // minibatch optimizers
         const auto minibatch_optimizers =
@@ -97,16 +97,16 @@ static void test_optimizers(
 
         const string_t basename = "[" + text::to_string(criterion) + "] ";
 
-//        // run optimizers and collect results
-//        for (optim::batch_optimizer optimizer : batch_optimizers)
-//        {
-//                test_optimizer(model, [&] ()
-//                {
-//                        return ncv::batch_train(
-//                                model, task, tsampler, vsampler, n_threads,
-//                                loss, criterion, optimizer, cmd_iterations, cmd_epsilon, verbose);
-//                }, basename + "batch-" + text::to_string(optimizer), table);
-//        }
+        // run optimizers and collect results
+        for (optim::batch_optimizer optimizer : batch_optimizers)
+        {
+                test_optimizer(model, [&] ()
+                {
+                        return ncv::batch_train(
+                                model, task, tsampler, vsampler, n_threads,
+                                loss, criterion, optimizer, cmd_iterations, cmd_epsilon, verbose);
+                }, basename + "batch-" + text::to_string(optimizer), table);
+        }
 
         for (optim::batch_optimizer optimizer : minibatch_optimizers)
         {
@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
 {
         ncv::init();
 
-        const size_t cmd_samples = 8 * 1024;
+        const size_t cmd_samples = 10000;
         const size_t cmd_rows = 16;
         const size_t cmd_cols = 16;
         const size_t cmd_outputs = 10;
@@ -178,8 +178,8 @@ int main(int argc, char *argv[])
                 cmodel + outlayer
         };
 
-        const strings_t cmd_losses = { "classnll" }; //logistic" }; //ncv::get_losses().ids();
-        const strings_t cmd_criteria = ncv::get_criteria().ids();
+        const strings_t cmd_losses = { "classnll" };    //ncv::get_losses().ids();
+        const strings_t cmd_criteria = { "avg" };       //ncv::get_criteria().ids();
 
         // vary the model
         for (const string_t& cmd_network : cmd_networks)
