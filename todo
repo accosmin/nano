@@ -1,12 +1,12 @@
-- design: src/util depends on src/tensor (e.g. random_noise.hpp)
-- design: src/file depends on src/util (e.g. on logger)
 - design: nicer way to specify colors than using the current array:
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2  # blue
 set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2  # red
 
-- faster mini-batch & stochastic trainers:
-	- the minibatch is much slower than batch (3-5 times)
-	- the stochastic is slower, but also produces much worse models
+- analyze the history of the validation errors to check if training should stop:
+	- fit a line to the last X measurements and check its angle
+
+	- if this works reliable (early stopping clearly overfitting configurations),
+		then can go back to tuning the regularization parameters globally for all epochs (like batch)
 
 - activate the address sanitizer build (clang 3.5 should support it)
 
