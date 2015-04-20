@@ -1,9 +1,22 @@
 #include "trainer_state.h"
 #include "nanocv/text.h"
 #include <fstream>
+#include <limits>
+#include <cmath>
 
 namespace ncv
 {
+        trainer_state_t::trainer_state_t()
+                :       trainer_state_t(
+                        std::numeric_limits<scalar_t>::max(),
+                        std::numeric_limits<scalar_t>::max(),
+                        std::numeric_limits<scalar_t>::max(),
+                        std::numeric_limits<scalar_t>::max(),
+                        std::numeric_limits<scalar_t>::max(),
+                        std::numeric_limits<scalar_t>::max())
+        {
+        }
+
         trainer_state_t::trainer_state_t(
                         scalar_t tvalue,
                         scalar_t terror_avg,
@@ -18,6 +31,13 @@ namespace ncv
                         m_verror_avg(verror_avg),
                         m_verror_var(verror_var)
         {
+        }
+
+        bool operator<(const trainer_state_t& one, const trainer_state_t& two)
+        {
+                const scalar_t v1 = std::isfinite(one.m_verror_avg) ? one.m_verror_avg : std::numeric_limits<scalar_t>::max();
+                const scalar_t v2 = std::isfinite(two.m_verror_avg) ? two.m_verror_avg : std::numeric_limits<scalar_t>::max();
+                return v1 < v2;
         }
 
         bool save(const string_t& path, const trainer_states_t& states)

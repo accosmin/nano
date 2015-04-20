@@ -38,7 +38,7 @@ static void test_optimizer(model_t& model, ttrainer trainer, const string_t& nam
                 model.random_params();
 
                 const trainer_result_t result = trainer();
-                const trainer_state_t& state = result.m_opt_state;
+                const trainer_state_t state = result.optimum_state();
 
                 tvalues(state.m_tvalue);
                 vvalues(state.m_vvalue);
@@ -46,7 +46,7 @@ static void test_optimizer(model_t& model, ttrainer trainer, const string_t& nam
                 terrors(state.m_terror_avg);
                 verrors(state.m_verror_avg);
 
-                log_info() << "<<< --- optimum config = {" << text::concatenate(result.m_opt_config)
+                log_info() << "<<< --- optimum config = {" << text::concatenate(result.optimum_config())
                            << "}, error " << state.m_terror_avg << "/" << state.m_verror_avg << ".";
         }, cmd_trials);
 

@@ -8,14 +8,16 @@ namespace ncv
         {
         }
 
-        bool trainer_result_t::update(const vector_t& params,
+        trainer_result_update_code_t trainer_result_t::update(const vector_t& params,
                 scalar_t tvalue, scalar_t terror_avg, scalar_t terror_var,
                 scalar_t vvalue, scalar_t verror_avg, scalar_t verror_var,
                 size_t epoch, const scalars_t& config)
         {
                 const trainer_state_t state(tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var);
                 m_history[config].push_back(state);
-                
+
+                /// \todo check if overfitting or problem solved!
+
                 if (state < m_opt_state)
                 {
                         m_opt_params = params;
@@ -23,27 +25,32 @@ namespace ncv
                         m_opt_epoch = epoch;
                         m_opt_config = config;
 
-                        return true;
+                        return trainer_result_update_code_t::better;
                 }
 
                 else
                 {
-                        return false;
+                        return trainer_result_update_code_t::worse;
                 }
         }
 
-        bool trainer_result_t::update(const trainer_result_t& other)
+        trainer_result_update_code_t trainer_result_t::update(const trainer_result_t& other)
         {
                 if (*this < other)
                 {
                         *this = other;
-                        return true;
+                        return trainer_result_update_code_t::better;
                 }
 
                 else
                 {
-                        return false;
+                        return trainer_result_update_code_t::worse;
                 }
+        }
+
+        trainer_state_t trainer_result_t::optimum_state() const
+        {
+                return m_opt_state;
         }
         
         trainer_states_t trainer_result_t::optimum_states() const
@@ -59,6 +66,26 @@ namespace ncv
                 }
                 
                 return trainer_states_t();
+        }
+
+        vector_t trainer_result_t::optimum_params() const
+        {
+                return m_opt_params;
+        }
+
+        trainer_config_t trainer_result_t::optimum_config() const
+        {
+                return m_opt_config;
+        }
+
+        size_t trainer_result_t::optimum_epoch() const
+        {
+                return m_opt_epoch;
+        }
+
+        bool operator<(const trainer_result_t& one, const trainer_result_t& other)
+        {
+                return one.optimum_state() < other.optimum_state();
         }
 }
 	

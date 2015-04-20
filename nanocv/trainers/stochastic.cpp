@@ -117,7 +117,7 @@ namespace ncv
                                         const trainer_result_t result = train(
                                                 data, optimizer, epochs, batch, alpha, decay, false);
 
-                                        const trainer_state_t& state = result.m_opt_state;
+                                        const trainer_state_t state = result.optimum_state();
 
                                         if (verbose)
                                         log_info()

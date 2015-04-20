@@ -51,16 +51,18 @@ namespace ncv
                         model, task, tsampler, vsampler, nthreads,
                         loss, criterion, optimizer, epochs, epsilon);
 
-                log_info() << "optimum [train = " << result.m_opt_state.m_tvalue << "/" << result.m_opt_state.m_terror_avg
-                           << ", valid = " << result.m_opt_state.m_vvalue << "/" << result.m_opt_state.m_verror_avg
-                           << ", epoch = " << result.m_opt_epoch
-                           << ", config = " << text::concatenate(result.m_opt_config, "/")
+                const trainer_state_t state = result.optimum_state();
+
+                log_info() << "optimum [train = " << state.m_tvalue << "/" << state.m_terror_avg
+                           << ", valid = " << state.m_vvalue << "/" << state.m_verror_avg
+                           << ", epoch = " << result.optimum_epoch()
+                           << ", config = " << text::concatenate(result.optimum_config(), "/")
                            << "].";
 
                 // OK
                 if (result.valid())
                 {
-                        model.load_params(result.m_opt_params);
+                        model.load_params(result.optimum_params());
                 }
                 return result;
         }

@@ -19,12 +19,25 @@ namespace ncv
                 trainer_config_t,
                 trainer_states_t
         >                               trainer_history_t;
+
+        ///
+        /// \brief return code for updating the state
+        ///
+        enum class trainer_result_update_code_t
+        {
+                better,         ///< performance improved
+                worse,          ///< performance decreased (but not critically)
+                overfitting,    ///< overfitting detected (processing should stop)
+                solved          ///< problem solved with arbitrary accuracy (processing should stop)
+        };
         
         ///
         /// \brief track the current/optimum model state
         ///
-        struct NANOCV_PUBLIC trainer_result_t
+        class NANOCV_PUBLIC trainer_result_t
         {
+        public:
+
                 ///
                 /// \brief constructor
                 ///
@@ -32,13 +45,16 @@ namespace ncv
 
                 ///
                 /// \brief update the current/optimum state with a possible better state
-                /// \return true is the state was improved (aka lower validation error)
                 ///
-                bool update(const vector_t& params,
-                            scalar_t tvalue, scalar_t terror_avg, scalar_t terror_var,
-                            scalar_t vvalue, scalar_t verror_avg, scalar_t verror_var,
-                            size_t epoch, const scalars_t& config);
-                bool update(const trainer_result_t& other);
+                trainer_result_update_code_t update(const vector_t& params,
+                        scalar_t tvalue, scalar_t terror_avg, scalar_t terror_var,
+                        scalar_t vvalue, scalar_t verror_avg, scalar_t verror_var,
+                        size_t epoch, const scalars_t& config);
+
+                ///
+                /// \brief update the current/optimum state with a possible better state
+                ///
+                trainer_result_update_code_t update(const trainer_result_t& other);
 
                 ///
                 /// \brief check if valid result
@@ -47,11 +63,33 @@ namespace ncv
                 {
                         return !m_history.empty() && m_opt_params.size() > 0;
                 }
+
+                ///
+                /// \brief optimum training state
+                ///
+                trainer_state_t optimum_state() const;
                 
                 ///
                 /// \brief training history for the optimum configuration
                 ///
                 trainer_states_t optimum_states() const;
+
+                ///
+                /// \brief optimum model parameters
+                ///
+                vector_t optimum_params() const;
+
+                ///
+                /// \brief optimum hyper-parameter configuration
+                ///
+                trainer_config_t optimum_config() const;
+
+                ///
+                /// \brief optimum epoch
+                ///
+                size_t optimum_epoch() const;
+
+        private:
 
                 // attributes
                 vector_t                m_opt_params;           ///< optimum model parameters
@@ -64,9 +102,6 @@ namespace ncv
         ///
         /// \brief compare two trainer results
         ///
-        inline bool operator<(const trainer_result_t& one, const trainer_result_t& other)
-        {
-                return one.m_opt_state < other.m_opt_state;
-        }
+        NANOCV_PUBLIC bool operator<(const trainer_result_t& one, const trainer_result_t& other);
 }
 

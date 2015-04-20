@@ -3,8 +3,6 @@
 #include "nanocv/arch.h"
 #include "nanocv/string.h"
 #include "nanocv/scalar.h"
-#include <limits>
-#include <cmath>
 
 namespace ncv
 {
@@ -16,12 +14,13 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                trainer_state_t(scalar_t tvalue = std::numeric_limits<scalar_t>::max(),
-                                scalar_t terror_avg = std::numeric_limits<scalar_t>::max(),
-                                scalar_t terror_var = std::numeric_limits<scalar_t>::max(),
-                                scalar_t vvalue = std::numeric_limits<scalar_t>::max(),
-                                scalar_t verror_avg = std::numeric_limits<scalar_t>::max(),
-                                scalar_t verror_var = std::numeric_limits<scalar_t>::max());
+                trainer_state_t();
+
+                ///
+                /// \brief constructor
+                ///
+                trainer_state_t(scalar_t tvalue, scalar_t terror_avg, scalar_t terror_var,
+                                scalar_t vvalue, scalar_t verror_avg, scalar_t verror_var);
                 
                 // attributes
                 scalar_t                m_tvalue;       ///< train loss value
@@ -32,17 +31,12 @@ namespace ncv
                 scalar_t                m_verror_var;   ///< validation error (variance)
         };
 
+        typedef std::vector<trainer_state_t> trainer_states_t;
+
         ///
         /// \brief compare two training states
         ///
-        inline bool operator<(const trainer_state_t& one, const trainer_state_t& two)
-        {
-                const scalar_t v1 = std::isfinite(one.m_verror_avg) ? one.m_verror_avg : std::numeric_limits<scalar_t>::max();
-                const scalar_t v2 = std::isfinite(two.m_verror_avg) ? two.m_verror_avg : std::numeric_limits<scalar_t>::max();
-                return v1 < v2;
-        }
-        
-        typedef std::vector<trainer_state_t>    trainer_states_t;
+        NANOCV_PUBLIC bool operator<(const trainer_state_t& one, const trainer_state_t& two);
 
         ///
         /// \brief save optimization states to text file
