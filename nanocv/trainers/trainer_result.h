@@ -24,7 +24,7 @@ namespace ncv
         ///
         /// \brief return code for updating the state
         ///
-        enum class trainer_result_update_code_t
+        enum class trainer_result_return_t
         {
                 better,         ///< performance improved
                 worse,          ///< performance decreased (but not critically)
@@ -36,14 +36,14 @@ namespace ncv
         namespace text
         {
                 template <>
-                inline std::string to_string(trainer_result_update_code_t code)
+                inline std::string to_string(trainer_result_return_t code)
                 {
                         switch (code)
                         {
-                        case trainer_result_update_code_t::better:      return "better";
-                        case trainer_result_update_code_t::worse:       return "worse";
-                        case trainer_result_update_code_t::overfitting: return "overfitting";
-                        case trainer_result_update_code_t::solved:      return "solved";
+                        case trainer_result_return_t::better:      return "better";
+                        case trainer_result_return_t::worse:       return "worse";
+                        case trainer_result_return_t::overfitting: return "overfitting";
+                        case trainer_result_return_t::solved:      return "solved";
                         default:                                        return "????";
                         }
                 }
@@ -64,7 +64,7 @@ namespace ncv
                 ///
                 /// \brief update the current/optimum state with a possible better state
                 ///
-                trainer_result_update_code_t update(const vector_t& params,
+                trainer_result_return_t update(const vector_t& params,
                         scalar_t tvalue, scalar_t terror_avg, scalar_t terror_var,
                         scalar_t vvalue, scalar_t verror_avg, scalar_t verror_var,
                         size_t epoch, const scalars_t& config);
@@ -72,7 +72,7 @@ namespace ncv
                 ///
                 /// \brief update the current/optimum state with a possible better state
                 ///
-                trainer_result_update_code_t update(const trainer_result_t& other);
+                trainer_result_return_t update(const trainer_result_t& other);
 
                 ///
                 /// \brief check if valid result

@@ -54,7 +54,7 @@ namespace ncv
                                         << ", calls = " << state.n_fval_calls() << "/" << state.n_grad_calls()
                                         << "] done in " << timer.elapsed() << ".";
 
-                                return ret != trainer_result_update_code_t::overfitting;
+                                return ret != trainer_result_return_t::overfitting;
                         };
 
                         // assembly optimization problem & optimize the model

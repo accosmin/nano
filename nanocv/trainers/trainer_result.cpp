@@ -8,7 +8,7 @@ namespace ncv
         {
         }
 
-        trainer_result_update_code_t trainer_result_t::update(const vector_t& params,
+        trainer_result_return_t trainer_result_t::update(const vector_t& params,
                 scalar_t tvalue, scalar_t terror_avg, scalar_t terror_var,
                 scalar_t vvalue, scalar_t verror_avg, scalar_t verror_var,
                 size_t epoch, const scalars_t& config)
@@ -28,7 +28,7 @@ namespace ncv
                         m_opt_epoch = epoch;
                         m_opt_config = config;
 
-                        return trainer_result_update_code_t::solved;
+                        return trainer_result_return_t::solved;
                 }
 
                 // improved performance
@@ -39,7 +39,7 @@ namespace ncv
                         m_opt_epoch = epoch;
                         m_opt_config = config;
 
-                        return trainer_result_update_code_t::better;
+                        return trainer_result_return_t::better;
                 }
 
                 // worse performance
@@ -50,28 +50,28 @@ namespace ncv
                         // slightly worse performance, keep training
                         if (ratio < thres)
                         {
-                                return trainer_result_update_code_t::worse;
+                                return trainer_result_return_t::worse;
                         }
 
                         // much worse performance, overfitting detected
                         else
                         {
-                                return trainer_result_update_code_t::overfitting;
+                                return trainer_result_return_t::overfitting;
                         }
                 }
         }
 
-        trainer_result_update_code_t trainer_result_t::update(const trainer_result_t& other)
+        trainer_result_return_t trainer_result_t::update(const trainer_result_t& other)
         {
                 if (*this < other)
                 {
                         *this = other;
-                        return trainer_result_update_code_t::better;
+                        return trainer_result_return_t::better;
                 }
 
                 else
                 {
-                        return trainer_result_update_code_t::worse;
+                        return trainer_result_return_t::worse;
                 }
         }
 

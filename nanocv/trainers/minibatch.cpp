@@ -116,7 +116,7 @@ namespace ncv
                                         << ", lambda = " << data.lambda()
                                         << "] done in " << timer.elapsed() << ".";
 
-                                if (ret == trainer_result_update_code_t::overfitting)
+                                if (ret == trainer_result_return_t::overfitting)
                                 {
                                         break;
                                 }
