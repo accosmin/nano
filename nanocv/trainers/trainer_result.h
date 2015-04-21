@@ -40,10 +40,10 @@ namespace ncv
                 {
                         switch (code)
                         {
-                        case trainer_result_return_t::better:      return "better";
-                        case trainer_result_return_t::worse:       return "worse";
-                        case trainer_result_return_t::overfitting: return "overfitting";
-                        case trainer_result_return_t::solved:      return "solved";
+                        case trainer_result_return_t::better:           return "better";
+                        case trainer_result_return_t::worse:            return "worse";
+                        case trainer_result_return_t::overfitting:      return "overfitting";
+                        case trainer_result_return_t::solved:           return "solved";
                         default:                                        return "????";
                         }
                 }

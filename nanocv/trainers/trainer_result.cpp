@@ -51,7 +51,7 @@ namespace ncv
                 {
                         const scalar_t ratio = (curre - beste) / (beste);
 
-                        // slightly worse performance, keep training
+                        // slightly worse performance or not enough epochs, keep training
                         if (ratio < thres || m_epoch < min_epochs)
                         {
                                 return trainer_result_return_t::worse;

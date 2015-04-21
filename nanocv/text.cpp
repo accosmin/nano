@@ -18,9 +18,9 @@ namespace ncv
                         else
                         {
                                 bool ret = true;
-                                for (std::size_t i = 0; i < token.size() && ret; i ++)
+                                for (std::size_t i = 0, istr = str.size() - token.size(); i < token.size() && ret; i ++)
                                 {
-                                        ret = op(token[i], str[str.size() - token.size() + i]);
+                                        ret = op(token[i], str[istr + i]);
                                 }
 
                                 return ret;
