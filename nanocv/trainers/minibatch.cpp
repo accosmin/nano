@@ -173,28 +173,6 @@ namespace ncv
                         // OK
                         return std::make_tuple(opt_result, opt_batch, opt_iterations);
                 }
-
-                // <result, batch size, iterations per batch, regularization weight>
-                std::tuple<trainer_result_t, size_t, size_t, scalar_t> tune_lambda(
-                        trainer_data_t& data, optim::batch_optimizer optimizer, scalar_t epsilon, bool verbose)
-                {
-                        const auto op = [&] (scalar_t lambda)
-                        {
-                                data.set_lambda(lambda);
-
-                                const auto ret = tune_minibatch(data, optimizer, epsilon, verbose);
-                                return std::tuple_cat(ret, std::make_tuple(lambda));
-                        };
-
-                        if (data.m_lacc.can_regularize())
-                        {
-                                return log10_min_search(op, -6.0, +0.0, 0.5, 4).first;
-                        }
-                        else
-                        {
-                                return op(0.0);
-                        }
-                }
         }
 
         trainer_result_t minibatch_train(
@@ -213,15 +191,26 @@ namespace ncv
                 trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
 
                 // tune the regularization factor (if needed)
-                const auto ret = tune_lambda(data, optimizer, epsilon, verbose);
+                const auto op = [&] (scalar_t lambda)
+                {
+                        data.set_lambda(lambda);
 
-                const size_t opt_batch = std::get<1>(ret);
-                const size_t opt_iterations = std::get<2>(ret);
-                const scalar_t opt_lambda = std::get<3>(ret);
+                        const auto ret = tune_minibatch(data, optimizer, epsilon, verbose);
 
-                data.set_lambda(opt_lambda);
+                        const size_t opt_batch = std::get<1>(ret);
+                        const size_t opt_iterations = std::get<2>(ret);
 
-                return train(data, optimizer, epochs, opt_batch, opt_iterations, epsilon, verbose);
+                        return train(data, optimizer, epochs, opt_batch, opt_iterations, epsilon, verbose);
+                };
+
+                if (data.m_lacc.can_regularize())
+                {
+                        return log10_min_search(op, -6.0, +0.0, 0.5, 4).first;
+                }
+                else
+                {
+                        return op(0.0);
+                }
         }
 }
 	

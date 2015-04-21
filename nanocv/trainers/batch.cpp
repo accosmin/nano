@@ -8,9 +8,9 @@
 
 namespace ncv
 {
-        namespace detail
+        namespace
         {        
-                static opt_state_t batch_train(
+                opt_state_t train_batch(
                         trainer_data_t& data,
                         optim::batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
                         timer_t& timer, trainer_result_t& result, bool verbose)
@@ -72,30 +72,29 @@ namespace ncv
                 vector_t x0;
                 model.save_params(x0);
 
-                // operator to train for a given regularization factor
+                // setup acumulators
+                accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value);
+                accumulator_t gacc(model, nthreads, criterion, criterion_t::type::vgrad);
+
+                trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
+
+                // tune the regularization factor (if needed)
                 const auto op = [&] (scalar_t lambda)
                 {
+                        data.set_lambda(lambda);
+
                         trainer_result_t result;
                         timer_t timer;
 
-                        // optimize the model
-                        accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value, lambda);
-                        accumulator_t gacc(model, nthreads, criterion, criterion_t::type::vgrad, lambda);
+                        train_batch(data, optimizer, iterations, epsilon, timer, result, verbose);
 
-                        trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
-
-                        detail::batch_train(data, optimizer, iterations, epsilon, timer, result, verbose);
-
-                        // OK
                         return result;
                 };
 
-                // tune the regularization factor (if needed)
-                if (accumulator_t::can_regularize(criterion))
+                if (data.m_lacc.can_regularize())
                 {
-                        return log10_min_search(op, -6.0, +0.0, 0.2, 4).first;
+                        return log10_min_search(op, -6.0, +0.0, 0.5, 4).first;
                 }
-
                 else
                 {
                         return op(0.0);

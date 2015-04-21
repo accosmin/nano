@@ -4,7 +4,8 @@
 namespace ncv
 {
         trainer_result_t::trainer_result_t()
-                :       m_opt_epoch(0)
+                :       m_epoch(0),
+                        m_opt_epoch(0)
         {
         }
 
@@ -19,6 +20,9 @@ namespace ncv
                 const scalar_t thres = 0.05;
                 const scalar_t beste = m_opt_state.m_verror_avg;
                 const scalar_t curre = verror_avg;
+
+                ++ m_epoch;
+                const size_t min_epochs = 8;
 
                 // arbitrary precision (problem solved!)
                 if (curre < std::numeric_limits<scalar_t>::epsilon())
@@ -48,7 +52,7 @@ namespace ncv
                         const scalar_t ratio = (curre - beste) / (beste);
 
                         // slightly worse performance, keep training
-                        if (ratio < thres)
+                        if (ratio < thres || m_epoch < min_epochs)
                         {
                                 return trainer_result_return_t::worse;
                         }
