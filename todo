@@ -8,6 +8,8 @@ set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2  # red
 	- if this works reliable (early stopping clearly overfitting configurations),
 		then can go back to tuning the regularization parameters globally for all epochs (like batch)
 
+- make text.* & file/* independent of boost
+
 - activate the address sanitizer build (clang 3.5 should support it)
 
 - augment training samples (to reduce overfitting):
