@@ -38,7 +38,7 @@ namespace ncv
                         /// logging: warning, error, update (with the current state)
                         typedef std::function<void(const std::string&)>                 twlog;
                         typedef std::function<void(const std::string&)>                 telog;
-                        typedef std::function<void(const tstate&)>                      tulog;
+                        typedef std::function<bool(const tstate&)>                      tulog;
 
                         ///
                         /// \brief constructor (analytic gradient)

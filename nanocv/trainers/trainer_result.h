@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include "nanocv/text.h"
 #include "nanocv/tensor.h"
 #include "trainer_state.h"
 
@@ -30,6 +31,23 @@ namespace ncv
                 overfitting,    ///< overfitting detected (processing should stop)
                 solved          ///< problem solved with arbitrary accuracy (processing should stop)
         };
+
+        // string cast for enumerations
+        namespace text
+        {
+                template <>
+                inline std::string to_string(trainer_result_update_code_t code)
+                {
+                        switch (code)
+                        {
+                        case trainer_result_update_code_t::better:      return "better";
+                        case trainer_result_update_code_t::worse:       return "worse";
+                        case trainer_result_update_code_t::overfitting: return "overfitting";
+                        case trainer_result_update_code_t::solved:      return "solved";
+                        default:                                        return "????";
+                        }
+                }
+        }
         
         ///
         /// \brief track the current/optimum model state

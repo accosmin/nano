@@ -98,21 +98,28 @@ namespace ncv
                                 const scalar_t verror_var = data.m_lacc.var_error();
 
                                 // update the optimum state
-                                result.update(x, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var,
-                                              epoch, scalars_t({ static_cast<scalar_t>(batch),
-                                                                 static_cast<scalar_t>(iterations),
-                                                                 data.lambda() }));
+                                const auto ret = result.update(
+                                        x, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var,
+                                        epoch, scalars_t({ static_cast<scalar_t>(batch),
+                                                           static_cast<scalar_t>(iterations),
+                                                           data.lambda() }));
 
                                 if (verbose)
                                 log_info()
                                         << "[train = " << tvalue << "/" << terror_avg
                                         << ", valid = " << vvalue << "/" << verror_avg
+                                        << " (" << text::to_string(ret) << ")"
                                         << ", xnorm = " << x.lpNorm<Eigen::Infinity>()
                                         << ", epoch = " << epoch << "/" << epochs
                                         << ", batch = " << batch
                                         << ", iters = " << iterations
                                         << ", lambda = " << data.lambda()
                                         << "] done in " << timer.elapsed() << ".";
+
+                                if (ret == trainer_result_update_code_t::overfitting)
+                                {
+                                        break;
+                                }
                         }
 
                         return result;

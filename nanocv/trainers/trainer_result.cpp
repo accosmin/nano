@@ -16,9 +16,23 @@ namespace ncv
                 const trainer_state_t state(tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var);
                 m_history[config].push_back(state);
 
-                /// \todo check if overfitting or problem solved!
+                const scalar_t thres = 0.05;
+                const scalar_t beste = m_opt_state.m_verror_avg;
+                const scalar_t curre = verror_avg;
 
-                if (state < m_opt_state)
+                // arbitrary precision (problem solved!)
+                if (curre < std::numeric_limits<scalar_t>::epsilon())
+                {
+                        m_opt_params = params;
+                        m_opt_state = state;
+                        m_opt_epoch = epoch;
+                        m_opt_config = config;
+
+                        return trainer_result_update_code_t::solved;
+                }
+
+                // improved performance
+                else if (curre < beste)
                 {
                         m_opt_params = params;
                         m_opt_state = state;
@@ -28,9 +42,22 @@ namespace ncv
                         return trainer_result_update_code_t::better;
                 }
 
+                // worse performance
                 else
                 {
-                        return trainer_result_update_code_t::worse;
+                        const scalar_t ratio = (curre - beste) / (beste);
+
+                        // slightly worse performance, keep training
+                        if (ratio < thres)
+                        {
+                                return trainer_result_update_code_t::worse;
+                        }
+
+                        // much worse performance, overfitting detected
+                        else
+                        {
+                                return trainer_result_update_code_t::overfitting;
+                        }
                 }
         }
 

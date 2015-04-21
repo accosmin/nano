@@ -67,9 +67,9 @@ namespace ncv
                         ///
                         /// \brief log current optimization state
                         ///
-                        void ulog(const tstate& state) const
+                        bool ulog(const tstate& state) const
                         {
-                                if (m_ulog) m_ulog(state);
+                                return m_ulog ? m_ulog(state) : true;
                         }
 
                         ///

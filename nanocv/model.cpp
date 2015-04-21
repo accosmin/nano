@@ -158,6 +158,8 @@ namespace ncv
 //                                   << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
 //                                   << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
 //                                   << "] done in " << timer.elapsed() << ".";
+
+                        return true;
                 };
 
                 // assembly optimization problem & optimize the input

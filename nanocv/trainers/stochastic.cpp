@@ -52,16 +52,18 @@ namespace ncv
                                 epoch ++;
 
                                 // OK, update the optimum solution
-                                result.update(state.x, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var,
-                                              epoch, scalars_t({ static_cast<scalar_t>(batch),
-                                                                 alpha0,
-                                                                 decay,
-                                                                 data.lambda() }));
+                                const auto ret = result.update(
+                                        state.x, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var,
+                                        epoch, scalars_t({ static_cast<scalar_t>(batch),
+                                                           alpha0,
+                                                           decay,
+                                                           data.lambda() }));
 
                                 if (verbose)
                                 log_info()
                                         << "[train = " << tvalue << "/" << terror_avg
                                         << ", valid = " << vvalue << "/" << verror_avg
+                                        << " (" << text::to_string(ret) << ")"
                                         << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
                                         << ", epoch = " << epoch << "/" << epochs
                                         << ", batch = " << batch
@@ -69,6 +71,8 @@ namespace ncv
                                         << ", decay = " << decay
                                         << ", lambda = " << data.lambda()
                                         << "] done in " << timer.elapsed() << ".";
+
+                                return ret != trainer_result_update_code_t::overfitting;
                         };
 
                         // OK, optimize the model

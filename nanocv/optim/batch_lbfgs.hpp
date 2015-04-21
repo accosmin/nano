@@ -66,10 +66,8 @@ namespace ncv
                                 linesearch_strategy_t<tproblem> ls_step(base_t::m_ls_strategy, 1e-4, 0.9);
 
                                 // iterate until convergence
-                                for (tsize i = 0; i < base_t::m_max_iterations; i ++)
+                                for (tsize i = 0; i < base_t::m_max_iterations && base_t::ulog(cstate); i ++)
                                 {
-                                        base_t::ulog(cstate);
-
                                         // check convergence
                                         if (cstate.converged(base_t::m_epsilon))
                                         {

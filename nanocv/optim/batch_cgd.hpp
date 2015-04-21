@@ -63,10 +63,8 @@ namespace ncv
                                 const tcgd_update op_update;
 
                                 // iterate until convergence
-                                for (tsize i = 0; i < base_t::m_max_iterations; i ++)
+                                for (tsize i = 0; i < base_t::m_max_iterations && base_t::ulog(cstate); i ++)
                                 {
-                                        base_t::ulog(cstate);
-
                                         // check convergence
                                         if (cstate.converged(base_t::m_epsilon))
                                         {

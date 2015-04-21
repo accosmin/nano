@@ -38,19 +38,23 @@ namespace ncv
                                 const scalar_t verror_var = data.m_lacc.var_error();
 
                                 // update the optimum state
-                                result.update(state.x, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var,
-                                              ++ iteration, scalars_t({ data.lambda() }));
+                                const auto ret = result.update(
+                                        state.x, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var,
+                                        ++ iteration, scalars_t({ data.lambda() }));
 
                                 if (verbose)
                                 log_info()
                                         << "[train = " << tvalue << "/" << terror_avg
                                         << ", valid = " << vvalue << "/" << verror_avg
+                                        << " (" << text::to_string(ret) << ")"
                                         << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
                                         << ", gnorm = " << state.g.lpNorm<Eigen::Infinity>()
                                         << ", epoch = " << iteration
                                         << ", lambda = " << data.lambda()
                                         << ", calls = " << state.n_fval_calls() << "/" << state.n_grad_calls()
                                         << "] done in " << timer.elapsed() << ".";
+
+                                return ret != trainer_result_update_code_t::overfitting;
                         };
 
                         // assembly optimization problem & optimize the model
