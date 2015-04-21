@@ -4,8 +4,7 @@
 namespace ncv
 {
         trainer_result_t::trainer_result_t()
-                :       m_epoch(0),
-                        m_opt_epoch(0)
+                :       m_opt_epoch(0)
         {
         }
 
@@ -17,12 +16,10 @@ namespace ncv
                 const trainer_state_t state(tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var);
                 m_history[config].push_back(state);
 
-                const scalar_t thres = 0.05;
                 const scalar_t beste = m_opt_state.m_verror_avg;
                 const scalar_t curre = verror_avg;
 
-                ++ m_epoch;
-                const size_t min_epochs = 8;
+                const size_t max_epochs_without_improvement = 4;
 
                 // arbitrary precision (problem solved!)
                 if (curre < std::numeric_limits<scalar_t>::epsilon())
@@ -49,18 +46,25 @@ namespace ncv
                 // worse performance
                 else
                 {
-                        const scalar_t ratio = (curre - beste) / (beste);
-
-                        // slightly worse performance or not enough epochs, keep training
-                        if (ratio < thres || m_epoch < min_epochs)
+                        // not enough epochs, keep training
+                        if (epoch < max_epochs_without_improvement)
                         {
                                 return trainer_result_return_t::worse;
                         }
 
-                        // much worse performance, overfitting detected
                         else
                         {
-                                return trainer_result_return_t::overfitting;
+                                // last improvement not far in the past, keep training
+                                if (epoch < m_opt_epoch + max_epochs_without_improvement)
+                                {
+                                        return trainer_result_return_t::worse;
+                                }
+
+                                // no improvement since many epochs, overfitting detected
+                                else
+                                {
+                                        return trainer_result_return_t::overfitting;
+                                }
                         }
                 }
         }

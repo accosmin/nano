@@ -110,7 +110,6 @@ namespace ncv
         private:
 
                 // attributes
-                size_t                  m_epoch;
                 vector_t                m_opt_params;           ///< optimum model parameters
                 trainer_state_t         m_opt_state;            ///< optimum training state
                 trainer_config_t        m_opt_config;           ///< optimum configuration
