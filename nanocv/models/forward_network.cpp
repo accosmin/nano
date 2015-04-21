@@ -201,8 +201,7 @@ namespace ncv
                 // create layers
                 const string_t config = this->configuration();
 
-                strings_t net_params;
-                text::split(net_params, config, text::is_any_of(";"));
+                const strings_t net_params = text::split(config, ";");
                 for (size_t l = 0; l < net_params.size(); l ++)
                 {
                         if (net_params[l].empty())
@@ -210,8 +209,7 @@ namespace ncv
                                 continue;
                         }
 
-                        strings_t layer_tokens;
-                        text::split(layer_tokens, net_params[l], text::is_any_of(":"));
+                        const strings_t layer_tokens = text::split(net_params[l], ":");
                         if (layer_tokens.size() != 2 && layer_tokens.size() != 1)
                         {
                                 const string_t message = "invalid layer description <" +

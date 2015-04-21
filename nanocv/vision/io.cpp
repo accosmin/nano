@@ -87,7 +87,7 @@ namespace ncv
                 ILenum type = IL_TYPE_UNKNOWN;
                 for (const auto& extension : extensions)
                 {
-                        if (boost::algorithm::iends_with(name, extension.first))
+                        if (text::iends_with(name, extension.first))
                         {
                                 type = extension.second;
                         }

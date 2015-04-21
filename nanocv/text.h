@@ -2,8 +2,8 @@
 
 #include "arch.h"
 #include <vector>
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
+#include <string>
+#include <algorithm>
 
 namespace ncv
 {
@@ -19,13 +19,36 @@ namespace ncv
 
         namespace text
         {
-                using namespace boost::algorithm;
-
                 ///
                 /// \brief align a string to fill the given size
                 ///
                 NANOCV_PUBLIC std::string resize(const std::string& str, std::size_t size,
                         align alignment = align::left, char fill_char = ' ');
+
+                ///
+                /// \brief tokenize a string using the given delimeters
+                ///
+                NANOCV_PUBLIC std::vector<std::string> split(const std::string& str, const char* delimeters);
+
+                ///
+                /// \brief returns the lower case string
+                ///
+                NANOCV_PUBLIC std::string lower(const std::string& str);
+
+                ///
+                /// \brief returns the upper case string
+                ///
+                NANOCV_PUBLIC std::string upper(const std::string& str);
+
+                ///
+                /// \brief check if a string ends with a token (case sensitive)
+                ///
+                NANOCV_PUBLIC bool ends_with(const std::string& str, const std::string& token);
+
+                ///
+                /// \brief check if a string ends with a token (case insensitive)
+                ///
+                NANOCV_PUBLIC bool iends_with(const std::string& str, const std::string& token);
 
                 ///
                 /// \brief cast to string for built-in types
@@ -56,9 +79,51 @@ namespace ncv
                 <
                         typename tvalue
                 >
-                tvalue from_string(const std::string& str)
+                tvalue from_string(const std::string& str);
+                template <>
+                inline int from_string<int>(const std::string& str)
                 {
-                        return boost::lexical_cast<tvalue>(str);
+                        return std::stoi(str);
+                }
+                template <>
+                inline long from_string<long>(const std::string& str)
+                {
+                        return std::stol(str);
+                }
+                template <>
+                inline long long from_string<long long>(const std::string& str)
+                {
+                        return std::stoll(str);
+                }
+                template <>
+                inline unsigned long from_string<unsigned long>(const std::string& str)
+                {
+                        return std::stoul(str);
+                }
+                template <>
+                inline unsigned long long from_string<unsigned long long>(const std::string& str)
+                {
+                        return std::stoull(str);
+                }
+                template <>
+                inline float from_string<float>(const std::string& str)
+                {
+                        return std::stof(str);
+                }
+                template <>
+                inline double from_string<double>(const std::string& str)
+                {
+                        return std::stod(str);
+                }
+                template <>
+                inline long double from_string<long double>(const std::string& str)
+                {
+                        return std::stold(str);
+                }
+                template <>
+                inline std::string from_string<std::string>(const std::string& str)
+                {
+                        return str;
                 }
 
                 ///
@@ -89,12 +154,10 @@ namespace ncv
                 >
                 tvalue from_params(const std::string& params, const std::string& param_name, tvalue default_value)
                 {
-                        std::vector<std::string> tokens, dual;
-
-                        text::split(tokens, params, text::is_any_of(","));
+                        const auto tokens = text::split(params, ",");
                         for (std::size_t i = 0; i < tokens.size(); i ++)
                         {
-                                text::split(dual, tokens[i], text::is_any_of("="));
+                                const auto dual = text::split(tokens[i], "=");
                                 if (dual.size() == 2 && dual[0] == param_name)
                                 {
                                         std::string value = dual[1];

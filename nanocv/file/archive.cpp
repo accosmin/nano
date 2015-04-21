@@ -1,10 +1,10 @@
 #include "archive.h"
 #include "bzip.h"
 #include "gzip.h"
+#include "nanocv/text.h"
 #include "nanocv/logger.h"
 #include <archive.h>
 #include <archive_entry.h>
-#include <boost/algorithm/string.hpp>
 
 namespace ncv
 {
@@ -22,26 +22,26 @@ namespace ncv
 
                 archive_type decode_archive_type(const std::string& path)
                 {
-                        if (    boost::algorithm::iends_with(path, ".tar.gz") ||
-                                boost::algorithm::iends_with(path, ".tgz"))
+                        if (    text::iends_with(path, ".tar.gz") ||
+                                text::iends_with(path, ".tgz"))
                         {
                                 return archive_type::tar_gz;
                         }
 
-                        else if (boost::algorithm::iends_with(path, ".tar.bz2") ||
-                                 boost::algorithm::iends_with(path, ".tbz") ||
-                                 boost::algorithm::iends_with(path, ".tbz2") ||
-                                 boost::algorithm::iends_with(path, ".tb2"))
+                        else if (text::iends_with(path, ".tar.bz2") ||
+                                 text::iends_with(path, ".tbz") ||
+                                 text::iends_with(path, ".tbz2") ||
+                                 text::iends_with(path, ".tb2"))
                         {
                                 return archive_type::tar_bz2;
                         }
 
-                        else if (boost::algorithm::iends_with(path, ".tar"))
+                        else if (text::iends_with(path, ".tar"))
                         {
                                 return archive_type::tar;
                         }
 
-                        else if (boost::algorithm::iends_with(path, ".gz"))
+                        else if (text::iends_with(path, ".gz"))
                         {
                                 return archive_type::gz;
                         }

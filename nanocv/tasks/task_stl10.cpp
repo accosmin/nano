@@ -171,8 +171,7 @@ namespace ncv
                                 return false;
                         }
 
-                        strings_t tokens;
-                        text::split(tokens, line, text::is_any_of(" \t\n\r"));
+                        const strings_t tokens = text::split(line, " \t\n\r");
 
                         size_t fcount = 0;
                         for (size_t t = 0; t < tokens.size(); t ++)

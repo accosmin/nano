@@ -130,11 +130,11 @@ namespace ncv
 
                 const auto op = [&] (const string_t& filename, const io::data_t& data)
                 {
-                        if (boost::algorithm::iends_with(filename, train_bfile))
+                        if (text::ends_with(filename, train_bfile))
                         {
                                 return load(filename, data.data(), data.size(), protocol::train, n_train_samples);
                         }
-                        else if (boost::algorithm::iends_with(filename, test_bfile))
+                        else if (text::ends_with(filename, test_bfile))
                         {
                                 return load(filename, data.data(), data.size(), protocol::test, n_test_samples);
                         }                        

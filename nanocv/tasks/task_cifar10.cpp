@@ -44,15 +44,15 @@ namespace ncv
 
                 const auto op = [&] (const string_t& filename, const io::data_t& data)
                 {
-                        if (    boost::algorithm::iends_with(filename, train_bfile1) ||
-                                boost::algorithm::iends_with(filename, train_bfile2) ||
-                                boost::algorithm::iends_with(filename, train_bfile3) ||
-                                boost::algorithm::iends_with(filename, train_bfile4) ||
-                                boost::algorithm::iends_with(filename, train_bfile5))
+                        if (    text::iends_with(filename, train_bfile1) ||
+                                text::iends_with(filename, train_bfile2) ||
+                                text::iends_with(filename, train_bfile3) ||
+                                text::iends_with(filename, train_bfile4) ||
+                                text::iends_with(filename, train_bfile5))
                         {
                                 return load(filename, data.data(), data.size(), protocol::train, n_train_samples);
                         }
-                        else if (boost::algorithm::iends_with(filename, test_bfile))
+                        else if (text::iends_with(filename, test_bfile))
                         {                                
                                 return load(filename, data.data(), data.size(), protocol::test, n_test_samples);
                         }                        
