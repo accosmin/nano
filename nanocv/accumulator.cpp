@@ -38,9 +38,11 @@ namespace ncv
 
         accumulator_t::accumulator_t(const model_t& model, size_t nthreads,
                                      const string_t& criterion_name, criterion_t::type type, scalar_t lambda)
-                :       m_impl(std::make_shared<impl_t>(model, nthreads, criterion_name, type, lambda))
+                :       m_impl(std::make_unique<impl_t>(model, nthreads, criterion_name, type, lambda))
         {
         }
+
+        accumulator_t::~accumulator_t() = default;
 
         void accumulator_t::reset()
         {

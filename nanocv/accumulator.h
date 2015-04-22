@@ -12,10 +12,15 @@ namespace ncv
         public:
 
                 ///
-                /// \brief constructors
+                /// \brief constructor
                 ///
                 accumulator_t(const model_t&, size_t nthreads, 
                               const string_t& criterion_name, criterion_t::type, scalar_t lambda = 0.0);
+
+                ///
+                /// \brief destructor
+                ///
+                ~accumulator_t();
 
                 ///
                 /// \brief reset statistics (keeps parameters)
@@ -91,6 +96,6 @@ namespace ncv
 
                 // attributes
                 struct impl_t;
-                std::shared_ptr<impl_t> m_impl;
+                std::unique_ptr<impl_t> m_impl;
         };
 }
