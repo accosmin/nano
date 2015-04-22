@@ -44,7 +44,7 @@ namespace ncv
                         typename toperator,
                         typename tscalar
                 >
-                auto evaluate(const toperator& op, tscalar log) -> std::pair<decltype(op(tscalar(0))), tscalar>
+                decltype(auto) evaluate(const toperator& op, tscalar log)
                 {
                         return std::make_pair(op(make_param(log)), log);
                 }
@@ -62,9 +62,8 @@ namespace ncv
                 typename tscalar,
                 typename tsize
         >
-        auto log10_min_search(const toperator& op,
+        decltype(auto) log10_min_search(const toperator& op,
                 tscalar minlog, tscalar maxlog, tscalar epslog, tsize splits)
-                -> std::pair<decltype(op(tscalar(0))), tscalar>
         {
                 // <result, logarithmic parameter>
                 typedef decltype(op(tscalar(0)))        tresult;
@@ -105,9 +104,8 @@ namespace ncv
                 typename tscalar,
                 typename tsize
         >
-        auto log10_min_search_mt(const toperator& op, tpool& pool,
+        decltype(auto) log10_min_search_mt(const toperator& op, tpool& pool,
                 tscalar minlog, tscalar maxlog, tscalar epslog, tsize splits)
-                -> std::pair<decltype(op(tscalar(0))), tscalar>
         {
                 // <result, logarithmic parameter>
                 typedef decltype(op(tscalar(0)))        tresult;                
