@@ -68,11 +68,11 @@ namespace ncv
         protected:
 
                 // save/load from file
-                virtual bool save(boost::archive::binary_oarchive& oa) const;
-                virtual bool load(boost::archive::binary_iarchive& ia);
+                virtual bool save(boost::archive::binary_oarchive& oa) const override;
+                virtual bool load(boost::archive::binary_iarchive& ia) override;
 
                 // resize to new inputs/outputs, returns the number of parameters
-                virtual size_t resize(bool verbose);
+                virtual size_t resize(bool verbose) override;
 
         private:
 
