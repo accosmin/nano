@@ -54,7 +54,7 @@ namespace ncv
                         ///
                         /// \brief set all elements to zero
                         ///
-                        void zero()
+                        void setZero()
                         {
                                 m_data.setZero();
                         }
@@ -62,7 +62,7 @@ namespace ncv
                         ///
                         /// \brief set all elements to constant
                         ///
-                        void constant(tscalar val)
+                        void setConstant(tscalar val)
                         {
                                 m_data.setConstant(val);
                         }
@@ -138,38 +138,22 @@ namespace ncv
                         ///
                         /// \brief copy to/from another tensor (of the same size)
                         ///
-                        template
-                        <
-                                typename ttensor
-                        >
-                        void copy_from(const ttensor& t)
+                        void copy_from(const tensor_t& t)
                         {
                                 assert(size() == t.size());
                                 copy_from(t.data());
                         }
-                        template
-                        <
-                                typename ttensor
-                        >
-                        void copy_to(ttensor& t) const
+                        void copy_to(tensor_t& t) const
                         {
                                 assert(size() == t.size());
                                 copy_to(t.data());
                         }
 
-                        template
-                        <
-                                typename ttscalar
-                        >
-                        void copy_from(const ttscalar* d)
+                        void copy_from(const tscalar* d)
                         {
                                 m_data = tensor::map_vector(d, size());
                         }
-                        template
-                        <
-                                typename ttscalar
-                        >
-                        void copy_to(ttscalar* d) const
+                        void copy_to(tscalar* d) const
                         {                                
                                 tensor::map_vector(d, size()) = m_data;
                         }
@@ -177,40 +161,24 @@ namespace ncv
                         ///
                         /// \brief copy plane to/from another tensor (of the same size)
                         ///
-                        template
-                        <
-                                typename ttensor
-                        >
-                        void copy_plane_from(tsize i, const ttensor& t)
+                        void copy_plane_from(tsize i, const tensor_t& t)
                         {
                                 assert(plane_size() == static_cast<tsize>(t.size()));
                                 assert(i < dims());
                                 copy_plane_from(i, t.data());
                         }
-                        template
-                        <
-                                typename ttensor
-                        >
-                        void copy_plane_to(tsize i, ttensor& t) const
+                        void copy_plane_to(tsize i, tensor_t& t) const
                         {
                                 assert(plane_size() == t.size());
                                 assert(i < dims());
                                 copy_plane_to(i, t.data());
                         }
 
-                        template
-                        <
-                                typename ttscalar
-                        >
-                        void copy_plane_from(tsize i, const ttscalar* d)
+                        void copy_plane_from(tsize i, const tscalar* d)
                         {
                                 tensor::map_vector(plane_data(i), plane_size()) = tensor::map_vector(d, plane_size());
                         }
-                        template
-                        <
-                                typename ttscalar
-                        >
-                        void copy_plane_to(tsize i, ttscalar* d) const
+                        void copy_plane_to(tsize i, tscalar* d) const
                         {
                                 tensor::map_vector(d, plane_size()) = tensor::map_vector(plane_data(i), plane_size());
                         }

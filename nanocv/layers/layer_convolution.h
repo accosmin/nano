@@ -76,5 +76,7 @@ namespace ncv
                 tensor_t                m_odata;        ///< output buffer:             odims x orows x ocols
                 tensor_t                m_kdata;        ///< convolution kernels:       odims x idims x krows x kcols
                 tensor_t                m_bdata;        ///< convolution bias:          odims x 1 x 1
+
+                tensor_t                m_gkdata;
         };
 }

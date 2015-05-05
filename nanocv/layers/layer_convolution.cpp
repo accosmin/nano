@@ -1,10 +1,12 @@
 #include "layer_convolution.h"
 #include "nanocv/text.h"
 #include "nanocv/logger.h"
+#include "convolution.hpp"
 #include "nanocv/math/clamp.hpp"
+#include "nanocv/math/conv2d.hpp"
+#include "nanocv/math/corr2d.hpp"
 #include "nanocv/math/random.hpp"
 #include "nanocv/tensor/serialize.hpp"
-#include "convolution.hpp"
 
 namespace ncv
 {
@@ -48,13 +50,15 @@ namespace ncv
                 m_kdata.resize(odims * idims, krows, kcols);
                 m_bdata.resize(odims, 1, 1);
 
+                m_gkdata.resize(odims * idims, krows, kcols);
+
                 return psize();
         }
 
         void conv_layer_t::zero_params()
         {
-                m_kdata.zero();
-                m_bdata.zero();
+                m_kdata.setZero();
+                m_bdata.setZero();
         }
 
         void conv_layer_t::random_params(scalar_t min, scalar_t max)
@@ -103,10 +107,7 @@ namespace ncv
                 m_idata.copy_from(input);
                 
                 // convolution
-                convolution::output(
-                        m_idata.data(), idims(),
-                        m_kdata.data(), krows(), kcols(),
-                        m_odata.data(), odims(), orows(), ocols());
+                convolution::output(m_idata, m_kdata, m_odata);
 
                 // +bias
                 for (size_t o = 0; o < odims(); o ++)
@@ -125,10 +126,7 @@ namespace ncv
 
                 m_odata.copy_from(output);
                 
-                convolution::ginput(
-                        m_idata.data(), idims(),
-                        m_kdata.data(), krows(), kcols(),
-                        m_odata.data(), odims(), orows(), ocols());
+                convolution::ginput(m_idata, m_kdata, m_odata);
 
                 return m_idata;
         }
@@ -142,10 +140,8 @@ namespace ncv
                 m_odata.copy_from(output);
                 
                 // wrt convolution
-                convolution::gparam(
-                        m_idata.data(), idims(),
-                        gradient, krows(), kcols(),
-                        m_odata.data(), odims(), orows(), ocols());
+                convolution::gparam(m_idata, m_gkdata, m_odata);
+                m_gkdata.copy_to(gradient);
 
                 // wrt bias
                 for (size_t o = 0; o < odims(); o ++)

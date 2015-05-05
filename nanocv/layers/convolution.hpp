@@ -8,98 +8,80 @@ namespace ncv
 {
         namespace convolution
         {
+                ///
+                /// \brief convolution output
+                ///
                 template
                 <
-                        typename tscalar,
-                        typename tsize
+                        typename ttensor
                 >
-                void output(
-                        const tscalar* idata, tsize idims,
-                        const tscalar* kdata, tsize krows, tsize kcols,
-                        tscalar* odata, tsize odims, tsize orows, tsize ocols)
+                void output(const ttensor& idata, const ttensor& kdata, ttensor& odata)
                 {
-                        const tsize irows = orows + krows - 1;
-                        const tsize icols = ocols + kcols - 1;
-                        const tsize isize = irows * icols;
+                        const auto idims = idata.dims();
+                        const auto odims = odata.dims();
 
-                        const tsize osize = orows * ocols;
-                        const tsize ksize = krows * kcols;
-
-                        // output
-                        for (tsize o = 0, k = 0; o < odims; o ++)
+                        for (auto o = 0, k = 0; o < odims; o ++)
                         {
-                                auto omap = tensor::map_matrix(odata + o * osize, orows, ocols);
+                                auto omap = odata.plane_matrix(o);
 
                                 omap.setZero();
-                                for (tsize i = 0; i < idims; i ++, k ++)
+                                for (auto i = 0; i < idims; i ++, k ++)
                                 {
-                                        auto imap = tensor::map_matrix(idata + i * isize, irows, icols);
-                                        auto kmap = tensor::map_matrix(kdata + k * ksize, krows, kcols);
+                                        auto imap = idata.plane_matrix(i);
+                                        auto kmap = kdata.plane_matrix(k);
 
                                         math::conv2d_dyn(imap, kmap, omap);
                                 }
                         }
                 }
 
+                ///
+                /// \brief gradient wrt the input
+                ///
                 template
                 <
-                        typename tscalar,
-                        typename tsize
+                        typename ttensor
                 >
-                void ginput(
-                        tscalar* gidata, tsize idims,
-                        const tscalar* kdata, tsize krows, tsize kcols,
-                        const tscalar* odata, tsize odims, tsize orows, tsize ocols)
+                void ginput(ttensor& gidata, const ttensor& kdata, const ttensor& odata)
                 {
-                        const tsize irows = orows + krows - 1;
-                        const tsize icols = ocols + kcols - 1;
-                        const tsize isize = irows * icols;
+                        const auto idims = gidata.dims();
+                        const auto odims = odata.dims();
 
-                        const tsize osize = orows * ocols;
-                        const tsize ksize = krows * kcols;
-
-                        // input gradient
-                        tensor::map_vector(gidata, idims * isize).setZero();
-                        for (tsize o = 0, k = 0; o < odims; o ++)
+                        gidata.setZero();
+                        for (auto o = 0, k = 0; o < odims; o ++)
                         {
-                                auto omap = tensor::map_matrix(odata + o * osize, orows, ocols);
+                                auto omap = odata.plane_matrix(o);
 
-                                for (tsize i = 0; i < idims; i ++, k ++)
+                                for (auto i = 0; i < idims; i ++, k ++)
                                 {
-                                        auto gimap = tensor::map_matrix(gidata + i * isize, irows, icols);
-                                        auto kmap = tensor::map_matrix(kdata + k * ksize, krows, kcols);
+                                        auto gimap = gidata.plane_matrix(i);
+                                        auto kmap = kdata.plane_matrix(k);
 
                                         math::corr2d_dyn(omap, kmap, gimap);
                                 }
                         }
                 }
 
+                ///
+                /// \brief gradient wrt the kernel
+                ///
                 template
                 <
-                        typename tscalar,
-                        typename tsize
+                        typename ttensor
                 >
-                void gparam(
-                        const tscalar* idata, tsize idims,
-                        tscalar* gkdata, tsize krows, tsize kcols,
-                        const tscalar* odata, tsize odims, tsize orows, tsize ocols)
+                void gparam(const ttensor& idata, ttensor& gkdata, const ttensor& odata)
                 {
-                        const tsize irows = orows + krows - 1;
-                        const tsize icols = ocols + kcols - 1;
-                        const tsize isize = irows * icols;
+                        const auto idims = idata.dims();
+                        const auto odims = odata.dims();
 
-                        const tsize osize = orows * ocols;
-                        const tsize ksize = krows * kcols;
-
-                        // convolution kernel gradient
-                        for (tsize o = 0, k = 0; o < odims; o ++)
+                        for (auto o = 0, k = 0; o < odims; o ++)
                         {
-                                auto omap = tensor::map_matrix(odata + o * osize, orows, ocols);
+                                auto omap = odata.plane_matrix(o);
 
-                                for (tsize i = 0; i < idims; i ++, k ++)
+                                for (auto i = 0; i < idims; i ++, k ++)
                                 {
-                                        auto imap = tensor::map_matrix(idata + i * isize, irows, icols);
-                                        auto gkmap = tensor::map_matrix(gkdata + k * ksize, krows, kcols);
+                                        auto imap = idata.plane_matrix(i);
+                                        auto gkmap = gkdata.plane_matrix(k);
 
                                         gkmap.setZero();
                                         math::conv2d_dyn(imap, omap, gkmap);

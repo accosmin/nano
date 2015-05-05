@@ -30,8 +30,8 @@ namespace ncv
 
         void linear_layer_t::zero_params()
         {
-                m_wdata.zero();
-                m_bdata.zero();
+                m_wdata.setZero();
+                m_bdata.setZero();
         }
 
         void linear_layer_t::random_params(scalar_t min, scalar_t max)
