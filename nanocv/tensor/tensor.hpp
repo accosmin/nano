@@ -117,20 +117,20 @@ namespace ncv
                                 return data() + i * plane_size();
                         }
 
-                        Eigen::Map<tmatrix> plane_matrix(tsize i = 0)
+                        decltype(auto) plane_matrix(tsize i = 0)
                         {
                                 return tensor::map_matrix(plane_data(i), rows(), cols());
                         }
-                        Eigen::Map<const tmatrix> plane_matrix(tsize i = 0) const
+                        decltype(auto) plane_matrix(tsize i = 0) const
                         {
                                 return tensor::map_matrix(plane_data(i), rows(), cols());
                         }
 
-                        Eigen::Map<tvector> plane_vector(tsize i = 0)
+                        decltype(auto) plane_vector(tsize i = 0)
                         {
                                 return tensor::map_vector(plane_data(i), plane_size());
                         }
-                        Eigen::Map<const tvector> plane_vector(tsize i = 0) const
+                        decltype(auto) plane_vector(tsize i = 0) const
                         {
                                 return tensor::map_vector(plane_data(i), plane_size());
                         }
