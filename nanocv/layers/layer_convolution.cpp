@@ -104,15 +104,15 @@ namespace ncv
                 assert(irows() == input.rows());
                 assert(icols() == input.cols());
 
-                m_idata.copy_from(input);
-                
+                m_idata = input;
+
                 // convolution
                 convolution::output(m_idata, m_kdata, m_odata);
 
                 // +bias
                 for (size_t o = 0; o < odims(); o ++)
                 {
-                        m_odata.plane_vector(o).array() += m_bdata(o);
+                        m_odata.vector(o).array() += m_bdata(o);
                 }
 
                 return m_odata;
@@ -124,7 +124,7 @@ namespace ncv
                 assert(orows() == output.rows());
                 assert(ocols() == output.cols());
 
-                m_odata.copy_from(output);
+                m_odata = output;
                 
                 convolution::ginput(m_idata, m_kdata, m_odata);
 
@@ -137,16 +137,16 @@ namespace ncv
                 assert(orows() == output.rows());
                 assert(ocols() == output.cols());
 
-                m_odata.copy_from(output);
+                m_odata = output;
                 
                 // wrt convolution
                 convolution::gparam(m_idata, m_gkdata, m_odata);
-                m_gkdata.copy_to(gradient);
+                tensor::map_vector(gradient, m_gkdata.size()) = m_gkdata.vector();
 
                 // wrt bias
                 for (size_t o = 0; o < odims(); o ++)
                 {
-                        gradient[m_kdata.size() + o] = m_odata.plane_vector(o).sum();
+                        gradient[m_kdata.size() + o] = m_odata.vector(o).sum();
                 }
         }
 }

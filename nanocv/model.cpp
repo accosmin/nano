@@ -176,7 +176,7 @@ namespace ncv
                         fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog_ref,
                         input.vector(), optimizer, iterations, epsilon);
 
-                input.copy_from(result.x.data());
+                input.vector() = result.x;
 
                 log_info() << "[loss = " << result.f
                            << ", grad = " << result.g.lpNorm<Eigen::Infinity>()

@@ -42,11 +42,11 @@ namespace ncv
                 for (size_t o = 0; o < odims(); o ++)
                 {
                         pooling::output(
-                                m_idata.plane_data(o), irows(), icols(), m_alpha,
-                                m_wdata.plane_data(o),
-                                m_sdata.plane_data(o),
-                                m_cdata.plane_data(o),
-                                m_odata.plane_data(o));
+                                m_idata.planeData(o), irows(), icols(), m_alpha,
+                                m_wdata.planeData(o),
+                                m_sdata.planeData(o),
+                                m_cdata.planeData(o),
+                                m_odata.planeData(o));
                 }
 
                 return m_odata;
@@ -61,11 +61,11 @@ namespace ncv
                 for (size_t o = 0; o < odims(); o ++)
                 {
                         pooling::ginput(
-                                m_idata.plane_data(o), irows(), icols(),
-                                m_wdata.plane_data(o),
-                                m_sdata.plane_data(o),
-                                m_cdata.plane_data(o),
-                                output.plane_data(o));
+                                m_idata.planeData(o), irows(), icols(),
+                                m_wdata.planeData(o),
+                                m_sdata.planeData(o),
+                                m_cdata.planeData(o),
+                                output.planeData(o));
                 }
 
                 return m_idata;

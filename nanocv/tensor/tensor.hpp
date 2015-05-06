@@ -94,6 +94,12 @@ namespace ncv
                         decltype(auto) vector() { return tensor::map_vector(data(), size()); }
 
                         ///
+                        /// \brief access the whole tensor as an array
+                        ///
+                        const tscalar* data() const { return m_data.data(); }
+                        tscalar* data() { return m_data.data(); }
+
+                        ///
                         /// \brief access the 2D plane (i) as vector
                         ///
                         decltype(auto) vector(tindex i) const { return tensor::map_vector(planeData(i), planeSize()); }
@@ -104,6 +110,12 @@ namespace ncv
                         ///
                         decltype(auto) matrix(tindex i) const { return tensor::map_matrix(planeData(i), rows(), cols()); }
                         decltype(auto) matrix(tindex i) { return tensor::map_matrix(planeData(i), rows(), cols()); }
+
+                        ///
+                        /// \brief access the 2D plane (i) as an array
+                        ///
+                        const tscalar* planeData(tindex i) const { return data() + i * planeSize(); }
+                        tscalar* planeData(tindex i) { return data() + i * planeSize(); }
 
                         ///
                         /// \brief access an element of the tensor in the range [0, size())
@@ -128,72 +140,6 @@ namespace ncv
                                 ar & m_cols;
                                 ar & m_data;
                         }
-
-                        const tscalar* data() const
-                        {
-                                return m_data.data();
-                        }
-                        tscalar* data()
-                        {
-                                return m_data.data();
-                        }
-
-                        const tscalar* planeData(tsize i) const
-                        {
-                                return data() + i * planeSize();
-                        }
-                        tscalar* planeData(tsize i)
-                        {
-                                return data() + i * planeSize();
-                        }
-
-//                        ///
-//                        /// \brief copy to/from another tensor (of the same size)
-//                        ///
-//                        void copy_from(const tensor_t& t)
-//                        {
-//                                assert(size() == t.size());
-//                                copy_from(t.data());
-//                        }
-//                        void copy_to(tensor_t& t) const
-//                        {
-//                                assert(size() == t.size());
-//                                copy_to(t.data());
-//                        }
-
-//                        void copy_from(const tscalar* d)
-//                        {
-//                                m_data = tensor::map_vector(d, size());
-//                        }
-//                        void copy_to(tscalar* d) const
-//                        {
-//                                tensor::map_vector(d, size()) = m_data;
-//                        }
-
-//                        ///
-//                        /// \brief copy plane to/from another tensor (of the same size)
-//                        ///
-//                        void copy_plane_from(tsize i, const tensor_t& t)
-//                        {
-//                                assert(planeSize() == static_cast<tsize>(t.size()));
-//                                assert(i < dims());
-//                                copy_plane_from(i, t.data());
-//                        }
-//                        void copy_plane_to(tsize i, tensor_t& t) const
-//                        {
-//                                assert(planeSize() == t.size());
-//                                assert(i < dims());
-//                                copy_plane_to(i, t.data());
-//                        }
-
-//                        void copy_plane_from(tsize i, const tscalar* d)
-//                        {
-//                                tensor::map_vector(planeData(i), planeSize()) = tensor::map_vector(d, planeSize());
-//                        }
-//                        void copy_plane_to(tsize i, tscalar* d) const
-//                        {
-//                                tensor::map_vector(d, planeSize()) = tensor::map_vector(planeData(i), planeSize());
-//                        }
 
                 private:
 

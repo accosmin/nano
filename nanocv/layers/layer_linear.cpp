@@ -25,6 +25,9 @@ namespace ncv
                 m_wdata.resize(1, odims, idims);
                 m_bdata.resize(odims, 1, 1);
 
+                m_gwdata.resize(1, odims, idims);
+                m_gbdata.resize(odims, 1, 1);
+
                 return psize();
         }
 
@@ -70,12 +73,9 @@ namespace ncv
                 assert(irows() == input.rows());
                 assert(icols() == input.cols());
 
-                m_idata.copy_from(input);
+                m_idata = input;
 
-                linear::output(
-                        m_idata.data(), isize(),
-                        m_wdata.data(), m_bdata.data(),
-                        m_odata.data(), osize());
+                linear::output(m_idata, m_wdata, m_bdata, m_odata);
 
                 return m_odata;
         }
@@ -86,12 +86,9 @@ namespace ncv
                 assert(output.rows() == orows());
                 assert(output.cols() == ocols());
 
-                m_odata.copy_from(output);
+                m_odata = output;
 
-                linear::ginput(
-                        m_idata.data(), isize(),
-                        m_wdata.data(),
-                        m_odata.data(), osize());
+                linear::ginput(m_idata, m_wdata, m_bdata, m_odata);
 
                 return m_idata;
         }
@@ -102,12 +99,12 @@ namespace ncv
                 assert(output.rows() == orows());
                 assert(output.cols() == ocols());
 
-                m_odata.copy_from(output);
+                m_odata = output;
 
-                linear::gparam(
-                        m_idata.data(), isize(),
-                        gradient, gradient + m_wdata.size(),
-                        m_odata.data(), osize());
+                linear::gparam(m_idata, m_gwdata, m_gbdata, m_odata);
+
+                tensor::map_vector(gradient, m_gwdata.size()) = m_gwdata.vector();
+                tensor::map_vector(gradient + m_gwdata.size(), m_gbdata.size()) = m_gbdata.vector();
         }
 }
 
