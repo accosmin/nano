@@ -46,7 +46,6 @@ namespace ncv
                                 m_cols = cols;
 
                                 m_data.resize(m_dims * m_rows * m_cols);
-                                m_data.setZero();
 
                                 return size();
                         }
