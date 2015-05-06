@@ -37,7 +37,7 @@ namespace ncv
                 assert(irows() <= input.rows());
                 assert(icols() <= input.cols());
 
-                m_idata.copy_from(input);
+                m_idata = input;
 
                 for (size_t o = 0; o < odims(); o ++)
                 {

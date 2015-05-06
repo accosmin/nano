@@ -10,7 +10,7 @@ namespace ncv
         namespace tensor
         {
                 ///
-                /// 3D tensor stored as ::dims() 2D planes of size ::rows() x ::cols()
+                /// \brief 3D tensor stored as ::dims() 2D planes of size ::rows() x ::cols()
                 ///
                 template
                 <
@@ -75,7 +75,7 @@ namespace ncv
                         >
                         void random(tgenerator gen)
                         {
-                                gen(m_data.data(), m_data.data() + size());
+                                gen(data(), data() + size());
                         }
 
                         ///
@@ -85,107 +85,36 @@ namespace ncv
                         tsize dims() const { return m_dims; }
                         tsize rows() const { return m_rows; }
                         tsize cols() const { return m_cols; }                        
-                        tsize plane_size() const { return rows() * cols(); }
+                        tsize planeSize() const { return rows() * cols(); }
 
                         ///
-                        /// \brief access the tensor as a vector (size() x 1)
+                        /// \brief access the whole tensor as a vector (size() x 1)
                         ///
                         const tvector& vector() const { return m_data; }
+                        decltype(auto) vector() { return tensor::map_vector(data(), size()); }
 
                         ///
-                        /// \brief access the whole tensor data
+                        /// \brief access the 2D plane (i) as vector
                         ///
-                        const tscalar* data() const { return m_data.data(); }
-                        tscalar* data() { return m_data.data(); }
+                        decltype(auto) vector(tindex i) const { return tensor::map_vector(planeData(i), planeSize()); }
+                        decltype(auto) vector(tindex i) { return tensor::map_vector(planeData(i), planeSize()); }
+
+                        ///
+                        /// \brief access the 2D plane (i) as matrix
+                        ///
+                        decltype(auto) matrix(tindex i) const { return tensor::map_matrix(planeData(i), rows(), cols()); }
+                        decltype(auto) matrix(tindex i) { return tensor::map_matrix(planeData(i), rows(), cols()); }
 
                         ///
                         /// \brief access an element of the tensor in the range [0, size())
                         ///
-                        tscalar data(size_t i) const { return m_data(i); }
-                        tscalar& data(size_t i) { return m_data(i); }
-
-                        ///
-                        /// \brief access the 2D planes
-                        ///
-                        const tscalar* plane_data(tsize i) const
-                        {
-                                return data() + i * plane_size();
-                        }
-                        tscalar* plane_data(tsize i)
-                        {
-                                return data() + i * plane_size();
-                        }
-
-                        decltype(auto) plane_matrix(tsize i = 0)
-                        {
-                                return tensor::map_matrix(plane_data(i), rows(), cols());
-                        }
-                        decltype(auto) plane_matrix(tsize i = 0) const
-                        {
-                                return tensor::map_matrix(plane_data(i), rows(), cols());
-                        }
-
-                        decltype(auto) plane_vector(tsize i = 0)
-                        {
-                                return tensor::map_vector(plane_data(i), plane_size());
-                        }
-                        decltype(auto) plane_vector(tsize i = 0) const
-                        {
-                                return tensor::map_vector(plane_data(i), plane_size());
-                        }
-
-                        ///
-                        /// \brief copy to/from another tensor (of the same size)
-                        ///
-                        void copy_from(const tensor_t& t)
-                        {
-                                assert(size() == t.size());
-                                copy_from(t.data());
-                        }
-                        void copy_to(tensor_t& t) const
-                        {
-                                assert(size() == t.size());
-                                copy_to(t.data());
-                        }
-
-                        void copy_from(const tscalar* d)
-                        {
-                                m_data = tensor::map_vector(d, size());
-                        }
-                        void copy_to(tscalar* d) const
-                        {                                
-                                tensor::map_vector(d, size()) = m_data;
-                        }
-
-                        ///
-                        /// \brief copy plane to/from another tensor (of the same size)
-                        ///
-                        void copy_plane_from(tsize i, const tensor_t& t)
-                        {
-                                assert(plane_size() == static_cast<tsize>(t.size()));
-                                assert(i < dims());
-                                copy_plane_from(i, t.data());
-                        }
-                        void copy_plane_to(tsize i, tensor_t& t) const
-                        {
-                                assert(plane_size() == t.size());
-                                assert(i < dims());
-                                copy_plane_to(i, t.data());
-                        }
-
-                        void copy_plane_from(tsize i, const tscalar* d)
-                        {
-                                tensor::map_vector(plane_data(i), plane_size()) = tensor::map_vector(d, plane_size());
-                        }
-                        void copy_plane_to(tsize i, tscalar* d) const
-                        {
-                                tensor::map_vector(d, plane_size()) = tensor::map_vector(plane_data(i), plane_size());
-                        }
+                        tscalar operator()(tindex i) const { return m_data(i); }
+                        tscalar& operator()(tindex i) { return m_data(i); }
 
                 private:
 
                         ///
-                        /// serialize
+                        /// \brief serialize
                         ///
                         friend class boost::serialization::access;
                         template
@@ -199,6 +128,72 @@ namespace ncv
                                 ar & m_cols;
                                 ar & m_data;
                         }
+
+                        const tscalar* data() const
+                        {
+                                return m_data.data();
+                        }
+                        tscalar* data()
+                        {
+                                return m_data.data();
+                        }
+
+                        const tscalar* planeData(tsize i) const
+                        {
+                                return data() + i * planeSize();
+                        }
+                        tscalar* planeData(tsize i)
+                        {
+                                return data() + i * planeSize();
+                        }
+
+//                        ///
+//                        /// \brief copy to/from another tensor (of the same size)
+//                        ///
+//                        void copy_from(const tensor_t& t)
+//                        {
+//                                assert(size() == t.size());
+//                                copy_from(t.data());
+//                        }
+//                        void copy_to(tensor_t& t) const
+//                        {
+//                                assert(size() == t.size());
+//                                copy_to(t.data());
+//                        }
+
+//                        void copy_from(const tscalar* d)
+//                        {
+//                                m_data = tensor::map_vector(d, size());
+//                        }
+//                        void copy_to(tscalar* d) const
+//                        {
+//                                tensor::map_vector(d, size()) = m_data;
+//                        }
+
+//                        ///
+//                        /// \brief copy plane to/from another tensor (of the same size)
+//                        ///
+//                        void copy_plane_from(tsize i, const tensor_t& t)
+//                        {
+//                                assert(planeSize() == static_cast<tsize>(t.size()));
+//                                assert(i < dims());
+//                                copy_plane_from(i, t.data());
+//                        }
+//                        void copy_plane_to(tsize i, tensor_t& t) const
+//                        {
+//                                assert(planeSize() == t.size());
+//                                assert(i < dims());
+//                                copy_plane_to(i, t.data());
+//                        }
+
+//                        void copy_plane_from(tsize i, const tscalar* d)
+//                        {
+//                                tensor::map_vector(planeData(i), planeSize()) = tensor::map_vector(d, planeSize());
+//                        }
+//                        void copy_plane_to(tsize i, tscalar* d) const
+//                        {
+//                                tensor::map_vector(d, planeSize()) = tensor::map_vector(planeData(i), planeSize());
+//                        }
 
                 private:
 

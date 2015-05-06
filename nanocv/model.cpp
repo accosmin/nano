@@ -65,7 +65,7 @@ namespace ncv
                 assert(static_cast<size_t>(input.size()) == isize());
 
                 tensor_t xinput(idims(), irows(), icols());
-                xinput.copy_from(input.data());
+                xinput.vector() = input;
 
                 return output(xinput);
         }

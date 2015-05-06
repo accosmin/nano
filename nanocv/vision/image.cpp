@@ -131,7 +131,7 @@ namespace ncv
 
                 if (data.dims() == 1)
                 {
-                        const auto gmap = data.plane_matrix(0);
+                        const auto gmap = data.matrix(0);
 
                         m_luma.resize(data.rows(), data.cols());
                         tensor::transform(gmap, m_luma, [=] (scalar_t l)
@@ -145,9 +145,9 @@ namespace ncv
 
                 else if (data.dims() == 3)
                 {
-                        const auto rmap = data.plane_matrix(0);
-                        const auto gmap = data.plane_matrix(1);
-                        const auto bmap = data.plane_matrix(2);
+                        const auto rmap = data.matrix(0);
+                        const auto gmap = data.matrix(1);
+                        const auto bmap = data.matrix(2);
 
                         m_rgba.resize(data.rows(), data.cols());
                         tensor::transform(rmap, gmap, bmap, m_rgba, [=] (scalar_t r, scalar_t g, scalar_t b)
@@ -201,7 +201,7 @@ namespace ncv
                 case color_mode::luma:
                         {
                                 tensor_t data(1, rows, cols);
-                                auto gmap = data.plane_matrix(0);
+                                auto gmap = data.matrix(0);
 
                                 tensor::transform(m_luma.block(top, left, rows, cols), gmap, [=] (luma_t luma)
                                 {
@@ -214,9 +214,9 @@ namespace ncv
                 case color_mode::rgba:
                         {
                                 tensor_t data(3, rows, cols);
-                                auto rmap = data.plane_matrix(0);
-                                auto gmap = data.plane_matrix(1);
-                                auto bmap = data.plane_matrix(2);
+                                auto rmap = data.matrix(0);
+                                auto gmap = data.matrix(1);
+                                auto bmap = data.matrix(2);
 
                                 tensor::transform(m_rgba.block(top, left, rows, cols), rmap, [=] (rgba_t rgba)
                                 {

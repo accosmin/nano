@@ -22,13 +22,13 @@ namespace ncv
 
                         for (auto o = 0, k = 0; o < odims; o ++)
                         {
-                                auto omap = odata.plane_matrix(o);
+                                auto omap = odata.matrix(o);
 
                                 omap.setZero();
                                 for (auto i = 0; i < idims; i ++, k ++)
                                 {
-                                        auto imap = idata.plane_matrix(i);
-                                        auto kmap = kdata.plane_matrix(k);
+                                        auto imap = idata.matrix(i);
+                                        auto kmap = kdata.matrix(k);
 
                                         math::conv2d_dyn(imap, kmap, omap);
                                 }
@@ -50,12 +50,12 @@ namespace ncv
                         gidata.setZero();
                         for (auto o = 0, k = 0; o < odims; o ++)
                         {
-                                auto omap = odata.plane_matrix(o);
+                                auto omap = odata.matrix(o);
 
                                 for (auto i = 0; i < idims; i ++, k ++)
                                 {
-                                        auto gimap = gidata.plane_matrix(i);
-                                        auto kmap = kdata.plane_matrix(k);
+                                        auto gimap = gidata.matrix(i);
+                                        auto kmap = kdata.matrix(k);
 
                                         math::corr2d_dyn(omap, kmap, gimap);
                                 }
@@ -63,7 +63,7 @@ namespace ncv
                 }
 
                 ///
-                /// \brief gradient wrt the kernel
+                /// \brief gradient wrt the parameters
                 ///
                 template
                 <
@@ -76,12 +76,12 @@ namespace ncv
 
                         for (auto o = 0, k = 0; o < odims; o ++)
                         {
-                                auto omap = odata.plane_matrix(o);
+                                auto omap = odata.matrix(o);
 
                                 for (auto i = 0; i < idims; i ++, k ++)
                                 {
-                                        auto imap = idata.plane_matrix(i);
-                                        auto gkmap = gkdata.plane_matrix(k);
+                                        auto imap = idata.matrix(i);
+                                        auto gkmap = gkdata.matrix(k);
 
                                         gkmap.setZero();
                                         math::conv2d_dyn(imap, omap, gkmap);

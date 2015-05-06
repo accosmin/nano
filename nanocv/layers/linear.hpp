@@ -7,58 +7,41 @@ namespace ncv
 {
         namespace linear
         {
+                ///
+                /// \brief linear output
+                ///
                 template
                 <
-                        typename tscalar,
-                        typename tsize
+                        typename ttensor
                 >
-                void output(
-                        const tscalar* idata, tsize isize,
-                        const tscalar* wdata,
-                        const tscalar* bdata,
-                        tscalar* odata, tsize osize)
+                void output(const ttensor& idata, const ttensor& wdata, const ttensor& bdata, ttensor& odata)
                 {
-                        // output
-                        tensor::map_vector(odata, osize).noalias() =
-                                tensor::map_vector(bdata, osize) +
-                                tensor::map_matrix(wdata, osize, isize) *
-                                tensor::map_vector(idata, isize);
+                        odata.vector() = bdata.vector() + wdata.matrix(0) * idata.vector();
                 }
 
+                ///
+                /// \brief gradient wrt the input
+                ///
                 template
                 <
-                        typename tscalar,
-                        typename tsize
+                        typename ttensor
                 >
-                void ginput(
-                        tscalar* idata, tsize isize,
-                        const tscalar* wdata,
-                        const tscalar* odata, tsize osize)
+                void ginput(ttensor& gidata, const ttensor& wdata, const ttensor&, const ttensor& odata)
                 {
-                        // input gradient
-                        tensor::map_vector(idata, isize).noalias() =
-                                tensor::map_matrix(wdata, osize, isize).transpose() *
-                                tensor::map_vector(odata, osize);
+                        gidata.vector() = wdata.matrix(0).transpose() * odata.vector();
                 }
 
+                ///
+                /// \brief gradient wrt the parameters
+                ///
                 template
                 <
-                        typename tscalar,
-                        typename tsize
+                        typename ttensor
                 >
-                void gparam(
-                        tscalar* idata, tsize isize,
-                        tscalar* gwdata,
-                        tscalar* gbdata,
-                        const tscalar* odata, tsize osize)
+                void gparam(const ttensor& idata, ttensor& gwdata, ttensor& gbdata, const ttensor& odata)
                 {
-                        // bias & weights gradient
-                        tensor::map_vector(gbdata, osize).noalias() =
-                                tensor::map_vector(odata, osize);
-
-                        tensor::map_matrix(gwdata, osize, isize).noalias() =
-                                tensor::map_vector(odata, osize) *
-                                tensor::map_vector(idata, isize).transpose();
+                        gbdata.vector() = odata.vector();
+                        gwdata.matrix(0) = odata.vector() * idata.vector().transpose();
                 }
         }
 }

@@ -112,7 +112,7 @@ namespace ncv
                 // +bias
                 for (size_t o = 0; o < odims(); o ++)
                 {
-                        m_odata.plane_vector(o).array() += m_bdata.data(o);
+                        m_odata.plane_vector(o).array() += m_bdata(o);
                 }
 
                 return m_odata;
