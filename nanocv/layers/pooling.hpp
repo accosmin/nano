@@ -8,38 +8,36 @@ namespace ncv
         {
                 template
                 <
+                        typename tmatrixi,
                         typename tscalar,
-                        typename tsize
+                        typename tmatrixw,
+                        typename tmatrixs,
+                        typename tmatrixc,
+                        typename tmatrixo
                 >
                 void output(
-                        const tscalar* idata, tsize irows, tsize icols, tscalar alpha,
-                        tscalar* wdata, tscalar* sdata, tscalar* cdata, tscalar* odata)
+                        const tmatrixi& idata, tscalar alpha,
+                        tmatrixw&& wdata, tmatrixs&& sdata, tmatrixc&& cdata, tmatrixo&& odata)
                 {
-                        const tsize orows = (irows + 1) / 2;
-                        const tsize ocols = (icols + 1) / 2;
+                        const auto irows = idata.rows();
+                        const auto icols = idata.cols();
                         const tscalar ialpha = 1 / alpha;
 
-                        auto wmap = tensor::map_matrix(wdata, irows, icols);
-                        auto smap = tensor::map_matrix(sdata, orows, ocols);
-                        auto cmap = tensor::map_matrix(cdata, orows, ocols);
-                        auto omap = tensor::map_matrix(odata, orows, ocols);
-                        auto imap = tensor::map_matrix(idata, irows, icols);
+                        wdata = (idata.array() * alpha).exp();
 
-                        wmap = (imap.array() * alpha).exp();
+                        sdata.setZero();
+                        cdata.setZero();
 
-                        smap.setZero();
-                        cmap.setZero();
-
-                        for (tsize r = 0, rr = 0; r < irows; r ++, rr = r / 2)
+                        for (auto r = 0, rr = 0; r < irows; r ++, rr = r / 2)
                         {
-                                for (tsize c = 0, cc = 0; c < icols; c ++, cc = c / 2)
+                                for (auto c = 0, cc = 0; c < icols; c ++, cc = c / 2)
                                 {
-                                        smap(rr, cc) += wmap(r, c);
-                                        cmap(rr, cc) += 1;
+                                        sdata(rr, cc) += wdata(r, c);
+                                        cdata(rr, cc) += 1;
                                 }
                         }
 
-                        omap = ialpha * (smap.array() / cmap.array()).log();
+                        odata = ialpha * (sdata.array() / cdata.array()).log();
                 }
 
                 template
