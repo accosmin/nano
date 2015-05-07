@@ -50,8 +50,6 @@ namespace ncv
                 m_kdata.resize(odims * idims, krows, kcols);
                 m_bdata.resize(odims, 1, 1);
 
-                m_gkdata.resize(odims * idims, krows, kcols);
-
                 return psize();
         }
 
@@ -140,8 +138,8 @@ namespace ncv
                 m_odata = output;
                 
                 // wrt convolution
-                convolution::gparam(m_idata, m_gkdata, m_odata);
-                tensor::map_vector(gradient, m_gkdata.size()) = m_gkdata.vector();
+                auto kdata = tensor::map_tensor(gradient, kdims(), krows(), kcols());
+                convolution::gparam(m_idata, kdata, m_odata);
 
                 // wrt bias
                 for (size_t o = 0; o < odims(); o ++)

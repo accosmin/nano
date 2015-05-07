@@ -56,9 +56,9 @@ namespace ncv
                 virtual size_t psize() const override;
 
                 // flops
-                virtual size_t output_flops() const override { return odims() * idims() * oplane_size() * kplane_size(); }
-                virtual size_t ginput_flops() const override { return odims() * orows() * oplane_size() * kplane_size(); }
-                virtual size_t gparam_flops() const override { return odims() * orows() * iplane_size() * oplane_size(); }
+                virtual size_t output_flops() const override { return odims() * idims() * oppsize() * kppsize(); }
+                virtual size_t ginput_flops() const override { return odims() * orows() * oppsize() * kppsize(); }
+                virtual size_t gparam_flops() const override { return odims() * orows() * ippsize() * oppsize(); }
 
         private:
 
@@ -67,9 +67,9 @@ namespace ncv
                 size_t kcols() const { return m_kdata.cols(); }
                 size_t ksize() const { return m_kdata.size(); }
 
-                size_t oplane_size() const { return m_odata.planeSize(); }
-                size_t iplane_size() const { return m_idata.planeSize(); }
-                size_t kplane_size() const { return m_kdata.planeSize(); }
+                size_t oppsize() const { return m_odata.planeSize(); }
+                size_t ippsize() const { return m_idata.planeSize(); }
+                size_t kppsize() const { return m_kdata.planeSize(); }
 
         private:
 
@@ -78,7 +78,5 @@ namespace ncv
                 tensor_t                m_odata;        ///< output buffer:             odims x orows x ocols
                 tensor_t                m_kdata;        ///< convolution kernels:       odims x idims x krows x kcols
                 tensor_t                m_bdata;        ///< convolution bias:          odims x 1 x 1
-
-                tensor_t                m_gkdata;
         };
 }
