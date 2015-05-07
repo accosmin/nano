@@ -1,8 +1,6 @@
 #pragma once
 
-#include "vector.hpp"
-#include "matrix.hpp"
-#include <cassert>
+#include "tensor_base.hpp"
 #include <boost/serialization/access.hpp>
 
 namespace ncv
@@ -14,24 +12,24 @@ namespace ncv
                 ///
                 template
                 <
-                        typename tscalar_,
-                        typename tsize_
+                        typename tscalar,
+                        typename tsize,
+                        typename tindex = tsize,
+                        typename tvector = typename vector_types_t<tscalar>::tvector,
+                        typename tbase = tensor_base_t<tscalar, tsize, tvector>
                 >
-                class tensor_t
+                class tensor_t : public tbase
                 {
                 public:
 
-                        typedef tscalar_                                        Scalar; // Eigen compatible
-                        typedef tscalar_                                        tscalar;
-                        typedef tsize_                                          tindex;
-                        typedef tsize_                                          tsize;
-                        typedef typename vector_types_t<tscalar>::tvector       tvector;
-                        typedef typename matrix_types_t<tscalar>::tmatrix       tmatrix;
+                        // Eigen compatible
+                        typedef typename tbase::Scalar Scalar;
 
                         ///
                         /// \brief constructor
                         ///
                         tensor_t(tsize dims = 0, tsize rows = 0, tsize cols = 0)
+                                :       tbase(dims, rows, cols)
                         {
                                 resize(dims, rows, cols);
                         }
@@ -41,87 +39,13 @@ namespace ncv
                         ///
                         tsize resize(tsize dims, tsize rows, tsize cols)
                         {
-                                m_dims = dims;
-                                m_rows = rows;
-                                m_cols = cols;
+                                this->m_dims = dims;
+                                this->m_rows = rows;
+                                this->m_cols = cols;
+                                this->m_data.resize(dims * rows * cols);
 
-                                m_data.resize(m_dims * m_rows * m_cols);
-
-                                return size();
+                                return this->size();
                         }
-
-                        ///
-                        /// \brief set all elements to zero
-                        ///
-                        void setZero()
-                        {
-                                m_data.setZero();
-                        }
-
-                        ///
-                        /// \brief set all elements to constant
-                        ///
-                        void setConstant(tscalar val)
-                        {
-                                m_data.setConstant(val);
-                        }
-
-                        ///
-                        /// \brief set all elements to random values using the given generator
-                        ///
-                        template
-                        <
-                                typename tgenerator
-                        >
-                        void random(tgenerator gen)
-                        {
-                                gen(data(), data() + size());
-                        }
-
-                        ///
-                        /// \brief dimensions
-                        ///
-                        tsize size() const { return m_data.size(); }
-                        tsize dims() const { return m_dims; }
-                        tsize rows() const { return m_rows; }
-                        tsize cols() const { return m_cols; }                        
-                        tsize planeSize() const { return rows() * cols(); }
-
-                        ///
-                        /// \brief access the whole tensor as a vector (size() x 1)
-                        ///
-                        const tvector& vector() const { return m_data; }
-                        decltype(auto) vector() { return tensor::map_vector(data(), size()); }
-
-                        ///
-                        /// \brief access the whole tensor as an array
-                        ///
-                        const tscalar* data() const { return m_data.data(); }
-                        tscalar* data() { return m_data.data(); }
-
-                        ///
-                        /// \brief access the 2D plane (i) as vector
-                        ///
-                        decltype(auto) vector(tindex i) const { return tensor::map_vector(planeData(i), planeSize()); }
-                        decltype(auto) vector(tindex i) { return tensor::map_vector(planeData(i), planeSize()); }
-
-                        ///
-                        /// \brief access the 2D plane (i) as matrix
-                        ///
-                        decltype(auto) matrix(tindex i) const { return tensor::map_matrix(planeData(i), rows(), cols()); }
-                        decltype(auto) matrix(tindex i) { return tensor::map_matrix(planeData(i), rows(), cols()); }
-
-                        ///
-                        /// \brief access the 2D plane (i) as an array
-                        ///
-                        const tscalar* planeData(tindex i) const { return data() + i * planeSize(); }
-                        tscalar* planeData(tindex i) { return data() + i * planeSize(); }
-
-                        ///
-                        /// \brief access an element of the tensor in the range [0, size())
-                        ///
-                        tscalar operator()(tindex i) const { return m_data(i); }
-                        tscalar& operator()(tindex i) { return m_data(i); }
 
                 private:
 
@@ -135,19 +59,69 @@ namespace ncv
                         >
                         void serialize(tarchive & ar, const unsigned int version)
                         {
-                                ar & m_dims;
-                                ar & m_rows;
-                                ar & m_cols;
-                                ar & m_data;
+                                ar & this->m_dims;
+                                ar & this->m_rows;
+                                ar & this->m_cols;
+                                ar & this->m_data;
                         }
-
-                private:
-
-                        // attributes
-                        tsize                   m_dims;         ///< #dimensions
-                        tsize                   m_rows;         ///< #rows (for each dimension)
-                        tsize                   m_cols;         ///< #cols (for each dimension)
-                        tvector                 m_data;         ///< storage (1D vector)
                 };
+
+                ///
+                /// \brief 3D tensor mapping an array as ::dims() 2D planes of size ::rows() x ::cols()
+                ///
+                template
+                <
+                        typename tscalar,
+                        typename tsize,
+                        typename tindex = tsize,
+                        typename tvector = typename vector_types_t<tscalar>::tvector,
+                        typename tmap = Eigen::Map<tvector>,
+                        typename tbase = tensor_base_t<tscalar, tsize, tmap>
+                >
+                class tensor_map_t : public tbase
+                {
+                public:
+
+                        // Eigen compatible
+                        typedef typename tbase::Scalar Scalar;
+
+                        ///
+                        /// \brief constructor
+                        ///
+                        tensor_map_t(tscalar* data, tsize dims, tsize rows, tsize cols)
+                                :       tbase(dims, rows, cols, tensor::map_vector(data, dims * rows * cols))
+                        {
+                        }
+                };
+
+                ///
+                /// \brief map non-constant data to tensors
+                ///
+                template
+                <
+                        typename tvalue_,
+                        typename tsize,
+                        typename tvalue = typename std::remove_const<tvalue_>::type,
+                        typename tresult = tensor_map_t<tvalue, tsize>
+                >
+                tresult map_tensor(tvalue_* data, tsize dims, tsize rows, tsize cols)
+                {
+                        return tresult(data, dims, rows, cols);
+                }
+
+                ///
+                /// \brief map constant data to tensors
+                ///
+                template
+                <
+                        typename tvalue_,
+                        typename tsize,
+                        typename tvalue = typename std::remove_const<tvalue_>::type,
+                        typename tresult = tensor_map_t<tvalue, tsize>
+                >
+                tresult map_tensor(const tvalue_* data, tsize dims, tsize rows, tsize cols)
+                {
+                        return tresult(data, dims, rows, cols);
+                }
         }
 }
