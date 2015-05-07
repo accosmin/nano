@@ -44,26 +44,24 @@ namespace ncv
 
                 template
                 <
-                        typename tscalar,
-                        typename tsize
+                        typename tmatrixi,
+                        typename tmatrixw,
+                        typename tmatrixs,
+                        typename tmatrixc,
+                        typename tmatrixo
                 >
                 void ginput(
-                        tscalar* idata, tsize irows, tsize icols,
-                        const tscalar* wdata, const tscalar* sdata, const tscalar*, const tscalar* gdata)
+                        tmatrixi&& gidata,
+                        const tmatrixw& wdata, const tmatrixs& sdata, const tmatrixc&, const tmatrixo& odata)
                 {
-                        const tsize orows = (irows + 1) / 2;
-                        const tsize ocols = (icols + 1) / 2;
+                        const auto irows = gidata.rows();
+                        const auto icols = gidata.cols();
 
-                        auto wmap = tensor::map_matrix(wdata, irows, icols);
-                        auto smap = tensor::map_matrix(sdata, orows, ocols);
-                        auto gmap = tensor::map_matrix(gdata, orows, ocols);
-                        auto imap = tensor::map_matrix(idata, irows, icols);
-
-                        for (tsize r = 0, rr = 0; r < irows; r ++, rr = r / 2)
+                        for (auto r = 0, rr = 0; r < irows; r ++, rr = r / 2)
                         {
-                                for (tsize c = 0, cc = 0; c < icols; c ++, cc = c / 2)
+                                for (auto c = 0, cc = 0; c < icols; c ++, cc = c / 2)
                                 {
-                                        imap(r, c) = gmap(rr, cc) * wmap(r, c) / smap(rr, cc);
+                                        gidata(r, c) = odata(rr, cc) * wdata(r, c) / sdata(rr, cc);
                                 }
                         }
                 }

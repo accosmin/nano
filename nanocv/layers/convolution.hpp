@@ -17,7 +17,7 @@ namespace ncv
                         typename ttensork,
                         typename ttensoro
                 >
-                void output(const ttensori& idata, const ttensork& kdata, ttensoro& odata)
+                void output(const ttensori& idata, const ttensork& kdata, ttensoro&& odata)
                 {
                         const auto idims = idata.dims();
                         const auto odims = odata.dims();
@@ -46,7 +46,7 @@ namespace ncv
                         typename ttensork,
                         typename ttensoro
                 >
-                void ginput(ttensori& gidata, const ttensork& kdata, const ttensoro& odata)
+                void ginput(ttensori&& gidata, const ttensork& kdata, const ttensoro& odata)
                 {
                         const auto idims = gidata.dims();
                         const auto odims = odata.dims();
@@ -75,7 +75,7 @@ namespace ncv
                         typename ttensork,
                         typename ttensoro
                 >
-                void gparam(const ttensori& idata, ttensork& gkdata, const ttensoro& odata)
+                void gparam(const ttensori& idata, ttensork&& gkdata, const ttensoro& odata)
                 {
                         const auto idims = idata.dims();
                         const auto odims = odata.dims();

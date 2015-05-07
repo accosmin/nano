@@ -17,7 +17,7 @@ namespace ncv
                         typename ttensorb,
                         typename ttensoro
                 >
-                void output(const ttensori& idata, const ttensorw& wdata, const ttensorb& bdata, ttensoro& odata)
+                void output(const ttensori& idata, const ttensorw& wdata, const ttensorb& bdata, ttensoro&& odata)
                 {
                         odata.vector() = bdata.vector() + wdata.matrix(0) * idata.vector();
                 }
@@ -32,7 +32,7 @@ namespace ncv
                         typename ttensorb,
                         typename ttensoro
                 >
-                void ginput(ttensori& gidata, const ttensorw& wdata, const ttensorb&, const ttensoro& odata)
+                void ginput(ttensori&& gidata, const ttensorw& wdata, const ttensorb&, const ttensoro& odata)
                 {
                         gidata.vector() = wdata.matrix(0).transpose() * odata.vector();
                 }
@@ -47,7 +47,7 @@ namespace ncv
                         typename ttensorb,
                         typename ttensoro
                 >
-                void gparam(const ttensori& idata, ttensorw& gwdata, ttensorb& gbdata, const ttensoro& odata)
+                void gparam(const ttensori& idata, ttensorw&& gwdata, ttensorb&& gbdata, const ttensoro& odata)
                 {
                         gbdata.vector() = odata.vector();
                         gwdata.matrix(0) = odata.vector() * idata.vector().transpose();

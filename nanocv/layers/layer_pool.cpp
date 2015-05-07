@@ -61,11 +61,11 @@ namespace ncv
                 for (size_t o = 0; o < odims(); o ++)
                 {
                         pooling::ginput(
-                                m_idata.planeData(o), irows(), icols(),
-                                m_wdata.planeData(o),
-                                m_sdata.planeData(o),
-                                m_cdata.planeData(o),
-                                output.planeData(o));
+                                m_idata.matrix(o),
+                                m_wdata.matrix(o),
+                                m_sdata.matrix(o),
+                                m_cdata.matrix(o),
+                                output.matrix(o));
                 }
 
                 return m_idata;
