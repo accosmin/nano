@@ -62,8 +62,10 @@ namespace ncv
 
         private:
 
+                size_t kdims() const { return m_kdata.dims(); }
                 size_t krows() const { return m_kdata.rows(); }
-                size_t kcols() const { return m_kdata.cols(); }                
+                size_t kcols() const { return m_kdata.cols(); }
+                size_t ksize() const { return m_kdata.size(); }
 
                 size_t oplane_size() const { return m_odata.planeSize(); }
                 size_t iplane_size() const { return m_idata.planeSize(); }

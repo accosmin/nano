@@ -13,9 +13,11 @@ namespace ncv
                 ///
                 template
                 <
-                        typename ttensor
+                        typename ttensori,
+                        typename ttensork,
+                        typename ttensoro
                 >
-                void output(const ttensor& idata, const ttensor& kdata, ttensor& odata)
+                void output(const ttensori& idata, const ttensork& kdata, ttensoro& odata)
                 {
                         const auto idims = idata.dims();
                         const auto odims = odata.dims();
@@ -40,9 +42,11 @@ namespace ncv
                 ///
                 template
                 <
-                        typename ttensor
+                        typename ttensori,
+                        typename ttensork,
+                        typename ttensoro
                 >
-                void ginput(ttensor& gidata, const ttensor& kdata, const ttensor& odata)
+                void ginput(ttensori& gidata, const ttensork& kdata, const ttensoro& odata)
                 {
                         const auto idims = gidata.dims();
                         const auto odims = odata.dims();
@@ -67,9 +71,11 @@ namespace ncv
                 ///
                 template
                 <
-                        typename ttensor
+                        typename ttensori,
+                        typename ttensork,
+                        typename ttensoro
                 >
-                void gparam(const ttensor& idata, ttensor& gkdata, const ttensor& odata)
+                void gparam(const ttensori& idata, ttensork& gkdata, const ttensoro& odata)
                 {
                         const auto idims = idata.dims();
                         const auto odims = odata.dims();
