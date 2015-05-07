@@ -25,9 +25,6 @@ namespace ncv
                 m_wdata.resize(1, odims, idims);
                 m_bdata.resize(odims, 1, 1);
 
-                m_gwdata.resize(1, odims, idims);
-                m_gbdata.resize(odims, 1, 1);
-
                 return psize();
         }
 
@@ -101,10 +98,9 @@ namespace ncv
 
                 m_odata = output;
 
-                linear::gparam(m_idata, m_gwdata, m_gbdata, m_odata);
-
-                tensor::map_vector(gradient, m_gwdata.size()) = m_gwdata.vector();
-                tensor::map_vector(gradient + m_gwdata.size(), m_gbdata.size()) = m_gbdata.vector();
+                auto gwmap = tensor::map_tensor(gradient, m_wdata);
+                auto gbmap = tensor::map_tensor(gradient + m_wdata.size(), m_bdata);
+                linear::gparam(m_idata, gwmap, gbmap, m_odata);
         }
 }
 

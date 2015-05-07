@@ -66,8 +66,5 @@ namespace ncv
 
                 tensor_t                m_wdata;        ///< weights:           1 x osize x isize
                 tensor_t                m_bdata;        ///< bias:              osize x 1 x 1
-
-                tensor_t                m_gwdata;
-                tensor_t                m_gbdata;
         };
 }

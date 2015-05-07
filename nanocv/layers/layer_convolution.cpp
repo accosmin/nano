@@ -138,8 +138,8 @@ namespace ncv
                 m_odata = output;
                 
                 // wrt convolution
-                auto kdata = tensor::map_tensor(gradient, kdims(), krows(), kcols());
-                convolution::gparam(m_idata, kdata, m_odata);
+                auto gkmap = tensor::map_tensor(gradient, m_kdata);
+                convolution::gparam(m_idata, gkmap, m_odata);
 
                 // wrt bias
                 for (size_t o = 0; o < odims(); o ++)
