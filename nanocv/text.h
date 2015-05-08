@@ -81,6 +81,11 @@ namespace ncv
                 >
                 tvalue from_string(const std::string& str);
                 template <>
+                inline short from_string<short>(const std::string& str)
+                {
+                        return std::stoi(str);
+                }
+                template <>
                 inline int from_string<int>(const std::string& str)
                 {
                         return std::stoi(str);
@@ -131,15 +136,16 @@ namespace ncv
                 ///
                 template
                 <
-                        typename tvalue
+                        typename tcontainer,
+                        typename tvalue = decltype(*std::begin(tcontainer()))
                 >
-                std::string concatenate(const std::vector<tvalue>& values, const std::string& glue = ",")
+                std::string concatenate(const tcontainer& values, const std::string& glue = ",")
                 {
                         std::string ret;
-                        std::for_each(std::begin(values), std::end(values), [&] (const tvalue& val)
+                        for (auto value : values)
                         {
-                                ret += to_string(val) + glue;
-                        });
+                                ret += to_string(value) + glue;
+                        };
 
                         return ret.empty() ? ret : ret.substr(0, ret.size() - glue.size());
                 }
