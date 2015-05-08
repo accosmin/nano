@@ -118,17 +118,6 @@ BOOST_AUTO_TEST_CASE(test_from_params)
 {
         using namespace ncv;
 
-
-        /////
-        ///// \brief decode parameter by name: [name1=value1[,name2=value2[...]]
-        ///// the default value is returned if the parameter cannot be found or is invalid.
-        /////
-        //template
-        //<
-        //        class tvalue
-        //>
-        //tvalue from_params(const std::string& params, const std::string& param_name, tvalue default_value)
-
         const auto config = "param1=1.7,param2=3";
 
         BOOST_CHECK_EQUAL(text::from_params(config, "param1", 2.0), 1.7);
