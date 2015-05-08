@@ -1,11 +1,12 @@
 #!/bin/bash
 
 build_type=Debug
+build_sys=ninja
 
-bash build.sh --build-dir ./build-debug --build-type ${build_type} --asan OFF --lsan OFF --tsan OFF
+bash build.sh --build-dir ./build-debug --build-type ${build_type} --build-sys ${build_sys} --asan OFF --lsan OFF --tsan OFF
 
-# does not work with clang!
-#bash build.sh --build-dir ./build-debug-asan --build-type ${build_type} --asan ON --lsan OFF --tsan OFF
-#bash build.sh --build-dir ./build-debug-lsan --build-type ${build_type} --asan OFF --lsan ON --tsan OFF
-#bash build.sh --build-dir ./build-debug-tsan --build-type ${build_type} --asan OFF --lsan OFF --tsan ON
+# does not work with XCode's clang!
+#bash build.sh --build-dir ./build-debug-asan --build-type ${build_type} --build-sys ${build_sys} --asan ON --lsan OFF --tsan OFF
+#bash build.sh --build-dir ./build-debug-lsan --build-type ${build_type} --build-sys ${build_sys} --asan OFF --lsan ON --tsan OFF
+#bash build.sh --build-dir ./build-debug-tsan --build-type ${build_type} --build-sys ${build_sys} --asan OFF --lsan OFF --tsan ON
 

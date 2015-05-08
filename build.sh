@@ -2,6 +2,7 @@
 
 build_dir=""
 build_type="Release"
+build_sys="ninja"
 install_dir="/usr/local/"
 install="OFF"
 
@@ -15,6 +16,7 @@ function usage
 	echo "Usage: "
 	echo -e "\t--build-dir          <build directory>               required" 
 	echo -e "\t--build-type         <build type [Release/Debug]>    default=${build_type}"
+	echo -e "\t--build-sys          <build system [ninja/make]>	default=${build_sys}"
 	echo -e "\t--install-dir        <installation directory>        default=${install_dir}" 
 	echo -e "\t--install            <install [ON/OFF] Release only> default=${install}" 
 	echo -e "\t--asan               <address sanitizer [ON/OFF]>    default=${asan_flag}"
@@ -32,6 +34,9 @@ do
                                 ;;
         	--build-type)	shift
                                 build_type=$1
+                                ;;
+        	--build-sys)	shift
+                                build_sys=$1
                                 ;;
         	--install-dir)	shift
                                 install_dir=$1
@@ -73,25 +78,43 @@ mkdir -p ${build_dir}
 cd ${build_dir}
 rm -rf *
 
-# setup cmake
-cmake_params=""
-cmake_params=${cmake_params}" -DCMAKE_BUILD_TYPE=${build_type}"
-cmake_params=${cmake_params}" -DNANOCV_WITH_ASAN=${asan_flag}"
-cmake_params=${cmake_params}" -DNANOCV_WITH_LSAN=${lsan_flag}"
-cmake_params=${cmake_params}" -DNANOCV_WITH_TSAN=${tsan_flag}"
-cmake_params=${cmake_params}" -G Ninja"
-cmake_params=${cmake_params}" -DCMAKE_INSTALL_PREFIX=${install_dir}"
+# setup build systemr
+if [ "${build_sys}" == "ninja" ]
+then
+	generator="Ninja"
+	maker="ninja"
+	installer="ninja install"
 
-cmake ${cmake_params} ${current_dir}/
+elif [ "${build_sys}" == "make" ]
+then
+	generator="Unix Makefiles"
+	maker="make -j"
+	installer="make install"
+
+else
+	echo "Please use either ninja or make as the build system!"
+	echo
+	exit 1
+fi
+
+# setup cmake
+cmake \
+	-DCMAKE_BUILD_TYPE=${build_type} \
+    	-DNANOCV_WITH_ASAN=${asan_flag} \
+    	-DNANOCV_WITH_LSAN=${lsan_flag} \
+    	-DNANOCV_WITH_TSAN=${tsan_flag} \
+    	-G "${generator}" \
+    	-DCMAKE_INSTALL_PREFIX=${install_dir} \
+    	${current_dir}/
 
 # build
-ninja
+${maker}
 echo
 
 # install
 if [ "Release" == "${build_type}" ] && [ "ON" == "${install}" ]
 then
-	ninja install
+	${installer}
 	echo
 fi
 
