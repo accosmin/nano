@@ -30,15 +30,15 @@ namespace ncv
                         const auto icols = idata.cols();
                         const auto isize = idata.size();
 
-                        typename vector_types_t<tscalar>::tvector toeplitz_rowchunk(krows * icols - ocols + 1);
-                        toeplitz_rowchunk.setZero();
+                        typedef typename vector_types_t<tscalar>::tvector tvector;
+
+                        tvector toeplitz_rowchunk = tvector::Zero(krows * icols - ocols + 1);
                         for (auto kr = 0; kr < krows; kr ++)
                         {
                                 toeplitz_rowchunk.segment(kr * icols, kcols) = kdata.row(kr);
                         }
 
-                        tmatrixo toeplitz_matrix(osize, isize);
-                        toeplitz_matrix.setZero();
+                        tmatrixo toeplitz_matrix = tmatrixo::Zero(osize, isize);
                         for (auto r = 0; r < orows; r ++)
                         {
                                 for (auto c = 0; c < ocols; c ++)
