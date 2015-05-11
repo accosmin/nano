@@ -19,15 +19,12 @@ namespace ncv
                 >
                 void output(const ttensori& idata, const ttensork& kdata, ttensoro&& odata)
                 {
-                        const auto idims = idata.dims();
-                        const auto odims = odata.dims();
-
-                        for (decltype(odata.dims()) o = 0, k = 0; o < odims; o ++)
+                        odata.setZero();
+                        for (decltype(odata.dims()) o = 0, k = 0; o < odata.dims(); o ++)
                         {
                                 auto omap = odata.matrix(o);
 
-                                omap.setZero();
-                                for (decltype(idata.dims()) i = 0; i < idims; i ++, k ++)
+                                for (decltype(idata.dims()) i = 0; i < idata.dims(); i ++, k ++)
                                 {
                                         auto imap = idata.matrix(i);
                                         auto kmap = kdata.matrix(k);
@@ -48,15 +45,12 @@ namespace ncv
                 >
                 void ginput(ttensori&& gidata, const ttensork& kdata, const ttensoro& odata)
                 {
-                        const auto idims = gidata.dims();
-                        const auto odims = odata.dims();
-
                         gidata.setZero();
-                        for (decltype(odata.dims()) o = 0, k = 0; o < odims; o ++)
+                        for (decltype(odata.dims()) o = 0, k = 0; o < odata.dims(); o ++)
                         {
                                 auto omap = odata.matrix(o);
 
-                                for (decltype(gidata.dims()) i = 0; i < idims; i ++, k ++)
+                                for (decltype(gidata.dims()) i = 0; i < gidata.dims(); i ++, k ++)
                                 {
                                         auto gimap = gidata.matrix(i);
                                         auto kmap = kdata.matrix(k);
@@ -77,14 +71,11 @@ namespace ncv
                 >
                 void gparam(const ttensori& idata, ttensork&& gkdata, const ttensoro& odata)
                 {
-                        const auto idims = idata.dims();
-                        const auto odims = odata.dims();
-
-                        for (decltype(odata.dims()) o = 0, k = 0; o < odims; o ++)
+                        for (decltype(odata.dims()) o = 0, k = 0; o < odata.dims(); o ++)
                         {
                                 auto omap = odata.matrix(o);
 
-                                for (decltype(idata.dims()) i = 0; i < idims; i ++, k ++)
+                                for (decltype(idata.dims()) i = 0; i < idata.dims(); i ++, k ++)
                                 {
                                         auto imap = idata.matrix(i);
                                         auto gkmap = gkdata.matrix(k);
