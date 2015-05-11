@@ -113,6 +113,11 @@ else()
 	message(WARNING "Compiling with an unsupported compiler ...")
 endif()
 
+# debug
+if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]")
+        add_definitions(-DNANOCV_DEBUG)
+endif()
+
 # do not use Eigen's MT
 add_definitions(-DEIGEN_DONT_PARALLELIZE)
 
