@@ -12,14 +12,14 @@ namespace ncv
                 avg_criterion_t::reset();
         }
 
-        void avg_l2_criterion_t::accumulate(scalar_t value, scalar_t error)
+        void avg_l2_criterion_t::accumulate(scalar_t value)
         {
-                avg_criterion_t::accumulate(value, error);
+                avg_criterion_t::accumulate(value);
         }
 
-        void avg_l2_criterion_t::accumulate(const vector_t& vgrad, scalar_t value, scalar_t error)
+        void avg_l2_criterion_t::accumulate(const vector_t& vgrad, scalar_t value)
         {
-                avg_criterion_t::accumulate(vgrad, value, error);
+                avg_criterion_t::accumulate(vgrad, value);
         }
 
         void avg_l2_criterion_t::accumulate(const criterion_t& other)

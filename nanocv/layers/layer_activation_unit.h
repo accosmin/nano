@@ -18,6 +18,8 @@ namespace ncv
                 {
                         scalar_t operator()(scalar_t g, scalar_t o) const
                         {
+                                NANOCV_UNUSED1(o);
+
                                 return g;
                         }
                 };

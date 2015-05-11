@@ -103,11 +103,11 @@ namespace ncv
                 switch (m_type)
                 {
                 case type::value:
-                        accumulate(value, error);
+                        accumulate(value);
                         break;
 
                 case type::vgrad:
-                        accumulate(m_model->gparam(loss.vgrad(target, output)), value, error);
+                        accumulate(m_model->gparam(loss.vgrad(target, output)), value);
                         break;
                 }
         }

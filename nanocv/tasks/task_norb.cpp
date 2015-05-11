@@ -148,6 +148,8 @@ namespace ncv
                 // load ground truth
                 const auto gop = [&] (const string_t& filename, const io::data_t& data)
                 {
+                        NANOCV_UNUSED1(filename);
+
                         io::stream_t stream(data.data(), data.size());
                         
                         // read header

@@ -22,12 +22,12 @@ namespace ncv
                         const auto idims = idata.dims();
                         const auto odims = odata.dims();
 
-                        for (auto o = 0, k = 0; o < odims; o ++)
+                        for (decltype(odata.dims()) o = 0, k = 0; o < odims; o ++)
                         {
                                 auto omap = odata.matrix(o);
 
                                 omap.setZero();
-                                for (auto i = 0; i < idims; i ++, k ++)
+                                for (decltype(idata.dims()) i = 0; i < idims; i ++, k ++)
                                 {
                                         auto imap = idata.matrix(i);
                                         auto kmap = kdata.matrix(k);
@@ -52,11 +52,11 @@ namespace ncv
                         const auto odims = odata.dims();
 
                         gidata.setZero();
-                        for (auto o = 0, k = 0; o < odims; o ++)
+                        for (decltype(odata.dims()) o = 0, k = 0; o < odims; o ++)
                         {
                                 auto omap = odata.matrix(o);
 
-                                for (auto i = 0; i < idims; i ++, k ++)
+                                for (decltype(gidata.dims()) i = 0; i < idims; i ++, k ++)
                                 {
                                         auto gimap = gidata.matrix(i);
                                         auto kmap = kdata.matrix(k);
@@ -80,11 +80,11 @@ namespace ncv
                         const auto idims = idata.dims();
                         const auto odims = odata.dims();
 
-                        for (auto o = 0, k = 0; o < odims; o ++)
+                        for (decltype(odata.dims()) o = 0, k = 0; o < odims; o ++)
                         {
                                 auto omap = odata.matrix(o);
 
-                                for (auto i = 0; i < idims; i ++, k ++)
+                                for (decltype(idata.dims()) i = 0; i < idims; i ++, k ++)
                                 {
                                         auto imap = idata.matrix(i);
                                         auto gkmap = gkdata.matrix(k);

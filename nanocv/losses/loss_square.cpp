@@ -31,6 +31,8 @@ namespace ncv
 
         indices_t square_loss_t::labels(const vector_t& scores) const
         {
+                NANOCV_UNUSED1(scores);
+
                 return indices_t();
 	}
 }

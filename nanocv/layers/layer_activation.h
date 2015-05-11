@@ -39,7 +39,7 @@ namespace ncv
 
                 // reset parameters
                 virtual void zero_params() override {}
-                virtual void random_params(scalar_t min, scalar_t max) override {}
+                virtual void random_params(scalar_t min, scalar_t max) override { NANOCV_UNUSED2(min, max); }
 
                 // serialize parameters
                 virtual scalar_t* save_params(scalar_t* params) const override { return params; }
@@ -105,6 +105,8 @@ namespace ncv
                 // gradient
                 void _gparam(const tensor_t& output)
                 {
+                        NANOCV_UNUSED1_RELEASE(output);
+
                         assert(m_data.dims() == output.dims());
                         assert(m_data.rows() == output.rows());
                         assert(m_data.cols() == output.cols());

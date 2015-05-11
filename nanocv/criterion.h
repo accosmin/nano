@@ -117,8 +117,8 @@ namespace ncv
                 ///
                 /// \brief update statistics with the loss value/error/gradient for a sample
                 ///
-                virtual void accumulate(scalar_t value, scalar_t error) = 0;
-                virtual void accumulate(const vector_t& vgrad, scalar_t value, scalar_t error) = 0;
+                virtual void accumulate(scalar_t value) = 0;
+                virtual void accumulate(const vector_t& vgrad, scalar_t value) = 0;
 
                 ///
                 /// \brief update statistics with cumulated samples

@@ -35,7 +35,7 @@ static bool check(const tvector& a, const tvector& b, const char* error_message)
         }
 }
 
-int main(int argc, char *argv[])
+int main(int, char* [])
 {
         using namespace ncv;
 
