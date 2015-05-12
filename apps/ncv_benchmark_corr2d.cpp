@@ -48,7 +48,7 @@ void test_corr2d(tabulator_t::row_t& row, int isize, int ksize)
         test_cpu(row, ncv::math::corr2d_dyn<matrix_t>, odata, kdata, idata);
 }
 
-int main(int argc, char* argv[])
+int main(int, char* [])
 {
         const int min_isize = 24;
         const int max_isize = 48;

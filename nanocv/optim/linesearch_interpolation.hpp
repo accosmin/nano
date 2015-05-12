@@ -86,7 +86,7 @@ namespace ncv
                         ///     see "Numerical optimization", Nocedal & Wright, 2nd edition, p.60
                         ///
                         tstep zoom(
-                                const ls_strategy strategy, const tscalar c1, const tscalar c2,
+                                const ls_strategy, const tscalar c1, const tscalar c2,
                                 const tstep& step0, tstep steplo, tstep stephi,
                                 const tsize max_iters = 64) const
                         {

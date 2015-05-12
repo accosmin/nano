@@ -66,7 +66,8 @@ endif()
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
         message("Compiling with gcc ${CMAKE_CXX_COMPILER_VERSION} ...")
 
-        set(CMAKE_CXX_FLAGS			"-Wall -std=c++14 -march=native -mtune=native ${NANOCV_OPENMP_FLAG}")
+        set(CMAKE_CXX_FLAGS			"-Wall -Wextra -std=c++14 -march=native -mtune=native")
+        set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} ${NANOCV_OPENMP_FLAG}")
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 	set(CMAKE_CXX_FLAGS_DEBUG		"-g -Og -fno-omit-frame-pointer")
 	set(CMAKE_CXX_FLAGS_RELEASE             "-O3 -DNDEBUG")         # -DEIGEN_NO_DEBUG")
@@ -90,7 +91,8 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
 elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
         message("Compiling with Clang ${CMAKE_CXX_COMPILER_VERSION} ...")
 
-        set(CMAKE_CXX_FLAGS			"-Wall -std=c++14 -march=native -mtune=native ${NANOCV_OPENMP_FLAG}")
+        set(CMAKE_CXX_FLAGS			"-Wall -Wextra -std=c++14 -march=native -mtune=native")
+        set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} ${NANOCV_OPENMP_FLAG}")
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
 	set(CMAKE_CXX_FLAGS_DEBUG		"-g -fno-omit-frame-pointer")
 	set(CMAKE_CXX_FLAGS_RELEASE             "-O3 -DNDEBUG")         # -DEIGEN_NO_DEBUG")
@@ -109,6 +111,11 @@ elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
 
 else()
 	message(WARNING "Compiling with an unsupported compiler ...")
+endif()
+
+# debug
+if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]")
+        add_definitions(-DNANOCV_DEBUG)
 endif()
 
 # do not use Eigen's MT

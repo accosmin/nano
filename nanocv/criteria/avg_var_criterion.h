@@ -46,8 +46,8 @@ namespace ncv
                 ///
                 /// \brief update statistics with the loss value/error/gradient for a sample
                 ///
-                virtual void accumulate(scalar_t value, scalar_t error) override;
-                virtual void accumulate(const vector_t& vgrad, scalar_t value, scalar_t error) override;
+                virtual void accumulate(scalar_t value) override;
+                virtual void accumulate(const vector_t& vgrad, scalar_t value) override;
 
                 ///
                 /// \brief update statistics with cumulated samples

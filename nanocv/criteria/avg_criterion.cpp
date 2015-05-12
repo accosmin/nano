@@ -16,12 +16,12 @@ namespace ncv
                 m_vgrad.setZero();
         }
 
-        void avg_criterion_t::accumulate(scalar_t value, scalar_t error)
+        void avg_criterion_t::accumulate(scalar_t value)
         {
                 m_value += value;                
         }
 
-        void avg_criterion_t::accumulate(const vector_t& vgrad, scalar_t value, scalar_t error)
+        void avg_criterion_t::accumulate(const vector_t& vgrad, scalar_t value)
         {
                 m_value += value;
                 m_vgrad += vgrad;

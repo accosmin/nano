@@ -30,7 +30,7 @@ namespace test
 {
         using namespace ncv;
 
-        static void check_solution(const string_t& problem_name, const string_t& optimizer_name,
+        static void check_solution(const string_t&, const string_t&,
                 const opt_state_t& state, const std::vector<std::pair<vector_t, scalar_t>>& solutions)
         {
                 // Check convergence

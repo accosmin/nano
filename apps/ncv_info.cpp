@@ -24,7 +24,7 @@ void print(const string_t& name, const manager_t<tobject>& manager)
         std::cout << std::endl << std::endl;
 }
 
-int main(int argc, char *argv[])
+int main(int, char* [])
 {
         ncv::init();
 

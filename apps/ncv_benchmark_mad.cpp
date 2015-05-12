@@ -45,7 +45,7 @@ static void test_mad(size_t size, tabulator_t::row_t& row)
         test_mad(row, ncv::tensor::mad<scalar_t>, vec1, vec2, wei);
 }
 
-int main(int argc, char* argv[])
+int main(int, char* [])
 {
         static const size_t min_size = 32 * 1024;
         static const size_t max_size = 4 * 1024 * 1024;

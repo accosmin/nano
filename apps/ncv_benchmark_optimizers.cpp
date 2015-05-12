@@ -193,7 +193,7 @@ static void check_problems(const std::vector<ncv::function_t>& funcs)
         }
 }
 
-int main(int argc, char *argv[])
+int main(int, char* [])
 {
         using namespace ncv;
 

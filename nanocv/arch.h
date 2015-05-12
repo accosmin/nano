@@ -26,3 +26,15 @@
                 #define NANOCV_PRIVATE
         #endif
 #endif
+
+// fix "unused variable" warnings
+#define NANOCV_UNUSED1(x) (void)(x)
+#define NANOCV_UNUSED2(x, y) NANOCV_UNUSED1(x); NANOCV_UNUSED1(y)
+#define NANOCV_UNUSED3(x, y, z) NANOCV_UNUSED1(x); NANOCV_UNUSED1(y); NANOCV_UNUSED1(z)
+
+// fix "unused variable" warnings (only for release mode)
+#ifdef NANOCV_DEBUG
+        #define NANOCV_UNUSED1_RELEASE(x)
+#else
+        #define NANOCV_UNUSED1_RELEASE(x) NANOCV_UNUSED1(x)
+#endif
