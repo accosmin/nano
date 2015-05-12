@@ -20,6 +20,7 @@ namespace ncv
                 void output(const ttensori& idata, const ttensork& kdata, ttensoro&& odata)
                 {
                         odata.setZero();
+
                         for (decltype(odata.dims()) o = 0, k = 0; o < odata.dims(); o ++)
                         {
                                 auto omap = odata.matrix(o);
@@ -46,6 +47,7 @@ namespace ncv
                 void ginput(ttensori&& gidata, const ttensork& kdata, const ttensoro& odata)
                 {
                         gidata.setZero();
+
                         for (decltype(odata.dims()) o = 0, k = 0; o < odata.dims(); o ++)
                         {
                                 auto omap = odata.matrix(o);
