@@ -104,10 +104,11 @@ namespace test
                 std::vector<std::pair<ncv::string_t, ncv::string_t> > result;
                 for (const string_t& desc : descs)
                 {
-                        for (const string_t& loss_id : loss_ids)
-                        {
-                                result.emplace_back(desc, loss_id);
-                        }
+                        // pick a random loss (enough, because all the loss functions are tested separately)
+                        random_t<size_t> rng(0, loss_ids.size());
+
+                        const string_t loss_id = loss_ids[rng() % loss_ids.size()];
+                        result.emplace_back(desc, loss_id);
                 }
 
                 // OK
