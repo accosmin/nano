@@ -4,7 +4,6 @@
 #include "nanocv/tabulator.h"
 #include "nanocv/placeholders.h"
 #include "nanocv/math/conv2d.hpp"
-#include "nanocv/tensor/conv2d.hpp"
 #include <iostream>
 
 using namespace ncv;
@@ -43,15 +42,11 @@ void test_conv2d(tabulator_t::row_t& row, int isize, int ksize)
         kdata /= ksize;
         odata /= osize;
 
-        const matrix_t tdata = ncv::tensor::conv2d_make_toeplitz(idata, kdata, odata);
-        
         test_cpu(row, ncv::math::conv2d_eig<matrix_t>, idata, kdata, odata);
         test_cpu(row, ncv::math::conv2d_cpp<matrix_t>, idata, kdata, odata);
         test_cpu(row, ncv::math::conv2d_dot<matrix_t>, idata, kdata, odata);
         test_cpu(row, ncv::math::conv2d_mad<matrix_t>, idata, kdata, odata);
         test_cpu(row, ncv::math::conv2d_dyn<matrix_t>, idata, kdata, odata);
-        test_cpu(row, ncv::tensor::conv2d_toeplitz<matrix_t>, idata, kdata, odata);
-        test_cpu(row, std::bind(ncv::tensor::conv2d_toeplitz_buffered<matrix_t>, ncv::_1, ncv::_2, std::cref(tdata), _3), idata, kdata, odata);
 }
 
 int main(int, char* [])
