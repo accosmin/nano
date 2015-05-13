@@ -6,7 +6,7 @@
 namespace ncv
 {
         ///
-        /// the clonable interface to be used with a manager:
+        /// \brief the clonable interface to be used with a manager:
         ///      ::make(const tstring&)         - create a new object (with the given configuration)
         ///      ::clone()                      - create a copy of the current object
         ///      ::configuration()              - parametrization
