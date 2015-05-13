@@ -2,14 +2,6 @@
 set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2  # blue
 set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2  # red
 
-- analyze the history of the validation errors to check if training should stop:
-	- fit a line to the last X measurements and check its angle
-
-	- if this works reliable (early stopping clearly overfitting configurations),
-		then can go back to tuning the regularization parameters globally for all epochs (like batch)
-
-- activate the address sanitizer build (clang 3.5 should support it)
-
 - augment training samples (to reduce overfitting):
 	- new parameter to all tasks: "noisy=off/on"
 
