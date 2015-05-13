@@ -1,8 +1,7 @@
-#include "nanocv/timer.h"
-#include "nanocv/logger.h"
 #include "nanocv/nanocv.h"
 #include "nanocv/sampler.h"
 #include "nanocv/tabulator.h"
+#include "nanocv/measure.hpp"
 #include "nanocv/accumulator.h"
 #include "nanocv/math/random.hpp"
 #include "nanocv/thread/thread.h"
@@ -163,28 +162,30 @@ int main(int argc, char *argv[])
                         {
                                 accumulator_t ldata(*model, nthreads, "l2n-reg", criterion_t::type::value, 0.1);
 
-                                const ncv::timer_t timer;
-                                ldata.update(inputs, targets, *loss);
-                                const auto mili = timer.miliseconds();
+                                const auto milis = ncv::measure_robustly_usec([&] ()
+                                {
+                                        ldata.update(inputs, targets, *loss);
+                                }, 1) / 1000;
 
                                 log_info() << "<<< processed [" << ldata.count()
-                                           << "] forward samples in " << timer.elapsed() << ".";
+                                           << "] forward samples in " << milis << " ms.";
 
-                                frow << mili;
+                                frow << milis;
                         }
 
                         if (cmd_backward)
                         {
                                 accumulator_t gdata(*model, nthreads, "l2n-reg", criterion_t::type::vgrad, 0.1);
 
-                                const ncv::timer_t timer;
-                                gdata.update(inputs, targets, *loss);
-                                const auto mili = timer.miliseconds();
+                                const auto milis = ncv::measure_robustly_usec([&] ()
+                                {
+                                        gdata.update(inputs, targets, *loss);
+                                }, 1) / 1000;
 
                                 log_info() << "<<< processed [" << gdata.count()
-                                           << "] backward samples in " << timer.elapsed() << ".";
+                                           << "] backward samples in " << milis << " ms.";
 
-                                brow << mili;
+                                brow << milis;
                         }
                 }
 

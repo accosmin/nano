@@ -1,8 +1,7 @@
-#include "nanocv/timer.h"
-#include "nanocv/logger.h"
 #include "nanocv/nanocv.h"
 #include "nanocv/sampler.h"
 #include "nanocv/tabulator.h"
+#include "nanocv/measure.hpp"
 #include "nanocv/thread/parallel.hpp"
 #include "nanocv/tasks/task_synthetic_shapes.h"
 #include <boost/program_options.hpp>
@@ -88,24 +87,21 @@ int main(int argc, char *argv[])
                 {
                         ncv::thread_pool_t pool(nthreads);
 
-                        const ncv::timer_t timer;
-
-                        ncv::thread_loopi(samples.size(), pool, [&] (size_t i)
+                        const auto micros = ncv::measure_robustly_usec([&]
                         {
-                                const sample_t& sample = samples[i];
+                                ncv::thread_loopi(samples.size(), pool, [&] (size_t i)
+                                {
+                                        const sample_t& sample = samples[i];
+                                        const image_t& image = task.image(sample.m_index);
 
-                                const image_t& image = task.image(sample.m_index);
+                                        inputs[i] = image.to_tensor(sample.m_region);
+                                        targets[i] = sample.m_target;
+                                });
+                        }, 1);
 
-                                inputs[i] = image.to_tensor(sample.m_region);
-                                targets[i] = sample.m_target;
-                        });
+                        log_info() << "<<< processed [" << samples.size() << "] samples in " << micros << " us.";
 
-                        const auto micro = timer.microseconds();
-
-                        log_info() << "<<< processed [" << samples.size()
-                                   << "] samples in " << timer.elapsed() << ".";
-
-                        row << micro;
+                        row << micros;
                 }
 
                 log_info();
