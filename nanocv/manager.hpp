@@ -11,8 +11,6 @@ namespace ncv
         ///
         /// \brief manager: used to manage different object types associated with ID strings.
         ///
-        /// hint: use register_object<base, derived> to register objects to the manager.
-        ///
         template
         <
                 class tobject,
@@ -104,21 +102,5 @@ namespace ncv
 
                 // attributes
                 std::map<tstring, robject_t>    m_protos;       ///< registered objects
-        };
-
-        ///
-        /// \brief register a type tderived to the tbase manager
-        ///
-        template
-        <
-                class tbase,
-                class tderived
-        >
-        struct register_object
-        {
-                register_object(const typename tbase::string_t& id)
-                {
-                        manager_t<tbase>::instance().add(id, tderived());
-                }
         };
 }
