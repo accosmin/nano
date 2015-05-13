@@ -26,6 +26,9 @@ namespace ncv
                 // constructor
                 explicit synthetic_shapes_task_t(const string_t& configuration = string_t());
 
+                // constructor
+                synthetic_shapes_task_t(size_t rows, size_t cols, size_t dims, color_mode, size_t size);
+
                 // load images from the given directory
                 virtual bool load(const string_t&) override;
 

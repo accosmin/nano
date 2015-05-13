@@ -140,12 +140,7 @@ int main(int, char* [])
         const color_mode cmd_color = color_mode::rgba;
 
         // create task
-        synthetic_shapes_task_t task(
-                "rows=" + text::to_string(cmd_rows) + "," +
-                "cols=" + text::to_string(cmd_cols) + "," +
-                "color=" + text::to_string(cmd_color) + "," +
-                "dims=" + text::to_string(cmd_outputs) + "," +
-                "size=" + text::to_string(cmd_samples));
+        synthetic_shapes_task_t task(cmd_rows, cmd_cols, cmd_outputs, cmd_color, cmd_samples);
         task.load("");
 	task.describe();
 

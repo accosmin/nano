@@ -32,8 +32,7 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
         const size_t cmd_outputs = 5;
         const scalar_t cmd_epsilon = math::epsilon1<scalar_t>();
 
-        synthetic_shapes_task_t task("rows=16,cols=16,color=luma,dims=" + text::to_string(cmd_outputs) +
-                                     ",size=" + text::to_string(cmd_samples));
+        synthetic_shapes_task_t task(16, 16, cmd_outputs, color_mode::luma, cmd_samples);
         BOOST_CHECK_EQUAL(task.load(""), true);
 
         const samples_t samples = task.samples();

@@ -47,12 +47,7 @@ int main(int argc, char *argv[])
         const size_t cmd_max_nthreads = ncv::n_threads();
 
         // create synthetic task
-        synthetic_shapes_task_t task(
-                "rows=" + text::to_string(cmd_rows) + "," +
-                "cols=" + text::to_string(cmd_cols) + "," +
-                "dims=" + text::to_string(cmd_outputs) + "," +
-                "color=" + text::to_string(cmd_color) + "," +
-                "size=" + text::to_string(cmd_samples));
+        synthetic_shapes_task_t task(cmd_rows, cmd_cols, cmd_outputs, cmd_color, cmd_samples);
         task.load("");
 
         tensors_t inputs(cmd_max_samples);
