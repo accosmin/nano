@@ -78,8 +78,9 @@ int main(int argc, char *argv[])
         const size_t cmd_rows = 28;
         const size_t cmd_cols = 28;
         const size_t cmd_outputs = 10;
-        const size_t cmd_min_nthreads = 1;
         const color_mode cmd_color = color_mode::luma;
+
+        const size_t cmd_min_nthreads = 1;
         const size_t cmd_max_nthreads = ncv::n_threads();
 
         // generate random samples
@@ -164,11 +165,12 @@ int main(int argc, char *argv[])
 
                                 const ncv::timer_t timer;
                                 ldata.update(inputs, targets, *loss);
+                                const auto mili = timer.miliseconds();
 
                                 log_info() << "<<< processed [" << ldata.count()
                                            << "] forward samples in " << timer.elapsed() << ".";
 
-                                frow << timer.miliseconds();
+                                frow << mili;
                         }
 
                         if (cmd_backward)
@@ -177,11 +179,12 @@ int main(int argc, char *argv[])
 
                                 const ncv::timer_t timer;
                                 gdata.update(inputs, targets, *loss);
+                                const auto mili = timer.miliseconds();
 
                                 log_info() << "<<< processed [" << gdata.count()
                                            << "] backward samples in " << timer.elapsed() << ".";
 
-                                brow << timer.miliseconds();
+                                brow << mili;
                         }
                 }
 
