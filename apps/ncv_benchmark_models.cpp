@@ -4,9 +4,35 @@
 #include "nanocv/sampler.h"
 #include "nanocv/tabulator.h"
 #include "nanocv/accumulator.h"
+#include "nanocv/math/random.hpp"
 #include "nanocv/thread/thread.h"
-#include "nanocv/tasks/task_synthetic_shapes.h"
 #include <boost/program_options.hpp>
+
+namespace
+{
+        using namespace ncv;
+
+        void make_random_samples(
+                size_t cmd_samples, size_t cmd_rows, size_t cmd_cols, size_t cmd_outputs, color_mode cmd_color,
+                tensors_t& inputs, vectors_t& targets)
+        {
+                random_t<scalar_t> irgen(0.0, 1.0);
+                random_t<size_t> trgen(0, cmd_outputs);
+
+                inputs.resize(cmd_samples);
+                for (auto& input : inputs)
+                {
+                        input.resize(cmd_color == color_mode::luma ? 1 : 3, cmd_rows, cmd_cols);
+                        input.random(irgen);
+                }
+
+                targets.resize(cmd_samples);
+                for (auto& target : targets)
+                {
+                        target = ncv::class_target(trgen() % cmd_outputs, cmd_outputs);
+                }
+        }
+}
 
 int main(int argc, char *argv[])
 {
@@ -53,16 +79,15 @@ int main(int argc, char *argv[])
         const size_t cmd_cols = 28;
         const size_t cmd_outputs = 10;
         const size_t cmd_min_nthreads = 1;
+        const color_mode cmd_color = color_mode::luma;
         const size_t cmd_max_nthreads = ncv::n_threads();
 
-        synthetic_shapes_task_t task(
-                "rows=" + text::to_string(cmd_rows) + "," +
-                "cols=" + text::to_string(cmd_cols) + "," +
-                "dims=" + text::to_string(cmd_outputs) + "," +
-                "color=luma" + "," +
-                "size=" + text::to_string(cmd_samples));
-        task.load("");
+        // generate random samples
+        tensors_t inputs;
+        vectors_t targets;
+        make_random_samples(cmd_samples, cmd_rows, cmd_cols, cmd_outputs, cmd_color, inputs, targets);
 
+        // construct models
         const string_t lmodel0;
         const string_t lmodel1 = lmodel0 + "linear:dims=100;act-snorm;";
         const string_t lmodel2 = lmodel1 + "linear:dims=100;act-snorm;";
@@ -128,14 +153,7 @@ int main(int argc, char *argv[])
                 // create feed-forward network
                 const rmodel_t model = ncv::get_models().get("forward-network", cmd_network);
                 assert(model);
-                model->resize(task, true);
-
-                // select random samples
-                sampler_t sampler(task);
-                sampler.setup(sampler_t::stype::uniform, cmd_samples);
-                sampler.setup(sampler_t::atype::annotated);
-
-                const samples_t samples = sampler.get();
+                model->resize(cmd_rows, cmd_cols, cmd_outputs, cmd_color, true);
 
                 // process the samples
                 for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; nthreads ++)
@@ -145,7 +163,7 @@ int main(int argc, char *argv[])
                                 accumulator_t ldata(*model, nthreads, "l2n-reg", criterion_t::type::value, 0.1);
 
                                 const ncv::timer_t timer;
-                                ldata.update(task, samples, *loss);
+                                ldata.update(inputs, targets, *loss);
 
                                 log_info() << "<<< processed [" << ldata.count()
                                            << "] forward samples in " << timer.elapsed() << ".";
@@ -158,7 +176,7 @@ int main(int argc, char *argv[])
                                 accumulator_t gdata(*model, nthreads, "l2n-reg", criterion_t::type::vgrad, 0.1);
 
                                 const ncv::timer_t timer;
-                                gdata.update(task, samples, *loss);
+                                gdata.update(inputs, targets, *loss);
 
                                 log_info() << "<<< processed [" << gdata.count()
                                            << "] backward samples in " << timer.elapsed() << ".";
