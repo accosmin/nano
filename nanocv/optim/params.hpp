@@ -11,8 +11,10 @@ namespace ncv
                 <
                         typename tproblem                       ///< optimization problem
                 >
-                struct params_t
+                class params_t
                 {
+                public:
+
                         typedef typename tproblem::tscalar      tscalar;
                         typedef typename tproblem::tsize        tsize;
                         typedef typename tproblem::tvector      tvector;
@@ -78,6 +80,8 @@ namespace ncv
                         void set_wlog(const twlog& wlog) { m_wlog = wlog; }
                         void set_elog(const telog& elog) { m_elog = elog; }
                         void set_ulog(const tulog& ulog) { m_ulog = ulog; }
+
+                private:
 
                         twlog           m_wlog;                 ///< warning log: (string message)
                         telog           m_elog;                 ///< error log: (string message)
