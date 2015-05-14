@@ -90,6 +90,7 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
                         const vector_t pgrad1 = gacc.vgrad();
 
                         BOOST_CHECK_EQUAL(gacc.count(), cmd_samples);
+                        BOOST_CHECK(std::isfinite(vgrad1));
                         BOOST_CHECK_LE(math::abs(vgrad1 - value1), cmd_epsilon);
 
                         // check results with multiple threads
