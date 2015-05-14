@@ -9,7 +9,7 @@ namespace ncv
         {
         }
 
-        void avg_criterion_t::reset()
+        void avg_criterion_t::clear()
         {
                 m_value = 0.0;
                 m_vgrad.resize(psize());

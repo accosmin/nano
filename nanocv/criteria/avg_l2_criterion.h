@@ -17,11 +17,6 @@ namespace ncv
                 /// \brief constructor
                 ///
                 explicit avg_l2_criterion_t(const string_t& = string_t());
-                
-                ///
-                /// \brief reset statistics and settings
-                ///
-                virtual void reset() override;
 
                 ///
                 /// \brief cumulated loss value
@@ -39,6 +34,11 @@ namespace ncv
                 virtual bool can_regularize() const override;
 
         protected:
+
+                ///
+                /// \brief reset statistics
+                ///
+                virtual void clear() override;
 
                 ///
                 /// \brief update statistics with the loss value/error/gradient for a sample

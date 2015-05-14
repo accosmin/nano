@@ -9,9 +9,9 @@ namespace ncv
         {
         }
 
-        void avg_var_criterion_t::reset()
+        void avg_var_criterion_t::clear()
         {
-                avg_criterion_t::reset();
+                avg_criterion_t::clear();
 
                 m_value2 = 0.0;
 

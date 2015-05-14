@@ -7,9 +7,9 @@ namespace ncv
         {
         }
 
-        void avg_l2_criterion_t::reset()
+        void avg_l2_criterion_t::clear()
         {
-                avg_criterion_t::reset();
+                avg_criterion_t::clear();
         }
 
         void avg_l2_criterion_t::accumulate(scalar_t value)
