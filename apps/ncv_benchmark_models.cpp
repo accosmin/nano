@@ -15,15 +15,14 @@ namespace
                 size_t cmd_samples, size_t cmd_rows, size_t cmd_cols, size_t cmd_outputs, color_mode cmd_color,
                 tensors_t& inputs, vectors_t& targets)
         {
-                random_t<scalar_t> irgen(0.0, 1.0);
-                random_t<size_t> trgen(0, cmd_outputs);
-
                 inputs.resize(cmd_samples);
                 for (auto& input : inputs)
                 {
                         input.resize(cmd_color == color_mode::luma ? 1 : 3, cmd_rows, cmd_cols);
-                        input.random(irgen);
+                        input.setRandom(random_t<scalar_t>(0.0, 1.0));
                 }
+
+                random_t<size_t> trgen(0, cmd_outputs);
 
                 targets.resize(cmd_samples);
                 for (auto& target : targets)

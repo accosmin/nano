@@ -61,8 +61,8 @@ namespace ncv
 
         void conv_layer_t::random_params(scalar_t min, scalar_t max)
         {
-                m_kdata.random(random_t<scalar_t>(min, max));
-                m_bdata.random(random_t<scalar_t>(min, max));
+                m_kdata.setRandom(random_t<scalar_t>(min, max));
+                m_bdata.setRandom(random_t<scalar_t>(min, max));
         }
 
         scalar_t* conv_layer_t::save_params(scalar_t* params) const
