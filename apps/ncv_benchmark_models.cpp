@@ -5,6 +5,7 @@
 #include "nanocv/accumulator.h"
 #include "nanocv/math/random.hpp"
 #include "nanocv/thread/thread.h"
+#include "nanocv/tasks/task_synthetic_shapes.h"
 #include <boost/program_options.hpp>
 
 namespace
@@ -86,6 +87,10 @@ int main(int argc, char *argv[])
         vectors_t targets;
         make_random_samples(cmd_samples, cmd_rows, cmd_cols, cmd_outputs, cmd_color, inputs, targets);
 
+        // generate synthetic task
+        synthetic_shapes_task_t task(cmd_rows, cmd_cols, cmd_outputs, cmd_color, cmd_samples);
+        task.load("");
+
         // construct models
         const string_t lmodel0;
         const string_t lmodel1 = lmodel0 + "linear:dims=100;act-snorm;";
@@ -129,13 +134,19 @@ int main(int argc, char *argv[])
         assert(loss);
 
         // construct tables to compare models
-        tabulator_t ftable("model-forward\\threads");
-        tabulator_t btable("model-backward\\threads");
+        tabulator_t ftable_rand("model-forward (rand)\\threads");
+        tabulator_t ftable_task("model-forward (task)\\threads");
+
+        tabulator_t btable_rand("model-backward (rand)\\threads");
+        tabulator_t btable_task("model-backward (task)\\threads");
 
         for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; nthreads ++)
         {
-                ftable.header() << (text::to_string(nthreads) + "xCPU [ms]");
-                btable.header() << (text::to_string(nthreads) + "xCPU [ms]");
+                ftable_rand.header() << (text::to_string(nthreads) + "xCPU [ms]");
+                ftable_task.header() << (text::to_string(nthreads) + "xCPU [ms]");
+
+                btable_rand.header() << (text::to_string(nthreads) + "xCPU [ms]");
+                btable_task.header() << (text::to_string(nthreads) + "xCPU [ms]");
         }
 
         // evaluate models
@@ -144,8 +155,11 @@ int main(int argc, char *argv[])
                 const string_t cmd_network = cmd_networks[im];
                 const string_t cmd_name = cmd_names[im];
 
-                tabulator_t::row_t& frow = ftable.append(cmd_name);
-                tabulator_t::row_t& brow = btable.append(cmd_name);
+                tabulator_t::row_t& frow_rand = ftable_rand.append(cmd_name + "(rand)");
+                tabulator_t::row_t& frow_task = ftable_task.append(cmd_name + "(task)");
+
+                tabulator_t::row_t& brow_rand = btable_rand.append(cmd_name + "(rand)");
+                tabulator_t::row_t& brow_task = btable_task.append(cmd_name + "(task)");
 
                 log_info() << "<<< running network [" << cmd_network << "] ...";
 
@@ -154,6 +168,13 @@ int main(int argc, char *argv[])
                 assert(model);
                 model->resize(cmd_rows, cmd_cols, cmd_outputs, cmd_color, true);
 
+                // select random samples
+                sampler_t sampler(task);
+                sampler.setup(sampler_t::stype::uniform, cmd_samples);
+                sampler.setup(sampler_t::atype::annotated);
+
+                const samples_t samples = sampler.get();
+
                 // process the samples
                 for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; nthreads ++)
                 {
@@ -161,30 +182,43 @@ int main(int argc, char *argv[])
                         {
                                 accumulator_t ldata(*model, nthreads, "l2n-reg", criterion_t::type::value, 0.1);
 
-                                const auto milis = ncv::measure_robustly_usec([&] ()
+                                const auto milis_rand = ncv::measure_robustly_usec([&] ()
                                 {
                                         ldata.update(inputs, targets, *loss);
                                 }, 1) / 1000;
 
-                                log_info() << "<<< processed [" << ldata.count()
-                                           << "] forward samples in " << milis << " ms.";
+                                const auto milis_task = ncv::measure_robustly_usec([&] ()
+                                {
+                                        ldata.update(inputs, targets, *loss);
+//                                        ldata.update(task, samples, *loss);
+                                }, 1) / 1000;
 
-                                frow << milis;
+                                log_info() << "<<< processed [" << ldata.count() << "/" << ldata.value()
+                                           << "] forward samples in " << milis_rand << "/" << milis_task << " ms.";
+
+                                frow_rand << milis_rand;
+                                frow_task << milis_task;
                         }
 
                         if (cmd_backward)
                         {
                                 accumulator_t gdata(*model, nthreads, "l2n-reg", criterion_t::type::vgrad, 0.1);
 
-                                const auto milis = ncv::measure_robustly_usec([&] ()
+                                const auto milis_rand = ncv::measure_robustly_usec([&] ()
                                 {
                                         gdata.update(inputs, targets, *loss);
                                 }, 1) / 1000;
 
-                                log_info() << "<<< processed [" << gdata.count()
-                                           << "] backward samples in " << milis << " ms.";
+                                const auto milis_task = ncv::measure_robustly_usec([&] ()
+                                {
+                                        gdata.update(task, samples, *loss);
+                                }, 1) / 1000;
 
-                                brow << milis;
+                                log_info() << "<<< processed [" << gdata.count()
+                                           << "] backward samples in " << milis_rand << "/" << milis_task << " ms.";
+
+                                brow_rand << milis_rand;
+                                brow_task << milis_task;
                         }
                 }
 
@@ -194,12 +228,14 @@ int main(int argc, char *argv[])
         // print results
         if (cmd_forward)
         {
-                ftable.print(std::cout);
+                ftable_rand.print(std::cout);
+                ftable_task.print(std::cout);
         }
         log_info();
         if (cmd_backward)
         {
-                btable.print(std::cout);
+                btable_rand.print(std::cout);
+                btable_task.print(std::cout);
         }
 
         // OK
