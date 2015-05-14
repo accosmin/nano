@@ -75,7 +75,7 @@ namespace ncv
                         <
                                 typename tgenerator
                         >
-                        void random(tgenerator gen)
+                        void setRandom(tgenerator gen)
                         {
                                 gen(data(), data() + size());
                         }

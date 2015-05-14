@@ -16,6 +16,17 @@ namespace ncv
         {
         }
 
+        synthetic_shapes_task_t::synthetic_shapes_task_t(
+                size_t rows, size_t cols, size_t dims, color_mode color, size_t size)
+                :       synthetic_shapes_task_t(
+                        "rows=" + text::to_string(rows) + "," +
+                        "cols=" + text::to_string(cols) + "," +
+                        "dims=" + text::to_string(dims) + "," +
+                        "color=" + text::to_string(color) + "," +
+                        "size=" + text::to_string(size))
+        {
+        }
+
         namespace
         {
                 rgba_t make_transparent_color()

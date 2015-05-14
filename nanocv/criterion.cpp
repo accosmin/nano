@@ -27,11 +27,8 @@ namespace ncv
         {
                 m_model = model.clone();
                 m_model->save_params(m_params);
-                m_estats.clear();
 
-                reset();
-
-                return *this;
+                return reset();
         }
 
         criterion_t& criterion_t::reset(const vector_t& params)
@@ -40,25 +37,33 @@ namespace ncv
 
                 m_model->load_params(params);
                 m_params = params;
-                m_estats.clear();
 
-                reset();
-
-                return *this;
+                return reset();
         }
 
         criterion_t& criterion_t::reset(type t)
         {
                 m_type = t;
-                return *this;
+
+                return reset();
         }
 
         criterion_t& criterion_t::reset(scalar_t lambda)
         {
                 m_lambda = lambda;
-                return *this;
+
+                return reset();
         }
         
+        criterion_t& criterion_t::reset()
+        {
+                m_estats.clear();
+
+                clear();
+
+                return *this;
+        }
+
         void criterion_t::update(const task_t& task, const sample_t& sample, const loss_t& loss)
         {
                 assert(sample.m_index < task.n_images());

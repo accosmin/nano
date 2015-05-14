@@ -53,7 +53,7 @@ namespace ncv
                 criterion_t& reset(const vector_t& params);
                 criterion_t& reset(type t);
                 criterion_t& reset(scalar_t lambda);
-                virtual void reset() = 0;
+                criterion_t& reset();
 
                 ///
                 /// \brief update statistics with a new sample
@@ -113,6 +113,11 @@ namespace ncv
                 virtual bool can_regularize() const = 0;
 
         protected:
+
+                ///
+                /// \brief reset statistics, keep parameters
+                ///
+                virtual void clear() = 0;
 
                 ///
                 /// \brief update statistics with the loss value/error/gradient for a sample
