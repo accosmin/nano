@@ -167,6 +167,7 @@ int main(int argc, char *argv[])
                 const rmodel_t model = ncv::get_models().get("forward-network", cmd_network);
                 assert(model);
                 model->resize(cmd_rows, cmd_cols, cmd_outputs, cmd_color, true);
+                model->random_params();
 
                 // select random samples
                 sampler_t sampler(task);
@@ -184,16 +185,17 @@ int main(int argc, char *argv[])
 
                                 const auto milis_rand = ncv::measure_robustly_usec([&] ()
                                 {
+                                        ldata.reset();
                                         ldata.update(inputs, targets, *loss);
                                 }, 1) / 1000;
 
                                 const auto milis_task = ncv::measure_robustly_usec([&] ()
                                 {
-                                        ldata.update(inputs, targets, *loss);
-//                                        ldata.update(task, samples, *loss);
+                                        ldata.reset();
+                                        ldata.update(task, samples, *loss);
                                 }, 1) / 1000;
 
-                                log_info() << "<<< processed [" << ldata.count() << "/" << ldata.value()
+                                log_info() << "<<< processed [" << ldata.count()
                                            << "] forward samples in " << milis_rand << "/" << milis_task << " ms.";
 
                                 frow_rand << milis_rand;
