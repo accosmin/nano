@@ -85,6 +85,42 @@ BOOST_AUTO_TEST_CASE(test_text_iends_with)
         BOOST_CHECK(text::iends_with("ToKeN", "Token"));
 }
 
+BOOST_AUTO_TEST_CASE(test_text_equals)
+{
+        using namespace ncv;
+
+        BOOST_CHECK(!text::equals("ToKeN", ""));
+        BOOST_CHECK(!text::equals("ToKeN", "N"));
+        BOOST_CHECK(!text::equals("ToKeN", "eN"));
+        BOOST_CHECK(!text::equals("ToKeN", "KeN"));
+        BOOST_CHECK(!text::equals("ToKeN", "oKeN"));
+        BOOST_CHECK(text::equals("ToKeN", "ToKeN"));
+
+        BOOST_CHECK(!text::equals("ToKeN", "n"));
+        BOOST_CHECK(!text::equals("ToKeN", "en"));
+        BOOST_CHECK(!text::equals("ToKeN", "ken"));
+        BOOST_CHECK(!text::equals("ToKeN", "oken"));
+        BOOST_CHECK(!text::equals("ToKeN", "Token"));
+}
+
+BOOST_AUTO_TEST_CASE(test_text_iequals)
+{
+        using namespace ncv;
+
+        BOOST_CHECK(!text::iequals("ToKeN", ""));
+        BOOST_CHECK(!text::iequals("ToKeN", "N"));
+        BOOST_CHECK(!text::iequals("ToKeN", "eN"));
+        BOOST_CHECK(!text::iequals("ToKeN", "KeN"));
+        BOOST_CHECK(!text::iequals("ToKeN", "oKeN"));
+        BOOST_CHECK(text::iequals("ToKeN", "ToKeN"));
+
+        BOOST_CHECK(!text::iequals("ToKeN", "n"));
+        BOOST_CHECK(!text::iequals("ToKeN", "en"));
+        BOOST_CHECK(!text::iequals("ToKeN", "ken"));
+        BOOST_CHECK(!text::iequals("ToKeN", "oken"));
+        BOOST_CHECK(text::iequals("ToKeN", "Token"));
+}
+
 BOOST_AUTO_TEST_CASE(test_text_to_string)
 {
         using namespace ncv;

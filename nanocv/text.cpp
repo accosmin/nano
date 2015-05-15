@@ -11,14 +11,18 @@ namespace ncv
                 >
                 bool impl_ends_with(const std::string& str, const std::string& token, const tcomparator& op)
                 {
-                        if (str.size() < token.size())
-                        {
-                                return false;
-                        }
-                        else
-                        {
-                                return std::equal(token.rbegin(), token.rend(), str.rbegin(), op);
-                        }
+                        return  str.size() >= token.size() &&
+                                std::equal(token.rbegin(), token.rend(), str.rbegin(), op);
+                }
+
+                template
+                <
+                        typename tcomparator
+                >
+                bool impl_equals(const std::string& str1, const std::string& str2, const tcomparator& op)
+                {
+                        return  str1.size() == str2.size() &&
+                                std::equal(str1.begin(), str1.end(), str2.begin(), op);
                 }
         }
 
@@ -93,5 +97,15 @@ namespace ncv
         bool text::iends_with(const std::string& str, const std::string& token)
         {
                 return impl_ends_with(str, token, [] (char c1, char c2) { return std::tolower(c1) == std::tolower(c2); });
+        }
+
+        bool text::equals(const std::string& str1, const std::string& str2)
+        {
+                return impl_equals(str1, str2, [] (char c1, char c2) { return c1 == c2; });
+        }
+
+        bool text::iequals(const std::string& str1, const std::string& str2)
+        {
+                return impl_equals(str1, str2, [] (char c1, char c2) { return std::tolower(c1) == std::tolower(c2); });
         }
 }

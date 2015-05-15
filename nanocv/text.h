@@ -51,6 +51,16 @@ namespace ncv
                 NANOCV_PUBLIC bool iends_with(const std::string& str, const std::string& token);
 
                 ///
+                /// \brief check if two strings are equal (case sensitive)
+                ///
+                NANOCV_PUBLIC bool equals(const std::string& str1, const std::string& str2);
+
+                ///
+                /// \brief check if two strings are equal (case insensitive)
+                ///
+                NANOCV_PUBLIC bool iequals(const std::string& str1, const std::string& str2);
+
+                ///
                 /// \brief cast to string for built-in types
                 ///
                 template
