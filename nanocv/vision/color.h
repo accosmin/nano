@@ -152,55 +152,29 @@ namespace ncv
         namespace text
         {
                 template <>
-                inline std::string to_string(color_mode mode)
+                inline std::map<color_mode, std::string> enum_mapper<color_mode>()
                 {
-                        switch (mode)
+                        return
                         {
-                        case color_mode::luma:          return "luma";
-                        case color_mode::rgba:          return "rgba";
-                        default:                        return "luma";
-                        }
+                                { color_mode::luma, "luma" },
+                                { color_mode::rgba, "rgba" }
+                        };
                 }
 
                 template <>
-                inline color_mode from_string<color_mode>(const std::string& string)
+                inline std::map<color_channel, std::string> enum_mapper<color_channel>()
                 {
-                        if (string == "luma")           return color_mode::luma;
-                        if (string == "rgba")           return color_mode::rgba;
-                        throw std::invalid_argument("invalid color mode <" + string + ">!");
-                        return color_mode::luma;
-                }
-
-                template <>
-                inline std::string to_string(color_channel type)
-                {
-                        switch (type)
+                        return
                         {
-                        case color_channel::red:        return "red";
-                        case color_channel::green:      return "green";
-                        case color_channel::blue:       return "blue";
-                        case color_channel::luma:       return "luma";
-                        case color_channel::rgba:       return "rgba";
-                        case color_channel::cielab_l:   return "cielab_l";
-                        case color_channel::cielab_a:   return "cielab_a";
-                        case color_channel::cielab_b:   return "cielab_b";
-                        default:                        return "luma";
-                        }
-                }
-
-                template <>
-                inline color_channel from_string<color_channel>(const std::string& string)
-                {
-                        if (string == "red")            return color_channel::red;
-                        if (string == "green")          return color_channel::green;
-                        if (string == "blue")           return color_channel::blue;
-                        if (string == "luma")           return color_channel::luma;
-                        if (string == "rgba")           return color_channel::rgba;
-                        if (string == "cielab_l")       return color_channel::cielab_l;
-                        if (string == "cielab_a")       return color_channel::cielab_a;
-                        if (string == "cielab_b")       return color_channel::cielab_b;
-                        throw std::invalid_argument("Invalid color channel <" + string + ">!");
-                        return color_channel::luma;
+                                { color_channel::red,           "red" },
+                                { color_channel::green,         "green" },
+                                { color_channel::blue,          "blue" },
+                                { color_channel::luma,          "luma" },
+                                { color_channel::rgba,          "rgba" },
+                                { color_channel::cielab_l,      "cielab_l" },
+                                { color_channel::cielab_a,      "cielab_a" },
+                                { color_channel::cielab_b,      "cielab_b" }
+                        };
                 }
         }
 }

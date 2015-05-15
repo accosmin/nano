@@ -18,23 +18,13 @@ namespace ncv
         namespace text
         {
                 template <>
-                inline std::string to_string(protocol type)
+                inline std::map<protocol, std::string> enum_mapper<protocol>()
                 {
-                        switch (type)
+                        return
                         {
-                        case protocol::train:           return "train";
-                        case protocol::test:            return "test";
-                        default:                        return "train";
-                        }
-                }
-
-                template <>
-                inline protocol from_string<protocol>(const std::string& string)
-                {
-                        if (string == "train")          return protocol::train;
-                        if (string == "test")           return protocol::test;
-                        throw std::invalid_argument("invalid protocol <" + string + ">!");
-                        return protocol::train;
+                                { protocol::train,      "train" },
+                                { protocol::test,       "test" }
+                        };
                 }
         }
 }

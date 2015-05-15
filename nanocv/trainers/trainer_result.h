@@ -36,16 +36,15 @@ namespace ncv
         namespace text
         {
                 template <>
-                inline std::string to_string(trainer_result_return_t code)
+                inline std::map<trainer_result_return_t, std::string> enum_mapper<trainer_result_return_t>()
                 {
-                        switch (code)
+                        return
                         {
-                        case trainer_result_return_t::better:           return "better";
-                        case trainer_result_return_t::worse:            return "worse";
-                        case trainer_result_return_t::overfitting:      return "overfitting";
-                        case trainer_result_return_t::solved:           return "solved";
-                        default:                                        return "????";
-                        }
+                                { trainer_result_return_t::better,      "better" },
+                                { trainer_result_return_t::worse,       "worse" },
+                                { trainer_result_return_t::overfitting, "overfitting" },
+                                { trainer_result_return_t::solved,      "solved" }
+                        };
                 }
         }
         
