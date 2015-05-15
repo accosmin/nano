@@ -3,7 +3,6 @@
 #include "arch.h"
 #include <vector>
 #include <string>
-#include <algorithm>
 
 namespace ncv
 {
