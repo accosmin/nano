@@ -31,97 +31,61 @@ namespace ncv
         namespace text
         {
                 template <>
-                inline std::string to_string(optim::stoch_optimizer type)
+                inline std::map<optim::stoch_optimizer, std::string> enum_mapper<optim::stoch_optimizer>()
                 {
-                        switch (type)
+                        return
                         {
-                        case optim::stoch_optimizer::SG:           return "sg";
-                        case optim::stoch_optimizer::SGA:          return "sga";
-                        case optim::stoch_optimizer::SIA:          return "sia";
-                        case optim::stoch_optimizer::AG:           return "ag";
-                        case optim::stoch_optimizer::ADAGRAD:      return "adagrad";
-                        case optim::stoch_optimizer::ADADELTA:     return "adadelta";
-                        default:                                   return "????";
-                        }
+                                { optim::stoch_optimizer::SG,           "sg" },
+                                { optim::stoch_optimizer::SGA,          "sga" },
+                                { optim::stoch_optimizer::SIA,          "sia" },
+                                { optim::stoch_optimizer::AG,           "ag" },
+                                { optim::stoch_optimizer::ADAGRAD,      "adagrad" },
+                                { optim::stoch_optimizer::ADADELTA,     "adadelta" }
+                        };
                 }
 
                 template <>
-                inline optim::stoch_optimizer from_string<optim::stoch_optimizer>(const std::string& string)
+                inline std::map<optim::batch_optimizer, std::string> enum_mapper<optim::batch_optimizer>()
                 {
-                        if (string == "sg")             return optim::stoch_optimizer::SG;
-                        if (string == "sga")            return optim::stoch_optimizer::SGA;
-                        if (string == "sia")            return optim::stoch_optimizer::SIA;
-                        if (string == "ag")             return optim::stoch_optimizer::AG;
-                        if (string == "adagrad")        return optim::stoch_optimizer::ADAGRAD;
-                        if (string == "adadelta")       return optim::stoch_optimizer::ADADELTA;
-                        throw std::invalid_argument("invalid stochastic optimizer <" + string + ">!");
-                        return optim::stoch_optimizer::SG;
-                }
-
-                template <>
-                inline std::string to_string(optim::batch_optimizer type)
-                {
-                        switch (type)
+                        return
                         {
-                        case optim::batch_optimizer::GD:                return "gd";
-                        case optim::batch_optimizer::CGD:               return "cgd";
-                        case optim::batch_optimizer::LBFGS:             return "lbfgs";
-                        case optim::batch_optimizer::CGD_HS:            return "cgd-hs";
-                        case optim::batch_optimizer::CGD_FR:            return "cgd-fr";
-                        case optim::batch_optimizer::CGD_PRP:           return "cgd-prp";
-                        case optim::batch_optimizer::CGD_CD:            return "cgd-cd";
-                        case optim::batch_optimizer::CGD_LS:            return "cgd-ls";
-                        case optim::batch_optimizer::CGD_DY:            return "cgd-dy";
-                        case optim::batch_optimizer::CGD_N:             return "cgd-n";
-                        case optim::batch_optimizer::CGD_DYCD:          return "cgd-dycd";
-                        case optim::batch_optimizer::CGD_DYHS:          return "cgd-dyhs";
-                        default:                                        return "????";
-                        }
+                                { optim::batch_optimizer::GD,           "gd" },
+                                { optim::batch_optimizer::CGD,          "cgd" },
+                                { optim::batch_optimizer::LBFGS,        "lbfgs" },
+                                { optim::batch_optimizer::CGD_HS,       "cgd-hs" },
+                                { optim::batch_optimizer::CGD_FR,       "cgd-fr" },
+                                { optim::batch_optimizer::CGD_PRP,      "cgd-prp" },
+                                { optim::batch_optimizer::CGD_CD,       "cgd-cd" },
+                                { optim::batch_optimizer::CGD_LS,       "cgd-ls" },
+                                { optim::batch_optimizer::CGD_DY,       "cgd-dy" },
+                                { optim::batch_optimizer::CGD_N,        "cgd-n" },
+                                { optim::batch_optimizer::CGD_DYCD,     "cgd-dycd" },
+                                { optim::batch_optimizer::CGD_DYHS,     "cgd-dyhs" }
+                        };
                 }
 
                 template <>
-                inline optim::batch_optimizer from_string<optim::batch_optimizer>(const std::string& string)
+                inline std::map<optim::ls_initializer, std::string> enum_mapper<optim::ls_initializer>()
                 {
-                        if (string == "gd")             return optim::batch_optimizer::GD;
-                        if (string == "cgd")            return optim::batch_optimizer::CGD_N;
-                        if (string == "lbfgs")          return optim::batch_optimizer::LBFGS;
-                        if (string == "cgd-hs")         return optim::batch_optimizer::CGD_HS;
-                        if (string == "cgd-fr")         return optim::batch_optimizer::CGD_FR;
-                        if (string == "cgd-prp")        return optim::batch_optimizer::CGD_PRP;
-                        if (string == "cgd-cd")         return optim::batch_optimizer::CGD_CD;
-                        if (string == "cgd-ls")         return optim::batch_optimizer::CGD_LS;
-                        if (string == "cgd-dy")         return optim::batch_optimizer::CGD_DY;
-                        if (string == "cgd-n")          return optim::batch_optimizer::CGD_N;
-                        if (string == "cgd-dycd")       return optim::batch_optimizer::CGD_DYCD;
-                        if (string == "cgd-dyhs")       return optim::batch_optimizer::CGD_DYHS;
-                        throw std::invalid_argument("invalid batch optimizer <" + string + ">!");
-                        return optim::batch_optimizer::GD;
-                }
-
-                template <>
-                inline std::string to_string(optim::ls_initializer type)
-                {
-                        switch (type)
+                        return
                         {
-                        case optim::ls_initializer::unit:               return "init-unit";
-                        case optim::ls_initializer::quadratic:          return "init-quadratic";
-                        case optim::ls_initializer::consistent:         return "init-consistent";
-                        default:                                        return "????";
-                        }
+                                { optim::ls_initializer::unit,          "init-unit" },
+                                { optim::ls_initializer::quadratic,     "init-quadratic" },
+                                { optim::ls_initializer::consistent,    "init-consistent" }
+                        };
                 }
 
                 template <>
-                inline std::string to_string(optim::ls_strategy type)
+                inline std::map<optim::ls_strategy, std::string> enum_mapper<optim::ls_strategy>()
                 {
-                        switch (type)
+                        return
                         {
-                        case optim::ls_strategy::backtrack_armijo:              return "backtrack-Armijo";
-                        case optim::ls_strategy::backtrack_wolfe:               return "backtrack-Wolfe";
-                        case optim::ls_strategy::backtrack_strong_wolfe:        return "backtrack-strong-Wolfe";
-                        case optim::ls_strategy::interpolation:                 return "interp";
-                        case optim::ls_strategy::cg_descent:                    return "cgdescent";
-                        default:                                                return "????";
-                        }
+                                { optim::ls_strategy::backtrack_armijo,         "backtrack-Armijo" },
+                                { optim::ls_strategy::backtrack_wolfe,          "backtrack-Wolfe" },
+                                { optim::ls_strategy::backtrack_strong_wolfe,   "backtrack-strong-Wolfe" },
+                                { optim::ls_strategy::interpolation,            "interp" },
+                                { optim::ls_strategy::cg_descent,               "cgdescent" }
+                        };
                 }
         }
 }

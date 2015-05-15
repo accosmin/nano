@@ -1,8 +1,12 @@
 #pragma once
 
+#include <map>
 #include "arch.h"
 #include <vector>
 #include <string>
+#include <typeinfo>
+#include <stdexcept>
+#include <algorithm>
 
 namespace ncv
 {
@@ -60,16 +64,69 @@ namespace ncv
                 NANOCV_PUBLIC bool iequals(const std::string& str1, const std::string& str2);
 
                 ///
+                /// \brief maps all possible values of an enum to string
+                ///
+                template
+                <
+                        typename tenum
+                >
+                std::map<tenum, std::string> enum_mapper();
+
+                ///
                 /// \brief cast to string for built-in types
                 ///
                 template
                 <
                         typename tvalue
                 >
-                std::string to_string(tvalue value)
+                std::string to_string(tvalue value);
+
+                template <>
+                inline std::string to_string<int>(int value)
                 {
                         return std::to_string(value);
                 }
+                template <>
+                inline std::string to_string<long>(long value)
+                {
+                        return std::to_string(value);
+                }
+                template <>
+                inline std::string to_string<long long>(long long value)
+                {
+                        return std::to_string(value);
+                }
+                template <>
+                inline std::string to_string<unsigned int>(unsigned int value)
+                {
+                        return std::to_string(value);
+                }
+                template <>
+                inline std::string to_string<unsigned long>(unsigned long value)
+                {
+                        return std::to_string(value);
+                }
+                template <>
+                inline std::string to_string<unsigned long long>(unsigned long long value)
+                {
+                        return std::to_string(value);
+                }
+                template <>
+                inline std::string to_string<float>(float value)
+                {
+                        return std::to_string(value);
+                }
+                template <>
+                inline std::string to_string<double>(double value)
+                {
+                        return std::to_string(value);
+                }
+                template <>
+                inline std::string to_string<long double>(long double value)
+                {
+                        return std::to_string(value);
+                }
+
                 template <>
                 inline std::string to_string(std::string value)
                 {
@@ -79,6 +136,23 @@ namespace ncv
                 inline std::string to_string(const char* value)
                 {
                         return value;
+                }
+
+                ///
+                /// \brief to_string specialization for enums
+                ///
+                template
+                <
+                        typename tvalue
+                >
+                std::string to_string(tvalue value)
+                {
+                        typedef typename std::enable_if<std::is_enum<tvalue>::value>::type to_string_for_enums;
+
+                        const auto vm = enum_mapper<tvalue>();
+                        const auto it = vm.find(value);
+
+                        return (it == vm.end()) ? "????" : it->second;
                 }
 
                 ///
@@ -138,6 +212,29 @@ namespace ncv
                 inline std::string from_string<std::string>(const std::string& str)
                 {
                         return str;
+                }
+
+                ///
+                /// \brief from_string specialization for enums
+                ///
+                template
+                <
+                        typename tvalue
+                >
+                tvalue from_string(const std::string& str)
+                {
+                        typedef typename std::enable_if<std::is_enum<tvalue>::value>::type to_string_for_enums;
+
+                        const auto vm = enum_mapper<tvalue>();
+                        const auto it = std::find_if(vm.begin(), vm.end(),
+                                [&str] (const auto& v) { return text::iequals(str, v.second); });
+
+                        if (it == vm.end())
+                        {
+                                const auto msg = std::string("invalid ") + typeid(tvalue).name() + " <" + str + ">!";
+                                throw std::invalid_argument(msg);
+                        }
+                        return it->first;
                 }
 
                 ///
