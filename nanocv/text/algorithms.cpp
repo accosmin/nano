@@ -1,4 +1,4 @@
-#include "text.h"
+#include "algorithms.h"
 #include <cctype>
 
 namespace ncv

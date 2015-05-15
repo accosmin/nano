@@ -31,7 +31,7 @@ namespace ncv
         namespace text
         {
                 template <>
-                inline std::map<optim::stoch_optimizer, std::string> enum_mapper<optim::stoch_optimizer>()
+                inline std::map<optim::stoch_optimizer, std::string> enum_string<optim::stoch_optimizer>()
                 {
                         return
                         {
@@ -45,7 +45,7 @@ namespace ncv
                 }
 
                 template <>
-                inline std::map<optim::batch_optimizer, std::string> enum_mapper<optim::batch_optimizer>()
+                inline std::map<optim::batch_optimizer, std::string> enum_string<optim::batch_optimizer>()
                 {
                         return
                         {
@@ -65,7 +65,7 @@ namespace ncv
                 }
 
                 template <>
-                inline std::map<optim::ls_initializer, std::string> enum_mapper<optim::ls_initializer>()
+                inline std::map<optim::ls_initializer, std::string> enum_string<optim::ls_initializer>()
                 {
                         return
                         {
@@ -76,7 +76,7 @@ namespace ncv
                 }
 
                 template <>
-                inline std::map<optim::ls_strategy, std::string> enum_mapper<optim::ls_strategy>()
+                inline std::map<optim::ls_strategy, std::string> enum_string<optim::ls_strategy>()
                 {
                         return
                         {

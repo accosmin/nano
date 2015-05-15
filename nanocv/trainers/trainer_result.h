@@ -36,7 +36,7 @@ namespace ncv
         namespace text
         {
                 template <>
-                inline std::map<trainer_result_return_t, std::string> enum_mapper<trainer_result_return_t>()
+                inline std::map<trainer_result_return_t, std::string> enum_string<trainer_result_return_t>()
                 {
                         return
                         {

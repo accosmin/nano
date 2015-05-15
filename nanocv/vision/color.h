@@ -152,7 +152,7 @@ namespace ncv
         namespace text
         {
                 template <>
-                inline std::map<color_mode, std::string> enum_mapper<color_mode>()
+                inline std::map<color_mode, std::string> enum_string<color_mode>()
                 {
                         return
                         {
@@ -162,7 +162,7 @@ namespace ncv
                 }
 
                 template <>
-                inline std::map<color_channel, std::string> enum_mapper<color_channel>()
+                inline std::map<color_channel, std::string> enum_string<color_channel>()
                 {
                         return
                         {
