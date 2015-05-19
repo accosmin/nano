@@ -100,10 +100,7 @@ namespace ncv
                                 m_impl->m_caches[th]->update(task, samples[i], loss);
                         });
                         
-                        for (const rcriterion_t& cache : m_impl->m_caches)
-                        {
-                                (*m_impl->m_cache) += (*cache);
-                        }
+                        sumup();
                 }
         }
 
@@ -124,10 +121,7 @@ namespace ncv
                                 m_impl->m_caches[th]->update(inputs[i], targets[i], loss);
                         });
                         
-                        for (const rcriterion_t& cache : m_impl->m_caches)
-                        {
-                                (*m_impl->m_cache) += (*cache);
-                        }
+                        sumup();
                 }
         }
 
@@ -147,11 +141,16 @@ namespace ncv
                         {
                                 m_impl->m_caches[th]->update(inputs[i], targets[i], loss);
                         });
-                        
-                        for (const rcriterion_t& cache : m_impl->m_caches)
-                        {
-                                (*m_impl->m_cache) += (*cache);
-                        }
+
+                        sumup();
+                }
+        }
+
+        void accumulator_t::sumup() const
+        {
+                for (const rcriterion_t& cache : m_impl->m_caches)
+                {
+                        (*m_impl->m_cache) += (*cache);
                 }
         }
         
