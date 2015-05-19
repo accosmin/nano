@@ -1,5 +1,6 @@
 #include "algorithms.h"
 #include <cctype>
+#include <algorithm>
 
 namespace ncv
 {

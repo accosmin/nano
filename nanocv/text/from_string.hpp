@@ -88,8 +88,6 @@ namespace ncv
                 >
                 tvalue from_string(const std::string& str)
                 {
-                        typedef typename std::enable_if<std::is_enum<tvalue>::value>::type to_string_for_enums;
-
                         const auto vm = enum_string<tvalue>();
                         const auto it = std::find_if(vm.begin(), vm.end(), [&str] (const auto& v)
                         {
