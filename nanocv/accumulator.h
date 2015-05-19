@@ -94,6 +94,13 @@ namespace ncv
 
         private:
 
+                ///
+                /// \brief accumulate partial results
+                ///
+                void sumup() const;
+
+        private:
+
                 // attributes
                 struct impl_t;
                 std::unique_ptr<impl_t> m_impl;
