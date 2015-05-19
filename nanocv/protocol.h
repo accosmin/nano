@@ -18,7 +18,7 @@ namespace ncv
         namespace text
         {
                 template <>
-                inline std::map<protocol, std::string> enum_mapper<protocol>()
+                inline std::map<protocol, std::string> enum_string<protocol>()
                 {
                         return
                         {

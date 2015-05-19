@@ -50,9 +50,9 @@ void test_corr2d(tabulator_t::row_t& row, int isize, int ksize)
 
 int main(int, char* [])
 {
-        const int min_isize = 24;
+        const int min_isize = 12;
         const int max_isize = 48;
-        const int min_ksize = 5;
+        const int min_ksize = 3;
 
         tabulator_t table("size\\method");
         table.header() << "egb [us]"
