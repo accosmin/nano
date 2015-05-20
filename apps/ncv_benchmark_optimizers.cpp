@@ -8,7 +8,7 @@
 #include "nanocv/math/random.hpp"
 #include "nanocv/math/numeric.hpp"
 #include "nanocv/math/epsilon.hpp"
-#include "nanocv/thread/parallel.hpp"
+#include "nanocv/thread/loopi.hpp"
 
 #include "nanocv/functions/function_trid.h"
 #include "nanocv/functions/function_beale.h"

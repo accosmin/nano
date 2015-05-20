@@ -2,7 +2,7 @@
 #include "nanocv/sampler.h"
 #include "nanocv/tabulator.h"
 #include "nanocv/measure.hpp"
-#include "nanocv/thread/parallel.hpp"
+#include "nanocv/thread/loopi.hpp"
 #include "nanocv/tasks/task_synthetic_shapes.h"
 #include <boost/program_options.hpp>
 

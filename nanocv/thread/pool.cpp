@@ -43,7 +43,7 @@ namespace ncv
                 }
         }
 
-        thread_pool_t::thread_pool_t(size_t nthreads)
+        thread_pool_t::thread_pool_t(std::size_t nthreads)
         {
                 nthreads = (nthreads == 0) ? ncv::n_threads() :
                                              std::max(size_t(1), std::min(nthreads, ncv::max_n_threads()));
@@ -79,6 +79,16 @@ namespace ncv
                 {
                         m_data.m_condition.wait(lock);
                 }
+        }
+
+        std::size_t thread_pool_t::n_workers() const
+        {
+                return m_workers.size();
+        }
+
+        std::size_t thread_pool_t::n_tasks() const
+        {
+                return m_data.m_tasks.size();
         }
 }
 
