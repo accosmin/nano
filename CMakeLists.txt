@@ -59,8 +59,32 @@ endif()
 #set(CMAKE_CXX_COMPILER                  "/usr/bin/clang++")
 #set(CMAKE_CXX_COMPILER                  "g++-4.9")
 
+######################################################################
 # compiler flags
+######################################################################
+
 include(CheckCXXCompilerFlag)
+
+set(NANOCV_TEST_PROGRAM "int main() { return 0; }")
+
+CHECK_CXX_COMPILER_FLAG(-std=c++14 COMPILER_SUPPORTS_CXX14)
+
+#CHECK_CXX_COMPILER_FLAG(-fsanitize=address COMPILER_SUPPORTS_SANITIZE_ADDRESS)
+#CHECK_CXX_COMPILER_FLAG(-fsanitize=undefined COMPILER_SUPPORTS_SANITIZE_UNDEFINED)
+#CHECK_CXX_COMPILER_FLAG(-fsanitize=leak COMPILER_SUPPORTS_SANITIZE_LEAK)
+#CHECK_CXX_COMPILER_FLAG(-fsanitize=thread COMPILER_SUPPORTS_SANITIZE_THREAD)
+
+set(CMAKE_REQUIRED_FLAGS "-fsanitize=address")
+CHECK_CXX_SOURCE_COMPILES(NANOCV_TEST_PROGRAM COMPILER_SUPPORTS_SANITIZE_ADDRESS)
+
+set(CMAKE_REQUIRED_FLAGS "-fsanitize=undefined")
+CHECK_CXX_SOURCE_COMPILES(NANOCV_TEST_PROGRAM COMPILER_SUPPORTS_SANITIZE_UNDEFINED)
+
+set(CMAKE_REQUIRED_FLAGS "-fsanitize=leak")
+CHECK_CXX_SOURCE_COMPILES(NANOCV_TEST_PROGRAM COMPILER_SUPPORTS_SANITIZE_LEAK)
+
+set(CMAKE_REQUIRED_FLAGS "-fsanitize=thread -fPIE -pie")
+CHECK_CXX_SOURCE_COMPILES(NANOCV_TEST_PROGRAM COMPILER_SUPPORTS_SANITIZE_THREAD)
 
 ######################################################################
 # compilation & linking flags
@@ -73,7 +97,7 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHE
         CHECK_CXX_COMPILER_FLAG(-std=c++14 COMPILER_SUPPORTS_CXX14)
 
         if(NOT COMPILER_SUPPORTS_CXX14)
-                message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++14 support.")
+                message(FATAL_ERROR "The compiler has no C++14 support.")
         endif()
 
         # set flags
@@ -94,28 +118,24 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHE
                 if(COMPILER_SUPPORTS_SANITIZE_ADDRESS AND COMPILER_SUPPORTS_SANITIZE_UNDEFINED)
                         set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address -fsanitize=undefined")
                 else()
-                        message(WARNING "The compiler ${CMAKE_CXX_COMPILER} has no address sanitizer support.")
+                        message(WARNING "The compiler has no address sanitizer support. Ignoring...")
                 endif()
 
         # set leak sanitizer
 	elseif(NANOCV_WITH_LSAN)
-                CHECK_CXX_COMPILER_FLAG(-fsanitize=leak COMPILER_SUPPORTS_SANITIZE_LEAK)
-
                 if(COMPILER_SUPPORTS_SANITIZE_LEAK)
                         set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=leak")
                 else()
-                        message(WARNING "The compiler ${CMAKE_CXX_COMPILER} has no leak sanitizer support.")
+                        message(WARNING "The compiler has no leak sanitizer support. Ignoring...")
                 endif()
 
         # set thread sanitizer
 	elseif(NANOCV_WITH_TSAN)
-                CHECK_CXX_COMPILER_FLAG(-fsanitize=thread COMPILER_SUPPORTS_SANITIZE_THREAD)
-
                 if(COMPILER_SUPPORTS_SANITIZE_THREAD)
                         set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=thread -fPIE")
                         set(CMAKE_EXE_LINKER_FLAGS      "${CMAKE_EXE_LINKER_FLAGS} -pie")
                 else()
-                        message(WARNING "The compiler ${CMAKE_CXX_COMPILER} has no thread sanitizer support.")
+                        message(WARNING "The compiler has no thread sanitizer support. Ignoring...")
                 endif()
 	endif()
 
