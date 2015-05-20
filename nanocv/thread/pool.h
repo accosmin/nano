@@ -3,6 +3,7 @@
 #include <deque>
 #include <thread>
 #include <vector>
+#include <memory>
 #include "thread.h"
 #include <condition_variable>
 #include "nanocv/noncopyable.hpp"
@@ -28,12 +29,22 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                explicit thread_pool_t(size_t nthreads = 0);
+                explicit thread_pool_t(std::size_t nthreads = 0);
 
                 ///
                 /// \brief destructor
                 ///
                 ~thread_pool_t();
+
+                ///
+                /// \brief movable
+                ///
+                thread_pool_t(thread_pool_t&&) = default;
+
+                ///
+                /// \brief movable
+                ///
+                thread_pool_t& operator=(thread_pool_t&&) = default;
 
                 ///
                 /// \brief enqueue a new task to execute
@@ -49,9 +60,15 @@ namespace ncv
                 ///
                 void wait();
 
-                // access functions
-                size_t n_workers() const { return m_workers.size(); }
-                size_t n_jobs() const { return m_data.m_tasks.size(); }
+                ///
+                /// \brief number of available worker threads
+                ///
+                std::size_t n_workers() const;
+
+                ///
+                /// \brief number of tasks to run
+                ///
+                std::size_t n_tasks() const;
 
         private:
 
@@ -70,7 +87,7 @@ namespace ncv
 
                         // attributes
                         std::deque<task_t>      m_tasks;                ///< tasks (functors) to execute
-                        size_t                  m_running;              ///< #running threads
+                        std::size_t             m_running;              ///< #running threads
                         mutex_t                 m_mutex;                ///< synchronize task access
                         condition_t             m_condition;            ///< signaling
                         bool                    m_stop;                 ///< stop requested
@@ -104,11 +121,12 @@ namespace ncv
                 void _enqueue(F f)
                 {
                         {
-                                const lock_t lock(m_data.m_mutex);
-                                
+                                const lock_t lock(m_data.m_mutex);                                
                                 m_data.m_tasks.push_back(task_t(f));
                         }
-                        m_data.m_condition.notify_one();
+                        {
+                                m_data.m_condition.notify_one();
+                        }
                 }
 
         private:

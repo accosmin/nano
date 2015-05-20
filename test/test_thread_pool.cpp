@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
 
         // check that there is no job to do
         BOOST_CHECK_EQUAL(pool.n_workers(), ncv::n_threads());
-        BOOST_CHECK_EQUAL(pool.n_jobs(), 0);
+        BOOST_CHECK_EQUAL(pool.n_tasks(), 0);
 
         const size_t n_tests = 8;
         const size_t n_max_jobs = pool.n_workers() * 16;
@@ -27,11 +27,11 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
                 random_t<size_t> rnd(1, n_max_jobs);
 
                 // ... enqueue jobs
-                const size_t n_jobs = rnd();
+                const size_t n_tasks = rnd();
                 log_info() << "@pool [" << (t + 1) << "/" << n_tests
-                           << "]: creating " << n_jobs << " jobs ...";
+                           << "]: creating " << n_tasks << " jobs ...";
 
-                for (size_t j = 0; j < n_jobs; j ++)
+                for (size_t j = 0; j < n_tasks; j ++)
                 {
                         pool.enqueue([=, &mutex]()
                         {
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
                                 {
                                         const thread_pool_t::lock_t lock(mutex);
 
-                                        log_info() << "#job [" << (j + 1) << "/" << n_jobs << "@"
+                                        log_info() << "#job [" << (j + 1) << "/" << n_tasks << "@"
                                                    << (t + 1) << "/" << n_tests << "] started ...";
                                 }
 
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
                                 {
                                         const thread_pool_t::lock_t lock(mutex);
 
-                                        log_info() << "#job [" << (j + 1) << "/" << n_jobs << "@"
+                                        log_info() << "#job [" << (j + 1) << "/" << n_tasks << "@"
                                                    << (t + 1) << "/" << n_tests << "] done.";
                                 }
                         });
@@ -59,15 +59,15 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
 
                 // ... wait for all jobs to finish
                 log_info() << "@pool [" << (t + 1) << "/" << n_tests
-                           << "]: waiting for " << pool.n_jobs() << " jobs ...";
+                           << "]: waiting for " << pool.n_tasks() << " jobs ...";
 
                 pool.wait();
 
                 log_info() << "@pool [" << (t + 1) << "/" << n_tests
-                                << "]: waiting done (enqueued " << pool.n_jobs() << " jobs).";
+                                << "]: waiting done (enqueued " << pool.n_tasks() << " jobs).";
 
                 // check that all jobs are done
                 BOOST_CHECK_EQUAL(pool.n_workers(), ncv::n_threads());
-                BOOST_CHECK_EQUAL(pool.n_jobs(), 0);
+                BOOST_CHECK_EQUAL(pool.n_tasks(), 0);
         }
 }
