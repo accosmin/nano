@@ -59,54 +59,64 @@ endif()
 #set(CMAKE_CXX_COMPILER                  "/usr/bin/clang++")
 #set(CMAKE_CXX_COMPILER                  "g++-4.9")
 
+# compiler flags
+include(CheckCXXCompilerFlag)
+
 ######################################################################
-# compilation & linking flags (GCC)
+# compilation & linking flags
 ######################################################################
 
-if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
-        message("Compiling with gcc ${CMAKE_CXX_COMPILER_VERSION} ...")
+if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+        message("Compiling with ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION} ...")
 
+        # check C++14
+        CHECK_CXX_COMPILER_FLAG(-std=c++14 COMPILER_SUPPORTS_CXX14)
+
+        if(NOT COMPILER_SUPPORTS_CXX14)
+                message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++14 support.")
+        endif()
+
+        # set flags
         set(CMAKE_CXX_FLAGS			"-Wall -Wextra -std=c++14 -march=native -mtune=native")
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} ${NANOCV_OPENMP_FLAG}")
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
-	set(CMAKE_CXX_FLAGS_DEBUG		"-g -Og -fno-omit-frame-pointer")
+        set(CMAKE_CXX_FLAGS_DEBUG		"-g -fno-omit-frame-pointer")
 	set(CMAKE_CXX_FLAGS_RELEASE             "-O3 -DNDEBUG")         # -DEIGEN_NO_DEBUG")
 	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O2 -g")               # -DEIGEN_NO_DEBUG")
 	set(CMAKE_CXX_FLAGS_MINSIZEREL          "-Os -DNDEBUG")         # -DEIGEN_NO_DEBUG")
 	set(CMAKE_EXE_LINKER_FLAGS              "-flto")
 
+        # set address sanitizer
 	if(NANOCV_WITH_ASAN)
-        	set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address -fsanitize=undefined")
+                CHECK_CXX_COMPILER_FLAG(-fsanitize=address COMPILER_SUPPORTS_SANITIZE_ADDRESS)
+                CHECK_CXX_COMPILER_FLAG(-fsanitize=undefined COMPILER_SUPPORTS_SANITIZE_UNDEFINED)
+
+                if(COMPILER_SUPPORTS_SANITIZE_ADDRESS AND COMPILER_SUPPORTS_SANITIZE_UNDEFINED)
+                        set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address -fsanitize=undefined")
+                else()
+                        message(WARNING "The compiler ${CMAKE_CXX_COMPILER} has no address sanitizer support.")
+                endif()
+
+        # set leak sanitizer
 	elseif(NANOCV_WITH_LSAN)
-        	set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=leak")
+                CHECK_CXX_COMPILER_FLAG(-fsanitize=leak COMPILER_SUPPORTS_SANITIZE_LEAK)
+
+                if(COMPILER_SUPPORTS_SANITIZE_LEAK)
+                        set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=leak")
+                else()
+                        message(WARNING "The compiler ${CMAKE_CXX_COMPILER} has no leak sanitizer support.")
+                endif()
+
+        # set thread sanitizer
 	elseif(NANOCV_WITH_TSAN)
-        	set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=thread -fPIE")
-        	set(CMAKE_EXE_LINKER_FLAGS      "${CMAKE_EXE_LINKER_FLAGS} -pie")
-	endif()
+                CHECK_CXX_COMPILER_FLAG(-fsanitize=thread COMPILER_SUPPORTS_SANITIZE_THREAD)
 
-######################################################################
-# compilation & linking flags (CLANG)
-######################################################################
-	
-elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-        message("Compiling with Clang ${CMAKE_CXX_COMPILER_VERSION} ...")
-
-        set(CMAKE_CXX_FLAGS			"-Wall -Wextra -std=c++14 -march=native -mtune=native")
-        set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} ${NANOCV_OPENMP_FLAG}")
-        set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
-	set(CMAKE_CXX_FLAGS_DEBUG		"-g -fno-omit-frame-pointer")
-	set(CMAKE_CXX_FLAGS_RELEASE             "-O3 -DNDEBUG")         # -DEIGEN_NO_DEBUG")
-	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O2 -g")               # -DEIGEN_NO_DEBUG")
-	set(CMAKE_CXX_FLAGS_MINSIZEREL          "-Os -DNDEBUG")         # -DEIGEN_NO_DEBUG")
-	set(CMAKE_EXE_LINKER_FLAGS              "-flto")
-
-	if(NANOCV_WITH_ASAN)
-        	set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address -fsanitize=undefined")
-	elseif(NANOCV_WITH_LSAN)
-        	set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=leak")
-	elseif(NANOCV_WITH_TSAN)
-        	set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=thread -fPIE")
-        	set(CMAKE_EXE_LINKER_FLAGS      "${CMAKE_EXE_LINKER_FLAGS} -pie")
+                if(COMPILER_SUPPORTS_SANITIZE_THREAD)
+                        set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=thread -fPIE")
+                        set(CMAKE_EXE_LINKER_FLAGS      "${CMAKE_EXE_LINKER_FLAGS} -pie")
+                else()
+                        message(WARNING "The compiler ${CMAKE_CXX_COMPILER} has no thread sanitizer support.")
+                endif()
 	endif()
 
 else()
