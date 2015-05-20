@@ -133,6 +133,6 @@ namespace ncv
 
                 // attributes
                 std::vector<thread_t>           m_workers;              ///< worker threads
-                data_t                          m_data;                 ///< tasks to execute + synchronization
+                mutable data_t                  m_data;                 ///< tasks to execute + synchronization
         };
 }

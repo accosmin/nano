@@ -88,6 +88,7 @@ namespace ncv
 
         std::size_t thread_pool_t::n_tasks() const
         {
+                const lock_t lock(m_data.m_mutex);
                 return m_data.m_tasks.size();
         }
 }
