@@ -3,7 +3,6 @@
 #include "timer.h"
 #include "logger.h"
 #include "minimize.h"
-#include "placeholders.h"
 #include "math/random.hpp"
 #include "losses/loss_square.h"
 #include <fstream>
@@ -152,7 +151,7 @@ namespace ncv
                 {
                         log_error() << message;
                 };
-                auto fn_ulog = [&] (const opt_state_t& /*result*/, const timer_t& /*timer*/)
+                auto fn_ulog = [&] (const opt_state_t& /*result*/)
                 {
 //                        log_info() << "[loss = " << result.f
 //                                   << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
@@ -163,8 +162,6 @@ namespace ncv
                 };
 
                 // assembly optimization problem & optimize the input
-                const opt_opulog_t fn_ulog_ref = std::bind(fn_ulog, _1, std::ref(timer));
-
                 const optim::batch_optimizer optimizer = optim::batch_optimizer::LBFGS;
                 const size_t iterations = 256;
                 const scalar_t epsilon = 1e-6;
@@ -173,7 +170,7 @@ namespace ncv
                 input.setRandom(random_t<scalar_t>(0.0, 1.0));
 
                 const opt_state_t result = ncv::minimize(
-                        fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog_ref,
+                        fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
                         input.vector(), optimizer, iterations, epsilon);
 
                 input.vector() = result.x;

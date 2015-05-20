@@ -1,7 +1,6 @@
 #pragma once
 
 #include "nanocv/layer.h"
-#include "nanocv/placeholders.h"
 #include "nanocv/tensor/transform.hpp"
 
 namespace ncv
@@ -85,7 +84,9 @@ namespace ncv
                         assert(m_data.rows() == input.rows());
                         assert(m_data.cols() == input.cols());
 
-                        tensor::transform(input, m_data, std::bind(teval_op(), _1));
+                        const auto op = teval_op();
+                        tensor::transform(input, m_data,
+                                          [op = std::move(op)] (auto x) { return op(x); });
 
                         return m_data;
                 }
@@ -97,7 +98,9 @@ namespace ncv
                         assert(m_data.rows() == output.rows());
                         assert(m_data.cols() == output.cols());
 
-                        tensor::transform(output, m_data, m_data, std::bind(tgrad_op(), _1, _2));
+                        const auto op = tgrad_op();
+                        tensor::transform(output, m_data, m_data,
+                                          [op = std::move(op)] (auto g, auto o) { return op(g, o); });
 
                         return m_data;
                 }
