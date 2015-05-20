@@ -1,11 +1,11 @@
 #pragma once
 
-#include "thread.h"
-#include "nanocv/arch.h"
-#include "nanocv/noncopyable.hpp"
 #include <deque>
+#include <thread>
 #include <vector>
+#include "thread.h"
 #include <condition_variable>
+#include "nanocv/noncopyable.hpp"
 
 namespace ncv
 {

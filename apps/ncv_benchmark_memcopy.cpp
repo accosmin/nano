@@ -4,7 +4,7 @@
 #include "nanocv/tensor.h"
 #include "nanocv/math/abs.hpp"
 #include "nanocv/math/stats.hpp"
-#include "nanocv/thread/parallel.hpp"
+#include "nanocv/thread/loopi.hpp"
 
 template
 <
