@@ -59,6 +59,7 @@ namespace ncv
                         trainer_result_t result;
 
                         const size_t epoch_size = make_epoch_size(data, batch);
+                        const size_t history_size = std::max(iterations / 2, size_t(4));
 
                         // construct the optimization problem
                         auto fn_size = ncv::make_opsize(data);
@@ -78,7 +79,7 @@ namespace ncv
                                 {
                                         const opt_state_t state = ncv::minimize(
                                                 fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
-                                                x, optimizer, iterations, epsilon);
+                                                x, optimizer, iterations, epsilon, history_size);
 
                                         x = state.x;
                                 });

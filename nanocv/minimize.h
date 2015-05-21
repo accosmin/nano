@@ -15,7 +15,8 @@ namespace ncv
                 const opt_opelog_t& fn_elog,
                 const opt_opulog_t& fn_ulog,
                 const vector_t& x0,
-                optim::batch_optimizer, size_t iterations, scalar_t epsilon);
+                optim::batch_optimizer, size_t iterations, scalar_t epsilon,
+                size_t history_size = 6);
 
         ///
         /// \brief batch optimization (can detail the line-search parameters)

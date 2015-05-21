@@ -99,14 +99,15 @@ namespace ncv
                 const opt_opelog_t& fn_elog,
                 const opt_opulog_t& fn_ulog,
                 const vector_t& x0,
-                optim::batch_optimizer optimizer, size_t iterations, scalar_t epsilon)
+                optim::batch_optimizer optimizer, size_t iterations, scalar_t epsilon, size_t history_size)
         {
                 switch (optimizer)
                 {
                 case optim::batch_optimizer::LBFGS:
                         return minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog, x0,
                                         optimizer, iterations, epsilon,
-                                        optim::ls_initializer::unit, optim::ls_strategy::interpolation);
+                                        optim::ls_initializer::unit, optim::ls_strategy::interpolation,
+                                        history_size);
 
                 case optim::batch_optimizer::CGD:
                 case optim::batch_optimizer::CGD_CD:
@@ -120,13 +121,15 @@ namespace ncv
                 case optim::batch_optimizer::CGD_DYHS:
                         return minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog, x0,
                                         optimizer, iterations, epsilon,
-                                        optim::ls_initializer::quadratic, optim::ls_strategy::interpolation);
+                                        optim::ls_initializer::quadratic, optim::ls_strategy::interpolation,
+                                        history_size);
 
                 case optim::batch_optimizer::GD:
                 default:
                         return minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog, x0,
                                         optimizer, iterations, epsilon,
-                                        optim::ls_initializer::quadratic, optim::ls_strategy::backtrack_wolfe);
+                                        optim::ls_initializer::quadratic, optim::ls_strategy::backtrack_wolfe,
+                                        history_size);
                 }
         }
 
