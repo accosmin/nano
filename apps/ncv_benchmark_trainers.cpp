@@ -47,7 +47,8 @@ static void test_optimizer(model_t& model, ttrainer trainer, const string_t& nam
                 verrors(state.m_verror_avg);
 
                 log_info() << "<<< --- optimum config = {" << text::concatenate(result.optimum_config())
-                           << "}, error " << state.m_terror_avg << "/" << state.m_verror_avg << ".";
+                           << "}, optimum epoch = " << result.optimum_epoch()
+                           << ", error " << state.m_terror_avg << "/" << state.m_verror_avg << ".";
         }, cmd_trials);
 
         table.append(name)
@@ -61,8 +62,8 @@ static void test_optimizers(
         const loss_t& loss, const string_t& criterion, tabulator_t& table)
 {
         const size_t cmd_iterations = 32;
-        const size_t cmd_minibatch_epochs = cmd_iterations;
-        const size_t cmd_stochastic_epochs = cmd_iterations;
+//        const size_t cmd_minibatch_epochs = cmd_iterations;
+//        const size_t cmd_stochastic_epochs = cmd_iterations;
         const scalar_t cmd_epsilon = 1e-4;
 
         const size_t n_threads = ncv::n_threads();
@@ -76,24 +77,24 @@ static void test_optimizers(
                 optim::batch_optimizer::LBFGS
         };
 
-        // minibatch optimizers
-        const auto minibatch_optimizers =
-        {
-                optim::batch_optimizer::GD,
-                optim::batch_optimizer::CGD,
-                optim::batch_optimizer::LBFGS
-        };
+//        // minibatch optimizers
+//        const auto minibatch_optimizers =
+//        {
+//                optim::batch_optimizer::GD,
+//                optim::batch_optimizer::CGD,
+//                optim::batch_optimizer::LBFGS
+//        };
 
-        // stochastic optimizers
-        const auto stoch_optimizers =
-        {
-                optim::stoch_optimizer::SG,
-                optim::stoch_optimizer::SGA,
-                optim::stoch_optimizer::SIA,
-                optim::stoch_optimizer::AG,
-                optim::stoch_optimizer::ADAGRAD,
-                optim::stoch_optimizer::ADADELTA
-        };
+//        // stochastic optimizers
+//        const auto stoch_optimizers =
+//        {
+//                optim::stoch_optimizer::SG,
+//                optim::stoch_optimizer::SGA,
+//                optim::stoch_optimizer::SIA,
+//                optim::stoch_optimizer::AG,
+//                optim::stoch_optimizer::ADAGRAD,
+//                optim::stoch_optimizer::ADADELTA
+//        };
 
         const string_t basename = "[" + text::to_string(criterion) + "] ";
 
@@ -108,25 +109,25 @@ static void test_optimizers(
                 }, basename + "batch-" + text::to_string(optimizer), table);
         }
 
-        for (optim::batch_optimizer optimizer : minibatch_optimizers)
-        {
-                test_optimizer(model, [&] ()
-                {
-                        return ncv::minibatch_train(
-                                model, task, tsampler, vsampler, n_threads,
-                                loss, criterion, optimizer, cmd_minibatch_epochs, cmd_epsilon, verbose);
-                }, basename + "minibatch-" + text::to_string(optimizer), table);
-        }
+//        for (optim::batch_optimizer optimizer : minibatch_optimizers)
+//        {
+//                test_optimizer(model, [&] ()
+//                {
+//                        return ncv::minibatch_train(
+//                                model, task, tsampler, vsampler, n_threads,
+//                                loss, criterion, optimizer, cmd_minibatch_epochs, cmd_epsilon, verbose);
+//                }, basename + "minibatch-" + text::to_string(optimizer), table);
+//        }
 
-        for (optim::stoch_optimizer optimizer : stoch_optimizers)
-        {
-                test_optimizer(model, [&] ()
-                {
-                        return ncv::stochastic_train(
-                                model, task, tsampler, vsampler, n_threads,
-                                loss, criterion, optimizer, cmd_stochastic_epochs, verbose);
-                }, basename + "stochastic-" + text::to_string(optimizer), table);
-        }
+//        for (optim::stoch_optimizer optimizer : stoch_optimizers)
+//        {
+//                test_optimizer(model, [&] ()
+//                {
+//                        return ncv::stochastic_train(
+//                                model, task, tsampler, vsampler, n_threads,
+//                                loss, criterion, optimizer, cmd_stochastic_epochs, verbose);
+//                }, basename + "stochastic-" + text::to_string(optimizer), table);
+//        }
 }
 
 int main(int, char* [])
