@@ -233,7 +233,6 @@ namespace ncv
 
                                 return data;
                         }
-                        break;
 
                 default:
                         return tensor_t();

@@ -14,7 +14,7 @@ namespace ncv
                         typename tmatrix,
                         typename toperator
                 >
-                bool apply(const rect_t& rect, const tmatrix& data, toperator op)
+                bool apply(const rect_t& rect, const tmatrix& data, const toperator& op)
                 {
                         const coord_t l = std::max(rect.left(), coord_t(0));
                         const coord_t r = std::min(rect.right(), static_cast<coord_t>(data.cols()));
@@ -72,14 +72,16 @@ namespace ncv
                 const coord_t cx = center.x();
                 const coord_t cy = center.y();
 
-                const coord_t radiusx = (rect.width() + 1) / 2;
-                const coord_t radiusy = (rect.height() + 1) / 2;
+                const coord_t radx = (rect.width() + 1) / 2;
+                const coord_t rady = (rect.height() + 1) / 2;
 
-                return draw_detail::apply(rect, data, [&] (coord_t x, coord_t y, coord_t, coord_t, coord_t, coord_t)
+                return  draw_detail::apply(rect, data,
+                        [&data = data, fill_value = fill_value, cx = cx, cy = cy, radx = radx, rady = rady]
+                        (coord_t x, coord_t y, coord_t, coord_t, coord_t, coord_t)
                 {
-                        if (    math::square(x - cx) * math::square(radiusy) +
-                                math::square(y - cy) * math::square(radiusx) <
-                                math::square(radiusx * radiusy))
+                        if (    math::square(x - cx) * math::square(rady) +
+                                math::square(y - cy) * math::square(radx) <
+                                math::square(radx * rady))
                         {
                                 data(y, x) = fill_value;
                         }
@@ -99,7 +101,9 @@ namespace ncv
                 const coord_t w = rect.width(), w2 = (w + 1) / 2;
                 const coord_t h = rect.height();
 
-                return draw_detail::apply(rect, data, [&] (coord_t x, coord_t y, coord_t l, coord_t t, coord_t, coord_t)
+                return  draw_detail::apply(rect, data,
+                        [&data = data, fill_value = fill_value, h = h, w2 = w2]
+                        (coord_t x, coord_t y, coord_t l, coord_t t, coord_t, coord_t)
                 {
                         const coord_t dy = (h * math::abs(x - l - w2) + w2 - 1) / w2;
 
@@ -123,7 +127,9 @@ namespace ncv
                 const coord_t w = rect.width(), w2 = (w + 1) / 2;
                 const coord_t h = rect.height();
 
-                return draw_detail::apply(rect, data, [&] (coord_t x, coord_t y, coord_t l, coord_t t, coord_t r, coord_t)
+                return  draw_detail::apply(rect, data,
+                        [&data = data, fill_value = fill_value, h = h, w2 = w2]
+                        (coord_t x, coord_t y, coord_t l, coord_t t, coord_t r, coord_t)
                 {
                         const coord_t dy = (h * (x < l + w2 ? x - l : r - x) + w2 - 1) / w2;
 
