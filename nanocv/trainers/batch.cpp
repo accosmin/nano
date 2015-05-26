@@ -47,7 +47,7 @@ namespace ncv
                                         << "[train = " << tvalue << "/" << terror_avg
                                         << ", valid = " << vvalue << "/" << verror_avg
                                         << " (" << text::to_string(ret) << ")"
-                                        << ", epoch = " << iteration
+                                        << ", epoch = " << iteration << "/" << iterations
                                         << ", lambda = " << data.lambda()
                                         << ", calls = " << state.n_fval_calls() << "/" << state.n_grad_calls()
                                         << "] done in " << timer.elapsed() << ".";
