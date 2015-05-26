@@ -71,7 +71,7 @@ namespace ncv
                                         << ", lambda = " << data.lambda()
                                         << "] done in " << timer.elapsed() << ".";
 
-                                return ret != trainer_result_return_t::overfitting;
+                                return !ncv::is_done(ret);
                         };
 
                         // OK, optimize the model

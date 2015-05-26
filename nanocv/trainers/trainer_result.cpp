@@ -19,7 +19,7 @@ namespace ncv
                 const scalar_t beste = m_opt_state.m_verror_avg;
                 const scalar_t curre = verror_avg;
 
-                const size_t max_epochs_without_improvement = 16;
+                const size_t max_epochs_without_improvement = 32;
 
                 // arbitrary precision (problem solved!)
                 if (curre < std::numeric_limits<scalar_t>::epsilon())
@@ -121,6 +121,12 @@ namespace ncv
         bool operator<(const trainer_result_t& one, const trainer_result_t& other)
         {
                 return one.optimum_state() < other.optimum_state();
+        }
+
+        bool is_done(const trainer_result_return_t code)
+        {
+                return  code == trainer_result_return_t::overfitting ||
+                        code == trainer_result_return_t::solved;
         }
 }
 	

@@ -32,6 +32,11 @@ namespace ncv
                 solved          ///< problem solved with arbitrary accuracy (processing should stop)
         };
 
+        ///
+        /// \brief check if the training should be stopped based on the return code
+        ///
+        NANOCV_PUBLIC bool is_done(const trainer_result_return_t);
+
         // string cast for enumerations
         namespace text
         {
