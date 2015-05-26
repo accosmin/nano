@@ -102,7 +102,7 @@ namespace ncv
                                 break;
 
                         default:
-                                decays = { 0.0, 0.10, 0.20, 0.50, 0.75, 1.00 };
+                                decays = { 0.10, 0.20, 0.50, 0.75, 1.00 };
                                 break;
                         }
 
@@ -151,21 +151,10 @@ namespace ncv
                         optim::stoch_optimizer optimizer,
                         bool verbose)
                 {
-                        const auto op = [&] (scalar_t alpha)
-                        {
-                                const auto ret = tune_batch_decay(data, optimizer, alpha, verbose);
-                                return std::tuple_cat(ret, std::make_tuple(alpha));
-                        };
+                        const scalar_t alpha0 = 0.1; // don't tune the learning rate (no benefit)!
 
-                        // tune the learning rate (if possible)
-                        switch (optimizer)
-                        {
-                        case optim::stoch_optimizer::ADADELTA:
-                                return op(1.0);
-
-                        default:
-                                return log10_min_search(op, -4.0, +2.0, 0.5, 4).first;
-                        }
+                        const auto ret = tune_batch_decay(data, optimizer, alpha0, verbose);
+                        return std::tuple_cat(ret, std::make_tuple(alpha0));
                 }
 
                 // <result, batch size, decay rate, learning rate, regularization weight>
