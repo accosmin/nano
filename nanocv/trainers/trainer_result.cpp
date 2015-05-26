@@ -19,7 +19,7 @@ namespace ncv
                 const scalar_t beste = m_opt_state.m_verror_avg;
                 const scalar_t curre = verror_avg;
 
-                const size_t max_epochs_without_improvement = 4;
+                const size_t max_epochs_without_improvement = 16;
 
                 // arbitrary precision (problem solved!)
                 if (curre < std::numeric_limits<scalar_t>::epsilon())
