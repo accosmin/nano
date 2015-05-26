@@ -47,8 +47,6 @@ namespace ncv
                                         << "[train = " << tvalue << "/" << terror_avg
                                         << ", valid = " << vvalue << "/" << verror_avg
                                         << " (" << text::to_string(ret) << ")"
-//                                        << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
-//                                        << ", gnorm = " << state.g.lpNorm<Eigen::Infinity>()
                                         << ", epoch = " << iteration
                                         << ", lambda = " << data.lambda()
                                         << ", calls = " << state.n_fval_calls() << "/" << state.n_grad_calls()
