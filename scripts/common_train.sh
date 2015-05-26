@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # paths
-dir_exp=/Users/cosmin/experiments/results
-dir_db=/Users/cosmin/experiments/databases
+dir_exp=~cosmin/experiments/results
+dir_db=~cosmin/experiments/databases
 
 exe_trainer=../build-release/apps/ncv_trainer
 exe_tester=../build-release/apps/ncv_tester
