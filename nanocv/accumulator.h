@@ -35,7 +35,7 @@ namespace ncv
                 ///
                 /// \brief change the regularization weight (keeps parameters)
                 ///
-                scalar_t set_lambda(scalar_t lambda);
+                void set_lambda(scalar_t lambda);
 
                 ///
                 /// \brief update statistics with a new sample

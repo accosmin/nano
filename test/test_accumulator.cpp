@@ -85,8 +85,11 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
                         BOOST_CHECK_EQUAL(lacc.lambda(), lambda);
                         BOOST_CHECK_EQUAL(gacc.lambda(), lambda);
 
-                        BOOST_CHECK_EQUAL(lacc.set_lambda(lambda), lambda);
-                        BOOST_CHECK_EQUAL(gacc.set_lambda(lambda), lambda);
+                        lacc.set_lambda(lambda);
+                        gacc.set_lambda(lambda);
+
+                        BOOST_CHECK_EQUAL(lacc.lambda(), lambda);
+                        BOOST_CHECK_EQUAL(gacc.lambda(), lambda);
 
                         lacc.update(task, samples, *loss);
                         const scalar_t value1 = lacc.value();
@@ -110,8 +113,11 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
                                 BOOST_CHECK_EQUAL(laccx.lambda(), lambda);
                                 BOOST_CHECK_EQUAL(gaccx.lambda(), lambda);
 
-                                BOOST_CHECK_EQUAL(laccx.set_lambda(lambda), lambda);
-                                BOOST_CHECK_EQUAL(gaccx.set_lambda(lambda), lambda);
+                                laccx.set_lambda(lambda);
+                                gaccx.set_lambda(lambda);
+
+                                BOOST_CHECK_EQUAL(laccx.lambda(), lambda);
+                                BOOST_CHECK_EQUAL(gaccx.lambda(), lambda);
 
                                 laccx.update(task, samples, *loss);
 

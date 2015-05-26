@@ -53,10 +53,15 @@ namespace ncv
                 }
         }
 
-        scalar_t accumulator_t::set_lambda(scalar_t lambda)
+        void accumulator_t::set_lambda(scalar_t lambda)
         {
-                m_impl->m_cache->reset(math::clamp(lambda, 0.0, 1.0));
-                return this->lambda();
+                lambda = math::clamp(lambda, 0.0, 1.0);
+
+                m_impl->m_cache->reset(lambda);
+                for (const rcriterion_t& cache : m_impl->m_caches)
+                {
+                        cache->reset(lambda);
+                }
         }
 
         void accumulator_t::set_params(const vector_t& params)
