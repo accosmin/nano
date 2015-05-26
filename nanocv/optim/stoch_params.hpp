@@ -63,7 +63,10 @@ namespace ncv
                         ///
                         /// \brief current learning rate (following the decay rate)
                         ///
-                        tscalar alpha(tsize iter) const { return optim::decay(m_alpha0, iter, m_decay); }
+                        tscalar alpha(tsize iter) const
+                        {
+                                return optim::decay(m_alpha0, iter, m_decay);
+                        }
 
                         ///
                         /// \brief running-average weight

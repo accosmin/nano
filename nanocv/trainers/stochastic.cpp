@@ -12,6 +12,32 @@ namespace ncv
 {
         namespace
         {
+                scalars_t tunable_alphas(const optim::stoch_optimizer optimizer)
+                {
+                        switch (optimizer)
+                        {
+                        case optim::stoch_optimizer::ADADELTA:
+                                return { 0.0 };
+
+                        default:
+                                return { 1e-4, 1e-3, 1e-2, 1e-1 };
+                        }
+                }
+
+                scalars_t tunable_decays(const optim::stoch_optimizer optimizer)
+                {
+                        switch (optimizer)
+                        {
+                        case optim::stoch_optimizer::AG:
+                        case optim::stoch_optimizer::ADAGRAD:
+                        case optim::stoch_optimizer::ADADELTA:
+                                return { 1.00 };
+
+                        default:
+                                return { 0.10, 0.20, 0.50, 0.75, 1.00 };
+                        }
+                }
+
                 trainer_result_t train(
                         trainer_data_t& data,
                         optim::stoch_optimizer optimizer, size_t epochs, size_t batch, scalar_t alpha0, scalar_t decay,
@@ -81,87 +107,65 @@ namespace ncv
                         return result;
                 }
 
-                // <result, batch size, decay rate>
-                std::tuple<trainer_result_t, size_t, scalar_t> tune_batch_decay(
-                        trainer_data_t& data,
-                        optim::stoch_optimizer optimizer, scalar_t alpha,
-                        bool verbose)
+                // <result, batch size, decay rate, learning rate>
+                decltype(auto) tune_batch_decay_lrate(trainer_data_t& data,
+                        optim::stoch_optimizer optimizer, bool verbose)
                 {
                         trainer_result_t opt_result;
-                        scalar_t opt_decay = 0.50;
+                        scalar_t opt_decay = 0.0;
+                        scalar_t opt_alpha = 0.0;
                         size_t opt_batch = 0;
 
-                        // tune the decay rate (if possible)
-                        scalars_t decays;
-                        switch (optimizer)
-                        {
-                        case optim::stoch_optimizer::AG:
-                        case optim::stoch_optimizer::ADAGRAD:
-                        case optim::stoch_optimizer::ADADELTA:
-                                decays = { 1.00 };
-                                break;
+                        const scalars_t decays = tunable_decays(optimizer);
+                        const scalars_t alphas = tunable_alphas(optimizer);
 
-                        default:
-                                decays = { 0.10, 0.20, 0.50, 0.75, 1.00 };
-                                break;
-                        }
-
+                        // tune the decay rate
                         for (scalar_t decay : decays)
                         {
-                                // tune the batch size
-                                const size_t min_batch = 16 * ncv::n_threads();
-                                const size_t max_batch = 16 * min_batch;
-
-                                for (size_t batch = min_batch; batch <= max_batch; batch *= 2)
+                                // tune the learning rate
+                                for (scalar_t alpha : alphas)
                                 {
-                                        const ncv::timer_t timer;
+                                        // tune the batch size
+                                        const size_t min_batch = 16 * ncv::n_threads();
+                                        const size_t max_batch = 16 * min_batch;
 
-                                        const size_t epochs = 1;
-                                        const trainer_result_t result = train(
-                                                data, optimizer, epochs, batch, alpha, decay, false);
-
-                                        const trainer_state_t state = result.optimum_state();
-
-                                        if (verbose)
-                                        log_info()
-                                                << "[tuning: train = " << state.m_tvalue << "/" << state.m_terror_avg
-                                                << ", valid = " << state.m_vvalue << "/" << state.m_verror_avg
-                                                << ", batch = " << batch
-                                                << ", alpha = " << alpha
-                                                << ", decay = " << decay
-                                                << ", lambda = " << data.lambda()
-                                                << "] done in " << timer.elapsed() << ".";
-
-                                        if (result < opt_result)
+                                        for (size_t batch = min_batch; batch <= max_batch; batch *= 2)
                                         {
-                                                opt_result = result;
-                                                opt_batch = batch;
-                                                opt_decay = decay;
+                                                const ncv::timer_t timer;
+
+                                                const size_t epochs = 1;
+                                                const auto result = train(data, optimizer, epochs, batch, alpha, decay, false);
+
+                                                const trainer_state_t state = result.optimum_state();
+
+                                                if (verbose)
+                                                log_info()
+                                                        << "[tuning: train = " << state.m_tvalue << "/" << state.m_terror_avg
+                                                        << ", valid = " << state.m_vvalue << "/" << state.m_verror_avg
+                                                        << ", batch = " << batch
+                                                        << ", alpha = " << alpha
+                                                        << ", decay = " << decay
+                                                        << ", lambda = " << data.lambda()
+                                                        << "] done in " << timer.elapsed() << ".";
+
+                                                if (result < opt_result)
+                                                {
+                                                        opt_result = result;
+                                                        opt_batch = batch;
+                                                        opt_decay = decay;
+                                                        opt_alpha = alpha;
+                                                }
                                         }
                                 }
                         }
 
                         // OK
-                        return std::make_tuple(opt_result, opt_batch, opt_decay);
-                }
-
-                // <result, batch size, decay rate, learning rate>
-                std::tuple<trainer_result_t, size_t, scalar_t, scalar_t> tune_batch_decay_lrate(
-                        trainer_data_t& data,
-                        optim::stoch_optimizer optimizer,
-                        bool verbose)
-                {
-                        const scalar_t alpha0 = 0.1; // don't tune the learning rate (no benefit)!
-
-                        const auto ret = tune_batch_decay(data, optimizer, alpha0, verbose);
-                        return std::tuple_cat(ret, std::make_tuple(alpha0));
+                        return std::make_tuple(opt_result, opt_batch, opt_decay, opt_alpha);
                 }
 
                 // <result, batch size, decay rate, learning rate, regularization weight>
-                std::tuple<trainer_result_t, size_t, scalar_t, scalar_t, scalar_t> tune_lambda(
-                        trainer_data_t& data,
-                        optim::stoch_optimizer optimizer,
-                        bool verbose)
+                decltype(auto) tune_lambda(trainer_data_t& data,
+                        optim::stoch_optimizer optimizer, bool verbose)
                 {
                         const auto op = [&] (scalar_t lambda)
                         {
