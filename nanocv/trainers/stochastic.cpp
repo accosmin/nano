@@ -64,7 +64,7 @@ namespace ncv
                                         << "[train = " << tvalue << "/" << terror_avg
                                         << ", valid = " << vvalue << "/" << verror_avg
                                         << " (" << text::to_string(ret) << ")"
-                                        << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
+//                                        << ", xnorm = " << state.x.lpNorm<Eigen::Infinity>()
                                         << ", epoch = " << epoch << "/" << epochs
                                         << ", batch = " << batch
                                         << ", alpha = " << alpha0
