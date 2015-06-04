@@ -34,24 +34,6 @@ namespace ncv
                         return 0;
                 }
 
-                rgba_t make_light_color()
-                {
-                        random_t<rgba_t> rng_red(175, 255);
-                        random_t<rgba_t> rng_green(175, 255);
-                        random_t<rgba_t> rng_blue(175, 255);
-
-                        return color::make_rgba(rng_red(), rng_green(), rng_blue());
-                }
-
-                rgba_t make_dark_color()
-                {
-                        random_t<rgba_t> rng_red(0, 125);
-                        random_t<rgba_t> rng_green(0, 125);
-                        random_t<rgba_t> rng_blue(0, 125);
-
-                        return color::make_rgba(rng_red(), rng_green(), rng_blue());
-                }
-
                 rect_t make_rect(coord_t rows, coord_t cols)
                 {
                         random_t<coord_t> rng(1, std::min(rows / 4, cols / 4));
@@ -246,9 +228,8 @@ namespace ncv
                                 // random output class: #dots
                                 const size_t o = rng_output();
 
-                                const bool is_dark_background = (rng_protocol() % 2) == 0;
-                                const rgba_t back_color = is_dark_background ? make_dark_color() : make_light_color();
-                                const rgba_t shape_color = is_dark_background ? make_light_color() : make_dark_color();
+                                const rgba_t back_color = color::make_random_rgba();
+                                const rgba_t shape_color = color::make_opposite_random_rgba(back_color);
 
                                 // generate random image background
                                 image_t image(irows(), icols(), color());

@@ -1,6 +1,7 @@
 #include "color.h"
+#include "nanocv/math/abs.hpp"
+#include "nanocv/math/random.hpp"
 #include "nanocv/math/numeric.hpp"
-#include "nanocv/math/cast.hpp"
 
 namespace ncv
 {
@@ -199,5 +200,58 @@ namespace ncv
                 detail::xyz2rgb(x, y, z, r, g, b);
 
                 return make_rgba(r, g, b, static_cast<rgba_t>(cielab(3)));
+        }
+
+        namespace
+        {
+                scalar_t make_random_lab(color_channel channel)
+                {
+                        const scalar_t min = color::min(channel);
+                        const scalar_t max = color::max(channel);
+
+                        random_t<scalar_t> rng(min, max);
+                        return rng();
+                }
+
+                scalar_t make_opposite_random_lab(scalar_t val, color_channel channel)
+                {
+                        const scalar_t min = color::min(channel);
+                        const scalar_t max = color::max(channel);
+
+                        random_t<scalar_t> rngmin(min, val);
+                        const scalar_t valmin = rngmin();
+
+                        random_t<scalar_t> rngmax(val, max);
+                        const scalar_t valmax = rngmax();
+
+                        if (math::abs(valmin - val) > math::abs(valmax - val))
+                        {
+                                return valmax;
+                        }
+                        else
+                        {
+                                return valmin;
+                        }
+                }
+        }
+
+        rgba_t color::make_random_rgba()
+        {
+                return  make_rgba(cielab_t(
+                        make_random_lab(color_channel::cielab_l),
+                        make_random_lab(color_channel::cielab_a),
+                        make_random_lab(color_channel::cielab_b),
+                        255.0));
+        }
+
+        rgba_t color::make_opposite_random_rgba(const rgba_t source)
+        {
+                const cielab_t source_lab = make_cielab(source);
+
+                return  make_rgba(cielab_t(
+                        make_opposite_random_lab(source_lab(0), color_channel::cielab_l),
+                        make_opposite_random_lab(source_lab(1), color_channel::cielab_a),
+                        make_opposite_random_lab(source_lab(2), color_channel::cielab_b),
+                        255.0));
         }
 }

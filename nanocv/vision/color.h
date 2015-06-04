@@ -116,7 +116,19 @@ namespace ncv
 
                 }
 
-                // color channel range
+                ///
+                /// \brief create random RGBA color
+                ///
+                NANOCV_PUBLIC rgba_t make_random_rgba();
+
+                ///
+                /// \brief create random RGBA color as opposite as possible from the source color
+                ///
+                NANOCV_PUBLIC rgba_t make_opposite_random_rgba(const rgba_t source);
+
+                ///
+                /// \brief minimum color range
+                ///
                 inline scalar_t min(color_channel ch)
                 {
                         switch (ch)
@@ -132,6 +144,9 @@ namespace ncv
                         }
                 }
 
+                ///
+                /// \brief maximum color range
+                ///
                 inline scalar_t max(color_channel ch)
                 {
                         switch (ch)
