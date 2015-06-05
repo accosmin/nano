@@ -31,6 +31,7 @@ namespace ncv
                 blue,                   // B
                 luma,                   // Y/L
                 rgba,                   // RGBA
+                alpha,                  // transparency
                 cielab_l,               // CIELab L
                 cielab_a,               // CIELab a
                 cielab_b                // CIELab b
@@ -186,6 +187,7 @@ namespace ncv
                                 { color_channel::blue,          "blue" },
                                 { color_channel::luma,          "luma" },
                                 { color_channel::rgba,          "rgba" },
+                                { color_channel::alpha,         "alpha" },
                                 { color_channel::cielab_l,      "cielab_l" },
                                 { color_channel::cielab_a,      "cielab_a" },
                                 { color_channel::cielab_b,      "cielab_b" }

@@ -18,7 +18,7 @@ namespace ncv
 
                 typename tvalue = typename tmatrix::Scalar
         >
-        bool random_translate(tmatrix& src, int range, tmixer mixer)
+        bool random_translate(tmatrix& src, int range, const tmixer& mixer)
         {
                 const int rows = static_cast<int>(src.rows());
                 const int cols = static_cast<int>(src.cols());

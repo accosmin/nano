@@ -29,11 +29,6 @@ namespace ncv
 
         namespace
         {
-                rgba_t make_transparent_color()
-                {
-                        return 0;
-                }
-
                 rect_t make_rect(coord_t rows, coord_t cols)
                 {
                         random_t<coord_t> rng(std::min(rows / 8, cols / 8),
@@ -93,117 +88,72 @@ namespace ncv
                                       rect.height() - dy - dh);
                 }
 
-                image_t make_filled_rect(coord_t rows, coord_t cols, rgba_t fill_color)
+                void make_filled_rect(image_t& image, rgba_t fill_color)
                 {
-                        const rect_t rect = make_rect(rows, cols);
+                        const rect_t rect = make_rect(image.rows(), image.cols());
 
-                        image_t image(rows, cols, color_mode::rgba);
-
-                        image.fill(make_transparent_color());
                         image.fill_rectangle(rect, fill_color);
-
-                        return image;
                 }
 
-                image_t make_hollow_rect(coord_t rows, coord_t cols, rgba_t fill_color)
+                void make_hollow_rect(image_t& image, rgba_t back_color, rgba_t fill_color)
                 {
-                        const rect_t rect = make_rect(rows, cols);
+                        const rect_t rect = make_rect(image.rows(), image.cols());
 
-                        image_t image(rows, cols, color_mode::rgba);
-
-                        image.fill(make_transparent_color());
                         image.fill_rectangle(rect, fill_color);
-                        image.fill_rectangle(make_interior_rect(rect), make_transparent_color());
-
-                        return image;
+                        image.fill_rectangle(make_interior_rect(rect), back_color);
                 }
 
-                image_t make_filled_ellipse(coord_t rows, coord_t cols, rgba_t fill_color)
+                void make_filled_ellipse(image_t& image, rgba_t fill_color)
                 {
-                        const rect_t rect = make_rect(rows, cols);
+                        const rect_t rect = make_rect(image.rows(), image.cols());
 
-                        image_t image(rows, cols, color_mode::rgba);
-
-                        image.fill(make_transparent_color());
                         image.fill_ellipse(rect, fill_color);
-
-                        return image;
                 }
 
-                image_t make_hollow_ellipse(coord_t rows, coord_t cols, rgba_t fill_color)
+                void make_hollow_ellipse(image_t& image, rgba_t back_color, rgba_t fill_color)
                 {
-                        const rect_t rect = make_rect(rows, cols);
+                        const rect_t rect = make_rect(image.rows(), image.cols());
 
-                        image_t image(rows, cols, color_mode::rgba);
-
-                        image.fill(make_transparent_color());
                         image.fill_ellipse(rect, fill_color);
-                        image.fill_ellipse(make_interior_rect(rect), make_transparent_color());
-
-                        return image;
+                        image.fill_ellipse(make_interior_rect(rect), back_color);
                 }
 
-                image_t make_cross(coord_t rows, coord_t cols, rgba_t fill_color)
+                void make_cross(image_t& image, rgba_t fill_color)
                 {
-                        const rect_t rect = make_rect(rows, cols);
+                        const rect_t rect = make_rect(image.rows(), image.cols());
 
-                        image_t image(rows, cols, color_mode::rgba);
-
-                        image.fill(make_transparent_color());
                         image.fill(make_vertical_interior_rect(rect), fill_color);
                         image.fill(make_horizontal_interior_rect(rect), fill_color);
-
-                        return image;
                 }
 
-                image_t make_filled_up_triangle(coord_t rows, coord_t cols, rgba_t fill_color)
+                void make_filled_up_triangle(image_t& image, rgba_t fill_color)
                 {
-                        const rect_t rect = make_rect(rows, cols);
+                        const rect_t rect = make_rect(image.rows(), image.cols());
 
-                        image_t image(rows, cols, color_mode::rgba);
-
-                        image.fill(make_transparent_color());
                         image.fill_up_triangle(rect, fill_color);
-
-                        return image;
                 }
 
-                image_t make_hollow_up_triangle(coord_t rows, coord_t cols, rgba_t fill_color)
+                void make_hollow_up_triangle(image_t& image, rgba_t back_color, rgba_t fill_color)
                 {
-                        const rect_t rect = make_rect(rows, cols);
+                        const rect_t rect = make_rect(image.rows(), image.cols());
 
-                        image_t image(rows, cols, color_mode::rgba);
-
-                        image.fill(make_transparent_color());
                         image.fill_up_triangle(rect, fill_color);
-                        image.fill_up_triangle(make_interior_rect(rect), make_transparent_color());
-
-                        return image;
+                        image.fill_up_triangle(make_interior_rect(rect), back_color);
                 }
 
-                image_t make_filled_down_triangle(coord_t rows, coord_t cols, rgba_t fill_color)
+                void make_filled_down_triangle(image_t& image, rgba_t fill_color)
                 {
-                        const rect_t rect = make_rect(rows, cols);
+                        const rect_t rect = make_rect(image.rows(), image.cols());
 
-                        image_t image(rows, cols, color_mode::rgba);
-
-                        image.fill(make_transparent_color());
                         image.fill_down_triangle(rect, fill_color);
-
-                        return image;
                 }
 
-                image_t make_hollow_down_triangle(coord_t rows, coord_t cols, rgba_t fill_color)
+                void make_hollow_down_triangle(image_t& image, rgba_t back_color, rgba_t fill_color)
                 {
-                        const rect_t rect = make_rect(rows, cols);
+                        const rect_t rect = make_rect(image.rows(), image.cols());
 
-                        image_t image(rows, cols, color_mode::rgba);
-
-                        image.fill(make_transparent_color());
                         image.fill_down_triangle(rect, fill_color);
-                        image.fill_down_triangle(make_interior_rect(rect), make_transparent_color());
-
-                        return image;
+                        image.fill_down_triangle(make_interior_rect(rect), back_color);
                 }
         }
 
@@ -212,10 +162,7 @@ namespace ncv
                 random_t<size_t> rng_protocol(1, 10);
                 random_t<size_t> rng_output(1, osize());
 
-                random_t<scalar_t> rng_gauss(scalar_t(1.0), scalar_t(3.0));
-
-                const coord_t rows = static_cast<coord_t>(irows());
-                const coord_t cols = static_cast<coord_t>(icols());
+                random_t<scalar_t> rng_gauss(scalar_t(0.5), scalar_t(2.0));
 
                 clear_memory(0);
 
@@ -235,28 +182,24 @@ namespace ncv
                                 // generate random image background
                                 image_t image(irows(), icols(), color());
                                 image.fill(back_color);
-                                image.random_noise(color_channel::rgba, -80.0, +80.0, rng_gauss());
 
                                 // generate random shapes
-                                image_t shape;
-
                                 switch (o)
                                 {                                
-                                case 1:         shape = image; break;
-                                case 2:         shape = make_filled_rect(rows, cols, shape_color); break;
-                                case 3:         shape = make_hollow_rect(rows, cols, shape_color); break;
-                                case 4:         shape = make_filled_ellipse(rows, cols, shape_color); break;
-                                case 5:         shape = make_hollow_ellipse(rows, cols, shape_color); break;
-                                case 6:         shape = make_cross(rows, cols, shape_color); break;
-                                case 7:         shape = make_filled_up_triangle(rows, cols, shape_color); break;
-                                case 8:         shape = make_hollow_up_triangle(rows, cols, shape_color); break;
-                                case 9:         shape = make_filled_down_triangle(rows, cols, shape_color); break;
-                                case 10:        shape = make_hollow_down_triangle(rows, cols, shape_color); break;
+                                case 1:         break;
+                                case 2:         make_filled_rect(image, shape_color); break;
+                                case 3:         make_hollow_rect(image, back_color, shape_color); break;
+                                case 4:         make_filled_ellipse(image, shape_color); break;
+                                case 5:         make_hollow_ellipse(image, back_color, shape_color); break;
+                                case 6:         make_cross(image, shape_color); break;
+                                case 7:         make_filled_up_triangle(image, shape_color); break;
+                                case 8:         make_hollow_up_triangle(image, back_color, shape_color); break;
+                                case 9:         make_filled_down_triangle(image, shape_color); break;
+                                case 10:        make_hollow_down_triangle(image, back_color, shape_color); break;
                                 default:        break;
                                 }
 
-                                shape.random_noise(color_channel::rgba, -40.0, +40.0, rng_gauss() * 0.5);
-                                image.alpha_blend(shape.rgba());
+                                image.random_noise(color_channel::rgba, -40.0, +40.0, rng_gauss());
 
                                 add_image(image);
 

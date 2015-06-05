@@ -129,11 +129,6 @@ namespace ncv
                 bool gauss(color_channel channel, scalar_t sigma);
 
                 ///
-                /// \brief blend with the given patch using the alpha channel as mask
-                ///
-                bool alpha_blend(const rgba_matrix_t& patch);
-
-                ///
                 /// \brief fill rectangle with the given color
                 ///
                 bool fill_rectangle(const rect_t& rect, rgba_t rgba);

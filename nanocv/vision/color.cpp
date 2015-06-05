@@ -213,18 +213,15 @@ namespace ncv
 
         rgba_t color::make_opposite_random_rgba(const rgba_t source)
         {
-                const cielab_t source_lab = make_cielab(source);
+                const auto cr = 0xFF - get_red(source);
+                const auto cg = 0xFF - get_green(source);
+                const auto cb = 0xFF - get_blue(source);
 
-                const size_t trials = 64;
+                random_t<int> rng(-55, +55);
 
-                std::vector<rgba_t> candidates(trials);
-                std::generate(candidates.begin(), candidates.end(), [] () { return make_random_rgba(); });
-
-                return  *std::max_element(candidates.begin(), candidates.end(), [source_lab = source_lab]
-                        (const rgba_t c1, const rgba_t c2)
-                        {
-                                return  (make_cielab(c1) - source_lab).squaredNorm() <=
-                                        (make_cielab(c2) - source_lab).squaredNorm();
-                        });
+                return make_rgba(static_cast<rgba_t>(math::clamp(cr + rng(), 0, 255)),
+                                 static_cast<rgba_t>(math::clamp(cg + rng(), 0, 255)),
+                                 static_cast<rgba_t>(math::clamp(cb + rng(), 0, 255)),
+                                 255);
         }
 }
