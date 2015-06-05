@@ -1,11 +1,12 @@
 #include "io.h"
 #include "image.h"
 #include "noise.hpp"
-#include "shapes.hpp"
 #include "filter.hpp"
 #include "bilinear.hpp"
 #include "translate.hpp"
-#include "nanocv/math/numeric.hpp"
+#include "fill_circle.hpp"
+#include "fill_ellipse.hpp"
+#include "fill_triangle.hpp"
 
 namespace ncv
 {

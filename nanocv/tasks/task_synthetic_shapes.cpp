@@ -36,7 +36,8 @@ namespace ncv
 
                 rect_t make_rect(coord_t rows, coord_t cols)
                 {
-                        random_t<coord_t> rng(1, std::min(rows / 4, cols / 4));
+                        random_t<coord_t> rng(std::min(rows / 8, cols / 8),
+                                              std::min(rows / 4, cols / 4));
 
                         const coord_t dx = rng();
                         const coord_t dy = rng();
@@ -48,8 +49,8 @@ namespace ncv
 
                 rect_t make_interior_rect(const rect_t& rect)
                 {
-                        random_t<coord_t> rngx(1 + (rect.width() + 7) / 8, (rect.width() + 3) / 4);
-                        random_t<coord_t> rngy(1 + (rect.height() + 7) / 8, (rect.height() + 3) / 4);
+                        random_t<coord_t> rngx(1 + (rect.width() + 7) / 8, 1 + (rect.width() + 3) / 4);
+                        random_t<coord_t> rngy(1 + (rect.height() + 7) / 8, 1 + (rect.height() + 3) / 4);
 
                         const coord_t dx = rngx();
                         const coord_t dy = rngy();
@@ -64,7 +65,7 @@ namespace ncv
 
                 rect_t make_vertical_interior_rect(const rect_t& rect)
                 {
-                        random_t<coord_t> rng((rect.width() + 3) / 4, (rect.width() + 2) / 3);
+                        random_t<coord_t> rng(1 + (rect.width() + 3) / 4, 1 + (rect.width() + 2) / 3);
 
                         const coord_t dx = rng();
                         const coord_t dy = 0;
@@ -79,7 +80,7 @@ namespace ncv
 
                 rect_t make_horizontal_interior_rect(const rect_t& rect)
                 {
-                        random_t<coord_t> rng((rect.height() + 3) / 4, (rect.height() + 2) / 3);
+                        random_t<coord_t> rng(1 + (rect.height() + 3) / 4, 1 + (rect.height() + 2) / 3);
 
                         const coord_t dx = 0;
                         const coord_t dy = rng();
