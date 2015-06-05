@@ -1,6 +1,7 @@
 #pragma once
 
 #include <random>
+#include <limits>
 #include <type_traits>
 
 namespace ncv
@@ -19,7 +20,8 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                random_t(tscalar min, tscalar max)
+                random_t(tscalar min = std::numeric_limits<tscalar>::min(),
+                         tscalar max = std::numeric_limits<tscalar>::max())
                         :       m_gen(std::random_device()()),
                                 m_die(std::min(min, max),
                                       std::max(min, max))

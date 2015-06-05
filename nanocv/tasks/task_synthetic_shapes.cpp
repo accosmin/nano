@@ -254,7 +254,7 @@ namespace ncv
                                 default:        break;
                                 }
 
-                                shape.random_noise(color_channel::rgba, -50.0, +50.0, rng_gauss() * 0.5);
+                                shape.random_noise(color_channel::rgba, -40.0, +40.0, rng_gauss() * 0.5);
                                 image.alpha_blend(shape.rgba());
 
                                 add_image(image);
