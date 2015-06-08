@@ -1,7 +1,7 @@
 #pragma once
 
-#include "logger.h"
 #include "timer.h"
+#include "logger.h"
 #include "math/stats.hpp"
 #include <cstdlib>
 

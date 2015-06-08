@@ -1,8 +1,8 @@
 #pragma once
 
+#include <ratio>
 #include "arch.h"
 #include <chrono>
-#include <ratio>
 #include <string>
 
 namespace ncv
