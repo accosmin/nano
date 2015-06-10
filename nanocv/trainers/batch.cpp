@@ -1,10 +1,10 @@
 #include "batch.h"
+#include "tune_log10.hpp"
 #include "nanocv/timer.h"
 #include "nanocv/logger.h"
 #include "nanocv/sampler.h"
 #include "nanocv/minimize.h"
 #include "nanocv/accumulator.h"
-#include "nanocv/log_search.hpp"
 
 namespace ncv
 {
@@ -91,7 +91,7 @@ namespace ncv
 
                 if (data.m_lacc.can_regularize())
                 {
-                        return log10_min_search(op, -6.0, +0.0, 0.5, 4).first;
+                        return std::get<0>(tune_log10(op, -6.0, +0.0, 0.5, 4));
                 }
                 else
                 {

@@ -1,10 +1,11 @@
 #include "minibatch.h"
+#include "tune_grid.hpp"
+#include "tune_log10.hpp"
 #include "nanocv/timer.h"
 #include "nanocv/logger.h"
 #include "nanocv/sampler.h"
 #include "nanocv/minimize.h"
 #include "nanocv/accumulator.h"
-#include "nanocv/log_search.hpp"
 #include "nanocv/thread/thread.h"
 #include <tuple>
 
@@ -29,6 +30,18 @@ namespace ncv
                 size_t make_epoch_size(const trainer_data_t& data, size_t batch)
                 {
                         return (data.m_tsampler.size() + batch - 1) / batch;
+                }
+
+                sizes_t tunable_batches()
+                {
+                        const size_t batch0 = 16 * ncv::n_threads();
+
+                        return { batch0, batch0 * 2, batch0 * 4, batch0 * 8, batch0 * 16 };
+                }
+
+                sizes_t tunable_iterations()
+                {
+                        return { 4, 8 };
                 }
 
                 template
@@ -130,48 +143,30 @@ namespace ncv
                         trainer_data_t& data, optim::batch_optimizer optimizer, scalar_t epsilon,
                         bool verbose)
                 {
-                        const size_t min_batch = 16 * ncv::n_threads();
-                        const size_t max_batch = 16 * min_batch;
-
-                        const indices_t batch_iterations = { 4, 8 };
-
-                        trainer_result_t opt_result;
-                        size_t opt_batch = min_batch;
-                        size_t opt_iterations = 4;
-
-                        // tune the batch size and the number of optimization iterations per batch
-                        for (size_t batch = min_batch; batch <= max_batch; batch *= 2)
+                        const auto op = [&] (size_t batch, size_t iterations)
                         {
-                                for (size_t iterations : batch_iterations)
-                                {
-                                        const ncv::timer_t timer;
+                                const ncv::timer_t timer;
 
-                                        const size_t epochs = 1;
-                                        const trainer_result_t result =
-                                                train(data, optimizer, epochs, batch, iterations, epsilon, false);
+                                const size_t epochs = 1;
+                                const auto result = train(data, optimizer, epochs, batch, iterations, epsilon, false);
+                                const auto state = result.optimum_state();
 
-                                        const trainer_state_t state = result.optimum_state();
+                                if (verbose)
+                                log_info()
+                                        << "[tuning: train = " << state.m_tvalue << "/" << state.m_terror_avg
+                                        << ", valid = " << state.m_vvalue << "/" << state.m_verror_avg
+                                        << ", batch = " << batch
+                                        << ", iters = " << iterations
+                                        << ", lambda = " << data.lambda()
+                                        << "] done in " << timer.elapsed() << ".";
 
-                                        if (verbose)
-                                        log_info()
-                                                << "[tuning: train = " << state.m_tvalue << "/" << state.m_terror_avg
-                                                << ", valid = " << state.m_vvalue << "/" << state.m_verror_avg
-                                                << ", batch = " << batch
-                                                << ", iters = " << iterations
-                                                << ", lambda = " << data.lambda()
-                                                << "] done in " << timer.elapsed() << ".";
+                                return result;
+                        };
 
-                                        if (result < opt_result)
-                                        {
-                                                opt_result = result;
-                                                opt_batch = batch;
-                                                opt_iterations = iterations;
-                                        }
-                                }
-                        }
+                        const auto batches = tunable_batches();
+                        const auto iterations = tunable_iterations();
 
-                        // OK
-                        return std::make_tuple(opt_result, opt_batch, opt_iterations);
+                        return tune_grid2D(op, batches, iterations);
                 }
         }
 
@@ -196,16 +191,15 @@ namespace ncv
                         data.set_lambda(lambda);
 
                         const auto ret = tune_minibatch(data, optimizer, epsilon, verbose);
-
-                        const size_t opt_batch = std::get<1>(ret);
-                        const size_t opt_iterations = std::get<2>(ret);
+                        const auto opt_batch = std::get<1>(ret);
+                        const auto opt_iterations = std::get<2>(ret);
 
                         return train(data, optimizer, epochs, opt_batch, opt_iterations, epsilon, verbose);
                 };
 
                 if (data.m_lacc.can_regularize())
                 {
-                        return log10_min_search(op, -6.0, +0.0, 0.5, 4).first;
+                        return std::get<0>(tune_log10(op, -6.0, +0.0, 0.5, 4));
                 }
                 else
                 {

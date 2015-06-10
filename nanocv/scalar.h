@@ -5,7 +5,8 @@
 namespace ncv
 {
         // numerical types
-        typedef std::size_t                                     size_t;
+        typedef std::size_t                                     size_t;        
+        typedef std::vector<size_t>                             sizes_t;
         typedef std::vector<size_t>                             indices_t;
 
 #ifdef NANOCV_WITH_FLOAT

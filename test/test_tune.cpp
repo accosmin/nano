@@ -1,13 +1,13 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_log_search"
+#define BOOST_TEST_MODULE "test_tune"
 
 #include <boost/test/unit_test.hpp>
 #include "nanocv/scalar.h"
-#include "nanocv/thread/pool.h"
-#include "nanocv/log_search.hpp"
 #include "nanocv/math/abs.hpp"
+#include "nanocv/thread/pool.h"
 #include "nanocv/math/random.hpp"
 #include "nanocv/math/epsilon.hpp"
+#include "nanocv/trainers/tune_log10.hpp"
 
 namespace test
 {
@@ -21,25 +21,27 @@ namespace test
                 };
 
                 // single-threaded version
-                const std::pair<scalar_t, scalar_t> ret1 = ncv::log10_min_search(op, minlog, maxlog, epslog, splits);
+                scalar_t stfx, stx;
+                std::tie(stfx, stx) = ncv::tune_log10(op, minlog, maxlog, epslog, splits);
 
                 // multi-threaded version
                 thread_pool_t pool(splits);
-                const std::pair<scalar_t, scalar_t> retx = ncv::log10_min_search_mt(op, pool, minlog, maxlog, epslog, splits);
+                scalar_t mtfx, mtx;
+                std::tie(mtfx, mtx) = ncv::tune_log10_mt(op, pool, minlog, maxlog, epslog, splits);
 
                 const scalar_t epsilon = math::epsilon2<scalar_t>();
 
                 // check optimum result
-                BOOST_CHECK_LE(math::abs(ret1.first - b), epsilon);
-                BOOST_CHECK_LE(math::abs(retx.first - b), epsilon);
+                BOOST_CHECK_LE(math::abs(stfx - b), epsilon);
+                BOOST_CHECK_LE(math::abs(mtfx - b), epsilon);
 
                 // check optimum parameters
-                BOOST_CHECK_LE(math::abs(ret1.second - a), epsilon);
-                BOOST_CHECK_LE(math::abs(retx.second - a), epsilon);
+                BOOST_CHECK_LE(math::abs(stx - a), epsilon);
+                BOOST_CHECK_LE(math::abs(mtx - a), epsilon);
         }
 }
 
-BOOST_AUTO_TEST_CASE(test_log_search)
+BOOST_AUTO_TEST_CASE(test_tune)
 {
         using namespace ncv;
 
