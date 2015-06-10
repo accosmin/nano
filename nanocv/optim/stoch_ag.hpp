@@ -84,7 +84,7 @@ namespace ncv
                                                 const tscalar m = tscalar(k - 1) / tscalar(k + 2);
 
                                                 cx = y - alpha * cstate.g;
-                                                y = px + m * (cx - px);
+                                                y = cx + m * (cx - px);
 
                                                 // update solution
                                                 cstate.x = cx;
