@@ -9,8 +9,18 @@ namespace ncv
         {
                 ///
                 /// \brief stochastic Nesterov's accelerated gradient (descent)
-                ///     see "Introductory Lectures on Convex Optimization. A Basic Course",
-                ///     by Yu. Nesterov
+                ///     see "A method of solving a convex programming problem with convergence rate O(1/k^2)",
+                ///     by Yu. Nesterov, 1983
+                ///
+                ///     see "Gradient methods for minimizing composite objective function",
+                ///     by Yu. Nesterov, 2007
+                ///
+                ///     see "Adaptive Restart for Accelerated Gradient Schemes",
+                ///     by Brendan O’Donoghue & Emmanuel Candes, 2013
+                ///
+                ///     see "A Differential Equation for Modeling Nesterov’s Accelerated Gradient Method:
+                ///     Theory and Insights",
+                ///     by Weijie Su, Stephen Boyd & Emmanuel J. Candes, 2015
                 ///
                 ///     see http://calculus.subwiki.org/wiki/Nesterov%27s_accelerated_gradient_descent_with_constant_learning_rate_for_a_quadratic_function_of_one_variable
                 ///     see http://stronglyconvex.com/blog/accelerated-gradient-descent.html
