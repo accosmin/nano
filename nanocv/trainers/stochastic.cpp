@@ -1,5 +1,5 @@
 #include "stochastic.h"
-#include "tune_grid.hpp"
+#include "tune_fixed.hpp"
 #include "tune_log10.hpp"
 #include "nanocv/timer.h"
 #include "nanocv/logger.h"
@@ -144,7 +144,7 @@ namespace ncv
                         const auto decays = tunable_decays(optimizer);
                         const auto alphas = tunable_alphas(optimizer);
 
-                        return tune_grid3D(op, batches, decays, alphas);
+                        return tune_fixed(op, batches, decays, alphas);
                 }
         }
 

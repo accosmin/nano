@@ -1,5 +1,5 @@
 #include "minibatch.h"
-#include "tune_grid.hpp"
+#include "tune_fixed.hpp"
 #include "tune_log10.hpp"
 #include "nanocv/timer.h"
 #include "nanocv/logger.h"
@@ -166,7 +166,7 @@ namespace ncv
                         const auto batches = tunable_batches();
                         const auto iterations = tunable_iterations();
 
-                        return tune_grid2D(op, batches, iterations);
+                        return tune_fixed(op, batches, iterations);
                 }
         }
 
