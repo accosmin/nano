@@ -21,7 +21,7 @@ namespace ncv
                                 return { 0.0 };
 
                         default:
-                                return { 1e-4, 1e-3, 1e-2, 1e-1 };
+                                return { 1e-3, 1e-2, 1e-1, 1.0 };
                         }
                 }
 
@@ -35,7 +35,7 @@ namespace ncv
                                 return { 1.00 };
 
                         default:
-                                return { 0.10, 0.20, 0.50, 0.75, 1.00 };
+                                return { 0.50, 0.75 };
                         }
                 }
 

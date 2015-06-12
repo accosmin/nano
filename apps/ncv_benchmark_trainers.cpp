@@ -13,6 +13,7 @@ using namespace ncv;
 static string_t stats_to_string(const stats_t<scalar_t>& stats)
 {
         return  text::to_string(stats.avg())
+                + "+/-" + text::to_string(stats.stdev())
                 + " [" + text::to_string(stats.min())
                 + ", " + text::to_string(stats.max())
                 + "]";
@@ -26,8 +27,6 @@ static void test_optimizer(model_t& model, ttrainer trainer, const string_t& nam
 {
         const size_t cmd_trials = 16;
 
-        stats_t<scalar_t> tvalues;
-        stats_t<scalar_t> vvalues;
         stats_t<scalar_t> terrors;
         stats_t<scalar_t> verrors;
 
@@ -40,9 +39,6 @@ static void test_optimizer(model_t& model, ttrainer trainer, const string_t& nam
                 const trainer_result_t result = trainer();
                 const trainer_state_t state = result.optimum_state();
 
-                tvalues(state.m_tvalue);
-                vvalues(state.m_vvalue);
-
                 terrors(state.m_terror_avg);
                 verrors(state.m_verror_avg);
 
@@ -52,8 +48,8 @@ static void test_optimizer(model_t& model, ttrainer trainer, const string_t& nam
         }, cmd_trials);
 
         table.append(name)
-                << stats_to_string(tvalues) << stats_to_string(terrors)
-                << stats_to_string(vvalues) << stats_to_string(verrors)
+                << stats_to_string(terrors)
+                << stats_to_string(verrors)
                 << (usec / 1000);
 }
 
@@ -137,7 +133,7 @@ int main(int, char* [])
         const size_t cmd_rows = 16;
         const size_t cmd_cols = 16;
         const size_t cmd_outputs = 2;
-        const size_t cmd_samples = cmd_outputs * 400;
+        const size_t cmd_samples = ncv::n_threads() * 256 * 10;
         const color_mode cmd_color = color_mode::rgba;
 
         // create task
@@ -195,7 +191,9 @@ int main(int, char* [])
                         assert(loss);
 
                         tabulator_t table("optimizer\\");
-                        table.header() << "train loss" << "train error" << "valid loss" << "valid error" << "time [msec]";
+                        table.header() << "train error"
+                                       << "valid error"
+                                       << "time [msec]";
 
                         // vary the criteria
                         for (const string_t& cmd_criterion : cmd_criteria)
