@@ -39,6 +39,7 @@ namespace ncv
                                 { optim::stoch_optimizer::SGA,          "sga" },
                                 { optim::stoch_optimizer::SIA,          "sia" },
                                 { optim::stoch_optimizer::AG,           "ag" },
+                                { optim::stoch_optimizer::AGGS,         "aggs" },
                                 { optim::stoch_optimizer::ADAGRAD,      "adagrad" },
                                 { optim::stoch_optimizer::ADADELTA,     "adadelta" }
                         };

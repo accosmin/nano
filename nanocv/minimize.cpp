@@ -244,6 +244,11 @@ namespace ncv
                                 (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
+                case optim::stoch_optimizer::AGGS:
+                        return  optim::stoch_aggs_t<opt_problem_t>
+                                (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
+                                (problem, x0);
+
                 case optim::stoch_optimizer::ADAGRAD:
                         return  optim::stoch_adagrad_t<opt_problem_t>
                                 (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)

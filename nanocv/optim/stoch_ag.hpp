@@ -1,7 +1,7 @@
 #pragma once
 
 #include "stoch_params.hpp"
-#include <cassert>
+#include "stoch_ag_restarts.hpp"
 
 namespace ncv
 {
@@ -27,9 +27,10 @@ namespace ncv
                 ///
                 template
                 <
-                        typename tproblem               ///< optimization problem
+                        typename tproblem,              ///< optimization problem
+                        typename trestart               ///< restart method
                 >
-                struct stoch_ag_t : public stoch_params_t<tproblem>
+                struct stoch_ag_base_t : public stoch_params_t<tproblem>
                 {
                         typedef stoch_params_t<tproblem>        base_t;
 
@@ -44,7 +45,7 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        stoch_ag_t(     tsize epochs,
+                        stoch_ag_base_t(tsize epochs,
                                         tsize epoch_size,
                                         tscalar alpha0,
                                         tscalar decay,
@@ -61,6 +62,9 @@ namespace ncv
                         tstate operator()(const tproblem& problem, const tvector& x0) const
                         {
                                 assert(problem.size() == static_cast<tsize>(x0.size()));
+
+                                // restart method
+                                trestart restart;
 
                                 // current state
                                 tstate cstate(problem, x0);
@@ -90,6 +94,7 @@ namespace ncv
                                                 cstate.x = cx;
 
                                                 // next iteration
+                                                restart(cstate.g, cx, px, k);
                                                 px = cx;
                                         }
 
@@ -99,6 +104,15 @@ namespace ncv
                                 return cstate;
                         }
                 };
+
+                // create various AG implementations
+                template <typename tproblem>
+                using stoch_ag_t =
+                stoch_ag_base_t<tproblem, ag_no_restart_t<typename tproblem::tvector, typename tproblem::tsize>>;
+
+                template <typename tproblem>
+                using stoch_aggs_t =
+                stoch_ag_base_t<tproblem, ag_grad_restart_t<typename tproblem::tvector, typename tproblem::tsize>>;
         }
 }
 
