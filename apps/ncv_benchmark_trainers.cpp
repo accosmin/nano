@@ -99,7 +99,7 @@ static void test_optimizers(
                 optim::stoch_optimizer::SGA,
                 optim::stoch_optimizer::SIA,
                 optim::stoch_optimizer::AG,
-                optim::stoch_optimizer::AGGS,
+                optim::stoch_optimizer::AGGR,
                 optim::stoch_optimizer::ADAGRAD,
                 optim::stoch_optimizer::ADADELTA
         };

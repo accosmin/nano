@@ -33,7 +33,7 @@ namespace ncv
                         SGA,                    ///< stochastic gradient averaging
                         SIA,                    ///< stochastic iterate averaging
                         AG,                     ///< Nesterov's accelerated gradient
-                        AGGS,                   ///< Nesterov's accelerated gradient (with gradient check-based restarts)
+                        AGGR,                   ///< Nesterov's accelerated gradient (with gradient check-based restarts)
                         ADAGRAD,                ///< AdaGrad
                         ADADELTA                ///< AdaDelta
                 };

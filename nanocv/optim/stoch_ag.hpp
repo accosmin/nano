@@ -111,7 +111,7 @@ namespace ncv
                 stoch_ag_base_t<tproblem, ag_no_restart_t<typename tproblem::tvector, typename tproblem::tsize>>;
 
                 template <typename tproblem>
-                using stoch_aggs_t =
+                using stoch_aggr_t =
                 stoch_ag_base_t<tproblem, ag_grad_restart_t<typename tproblem::tvector, typename tproblem::tsize>>;
         }
 }

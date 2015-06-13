@@ -24,7 +24,7 @@ outlayer="linear:dims=10;"
 epochs=64
 
 stoch_ag="--trainer stochastic --trainer-params opt=ag,epoch=${epochs}"
-stoch_aggs="--trainer stochastic --trainer-params opt=aggs,epoch=${epochs}"
+stoch_aggr="--trainer stochastic --trainer-params opt=aggr,epoch=${epochs}"
 stoch_sg="--trainer stochastic --trainer-params opt=sg,epoch=${epochs}"
 stoch_sga="--trainer stochastic --trainer-params opt=sga,epoch=${epochs}"
 stoch_sia="--trainer stochastic --trainer-params opt=sia,epoch=${epochs}"
@@ -48,7 +48,7 @@ do
         trainers=""
         trainers=${trainers}" batch_gd batch_cgd batch_lbfgs"
         trainers=${trainers}" mbatch_gd mbatch_cgd mbatch_lbfgs"
-        trainers=${trainers}" stoch_ag stoch_aggs stoch_adagrad stoch_adadelta stoch_sg stoch_sga stoch_sia"
+        trainers=${trainers}" stoch_ag stoch_aggr stoch_adagrad stoch_adadelta stoch_sg stoch_sga stoch_sia"
 
         for trainer in ${trainers}
         do
