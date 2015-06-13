@@ -35,6 +35,15 @@ namespace ncv
                 }
 
                 ///
+                /// \brief retrieve the elapsed time in seconds
+                ///
+                std::size_t seconds() const
+                {
+                        const auto duration = std::chrono::duration_cast<seconds_t>(now() - m_start);
+                        return duration.count();
+                }
+
+                ///
                 /// \brief retrieve the elapsed time in miliseconds
                 ///
                 std::size_t miliseconds() const
@@ -57,6 +66,7 @@ namespace ncv
                 typedef std::chrono::high_resolution_clock::time_point  time_t;
                 typedef std::chrono::duration<std::size_t, std::milli>  milliseconds_t;
                 typedef std::chrono::duration<std::size_t, std::micro>  microseconds_t;
+                typedef std::chrono::duration<std::size_t>              seconds_t;
 
                 ///
                 /// \brief current time point

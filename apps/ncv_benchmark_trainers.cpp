@@ -23,18 +23,19 @@ template
 <
         typename ttrainer
 >
-static void test_optimizer(model_t& model, ttrainer trainer, const string_t& name, tabulator_t& table)
+static void test_optimizer(model_t& model, const string_t& name, tabulator_t& table, const vectors_t& x0s,
+        ttrainer trainer)
 {
-        const size_t cmd_trials = 16;
-
         stats_t<scalar_t> terrors;
         stats_t<scalar_t> verrors;
 
         log_info() << "<<< running " << name << " ...";
 
-        const size_t usec = ncv::measure_robustly_usec([&] ()
+        const timer_t timer;
+
+        for (const vector_t& x0 : x0s)
         {
-                model.random_params();
+                model.load_params(x0);
 
                 const trainer_result_t result = trainer();
                 const trainer_state_t state = result.optimum_state();
@@ -42,21 +43,23 @@ static void test_optimizer(model_t& model, ttrainer trainer, const string_t& nam
                 terrors(state.m_terror_avg);
                 verrors(state.m_verror_avg);
 
-                log_info() << "<<< --- optimum config = {" << text::concatenate(result.optimum_config())
+                log_info() << "<<< " << name << ", optimum config = {" << text::concatenate(result.optimum_config())
                            << "}, optimum epoch = " << result.optimum_epoch()
                            << ", error " << state.m_terror_avg << "/" << state.m_verror_avg << ".";
-        }, cmd_trials);
+        }
 
         table.append(name)
                 << stats_to_string(terrors)
                 << stats_to_string(verrors)
-                << (usec / 1000);
+                << (timer.seconds());
 }
 
 static void test_optimizers(
         const task_t& task, model_t& model, const sampler_t& tsampler, const sampler_t& vsampler,
         const loss_t& loss, const string_t& criterion, tabulator_t& table)
 {
+        const size_t cmd_trials = 16;
+
         const size_t cmd_iterations = 64;
         const size_t cmd_minibatch_epochs = cmd_iterations;
         const size_t cmd_stochastic_epochs = cmd_iterations;
@@ -64,6 +67,14 @@ static void test_optimizers(
 
         const size_t n_threads = ncv::n_threads();
         const bool verbose = true;
+
+        // generate fixed random starting points
+        vectors_t x0s(cmd_trials);
+        for (vector_t& x0 : x0s)
+        {
+                model.random_params();
+                model.save_params(x0);
+        }
 
         // batch optimizers
         const auto batch_optimizers =
@@ -97,32 +108,32 @@ static void test_optimizers(
         // run optimizers and collect results
         for (optim::batch_optimizer optimizer : batch_optimizers)
         {
-                test_optimizer(model, [&] ()
+                test_optimizer(model, basename + "batch-" + text::to_string(optimizer), table, x0s, [&] ()
                 {
                         return ncv::batch_train(
                                 model, task, tsampler, vsampler, n_threads,
                                 loss, criterion, optimizer, cmd_iterations, cmd_epsilon, verbose);
-                }, basename + "batch-" + text::to_string(optimizer), table);
+                });
         }
 
         for (optim::batch_optimizer optimizer : minibatch_optimizers)
         {
-                test_optimizer(model, [&] ()
+                test_optimizer(model, basename + "minibatch-" + text::to_string(optimizer), table, x0s, [&] ()
                 {
                         return ncv::minibatch_train(
                                 model, task, tsampler, vsampler, n_threads,
                                 loss, criterion, optimizer, cmd_minibatch_epochs, cmd_epsilon, verbose);
-                }, basename + "minibatch-" + text::to_string(optimizer), table);
+                });
         }
 
         for (optim::stoch_optimizer optimizer : stoch_optimizers)
         {
-                test_optimizer(model, [&] ()
+                test_optimizer(model, basename + "stochastic-" + text::to_string(optimizer), table, x0s, [&] ()
                 {
                         return ncv::stochastic_train(
                                 model, task, tsampler, vsampler, n_threads,
                                 loss, criterion, optimizer, cmd_stochastic_epochs, verbose);
-                }, basename + "stochastic-" + text::to_string(optimizer), table);
+                });
         }
 }
 
