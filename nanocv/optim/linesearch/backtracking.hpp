@@ -1,7 +1,7 @@
 #pragma once
 
-#include "types.h"
-#include "linesearch_step.hpp"
+#include "nanocv/optim/types.h"
+#include "step.hpp"
 
 namespace ncv
 {

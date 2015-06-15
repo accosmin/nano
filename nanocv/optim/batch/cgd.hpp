@@ -1,10 +1,9 @@
 #pragma once
 
-#include "batch_params.hpp"
-#include "batch_cgd_steps.hpp"
-#include "linesearch_init.hpp"
-#include "linesearch_strategy.hpp"
-#include <cassert>
+#include "nanocv/optim/batch_params.hpp"
+#include "cgd_steps.hpp"
+#include "nanocv/optim/linesearch/init.hpp"
+#include "nanocv/optim/linesearch/strategy.hpp"
 
 namespace ncv
 {
@@ -18,17 +17,16 @@ namespace ncv
                         typename tcgd_update,                   ///< CGD step update
                         typename tproblem                       ///< optimization problem
                 >
-                struct batch_cgd_t : public batch_params_t<tproblem>
+                struct batch_cgd_t
                 {
-                        typedef batch_params_t<tproblem>        base_t;
-
-                        typedef typename base_t::tscalar        tscalar;
-                        typedef typename base_t::tsize          tsize;
-                        typedef typename base_t::tvector        tvector;
-                        typedef typename base_t::tstate         tstate;
-                        typedef typename base_t::twlog          twlog;
-                        typedef typename base_t::telog          telog;
-                        typedef typename base_t::tulog          tulog;
+                        typedef batch_params_t<tproblem>        param_t;
+                        typedef typename param_t::tscalar       tscalar;
+                        typedef typename param_t::tsize         tsize;
+                        typedef typename param_t::tvector       tvector;
+                        typedef typename param_t::tstate        tstate;
+                        typedef typename param_t::twlog         twlog;
+                        typedef typename param_t::telog         telog;
+                        typedef typename param_t::tulog         tulog;
 
                         ///
                         /// \brief constructor
@@ -40,7 +38,7 @@ namespace ncv
                                         const twlog& wlog = twlog(),
                                         const telog& elog = telog(),
                                         const tulog& ulog = tulog())
-                                :       base_t(max_iterations, epsilon, lsinit, lsstrat, wlog, elog, ulog)
+                                :       m_param(max_iterations, epsilon, lsinit, lsstrat, wlog, elog, ulog)
                         {
                         }
 
@@ -55,18 +53,18 @@ namespace ncv
                                 tstate pstate = cstate;         // previous state
 
                                 // line-search initial step length
-                                linesearch_init_t<tstate> ls_init(base_t::m_ls_initializer);
+                                linesearch_init_t<tstate> ls_init(m_param.m_ls_initializer);
 
                                 // line-search step
-                                linesearch_strategy_t<tproblem> ls_step(base_t::m_ls_strategy, 1e-4, 0.1);
+                                linesearch_strategy_t<tproblem> ls_step(m_param.m_ls_strategy, 1e-4, 0.1);
 
                                 const tcgd_update op_update;
 
                                 // iterate until convergence
-                                for (tsize i = 0; i < base_t::m_max_iterations && base_t::ulog(cstate); i ++)
+                                for (tsize i = 0; i < m_param.m_max_iterations && m_param.ulog(cstate); i ++)
                                 {
                                         // check convergence
-                                        if (cstate.converged(base_t::m_epsilon))
+                                        if (cstate.converged(m_param.m_epsilon))
                                         {
                                                 break;
                                         }
@@ -85,7 +83,7 @@ namespace ncv
                                         if (cstate.d.dot(cstate.g) > tscalar(0))
                                         {
                                                 cstate.d = -cstate.g;
-                                                base_t::wlog("not a descent direction (CGD)!");
+                                                m_param.wlog("not a descent direction (CGD)!");
                                         }
 
                                         // line-search
@@ -94,13 +92,16 @@ namespace ncv
                                         const tscalar t0 = ls_init(cstate);
                                         if (!ls_step.update(problem, t0, cstate))
                                         {
-                                                base_t::elog("line-search failed (CGD)!");
+                                                m_param.elog("line-search failed (CGD)!");
                                                 break;
                                         }
                                 }
 
                                 return cstate;
                         }
+
+                        // attributes
+                        param_t         m_param;
                 };
 
                 // create various CGD algorithms

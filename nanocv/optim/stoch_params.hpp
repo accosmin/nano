@@ -1,6 +1,6 @@
 #pragma once
 
-#include "decay.hpp"
+#include "nanocv/optim/stochastic/decay.hpp"
 #include "params.hpp"
 #include <limits>
 
@@ -53,14 +53,6 @@ namespace ncv
                         }
 
                         ///
-                        /// \brief change parameters
-                        ///
-                        void set_epochs(tsize epochs) { m_epochs = epochs; }
-                        void set_epoch_size(tsize epoch_size) { m_epoch_size = epoch_size; }
-                        void set_alpha0(tscalar alpha0) { m_alpha0 = alpha0; }
-                        void set_decay(tscalar decay) { m_decay = decay; }
-
-                        ///
                         /// \brief current learning rate (following the decay rate)
                         ///
                         tscalar alpha(tsize iter) const
@@ -76,6 +68,7 @@ namespace ncv
                                 return tscalar(k) / tscalar(m_epochs * m_epoch_size);
                         }
 
+                        // attributes
                         tsize           m_epochs;               ///< number of epochs
                         tsize           m_epoch_size;           ///< epoch size in number of iterations
                         tscalar         m_alpha0;               ///< initial learning rate

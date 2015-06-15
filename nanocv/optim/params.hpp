@@ -74,13 +74,6 @@ namespace ncv
                                 return m_ulog ? m_ulog(state) : true;
                         }
 
-                        ///
-                        /// \brief change loggers
-                        ///
-                        void set_wlog(const twlog& wlog) { m_wlog = wlog; }
-                        void set_elog(const telog& elog) { m_elog = elog; }
-                        void set_ulog(const tulog& ulog) { m_ulog = ulog; }
-
                 private:
 
                         twlog           m_wlog;                 ///< warning log: (string message)

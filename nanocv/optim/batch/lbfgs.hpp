@@ -1,11 +1,10 @@
 #pragma once
 
-#include "batch_params.hpp"
-#include "linesearch_init.hpp"
-#include "linesearch_strategy.hpp"
+#include "nanocv/optim/batch_params.hpp"
+#include "nanocv/optim/linesearch/init.hpp"
+#include "nanocv/optim/linesearch/strategy.hpp"
 #include <deque>
 #include <vector>
-#include <cassert>
 
 namespace ncv
 {
@@ -18,17 +17,16 @@ namespace ncv
                 <
                         typename tproblem                       ///< optimization problem
                 >
-                struct batch_lbfgs_t : public batch_params_t<tproblem>
+                struct batch_lbfgs_t
                 {
-                        typedef batch_params_t<tproblem>        base_t;
-
-                        typedef typename base_t::tscalar        tscalar;
-                        typedef typename base_t::tsize          tsize;
-                        typedef typename base_t::tvector        tvector;
-                        typedef typename base_t::tstate         tstate;
-                        typedef typename base_t::twlog          twlog;
-                        typedef typename base_t::telog          telog;
-                        typedef typename base_t::tulog          tulog;
+                        typedef batch_params_t<tproblem>        param_t;
+                        typedef typename param_t::tscalar       tscalar;
+                        typedef typename param_t::tsize         tsize;
+                        typedef typename param_t::tvector       tvector;
+                        typedef typename param_t::tstate        tstate;
+                        typedef typename param_t::twlog         twlog;
+                        typedef typename param_t::telog         telog;
+                        typedef typename param_t::tulog         tulog;
 
                         ///
                         /// \brief constructor
@@ -41,8 +39,8 @@ namespace ncv
                                         const twlog& wlog = twlog(),
                                         const telog& elog = telog(),
                                         const tulog& ulog = tulog())
-                                :       base_t(max_iterations, epsilon, lsinit, lsstrat, wlog, elog, ulog),
-                                        m_history_size(history_size)
+                                :       m_param(max_iterations, epsilon, lsinit, lsstrat, wlog, elog, ulog),
+                                        m_hsize(history_size)
                         {
                         }
 
@@ -60,16 +58,16 @@ namespace ncv
                                 tvector q, r;
 
                                 // line-search initial step length
-                                linesearch_init_t<tstate> ls_init(base_t::m_ls_initializer);
+                                linesearch_init_t<tstate> ls_init(m_param.m_ls_initializer);
 
                                 // line-search step
-                                linesearch_strategy_t<tproblem> ls_step(base_t::m_ls_strategy, 1e-4, 0.9);
+                                linesearch_strategy_t<tproblem> ls_step(m_param.m_ls_strategy, 1e-4, 0.9);
 
                                 // iterate until convergence
-                                for (tsize i = 0; i < base_t::m_max_iterations && base_t::ulog(cstate); i ++)
+                                for (tsize i = 0; i < m_param.m_max_iterations && m_param.ulog(cstate); i ++)
                                 {
                                         // check convergence
-                                        if (cstate.converged(base_t::m_epsilon))
+                                        if (cstate.converged(m_param.m_epsilon))
                                         {
                                                 break;
                                         }
@@ -81,7 +79,7 @@ namespace ncv
                                         typename std::deque<tvector>::const_reverse_iterator itr_s = ss.rbegin();
                                         typename std::deque<tvector>::const_reverse_iterator itr_y = ys.rbegin();
                                         std::vector<tscalar> alphas;
-                                        for (tsize j = 1; j <= m_history_size && i >= j; j ++)
+                                        for (tsize j = 1; j <= m_hsize && i >= j; j ++)
                                         {
                                                 const tvector& s = (*itr_s ++);
                                                 const tvector& y = (*itr_y ++);
@@ -105,7 +103,7 @@ namespace ncv
                                         typename std::deque<tvector>::const_iterator it_s = ss.begin();
                                         typename std::deque<tvector>::const_iterator it_y = ys.begin();
                                         typename std::vector<tscalar>::const_reverse_iterator itr_alpha = alphas.rbegin();
-                                        for (tsize j = 1; j <= m_history_size && i >= j; j ++)
+                                        for (tsize j = 1; j <= m_hsize && i >= j; j ++)
                                         {
                                                 const tvector& s = (*it_s ++);
                                                 const tvector& y = (*it_y ++);
@@ -123,13 +121,13 @@ namespace ncv
                                         const tscalar t0 = ls_init(cstate);
                                         if (!ls_step.update(problem, t0, cstate))
                                         {
-                                                base_t::elog("line-search failed (LBFGS)!");
+                                                m_param.elog("line-search failed (LBFGS)!");
                                                 break;
                                         }
 
                                         ss.push_back(cstate.x - pstate.x);
                                         ys.push_back(cstate.g - pstate.g);
-                                        if (ss.size() > m_history_size)
+                                        if (ss.size() > m_hsize)
                                         {
                                                 ss.pop_front();
                                                 ys.pop_front();
@@ -139,7 +137,9 @@ namespace ncv
                                 return cstate;
                         }
 
-                        tsize   m_history_size; ///< number of previous iterations to approximate the Hessian's inverse
+                        // attributes
+                        param_t         m_param;
+                        tsize           m_hsize;///< number of previous iterations to approximate Hessian's inverse
                 };
         }
 }

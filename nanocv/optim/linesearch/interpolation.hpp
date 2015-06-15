@@ -1,10 +1,10 @@
 #pragma once
 
-#include "types.h"
-#include "linesearch_step.hpp"
-#include "linesearch_cubic.hpp"
-#include "linesearch_bisection.hpp"
-#include "linesearch_quadratic.hpp"
+#include "nanocv/optim/types.h"
+#include "step.hpp"
+#include "cubic.hpp"
+#include "bisection.hpp"
+#include "quadratic.hpp"
 #include <vector>
 
 namespace ncv

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "stoch_params.hpp"
+#include "nanocv/optim/stoch_params.hpp"
 #include "nanocv/math/average_vector.hpp"
-#include <cassert>
 
 namespace ncv
 {
@@ -17,17 +16,16 @@ namespace ncv
                 <
                         typename tproblem               ///< optimization problem
                 >
-                struct stoch_sga_t : public stoch_params_t<tproblem>
+                struct stoch_sga_t
                 {
-                        typedef stoch_params_t<tproblem>        base_t;
-
-                        typedef typename base_t::tscalar        tscalar;
-                        typedef typename base_t::tsize          tsize;
-                        typedef typename base_t::tvector        tvector;
-                        typedef typename base_t::tstate         tstate;
-                        typedef typename base_t::twlog          twlog;
-                        typedef typename base_t::telog          telog;
-                        typedef typename base_t::tulog          tulog;
+                        typedef stoch_params_t<tproblem>        param_t;
+                        typedef typename param_t::tscalar       tscalar;
+                        typedef typename param_t::tsize         tsize;
+                        typedef typename param_t::tvector       tvector;
+                        typedef typename param_t::tstate        tstate;
+                        typedef typename param_t::twlog         twlog;
+                        typedef typename param_t::telog         telog;
+                        typedef typename param_t::tulog         tulog;
 
                         ///
                         /// \brief constructor
@@ -39,7 +37,7 @@ namespace ncv
                                         const twlog& wlog = twlog(),
                                         const telog& elog = telog(),
                                         const tulog& ulog = tulog())
-                                :       base_t(epochs, epoch_size, alpha0, decay, wlog, elog, ulog)
+                                :       m_param(epochs, epoch_size, alpha0, decay, wlog, elog, ulog)
                         {
                         }
 
@@ -56,26 +54,29 @@ namespace ncv
                                 // running-weighted-averaged gradient
                                 average_vector_t<tscalar, tvector> gavg(x0.size());
 
-                                for (tsize e = 0, k = 1; e < base_t::m_epochs; e ++)
+                                for (tsize e = 0, k = 1; e < m_param.m_epochs; e ++)
                                 {
-                                        for (tsize i = 0; i < base_t::m_epoch_size; i ++, k ++)
+                                        for (tsize i = 0; i < m_param.m_epoch_size; i ++, k ++)
                                         {
                                                 // learning rate
-                                                const tscalar alpha = base_t::alpha(k);
+                                                const tscalar alpha = m_param.alpha(k);
 
                                                 // descent direction
-                                                gavg.update(cstate.g, base_t::weight(k));
+                                                gavg.update(cstate.g, m_param.weight(k));
                                                 cstate.d = -gavg.value();
 
                                                 // update solution
                                                 cstate.update(problem, alpha);
                                         }
 
-                                        base_t::ulog(cstate);
+                                        m_param.ulog(cstate);
                                 }
 
                                 return cstate;
                         }
+
+                        // attributes
+                        param_t         m_param;
                 };
         }
 }

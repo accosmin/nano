@@ -5,6 +5,9 @@ file(GLOB nanocv_sources
         math/*.*
         text/*.*
         optim/*.*
+        optim/batch/*.*
+        optim/stochastic/*.*
+        optim/linesearch/*.*
         tasks/*.*
         vision/*.*
         tensor/*.*

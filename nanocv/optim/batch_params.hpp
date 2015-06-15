@@ -49,12 +49,7 @@ namespace ncv
                         {
                         }
 
-                        ///
-                        /// \brief change parameters
-                        ///
-                        void set_max_iterations(tsize max_iterations) { m_max_iterations = max_iterations; }
-                        void set_epsilon(tscalar epsilon) { m_epsilon = epsilon; }
-
+                        // attributes
                         tsize           m_max_iterations;       ///< maximum number of iterations
                         tscalar         m_epsilon;              ///< convergence precision
 

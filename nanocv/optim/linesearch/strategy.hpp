@@ -1,9 +1,9 @@
 #pragma once
 
 #include <cassert>
-#include "linesearch_cgdescent.hpp"
-#include "linesearch_backtracking.hpp"
-#include "linesearch_interpolation.hpp"
+#include "cgdescent.hpp"
+#include "backtracking.hpp"
+#include "interpolation.hpp"
 
 namespace ncv
 {
