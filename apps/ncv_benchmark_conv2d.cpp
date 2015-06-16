@@ -1,7 +1,7 @@
 #include "nanocv/tensor.h"
 #include "nanocv/string.h"
-#include "nanocv/measure.hpp"
 #include "nanocv/tabulator.h"
+#include "nanocv/measure.hpp"
 #include "nanocv/math/conv2d.hpp"
 #include <iostream>
 

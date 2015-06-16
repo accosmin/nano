@@ -1,4 +1,5 @@
 #include "nanocv/nanocv.h"
+#include "nanocv/class.h"
 #include "nanocv/measure.hpp"
 #include "nanocv/vision/image_grid.h"
 #include <boost/program_options.hpp>

@@ -1,3 +1,4 @@
+#include "nanocv/class.h"
 #include "nanocv/nanocv.h"
 #include "nanocv/sampler.h"
 #include "nanocv/tabulator.h"

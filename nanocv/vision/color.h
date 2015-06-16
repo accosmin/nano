@@ -1,7 +1,7 @@
 #pragma once
 
-#include "nanocv/text.h"
 #include "nanocv/scalar.h"
+#include "nanocv/text.hpp"
 #include "nanocv/math/cast.hpp"
 #include "nanocv/math/clamp.hpp"
 #include "nanocv/tensor/tensor.hpp"

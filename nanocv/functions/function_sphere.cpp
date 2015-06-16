@@ -1,4 +1,5 @@
 #include "function_sphere.h"
+#include "nanocv/text/to_string.hpp"
 
 namespace ncv
 {

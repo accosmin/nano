@@ -1,7 +1,7 @@
 #include "nanocv/nanocv.h"
+#include "nanocv/measure.hpp"
 #include "nanocv/tester.h"
 #include "nanocv/sampler.h"
-#include "nanocv/measure.hpp"
 #include <boost/program_options.hpp>
 #include <algorithm>
 

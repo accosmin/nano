@@ -4,18 +4,17 @@ file(GLOB nanocv_sources
         file/*.*
         math/*.*
         text/*.*
+        thread/*.*
+        tensor/*.*
         optim/*.*
         optim/batch/*.*
         optim/stochastic/*.*
         optim/linesearch/*.*
-        tasks/*.*
         vision/*.*
-        tensor/*.*
+        tasks/*.*
         losses/*.*
         layers/*.*
         models/*.*
-        thread/*.*
-        optimize/*.*
         criteria/*.*
         trainers/*.*
         functions/*.*

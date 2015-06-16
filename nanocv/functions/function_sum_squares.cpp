@@ -1,4 +1,5 @@
 #include "function_sum_squares.h"
+#include "nanocv/text/to_string.hpp"
 
 namespace ncv
 {

@@ -1,4 +1,5 @@
 #include "function_rotated_ellipsoid.h"
+#include "nanocv/text/to_string.hpp"
 
 namespace ncv
 {
