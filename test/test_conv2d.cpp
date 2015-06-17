@@ -63,14 +63,14 @@ BOOST_AUTO_TEST_CASE(test_conv2d)
 {
         using namespace ncv;
 
-        const int min_isize = 24;
+        const int min_isize = 12;
         const int max_isize = 48;
-        const int min_ksize = 5;
-        const int n_tests = 64;
+        const int min_ksize = 1;
+        const int n_tests = 16;
 
         for (int isize = min_isize; isize <= max_isize; isize += 4)
         {
-                for (int ksize = min_ksize; ksize <= isize - min_ksize; ksize += 2)
+                for (int ksize = min_ksize; ksize <= isize - min_ksize; ksize ++)
                 {
                         for (int t = 0; t < n_tests; t ++)
                         {
