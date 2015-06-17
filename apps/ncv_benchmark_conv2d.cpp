@@ -7,7 +7,6 @@
 
 using namespace ncv;
 
-
 const size_t trials = 16;
 
 template
@@ -59,9 +58,7 @@ int main(int, char* [])
                         << "cpp [us]"
                         << "dot [us]"
                         << "mad [us]"
-                        << "dyn [us]"
-                        << "toe [us]"
-                        << "toe (buff) [us]";
+                        << "dyn [us]";
 
         for (int isize = min_isize; isize <= max_isize; isize += 4)
         {
