@@ -26,10 +26,10 @@ namespace ncv
                 ///
                 template
                 <
-                        typename tscalar,
-                        int tsize
+                        int tsize,
+                        typename tscalar
                 >
-                void mad(const tscalar* NANOCV_RESTRICT idata, tscalar weight, int, tscalar* NANOCV_RESTRICT odata)
+                void mad(const tscalar* NANOCV_RESTRICT idata, tscalar weight, tscalar* NANOCV_RESTRICT odata)
                 {
                         for (int i = 0; i < tsize; i ++)
                         {

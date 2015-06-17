@@ -29,10 +29,10 @@ namespace ncv
                 ///
                 template
                 <
-                        typename tscalar,
-                        int tsize
+                        int tsize,
+                        typename tscalar
                 >
-                tscalar dot(const tscalar* NANOCV_RESTRICT a, const tscalar* NANOCV_RESTRICT b, int)
+                tscalar dot(const tscalar* NANOCV_RESTRICT a, const tscalar* NANOCV_RESTRICT b)
                 {
                         tscalar sum = 0;
                         for (int i = 0; i < tsize; i ++)

@@ -91,7 +91,7 @@ namespace ncv
                         assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                         assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                        detail::corr_madk(odata, kdata, idata, mad<tscalar>);
+                        detail::corr_madk(odata, kdata, idata);
                 }
 
                 ///
@@ -109,7 +109,7 @@ namespace ncv
                         assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                         assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                        detail::corr_mado(odata, kdata, idata, mad<tscalar>);
+                        detail::corr_mado(odata, kdata, idata);
                 }
 
                 ///

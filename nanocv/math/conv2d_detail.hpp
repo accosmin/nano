@@ -49,10 +49,9 @@ namespace ncv
                         typename tmatrixi,
                         typename tmatrixk = tmatrixi,
                         typename tmatrixo = tmatrixi,
-                        typename tdotop,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                void conv_dot(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata, const tdotop& dotop)
+                void conv_dot(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
                 {
                         const auto orows = odata.rows();
                         const auto ocols = odata.cols();
@@ -71,7 +70,39 @@ namespace ncv
 
                                         for (auto c = 0; c < ocols; c ++)
                                         {
-                                                podata[c] += dotop(pidata + c, pkdata, kcols);
+                                                podata[c] += math::dot<tscalar>(pidata + c, pkdata, kcols);
+                                        }
+                                }
+                        }
+                }
+
+                template
+                <
+                        int kcols,
+                        typename tmatrixi,
+                        typename tmatrixk = tmatrixi,
+                        typename tmatrixo = tmatrixi,
+                        typename tscalar = typename tmatrixi::Scalar
+                >
+                void conv_doti(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                {
+                        const auto orows = odata.rows();
+                        const auto ocols = odata.cols();
+                        const auto krows = kdata.rows();
+                        const auto icols = idata.cols();
+
+                        for (auto r = 0; r < orows; r ++)
+                        {
+                                tscalar* podata = odata.data() + r * ocols;
+
+                                for (auto kr = 0; kr < krows; kr ++)
+                                {
+                                        const tscalar* pidata = idata.data() + (r + kr) * icols;
+                                        const tscalar* pkdata = kdata.data() + kr * kcols;
+
+                                        for (auto c = 0; c < ocols; c ++)
+                                        {
+                                                podata[c] += math::dot<kcols>(pidata + c, pkdata);
                                         }
                                 }
                         }
@@ -82,10 +113,9 @@ namespace ncv
                         typename tmatrixi,
                         typename tmatrixk = tmatrixi,
                         typename tmatrixo = tmatrixi,
-                        typename tmadop,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                void conv_mad(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata, const tmadop& madop)
+                void conv_mad(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
                 {
                         const auto orows = odata.rows();
                         const auto ocols = odata.cols();
@@ -104,7 +134,39 @@ namespace ncv
 
                                         for (auto kc = 0; kc < kcols; kc ++)
                                         {
-                                                madop(pidata + kc, pkdata[kc], ocols, podata);
+                                                math::mad<tscalar>(pidata + kc, pkdata[kc], ocols, podata);
+                                        }
+                                }
+                        }
+                }
+
+                template
+                <
+                        int ocols,
+                        typename tmatrixi,
+                        typename tmatrixk = tmatrixi,
+                        typename tmatrixo = tmatrixi,
+                        typename tscalar = typename tmatrixi::Scalar
+                >
+                void conv_madi(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                {
+                        const auto orows = odata.rows();
+                        const auto krows = kdata.rows();
+                        const auto kcols = kdata.cols();
+                        const auto icols = idata.cols();
+
+                        for (auto r = 0; r < orows; r ++)
+                        {
+                                tscalar* podata = odata.data() + r * ocols;
+
+                                for (auto kr = 0; kr < krows; kr ++)
+                                {
+                                        const tscalar* pidata = idata.data() + (r + kr) * icols;
+                                        const tscalar* pkdata = kdata.data() + kr * kcols;
+
+                                        for (auto kc = 0; kc < kcols; kc ++)
+                                        {
+                                                math::mad<ocols>(pidata + kc, pkdata[kc], podata);
                                         }
                                 }
                         }
@@ -127,44 +189,44 @@ namespace ncv
                         {
                                 switch (kcols)
                                 {
-                                case 1:         conv_dot(idata, kdata, odata, math::dot<tscalar, 1>); break;
-                                case 2:         conv_dot(idata, kdata, odata, math::dot<tscalar, 2>); break;
-                                case 3:         conv_dot(idata, kdata, odata, math::dot<tscalar, 3>); break;
-                                case 4:         conv_dot(idata, kdata, odata, math::dot<tscalar, 4>); break;
-                                case 5:         conv_dot(idata, kdata, odata, math::dot<tscalar, 5>); break;
-                                case 6:         conv_dot(idata, kdata, odata, math::dot<tscalar, 6>); break;
-                                case 7:         conv_dot(idata, kdata, odata, math::dot<tscalar, 7>); break;
-                                case 8:         conv_dot(idata, kdata, odata, math::dot<tscalar, 8>); break;
-                                case 9:         conv_dot(idata, kdata, odata, math::dot<tscalar, 9>); break;
-                                case 10:        conv_dot(idata, kdata, odata, math::dot<tscalar, 10>); break;
-                                case 11:        conv_dot(idata, kdata, odata, math::dot<tscalar, 11>); break;
-                                case 12:        conv_dot(idata, kdata, odata, math::dot<tscalar, 12>); break;
-                                case 13:        conv_dot(idata, kdata, odata, math::dot<tscalar, 13>); break;
-                                case 14:        conv_dot(idata, kdata, odata, math::dot<tscalar, 14>); break;
-                                case 15:        conv_dot(idata, kdata, odata, math::dot<tscalar, 15>); break;
-                                default:        conv_dot(idata, kdata, odata, math::dot<tscalar>); break;
+                                case 1:         conv_doti<1>(idata, kdata, odata); break;
+                                case 2:         conv_doti<2>(idata, kdata, odata); break;
+                                case 3:         conv_doti<3>(idata, kdata, odata); break;
+                                case 4:         conv_doti<4>(idata, kdata, odata); break;
+                                case 5:         conv_doti<5>(idata, kdata, odata); break;
+                                case 6:         conv_doti<6>(idata, kdata, odata); break;
+                                case 7:         conv_doti<7>(idata, kdata, odata); break;
+                                case 8:         conv_doti<8>(idata, kdata, odata); break;
+                                case 9:         conv_doti<9>(idata, kdata, odata); break;
+                                case 10:        conv_doti<10>(idata, kdata, odata); break;
+                                case 11:        conv_doti<11>(idata, kdata, odata); break;
+                                case 12:        conv_doti<12>(idata, kdata, odata); break;
+                                case 13:        conv_doti<13>(idata, kdata, odata); break;
+                                case 14:        conv_doti<14>(idata, kdata, odata); break;
+                                case 15:        conv_doti<15>(idata, kdata, odata); break;
+                                default:        conv_dot(idata, kdata, odata); break;
                                 }
                         }
                         else
                         {
                                 switch (ocols)
                                 {
-                                case 1:         conv_mad(idata, kdata, odata, math::mad<tscalar, 1>); break;
-                                case 2:         conv_mad(idata, kdata, odata, math::mad<tscalar, 2>); break;
-                                case 3:         conv_mad(idata, kdata, odata, math::mad<tscalar, 3>); break;
-                                case 4:         conv_mad(idata, kdata, odata, math::mad<tscalar, 4>); break;
-                                case 5:         conv_mad(idata, kdata, odata, math::mad<tscalar, 5>); break;
-                                case 6:         conv_mad(idata, kdata, odata, math::mad<tscalar, 6>); break;
-                                case 7:         conv_mad(idata, kdata, odata, math::mad<tscalar, 7>); break;
-                                case 8:         conv_mad(idata, kdata, odata, math::mad<tscalar, 8>); break;
-                                case 9:         conv_mad(idata, kdata, odata, math::mad<tscalar, 9>); break;
-                                case 10:        conv_mad(idata, kdata, odata, math::mad<tscalar, 10>); break;
-                                case 11:        conv_mad(idata, kdata, odata, math::mad<tscalar, 11>); break;
-                                case 12:        conv_mad(idata, kdata, odata, math::mad<tscalar, 12>); break;
-                                case 13:        conv_mad(idata, kdata, odata, math::mad<tscalar, 13>); break;
-                                case 14:        conv_mad(idata, kdata, odata, math::mad<tscalar, 14>); break;
-                                case 15:        conv_mad(idata, kdata, odata, math::mad<tscalar, 15>); break;
-                                default:        conv_mad(idata, kdata, odata, math::mad<tscalar>); break;
+                                case 1:         conv_madi<1>(idata, kdata, odata); break;
+                                case 2:         conv_madi<2>(idata, kdata, odata); break;
+                                case 3:         conv_madi<3>(idata, kdata, odata); break;
+                                case 4:         conv_madi<4>(idata, kdata, odata); break;
+                                case 5:         conv_madi<5>(idata, kdata, odata); break;
+                                case 6:         conv_madi<6>(idata, kdata, odata); break;
+                                case 7:         conv_madi<7>(idata, kdata, odata); break;
+                                case 8:         conv_madi<8>(idata, kdata, odata); break;
+                                case 9:         conv_madi<9>(idata, kdata, odata); break;
+                                case 10:        conv_madi<10>(idata, kdata, odata); break;
+                                case 11:        conv_madi<11>(idata, kdata, odata); break;
+                                case 12:        conv_madi<12>(idata, kdata, odata); break;
+                                case 13:        conv_madi<13>(idata, kdata, odata); break;
+                                case 14:        conv_madi<14>(idata, kdata, odata); break;
+                                case 15:        conv_madi<15>(idata, kdata, odata); break;
+                                default:        conv_mad(idata, kdata, odata); break;
                                 }
                         }
                 }

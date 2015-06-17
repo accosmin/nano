@@ -65,7 +65,7 @@ namespace ncv
                         assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                         assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                        detail::conv_dot(idata, kdata, odata, dot<tscalar>);
+                        detail::conv_dot(idata, kdata, odata);
                 }
 
                 ///
@@ -83,7 +83,7 @@ namespace ncv
                         assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                         assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                        detail::conv_mad(idata, kdata, odata, mad<tscalar>);
+                        detail::conv_mad(idata, kdata, odata);
                 }
 
                 ///
