@@ -7,8 +7,6 @@
 
 using namespace ncv;
 
-const size_t trials = 16;
-
 template
 <
         typename top,
@@ -17,11 +15,12 @@ template
 >
 static void test_cpu(tabulator_t::row_t& row, top op, const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
 {
+        const size_t trials = 1024;
         row << ncv::measure_robustly_usec([&] ()
         {
                 odata.setZero();
                 op(idata, kdata, odata);
-        }, trials);
+        }, trials / kdata.rows());
 }
 
 void test_corr2d(tabulator_t::row_t& row, int isize, int ksize)
