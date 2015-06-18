@@ -1,8 +1,6 @@
-# NanoCV
+## NanoCV
 
 This small (nano) library is used as a sandbox for training and testing models, such as neural networks and convolution networks, on various image classification and object detection problems. 
-
-## Concepts
 
 The library is built around several key concepts mapped to C++ object interfaces. Each object instantation is registered with an **ID** and thus it can be selected from command line arguments. Also 
 new objects can be easily registered and then they are automatically visibile across the library and its associated programs.
@@ -29,9 +27,7 @@ a numerical optimization criteria. Implemented instances: **batch** (using **L-B
 and **stochastic** (using Nesterov's accelerated gradient - **AG**, adaptive gradient - **ADAGRAD**, adaptive delta gradient - **ADADELTA**, stochastic gradient - **SG**, stochastic iterative averaging - **SIA** or stochastic 
 gradient averaging - **SGA**).
 
-## Usage
-
-### Compilation
+#### Compilation
 
 Use a C++14 compiler (gcc 4.9+, clang) and install Boost, Eigen3, LibArchive and DevIL. 
 
@@ -41,7 +37,7 @@ The easiest way to compile (and install) is to run the `build_release.sh` bash s
 
 The `build_debug.sh` bash script will build the debugging version with and without address, leak and thread gcc-based sanitizers (if available).
 
-### Examples
+#### Examples
 
 The library provides various command line programs and utilities. Each program displays its possible arguments with short explanations by running it with `--help`.
 
