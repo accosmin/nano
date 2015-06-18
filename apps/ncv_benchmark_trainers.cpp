@@ -31,7 +31,7 @@ static void test_optimizer(model_t& model, const string_t& name, tabulator_t& ta
 
         log_info() << "<<< running " << name << " ...";
 
-        const timer_t timer;
+        const ncv::timer_t timer;
 
         for (const vector_t& x0 : x0s)
         {
