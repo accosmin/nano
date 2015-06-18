@@ -11,6 +11,6 @@ bash build.sh \
 	--build-sys ${build_sys} \
 	--install-dir ${install_dir} \
 	--install ${install} \
-	--asan OFF --lsan OFF --tsan OFF
+	--asan OFF --tsan OFF
 
 

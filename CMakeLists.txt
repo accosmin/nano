@@ -7,7 +7,6 @@ project(nanocv)
 ######################################################################
 
 option(NANOCV_WITH_ASAN         "build with address sanitizer suppport (debug, gcc)"    OFF)
-option(NANOCV_WITH_LSAN         "build with leak sanitizer suppport (debug, gcc)"       OFF)
 option(NANOCV_WITH_TSAN         "build with thread sanitizer suppport (debug, gcc)"     OFF)
 
 option(NANOCV_WITH_FLOAT        "build using C++'s float as the default scalar"         OFF)
@@ -121,8 +120,6 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHE
                         message(WARNING "The compiler has no address sanitizer support. Ignoring...")
                 endif()
 
-        # set leak sanitizer
-	elseif(NANOCV_WITH_LSAN)
                 if(COMPILER_SUPPORTS_SANITIZE_LEAK)
                         set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=leak")
                 else()
@@ -162,7 +159,6 @@ message("-----------------------------------------------------------------------
 message("BUILD TYPE:                   " "${CMAKE_BUILD_TYPE}")
 message("------------------------------------------------------------------------------" "")
 message("ASAN                          " "${NANOCV_WITH_ASAN}")
-message("LSAN                          " "${NANOCV_WITH_LSAN}")
 message("TSAN                          " "${NANOCV_WITH_TSAN}")
 message("------------------------------------------------------------------------------" "")
 

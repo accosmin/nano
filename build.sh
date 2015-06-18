@@ -7,7 +7,6 @@ install_dir="/usr/local/"
 install="OFF"
 
 asan_flag="OFF"
-lsan_flag="OFF"
 tsan_flag="OFF"
 
 # usage
@@ -20,7 +19,6 @@ function usage
 	echo -e "\t--install-dir        <installation directory>        default=${install_dir}" 
 	echo -e "\t--install            <install [ON/OFF] Release only> default=${install}" 
 	echo -e "\t--asan               <address sanitizer [ON/OFF]>    default=${asan_flag}"
-	echo -e "\t--lsan               <leak sanitizer [ON/OFF]>       default=${lsan_flag}"
 	echo -e "\t--tsan               <thread sanitizer [ON/OFF]>     default=${tsan_flag}"
 	echo
 }
@@ -46,9 +44,6 @@ do
                                 ;;
         	--asan)		shift
                                 asan_flag=$1
-                                ;;
-        	--lsan)		shift
-                                lsan_flag=$1
                                 ;;
         	--tsan)		shift
                                 tsan_flag=$1
@@ -101,7 +96,6 @@ fi
 cmake \
 	-DCMAKE_BUILD_TYPE=${build_type} \
     	-DNANOCV_WITH_ASAN=${asan_flag} \
-    	-DNANOCV_WITH_LSAN=${lsan_flag} \
     	-DNANOCV_WITH_TSAN=${tsan_flag} \
     	-G "${generator}" \
     	-DCMAKE_INSTALL_PREFIX=${install_dir} \
