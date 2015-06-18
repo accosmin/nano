@@ -174,5 +174,5 @@ include_directories(./)
 
 add_subdirectory(nanocv)
 add_subdirectory(apps)
-add_subdirectory(test)
+add_subdirectory(tests)
 
