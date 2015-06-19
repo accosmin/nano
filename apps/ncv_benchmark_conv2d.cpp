@@ -3,7 +3,7 @@
 #include "nanocv/tabulator.h"
 #include "nanocv/measure.hpp"
 #include "nanocv/math/conv2d.hpp"
-#include "nanocv/tensor/toeplitz.hpp"
+#include "nanocv/tensor/conv2d_toeplitz.hpp"
 #include <iostream>
 
 using namespace ncv;
@@ -40,11 +40,11 @@ void test_conv2d(tabulator_t::row_t& row, int isize, int ksize)
         kdata /= ksize;
         odata /= osize;
 
-        const matrix_t tdata = ncv::tensor::conv2d_make_toeplitz(idata, kdata, odata);
+        const matrix_t toe = ncv::tensor::make_toeplitz(idata, kdata, odata);
 
         const auto op_toe = [&] (const matrix_t& idata, const matrix_t& kdata, matrix_t& odata)
         {
-                tensor::conv2d_toeplitz_buffered(idata, kdata, tdata, odata);
+                tensor::conv2d_toeplitz_buffered(idata, kdata, toe, odata);
         };
 
         test_cpu(row, math::conv2d_eig<matrix_t>, idata, kdata, odata);

@@ -7,7 +7,7 @@
 #include "nanocv/math/close.hpp"
 #include "nanocv/math/conv2d.hpp"
 #include "nanocv/math/epsilon.hpp"
-#include "nanocv/tensor/toeplitz.hpp"
+#include "nanocv/tensor/conv2d_toeplitz.hpp"
 
 namespace test
 {
