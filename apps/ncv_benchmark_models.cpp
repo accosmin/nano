@@ -100,10 +100,17 @@ int main(int argc, char *argv[])
         const string_t lmodel4 = lmodel3 + "linear:dims=100;act-snorm;";
         const string_t lmodel5 = lmodel4 + "linear:dims=100;act-snorm;";
         
-        string_t cmodel;
-        cmodel = cmodel + "conv:dims=16,rows=9,cols=9;pool-max;act-snorm;";
-        cmodel = cmodel + "conv:dims=32,rows=5,cols=5;pool-max;act-snorm;";
-        cmodel = cmodel + "conv:dims=64,rows=3,cols=3;act-snorm;";
+        string_t cmodel1;
+        cmodel1 = cmodel1 + "conv:dims=16,rows=9,cols=9;act-snorm;";
+
+        string_t cmodel2;
+        cmodel2 = cmodel2 + "conv:dims=16,rows=9,cols=9;pool-max;act-snorm;";
+        cmodel2 = cmodel2 + "conv:dims=32,rows=5,cols=5;act-snorm;";
+
+        string_t cmodel3;
+        cmodel3 = cmodel3 + "conv:dims=16,rows=9,cols=9;pool-max;act-snorm;";
+        cmodel3 = cmodel3 + "conv:dims=32,rows=5,cols=5;pool-max;act-snorm;";
+        cmodel3 = cmodel3 + "conv:dims=64,rows=3,cols=3;act-snorm;";
 
         const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
 
@@ -116,7 +123,9 @@ int main(int argc, char *argv[])
                 lmodel4 + outlayer,
                 lmodel5 + outlayer,
 
-                cmodel + outlayer
+                cmodel1 + outlayer,
+                cmodel2 + outlayer,
+                cmodel3 + outlayer,
         };
 
         strings_t cmd_names =
@@ -128,7 +137,9 @@ int main(int argc, char *argv[])
                 "lmodel4",
                 "lmodel5",
 
-                "cmodel"
+                "cmodel1",
+                "cmodel2",
+                "cmodel3"
         };
 
         const rloss_t loss = ncv::get_losses().get("logistic");
