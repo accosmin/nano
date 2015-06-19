@@ -30,6 +30,7 @@ namespace ncv
                         typedef std::vector<tvector>                    tvectors;
                         typedef typename tvectors::const_iterator       tvectors_const_it;
                         typedef typename tvectors::iterator             tvectors_it;
+                        typedef typename tvector::Index                 tindex;
                 };
 
                 ///
@@ -55,6 +56,7 @@ namespace ncv
                         typedef std::vector<tvector>                    tvectors;
                         typedef typename tvectors::const_iterator       tvectors_const_it;
                         typedef typename tvectors::iterator             tvectors_it;
+                        typedef typename tvector::Index                 tindex;
                 };
 
                 ///
