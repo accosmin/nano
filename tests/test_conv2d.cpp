@@ -7,6 +7,7 @@
 #include "nanocv/math/close.hpp"
 #include "nanocv/math/conv2d.hpp"
 #include "nanocv/math/epsilon.hpp"
+#include "nanocv/tensor/toeplitz.hpp"
 
 namespace test
 {
@@ -48,6 +49,7 @@ namespace test
                 const scalar_t convcpu_dot = test_cpu(ncv::math::conv2d_dot<matrix_t>, idata, kdata, odata);
                 const scalar_t convcpu_mad = test_cpu(ncv::math::conv2d_mad<matrix_t>, idata, kdata, odata);
                 const scalar_t convcpu_dyn = test_cpu(ncv::math::conv2d_dyn<matrix_t>, idata, kdata, odata);
+                const scalar_t convcpu_toe = test_cpu(ncv::tensor::conv2d_toeplitz<matrix_t>, idata, kdata, odata);
 
                 const scalar_t epsilon = math::epsilon1<scalar_t>();
 
@@ -56,6 +58,7 @@ namespace test
                 BOOST_CHECK_LE(math::abs(convcpu_dot - convcpu_eig), epsilon);
                 BOOST_CHECK_LE(math::abs(convcpu_mad - convcpu_eig), epsilon);
                 BOOST_CHECK_LE(math::abs(convcpu_dyn - convcpu_eig), epsilon);
+                BOOST_CHECK_LE(math::abs(convcpu_toe - convcpu_eig), epsilon);
         }
 }
 
