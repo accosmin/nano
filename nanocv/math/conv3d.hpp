@@ -1,15 +1,14 @@
 #pragma once
 
-#include "nanocv/math/conv2d.hpp"
-#include "nanocv/math/corr2d.hpp"
-#include "nanocv/tensor/matrix.hpp"
+#include "conv2d_dyn.hpp"
+#include "corr2d_dyn.hpp"
 
 namespace ncv
 {
-        namespace convolution
+        namespace math
         {
                 ///
-                /// \brief convolution output
+                /// \brief 3D convolution output: odata(o) = sum(i, idata(i) @ kdata(o, i))
                 ///
                 template
                 <
@@ -17,7 +16,7 @@ namespace ncv
                         typename ttensork,
                         typename ttensoro
                 >
-                void output(const ttensori& idata, const ttensork& kdata, ttensoro&& odata)
+                void conv3d_output(const ttensori& idata, const ttensork& kdata, ttensoro&& odata)
                 {
                         odata.setZero();
 
@@ -44,7 +43,7 @@ namespace ncv
                         typename ttensork,
                         typename ttensoro
                 >
-                void ginput(ttensori&& gidata, const ttensork& kdata, const ttensoro& odata)
+                void conv3d_ginput(ttensori&& gidata, const ttensork& kdata, const ttensoro& odata)
                 {
                         gidata.setZero();
 
@@ -71,7 +70,7 @@ namespace ncv
                         typename ttensork,
                         typename ttensoro
                 >
-                void gparam(const ttensori& idata, ttensork&& gkdata, const ttensoro& odata)
+                void conv3d_gparam(const ttensori& idata, ttensork&& gkdata, const ttensoro& odata)
                 {
                         for (decltype(odata.dims()) o = 0, k = 0; o < odata.dims(); o ++)
                         {
