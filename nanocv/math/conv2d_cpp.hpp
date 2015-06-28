@@ -1,16 +1,13 @@
 #pragma once
 
 #include <cassert>
-#include "vector.hpp"
 
 namespace ncv
 {
-        namespace tensor
+        namespace math
         {
                 ///
-                /// \brief create the Toeplitz-like matrix to replace
-                ///     the 2D convolution: odata += idata @ kdata
-                ///     with the linear product: as_vector(odata) = toeplitz * as_vector(kdata)
+                /// \brief 2D convolution: odata += idata @ kdata (using plain array indexing)
                 ///
                 template
                 <
@@ -19,41 +16,37 @@ namespace ncv
                         typename tmatrixo = tmatrixi,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                tmatrixo make_toeplitz(const tmatrixi& idata, const tmatrixk& kdata, const tmatrixo& odata)
+                void conv2d_cpp(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
                 {
                         assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                         assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
                         const auto orows = odata.rows();
                         const auto ocols = odata.cols();
-                        const auto osize = odata.size();
                         const auto krows = kdata.rows();
                         const auto kcols = kdata.cols();
-                        const auto ksize = kdata.size();
+                        const auto icols = idata.cols();
 
-                        tmatrixo toeplitz_matrix(osize, ksize);
-                        toeplitz_matrix.setZero();
-
-                        /// \todo more efficient construction
                         for (auto r = 0; r < orows; r ++)
                         {
+                                tscalar* podata = odata.data() + r * ocols;
+
                                 for (auto kr = 0; kr < krows; kr ++)
                                 {
+                                        const tscalar* pidata = idata.data() + (r + kr) * icols;
+                                        const tscalar* pkdata = kdata.data() + kr * kcols;
+
                                         for (auto c = 0; c < ocols; c ++)
                                         {
-//                                                toeplitz_matrix.row(r * ocols + c).segment(kr * kcols, krows) =
-//                                                idata.row(r + kr).segment(c, kcols);
-
+                                                tscalar sum = 0;
                                                 for (auto kc = 0; kc < kcols; kc ++)
                                                 {
-                                                        toeplitz_matrix(r * ocols + c, kr * kcols + kc) =
-                                                        idata(r + kr, c + kc);
+                                                        sum += pidata[c + kc] * pkdata[kc];
                                                 }
+                                                podata[c] += sum;
                                         }
                                 }
                         }
-
-                        return toeplitz_matrix;
                 }
         }
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "conv2d_make_toeplitz.hpp"
+#include "nanocv/arch.h"
 
 namespace ncv
 {
@@ -19,6 +20,8 @@ namespace ncv
                 void conv2d_toeplitz_buffered(const tmatrixi& idata,
                         const tmatrixk& kdata, const tmatrixo& toeplitz, tmatrixo& odata)
                 {
+                        NANOCV_UNUSED1_RELEASE(idata);
+
                         assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                         assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
