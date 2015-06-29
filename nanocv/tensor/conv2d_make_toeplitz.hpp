@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cassert>
-#include "vector.hpp"
+#include "matrix.hpp"
 
 namespace ncv
 {
@@ -16,10 +16,9 @@ namespace ncv
                 <
                         typename tmatrixi,
                         typename tmatrixk = tmatrixi,
-                        typename tmatrixo = tmatrixi,
-                        typename tscalar = typename tmatrixi::Scalar
+                        typename tmatrixo = tmatrixi
                 >
-                tmatrixo make_toeplitz(const tmatrixi& idata, const tmatrixk& kdata, const tmatrixo& odata)
+                decltype(auto) make_toeplitz(const tmatrixi& idata, const tmatrixk& kdata, const tmatrixo& odata)
                 {
                         assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                         assert(idata.cols() + 1 == kdata.cols() + odata.cols());
@@ -31,8 +30,10 @@ namespace ncv
                         const auto kcols = kdata.cols();
                         const auto ksize = kdata.size();
 
-                        tmatrixo toeplitz_matrix(osize, ksize);
-                        toeplitz_matrix.setZero();
+                        typedef typename tmatrixi::Scalar                               tscalar;
+                        typedef typename tensor::matrix_types_t<tscalar>::tmatrix       ttoeplitz;
+
+                        ttoeplitz toeplitz = ttoeplitz::Zero(osize, ksize);
 
                         /// \todo more efficient construction
                         for (auto r = 0; r < orows; r ++)
@@ -41,19 +42,19 @@ namespace ncv
                                 {
                                         for (auto c = 0; c < ocols; c ++)
                                         {
-//                                                toeplitz_matrix.row(r * ocols + c).segment(kr * kcols, krows) =
+//                                                toeplitz.row(r * ocols + c).segment(kr * kcols, krows) =
 //                                                idata.row(r + kr).segment(c, kcols);
 
                                                 for (auto kc = 0; kc < kcols; kc ++)
                                                 {
-                                                        toeplitz_matrix(r * ocols + c, kr * kcols + kc) =
+                                                        toeplitz(r * ocols + c, kr * kcols + kc) =
                                                         idata(r + kr, c + kc);
                                                 }
                                         }
                                 }
                         }
 
-                        return toeplitz_matrix;
+                        return toeplitz;
                 }
         }
 }

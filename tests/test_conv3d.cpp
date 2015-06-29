@@ -7,7 +7,7 @@
 #include "nanocv/math/conv3d.hpp"
 #include "nanocv/math/random.hpp"
 #include "nanocv/math/epsilon.hpp"
-#include "nanocv/tensor/conv2d_toe.hpp"
+#include "nanocv/tensor/conv3d.hpp"
 
 namespace test
 {
@@ -48,10 +48,12 @@ namespace test
                 odata.vector() /= osize;
 
                 const auto output_dyn = test_output(math::conv3d_output<tensor_t, tensor_t, tensor_t&>, idata, kdata, odata);
+                const auto output_toe = test_output(tensor::conv3d_output<tensor_t, tensor_t, tensor_t&>, idata, kdata, odata);
 
                 const scalar_t epsilon = math::epsilon1<scalar_t>();
 
                 BOOST_CHECK_LE(math::abs(output_dyn - output_dyn), epsilon);
+                BOOST_CHECK_LE(math::abs(output_toe - output_dyn), epsilon);
         }
 }
 
@@ -60,7 +62,7 @@ BOOST_AUTO_TEST_CASE(test_conv3d)
         using namespace ncv;
 
         const int min_isize = 4;
-        const int max_isize = 48;
+        const int max_isize = 12;//48;
 
         const int min_ksize = 1;
         const int max_ksize = 15;
@@ -68,8 +70,8 @@ BOOST_AUTO_TEST_CASE(test_conv3d)
         const int min_idims = 4;
         const int max_idims = 64;
 
-        const int min_odims = 4;
-        const int max_odims = 64;
+        const int min_odims = 16;
+        const int max_odims = 128;
 
         const int n_tests = 16;
 
@@ -77,7 +79,7 @@ BOOST_AUTO_TEST_CASE(test_conv3d)
         {
                 for (int idims = min_idims; idims <= max_idims; idims *= 2)
                 {
-                        for (int ksize = min_ksize; ksize <= max_ksize; ksize ++)
+                        for (int ksize = min_ksize; ksize <= std::min(max_ksize, isize); ksize ++)
                         {
                                 for (int odims = min_odims; odims <= max_odims; odims *= 2)
                                 {

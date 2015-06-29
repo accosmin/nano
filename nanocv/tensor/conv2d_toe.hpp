@@ -14,11 +14,11 @@ namespace ncv
                 <
                         typename tmatrixi,
                         typename tmatrixk = tmatrixi,
-                        typename tmatrixo = tmatrixi,
-                        typename tscalar = typename tmatrixi::Scalar
+                        typename tmatrixt = tmatrixi,
+                        typename tmatrixo = tmatrixi
                 >
                 void conv2d_toe_buffered(const tmatrixi& idata,
-                        const tmatrixk& kdata, const tmatrixo& toeplitz, tmatrixo& odata)
+                        const tmatrixk& kdata, tmatrixt&& toeplitz, tmatrixo&& odata)
                 {
                         NANOCV_UNUSED1_RELEASE(idata);
 
@@ -38,8 +38,7 @@ namespace ncv
                 <
                         typename tmatrixi,
                         typename tmatrixk = tmatrixi,
-                        typename tmatrixo = tmatrixi,
-                        typename tscalar = typename tmatrixi::Scalar
+                        typename tmatrixo = tmatrixi
                 >
                 void conv2d_toe(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
                 {
