@@ -3,8 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include "nanocv/tensor.h"
-#include "nanocv/logger.h"
-#include "nanocv/math/close.hpp"
+#include "nanocv/math/abs.hpp"
 #include "nanocv/math/corr2d.hpp"
 #include "nanocv/math/epsilon.hpp"
 
