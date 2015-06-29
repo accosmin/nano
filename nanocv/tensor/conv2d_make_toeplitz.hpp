@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cassert>
 #include "matrix.hpp"
 
 namespace ncv
@@ -15,20 +14,14 @@ namespace ncv
                 template
                 <
                         typename tmatrixi,
-                        typename tmatrixk = tmatrixi,
-                        typename tmatrixo = tmatrixi
+                        typename tsize
                 >
-                decltype(auto) make_toeplitz(const tmatrixi& idata, const tmatrixk& kdata, const tmatrixo& odata)
+                decltype(auto) make_toeplitz(const tmatrixi& idata, const tsize krows, const tsize kcols)
                 {
-                        assert(idata.rows() + 1 == kdata.rows() + odata.rows());
-                        assert(idata.cols() + 1 == kdata.cols() + odata.cols());
-
-                        const auto orows = odata.rows();
-                        const auto ocols = odata.cols();
-                        const auto osize = odata.size();
-                        const auto krows = kdata.rows();
-                        const auto kcols = kdata.cols();
-                        const auto ksize = kdata.size();
+                        const auto orows = idata.rows() - krows + 1;
+                        const auto ocols = idata.cols() - kcols + 1;
+                        const auto osize = orows * ocols;
+                        const auto ksize = krows * kcols;
 
                         typedef typename tmatrixi::Scalar                               tscalar;
                         typedef typename tensor::matrix_types_t<tscalar>::tmatrix       ttoeplitz;
@@ -36,16 +29,16 @@ namespace ncv
                         ttoeplitz toeplitz = ttoeplitz::Zero(osize, ksize);
 
                         /// \todo more efficient construction
-                        for (auto r = 0; r < orows; r ++)
+                        for (tsize r = 0; r < orows; r ++)
                         {
-                                for (auto kr = 0; kr < krows; kr ++)
+                                for (tsize kr = 0; kr < krows; kr ++)
                                 {
-                                        for (auto c = 0; c < ocols; c ++)
+                                        for (tsize c = 0; c < ocols; c ++)
                                         {
 //                                                toeplitz.row(r * ocols + c).segment(kr * kcols, krows) =
 //                                                idata.row(r + kr).segment(c, kcols);
 
-                                                for (auto kc = 0; kc < kcols; kc ++)
+                                                for (tsize kc = 0; kc < kcols; kc ++)
                                                 {
                                                         toeplitz(r * ocols + c, kr * kcols + kc) =
                                                         idata(r + kr, c + kc);
@@ -55,6 +48,16 @@ namespace ncv
                         }
 
                         return toeplitz;
+                }
+
+                template
+                <
+                        typename tmatrixi,
+                        typename tmatrixk = tmatrixi
+                >
+                decltype(auto) make_toeplitz(const tmatrixi& idata, const tmatrixk& kdata)
+                {
+                        return make_toeplitz(idata, kdata.rows(), kdata.cols());
                 }
         }
 }

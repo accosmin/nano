@@ -45,7 +45,7 @@ namespace ncv
                         assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                         assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                        return conv2d_toe_buffered(idata, kdata, make_toeplitz(idata, kdata, odata), odata);
+                        return conv2d_toe_buffered(idata, kdata, make_toeplitz(idata, kdata), odata);
                 }
         }
 }
