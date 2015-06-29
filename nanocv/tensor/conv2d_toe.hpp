@@ -17,7 +17,7 @@ namespace ncv
                         typename tmatrixo = tmatrixi,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                void conv2d_toeplitz_buffered(const tmatrixi& idata,
+                void conv2d_toe_buffered(const tmatrixi& idata,
                         const tmatrixk& kdata, const tmatrixo& toeplitz, tmatrixo& odata)
                 {
                         NANOCV_UNUSED1_RELEASE(idata);
@@ -41,12 +41,12 @@ namespace ncv
                         typename tmatrixo = tmatrixi,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                void conv2d_toeplitz(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                void conv2d_toe(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
                 {
                         assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                         assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                        return conv2d_toeplitz_buffered(idata, kdata, make_toeplitz(idata, kdata, odata), odata);
+                        return conv2d_toe_buffered(idata, kdata, make_toeplitz(idata, kdata, odata), odata);
                 }
         }
 }

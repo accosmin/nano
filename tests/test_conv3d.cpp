@@ -7,7 +7,7 @@
 #include "nanocv/math/conv3d.hpp"
 #include "nanocv/math/random.hpp"
 #include "nanocv/math/epsilon.hpp"
-#include "nanocv/tensor/conv2d_toeplitz.hpp"
+#include "nanocv/tensor/conv2d_toe.hpp"
 
 namespace test
 {
