@@ -14,10 +14,9 @@ namespace test
         template
         <
                 typename top,
-                typename tmatrix,
-                typename tscalar = typename tmatrix::Scalar
+                typename tmatrix
         >
-        tscalar test_cpu(top op, const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
+        decltype(auto) test_cpu(top op, const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
         {
                 odata.setZero();
 
