@@ -32,9 +32,10 @@ namespace test
         void test_conv3d(int isize, int idims, int ksize, int odims)
         {
                 const int osize = isize - ksize + 1;
+                const int kdims = odims * idims;
 
                 tensor_t idata(idims, isize, isize);
-                tensor_t kdata(odims * idims, ksize, ksize);
+                tensor_t kdata(kdims, ksize, ksize);
                 tensor_t odata(odims, osize, osize);
 
                 random_t<scalar_t> rng(-1.0, 1.0);
@@ -62,12 +63,12 @@ BOOST_AUTO_TEST_CASE(test_conv3d)
         using namespace ncv;
 
         const int min_isize = 4;
-        const int max_isize = 12;//48;
+        const int max_isize = 16;
 
         const int min_ksize = 1;
-        const int max_ksize = 15;
+        const int max_ksize = 9;
 
-        const int min_idims = 4;
+        const int min_idims = 16;
         const int max_idims = 64;
 
         const int min_odims = 16;

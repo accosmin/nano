@@ -10,8 +10,7 @@ using namespace ncv;
 template
 <
         typename top,
-        typename tmatrix,
-        typename tscalar = typename tmatrix::Scalar
+        typename tmatrix
 >
 static void test_cpu(tabulator_t::row_t& row, top op, const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
 {
