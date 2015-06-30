@@ -19,27 +19,18 @@ namespace ncv
                 {
                         odata.setZero();
 
-                        for (decltype(idata.dims()) i = 0, k = 0; i < idata.dims(); i ++)
+                        const auto osize = odata.rows() * odata.cols();
+                        const auto ksize = kdata.rows() * kdata.cols();
+                        const auto odims = odata.dims();
+
+                        for (decltype(idata.dims()) i = 0; i < idata.dims(); i ++)
                         {
                                 const auto imap = idata.matrix(i);
                                 const auto tmap = tensor::make_toeplitz(imap, kdata);
 
-                                const auto osize = odata.rows() * odata.cols();
-                                const auto ksize = kdata.rows() * kdata.cols();
-
-                                const auto odims = odata.dims();
-
-                                tensor::map_matrix(odata.data(), odims, osize).transpose() +=
-                                tmap *
-                                tensor::map_matrix(kdata.planeData(i * odims), odims, ksize).transpose();
-
-//                                for (decltype(odata.dims()) o = 0; o < odata.dims(); o ++, k ++)
-//                                {
-//                                        auto omap = odata.matrix(o);
-//                                        auto kmap = kdata.matrix(k);
-
-//                                        conv2d_toe_buffered(imap, kmap, tmap, omap);
-//                                }
+                                tensor::map_matrix(odata.data(), odims, osize) +=
+                                tensor::map_matrix(kdata.planeData(i * odims), odims, ksize) *
+                                tmap.transpose();
                         }
                 }
 
