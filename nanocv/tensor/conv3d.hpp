@@ -7,7 +7,7 @@ namespace ncv
         namespace tensor
         {
                 ///
-                /// \brief 3D convolution output: odata(o) = sum(i, idata(i) @ kdata(o, i))
+                /// \brief 3D convolution output: odata(o) = sum(i, idata(i) @ kdata(i, o))
                 ///
                 template
                 <
@@ -19,18 +19,17 @@ namespace ncv
                 {
                         odata.setZero();
 
-                        for (decltype(idata.dims()) i = 0; i < idata.dims(); i ++)
+                        for (decltype(idata.dims()) i = 0, k = 0; i < idata.dims(); i ++)
                         {
-                                auto imap = idata.matrix(i);
+                                const auto imap = idata.matrix(i);
+                                const auto tmap = tensor::make_toeplitz(imap, kdata);
 
-                                const auto toeplitz = tensor::make_toeplitz(imap, kdata.rows(), kdata.cols());
-
-                                for (decltype(odata.dims()) o = 0; o < odata.dims(); o ++)
+                                for (decltype(odata.dims()) o = 0; o < odata.dims(); o ++, k ++)
                                 {
                                         auto omap = odata.matrix(o);
-                                        auto kmap = kdata.matrix(o * idata.dims() + i);
+                                        auto kmap = kdata.matrix(k);
 
-                                        conv2d_toe_buffered(imap, kmap, toeplitz, omap);
+                                        conv2d_toe_buffered(imap, kmap, tmap, omap);
                                 }
                         }
                 }

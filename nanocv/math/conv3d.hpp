@@ -8,7 +8,7 @@ namespace ncv
         namespace math
         {
                 ///
-                /// \brief 3D convolution output: odata(o) = sum(i, idata(i) @ kdata(o, i))
+                /// \brief 3D convolution output: odata(o) = sum(i, idata(i) @ kdata(i, o))
                 ///
                 template
                 <
@@ -20,12 +20,11 @@ namespace ncv
                 {
                         odata.setZero();
 
-                        for (decltype(odata.dims()) o = 0, k = 0; o < odata.dims(); o ++)
+                        for (decltype(idata.dims()) i = 0, k = 0; i < idata.dims(); i ++)
                         {
-                                auto omap = odata.matrix(o);
-
-                                for (decltype(idata.dims()) i = 0; i < idata.dims(); i ++, k ++)
+                                for (decltype(odata.dims()) o = 0; o < odata.dims(); o ++, k ++)
                                 {
+                                        auto omap = odata.matrix(o);
                                         auto imap = idata.matrix(i);
                                         auto kmap = kdata.matrix(k);
 
@@ -43,20 +42,19 @@ namespace ncv
                         typename ttensork,
                         typename ttensoro
                 >
-                void conv3d_ginput(ttensori&& gidata, const ttensork& kdata, const ttensoro& odata)
+                void conv3d_ginput(ttensori&& idata, const ttensork& kdata, const ttensoro& odata)
                 {
-                        gidata.setZero();
+                        idata.setZero();
 
-                        for (decltype(odata.dims()) o = 0, k = 0; o < odata.dims(); o ++)
+                        for (decltype(idata.dims()) i = 0, k = 0; i < idata.dims(); i ++)
                         {
-                                auto omap = odata.matrix(o);
-
-                                for (decltype(gidata.dims()) i = 0; i < gidata.dims(); i ++, k ++)
+                                for (decltype(odata.dims()) o = 0; o < odata.dims(); o ++, k ++)
                                 {
-                                        auto gimap = gidata.matrix(i);
+                                        auto omap = odata.matrix(o);
+                                        auto imap = idata.matrix(i);
                                         auto kmap = kdata.matrix(k);
 
-                                        math::corr2d_dyn(omap, kmap, gimap);
+                                        math::corr2d_dyn(omap, kmap, imap);
                                 }
                         }
                 }
@@ -70,19 +68,19 @@ namespace ncv
                         typename ttensork,
                         typename ttensoro
                 >
-                void conv3d_gparam(const ttensori& idata, ttensork&& gkdata, const ttensoro& odata)
+                void conv3d_gparam(const ttensori& idata, ttensork&& kdata, const ttensoro& odata)
                 {
-                        for (decltype(odata.dims()) o = 0, k = 0; o < odata.dims(); o ++)
+                        kdata.setZero();
+
+                        for (decltype(idata.dims()) i = 0, k = 0; i < idata.dims(); i ++)
                         {
-                                auto omap = odata.matrix(o);
-
-                                for (decltype(idata.dims()) i = 0; i < idata.dims(); i ++, k ++)
+                                for (decltype(odata.dims()) o = 0; o < odata.dims(); o ++, k ++)
                                 {
+                                        auto omap = odata.matrix(o);
                                         auto imap = idata.matrix(i);
-                                        auto gkmap = gkdata.matrix(k);
+                                        auto kmap = kdata.matrix(k);
 
-                                        gkmap.setZero();
-                                        math::conv2d_dyn(imap, omap, gkmap);
+                                        math::conv2d_dyn(imap, omap, kmap);
                                 }
                         }
                 }

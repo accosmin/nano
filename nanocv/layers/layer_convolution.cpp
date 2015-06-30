@@ -45,7 +45,7 @@ namespace ncv
                 // resize buffers
                 m_idata.resize(idims, irows, icols);
                 m_odata.resize(odims, orows, ocols);
-                m_kdata.resize(odims * idims, krows, kcols);
+                m_kdata.resize(idims * odims, krows, kcols);
                 m_bdata.resize(odims, 1, 1);
 
                 return psize();
