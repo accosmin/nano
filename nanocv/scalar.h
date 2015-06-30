@@ -13,7 +13,7 @@ namespace ncv
         typedef float                                           scalar_t;
 #elseif MANOCV_WITH_DOUBLE
         typedef double                                          scalar_t;
-#elseif NANOCV_WIDTH_LONG_DOUBLE
+#elseif NANOCV_WITH_LONG_DOUBLE
         typedef long double                                     scalar_t;
 #else
         typedef double                                          scalar_t;
