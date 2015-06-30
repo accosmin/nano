@@ -53,14 +53,11 @@ int main(int, char* [])
         const int min_isize = 4;
         const int max_isize = 48;
 
-        const int min_ksize = 3;
+        const int min_ksize = 1;
         const int max_ksize = 9;
 
-        const int min_idims = 16;
-        const int max_idims = 64;
-
-        const int min_odims = 16;
-        const int max_odims = 128;
+        const int idims = 16;
+        const int odims = 32;
 
         tabulator_t table("size\\method");
         table.header() << "dyn [us]"
@@ -70,15 +67,11 @@ int main(int, char* [])
         {
                 table.clear();
 
-                for (int idims = min_idims; idims <= max_idims; idims *= 2)
+                for (int ksize = min_ksize; ksize <= std::min(max_ksize, isize); ksize ++)
                 {
-                        for (int ksize = min_ksize; ksize <= std::min(max_ksize, isize); ksize ++)
-                        {
-                                const int osize = isize - ksize + 1;
+                        const int osize = isize - ksize + 1;
 
-                                for (int odims = min_odims; odims <= max_odims; odims *= 2)
-                                {
-                                        const string_t header = "(" +
+                        const string_t header = "(" +
                                                 text::to_string(idims) + "x" +
                                                 text::to_string(isize) + "x" +
                                                 text::to_string(isize) + " @ " +
@@ -88,11 +81,9 @@ int main(int, char* [])
                                                 text::to_string(osize) + "x" +
                                                 text::to_string(osize) + ")";
 
-                                        tabulator_t::row_t& row = table.append(header);
+                        tabulator_t::row_t& row = table.append(header);
 
-                                        test_conv3d(row, isize, idims, ksize, odims);
-                                }
-                        }
+                        test_conv3d(row, isize, idims, ksize, odims);
                 }
 
                 table.print(std::cout);

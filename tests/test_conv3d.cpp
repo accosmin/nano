@@ -68,27 +68,18 @@ BOOST_AUTO_TEST_CASE(test_conv3d)
         const int min_ksize = 1;
         const int max_ksize = 9;
 
-        const int min_idims = 16;
-        const int max_idims = 64;
-
-        const int min_odims = 16;
-        const int max_odims = 128;
+        const int idims = 16;
+        const int odims = 32;
 
         const int n_tests = 16;
 
         for (int isize = min_isize; isize <= max_isize; isize += 4)
         {
-                for (int idims = min_idims; idims <= max_idims; idims *= 2)
+                for (int ksize = min_ksize; ksize <= std::min(max_ksize, isize); ksize ++)
                 {
-                        for (int ksize = min_ksize; ksize <= std::min(max_ksize, isize); ksize ++)
+                        for (int t = 0; t < n_tests; t ++)
                         {
-                                for (int odims = min_odims; odims <= max_odims; odims *= 2)
-                                {
-                                        for (int t = 0; t < n_tests; t ++)
-                                        {
-                                                test::test_conv3d(isize, idims, ksize, odims);
-                                        }
-                                }
+                                test::test_conv3d(isize, idims, ksize, odims);
                         }
                 }
         }
