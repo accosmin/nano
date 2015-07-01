@@ -95,7 +95,7 @@ namespace ncv
                 ///
                 /// \brief compute the model's gradient wrt inputs
                 ///
-                virtual const tensor_t& ginput(const vector_t& output) const = 0;
+                virtual tensor_t ginput(const vector_t& output) const = 0;
 
                 ///
                 /// \brief construct (from a random initialization) an input that matches closely the target

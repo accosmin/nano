@@ -46,7 +46,7 @@ namespace ncv
 		return *input;
         }
 
-        const tensor_t& forward_network_t::ginput(const vector_t& _output) const
+        tensor_t forward_network_t::ginput(const vector_t& _output) const
         {
                 assert(static_cast<size_t>(_output.size()) == osize());
                 assert(!m_layers.empty());
