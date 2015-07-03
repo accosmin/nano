@@ -13,22 +13,6 @@ namespace test
 {
         using namespace ncv;
 
-        template
-        <
-                typename top,
-                typename ttensori,
-                typename ttensork,
-                typename ttensoro
-        >
-        decltype(auto) test_output(const top& op, const ttensori& idata, const ttensork& kdata, ttensoro&& odata)
-        {
-                odata.setZero();
-
-                op(idata, kdata, odata);
-
-                return odata.vector().sum();
-        }
-
         void test_conv3d(int isize, int idims, int ksize, int odims)
         {
                 const int osize = isize - ksize + 1;
@@ -46,15 +30,45 @@ namespace test
 
                 idata.vector() /= isize;
                 kdata.vector() /= ksize;
-                odata.vector() /= osize;
-
-                const auto output_dyn = test_output(math::conv3d_output<tensor_t, tensor_t, tensor_t&>, idata, kdata, odata);
-                const auto output_toe = test_output(tensor::conv3d_output<tensor_t, tensor_t, tensor_t&>, idata, kdata, odata);
+                odata.vector() /= osize;                
 
                 const scalar_t epsilon = math::epsilon1<scalar_t>();
 
+                // output
+                const auto op_dyn_output = [&] ()
+                {
+                        math::conv3d_output(idata, kdata, odata);
+                        return odata.vector().sum();
+                };
+                const auto op_toe_output = [&] ()
+                {
+                        tensor::conv3d_output(idata, kdata, odata);
+                        return odata.vector().sum();
+                };
+
+                const auto output_dyn = op_dyn_output();
+                const auto output_toe = op_toe_output();
+
                 BOOST_CHECK_LE(math::abs(output_dyn - output_dyn), epsilon);
                 BOOST_CHECK_LE(math::abs(output_toe - output_dyn), epsilon);
+
+                // gradient wrt parameters (convolution kernels)
+                const auto op_dyn_gparam = [&] ()
+                {
+                        math::conv3d_gparam(idata, kdata, odata);
+                        return kdata.vector().sum();
+                };
+                const auto op_toe_gparam = [&] ()
+                {
+                        tensor::conv3d_gparam(idata, kdata, odata);
+                        return kdata.vector().sum();
+                };
+
+                const auto gparam_dyn = op_dyn_gparam();
+                const auto gparam_toe = op_toe_gparam();
+
+                BOOST_CHECK_LE(math::abs(gparam_dyn - gparam_dyn), epsilon);
+                BOOST_CHECK_LE(math::abs(gparam_toe - gparam_dyn), epsilon);
         }
 }
 

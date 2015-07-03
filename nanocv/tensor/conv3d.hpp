@@ -34,58 +34,57 @@ namespace ncv
                         }
                 }
 
-//                ///
-//                /// \brief gradient wrt the input
-//                ///
-//                template
-//                <
-//                        typename ttensori,
-//                        typename ttensork,
-//                        typename ttensoro
-//                >
-//                void conv3d_ginput(ttensori&& gidata, const ttensork& kdata, const ttensoro& odata)
-//                {
-//                        gidata.setZero();
+                ///
+                /// \brief gradient wrt the input
+                ///
+                template
+                <
+                        typename ttensori,
+                        typename ttensork,
+                        typename ttensoro
+                >
+                void conv3d_ginput(ttensori&& idata, const ttensork& kdata, const ttensoro& odata)
+                {
+//                        idata.setZero();
 
-//                        for (decltype(odata.dims()) o = 0, k = 0; o < odata.dims(); o ++)
+//                        for (decltype(idata.dims()) i = 0, k = 0; i < idata.dims(); i ++)
 //                        {
-//                                auto omap = odata.matrix(o);
-
-//                                for (decltype(gidata.dims()) i = 0; i < gidata.dims(); i ++, k ++)
+//                                for (decltype(odata.dims()) o = 0; o < odata.dims(); o ++, k ++)
 //                                {
-//                                        auto gimap = gidata.matrix(i);
+//                                        auto omap = odata.matrix(o);
+//                                        auto imap = idata.matrix(i);
 //                                        auto kmap = kdata.matrix(k);
 
-//                                        math::corr2d_dyn(omap, kmap, gimap);
+//                                        math::corr2d_dyn(omap, kmap, imap);
 //                                }
 //                        }
-//                }
+                }
 
-//                ///
-//                /// \brief gradient wrt the parameters
-//                ///
-//                template
-//                <
-//                        typename ttensori,
-//                        typename ttensork,
-//                        typename ttensoro
-//                >
-//                void conv3d_gparam(const ttensori& idata, ttensork&& gkdata, const ttensoro& odata)
-//                {
-//                        for (decltype(odata.dims()) o = 0, k = 0; o < odata.dims(); o ++)
-//                        {
-//                                auto omap = odata.matrix(o);
+                ///
+                /// \brief gradient wrt the parameters
+                ///
+                template
+                <
+                        typename ttensori,
+                        typename ttensork,
+                        typename ttensoro
+                >
+                void conv3d_gparam(const ttensori& idata, ttensork&& kdata, const ttensoro& odata)
+                {
+                        const auto osize = odata.rows() * odata.cols();
+                        const auto ksize = kdata.rows() * kdata.cols();
+                        const auto odims = odata.dims();
 
-//                                for (decltype(idata.dims()) i = 0; i < idata.dims(); i ++, k ++)
-//                                {
-//                                        auto imap = idata.matrix(i);
-//                                        auto gkmap = gkdata.matrix(k);
+                        for (decltype(idata.dims()) i = 0; i < idata.dims(); i ++)
+                        {
+                                const auto imap = idata.matrix(i);
+                                const auto tmap = tensor::make_toeplitz(imap, odata.rows(), odata.cols());
 
-//                                        gkmap.setZero();
-//                                        math::conv2d_dyn(imap, omap, gkmap);
-//                                }
-//                        }
-//                }
+                                tensor::map_matrix(kdata.planeData(i * odims), odims, ksize) =
+                                tensor::map_matrix(odata.data(), odims, osize) *
+                                tmap.transpose();
+                        }
+                }
         }
 }
 

@@ -9,22 +9,6 @@
 
 using namespace ncv;
 
-template
-<
-        typename top,
-        typename ttensori,
-        typename ttensork,
-        typename ttensoro
->
-static void test_cpu(tabulator_t::row_t& row, top op, const ttensori& idata, const ttensork& kdata, ttensoro&& odata)
-{
-        const size_t trials = 1;
-        row << ncv::measure_robustly_usec([&] ()
-        {
-                op(idata, kdata, odata);
-        }, trials);
-}
-
 void test_conv3d(tabulator_t::row_t& row, int isize, int idims, int ksize, int odims)
 {
         const int osize = isize - ksize + 1;
@@ -44,8 +28,27 @@ void test_conv3d(tabulator_t::row_t& row, int isize, int idims, int ksize, int o
         kdata.vector() /= ksize;
         odata.vector() /= osize;
 
-        test_cpu(row, math::conv3d_output<tensor_t, tensor_t, tensor_t&>, idata, kdata, odata);
-        test_cpu(row, tensor::conv3d_output<tensor_t, tensor_t, tensor_t&>, idata, kdata, odata);
+        const size_t trials = 1;
+
+        // output
+        row << ncv::measure_robustly_usec([&] ()
+        {
+                math::conv3d_output(idata, kdata, odata);
+        }, trials);
+        row << ncv::measure_robustly_usec([&] ()
+        {
+                tensor::conv3d_output(idata, kdata, odata);
+        }, trials);
+
+        // gradient wrt parameters (convolution kernels)
+        row << ncv::measure_robustly_usec([&] ()
+        {
+                math::conv3d_gparam(idata, kdata, odata);
+        }, trials);
+        row << ncv::measure_robustly_usec([&] ()
+        {
+                tensor::conv3d_gparam(idata, kdata, odata);
+        }, trials);
 }
 
 int main(int, char* [])
@@ -60,8 +63,10 @@ int main(int, char* [])
         const int odims = 32;
 
         tabulator_t table("size\\method");
-        table.header() << "dyn [us]"
-                       << "toe [us]";
+        table.header() << "dyn - output [us]"
+                       << "toe - output [us]"
+                       << "dyn - gparam [us]"
+                       << "toe - gparam [us]";
 
         for (int isize = min_isize; isize <= max_isize; isize += 4)
         {
