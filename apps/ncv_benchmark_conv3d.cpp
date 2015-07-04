@@ -49,6 +49,16 @@ void test_conv3d(tabulator_t::row_t& row, int isize, int idims, int ksize, int o
         {
                 tensor::conv3d_gparam(idata, kdata, odata);
         }, trials);
+
+        // gradient wrt inputs
+        row << ncv::measure_robustly_usec([&] ()
+        {
+                math::conv3d_ginput(idata, kdata, odata);
+        }, trials);
+        row << ncv::measure_robustly_usec([&] ()
+        {
+                tensor::conv3d_ginput(idata, kdata, odata);
+        }, trials);
 }
 
 int main(int, char* [])
@@ -66,7 +76,9 @@ int main(int, char* [])
         table.header() << "dyn - output [us]"
                        << "lin - output [us]"
                        << "dyn - gparam [us]"
-                       << "lin - gparam [us]";
+                       << "lin - gparam [us]"
+                       << "dyn - ginput [us]"
+                       << "lin - ginput [us]";
 
         for (int isize = min_isize; isize <= max_isize; isize += 4)
         {

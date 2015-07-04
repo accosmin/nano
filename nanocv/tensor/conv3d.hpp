@@ -1,6 +1,7 @@
 #pragma once
 
 #include "conv2d_linearize.hpp"
+#include "corr2d_linearize.hpp"
 
 namespace ncv
 {
@@ -45,19 +46,23 @@ namespace ncv
                 >
                 void conv3d_ginput(ttensori&& idata, const ttensork& kdata, const ttensoro& odata)
                 {
-//                        idata.setZero();
+                        idata.setZero();
 
-//                        for (decltype(idata.dims()) i = 0, k = 0; i < idata.dims(); i ++)
-//                        {
-//                                for (decltype(odata.dims()) o = 0; o < odata.dims(); o ++, k ++)
-//                                {
-//                                        auto omap = odata.matrix(o);
-//                                        auto imap = idata.matrix(i);
-//                                        auto kmap = kdata.matrix(k);
+                        for (decltype(odata.dims()) o = 0; o < odata.dims(); o ++)
+                        {
+                                const auto omap = odata.matrix(o);
+                                const auto tmap = tensor::corr2d_linearize(omap, kdata);
 
-//                                        math::corr2d_dyn(omap, kmap, imap);
-//                                }
-//                        }
+                                for (decltype(idata.dims()) i = 0; i < idata.dims(); i ++)
+                                {
+                                        auto imap = idata.matrix(i);
+                                        const auto kmap = kdata.matrix(i * odata.dims() + o);
+
+                                        tensor::map_vector(imap.data(), imap.size()) +=
+                                        tmap *
+                                        tensor::map_vector(kmap.data(), kmap.size());
+                                }
+                        }
                 }
 
                 ///
