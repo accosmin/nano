@@ -1,6 +1,6 @@
 #pragma once
 
-#include "conv2d_make_toeplitz.hpp"
+#include "conv2d_linearize.hpp"
 #include "nanocv/arch.h"
 
 namespace ncv
@@ -8,7 +8,8 @@ namespace ncv
         namespace tensor
         {
                 ///
-                /// \brief 2D convolution: odata += idata @ kdata (using an already computed Toeplitz-like matrix)
+                /// \brief 2D convolution: odata += idata @ kdata (as a linear operation)
+                ///     this version receives the already-linearized input matrix (idata)
                 ///
                 template
                 <
@@ -17,22 +18,22 @@ namespace ncv
                         typename tmatrixt = tmatrixi,
                         typename tmatrixo = tmatrixi
                 >
-                void conv2d_toe_buffered(const tmatrixi& idata,
-                        const tmatrixk& kdata, tmatrixt&& toeplitz, tmatrixo&& odata)
+                void conv2d_lin_buffered(const tmatrixi& idata,
+                        const tmatrixk& kdata, tmatrixt&& idata_linearized, tmatrixo&& odata)
                 {
                         NANOCV_UNUSED1_RELEASE(idata);
 
                         assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                         assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                        const auto osize = odata.size();
-                        const auto ksize = kdata.size();
-
-                        tensor::map_vector(odata.data(), osize) += toeplitz * tensor::map_vector(kdata.data(), ksize);
+                        tensor::map_vector(odata.data(), odata.size()) +=
+                        idata_linearized *
+                        tensor::map_vector(kdata.data(), kdata.size());
                 }
 
                 ///
-                /// \brief 2D convolution: odata += idata @ kdata (using a Toeplitz matrix computed on the fly)
+                /// \brief 2D convolution: odata += idata @ kdata (as a linear operation)
+                ///     this version linearizes the input matrix (idata) on the fly
                 ///
                 template
                 <
@@ -40,12 +41,12 @@ namespace ncv
                         typename tmatrixk = tmatrixi,
                         typename tmatrixo = tmatrixi
                 >
-                void conv2d_toe(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                void conv2d_lin(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
                 {
                         assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                         assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                        return conv2d_toe_buffered(idata, kdata, make_toeplitz(idata, kdata), odata);
+                        return conv2d_lin_buffered(idata, kdata, conv2d_linearize(idata, kdata), odata);
                 }
         }
 }

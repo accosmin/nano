@@ -3,7 +3,7 @@
 #include "nanocv/tabulator.h"
 #include "nanocv/measure.hpp"
 #include "nanocv/math/conv2d.hpp"
-#include "nanocv/tensor/conv2d_toe.hpp"
+#include "nanocv/tensor/conv2d_lin.hpp"
 #include <iostream>
 
 using namespace ncv;
@@ -39,11 +39,15 @@ void test_conv2d(tabulator_t::row_t& row, int isize, int ksize)
         kdata /= ksize;
         odata /= osize;
 
-        const matrix_t toe = ncv::tensor::make_toeplitz(idata, kdata);
+        const matrix_t lin = ncv::tensor::conv2d_linearize(idata, kdata);
 
-        const auto op_toe = [&] (const matrix_t& idata, const matrix_t& kdata, matrix_t& odata)
+        const auto op_lin = [&] (const matrix_t& idata, const matrix_t& kdata, matrix_t& odata)
         {
-                tensor::conv2d_toe_buffered(idata, kdata, toe, odata);
+                tensor::conv2d_lin(idata, kdata, odata);
+        };
+        const auto op_lin_buff = [&] (const matrix_t& idata, const matrix_t& kdata, matrix_t& odata)
+        {
+                tensor::conv2d_lin_buffered(idata, kdata, lin, odata);
         };
 
         test_cpu(row, math::conv2d_eig<matrix_t>, idata, kdata, odata);
@@ -51,8 +55,8 @@ void test_conv2d(tabulator_t::row_t& row, int isize, int ksize)
         test_cpu(row, math::conv2d_dot<matrix_t>, idata, kdata, odata);
         test_cpu(row, math::conv2d_mad<matrix_t>, idata, kdata, odata);
         test_cpu(row, math::conv2d_dyn<matrix_t>, idata, kdata, odata);
-        test_cpu(row, tensor::conv2d_toe<matrix_t>, idata, kdata, odata);
-        test_cpu(row, op_toe, idata, kdata, odata);
+        test_cpu(row, op_lin, idata, kdata, odata);
+        test_cpu(row, op_lin_buff, idata, kdata, odata);
 }
 
 int main(int, char* [])
@@ -67,8 +71,8 @@ int main(int, char* [])
                         << "dot [us]"
                         << "mad [us]"
                         << "dyn [us]"
-                        << "toe [us]"
-                        << "toe (buff) [us]";
+                        << "lin [us]"
+                        << "lin (buff) [us]";
 
         for (int isize = min_isize; isize <= max_isize; isize += 4)
         {

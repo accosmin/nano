@@ -16,7 +16,7 @@ namespace ncv
                         typename tmatrixi,
                         typename tsize
                 >
-                decltype(auto) make_toeplitz(const tmatrixi& idata, const tsize krows, const tsize kcols)
+                decltype(auto) conv2d_linearize(const tmatrixi& idata, const tsize krows, const tsize kcols)
                 {
                         const auto orows = idata.rows() - krows + 1;
                         const auto ocols = idata.cols() - kcols + 1;
@@ -55,9 +55,9 @@ namespace ncv
                         typename tmatrixi,
                         typename tmatrixk = tmatrixi
                 >
-                decltype(auto) make_toeplitz(const tmatrixi& idata, const tmatrixk& kdata)
+                decltype(auto) conv2d_linearize(const tmatrixi& idata, const tmatrixk& kdata)
                 {
-                        return make_toeplitz(idata, kdata.rows(), kdata.cols());
+                        return conv2d_linearize(idata, kdata.rows(), kdata.cols());
                 }
         }
 }

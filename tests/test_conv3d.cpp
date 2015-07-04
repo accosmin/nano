@@ -40,17 +40,17 @@ namespace test
                         math::conv3d_output(idata, kdata, odata);
                         return odata.vector().sum();
                 };
-                const auto op_toe_output = [&] ()
+                const auto op_lin_output = [&] ()
                 {
                         tensor::conv3d_output(idata, kdata, odata);
                         return odata.vector().sum();
                 };
 
                 const auto output_dyn = op_dyn_output();
-                const auto output_toe = op_toe_output();
+                const auto output_lin = op_lin_output();
 
                 BOOST_CHECK_LE(math::abs(output_dyn - output_dyn), epsilon);
-                BOOST_CHECK_LE(math::abs(output_toe - output_dyn), epsilon);
+                BOOST_CHECK_LE(math::abs(output_lin - output_dyn), epsilon);
 
                 // gradient wrt parameters (convolution kernels)
                 const auto op_dyn_gparam = [&] ()
@@ -58,17 +58,17 @@ namespace test
                         math::conv3d_gparam(idata, kdata, odata);
                         return kdata.vector().sum();
                 };
-                const auto op_toe_gparam = [&] ()
+                const auto op_lin_gparam = [&] ()
                 {
                         tensor::conv3d_gparam(idata, kdata, odata);
                         return kdata.vector().sum();
                 };
 
                 const auto gparam_dyn = op_dyn_gparam();
-                const auto gparam_toe = op_toe_gparam();
+                const auto gparam_lin = op_lin_gparam();
 
                 BOOST_CHECK_LE(math::abs(gparam_dyn - gparam_dyn), epsilon);
-                BOOST_CHECK_LE(math::abs(gparam_toe - gparam_dyn), epsilon);
+                BOOST_CHECK_LE(math::abs(gparam_lin - gparam_dyn), epsilon);
         }
 }
 

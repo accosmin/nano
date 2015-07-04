@@ -64,9 +64,9 @@ int main(int, char* [])
 
         tabulator_t table("size\\method");
         table.header() << "dyn - output [us]"
-                       << "toe - output [us]"
+                       << "lin - output [us]"
                        << "dyn - gparam [us]"
-                       << "toe - gparam [us]";
+                       << "lin - gparam [us]";
 
         for (int isize = min_isize; isize <= max_isize; isize += 4)
         {

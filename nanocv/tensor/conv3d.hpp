@@ -1,6 +1,6 @@
 #pragma once
 
-#include "conv2d_toe.hpp"
+#include "conv2d_linearize.hpp"
 
 namespace ncv
 {
@@ -26,7 +26,7 @@ namespace ncv
                         for (decltype(idata.dims()) i = 0; i < idata.dims(); i ++)
                         {
                                 const auto imap = idata.matrix(i);
-                                const auto tmap = tensor::make_toeplitz(imap, kdata);
+                                const auto tmap = tensor::conv2d_linearize(imap, kdata);
 
                                 tensor::map_matrix(odata.data(), odims, osize) +=
                                 tensor::map_matrix(kdata.planeData(i * odims), odims, ksize) *
@@ -78,7 +78,7 @@ namespace ncv
                         for (decltype(idata.dims()) i = 0; i < idata.dims(); i ++)
                         {
                                 const auto imap = idata.matrix(i);
-                                const auto tmap = tensor::make_toeplitz(imap, odata.rows(), odata.cols());
+                                const auto tmap = tensor::conv2d_linearize(imap, odata.rows(), odata.cols());
 
                                 tensor::map_matrix(kdata.planeData(i * odims), odims, ksize) =
                                 tensor::map_matrix(odata.data(), odims, osize) *
