@@ -239,7 +239,7 @@ namespace ncv
                 }
 
                 // check output size to match the target
-                if (    input.dims() != osize() ||
+                if (    static_cast<size_t>(input.dims()) != osize() ||
                         input.rows() != 1 ||
                         input.cols() != 1)
                 {

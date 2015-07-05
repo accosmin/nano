@@ -12,7 +12,7 @@ namespace ncv
         typedef tensor::matrix_types_t<scalar_t>::tmatrix       matrix_t;
         typedef tensor::matrix_types_t<scalar_t>::tmatrices     matrices_t;
 
-        typedef tensor::tensor_t<scalar_t, size_t>              tensor_t;
+        typedef tensor::tensor_t<scalar_t>                      tensor_t;
         typedef std::vector<tensor_t>                           tensors_t;
 }
 

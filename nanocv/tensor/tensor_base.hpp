@@ -12,18 +12,19 @@ namespace ncv
                 ///
                 template
                 <
-                        typename tscalar,
-                        typename tsize,
-                        typename tvector,
-                        typename tindex = tsize
+                        typename tvector
                 >
                 class tensor_base_t
                 {
                 public:
 
+                        typedef typename tvector::Scalar        tscalar;
+                        typedef typename tvector::Index         tindex;
+                        typedef tindex                          tsize;
+
                         // Eigen compatible
-                        typedef tscalar Scalar;
-                        typedef tindex Index;
+                        typedef tscalar         Scalar;
+                        typedef tindex          Index;
 
                         ///
                         /// \brief constructor
@@ -44,6 +45,7 @@ namespace ncv
                                         m_cols(cols),
                                         m_data(data)
                         {
+                                assert(m_data.size() == dims * rows * cols);
                         }
 
                         ///

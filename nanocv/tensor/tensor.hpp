@@ -14,18 +14,18 @@ namespace ncv
                 template
                 <
                         typename tscalar,
-                        typename tsize,
-                        typename tindex = tsize,
-                        typename tvector = typename vector_types_t<tscalar>::tvector,
-                        typename tbase = tensor_base_t<tscalar, tsize, tvector>
+                        typename tvector = typename vector_types_t<tscalar>::tvector
                 >
-                class tensor_t : public tbase
+                class tensor_t : public tensor_base_t<tvector>
                 {
                 public:
 
+                        typedef tensor_base_t<tvector>  tbase;
+                        typedef typename tbase::tsize   tsize;
+
                         // Eigen compatible
-                        typedef typename tbase::Scalar Scalar;
-                        typedef typename tbase::Index Index;
+                        typedef typename tbase::Scalar  Scalar;
+                        typedef typename tbase::Index   Index;
 
                         ///
                         /// \brief constructor
@@ -76,19 +76,19 @@ namespace ncv
                 template
                 <
                         typename tscalar,
-                        typename tsize,
-                        typename tindex = tsize,
                         typename tvector = typename vector_types_t<tscalar>::tvector,
-                        typename tmap = Eigen::Map<tvector>,
-                        typename tbase = tensor_base_t<tscalar, tsize, tmap>
+                        typename tmap = Eigen::Map<tvector>
                 >
-                class tensor_map_t : public tbase
+                class tensor_map_t : public tensor_base_t<tmap>
                 {
                 public:
 
+                        typedef tensor_base_t<tmap>     tbase;
+                        typedef typename tbase::tsize   tsize;
+
                         // Eigen compatible
-                        typedef typename tbase::Scalar Scalar;
-                        typedef typename tbase::Index Index;
+                        typedef typename tbase::Scalar  Scalar;
+                        typedef typename tbase::Index   Index;
 
                         ///
                         /// \brief constructor
@@ -107,7 +107,7 @@ namespace ncv
                         typename tvalue_,
                         typename tsize,
                         typename tvalue = typename std::remove_const<tvalue_>::type,
-                        typename tresult = tensor_map_t<tvalue, tsize>
+                        typename tresult = tensor_map_t<tvalue>
                 >
                 tresult map_tensor(tvalue_* data, tsize dims, tsize rows, tsize cols)
                 {
@@ -135,7 +135,7 @@ namespace ncv
                         typename tvalue_,
                         typename tsize,
                         typename tvalue = typename std::remove_const<tvalue_>::type,
-                        typename tresult = tensor_map_t<tvalue, tsize>
+                        typename tresult = tensor_map_t<tvalue>
                 >
                 tresult map_tensor(const tvalue_* data, tsize dims, tsize rows, tsize cols)
                 {
