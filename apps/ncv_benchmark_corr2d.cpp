@@ -38,12 +38,12 @@ void test_corr2d(tabulator_t::row_t& row, int isize, int ksize)
         kdata /= ksize;
         odata /= osize;
 
-        test_cpu(row, ncv::math::corr2d_egb<matrix_t>, odata, kdata, idata);
-        test_cpu(row, ncv::math::corr2d_egr<matrix_t>, odata, kdata, idata);
-        test_cpu(row, ncv::math::corr2d_cpp<matrix_t>, odata, kdata, idata);
-        test_cpu(row, ncv::math::corr2d_mdk<matrix_t>, odata, kdata, idata);
-        test_cpu(row, ncv::math::corr2d_mdo<matrix_t>, odata, kdata, idata);
-        test_cpu(row, ncv::math::corr2d_dyn<matrix_t>, odata, kdata, idata);
+        test_cpu(row, ncv::math::corr2d_egb_t(), odata, kdata, idata);
+        test_cpu(row, ncv::math::corr2d_egr_t(), odata, kdata, idata);
+        test_cpu(row, ncv::math::corr2d_cpp_t(), odata, kdata, idata);
+        test_cpu(row, ncv::math::corr2d_mdk_t(), odata, kdata, idata);
+        test_cpu(row, ncv::math::corr2d_mdo_t(), odata, kdata, idata);
+        test_cpu(row, ncv::math::corr2d_dyn_t(), odata, kdata, idata);
 }
 
 int main(int, char* [])

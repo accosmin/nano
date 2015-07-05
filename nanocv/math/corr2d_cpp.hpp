@@ -9,43 +9,45 @@ namespace ncv
                 ///
                 /// \brief 2D correlation: idata += odata @ kdata (using plain array indexing)
                 ///
-                template
-                <
-                        typename tmatrixo,
-                        typename tmatrixk = tmatrixo,
-                        typename tmatrixi = tmatrixo,
-                        typename tscalar = typename tmatrixi::Scalar
-                >
-                void corr2d_cpp(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
+                struct corr2d_cpp_t
                 {
-                        assert(idata.rows() + 1 == kdata.rows() + odata.rows());
-                        assert(idata.cols() + 1 == kdata.cols() + odata.cols());
-
-                        const auto orows = odata.rows();
-                        const auto ocols = odata.cols();
-                        const auto krows = kdata.rows();
-                        const auto kcols = kdata.cols();
-                        const auto icols = idata.cols();
-
-                        for (auto r = 0; r < orows; r ++)
+                        template
+                        <
+                                typename tmatrixo,
+                                typename tmatrixk = tmatrixo,
+                                typename tmatrixi = tmatrixo
+                        >
+                        void operator()(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata) const
                         {
-                                const tscalar* podata = odata.data() + r * ocols;
+                                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                                for (auto kr = 0; kr < krows; kr ++)
+                                const auto orows = odata.rows();
+                                const auto ocols = odata.cols();
+                                const auto krows = kdata.rows();
+                                const auto kcols = kdata.cols();
+                                const auto icols = idata.cols();
+
+                                for (auto r = 0; r < orows; r ++)
                                 {
-                                        tscalar* pidata = idata.data() + (r + kr) * icols;
-                                        const tscalar* pkdata = kdata.data() + kr * kcols;
+                                        const auto* podata = odata.data() + r * ocols;
 
-                                        for (auto c = 0; c < ocols; c ++)
+                                        for (auto kr = 0; kr < krows; kr ++)
                                         {
-                                                for (auto kc = 0; kc < kcols; kc ++)
+                                                auto* pidata = idata.data() + (r + kr) * icols;
+                                                const auto* pkdata = kdata.data() + kr * kcols;
+
+                                                for (auto c = 0; c < ocols; c ++)
                                                 {
-                                                        pidata[c + kc] += pkdata[kc] * podata[c];
+                                                        for (auto kc = 0; kc < kcols; kc ++)
+                                                        {
+                                                                pidata[c + kc] += pkdata[kc] * podata[c];
+                                                        }
                                                 }
                                         }
                                 }
                         }
-                }
+                };
         }
 }
 

@@ -42,12 +42,12 @@ namespace test
                 kdata /= ksize;
                 odata /= osize;
 
-                const scalar_t convcpu_eig = test_cpu(ncv::math::conv2d_eig<matrix_t>, idata, kdata, odata);
-                const scalar_t convcpu_cpp = test_cpu(ncv::math::conv2d_cpp<matrix_t>, idata, kdata, odata);
-                const scalar_t convcpu_dot = test_cpu(ncv::math::conv2d_dot<matrix_t>, idata, kdata, odata);
-                const scalar_t convcpu_mad = test_cpu(ncv::math::conv2d_mad<matrix_t>, idata, kdata, odata);
-                const scalar_t convcpu_dyn = test_cpu(ncv::math::conv2d_dyn<matrix_t>, idata, kdata, odata);
-                const scalar_t convcpu_lin = test_cpu(ncv::tensor::conv2d_lin<matrix_t, matrix_t, matrix_t>, idata, kdata, odata);
+                const scalar_t convcpu_eig = test_cpu(ncv::math::conv2d_eig_t(), idata, kdata, odata);
+                const scalar_t convcpu_cpp = test_cpu(ncv::math::conv2d_cpp_t(), idata, kdata, odata);
+                const scalar_t convcpu_dot = test_cpu(ncv::math::conv2d_dot_t(), idata, kdata, odata);
+                const scalar_t convcpu_mad = test_cpu(ncv::math::conv2d_mad_t(), idata, kdata, odata);
+                const scalar_t convcpu_dyn = test_cpu(ncv::math::conv2d_dyn_t(), idata, kdata, odata);
+                const scalar_t convcpu_lin = test_cpu(ncv::tensor::conv2d_lin_t(), idata, kdata, odata);
 
                 const scalar_t epsilon = math::epsilon1<scalar_t>();
 

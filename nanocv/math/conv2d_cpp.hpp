@@ -9,45 +9,48 @@ namespace ncv
                 ///
                 /// \brief 2D convolution: odata += idata @ kdata (using plain array indexing)
                 ///
-                template
-                <
-                        typename tmatrixi,
-                        typename tmatrixk = tmatrixi,
-                        typename tmatrixo = tmatrixi,
-                        typename tscalar = typename tmatrixi::Scalar
-                >
-                void conv2d_cpp(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                struct conv2d_cpp_t
                 {
-                        assert(idata.rows() + 1 == kdata.rows() + odata.rows());
-                        assert(idata.cols() + 1 == kdata.cols() + odata.cols());
-
-                        const auto orows = odata.rows();
-                        const auto ocols = odata.cols();
-                        const auto krows = kdata.rows();
-                        const auto kcols = kdata.cols();
-                        const auto icols = idata.cols();
-
-                        for (auto r = 0; r < orows; r ++)
+                        template
+                        <
+                                typename tmatrixi,
+                                typename tmatrixk = tmatrixi,
+                                typename tmatrixo = tmatrixi,
+                                typename tscalar = typename tmatrixo::Scalar
+                        >
+                        void operator()(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata) const
                         {
-                                tscalar* podata = odata.data() + r * ocols;
+                                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                                for (auto kr = 0; kr < krows; kr ++)
+                                const auto orows = odata.rows();
+                                const auto ocols = odata.cols();
+                                const auto krows = kdata.rows();
+                                const auto kcols = kdata.cols();
+                                const auto icols = idata.cols();
+
+                                for (auto r = 0; r < orows; r ++)
                                 {
-                                        const tscalar* pidata = idata.data() + (r + kr) * icols;
-                                        const tscalar* pkdata = kdata.data() + kr * kcols;
+                                        auto* podata = odata.data() + r * ocols;
 
-                                        for (auto c = 0; c < ocols; c ++)
+                                        for (auto kr = 0; kr < krows; kr ++)
                                         {
-                                                tscalar sum = 0;
-                                                for (auto kc = 0; kc < kcols; kc ++)
+                                                const auto* pidata = idata.data() + (r + kr) * icols;
+                                                const auto* pkdata = kdata.data() + kr * kcols;
+
+                                                for (auto c = 0; c < ocols; c ++)
                                                 {
-                                                        sum += pidata[c + kc] * pkdata[kc];
+                                                        tscalar sum = 0;
+                                                        for (auto kc = 0; kc < kcols; kc ++)
+                                                        {
+                                                                sum += pidata[c + kc] * pkdata[kc];
+                                                        }
+                                                        podata[c] += sum;
                                                 }
-                                                podata[c] += sum;
                                         }
                                 }
                         }
-                }
+                };
         }
 }
 

@@ -25,6 +25,7 @@ namespace ncv
 
                         // Eigen compatible
                         typedef typename tbase::Scalar Scalar;
+                        typedef typename tbase::Index Index;
 
                         ///
                         /// \brief constructor
@@ -87,6 +88,7 @@ namespace ncv
 
                         // Eigen compatible
                         typedef typename tbase::Scalar Scalar;
+                        typedef typename tbase::Index Index;
 
                         ///
                         /// \brief constructor

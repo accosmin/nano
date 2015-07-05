@@ -10,78 +10,85 @@ namespace ncv
                 ///
                 /// \brief 2D convolution: odata += idata @ kdata (using a mad operator)
                 ///
-                template
-                <
-                        typename tmatrixi,
-                        typename tmatrixk = tmatrixi,
-                        typename tmatrixo = tmatrixi,
-                        typename tscalar = typename tmatrixi::Scalar
-                >
-                void conv2d_mad(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                struct conv2d_mad_t
                 {
-                        assert(idata.rows() + 1 == kdata.rows() + odata.rows());
-                        assert(idata.cols() + 1 == kdata.cols() + odata.cols());
-
-                        const auto orows = odata.rows();
-                        const auto ocols = odata.cols();
-                        const auto krows = kdata.rows();
-                        const auto kcols = kdata.cols();
-                        const auto icols = idata.cols();
-
-                        for (auto r = 0; r < orows; r ++)
+                        template
+                        <
+                                typename tmatrixi,
+                                typename tmatrixk = tmatrixi,
+                                typename tmatrixo = tmatrixi
+                        >
+                        void operator()(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata) const
                         {
-                                tscalar* podata = odata.data() + r * ocols;
+                                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                                for (auto kr = 0; kr < krows; kr ++)
+                                const auto orows = odata.rows();
+                                const auto ocols = odata.cols();
+                                const auto krows = kdata.rows();
+                                const auto kcols = kdata.cols();
+                                const auto icols = idata.cols();
+
+                                for (auto r = 0; r < orows; r ++)
                                 {
-                                        const tscalar* pidata = idata.data() + (r + kr) * icols;
-                                        const tscalar* pkdata = kdata.data() + kr * kcols;
+                                        auto* podata = odata.data() + r * ocols;
 
-                                        for (auto kc = 0; kc < kcols; kc ++)
+                                        for (auto kr = 0; kr < krows; kr ++)
                                         {
-                                                math::mad<tscalar>(pidata + kc, pkdata[kc], ocols, podata);
+                                                const auto* pidata = idata.data() + (r + kr) * icols;
+                                                const auto* pkdata = kdata.data() + kr * kcols;
+
+                                                for (auto kc = 0; kc < kcols; kc ++)
+                                                {
+                                                        math::mad(pidata + kc, pkdata[kc], ocols, podata);
+                                                }
                                         }
                                 }
                         }
-                }
+                };
 
                 ///
                 /// \brief 2D convolution: odata += idata @ kdata (using a mad operator for a fixed output size)
                 ///
                 template
                 <
-                        int ocols,
-                        typename tmatrixi,
-                        typename tmatrixk = tmatrixi,
-                        typename tmatrixo = tmatrixi,
-                        typename tscalar = typename tmatrixi::Scalar
+                        int ocols
                 >
-                void conv2d_madi(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                struct conv2d_madi_t
                 {
-                        assert(idata.rows() + 1 == kdata.rows() + odata.rows());
-                        assert(idata.cols() + 1 == kdata.cols() + odata.cols());
-
-                        const auto orows = odata.rows();
-                        const auto krows = kdata.rows();
-                        const auto kcols = kdata.cols();
-                        const auto icols = idata.cols();
-
-                        for (auto r = 0; r < orows; r ++)
+                        template
+                        <
+                                typename tmatrixi,
+                                typename tmatrixk = tmatrixi,
+                                typename tmatrixo = tmatrixi
+                        >
+                        void operator()(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata) const
                         {
-                                tscalar* podata = odata.data() + r * ocols;
+                                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                                for (auto kr = 0; kr < krows; kr ++)
+                                const auto orows = odata.rows();
+                                const auto krows = kdata.rows();
+                                const auto kcols = kdata.cols();
+                                const auto icols = idata.cols();
+
+                                for (auto r = 0; r < orows; r ++)
                                 {
-                                        const tscalar* pidata = idata.data() + (r + kr) * icols;
-                                        const tscalar* pkdata = kdata.data() + kr * kcols;
+                                        auto* podata = odata.data() + r * ocols;
 
-                                        for (auto kc = 0; kc < kcols; kc ++)
+                                        for (auto kr = 0; kr < krows; kr ++)
                                         {
-                                                math::mad<ocols>(pidata + kc, pkdata[kc], podata);
+                                                const auto* pidata = idata.data() + (r + kr) * icols;
+                                                const auto* pkdata = kdata.data() + kr * kcols;
+
+                                                for (auto kc = 0; kc < kcols; kc ++)
+                                                {
+                                                        math::mad<ocols>(pidata + kc, pkdata[kc], podata);
+                                                }
                                         }
                                 }
                         }
-                }
+                };
         }
 }
 

@@ -1,8 +1,5 @@
 #pragma once
 
-#include "conv2d_dyn.hpp"
-#include "corr2d_dyn.hpp"
-
 namespace ncv
 {
         namespace math
@@ -12,11 +9,13 @@ namespace ncv
                 ///
                 template
                 <
+                        typename toperator,     ///< 2D convolution operator
                         typename ttensori,
                         typename ttensork,
                         typename ttensoro
                 >
-                void conv3d_output(const ttensori& idata, const ttensork& kdata, ttensoro&& odata)
+                void conv3d_output(const toperator& conv2d_op,
+                        const ttensori& idata, const ttensork& kdata, ttensoro&& odata)
                 {
                         odata.setZero();
 
@@ -28,7 +27,7 @@ namespace ncv
                                         auto imap = idata.matrix(i);
                                         auto kmap = kdata.matrix(k);
 
-                                        math::conv2d_dyn(imap, kmap, omap);
+                                        conv2d_op(imap, kmap, omap);
                                 }
                         }
                 }
@@ -38,11 +37,13 @@ namespace ncv
                 ///
                 template
                 <
+                        typename toperator,     ///< 2D correlation operator
                         typename ttensori,
                         typename ttensork,
                         typename ttensoro
                 >
-                void conv3d_ginput(ttensori&& idata, const ttensork& kdata, const ttensoro& odata)
+                void conv3d_ginput(const toperator& corr2d_op,
+                        ttensori&& idata, const ttensork& kdata, const ttensoro& odata)
                 {
                         idata.setZero();
 
@@ -54,7 +55,7 @@ namespace ncv
                                         auto imap = idata.matrix(i);
                                         auto kmap = kdata.matrix(k);
 
-                                        math::corr2d_dyn(omap, kmap, imap);
+                                        corr2d_op(omap, kmap, imap);
                                 }
                         }
                 }
@@ -64,11 +65,13 @@ namespace ncv
                 ///
                 template
                 <
+                        typename toperator,     ///< 2D convolution operator
                         typename ttensori,
                         typename ttensork,
                         typename ttensoro
                 >
-                void conv3d_gparam(const ttensori& idata, ttensork&& kdata, const ttensoro& odata)
+                void conv3d_gparam(const toperator& conv2d_op,
+                        const ttensori& idata, ttensork&& kdata, const ttensoro& odata)
                 {
                         kdata.setZero();
 
@@ -80,7 +83,7 @@ namespace ncv
                                         auto imap = idata.matrix(i);
                                         auto kmap = kdata.matrix(k);
 
-                                        math::conv2d_dyn(imap, omap, kmap);
+                                        conv2d_op(imap, omap, kmap);
                                 }
                         }
                 }

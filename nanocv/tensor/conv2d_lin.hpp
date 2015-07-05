@@ -10,44 +10,61 @@ namespace ncv
                 ///
                 /// \brief 2D convolution: odata += idata @ kdata (as a linear operation)
                 ///     this version receives the already-linearized input matrix (idata)
-                ///
                 template
                 <
-                        typename tmatrixi,
-                        typename tmatrixk = tmatrixi,
-                        typename tmatrixt = tmatrixi,
-                        typename tmatrixo = tmatrixi
+                        typename tmatrixt
                 >
-                void conv2d_lin_buffered(const tmatrixi& idata,
-                        const tmatrixk& kdata, tmatrixt&& idata_linearized, tmatrixo&& odata)
+                struct conv2d_lin_buf_t
                 {
-                        NANOCV_UNUSED1_RELEASE(idata);
+                        explicit conv2d_lin_buf_t(const tmatrixt& idata_linearized)
+                                :       m_idata_linearized(idata_linearized)
+                        {
+                        }
 
-                        assert(idata.rows() + 1 == kdata.rows() + odata.rows());
-                        assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+                        template
+                        <
+                                typename tmatrixi,
+                                typename tmatrixk = tmatrixi,
+                                typename tmatrixo = tmatrixi
+                        >
+                        void operator()(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo&& odata) const
+                        {
+                                NANOCV_UNUSED1_RELEASE(idata);
 
-                        tensor::map_vector(odata.data(), odata.size()) +=
-                        idata_linearized *
-                        tensor::map_vector(kdata.data(), kdata.size());
-                }
+                                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+
+                                tensor::map_vector(odata.data(), odata.size()) +=
+                                m_idata_linearized *
+                                tensor::map_vector(kdata.data(), kdata.size());
+                        }
+
+                        tmatrixt        m_idata_linearized;
+                };
 
                 ///
                 /// \brief 2D convolution: odata += idata @ kdata (as a linear operation)
                 ///     this version linearizes the input matrix (idata) on the fly
                 ///
-                template
-                <
-                        typename tmatrixi,
-                        typename tmatrixk = tmatrixi,
-                        typename tmatrixo = tmatrixi
-                >
-                void conv2d_lin(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata)
+                struct conv2d_lin_t
                 {
-                        assert(idata.rows() + 1 == kdata.rows() + odata.rows());
-                        assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+                        template
+                        <
+                                typename tmatrixi,
+                                typename tmatrixk = tmatrixi,
+                                typename tmatrixo = tmatrixi
+                        >
+                        void operator()(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata) const
+                        {
+                                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                        return conv2d_lin_buffered(idata, kdata, conv2d_linearize(idata, kdata), odata);
-                }
+                                const auto idata_linearized = conv2d_linearize(idata, kdata);
+
+                                return  conv2d_lin_buf_t<decltype(idata_linearized)>(idata_linearized)
+                                        (idata, kdata, odata);
+                        }
+                };
         }
 }
 

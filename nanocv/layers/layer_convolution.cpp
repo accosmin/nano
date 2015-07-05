@@ -2,6 +2,8 @@
 #include "nanocv/logger.h"
 #include "nanocv/text.hpp"
 #include "nanocv/math/clamp.hpp"
+#include "nanocv/math/conv2d.hpp"
+#include "nanocv/math/corr2d.hpp"
 #include "nanocv/math/conv3d.hpp"
 #include "nanocv/math/random.hpp"
 #include "nanocv/tensor/serialize.hpp"
@@ -103,7 +105,7 @@ namespace ncv
                 m_idata = input;
 
                 // convolution
-                math::conv3d_output(m_idata, m_kdata, m_odata);
+                math::conv3d_output(math::conv2d_dyn_t(), m_idata, m_kdata, m_odata);
 
                 // +bias
                 for (size_t o = 0; o < odims(); o ++)
@@ -122,7 +124,7 @@ namespace ncv
 
                 m_odata = output;
                 
-                math::conv3d_ginput(m_idata, m_kdata, m_odata);
+                math::conv3d_ginput(math::corr2d_dyn_t(), m_idata, m_kdata, m_odata);
 
                 return m_idata;
         }
@@ -136,7 +138,7 @@ namespace ncv
                 m_odata = output;
                 
                 // wrt convolution
-                math::conv3d_gparam(m_idata, tensor::map_tensor(gradient, m_kdata), m_odata);
+                math::conv3d_gparam(math::conv2d_dyn_t(), m_idata, tensor::map_tensor(gradient, m_kdata), m_odata);
 
                 // wrt bias
                 for (size_t o = 0; o < odims(); o ++)

@@ -41,22 +41,13 @@ void test_conv2d(tabulator_t::row_t& row, int isize, int ksize)
 
         const matrix_t lin = ncv::tensor::conv2d_linearize(idata, kdata);
 
-        const auto op_lin = [&] (const matrix_t& idata, const matrix_t& kdata, matrix_t& odata)
-        {
-                tensor::conv2d_lin(idata, kdata, odata);
-        };
-        const auto op_lin_buff = [&] (const matrix_t& idata, const matrix_t& kdata, matrix_t& odata)
-        {
-                tensor::conv2d_lin_buffered(idata, kdata, lin, odata);
-        };
-
-        test_cpu(row, math::conv2d_eig<matrix_t>, idata, kdata, odata);
-        test_cpu(row, math::conv2d_cpp<matrix_t>, idata, kdata, odata);
-        test_cpu(row, math::conv2d_dot<matrix_t>, idata, kdata, odata);
-        test_cpu(row, math::conv2d_mad<matrix_t>, idata, kdata, odata);
-        test_cpu(row, math::conv2d_dyn<matrix_t>, idata, kdata, odata);
-        test_cpu(row, op_lin, idata, kdata, odata);
-        test_cpu(row, op_lin_buff, idata, kdata, odata);
+        test_cpu(row, math::conv2d_eig_t(), idata, kdata, odata);
+        test_cpu(row, math::conv2d_cpp_t(), idata, kdata, odata);
+        test_cpu(row, math::conv2d_dot_t(), idata, kdata, odata);
+        test_cpu(row, math::conv2d_mad_t(), idata, kdata, odata);
+        test_cpu(row, math::conv2d_dyn_t(), idata, kdata, odata);
+        test_cpu(row, tensor::conv2d_lin_t(), idata, kdata, odata);
+        test_cpu(row, tensor::conv2d_lin_buf_t<matrix_t>(lin), idata, kdata, odata);
 }
 
 int main(int, char* [])

@@ -3,6 +3,8 @@
 #include "nanocv/tabulator.h"
 #include "nanocv/measure.hpp"
 #include "nanocv/math/random.hpp"
+#include "nanocv/math/conv2d.hpp"
+#include "nanocv/math/corr2d.hpp"
 #include "nanocv/math/conv3d.hpp"
 #include "nanocv/tensor/conv3d.hpp"
 #include <iostream>
@@ -33,7 +35,7 @@ void test_conv3d(tabulator_t::row_t& row, int isize, int idims, int ksize, int o
         // output
         row << ncv::measure_robustly_usec([&] ()
         {
-                math::conv3d_output(idata, kdata, odata);
+                math::conv3d_output(math::conv2d_dyn_t(), idata, kdata, odata);
         }, trials);
         row << ncv::measure_robustly_usec([&] ()
         {
@@ -43,7 +45,7 @@ void test_conv3d(tabulator_t::row_t& row, int isize, int idims, int ksize, int o
         // gradient wrt parameters (convolution kernels)
         row << ncv::measure_robustly_usec([&] ()
         {
-                math::conv3d_gparam(idata, kdata, odata);
+                math::conv3d_gparam(math::conv2d_dyn_t(), idata, kdata, odata);
         }, trials);
         row << ncv::measure_robustly_usec([&] ()
         {
@@ -53,7 +55,7 @@ void test_conv3d(tabulator_t::row_t& row, int isize, int idims, int ksize, int o
         // gradient wrt inputs
         row << ncv::measure_robustly_usec([&] ()
         {
-                math::conv3d_ginput(idata, kdata, odata);
+                math::conv3d_ginput(math::corr2d_dyn_t(), idata, kdata, odata);
         }, trials);
         row << ncv::measure_robustly_usec([&] ()
         {

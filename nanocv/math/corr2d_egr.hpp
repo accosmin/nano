@@ -9,29 +9,32 @@ namespace ncv
                 ///
                 /// \brief 2D correlation: idata += odata @ kdata (using Eigen 1D row-blocks)
                 ///
-                template
-                <
-                        typename tmatrixo,
-                        typename tmatrixk = tmatrixo,
-                        typename tmatrixi = tmatrixo,
-                        typename tscalar = typename tmatrixi::Scalar
-                >
-                void corr2d_egr(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata)
+                struct corr2d_egr_t
                 {
-                        assert(idata.rows() + 1 == kdata.rows() + odata.rows());
-                        assert(idata.cols() + 1 == kdata.cols() + odata.cols());
-
-                        for (auto r = 0; r < odata.rows(); r ++)
+                        template
+                        <
+                                typename tmatrixo,
+                                typename tmatrixk = tmatrixo,
+                                typename tmatrixi = tmatrixo
+                        >
+                        void operator()(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata) const
                         {
-                                for (auto kr = 0; kr < kdata.rows(); kr ++)
+                                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+
+                                for (auto r = 0; r < odata.rows(); r ++)
                                 {
-                                        for (auto kc = 0; kc < kdata.cols(); kc ++)
+                                        for (auto kr = 0; kr < kdata.rows(); kr ++)
                                         {
-                                                idata.block(r + kr, kc, 1, odata.cols()) += odata.row(r) * kdata(kr, kc);
+                                                for (auto kc = 0; kc < kdata.cols(); kc ++)
+                                                {
+                                                        idata.block(r + kr, kc, 1, odata.cols()) +=
+                                                        odata.row(r) * kdata(kr, kc);
+                                                }
                                         }
                                 }
                         }
-                }
+                };
         }
 }
 

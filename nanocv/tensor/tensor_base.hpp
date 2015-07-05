@@ -23,6 +23,7 @@ namespace ncv
 
                         // Eigen compatible
                         typedef tscalar Scalar;
+                        typedef tindex Index;
 
                         ///
                         /// \brief constructor

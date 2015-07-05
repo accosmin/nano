@@ -4,6 +4,8 @@
 #include <boost/test/unit_test.hpp>
 #include "nanocv/tensor.h"
 #include "nanocv/math/abs.hpp"
+#include "nanocv/math/conv2d.hpp"
+#include "nanocv/math/corr2d.hpp"
 #include "nanocv/math/conv3d.hpp"
 #include "nanocv/math/random.hpp"
 #include "nanocv/math/epsilon.hpp"
@@ -37,7 +39,7 @@ namespace test
                 // output
                 const auto op_dyn_output = [&] ()
                 {
-                        math::conv3d_output(idata, kdata, odata);
+                        math::conv3d_output(math::conv2d_dyn_t(), idata, kdata, odata);
                         return odata.vector().sum();
                 };
                 const auto op_lin_output = [&] ()
@@ -55,7 +57,7 @@ namespace test
                 // gradient wrt parameters (convolution kernels)
                 const auto op_dyn_gparam = [&] ()
                 {
-                        math::conv3d_gparam(idata, kdata, odata);
+                        math::conv3d_gparam(math::conv2d_dyn_t(), idata, kdata, odata);
                         return kdata.vector().sum();
                 };
                 const auto op_lin_gparam = [&] ()
@@ -73,7 +75,7 @@ namespace test
                 // gradient wrt inputs
                 const auto op_dyn_ginput = [&] ()
                 {
-                        math::conv3d_ginput(idata, kdata, odata);
+                        math::conv3d_ginput(math::corr2d_dyn_t(), idata, kdata, odata);
                         return idata.vector().sum();
                 };
                 const auto op_lin_ginput = [&] ()
