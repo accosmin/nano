@@ -72,23 +72,23 @@ namespace test
                 BOOST_CHECK_LE(math::abs(gparam_dyn - gparam_dyn), epsilon);
                 BOOST_CHECK_LE(math::abs(gparam_lin - gparam_dyn), epsilon);
 
-                // gradient wrt inputs
-                const auto op_dyn_ginput = [&] ()
-                {
-                        math::conv3d_ginput(math::corr2d_dyn_t(), idata, kdata, odata);
-                        return idata.vector().sum();
-                };
-                const auto op_lin_ginput = [&] ()
-                {
-                        tensor::conv3d_ginput(idata, kdata, odata);
-                        return idata.vector().sum();
-                };
+//                // gradient wrt inputs
+//                const auto op_dyn_ginput = [&] ()
+//                {
+//                        math::conv3d_ginput(math::corr2d_dyn_t(), idata, kdata, odata);
+//                        return idata.vector().sum();
+//                };
+//                const auto op_lin_ginput = [&] ()
+//                {
+//                        tensor::conv3d_ginput(idata, kdata, odata);
+//                        return idata.vector().sum();
+//                };
 
-                const auto ginput_dyn = op_dyn_ginput();
-                const auto ginput_lin = op_lin_ginput();
+//                const auto ginput_dyn = op_dyn_ginput();
+//                const auto ginput_lin = op_lin_ginput();
 
-                BOOST_CHECK_LE(math::abs(ginput_dyn - ginput_dyn), epsilon);
-                BOOST_CHECK_LE(math::abs(ginput_lin - ginput_dyn), epsilon);
+//                BOOST_CHECK_LE(math::abs(ginput_dyn - ginput_dyn), epsilon);
+//                BOOST_CHECK_LE(math::abs(ginput_lin - ginput_dyn), epsilon);
         }
 }
 
