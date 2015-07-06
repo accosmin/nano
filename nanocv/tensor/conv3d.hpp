@@ -87,7 +87,7 @@ namespace ncv
                         for (decltype(idata.dims()) i = 0; i < idims; i ++)
                         {
                                 const auto imap = idata.matrix(i);
-                                const auto tmap = tensor::conv2d_linearize(imap, odata.rows(), odata.cols());
+                                const auto tmap = tensor::conv2d_linearize(imap, odata);
 
                                 tensor::map_matrix(kdata.planeData(i * odims), odims, ksize) =
                                 tensor::map_matrix(odata.data(), odims, osize) *
