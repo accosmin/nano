@@ -98,9 +98,9 @@ namespace ncv
 
         const tensor_t& conv_layer_t::output(const tensor_t& input)
         {
-                assert(idims() == input.dims());
-                assert(irows() == input.rows());
-                assert(icols() == input.cols());
+                assert(idims() == static_cast<size_t>(input.dims()));
+                assert(irows() == static_cast<size_t>(input.rows()));
+                assert(icols() == static_cast<size_t>(input.cols()));
 
                 m_idata = input;
 
@@ -118,9 +118,9 @@ namespace ncv
 
         const tensor_t& conv_layer_t::ginput(const tensor_t& output)
         {
-                assert(odims() == output.dims());
-                assert(orows() == output.rows());
-                assert(ocols() == output.cols());
+                assert(odims() == static_cast<size_t>(output.dims()));
+                assert(orows() == static_cast<size_t>(output.rows()));
+                assert(ocols() == static_cast<size_t>(output.cols()));
 
                 m_odata = output;
                 
@@ -131,9 +131,9 @@ namespace ncv
 
         void conv_layer_t::gparam(const tensor_t& output, scalar_t* gradient)
         {
-                assert(odims() == output.dims());
-                assert(orows() == output.rows());
-                assert(ocols() == output.cols());
+                assert(odims() == static_cast<size_t>(output.dims()));
+                assert(orows() == static_cast<size_t>(output.rows()));
+                assert(ocols() == static_cast<size_t>(output.cols()));
 
                 m_odata = output;
                 
