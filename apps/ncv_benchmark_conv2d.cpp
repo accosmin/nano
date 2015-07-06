@@ -3,7 +3,6 @@
 #include "nanocv/tabulator.h"
 #include "nanocv/measure.hpp"
 #include "nanocv/math/conv2d.hpp"
-#include "nanocv/tensor/conv2d_lin.hpp"
 #include <iostream>
 
 using namespace ncv;
@@ -39,15 +38,11 @@ void test_conv2d(tabulator_t::row_t& row, int isize, int ksize)
         kdata /= ksize;
         odata /= osize;
 
-        const matrix_t lin = ncv::tensor::conv2d_linearize(idata, kdata);
-
         test_cpu(row, math::conv2d_eig_t(), idata, kdata, odata);
         test_cpu(row, math::conv2d_cpp_t(), idata, kdata, odata);
         test_cpu(row, math::conv2d_dot_t(), idata, kdata, odata);
         test_cpu(row, math::conv2d_mad_t(), idata, kdata, odata);
         test_cpu(row, math::conv2d_dyn_t(), idata, kdata, odata);
-        test_cpu(row, tensor::conv2d_lin_t(), idata, kdata, odata);
-        test_cpu(row, tensor::conv2d_lin_buf_t<matrix_t>(lin), idata, kdata, odata);
 }
 
 int main(int, char* [])
