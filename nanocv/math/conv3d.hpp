@@ -33,7 +33,7 @@ namespace ncv
                 }
 
                 ///
-                /// \brief gradient wrt the input
+                /// \brief gradient wrt the input: odata(o) = sum(i, idata(i) @ kdata(i, o))
                 ///
                 template
                 <
@@ -61,7 +61,7 @@ namespace ncv
                 }
 
                 ///
-                /// \brief gradient wrt the parameters
+                /// \brief gradient wrt the parameters: odata(o) = sum(i, idata(i) @ kdata(i, o))
                 ///
                 template
                 <

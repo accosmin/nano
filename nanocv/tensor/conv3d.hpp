@@ -22,21 +22,22 @@ namespace ncv
 
                         const auto osize = odata.rows() * odata.cols();
                         const auto ksize = kdata.rows() * kdata.cols();
+                        const auto idims = idata.dims();
                         const auto odims = odata.dims();
 
-                        for (decltype(idata.dims()) i = 0; i < idata.dims(); i ++)
+                        for (decltype(idata.dims()) i = 0; i < idims; i ++)
                         {
                                 const auto imap = idata.matrix(i);
                                 const auto tmap = tensor::conv2d_linearize(imap, kdata);
 
                                 tensor::map_matrix(odata.data(), odims, osize) +=
                                 tensor::map_matrix(kdata.planeData(i * odims), odims, ksize) *
-                                tmap.transpose();
+                                tmap;
                         }
                 }
 
                 ///
-                /// \brief gradient wrt the input
+                /// \brief gradient wrt the input: odata(o) = sum(i, idata(i) @ kdata(i, o))
                 ///
                 template
                 <
@@ -48,25 +49,27 @@ namespace ncv
                 {
                         idata.setZero();
 
-                        for (decltype(odata.dims()) o = 0; o < odata.dims(); o ++)
+
+                        // todo: need to transform kdata from (i, o) to (o, i) indexing
+
+                        const auto isize = idata.rows() * idata.cols();
+                        const auto ksize = kdata.rows() * kdata.cols();
+                        const auto idims = idata.dims();
+                        const auto odims = odata.dims();
+
+                        for (decltype(odata.dims()) o = 0; o < odims; o ++)
                         {
                                 const auto omap = odata.matrix(o);
                                 const auto tmap = tensor::corr2d_linearize(omap, kdata);
 
-                                for (decltype(idata.dims()) i = 0; i < idata.dims(); i ++)
-                                {
-                                        auto imap = idata.matrix(i);
-                                        const auto kmap = kdata.matrix(i * odata.dims() + o);
-
-                                        tensor::map_vector(imap.data(), imap.size()) +=
-                                        tmap *
-                                        tensor::map_vector(kmap.data(), kmap.size());
-                                }
+                                tensor::map_matrix(idata.data(), idims, isize) +=
+                                tensor::map_matrix(kdata.planeData(o * idims), idims, ksize) *
+                                tmap;
                         }
                 }
 
                 ///
-                /// \brief gradient wrt the parameters
+                /// \brief gradient wrt the parameters: odata(o) = sum(i, idata(i) @ kdata(i, o))
                 ///
                 template
                 <
@@ -78,16 +81,17 @@ namespace ncv
                 {
                         const auto osize = odata.rows() * odata.cols();
                         const auto ksize = kdata.rows() * kdata.cols();
+                        const auto idims = idata.dims();
                         const auto odims = odata.dims();
 
-                        for (decltype(idata.dims()) i = 0; i < idata.dims(); i ++)
+                        for (decltype(idata.dims()) i = 0; i < idims; i ++)
                         {
                                 const auto imap = idata.matrix(i);
                                 const auto tmap = tensor::conv2d_linearize(imap, odata.rows(), odata.cols());
 
                                 tensor::map_matrix(kdata.planeData(i * odims), odims, ksize) =
                                 tensor::map_matrix(odata.data(), odims, osize) *
-                                tmap.transpose();
+                                tmap;
                         }
                 }
         }

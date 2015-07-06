@@ -28,7 +28,7 @@ namespace ncv
                         typedef typename tmatrixo::Scalar                               tscalar;
                         typedef typename tensor::matrix_types_t<tscalar>::tmatrix       ttoeplitz;
 
-                        ttoeplitz toeplitz = ttoeplitz::Zero(isize, ksize);
+                        ttoeplitz toeplitz = ttoeplitz::Zero(ksize, isize);
 
                         /// \todo more efficient construction
                         for (tsize r = 0; r < orows; r ++)
@@ -39,7 +39,7 @@ namespace ncv
                                         {
                                                 for (tsize kc = 0; kc < kcols; kc ++)
                                                 {
-                                                        toeplitz((r + kr) * icols + (c + kc), kr * kcols + kc) +=
+                                                        toeplitz(kr * kcols + kc, (r + kr) * icols + (c + kc)) +=
                                                         odata(r, c);
                                                 }
                                         }
