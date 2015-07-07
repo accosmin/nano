@@ -25,17 +25,31 @@ namespace ncv
                         const auto idims = idata.dims();
                         const auto odims = odata.dims();
 
-                        conv2d_linearizer_t<tscalar> conv2dlin;
+                        typedef typename tensor::matrix_types_t<tscalar>::tmatrix tmatrix;
 
-                        odata.setZero();
+                        tmatrix idata_lin(idims * ksize, osize);
+
+                        conv2d_linearizer_t<tscalar> conv2dlin;
                         for (tsize i = 0; i < idims; i ++)
                         {
                                 const auto imap = idata.matrix(i);
 
-                                tensor::map_matrix(odata.data(), odims, osize) +=
-                                tensor::map_matrix(kdata.planeData(i * odims), odims, ksize) *
-                                conv2dlin(imap, kdata);
+                                idata_lin.block(i * ksize, 0, ksize, osize) = conv2dlin(imap, kdata);
                         }
+
+                        tensor::map_matrix(odata.data(), odims, osize) =
+                        tensor::map_matrix(kdata.data(), odims, idims * ksize) *
+                        idata_lin;
+
+//                        odata.setZero();
+//                        for (tsize i = 0; i < idims; i ++)
+//                        {
+//                                const auto imap = idata.matrix(i);
+
+//                                tensor::map_matrix(odata.data(), odims, osize) +=
+//                                tensor::map_matrix(kdata.planeData(i * odims), odims, ksize) *
+//                                conv2dlin(imap, kdata);
+//                        }
                 }
 
                 ///
@@ -53,7 +67,7 @@ namespace ncv
                 {
                         idata.setZero();
 
-                        // todo: need to transform kdata from (i, o) to (o, i) indexing
+                        /// \todo need to transform kdata from (i, o) to (o, i) indexing to use matrix-matrix multiplication
 
                         const auto isize = idata.rows() * idata.cols();
                         const auto ksize = kdata.rows() * kdata.cols();
@@ -66,9 +80,16 @@ namespace ncv
                         {
                                 const auto omap = odata.matrix(o);
 
-                                tensor::map_matrix(idata.data(), idims, isize) +=
-                                tensor::map_matrix(kdata.planeData(o * idims), idims, ksize) *
+//                                tensor::map_matrix(idata.data(), idims, isize) +=
+//                                tensor::map_matrix(kdata.planeData(o * idims), idims, ksize) *
                                 corr2lin(omap, kdata);
+
+                                for (tsize i = 0; i < idims; i ++)
+                                {
+                                        tensor::map_vector(idata.planeData(i), isize) +=
+                                        corr2lin.m_transf.transpose() *
+                                        tensor::map_vector(kdata.planeData(i * odims + o), ksize);
+                                }
                         }
                 }
 
