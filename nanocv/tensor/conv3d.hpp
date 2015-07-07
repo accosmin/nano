@@ -181,16 +181,20 @@ namespace ncv
                         const auto isize = idata.planeSize();
                         const auto ksize = kdata.planeSize();
 
-                        idata.setZero();
+                        typedef typename tensor::matrix_types_t<tscalar>::tmatrix tmatrix;
+
+                        tmatrix odata_lin(m_odims * ksize, isize);
 
                         corr2d_linearizer_t<tscalar> corr2lin;
-
                         for (tsize o = 0; o < m_odims; o ++)
                         {
-                                tensor::map_matrix(idata.data(), m_idims, isize) +=
-                                tensor::map_matrix(kdata.planeData(o * m_idims), m_idims, ksize) *
+                                odata_lin.block(o * ksize, 0, ksize, isize) =
                                 corr2lin(odata.matrix(o), kdata);
                         }
+
+                        tensor::map_matrix(idata.data(), m_idims, isize) =
+                        tensor::map_matrix(kdata.data(), m_idims, m_odims * ksize) *
+                        odata_lin;
 
                         return true;
                 }
