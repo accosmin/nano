@@ -34,14 +34,8 @@ namespace test
                 kdata.vector() /= ksize;
                 odata.vector() /= osize;
 
-                tensor_t oi_kdata = kdata;
-                for (int i = 0; i < idims; i ++)
-                {
-                        for (int o = 0; o < odims; o ++)
-                        {
-                                oi_kdata.matrix(o * idims + i) = kdata.matrix(i * odims + o);
-                        }
-                }
+                tensor::conv3d_t<tensor_t> conv3d;
+                conv3d.reset(kdata, idims, odims);
 
                 const scalar_t epsilon = math::epsilon1<scalar_t>();
 
@@ -53,7 +47,7 @@ namespace test
                 };
                 const auto op_lin_output = [&] ()
                 {
-                        tensor::conv3d_output(idata, oi_kdata, odata);
+                        conv3d.output(idata, odata);
                         return odata.vector().sum();
                 };
 
@@ -71,7 +65,7 @@ namespace test
                 };
                 const auto op_lin_gparam = [&] ()
                 {
-                        tensor::conv3d_gparam(idata, kdata, odata);
+                        conv3d.gparam(idata, kdata, odata);
                         return kdata.vector().sum();
                 };
 
@@ -89,7 +83,7 @@ namespace test
                 };
                 const auto op_lin_ginput = [&] ()
                 {
-                        tensor::conv3d_ginput(idata, kdata, odata);
+                        conv3d.ginput(idata, odata);
                         return idata.vector().sum();
                 };
 
