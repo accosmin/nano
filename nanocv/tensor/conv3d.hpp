@@ -15,7 +15,8 @@ namespace ncv
                         typename ttensori,
                         typename ttensork,
                         typename ttensoro,
-                        typename tsize = typename ttensori::Index
+                        typename tsize = typename ttensori::Index,
+                        typename tscalar = typename ttensori::Scalar
                 >
                 void conv3d_output(const ttensori& idata, const ttensork& kdata, ttensoro&& odata)
                 {
@@ -24,7 +25,7 @@ namespace ncv
                         const auto idims = idata.dims();
                         const auto odims = odata.dims();
 
-                        conv2d_linearizer_t<typename ttensori::Scalar> conv2dlin;
+                        conv2d_linearizer_t<tscalar> conv2dlin;
 
                         odata.setZero();
                         for (tsize i = 0; i < idims; i ++)
@@ -45,7 +46,8 @@ namespace ncv
                         typename ttensori,
                         typename ttensork,
                         typename ttensoro,
-                        typename tsize = typename ttensork::Index
+                        typename tsize = typename ttensork::Index,
+                        typename tscalar = typename ttensork::Scalar
                 >
                 void conv3d_ginput(ttensori&& idata, const ttensork& kdata, const ttensoro& odata)
                 {
@@ -58,9 +60,9 @@ namespace ncv
                         const auto idims = idata.dims();
                         const auto odims = odata.dims();
 
-                        corr2d_linearizer_t<typename ttensork::Scalar> corr2lin;
+                        corr2d_linearizer_t<tscalar> corr2lin;
 
-                        for (decltype(odata.dims()) o = 0; o < odims; o ++)
+                        for (tsize o = 0; o < odims; o ++)
                         {
                                 const auto omap = odata.matrix(o);
 
@@ -78,7 +80,8 @@ namespace ncv
                         typename ttensori,
                         typename ttensork,
                         typename ttensoro,
-                        typename tsize = typename ttensoro::Index
+                        typename tsize = typename ttensoro::Index,
+                        typename tscalar = typename ttensoro::Scalar
                 >
                 void conv3d_gparam(const ttensori& idata, ttensork&& kdata, const ttensoro& odata)
                 {
@@ -87,9 +90,9 @@ namespace ncv
                         const auto idims = idata.dims();
                         const auto odims = odata.dims();
 
-                        conv2d_linearizer_t<typename ttensoro::Scalar> conv2dlin;
+                        conv2d_linearizer_t<tscalar> conv2dlin;
 
-                        for (decltype(idata.dims()) i = 0; i < idims; i ++)
+                        for (tsize i = 0; i < idims; i ++)
                         {
                                 const auto imap = idata.matrix(i);
 
