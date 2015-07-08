@@ -60,7 +60,7 @@ namespace ncv
                         template
                         <
                                 typename ttensori,
-                                typename ttensork,
+                                typename ttensork,      ///< assumming of (i, o) type
                                 typename ttensoro
                         >
                         bool gparam(const ttensori& idata, ttensork&& kdata, const ttensoro& odata) const;
