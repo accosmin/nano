@@ -176,40 +176,25 @@ namespace ncv
                                 return false;
                         }
 
-                        const auto& kdata = m_kdata_oi;
+                        const auto& kdata = m_kdata_io;
 
                         const auto isize = idata.planeSize();
                         const auto ksize = kdata.planeSize();
 
-//                        typedef typename tensor::matrix_types_t<tscalar>::tmatrix tmatrix;
+                        typedef typename tensor::matrix_types_t<tscalar>::tmatrix tmatrix;
 
-//                        tmatrix odata_lin(m_odims * ksize, isize);
-
-//                        corr2d_linearizer_t<tscalar> corr2lin;
-//                        for (tsize o = 0; o < m_odims; o ++)
-//                        {
-//                                odata_lin.block(o * ksize, 0, ksize, isize) =
-//                                corr2lin(odata.matrix(o), kdata);
-//                        }
-
-//                        tensor::map_matrix(idata.data(), m_idims, isize) =
-//                        tensor::map_matrix(kdata.data(), m_idims, m_odims * ksize) *
-//                        odata_lin;
-
-                        idata.setZero();
+                        tmatrix odata_lin(m_odims * ksize, isize);
 
                         corr2d_linearizer_t<tscalar> corr2lin;
                         for (tsize o = 0; o < m_odims; o ++)
                         {
+                                odata_lin.block(o * ksize, 0, ksize, isize) =
                                 corr2lin(odata.matrix(o), kdata);
-
-                                for (tsize i = 0; i < m_idims; i ++)
-                                {
-                                        tensor::map_vector(idata.planeData(i), isize) +=
-                                        corr2lin.m_transf.transpose() *
-                                        tensor::map_vector(kdata.planeData(o * m_idims + i), ksize);
-                                }
                         }
+
+                        tensor::map_matrix(idata.data(), m_idims, isize) =
+                        tensor::map_matrix(kdata.data(), m_idims, m_odims * ksize) *
+                        odata_lin;
 
                         return true;
                 }
