@@ -1,5 +1,5 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_conv2d"
+#define BOOST_TEST_MODULE "test_conv3d"
 
 #include <boost/test/unit_test.hpp>
 #include "nanocv/tensor.h"
@@ -20,78 +20,39 @@ namespace test
                 const int osize = isize - ksize + 1;
                 const int kdims = odims * idims;
 
+                random_t<scalar_t> rng(-1.0 / isize, 1.0 / isize);
+
                 tensor_t idata(idims, isize, isize);
                 tensor_t kdata(kdims, ksize, ksize);
                 tensor_t odata(odims, osize, osize);
-
-                random_t<scalar_t> rng(-1.0, 1.0);
 
                 idata.setRandom(rng);
                 kdata.setRandom(rng);
                 odata.setRandom(rng);
 
-                idata.vector() /= isize;
-                kdata.vector() /= ksize;
-                odata.vector() /= osize;
+                tensor_t idata_dyn = idata, idata_lin = idata;
+                tensor_t kdata_dyn = kdata, kdata_lin = kdata;
+                tensor_t odata_dyn = odata, odata_lin = odata;
 
                 tensor::conv3d_t<tensor_t> conv3d;
-                conv3d.reset(kdata, idims, odims);
+                BOOST_CHECK(conv3d.reset(kdata, idims, odims));
 
                 const scalar_t epsilon = math::epsilon1<scalar_t>();
 
-                // output
-                const auto op_dyn_output = [&] ()
-                {
-                        math::conv3d_output(math::conv2d_dyn_t(), idata, kdata, odata);
-                        return odata.vector().sum();
-                };
-                const auto op_lin_output = [&] ()
-                {
-                        conv3d.output(idata, odata);
-                        return odata.vector().sum();
-                };
+                // 2D convolution-based
+                math::conv3d_output(math::conv2d_dyn_t(), idata, kdata, odata_dyn);
+                math::conv3d_gparam(math::conv2d_dyn_t(), idata, kdata_dyn, odata);
+                math::conv3d_ginput(math::corr2d_dyn_t(), idata_dyn, kdata, odata);
 
-                const auto output_dyn = op_dyn_output();
-                const auto output_lin = op_lin_output();
+                // linearized tensors-based
+                BOOST_CHECK(conv3d.output(idata, odata_lin));
+                BOOST_CHECK(conv3d.gparam(idata, kdata_lin, odata));
+                BOOST_CHECK(conv3d.ginput(idata_lin, odata));
 
-                BOOST_CHECK_LE(math::abs(output_dyn - output_dyn), epsilon);
-                BOOST_CHECK_LE(math::abs(output_lin - output_dyn), epsilon);
-
-                // gradient wrt parameters (convolution kernels)
-                const auto op_dyn_gparam = [&] ()
-                {
-                        math::conv3d_gparam(math::conv2d_dyn_t(), idata, kdata, odata);
-                        return kdata.vector().sum();
-                };
-                const auto op_lin_gparam = [&] ()
-                {
-                        conv3d.gparam(idata, kdata, odata);
-                        return kdata.vector().sum();
-                };
-
-                const auto gparam_dyn = op_dyn_gparam();
-                const auto gparam_lin = op_lin_gparam();
-
-                BOOST_CHECK_LE(math::abs(gparam_dyn - gparam_dyn), epsilon);
-                BOOST_CHECK_LE(math::abs(gparam_lin - gparam_dyn), epsilon);
-
-                // gradient wrt inputs
-                const auto op_dyn_ginput = [&] ()
-                {
-                        math::conv3d_ginput(math::corr2d_dyn_t(), idata, kdata, odata);
-                        return idata.vector().sum();
-                };
-                const auto op_lin_ginput = [&] ()
-                {
-                        conv3d.ginput(idata, odata);
-                        return idata.vector().sum();
-                };
-
-                const auto ginput_dyn = op_dyn_ginput();
-                const auto ginput_lin = op_lin_ginput();
-
-                BOOST_CHECK_LE(math::abs(ginput_dyn - ginput_dyn), epsilon);
-                BOOST_CHECK_LE(math::abs(ginput_lin - ginput_dyn), epsilon);
+                // check results
+                BOOST_CHECK_LE((odata_dyn.vector() - odata_lin.vector()).lpNorm<Eigen::Infinity>(), epsilon);
+                BOOST_CHECK_LE((kdata_dyn.vector() - kdata_lin.vector()).lpNorm<Eigen::Infinity>(), epsilon);
+                BOOST_CHECK_LE((idata_dyn.vector() - idata_lin.vector()).lpNorm<Eigen::Infinity>(), epsilon);
         }
 }
 

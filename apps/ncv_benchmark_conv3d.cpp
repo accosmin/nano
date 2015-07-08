@@ -30,6 +30,9 @@ void test_conv3d(tabulator_t::row_t& row, int isize, int idims, int ksize, int o
         kdata.vector() /= ksize;
         odata.vector() /= osize;
 
+        tensor::conv3d_t<tensor_t> conv3d;
+        conv3d.reset(kdata, idims, odims);
+
         const size_t trials = 1;
 
         // output
@@ -39,7 +42,7 @@ void test_conv3d(tabulator_t::row_t& row, int isize, int idims, int ksize, int o
         }, trials);
         row << ncv::measure_robustly_usec([&] ()
         {
-                ;//tensor::conv3d_output(idata, kdata, odata);
+                conv3d.output(idata, odata);
         }, trials);
 
         // gradient wrt parameters (convolution kernels)
@@ -49,7 +52,7 @@ void test_conv3d(tabulator_t::row_t& row, int isize, int idims, int ksize, int o
         }, trials);
         row << ncv::measure_robustly_usec([&] ()
         {
-                ;//tensor::conv3d_gparam(idata, kdata, odata);
+                conv3d.gparam(idata, kdata, odata);
         }, trials);
 
         // gradient wrt inputs

@@ -88,7 +88,7 @@ namespace ncv
                 bool conv3d_t<ttensor, tsize, tscalar>::reset(
                         const ttensor& kdata_io, const tsize idims, const tsize odims)
                 {
-                        if (idims * odims != kdata_io.size())
+                        if (idims * odims != kdata_io.dims())
                         {
                                 return false;
                         }
@@ -181,20 +181,35 @@ namespace ncv
                         const auto isize = idata.planeSize();
                         const auto ksize = kdata.planeSize();
 
-                        typedef typename tensor::matrix_types_t<tscalar>::tmatrix tmatrix;
+//                        typedef typename tensor::matrix_types_t<tscalar>::tmatrix tmatrix;
 
-                        tmatrix odata_lin(m_odims * ksize, isize);
+//                        tmatrix odata_lin(m_odims * ksize, isize);
+
+//                        corr2d_linearizer_t<tscalar> corr2lin;
+//                        for (tsize o = 0; o < m_odims; o ++)
+//                        {
+//                                odata_lin.block(o * ksize, 0, ksize, isize) =
+//                                corr2lin(odata.matrix(o), kdata);
+//                        }
+
+//                        tensor::map_matrix(idata.data(), m_idims, isize) =
+//                        tensor::map_matrix(kdata.data(), m_idims, m_odims * ksize) *
+//                        odata_lin;
+
+                        idata.setZero();
 
                         corr2d_linearizer_t<tscalar> corr2lin;
                         for (tsize o = 0; o < m_odims; o ++)
                         {
-                                odata_lin.block(o * ksize, 0, ksize, isize) =
                                 corr2lin(odata.matrix(o), kdata);
-                        }
 
-                        tensor::map_matrix(idata.data(), m_idims, isize) =
-                        tensor::map_matrix(kdata.data(), m_idims, m_odims * ksize) *
-                        odata_lin;
+                                for (tsize i = 0; i < m_idims; i ++)
+                                {
+                                        tensor::map_vector(idata.planeData(i), isize) =
+                                        corr2lin.m_transf.transpose() *
+                                        tensor::map_vector(kdata.planeData(i * m_odims + o), ksize);
+                                }
+                        }
 
                         return true;
                 }
@@ -214,6 +229,13 @@ namespace ncv
                 bool conv3d_t<ttensor, tsize, tscalar>::gparam(
                         const ttensori& idata, ttensork&& kdata, const ttensoro& odata) const
                 {
+                        if (    idata.dims() != m_idims ||
+                                odata.dims() != m_odims ||
+                                kdata.dims() != m_idims * m_odims)
+                        {
+                                return false;
+                        }
+
                         const auto osize = odata.planeSize();
                         const auto ksize = kdata.planeSize();
 
