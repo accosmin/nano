@@ -16,53 +16,51 @@ void test_conv3d(tabulator_t::row_t& row, int isize, int idims, int ksize, int o
         const int osize = isize - ksize + 1;
         const int kdims = odims * idims;
 
+        random_t<scalar_t> rng(-1.0 / isize, 1.0 / isize);
+
         tensor_t idata(idims, isize, isize);
         tensor_t kdata(kdims, ksize, ksize);
         tensor_t odata(odims, osize, osize);
-
-        random_t<scalar_t> rng(-1.0, 1.0);
 
         idata.setRandom(rng);
         kdata.setRandom(rng);
         odata.setRandom(rng);
 
-        idata.vector() /= isize;
-        kdata.vector() /= ksize;
-        odata.vector() /= osize;
+        tensor_t idata_dyn = idata, idata_lin = idata;
+        tensor_t kdata_dyn = kdata, kdata_lin = kdata;
+        tensor_t odata_dyn = odata, odata_lin = odata;
 
         tensor::conv3d_t<tensor_t> conv3d;
         conv3d.reset(kdata, idims, odims);
 
         const size_t trials = 1;
 
-        // output
+        // 2D convolution-based
         row << ncv::measure_robustly_usec([&] ()
         {
-                math::conv3d_output(math::conv2d_dyn_t(), idata, kdata, odata);
+                math::conv3d_output(math::conv2d_dyn_t(), idata, kdata, odata_dyn);
         }, trials);
         row << ncv::measure_robustly_usec([&] ()
         {
-                conv3d.output(idata, odata);
-        }, trials);
-
-        // gradient wrt parameters (convolution kernels)
-        row << ncv::measure_robustly_usec([&] ()
-        {
-                math::conv3d_gparam(math::conv2d_dyn_t(), idata, kdata, odata);
+                math::conv3d_gparam(math::conv2d_dyn_t(), idata, kdata_dyn, odata);
         }, trials);
         row << ncv::measure_robustly_usec([&] ()
         {
-                conv3d.gparam(idata, kdata, odata);
+                math::conv3d_ginput(math::corr2d_dyn_t(), idata_dyn, kdata, odata);
         }, trials);
 
-        // gradient wrt inputs
+        // linearized tensors-based
         row << ncv::measure_robustly_usec([&] ()
         {
-                math::conv3d_ginput(math::corr2d_dyn_t(), idata, kdata, odata);
+                conv3d.output(idata, odata_lin);
         }, trials);
         row << ncv::measure_robustly_usec([&] ()
         {
-                ;//tensor::conv3d_ginput(idata, kdata, odata);
+                conv3d.gparam(idata, kdata_lin, odata);
+        }, trials);
+        row << ncv::measure_robustly_usec([&] ()
+        {
+                conv3d.ginput(idata_lin, odata);
         }, trials);
 }
 
@@ -78,12 +76,12 @@ int main(int, char* [])
         const int odims = 32;
 
         tabulator_t table("size\\method");
-        table.header() << "dyn - output [us]"
-                       << "lin - output [us]"
-                       << "dyn - gparam [us]"
-                       << "lin - gparam [us]"
-                       << "dyn - ginput [us]"
-                       << "lin - ginput [us]";
+        table.header() << "dyn (odata) [us]"
+                       << "dyn (kdata) [us]"
+                       << "dyn (idata) [us]"
+                       << "lin (odata) [us]"
+                       << "lin (kdata) [us]"
+                       << "lin (idata) [us]";
 
         for (int isize = min_isize; isize <= max_isize; isize += 4)
         {
