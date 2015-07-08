@@ -205,9 +205,9 @@ namespace ncv
 
                                 for (tsize i = 0; i < m_idims; i ++)
                                 {
-                                        tensor::map_vector(idata.planeData(i), isize) =
+                                        tensor::map_vector(idata.planeData(i), isize) +=
                                         corr2lin.m_transf.transpose() *
-                                        tensor::map_vector(kdata.planeData(i * m_odims + o), ksize);
+                                        tensor::map_vector(kdata.planeData(o * m_idims + i), ksize);
                                 }
                         }
 

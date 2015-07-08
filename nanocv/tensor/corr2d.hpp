@@ -60,20 +60,6 @@ namespace ncv
                                         }
                                 }
 
-//                                for (auto r = 0; r < orows; r ++)
-//                                {
-//                                        for (auto kr = 0; kr < krows; kr ++)
-//                                        {
-//                                                for (auto c = 0; c < ocols; c ++)
-//                                                {
-//                                                        for (auto kc = 0; kc < kcols; kc ++)
-//                                                        {
-//                                                                idata(r + kr, c + kc) += kdata(kr, kc) * odata(r, c);
-//                                                        }
-//                                                }
-//                                        }
-//                                }
-
                                 return m_transf;
                         }
 
