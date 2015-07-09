@@ -63,10 +63,11 @@ namespace ncv
                 ///
                 template
                 <
+                        int alignment = Eigen::Unaligned,
                         typename tvalue_,
                         typename tsize,
                         typename tvalue = typename std::remove_const<tvalue_>::type,
-                        typename tresult = Eigen::Map<typename matrix_types_t<tvalue>::tmatrix>
+                        typename tresult = Eigen::Map<typename matrix_types_t<tvalue>::tmatrix, alignment>
                 >
                 tresult map_matrix(tvalue_* data, tsize rows, tsize cols)
                 {
@@ -78,10 +79,11 @@ namespace ncv
                 ///
                 template
                 <
+                        int alignment = Eigen::Unaligned,
                         typename tvalue_,
                         typename tsize,
                         typename tvalue = typename std::remove_const<tvalue_>::type,
-                        typename tresult = Eigen::Map<const typename matrix_types_t<tvalue>::tmatrix>
+                        typename tresult = Eigen::Map<const typename matrix_types_t<tvalue>::tmatrix, alignment>
                 >
                 tresult map_matrix(const tvalue_* data, tsize rows, tsize cols)
                 {
