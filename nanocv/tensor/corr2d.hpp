@@ -1,6 +1,8 @@
 #pragma once
 
 #include "matrix.hpp"
+#include <cassert>
+#include "nanocv/arch.h"
 
 namespace ncv
 {
@@ -9,63 +11,44 @@ namespace ncv
                 ///
                 /// \brief create the Toeplitz-like matrix to replace
                 ///     the 2D convolution: idata += odata @ kdata
-                ///     with the more eficient: as_vector(idata) = transpose(::operator()) * as_vector(kdata)
+                ///     with the more eficient: as_vector(idata) = transpose(ldata) * as_vector(kdata)
                 ///
-                template
+                 template
                 <
-                        typename tscalar_,
-                        typename tscalar = typename std::remove_const<tscalar_>::type,
-                        typename tmatrix = typename tensor::matrix_types_t<tscalar>::tmatrix
+                        typename tmatrixo,
+                        typename tsize,
+                        typename tmatrixl               ///< linearized matrix (asssuming already allocated)
                 >
-                struct corr2d_linearizer_t
+                void linearize_corr2d(const tmatrixo& odata, const tsize krows, const tsize kcols, tmatrixl&& ldata)
                 {
-                        ///
-                        /// \brief update buffer with new inputs
-                        ///
-                        template
-                        <
-                                typename tmatrixo,
-                                typename tmatrixk,
-                                typename tsize = typename tmatrixk::Index
-                        >
-                        const tmatrix& operator()(const tmatrixo& odata, const tmatrixk& kdata)
+                        const tsize orows = odata.rows();
+                        const tsize ocols = odata.cols();
+                        const tsize irows = orows + krows - 1;
+                        const tsize icols = ocols + kcols - 1;
+
+                        NANOCV_UNUSED1_RELEASE(irows);
+
+                        assert(ldata.rows() == krows * kcols);
+                        assert(ldata.cols() == irows * icols);
+
+                        ldata.setZero();
+
+                        /// \todo more efficient construction
+                        for (tsize r = 0; r < orows; r ++)
                         {
-                                const tsize krows = kdata.rows();
-                                const tsize kcols = kdata.cols();
-                                const tsize ksize = krows * kcols;
-
-                                const tsize orows = odata.rows();
-                                const tsize ocols = odata.cols();
-
-                                const tsize irows = orows + krows - 1;
-                                const tsize icols = ocols + kcols - 1;
-                                const tsize isize = irows * icols;
-
-                                m_transf.resize(ksize, isize);
-                                m_transf.setZero();
-
-                                /// \todo more efficient construction
-                                for (tsize r = 0; r < orows; r ++)
+                                for (tsize kr = 0; kr < krows; kr ++)
                                 {
-                                        for (tsize kr = 0; kr < krows; kr ++)
+                                        for (tsize c = 0; c < ocols; c ++)
                                         {
-                                                for (tsize c = 0; c < ocols; c ++)
+                                                for (tsize kc = 0; kc < kcols; kc ++)
                                                 {
-                                                        for (tsize kc = 0; kc < kcols; kc ++)
-                                                        {
-                                                                m_transf(kr * kcols + kc, (r + kr) * icols + (c + kc)) +=
-                                                                odata(r, c);
-                                                        }
+                                                        ldata(kr * kcols + kc, (r + kr) * icols + (c + kc)) +=
+                                                        odata(r, c);
                                                 }
                                         }
                                 }
-
-                                return m_transf;
                         }
-
-                        // attributes
-                        tmatrix         m_transf;       ///< Linearized odata (buffered to reduce memory allocations)
-                };
+                }
         }
 }
 

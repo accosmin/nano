@@ -12,13 +12,15 @@ namespace ncv
                 ///
                 template
                 <
-                        typename ttensor,
-                        typename tsize = typename ttensor::Index,
-                        typename tscalar = typename ttensor::Scalar
+                        typename ttensor
                 >
                 class conv3d_t
                 {
                 public:
+
+                        typedef typename ttensor::Index                                 tsize;
+                        typedef typename ttensor::Scalar                                tscalar;
+                        typedef typename tensor::matrix_types_t<tscalar>::tmatrix       tmatrix;
 
                         ///
                         /// \brief constructor
@@ -42,7 +44,7 @@ namespace ncv
                                 typename ttensori,
                                 typename ttensoro
                         >
-                        bool output(const ttensori& idata, ttensoro&& odata) const;
+                        bool output(const ttensori& idata, ttensoro&& odata);
 
                         ///
                         /// \brief gradient wrt the input
@@ -52,7 +54,7 @@ namespace ncv
                                 typename ttensori,
                                 typename ttensoro
                         >
-                        bool ginput(ttensori&& idata, const ttensoro& odata) const;
+                        bool ginput(ttensori&& idata, const ttensoro& odata);
 
                         ///
                         /// \brief gradient wrt the parameters
@@ -63,30 +65,40 @@ namespace ncv
                                 typename ttensork,      ///< assumming of (i, o) type
                                 typename ttensoro
                         >
-                        bool gparam(const ttensori& idata, ttensork&& kdata, const ttensoro& odata) const;
+                        bool gparam(const ttensori& idata, ttensork&& kdata, const ttensoro& odata);
 
-                        const ttensor& kdata() const
+                private:
+
+                        template
+                        <
+                                typename ttensori,
+                                typename ttensoro
+                        >
+                        bool check_inputs(ttensori&& idata, ttensoro&& odata) const
                         {
-                                return m_kdata_io;
+                                return  idata.dims() == m_idims &&
+                                        odata.dims() == m_odims;
                         }
 
                 private:
 
                         // attributes
+                        tsize           m_idims;        ///< number of input dimensions/planes
+                        tsize           m_odims;        ///< number of output dimensions/planes
+
                         ttensor         m_kdata_io;     ///< convolutions organized as (input i, output o)
                         ttensor         m_kdata_oi;     ///< convolutions organized as (output o, input i)
-                        tsize           m_idims;
-                        tsize           m_odims;
+
+                        tmatrix         m_idata_lin;    ///< buffer to store linearized inputs
+                        tmatrix         m_odata_lin;    ///< buffer to store linearized outputs
+                        tmatrix         m_kdata_lin;    ///< buffer to store linearized convolutions
                 };
 
                 template
                 <
-                        typename ttensor,
-                        typename tsize,
-                        typename tscalar
+                        typename ttensor
                 >
-                bool conv3d_t<ttensor, tsize, tscalar>::reset(
-                        const ttensor& kdata_io, const tsize idims, const tsize odims)
+                bool conv3d_t<ttensor>::reset(const ttensor& kdata_io, const tsize idims, const tsize odims)
                 {
                         if (idims * odims != kdata_io.dims())
                         {
@@ -116,19 +128,16 @@ namespace ncv
 
                 template
                 <
-                        typename ttensor,
-                        typename tsize,
-                        typename tscalar
+                        typename ttensor
                 >
                 template
                 <
                         typename ttensori,
                         typename ttensoro
                 >
-                bool conv3d_t<ttensor, tsize, tscalar>::output(const ttensori& idata, ttensoro&& odata) const
+                bool conv3d_t<ttensor>::output(const ttensori& idata, ttensoro&& odata)
                 {
-                        if (    idata.dims() != m_idims ||
-                                odata.dims() != m_odims)
+                        if (!check_inputs(idata, odata))
                         {
                                 return false;
                         }
@@ -138,40 +147,33 @@ namespace ncv
                         const auto osize = odata.planeSize();
                         const auto ksize = kdata.planeSize();
 
-                        typedef typename tensor::matrix_types_t<tscalar>::tmatrix tmatrix;
-
-                        tmatrix idata_lin(m_idims * ksize, osize);
-
-                        conv2d_linearizer_t<tscalar> conv2dlin;
+                        m_idata_lin.resize(m_idims * ksize, osize);
                         for (tsize i = 0; i < m_idims; i ++)
                         {
-                                idata_lin.block(i * ksize, 0, ksize, osize) =
-                                conv2dlin(idata.matrix(i), kdata);
+                                linearize_conv2d(
+                                        idata.matrix(i), kdata.rows(), kdata.cols(),
+                                        m_idata_lin.block(i * ksize, 0, ksize, osize));
                         }
 
                         tensor::map_matrix(odata.data(), m_odims, osize) =
                         tensor::map_matrix(kdata.data(), m_odims, m_idims * ksize) *
-                        idata_lin;
+                        m_idata_lin;
 
                         return true;
                 }
 
                 template
                 <
-                        typename ttensor,
-                        typename tsize,
-                        typename tscalar
+                        typename ttensor
                 >
                 template
                 <
                         typename ttensori,
                         typename ttensoro
                 >
-                bool conv3d_t<ttensor, tsize, tscalar>::ginput(
-                        ttensori&& idata, const ttensoro& odata) const
+                bool conv3d_t<ttensor>::ginput(ttensori&& idata, const ttensoro& odata)
                 {
-                        if (    idata.dims() != m_idims ||
-                                odata.dims() != m_odims)
+                        if (!check_inputs(idata, odata))
                         {
                                 return false;
                         }
@@ -181,29 +183,24 @@ namespace ncv
                         const auto isize = idata.planeSize();
                         const auto ksize = kdata.planeSize();
 
-                        typedef typename tensor::matrix_types_t<tscalar>::tmatrix tmatrix;
-
-                        tmatrix odata_lin(m_odims * ksize, isize);
-
-                        corr2d_linearizer_t<tscalar> corr2lin;
+                        m_odata_lin.resize(m_odims * ksize, isize);
                         for (tsize o = 0; o < m_odims; o ++)
                         {
-                                odata_lin.block(o * ksize, 0, ksize, isize) =
-                                corr2lin(odata.matrix(o), kdata);
+                                linearize_corr2d(
+                                        odata.matrix(o), kdata.rows(), kdata.cols(),
+                                        m_odata_lin.block(o * ksize, 0, ksize, isize));
                         }
 
                         tensor::map_matrix(idata.data(), m_idims, isize) =
                         tensor::map_matrix(kdata.data(), m_idims, m_odims * ksize) *
-                        odata_lin;
+                        m_odata_lin;
 
                         return true;
                 }
 
                 template
                 <
-                        typename ttensor,
-                        typename tsize,
-                        typename tscalar
+                        typename ttensor
                 >
                 template
                 <
@@ -211,11 +208,9 @@ namespace ncv
                         typename ttensork,
                         typename ttensoro
                 >
-                bool conv3d_t<ttensor, tsize, tscalar>::gparam(
-                        const ttensori& idata, ttensork&& kdata, const ttensoro& odata) const
+                bool conv3d_t<ttensor>::gparam(const ttensori& idata, ttensork&& kdata, const ttensoro& odata)
                 {
-                        if (    idata.dims() != m_idims ||
-                                odata.dims() != m_odims ||
+                        if (    !check_inputs(idata, odata) ||
                                 kdata.dims() != m_idims * m_odims)
                         {
                                 return false;
@@ -224,13 +219,16 @@ namespace ncv
                         const auto osize = odata.planeSize();
                         const auto ksize = kdata.planeSize();
 
-                        conv2d_linearizer_t<tscalar> conv2dlin;
-
+                        m_kdata_lin.resize(osize, ksize);
                         for (tsize i = 0; i < m_idims; i ++)
                         {
+                                linearize_conv2d(
+                                        idata.matrix(i), odata.rows(), odata.cols(),
+                                        m_kdata_lin);
+
                                 tensor::map_matrix(kdata.planeData(i * m_odims), m_odims, ksize) =
                                 tensor::map_matrix(odata.data(), m_odims, osize) *
-                                conv2dlin(idata.matrix(i), odata);
+                                m_kdata_lin;
                         }
 
                         return true;
