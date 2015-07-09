@@ -8,6 +8,7 @@
 #include "nanocv/math/conv3d.hpp"
 #include "nanocv/tensor/conv3d.hpp"
 #include <iostream>
+#include <algorithm>
 
 using namespace ncv;
 
@@ -33,35 +34,39 @@ void test_conv3d(tabulator_t::row_t& row, int isize, int idims, int ksize, int o
         tensor::conv3d_t<tensor_t> conv3d;
         conv3d.reset(kdata, idims, odims);
 
-        const size_t trials = 1;
+        const auto trials = static_cast<size_t>(std::max(8, 1024 / std::max(idims, odims)));
 
         // 2D convolution-based
-        row << ncv::measure_robustly_usec([&] ()
+        const auto time_odata_dyn = ncv::measure_robustly_usec([&] ()
         {
                 math::conv3d_output(math::conv2d_dyn_t(), idata, kdata, odata_dyn);
         }, trials);
-        row << ncv::measure_robustly_usec([&] ()
+        const auto time_kdata_dyn = ncv::measure_robustly_usec([&] ()
         {
                 math::conv3d_gparam(math::conv2d_dyn_t(), idata, kdata_dyn, odata);
         }, trials);
-        row << ncv::measure_robustly_usec([&] ()
+        const auto time_idata_dyn = ncv::measure_robustly_usec([&] ()
         {
                 math::conv3d_ginput(math::corr2d_dyn_t(), idata_dyn, kdata, odata);
         }, trials);
 
         // linearized tensors-based
-        row << ncv::measure_robustly_usec([&] ()
+        const auto time_odata_lin = ncv::measure_robustly_usec([&] ()
         {
                 conv3d.output(idata, odata_lin);
         }, trials);
-        row << ncv::measure_robustly_usec([&] ()
+        const auto time_kdata_lin = ncv::measure_robustly_usec([&] ()
         {
                 conv3d.gparam(idata, kdata_lin, odata);
         }, trials);
-        row << ncv::measure_robustly_usec([&] ()
+        const auto time_idata_lin = ncv::measure_robustly_usec([&] ()
         {
                 conv3d.ginput(idata_lin, odata);
         }, trials);
+
+        // OK, gather results
+        row << time_odata_dyn << time_kdata_dyn << time_idata_dyn
+            << time_odata_lin << time_kdata_lin << time_idata_lin;
 }
 
 int main(int, char* [])
@@ -69,25 +74,25 @@ int main(int, char* [])
         const int min_isize = 4;
         const int max_isize = 48;
 
-        const int min_ksize = 1;
-        const int max_ksize = 9;
+        const int min_ksize = 3;
+        const int max_ksize = 11;
 
         const int idims = 16;
         const int odims = 32;
 
-        tabulator_t table("size\\method");
-        table.header() << "dyn (odata) [us]"
-                       << "dyn (kdata) [us]"
-                       << "dyn (idata) [us]"
-                       << "lin (odata) [us]"
-                       << "lin (kdata) [us]"
-                       << "lin (idata) [us]";
+        tabulator_t table("size\\method [us]");
+        table.header() << "dyn (odata)"
+                       << "dyn (kdata)"
+                       << "dyn (idata)"
+                       << "lin (odata)"
+                       << "lin (kdata)"
+                       << "lin (idata)";
 
-        for (int isize = min_isize; isize <= max_isize; isize += 4)
+        for (int isize = min_isize; isize <= max_isize; isize += 2)
         {
                 table.clear();
 
-                for (int ksize = min_ksize; ksize <= std::min(max_ksize, isize); ksize ++)
+                for (int ksize = min_ksize; ksize <= std::min(max_ksize, isize); ksize += 2)
                 {
                         const int osize = isize - ksize + 1;
 
