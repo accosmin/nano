@@ -34,7 +34,7 @@ void test_conv3d(tabulator_t::row_t& row, int isize, int idims, int ksize, int o
         tensor::conv3d_t<tensor_t> conv3d;
         conv3d.reset(kdata, idims, odims);
 
-        const auto trials = static_cast<size_t>(std::max(8, 1024 / std::max(idims, odims)));
+        const size_t trials = 8;
 
         // 2D convolution-based
         const auto time_odata_dyn = ncv::measure_robustly_usec([&] ()

@@ -34,13 +34,13 @@ namespace ncv
                         ldata.setZero();
 
                         /// \todo more efficient construction
-                        for (tsize r = 0; r < orows; r ++)
+                        for (tsize kr = 0; kr < krows; kr ++)
                         {
-                                for (tsize kr = 0; kr < krows; kr ++)
+                                for (tsize kc = 0; kc < kcols; kc ++)
                                 {
-                                        for (tsize c = 0; c < ocols; c ++)
+                                        for (tsize r = 0; r < orows; r ++)
                                         {
-                                                for (tsize kc = 0; kc < kcols; kc ++)
+                                                for (tsize c = 0; c < ocols; c ++)
                                                 {
                                                         ldata(kr * kcols + kc, (r + kr) * icols + (c + kc)) +=
                                                         odata(r, c);
