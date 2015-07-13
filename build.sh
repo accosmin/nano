@@ -1,5 +1,6 @@
 #!/bin/bash
 
+compiler=$CXX
 build_dir=""
 build_type="Release"
 build_sys="ninja"
@@ -20,6 +21,7 @@ function usage
 	echo -e "\t--install            <install [ON/OFF] Release only> default=${install}" 
 	echo -e "\t--asan               <address sanitizer [ON/OFF]>    default=${asan_flag}"
 	echo -e "\t--tsan               <thread sanitizer [ON/OFF]>     default=${tsan_flag}"
+	echo -e "\t--compiler           <c++ compiler (g++, clang++)>	optional"
 	echo
 }
 
@@ -48,6 +50,9 @@ do
         	--tsan)		shift
                                 tsan_flag=$1
                                 ;;
+        	--compiler)	shift
+			        compiler=$1
+                                ;;
 		-h | --help)	usage
 				exit
 				;;
@@ -58,6 +63,8 @@ do
 	esac
 	shift
 done
+
+export CXX=${compiler}
 
 current_dir=`pwd`
 

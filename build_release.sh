@@ -1,11 +1,15 @@
 #!/bin/bash
 
+compiler="clang++" 	# "", "g++", "clang++"
+
 build_type=Release
 build_sys=ninja
+
 install_dir="`pwd`/install"
 install=OFF
 
 bash build.sh \
+	--compiler ${compiler} \
 	--build-dir ./build-release \
 	--build-type ${build_type} \
 	--build-sys ${build_sys} \
