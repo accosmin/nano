@@ -103,13 +103,21 @@ BOOST_AUTO_TEST_CASE(test_manager)
         BOOST_CHECK_EQUAL(manager.add(id3, obj3), false);
 
         // check retrieval
-        BOOST_CHECK_EQUAL(manager.has(id1), true);
-        BOOST_CHECK_EQUAL(manager.has(id2), true);
-        BOOST_CHECK_EQUAL(manager.has(id3), true);
+        BOOST_REQUIRE(manager.has(id1));
+        BOOST_REQUIRE(manager.has(id2));
+        BOOST_REQUIRE(manager.has(id3));
 
         BOOST_CHECK_EQUAL(manager.has(id1 + id2), false);
         BOOST_CHECK_EQUAL(manager.has(id2 + id3), false);
         BOOST_CHECK_EQUAL(manager.has(id3 + id1), false);
+
+        BOOST_CHECK_EQUAL(manager.get(id1)->configuration(), obj1.configuration());
+        BOOST_CHECK_EQUAL(manager.get(id2)->configuration(), obj2.configuration());
+        BOOST_CHECK_EQUAL(manager.get(id3)->configuration(), obj3.configuration());
+
+        BOOST_CHECK_EQUAL(manager.get(id1)->description(), obj1.description());
+        BOOST_CHECK_EQUAL(manager.get(id2)->description(), obj2.description());
+        BOOST_CHECK_EQUAL(manager.get(id3)->description(), obj3.description());
 
         BOOST_CHECK_EQUAL(static_cast<bool>(manager.get(id1)), true);
         BOOST_CHECK_EQUAL(static_cast<bool>(manager.get(id2)), true);
