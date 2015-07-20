@@ -43,6 +43,9 @@ if(OPENMP_FOUND)
 	set(NANOCV_OPENMP_FLAG "-fopenmp")
 endif()
 
+# Eigen
+add_definitions(-DEIGEN_DONT_PARALLELIZE)
+
 # scalar type
 if(NANOCV_WITH_FLOAT)
         add_definitions(-DNANOCV_WITH_FLOAT)

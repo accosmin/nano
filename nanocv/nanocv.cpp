@@ -49,6 +49,7 @@ namespace ncv
 
                 // use Eigen with multiple threads
                 Eigen::initParallel();
+                Eigen::setNbThreads(0);
 
                 // register losses
                 ncv::get_losses().add("square", square_loss_t());
