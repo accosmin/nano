@@ -15,7 +15,7 @@ namespace ncv
                 typename toperator,
                 typename tstring
         >
-        void measure_once_and_log(const toperator& op, const tstring& msg)
+        void measure_and_log(const toperator& op, const tstring& msg)
         {
                 const timer_t timer;
                 op();

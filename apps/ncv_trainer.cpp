@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
 
                         // test
                         scalar_t lvalue, lerror;
-                        ncv::measure_once_and_log(
+                        ncv::measure_and_log(
                                 [&] () { ncv::test(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror); },
                                 "model tested");
                         log_info() << "<<< test error: [" << lvalue << "/" << lerror << "].";
