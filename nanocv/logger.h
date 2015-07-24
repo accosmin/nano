@@ -12,13 +12,19 @@ namespace ncv
         {
         public:
 
-                // constructor
+                ///
+                /// \brief constructor
+                ///
                 logger_t(std::ostream& stream, const char* header, bool flush = true);
 
-                // destructor
+                ///
+                /// \brief destructor
+                ///
                 ~logger_t();
 
-                // stream data
+                ///
+                /// \brief log element
+                ///
                 template <typename T>
                 logger_t& operator<<(const T& data)
                 {
@@ -29,7 +35,9 @@ namespace ncv
                 logger_t& operator<<(std::ostream& (*pf)(std::ostream&));
                 logger_t& operator<<(logger_t& (*pf)(logger_t&));
 
-                // stream tags
+                ///
+                /// \brief log tags
+                ///
                 logger_t& newl();
                 logger_t& endl();
                 logger_t& done();
@@ -37,7 +45,9 @@ namespace ncv
 
         private:
 
-                // log current time
+                ///
+                /// \brief log the current time
+                ///
                 void log_time();
 
         private:
@@ -47,13 +57,17 @@ namespace ncv
                 bool            m_flush;
         };
 
-        // stream particular tags
+        ///
+        /// \brief stream particular tags
+        ///
         inline logger_t& newl(logger_t& logger_t)         { return logger_t.newl(); }
         inline logger_t& endl(logger_t& logger_t)         { return logger_t.endl(); }
         inline logger_t& done(logger_t& logger_t)         { return logger_t.done(); }
         inline logger_t& flush(logger_t& logger_t)        { return logger_t.flush(); }
 
-        // specific [information, warning, error] line loggers
+        ///
+        /// \brief specific [information, warning, error] line loggers
+        ///
         inline logger_t log_info(std::ostream& os = std::cout, bool flush_at_destruction = true)
         {
                 return logger_t(os, "info", flush_at_destruction);
