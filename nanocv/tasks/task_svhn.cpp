@@ -94,7 +94,7 @@ namespace ncv
                 return decode(image_data, label_data, p);
         }
 
-        size_t svhn_task_t::decode(const io::buffer_t& idata, const io::buffer_t& ldata, protocol p)
+        size_t svhn_task_t::decode(const io::buffer_t& idata, const io::buffer_t& ldata, const protocol p)
         {
                 // decode image & label arrays
                 mat5::array_t iarray, larray;
@@ -167,13 +167,13 @@ namespace ncv
                         const size_t ix = irows() * icols() * 3;
                         const size_t ibeg = isection.dbegin() + i * ix;
 
-                        for (size_t r = 0, p = 0; r < irows(); r ++)
+                        for (size_t r = 0, q = 0; r < irows(); r ++)
                         {
-                                for (size_t c = 0; c < icols(); c ++, p ++)
+                                for (size_t c = 0; c < icols(); c ++, q ++)
                                 {
-                                        const size_t ir = ibeg + (px * 0 + p);
-                                        const size_t ig = ibeg + (px * 1 + p);
-                                        const size_t ib = ibeg + (px * 2 + p);
+                                        const size_t ir = ibeg + (px * 0 + q);
+                                        const size_t ig = ibeg + (px * 1 + q);
+                                        const size_t ib = ibeg + (px * 2 + q);
 
                                         image.set(c, r, color::make_rgba(idata[ir], idata[ig], idata[ib]));
                                 }

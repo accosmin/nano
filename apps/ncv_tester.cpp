@@ -169,17 +169,17 @@ int main(int argc, char *argv[])
                                 sampler_t nk_sampler(nk_samples); nk_sampler.setup(label);
                                 sampler_t ll_sampler(samples); ll_sampler.setup(label);
 
-                                const samples_t ok_samples = ok_sampler.get();
-                                const samples_t nk_samples = nk_sampler.get();
-                                const samples_t ll_samples = ll_sampler.get();
+                                const samples_t label_ok_samples = ok_sampler.get();
+                                const samples_t label_nk_samples = nk_sampler.get();
+                                const samples_t label_ll_samples = ll_sampler.get();
 
-                                log_info() << "miss-classified " << nk_samples.size()
-                                           << "/" << ll_samples.size() 
-                                           << " = " << ((0.0 + nk_samples.size()) / (0.0 + ll_samples.size()))
+                                log_info() << "miss-classified " << label_nk_samples.size()
+                                           << "/" << label_ll_samples.size()
+                                           << " = " << ((0.0 + label_nk_samples.size()) / (0.0 + label_ll_samples.size()))
                                            << " [" << label << "] samples.";
 
-                                rtask->save_as_images(ok_samples, lbasepath + "_ok", grows, gcols, 8, ok_bkcolor);
-                                rtask->save_as_images(nk_samples, lbasepath + "_nk", grows, gcols, 8, nk_bkcolor);
+                                rtask->save_as_images(label_ok_samples, lbasepath + "_ok", grows, gcols, 8, ok_bkcolor);
+                                rtask->save_as_images(label_nk_samples, lbasepath + "_nk", grows, gcols, 8, nk_bkcolor);
                         }
                 }
         }            
