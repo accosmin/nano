@@ -53,7 +53,7 @@ namespace ncv
         inline logger_t& done(logger_t& logger_t)         { return logger_t.done(); }
         inline logger_t& flush(logger_t& logger_t)        { return logger_t.flush(); }
 
-        // specific [information, warning, error] line logger_ts
+        // specific [information, warning, error] line loggers
         inline logger_t log_info(std::ostream& os = std::cout, bool flush_at_destruction = true)
         {
                 return logger_t(os, "info", flush_at_destruction);
