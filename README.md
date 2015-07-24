@@ -35,7 +35,7 @@ NanoCV is tested on ArchLinux (gcc 4.9+, CMake 3.1+, Ninja) and OSX (clang, home
 
 The easiest way to compile (and install) is to run the `build_release.sh` bash script. The test programs and utilities will be found in the `build-release` directory.
 
-The `build_debug.sh` bash script will build the debugging version with and without address, leak and thread gcc-based sanitizers (if available).
+The `build_debug.sh` bash script will build the debugging version with and without address, leak and thread sanitizers (if available).
 
 #### Examples
 
