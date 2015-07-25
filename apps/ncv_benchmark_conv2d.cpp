@@ -56,9 +56,7 @@ int main(int, char* [])
                         << "cpp [us]"
                         << "dot [us]"
                         << "mad [us]"
-                        << "dyn [us]"
-                        << "lin [us]"
-                        << "lin (buff) [us]";
+                        << "dyn [us]";
 
         for (int isize = min_isize; isize <= max_isize; isize += 4)
         {
