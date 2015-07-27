@@ -1,6 +1,5 @@
 #pragma once
 
-#include "noncopyable.hpp"
 #include <memory>
 #include <mutex>
 
@@ -10,7 +9,7 @@ namespace ncv
         <
                 class tobject
         >
-        class singleton_t : private noncopyable_t
+        class singleton_t
 	{
         public:
 
@@ -36,6 +35,12 @@ namespace ncv
                 /// \brief constructor
                 ///
                 singleton_t() {}
+
+                ///
+                /// \brief disable copying
+                ///
+                singleton_t(const singleton_t&) = delete;
+                singleton_t& operator=(const singleton_t&) = delete;
 
                 ///
                 /// \brief destructor

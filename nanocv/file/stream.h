@@ -2,7 +2,6 @@
 
 #include <string>
 #include <utility>
-#include "nanocv/noncopyable.hpp"
 
 namespace ncv
 {
@@ -13,7 +12,7 @@ namespace ncv
                 ///
                 /// \brief map the std::istream's interface over an in-memory buffer
                 ///
-                class stream_t : private noncopyable_t
+                class stream_t
                 {
                 public:
 
@@ -21,6 +20,12 @@ namespace ncv
                         /// \brief constructor
                         ///
                         stream_t(const char* data, size_t size);
+
+                        ///
+                        /// \brief disable copying
+                        ///
+                        stream_t(const stream_t&) = delete;
+                        stream_t& operator=(const stream_t&) = delete;
 
                         ///
                         /// \brief read given number of bytes

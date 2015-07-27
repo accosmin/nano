@@ -6,7 +6,6 @@
 #include <memory>
 #include "thread.h"
 #include <condition_variable>
-#include "nanocv/noncopyable.hpp"
 
 namespace ncv
 {
@@ -16,7 +15,7 @@ namespace ncv
         ///
         /// NB: this is heavily copied/inspired by http://progsch.net/wordpress/?p=81
         ///
-        class NANOCV_PUBLIC thread_pool_t : private noncopyable_t
+        class NANOCV_PUBLIC thread_pool_t
         {
         public:
 
@@ -30,6 +29,12 @@ namespace ncv
                 /// \brief constructor
                 ///
                 explicit thread_pool_t(std::size_t nthreads = 0);
+
+                ///
+                /// \brief disable copying
+                ///
+                thread_pool_t(const thread_pool_t&) = delete;
+                thread_pool_t& operator=(const thread_pool_t&) = delete;
 
                 ///
                 /// \brief destructor

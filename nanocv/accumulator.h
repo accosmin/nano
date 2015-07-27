@@ -7,7 +7,7 @@ namespace ncv
         ///
         /// \brief cumulate sample evaluations (loss value, error and gradient)
         ///
-        class NANOCV_PUBLIC accumulator_t : private noncopyable_t
+        class NANOCV_PUBLIC accumulator_t
         {
         public:
 
@@ -16,6 +16,12 @@ namespace ncv
                 ///
                 accumulator_t(const model_t&, size_t nthreads, 
                               const string_t& criterion_name, criterion_t::type, scalar_t lambda = 0.0);
+
+                ///
+                /// \brief disable copying
+                ///
+                accumulator_t(const accumulator_t&) = delete;
+                accumulator_t& operator=(const accumulator_t&) = delete;
 
                 ///
                 /// \brief destructor
