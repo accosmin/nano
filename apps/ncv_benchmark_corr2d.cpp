@@ -19,18 +19,51 @@ namespace
                 typename ttensork,
                 typename ttensoro
         >
-        void test_ginput(tabulator_t::row_t& row, const top& op,
-                ttensori&& idata, const ttensork& kdata, const ttensoro& odata)
+        size_t measure_output(const top& op,
+                const ttensori& idata, const ttensork& kdata, ttensoro&& odata, const size_t trials = 16)
         {
-                const size_t trials = 16;
+                return ncv::measure_robustly_usec([&] ()
+                {
+                        math::conv3d_output(op, idata, kdata, odata);
+                }, trials);
+        }
 
-                row << ncv::measure_robustly_usec([&] ()
+        template
+        <
+                typename top,
+                typename ttensori,
+                typename ttensork,
+                typename ttensoro
+        >
+        size_t measure_ginput(const top& op,
+                ttensori&& idata, const ttensork& kdata, const ttensoro& odata, const size_t trials = 16)
+        {
+                return ncv::measure_robustly_usec([&] ()
                 {
                         math::conv3d_ginput(op, idata, kdata, odata);
                 }, trials);
         }
 
-        void test_corr2d(tabulator_t::row_t& row, int isize, int idims, int ksize, int odims)
+        template
+        <
+                typename top,
+                typename ttensori,
+                typename ttensork,
+                typename ttensoro
+        >
+        size_t measure_gparam(const top& op,
+                const ttensori& idata, const ttensork&& kdata, const ttensoro& odata, const size_t trials = 16)
+        {
+                return ncv::measure_robustly_usec([&] ()
+                {
+                        math::conv3d_gparam(op, idata, kdata, odata);
+                }, trials);
+        }
+
+        void test_corr2d(int isize, int idims, int ksize, int odims,
+                tabulator_t::row_t& row_output,
+                tabulator_t::row_t& row_ginput,
+                tabulator_t::row_t& row_gparam)
         {
                 const int osize = isize - ksize + 1;
                 const int kdims = odims * idims;
@@ -49,12 +82,27 @@ namespace
                 tensor_t kdata_ret = kdata;
                 tensor_t odata_ret = odata;
 
-                test_ginput(row, ncv::math::corr2d_egb_t(), idata_ret, kdata, odata);
-                test_ginput(row, ncv::math::corr2d_egr_t(), idata_ret, kdata, odata);
-                test_ginput(row, ncv::math::corr2d_cpp_t(), idata_ret, kdata, odata);
-                test_ginput(row, ncv::math::corr2d_mdk_t(), idata_ret, kdata, odata);
-                test_ginput(row, ncv::math::corr2d_mdo_t(), idata_ret, kdata, odata);
-                test_ginput(row, ncv::math::corr2d_dyn_t(), idata_ret, kdata, odata);
+                // output
+                row_output << measure_output(math::conv2d_eig_t(), idata, kdata, odata_ret);
+                row_output << measure_output(math::conv2d_cpp_t(), idata, kdata, odata_ret);
+                row_output << measure_output(math::conv2d_dot_t(), idata, kdata, odata_ret);
+                row_output << measure_output(math::conv2d_mad_t(), idata, kdata, odata_ret);
+                row_output << measure_output(math::conv2d_dyn_t(), idata, kdata, odata_ret);
+
+                // gradient wrt input
+                row_ginput << measure_ginput(ncv::math::corr2d_egb_t(), idata_ret, kdata, odata);
+                row_ginput << measure_ginput(ncv::math::corr2d_egr_t(), idata_ret, kdata, odata);
+                row_ginput << measure_ginput(ncv::math::corr2d_cpp_t(), idata_ret, kdata, odata);
+                row_ginput << measure_ginput(ncv::math::corr2d_mdk_t(), idata_ret, kdata, odata);
+                row_ginput << measure_ginput(ncv::math::corr2d_mdo_t(), idata_ret, kdata, odata);
+                row_ginput << measure_ginput(ncv::math::corr2d_dyn_t(), idata_ret, kdata, odata);
+
+                // gradient wrt parameters
+                row_gparam << measure_gparam(math::conv2d_eig_t(), idata, kdata_ret, odata);
+                row_gparam << measure_gparam(math::conv2d_cpp_t(), idata, kdata_ret, odata);
+                row_gparam << measure_gparam(math::conv2d_dot_t(), idata, kdata_ret, odata);
+                row_gparam << measure_gparam(math::conv2d_mad_t(), idata, kdata_ret, odata);
+                row_gparam << measure_gparam(math::conv2d_dyn_t(), idata, kdata_ret, odata);
         }
 }
 
@@ -75,6 +123,12 @@ int main(int, char* [])
                        << "cpp [us]"
                        << "mkd [us]"
                        << "mko [us]"
+                       << "dyn [us]";
+
+        table.header() << "eig [us]"
+                       << "cpp [us]"
+                       << "dot [us]"
+                       << "mad [us]"
                        << "dyn [us]";
 
         for (int isize = min_isize; isize <= max_isize; isize += 4)
