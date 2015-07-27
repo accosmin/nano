@@ -118,10 +118,10 @@ namespace
 int main(int, char* [])
 {
         const int min_isize = 8;
-        const int max_isize = 48;
+        const int max_isize = 32;
 
         const int min_ksize = 3;
-        const int max_ksize = 15;
+        const int max_ksize = 9;
 
         const int idims = 16;
         const int odims = 32;
