@@ -11,17 +11,14 @@ namespace
 {
         template
         <
-                typename top,
-                typename tmatrix
+                typename top
         >
-        void test_method(tabulator_t::row_t& row, top op, const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
+        void test_method(tabulator_t::row_t& row, const top& op,
+                const matrix_t& idata, const matrix_t& kdata, matrix_t& odata)
         {
-                const size_t trials = 1024;
-                row << ncv::measure_robustly_usec([&] ()
-                {
-                        odata.setZero();
-                        op(idata, kdata, odata);
-                }, trials / kdata.rows());
+                const size_t trials = 1024 / kdata.rows();
+
+                row << ncv::measure_robustly_usec([&] () { odata.setZero(); op(idata, kdata, odata); }, trials);
         }
 
         void test_conv2d(tabulator_t::row_t& row, int isize, int ksize)
