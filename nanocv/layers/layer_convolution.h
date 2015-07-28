@@ -1,6 +1,8 @@
 #pragma once
 
 #include "nanocv/layer.h"
+#include "nanocv/math/conv2d.hpp"
+#include "nanocv/math/corr2d.hpp"
 
 namespace ncv
 {
@@ -71,6 +73,8 @@ namespace ncv
                 size_t ippsize() const { return m_idata.planeSize(); }
                 size_t kppsize() const { return m_kdata.planeSize(); }
 
+                void tune();
+
         private:
 
                 // attributes
@@ -78,5 +82,9 @@ namespace ncv
                 tensor_t                m_odata;        ///< output buffer:             odims x orows x ocols
                 tensor_t                m_kdata;        ///< convolution kernels:       idims x odims x krows x kcols
                 tensor_t                m_bdata;        ///< convolution bias:          odims x 1 x 1
+
+                conv2d_op               m_output_op;    ///< 2D operator to compute the output
+                corr2d_op               m_ginput_op;    ///< 2D operator to compute the gradient wrt inputs
+                conv2d_op               m_gparam_op;    ///< 2D operator to compute the gradient wrt parameters
         };
 }

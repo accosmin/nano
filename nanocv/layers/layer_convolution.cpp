@@ -1,17 +1,20 @@
 #include "layer_convolution.h"
 #include "nanocv/logger.h"
 #include "nanocv/text.hpp"
+#include "nanocv/measure.hpp"
 #include "nanocv/math/clamp.hpp"
-#include "nanocv/math/conv2d.hpp"
-#include "nanocv/math/corr2d.hpp"
 #include "nanocv/math/conv3d.hpp"
 #include "nanocv/math/random.hpp"
 #include "nanocv/tensor/serialize.hpp"
+#include <map>
 
 namespace ncv
 {
         conv_layer_t::conv_layer_t(const string_t& parameters)
-                :       layer_t(parameters)
+                :       layer_t(parameters),
+                        m_output_op(conv2d_op::dyn),
+                        m_ginput_op(corr2d_op::dyn),
+                        m_gparam_op(conv2d_op::dyn)
         {
         }
 
@@ -50,7 +53,83 @@ namespace ncv
                 m_kdata.resize(idims * odims, krows, kcols);
                 m_bdata.resize(odims, 1, 1);
 
+                // choose the fastest 2D operators (for the given problem size)
+                tune();
+
                 return psize();
+        }
+
+        void conv_layer_t::tune()
+        {
+                const auto conv2ds =
+                {
+                        conv2d_op::cpp,
+                        conv2d_op::dot,
+                        conv2d_op::dyn,
+                        conv2d_op::eig,
+                        conv2d_op::mad
+                };
+                const auto corr2ds =
+                {
+                        corr2d_op::cpp,
+                        corr2d_op::dyn,
+                        corr2d_op::egb,
+                        corr2d_op::egr,
+                        corr2d_op::mdk,
+                        corr2d_op::mdo
+                };
+
+                std::map<size_t, conv2d_op> output_results;
+                std::map<size_t, corr2d_op> ginput_results;
+                std::map<size_t, conv2d_op> gparam_results;
+
+                tensor_t test_idata = m_idata;
+                tensor_t test_kdata(psize(), 1, 1);
+                tensor_t test_odata = m_odata;
+
+                // todo: more verbose here!
+
+                const size_t trials = 16;
+
+                for (const auto op : conv2ds)
+                {
+                        const auto time = ncv::measure_robustly_usec([&] ()
+                        {
+                                m_output_op = op;
+                                this->output(test_idata);
+                        }, trials);
+
+                        output_results[time] = op;
+                        log_info() << "output: time = " << time;
+                }
+
+                for (const auto op : corr2ds)
+                {
+                        const auto time = ncv::measure_robustly_usec([&] ()
+                        {
+                                m_ginput_op = op;
+                                this->ginput(test_odata);
+                        }, trials);
+
+                        ginput_results[time] = op;
+                        log_info() << "ginput: time = " << time;
+                }
+
+                for (const auto op : conv2ds)
+                {
+                        const auto time = ncv::measure_robustly_usec([&] ()
+                        {
+                                m_gparam_op = op;
+                                this->gparam(test_odata, test_kdata.data());
+                        }, trials);
+
+                        gparam_results[time] = op;
+                        log_info() << "gparam: time = " << time;
+                }
+
+                m_output_op = output_results.begin()->second;
+                m_ginput_op = ginput_results.begin()->second;
+                m_gparam_op = gparam_results.begin()->second;
         }
 
         void conv_layer_t::zero_params()
@@ -105,7 +184,15 @@ namespace ncv
                 m_idata = input;
 
                 // convolution
-                math::conv3d_output(math::conv2d_dyn_t(), m_idata, m_kdata, m_odata);
+                switch (m_output_op)
+                {
+                case conv2d_op::cpp:    math::conv3d_output(math::conv2d_cpp_t(), m_idata, m_kdata, m_odata); break;
+                case conv2d_op::dot:    math::conv3d_output(math::conv2d_dot_t(), m_idata, m_kdata, m_odata); break;
+                case conv2d_op::dyn:    math::conv3d_output(math::conv2d_dyn_t(), m_idata, m_kdata, m_odata); break;
+                case conv2d_op::eig:    math::conv3d_output(math::conv2d_eig_t(), m_idata, m_kdata, m_odata); break;
+                case conv2d_op::mad:    math::conv3d_output(math::conv2d_mad_t(), m_idata, m_kdata, m_odata); break;
+                default:                math::conv3d_output(math::conv2d_dyn_t(), m_idata, m_kdata, m_odata); break;
+                }
 
                 // +bias
                 for (size_t o = 0; o < odims(); o ++)
@@ -124,7 +211,16 @@ namespace ncv
 
                 m_odata = output;
                 
-                math::conv3d_ginput(math::corr2d_dyn_t(), m_idata, m_kdata, m_odata);
+                switch (m_ginput_op)
+                {
+                case corr2d_op::cpp:    math::conv3d_ginput(math::corr2d_cpp_t(), m_idata, m_kdata, m_odata); break;
+                case corr2d_op::dyn:    math::conv3d_ginput(math::corr2d_dyn_t(), m_idata, m_kdata, m_odata); break;
+                case corr2d_op::egb:    math::conv3d_ginput(math::corr2d_egb_t(), m_idata, m_kdata, m_odata); break;
+                case corr2d_op::egr:    math::conv3d_ginput(math::corr2d_egr_t(), m_idata, m_kdata, m_odata); break;
+                case corr2d_op::mdk:    math::conv3d_ginput(math::corr2d_mdk_t(), m_idata, m_kdata, m_odata); break;
+                case corr2d_op::mdo:    math::conv3d_ginput(math::corr2d_mdo_t(), m_idata, m_kdata, m_odata); break;
+                default:                math::conv3d_ginput(math::corr2d_dyn_t(), m_idata, m_kdata, m_odata); break;
+                }
 
                 return m_idata;
         }
@@ -138,7 +234,16 @@ namespace ncv
                 m_odata = output;
                 
                 // wrt convolution
-                math::conv3d_gparam(math::conv2d_dyn_t(), m_idata, tensor::map_tensor(gradient, m_kdata), m_odata);
+                auto kdata = tensor::map_tensor(gradient, m_kdata);
+                switch (m_gparam_op)
+                {
+                case conv2d_op::cpp:    math::conv3d_gparam(math::conv2d_cpp_t(), m_idata, kdata, m_odata); break;
+                case conv2d_op::dot:    math::conv3d_gparam(math::conv2d_dot_t(), m_idata, kdata, m_odata); break;
+                case conv2d_op::dyn:    math::conv3d_gparam(math::conv2d_dyn_t(), m_idata, kdata, m_odata); break;
+                case conv2d_op::eig:    math::conv3d_gparam(math::conv2d_eig_t(), m_idata, kdata, m_odata); break;
+                case conv2d_op::mad:    math::conv3d_gparam(math::conv2d_mad_t(), m_idata, kdata, m_odata); break;
+                default:                math::conv3d_gparam(math::conv2d_dyn_t(), m_idata, kdata, m_odata); break;
+                }
 
                 // wrt bias
                 for (size_t o = 0; o < odims(); o ++)
