@@ -1,31 +1,25 @@
-## NanoCV
+### NanoCV
 
 This small (nano) library is used as a sandbox for training and testing models, such as neural networks and convolution networks, on various image classification and object detection problems. 
 
 The library is built around several key concepts mapped to C++ object interfaces. Each object instantation is registered with an **ID** and thus it can be selected from command line arguments. Also 
 new objects can be easily registered and then they are automatically visibile across the library and its associated programs.
 
-#### Task
+##### Task
 
-A task describes a classification or regression problem consisting of separate training and test image patches with associated target outputs if any. The library has built-in support for various 
-standard benchmark datasets like: **MNIST**, **CIFAR-10**, **CIFAR-100**, **STL-10**, **SVHN**, **NORB**. These datasets are loaded directly from the original (compressed) files.
+A task describes a classification or regression problem consisting of separate training and test image patches with associated target outputs if any. The library has built-in support for various standard benchmark datasets like: **MNIST**, **CIFAR-10**, **CIFAR-100**, **STL-10**, **SVHN**, **NORB**. These datasets are loaded directly from the original (compressed) files.
 
-#### Model
+##### Model
 
-A model predicts the correct output for a given image patch, either its label (if a classification task) or a score (if a regression task). The library 
-implements various networks with any user-selectable combination of layers: **convolution**, **activation** (hyperbolic tangent, unit, signed 
-normalization), **linear** and **pooling**.
+A model predicts the correct output for a given image patch, either its label (if a classification task) or a score (if a regression task). The library implements various networks with any user-selectable combination of layers: **convolution**, **activation** (hyperbolic tangent, unit, signed normalization), **linear** and **pooling**.
 
-#### Loss 
+##### Loss 
 
 A loss function assigns a scalar score to the prediction of a model by comparing it with the ground truth target (if provided): the lower the score, the better the prediction.
 
-#### Trainer
+##### Trainer
 
-A trainer optimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as 
-a numerical optimization criteria. Implemented instances: **batch** (using **L-BFGS**, conjugate gradient descent - **CGD** or gradient descent - **GD**), **minibatch** 
-and **stochastic** (using Nesterov's accelerated gradient - **AG**, adaptive gradient - **ADAGRAD**, adaptive delta gradient - **ADADELTA**, stochastic gradient - **SG**, stochastic iterative averaging - **SIA** or stochastic 
-gradient averaging - **SGA**).
+A trainer optimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as a numerical optimization criteria. Implemented instances: **batch** (using **L-BFGS**, conjugate gradient descent - **CGD** or gradient descent - **GD**), **minibatch** and **stochastic** (using Nesterov's accelerated gradient - **AG**, adaptive gradient - **ADAGRAD**, adaptive delta gradient - **ADADELTA**, stochastic gradient - **SG**, stochastic iterative averaging - **SIA** or stochastic gradient averaging - **SGA**).
 
 #### Compilation
 
