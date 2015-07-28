@@ -80,9 +80,9 @@ namespace ncv
                 std::vector<tstring> collect(const tfunctor& fun) const
 		{
                         std::vector<tstring> result;
-                        for (const auto& it : m_protos)
+                        for (const auto& proto : m_protos)
                         {
-                                result.push_back(fun(it));
+                                result.push_back(fun(proto));
                         }
 
 			return result;

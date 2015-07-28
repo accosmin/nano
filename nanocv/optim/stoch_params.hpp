@@ -33,10 +33,10 @@ namespace ncv
                                         tsize epoch_size,
                                         tscalar alpha0,
                                         tscalar decay,
-                                        const twlog& wlog = twlog(),
-                                        const telog& elog = telog(),
-                                        const tulog& ulog = tulog())
-                                :       params_t<tproblem>(wlog, elog, ulog),
+                                        const twlog& w = twlog(),
+                                        const telog& e = telog(),
+                                        const tulog& u = tulog())
+                                :       params_t<tproblem>(w, e, u),
                                         m_epochs(epochs),
                                         m_epoch_size(epoch_size),
                                         m_alpha0(alpha0),

@@ -26,12 +26,12 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        params_t(       const twlog& wlog = twlog(),
-                                        const telog& elog = telog(),
-                                        const tulog& ulog = tulog())
-                                :       m_wlog(wlog),
-                                        m_elog(elog),
-                                        m_ulog(ulog)
+                        params_t(       const twlog& w = twlog(),
+                                        const telog& e = telog(),
+                                        const tulog& u = tulog())
+                                :       m_wlog(w),
+                                        m_elog(e),
+                                        m_ulog(u)
                         {
                         }
 

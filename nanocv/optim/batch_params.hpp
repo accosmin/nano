@@ -31,10 +31,10 @@ namespace ncv
                                         tscalar epsilon,
                                         ls_initializer lsinit,
                                         ls_strategy lsstrat,
-                                        const twlog& wlog = twlog(),
-                                        const telog& elog = telog(),
-                                        const tulog& ulog = tulog())
-                                :       params_t<tproblem>(wlog, elog, ulog),
+                                        const twlog& w = twlog(),
+                                        const telog& e = telog(),
+                                        const tulog& u = tulog())
+                                :       params_t<tproblem>(w, e, u),
                                         m_max_iterations(max_iterations),
                                         m_epsilon(epsilon),
                                         m_ls_initializer(lsinit),

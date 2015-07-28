@@ -1,6 +1,7 @@
 #!/bin/bash
 
-compiler="clang++"      # "", "g++", "clang++"
+compiler="g++"      # "", "g++", "clang++"
+
 build_type=Debug
 build_sys=ninja
 
