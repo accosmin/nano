@@ -5,6 +5,8 @@
 #include "nanocv/nanocv.h"
 #include "nanocv/tester.h"
 #include "nanocv/logger.h"
+#include "nanocv/math/abs.hpp"
+#include "nanocv/math/epsilon.hpp"
 #include "nanocv/tasks/task_synthetic_shapes.h"
 #include <cstdio>
 
@@ -94,11 +96,11 @@ BOOST_AUTO_TEST_CASE(test_model_io)
 
                         // check
                         BOOST_CHECK_EQUAL(lcount_before, lcount_after);
-                        BOOST_CHECK_EQUAL(lvalue_before, lvalue_after);
-                        BOOST_CHECK_EQUAL(lerror_before, lerror_before);
+                        BOOST_CHECK_LE(math::abs(lvalue_before - lvalue_after), math::epsilon0<scalar_t>());
+                        BOOST_CHECK_LE(math::abs(lerror_before - lerror_after), math::epsilon0<scalar_t>());
 
                         BOOST_CHECK_EQUAL(params.size(), xparams.size());
-                        BOOST_CHECK_LE((params - xparams).lpNorm<Eigen::Infinity>(), 1e-16);
+                        BOOST_CHECK_LE((params - xparams).lpNorm<Eigen::Infinity>(), math::epsilon0<scalar_t>());
 
                         // cleanup
                         std::remove(path.c_str());
