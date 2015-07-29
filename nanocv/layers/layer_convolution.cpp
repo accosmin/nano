@@ -10,6 +10,36 @@
 
 namespace ncv
 {
+        namespace text
+        {
+                template <>
+                inline std::map<conv2d_op, std::string> enum_string<conv2d_op>()
+                {
+                        return
+                        {
+                                { conv2d_op::cpp,       "cpp" },
+                                { conv2d_op::dot,       "dot" },
+                                { conv2d_op::dyn,       "dyn" },
+                                { conv2d_op::eig,       "eig" },
+                                { conv2d_op::mad,       "mad" }
+                        };
+                }
+
+                template <>
+                inline std::map<corr2d_op, std::string> enum_string<corr2d_op>()
+                {
+                        return
+                        {
+                                { corr2d_op::cpp,       "cpp" },
+                                { corr2d_op::dyn,       "dyn" },
+                                { corr2d_op::egb,       "egb" },
+                                { corr2d_op::egr,       "egr" },
+                                { corr2d_op::mdk,       "mdk" },
+                                { corr2d_op::mdo,       "mdo" }
+                        };
+                }
+        }
+
         conv_layer_t::conv_layer_t(const string_t& parameters)
                 :       layer_t(parameters),
                         m_output_op(conv2d_op::dyn),
@@ -87,8 +117,6 @@ namespace ncv
                 tensor_t test_kdata(psize(), 1, 1);
                 tensor_t test_odata = m_odata;
 
-                // todo: more verbose here!
-
                 const size_t trials = 16;
 
                 for (const auto op : conv2ds)
@@ -100,7 +128,7 @@ namespace ncv
                         }, trials);
 
                         output_results[time] = op;
-                        log_info() << "output: time = " << time;
+                        log_info() << "tuning convolution: output [" << text::to_string(op) << "] done in " << time << "us.";
                 }
 
                 for (const auto op : corr2ds)
@@ -112,7 +140,7 @@ namespace ncv
                         }, trials);
 
                         ginput_results[time] = op;
-                        log_info() << "ginput: time = " << time;
+                        log_info() << "tuning convolution: ginput [" << text::to_string(op) << "] done in " << time << "us.";
                 }
 
                 for (const auto op : conv2ds)
@@ -124,12 +152,17 @@ namespace ncv
                         }, trials);
 
                         gparam_results[time] = op;
-                        log_info() << "gparam: time = " << time;
+                        log_info() << "tuning convolution: gparam [" << text::to_string(op) << "] done in " << time << "us.";
                 }
 
                 m_output_op = output_results.begin()->second;
                 m_ginput_op = ginput_results.begin()->second;
                 m_gparam_op = gparam_results.begin()->second;
+
+                log_info() << "tuning convolution: optimum output [" << text::to_string(m_output_op)
+                           << "], ginput [" << text::to_string(m_ginput_op)
+                           << "], gparam [" << text::to_string(m_gparam_op)
+                           << "].";
         }
 
         void conv_layer_t::zero_params()
