@@ -6,7 +6,6 @@
 #include "nanocv/math/conv3d.hpp"
 #include "nanocv/math/random.hpp"
 #include "nanocv/tensor/serialize.hpp"
-#include <map>
 
 namespace ncv
 {
@@ -37,6 +36,39 @@ namespace ncv
                                 { corr2d_op::mdk,       "mdk" },
                                 { corr2d_op::mdo,       "mdo" }
                         };
+                }
+        }
+
+        namespace
+        {
+                template
+                <
+                        typename tvalues,
+                        typename ttest
+                >
+                decltype(auto) fastest(const std::string& header, const tvalues& values,
+                        const ttest& test, const size_t trials = 16)
+                {
+                        auto best_time = std::numeric_limits<size_t>::max();
+                        auto best_value = *std::begin(values);
+
+                        for (auto value : values)
+                        {
+                                const auto time = ncv::measure_robustly_usec([&] ()
+                                {
+                                        test(value);
+                                }, trials);
+
+                                if (time < best_time)
+                                {
+                                        best_time = time;
+                                        best_value = value;
+                                }
+
+                                log_info() << header << " [" << text::to_string(value) << " in " << time << "us].";
+                        }
+
+                        return best_value;
                 }
         }
 
@@ -109,57 +141,36 @@ namespace ncv
                         corr2d_op::mdo
                 };
 
-                std::map<size_t, conv2d_op> output_results;
-                std::map<size_t, corr2d_op> ginput_results;
-                std::map<size_t, conv2d_op> gparam_results;
-
                 tensor_t test_idata = m_idata;
                 tensor_t test_kdata(psize(), 1, 1);
                 tensor_t test_odata = m_odata;
 
-                const size_t trials = 16;
+                const string_t header =
+                        "[conv] (" +
+                        text::to_string(idims()) + "x" +
+                        text::to_string(irows()) + "x" +
+                        text::to_string(icols()) + ") -> (" +
+                        text::to_string(odims()) + "x" +
+                        text::to_string(orows()) + "x" +
+                        text::to_string(ocols()) + ")";
 
-                for (const auto op : conv2ds)
+                m_output_op = fastest(header + ": output", conv2ds, [&] (const conv2d_op& op)
                 {
-                        const auto time = ncv::measure_robustly_usec([&] ()
-                        {
-                                m_output_op = op;
-                                this->output(test_idata);
-                        }, trials);
-
-                        output_results[time] = op;
-                        log_info() << "tuning convolution: output [" << text::to_string(op) << "] done in " << time << "us.";
-                }
-
-                for (const auto op : corr2ds)
+                        m_output_op = op;
+                        this->output(test_idata);
+                });
+                m_ginput_op = fastest(header + ": ginput", corr2ds, [&] (const corr2d_op& op)
                 {
-                        const auto time = ncv::measure_robustly_usec([&] ()
-                        {
-                                m_ginput_op = op;
-                                this->ginput(test_odata);
-                        }, trials);
-
-                        ginput_results[time] = op;
-                        log_info() << "tuning convolution: ginput [" << text::to_string(op) << "] done in " << time << "us.";
-                }
-
-                for (const auto op : conv2ds)
+                        m_ginput_op = op;
+                        this->ginput(test_odata);
+                });
+                m_gparam_op = fastest(header + ": gparam", conv2ds, [&] (const conv2d_op& op)
                 {
-                        const auto time = ncv::measure_robustly_usec([&] ()
-                        {
-                                m_gparam_op = op;
-                                this->gparam(test_odata, test_kdata.data());
-                        }, trials);
+                        m_gparam_op = op;
+                        this->gparam(test_odata, test_kdata.data());
+                });
 
-                        gparam_results[time] = op;
-                        log_info() << "tuning convolution: gparam [" << text::to_string(op) << "] done in " << time << "us.";
-                }
-
-                m_output_op = output_results.begin()->second;
-                m_ginput_op = ginput_results.begin()->second;
-                m_gparam_op = gparam_results.begin()->second;
-
-                log_info() << "tuning convolution: optimum output [" << text::to_string(m_output_op)
+                log_info() << header << ": optimum output [" << text::to_string(m_output_op)
                            << "], ginput [" << text::to_string(m_ginput_op)
                            << "], gparam [" << text::to_string(m_gparam_op)
                            << "].";
