@@ -220,11 +220,13 @@ int main(int argc, char *argv[])
 
                                 const auto milis_rand = ncv::measure_robustly_usec([&] ()
                                 {
+                                        gdata.reset();
                                         gdata.update(inputs, targets, *loss);
                                 }, 1) / 1000;
 
                                 const auto milis_task = ncv::measure_robustly_usec([&] ()
                                 {
+                                        gdata.reset();
                                         gdata.update(task, samples, *loss);
                                 }, 1) / 1000;
 
