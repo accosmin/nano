@@ -117,7 +117,7 @@ namespace
 
 int main(int, char* [])
 {
-        const int min_isize = 8;
+        const int min_isize = 4;
         const int max_isize = 32;
 
         const int min_ksize = 3;
@@ -160,7 +160,7 @@ int main(int, char* [])
                 table_ginput.clear();
                 table_gparam.clear();
 
-                for (int ksize = min_ksize; ksize <= std::min(isize - min_ksize, max_ksize); ksize += 2)
+                for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ksize += 2)
                 {
                         const int osize = isize - ksize + 1;
 
