@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(test_thread_loop)
         using namespace ncv;
 
         const size_t min_size = 37;
-        const size_t max_size = 256 * 1024;
+        const size_t max_size = 64 * 1024;
 
         const size_t trials = 16;
 

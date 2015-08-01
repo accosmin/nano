@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
         ncv::init();
 
         const size_t cmd_samples = 256;
-        const size_t cmd_outputs = 5;
+        const size_t cmd_outputs = 3;
         const scalar_t cmd_epsilon = math::epsilon1<scalar_t>();
 
         synthetic_shapes_task_t task(16, 16, cmd_outputs, color_mode::luma, cmd_samples);
@@ -43,8 +43,8 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
         const string_t lmodel2 = lmodel1 + "linear:dims=32;act-snorm;";
 
         string_t cmodel;
-        cmodel = cmodel + "conv:dims=4,rows=5,cols=5;pool-max;act-snorm;";
-        cmodel = cmodel + "conv:dims=8,rows=3,cols=3;pool-max;act-snorm;";
+        cmodel = cmodel + "conv:dims=3,rows=5,cols=5;pool-max;act-snorm;";
+        cmodel = cmodel + "conv:dims=5,rows=3,cols=3;pool-max;act-snorm;";
 
         const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
 
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
                         BOOST_CHECK_LE(math::abs(vgrad1 - value1), cmd_epsilon);
 
                         // check results with multiple threads
-                        for (size_t nthreads = 2; nthreads < 8 * ncv::n_threads(); nthreads ++)
+                        for (size_t nthreads = 2; nthreads < 3 * ncv::n_threads(); nthreads ++)
                         {
                                 accumulator_t laccx(*model, nthreads, criterion, criterion_t::type::value, lambda);
                                 accumulator_t gaccx(*model, nthreads, criterion, criterion_t::type::vgrad, lambda);

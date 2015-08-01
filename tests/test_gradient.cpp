@@ -27,7 +27,7 @@ namespace test
         void test_grad_params(const string_t& header, const string_t& loss_id, const model_t& model,
                 accumulator_t& acc_params)
         {
-                random_t<size_t> rand(8, 16);
+                random_t<size_t> rand(3, 7);
 
                 const size_t n_tests = 16;
                 const size_t n_samples = rand();
@@ -118,8 +118,7 @@ namespace test
                 const strings_t criteria = ncv::get_criteria().ids();
                 for (const string_t& criterion : criteria)
                 {
-                        random_t<size_t> rand(2, 16);
-                        const size_t n_threads = 1 + (rand() % 2);
+                        const size_t n_threads = 1;
 
                         accumulator_t acc_params(model, n_threads, criterion, criterion_t::type::vgrad, 0.1);
                         test_grad_params(header + "[criterion = " + criterion + "]", loss_id, model, acc_params);

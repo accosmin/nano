@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(test_model_io)
 
         using namespace ncv;
 
-        synthetic_shapes_task_t task(28, 28, 10, color_mode::rgba, 1000);
+        synthetic_shapes_task_t task(28, 28, 10, color_mode::rgba, 1024);
         BOOST_CHECK_EQUAL(task.load(""), true);
 
         const size_t cmd_outputs = task.osize();
@@ -24,16 +24,16 @@ BOOST_AUTO_TEST_CASE(test_model_io)
         const size_t n_tests = 8;
 
         const string_t lmodel0;
-        const string_t lmodel1 = lmodel0 + "linear:dims=100;act-snorm;";
-        const string_t lmodel2 = lmodel1 + "linear:dims=100;act-snorm;";
-        const string_t lmodel3 = lmodel2 + "linear:dims=100;act-snorm;";
-        const string_t lmodel4 = lmodel3 + "linear:dims=100;act-snorm;";
-        const string_t lmodel5 = lmodel4 + "linear:dims=100;act-snorm;";
+        const string_t lmodel1 = lmodel0 + "linear:dims=10;act-snorm;";
+        const string_t lmodel2 = lmodel1 + "linear:dims=10;act-snorm;";
+        const string_t lmodel3 = lmodel2 + "linear:dims=10;act-snorm;";
+        const string_t lmodel4 = lmodel3 + "linear:dims=10;act-snorm;";
+        const string_t lmodel5 = lmodel4 + "linear:dims=10;act-snorm;";
         
         string_t cmodel;
-        cmodel = cmodel + "conv:dims=16,rows=9,cols=9;pool-max;act-snorm;";
-        cmodel = cmodel + "conv:dims=32,rows=5,cols=5;pool-max;act-snorm;";
-        cmodel = cmodel + "conv:dims=64,rows=3,cols=3;act-snorm;";
+        cmodel = cmodel + "conv:dims=8,rows=9,cols=9;pool-max;act-snorm;";
+        cmodel = cmodel + "conv:dims=8,rows=5,cols=5;pool-max;act-snorm;";
+        cmodel = cmodel + "conv:dims=8,rows=3,cols=3;act-snorm;";
 
         const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
 
