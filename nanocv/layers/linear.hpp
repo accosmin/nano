@@ -1,8 +1,5 @@
 #pragma once
 
-#include "nanocv/tensor/vector.hpp"
-#include "nanocv/tensor/matrix.hpp"
-
 namespace ncv
 {
         namespace linear
