@@ -6,6 +6,9 @@ namespace ncv
 {
         namespace pooling
         {
+                ///
+                /// \brief pooling output (2x downsampling)
+                ///
                 template
                 <
                         typename tmatrixi,
@@ -40,6 +43,9 @@ namespace ncv
                         odata = ialpha * (sdata.array() / cdata.array()).log();
                 }
 
+                ///
+                /// \brief gradient wrt inputs
+                ///
                 template
                 <
                         typename tmatrixi,
