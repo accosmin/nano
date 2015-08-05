@@ -508,11 +508,11 @@ namespace ncv
                 switch (m_mode)
                 {
                 case color_mode::luma:
-                        m_luma.setRandom();
+                        tensor::set_random(m_luma, random_t<luma_t>());
                         return true;
 
                 case color_mode::rgba:
-                        m_rgba.setRandom();
+                        tensor::set_random(m_rgba, random_t<rgba_t>());
                         tensor::transform(m_rgba, m_rgba, [] (rgba_t c) { return color::set_alpha(c, 255); });
                         return true;
 

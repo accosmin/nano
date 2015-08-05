@@ -21,7 +21,7 @@ namespace
                 for (auto& input : inputs)
                 {
                         input.resize(cmd_color == color_mode::luma ? 1 : 3, cmd_rows, cmd_cols);
-                        input.setRandom(random_t<scalar_t>(0.0, 1.0));
+                        tensor::set_random(input, random_t<scalar_t>(0.0, 1.0));
                 }
 
                 random_t<size_t> trgen(0, cmd_outputs);

@@ -60,8 +60,8 @@ namespace ncv
 
         void conv_layer_t::random_params(scalar_t min, scalar_t max)
         {
-                m_kdata.setRandom(random_t<scalar_t>(min, max));
-                m_bdata.setRandom(random_t<scalar_t>(min, max));
+                tensor::set_random(m_kdata, random_t<scalar_t>(min, max));
+                tensor::set_random(m_bdata, random_t<scalar_t>(min, max));
 
                 resetKConv();
         }

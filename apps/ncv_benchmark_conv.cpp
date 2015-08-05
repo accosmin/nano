@@ -75,9 +75,9 @@ namespace
                 tensor_t kdata(kdims, ksize, ksize);
                 tensor_t odata(odims, osize, osize);
 
-                idata.setRandom(rng);
-                kdata.setRandom(rng);
-                odata.setRandom(rng);
+                tensor::set_random(idata, rng);
+                tensor::set_random(kdata, rng);
+                tensor::set_random(odata, rng);
 
                 tensor_t idata_ret = idata;
                 tensor_t kdata_ret = kdata;

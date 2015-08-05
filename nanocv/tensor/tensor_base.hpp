@@ -72,18 +72,6 @@ namespace ncv
                         }
 
                         ///
-                        /// \brief set all elements to random values using the given generator
-                        ///
-                        template
-                        <
-                                typename tgenerator
-                        >
-                        void setRandom(tgenerator gen)
-                        {
-                                gen(data(), data() + size());
-                        }
-
-                        ///
                         /// \brief dimensions
                         ///
                         tsize size() const { return m_data.size(); }
