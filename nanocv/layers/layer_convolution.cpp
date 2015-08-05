@@ -278,7 +278,7 @@ namespace ncv
                 m_odata = output;
                 
                 // wrt convolution
-                auto kdata = tensor::map_tensor(gradient, m_kdata);
+                auto kdata = tensor::map_tensor(gradient, m_kdata.dims(), m_kdata.rows(), m_kdata.cols());
                 switch (m_gparam_op)
                 {
                 case conv2d_op::cpp:    math::conv3d_gparam(math::conv2d_cpp_t(), m_idata, kdata, m_odata); break;

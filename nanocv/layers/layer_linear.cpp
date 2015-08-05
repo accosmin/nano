@@ -19,11 +19,11 @@ namespace ncv
                                                  size_t(1), size_t(4096));
 
                 // resize buffers
-                m_idata.resize(tensor.dims(), tensor.rows(), tensor.cols());
+                m_idata.resize(idims, 1, 1);
                 m_odata.resize(odims, 1, 1);
 
-                m_wdata.resize(1, odims, idims);
-                m_bdata.resize(odims, 1, 1);
+                m_wdata.resize(odims, idims);
+                m_bdata.resize(odims);
 
                 return psize();
         }
@@ -36,8 +36,8 @@ namespace ncv
 
         void linear_layer_t::random_params(scalar_t min, scalar_t max)
         {
-                m_wdata.setRandom(random_t<scalar_t>(min, max));
-                m_bdata.setRandom(random_t<scalar_t>(min, max));
+                random_t<scalar_t>(min, max)(m_wdata.data(), m_wdata.data() + m_wdata.size());
+                random_t<scalar_t>(min, max)(m_bdata.data(), m_bdata.data() + m_bdata.size());
         }
 
         scalar_t* linear_layer_t::save_params(scalar_t* params) const
@@ -99,8 +99,8 @@ namespace ncv
                 m_odata = output;
 
                 linear::gparam(m_idata,
-                               tensor::map_tensor(gradient, m_wdata),
-                               tensor::map_tensor(gradient + m_wdata.size(), m_bdata),
+                               tensor::map_matrix(gradient, m_wdata.rows(), m_wdata.cols()),
+                               tensor::map_vector(gradient + m_wdata.size(), m_bdata.rows()),
                                m_odata);
         }
 }

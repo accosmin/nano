@@ -64,7 +64,7 @@ namespace ncv
                 tensor_t                m_idata;        ///< input buffer:      isize x 1 x 1
                 tensor_t                m_odata;        ///< output buffer:     osize x 1 x 1
 
-                tensor_t                m_wdata;        ///< weights:           1 x osize x isize
-                tensor_t                m_bdata;        ///< bias:              osize x 1 x 1
+                matrix_t                m_wdata;        ///< weights:           osize x isize
+                vector_t                m_bdata;        ///< bias:              osize
         };
 }

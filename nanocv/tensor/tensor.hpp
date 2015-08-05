@@ -115,19 +115,6 @@ namespace ncv
                 }
 
                 ///
-                /// \brief map non-constant data to tensors (using the dimensions of an equivalent tensor)
-                ///
-                template
-                <
-                        typename tvalue_,
-                        typename ttensor
-                >
-                decltype(auto) map_tensor(tvalue_* data, const ttensor& tensor)
-                {
-                        return map_tensor(data, tensor.dims(), tensor.rows(), tensor.cols());
-                }
-
-                ///
                 /// \brief map constant data to tensors
                 ///
                 template
@@ -140,19 +127,6 @@ namespace ncv
                 tresult map_tensor(const tvalue_* data, tsize dims, tsize rows, tsize cols)
                 {
                         return tresult(data, dims, rows, cols);
-                }
-
-                ///
-                /// \brief map constant data to tensors (using the dimensions of an equivalent tensor)
-                ///
-                template
-                <
-                        typename tvalue_,
-                        typename ttensor
-                >
-                decltype(auto) map_tensor(const tvalue_* data, const ttensor& tensor)
-                {
-                        return map_tensor(data, tensor.dims(), tensor.rows(), tensor.cols());
                 }
         }
 }
