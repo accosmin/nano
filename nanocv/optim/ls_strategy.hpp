@@ -1,9 +1,9 @@
 #pragma once
 
 #include <cassert>
-#include "cgdescent.hpp"
-#include "backtracking.hpp"
-#include "interpolation.hpp"
+#include "ls_cgdescent.hpp"
+#include "ls_backtracking.hpp"
+#include "ls_interpolation.hpp"
 
 namespace ncv
 {

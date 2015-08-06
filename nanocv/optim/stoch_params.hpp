@@ -1,6 +1,6 @@
 #pragma once
 
-#include "nanocv/optim/stochastic/decay.hpp"
+#include "nanocv/optim/stoch_decay.hpp"
 #include "params.hpp"
 #include <limits>
 

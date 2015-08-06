@@ -1,8 +1,8 @@
 #pragma once
 
 #include "nanocv/optim/batch_params.hpp"
-#include "nanocv/optim/linesearch/init.hpp"
-#include "nanocv/optim/linesearch/strategy.hpp"
+#include "nanocv/optim/ls_init.hpp"
+#include "nanocv/optim/ls_strategy.hpp"
 
 namespace ncv
 {

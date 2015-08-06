@@ -1,6 +1,6 @@
 #pragma once
 
-#include "nanocv/optim/types.h"
+#include "types.h"
 #include <algorithm>
 
 namespace ncv

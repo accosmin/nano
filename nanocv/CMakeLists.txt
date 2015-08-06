@@ -7,9 +7,6 @@ file(GLOB nanocv_sources
         thread/*.*
         tensor/*.*
         optim/*.*
-        optim/batch/*.*
-        optim/stochastic/*.*
-        optim/linesearch/*.*
         vision/*.*
         tasks/*.*
         losses/*.*

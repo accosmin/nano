@@ -1,9 +1,9 @@
 #pragma once
 
-#include "nanocv/optim/batch_params.hpp"
-#include "cgd_steps.hpp"
-#include "nanocv/optim/linesearch/init.hpp"
-#include "nanocv/optim/linesearch/strategy.hpp"
+#include "ls_init.hpp"
+#include "ls_strategy.hpp"
+#include "batch_params.hpp"
+#include "batch_cgd_steps.hpp"
 
 namespace ncv
 {

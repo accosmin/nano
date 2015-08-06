@@ -1,7 +1,7 @@
 #pragma once
 
-#include "nanocv/optim/stoch_params.hpp"
-#include "ag_restarts.hpp"
+#include "stoch_params.hpp"
+#include "stoch_ag_restarts.hpp"
 
 namespace ncv
 {

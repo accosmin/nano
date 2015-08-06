@@ -1,10 +1,10 @@
 #pragma once
 
-#include "nanocv/optim/types.h"
-#include "step.hpp"
-#include "cubic.hpp"
-#include "bisection.hpp"
-#include "quadratic.hpp"
+#include "types.h"
+#include "ls_step.hpp"
+#include "ls_cubic.hpp"
+#include "ls_bisection.hpp"
+#include "ls_quadratic.hpp"
 #include <vector>
 
 namespace ncv
