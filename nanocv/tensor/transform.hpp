@@ -7,47 +7,47 @@ namespace ncv
         namespace tensor
         {
                 ///
-                /// \brief transform coefficient-wise a matrix: out = op(in)
+                /// \brief transform coefficient-wise a tensor: out = op(in)
                 ///
                 template
                 <
-                        typename tin_matrix,
-                        typename tout_matrix,
+                        typename tin_tensor,
+                        typename tout_tensor,
                         typename toperator
                 >
-                void transform(const tin_matrix& in, tout_matrix& out, toperator op)
+                void transform(const tin_tensor& in, tout_tensor& out, toperator op)
                 {
                         std::transform(in.data(), in.data() + in.size(), out.data(), op);
                 }
 
                 ///
-                /// \brief transform coefficient-wise a matrix: out = op(in1, in2)
+                /// \brief transform coefficient-wise a tensor: out = op(in1, in2)
                 ///
                 template
                 <
-                        typename tin1_matrix,
-                        typename tin2_matrix,
-                        typename tout_matrix,
+                        typename tin1_tensor,
+                        typename tin2_tensor,
+                        typename tout_tensor,
                         typename toperator
                 >
-                void transform(const tin1_matrix& in1, const tin2_matrix& in2, tout_matrix& out, toperator op)
+                void transform(const tin1_tensor& in1, const tin2_tensor& in2, tout_tensor& out, toperator op)
                 {
                         std::transform(in1.data(), in1.data() + in1.size(), in2.data(), out.data(), op);
                 }
 
                 ///
-                /// \brief transform coefficient-wise a matrix: out = op(in1, in2, in3)
+                /// \brief transform coefficient-wise a tensor: out = op(in1, in2, in3)
                 ///
                 template
                 <
-                        typename tin1_matrix,
-                        typename tin2_matrix,
-                        typename tin3_matrix,
-                        typename tout_matrix,
+                        typename tin1_tensor,
+                        typename tin2_tensor,
+                        typename tin3_tensor,
+                        typename tout_tensor,
                         typename toperator
                 >
-                void transform(const tin1_matrix& in1, const tin2_matrix& in2, const tin3_matrix& in3,
-                        tout_matrix& out, toperator op)
+                void transform(const tin1_tensor& in1, const tin2_tensor& in2, const tin3_tensor& in3,
+                        tout_tensor& out, toperator op)
                 {
                         auto in1_it = in1.data(), in1_end = in1.data() + in1.size();
                         auto in2_it = in2.data();
