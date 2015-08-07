@@ -9,10 +9,6 @@ project(nanocv)
 option(NANOCV_WITH_ASAN         "build with address sanitizer suppport (debug, gcc)"    OFF)
 option(NANOCV_WITH_TSAN         "build with thread sanitizer suppport (debug, gcc)"     OFF)
 
-option(NANOCV_WITH_FLOAT        "build using C++'s float as the default scalar"         OFF)
-option(NANOCV_WITH_DOUBLE       "build using C++'s double as the default scalar"        OFF)
-option(NANOCV_WITH_LONG_DOUBLE  "build using C++'s long double as the default scalar"   OFF)
-
 # Zlib & BZip2
 find_package(ZLIB REQUIRED)
 find_package(BZip2 REQUIRED)
@@ -45,17 +41,6 @@ endif()
 
 # Eigen
 add_definitions(-DEIGEN_DONT_PARALLELIZE)
-
-# scalar type
-if(NANOCV_WITH_FLOAT)
-        add_definitions(-DNANOCV_WITH_FLOAT)
-endif()
-if(NANOCV_WITH_DOUBLE)
-        add_definitions(-DNANOCV_WITH_DOUBLE)
-endif()
-if(NANOCV_WITH_LONG_DOUBLE)
-        add_definitions(-DNANOCV_WITH_LONG_DOUBLE)
-endif()
 
 #set(CMAKE_C_COMPILER                    "/usr/bin/clang")
 #set(CMAKE_CXX_COMPILER                  "/usr/bin/clang++")
