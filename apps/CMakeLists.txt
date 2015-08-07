@@ -13,9 +13,9 @@ set(nanocv_programs
         ncv_max_threads
         ncv_info
         ncv_info_task
-        ncv_trainer
-        ncv_tester
-        ncv_generator)
+        ncv_train
+        ncv_evaluate
+        ncv_generate)
 
 install(TARGETS
         ${nanocv_programs}
