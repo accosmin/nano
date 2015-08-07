@@ -1,5 +1,6 @@
 #include "nanocv/nanocv.h"
 #include "nanocv/class.h"
+#include "nanocv/generate.h"
 #include "nanocv/measure.hpp"
 #include "nanocv/vision/image_grid.h"
 #include <boost/program_options.hpp>
@@ -75,7 +76,7 @@ int main(int argc, char *argv[])
                 {
                         for (size_t c = 0; c < cmd_save_group_cols; c ++)
                         {
-                                const tensor_t input = rmodel->generate(target);
+                                const tensor_t input = ncv::generate_match_target(*rmodel, target);
 
                                 image_t image;
                                 if (!image.load(input))

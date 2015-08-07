@@ -1,6 +1,6 @@
 #include "nanocv/nanocv.h"
 #include "nanocv/measure.hpp"
-#include "nanocv/tester.h"
+#include "nanocv/evaluate.h"
 #include "nanocv/sampler.h"
 #include <boost/program_options.hpp>
 #include <algorithm>
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 		// error rate
                 const ncv::timer_t timer;
                 scalar_t lvalue, lerror;
-                ncv::test(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror);
+                ncv::evaluate(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror);
                 log_info() << "<<< test error: [" << lvalue << "/" << lerror << "] in " << timer.elapsed() << ".";
 
                 lstats(lvalue);

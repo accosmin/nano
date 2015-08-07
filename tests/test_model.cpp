@@ -3,8 +3,8 @@
 
 #include <boost/test/unit_test.hpp>
 #include "nanocv/nanocv.h"
-#include "nanocv/tester.h"
 #include "nanocv/logger.h"
+#include "nanocv/evaluate.h"
 #include "nanocv/math/abs.hpp"
 #include "nanocv/math/epsilon.hpp"
 #include "nanocv/tasks/task_synthetic_shapes.h"
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(test_model_io)
 
                         // test error & parameters before saving
                         scalar_t lvalue_before, lerror_before;
-                        const size_t lcount_before = ncv::test(task, fold, *loss, *model, lvalue_before, lerror_before);
+                        const size_t lcount_before = ncv::evaluate(task, fold, *loss, *model, lvalue_before, lerror_before);
 
                         vector_t params(model->psize());
                         BOOST_CHECK(model->save_params(params));
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(test_model_io)
 
                         // test error & parameters after loading
                         scalar_t lvalue_after, lerror_after;
-                        const size_t lcount_after = ncv::test(task, fold, *loss, *model, lvalue_after, lerror_after);
+                        const size_t lcount_after = ncv::evaluate(task, fold, *loss, *model, lvalue_after, lerror_after);
 
                         vector_t xparams(model->psize());
                         BOOST_CHECK(model->save_params(xparams));

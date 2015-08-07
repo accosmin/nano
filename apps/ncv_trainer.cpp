@@ -1,5 +1,5 @@
 #include "nanocv/nanocv.h"
-#include "nanocv/tester.h"
+#include "nanocv/evaluate.h"
 #include "nanocv/measure.hpp"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
                         // test
                         scalar_t lvalue, lerror;
                         ncv::measure_and_log(
-                                [&] () { ncv::test(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror); },
+                                [&] () { ncv::evaluate(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror); },
                                 "model tested");
                         log_info() << "<<< test error: [" << lvalue << "/" << lerror << "].";
 
