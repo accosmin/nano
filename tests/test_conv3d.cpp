@@ -10,6 +10,7 @@
 #include "nanocv/math/random.hpp"
 #include "nanocv/math/epsilon.hpp"
 #include "nanocv/tensor/conv3d.hpp"
+#include "nanocv/tensor/random.hpp"
 
 namespace test
 {

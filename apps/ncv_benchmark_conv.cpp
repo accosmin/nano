@@ -7,6 +7,7 @@
 #include "nanocv/math/conv3d.hpp"
 #include "nanocv/math/random.hpp"
 #include "nanocv/tensor/conv3d.hpp"
+#include "nanocv/tensor/random.hpp"
 #include <iostream>
 
 using namespace ncv;

@@ -7,6 +7,7 @@
 #include "fill_circle.hpp"
 #include "fill_ellipse.hpp"
 #include "fill_triangle.hpp"
+#include "nanocv/tensor/random.hpp"
 
 namespace ncv
 {

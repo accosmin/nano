@@ -3,6 +3,7 @@
 #include "nanocv/text.hpp"
 #include "nanocv/math/clamp.hpp"
 #include "nanocv/math/random.hpp"
+#include "nanocv/tensor/random.hpp"
 #include "nanocv/tensor/serialize.hpp"
 
 namespace ncv

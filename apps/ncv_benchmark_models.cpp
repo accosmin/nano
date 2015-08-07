@@ -6,6 +6,7 @@
 #include "nanocv/accumulator.h"
 #include "nanocv/math/random.hpp"
 #include "nanocv/thread/thread.h"
+#include "nanocv/tensor/random.hpp"
 #include "nanocv/tasks/task_synthetic_shapes.h"
 #include <boost/program_options.hpp>
 

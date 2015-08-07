@@ -5,6 +5,7 @@
 #include "nanocv/logger.h"
 #include "losses/loss_square.h"
 #include "nanocv/math/random.hpp"
+#include "nanocv/tensor/random.hpp"
 #include <fstream>
 
 namespace ncv
