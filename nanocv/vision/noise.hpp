@@ -29,7 +29,7 @@ namespace ncv
                 random_t<tscalar> noiser(noise_range.min(), noise_range.max());
 
                 // create random noise map
-                typename tensor::matrix_types_t<tscalar>::tmatrix noisemap(src.rows(), src.cols());
+                typename tensor::matrix_t<tscalar> noisemap(src.rows(), src.cols());
                 tensor::transform(noisemap, noisemap, [&] (tvalue) { return noiser(); });
 
                 // smooth the noise map

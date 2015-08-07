@@ -10,16 +10,16 @@
 namespace ncv
 {
         // RGBA
-        typedef uint32_t                                                        rgba_t;
-        typedef tensor::matrix_types_t<rgba_t>::tmatrix                         rgba_matrix_t;
+        typedef uint32_t                                        rgba_t;
+        typedef tensor::matrix_t<rgba_t>                        rgba_matrix_t;
 
         // CIELab
-        typedef tensor::fixed_size_vector_types_t<scalar_t, 4>::tvector         cielab_t;
-        typedef tensor::matrix_types_t<cielab_t>::tmatrix                       cielab_matrix_t;
+        typedef tensor::fixed_size_vector_t<scalar_t, 4>        cielab_t;
+        typedef tensor::matrix_t<cielab_t>                      cielab_matrix_t;
 
         // grayscale
-        typedef uint8_t                                                         luma_t;
-        typedef tensor::matrix_types_t<luma_t>::tmatrix                         luma_matrix_t;
+        typedef uint8_t                                         luma_t;
+        typedef tensor::matrix_t<luma_t>                        luma_matrix_t;
 
         ///
         /// \brief color channels

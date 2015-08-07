@@ -14,7 +14,7 @@ namespace ncv
                 template
                 <
                         typename tscalar,
-                        typename tvector = typename vector_types_t<tscalar>::tvector
+                        typename tvector = vector_t<tscalar>
                 >
                 class tensor_t : public tensor_base_t<tvector>
                 {
@@ -76,7 +76,7 @@ namespace ncv
                 template
                 <
                         typename tscalar,
-                        typename tvector = typename vector_types_t<tscalar>::tvector,
+                        typename tvector = vector_t<tscalar>,
                         typename tmap = Eigen::Map<tvector>
                 >
                 class tensor_map_t : public tensor_base_t<tmap>

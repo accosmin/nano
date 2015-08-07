@@ -18,9 +18,9 @@ namespace ncv
                 {
                 public:
 
-                        typedef typename ttensor::Index                                 tsize;
-                        typedef typename ttensor::Scalar                                tscalar;
-                        typedef typename tensor::matrix_types_t<tscalar>::tmatrix       tmatrix;
+                        typedef typename ttensor::Index                 tsize;
+                        typedef typename ttensor::Scalar                tscalar;
+                        typedef typename tensor::matrix_t<tscalar>      tmatrix;
 
                         ///
                         /// \brief constructor
