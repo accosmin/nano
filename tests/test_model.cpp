@@ -84,6 +84,7 @@ BOOST_AUTO_TEST_CASE(test_model_io)
 
                         //
                         BOOST_CHECK_EQUAL(model->save(path), true);
+                        model->zero_params();
                         BOOST_CHECK_EQUAL(model->load(path), true);
                         //
 
