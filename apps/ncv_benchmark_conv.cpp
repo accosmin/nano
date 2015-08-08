@@ -76,16 +76,31 @@ namespace
                 tensor_t kdata(kdims, ksize, ksize);
                 tensor_t odata(odims, osize, osize);
 
+                ltensor_t lidata(idims, isize, isize);
+                ltensor_t lkdata(kdims, ksize, ksize);
+                ltensor_t lodata(odims, osize, osize);
+
                 tensor::set_random(idata, rng);
                 tensor::set_random(kdata, rng);
                 tensor::set_random(odata, rng);
+
+                tensor::set_random(lidata, rng);
+                tensor::set_random(lkdata, rng);
+                tensor::set_random(lodata, rng);
 
                 tensor_t idata_ret = idata;
                 tensor_t kdata_ret = kdata;
                 tensor_t odata_ret = odata;
 
+                ltensor_t lidata_ret = lidata;
+                ltensor_t lkdata_ret = lkdata;
+                ltensor_t lodata_ret = lodata;
+
                 tensor::conv3d_t<tensor_t> conv3d;
                 conv3d.reset(kdata, idims, odims);
+
+                tensor::conv3d_t<ltensor_t> lconv3d;
+                lconv3d.reset(lkdata, idims, odims);
 
                 const size_t trials = 16;
 
@@ -96,6 +111,7 @@ namespace
                 row_output << measure_output(math::conv2d_mad_t(), idata, kdata, odata_ret, trials);
                 row_output << measure_output(math::conv2d_dyn_t(), idata, kdata, odata_ret, trials);
                 row_output << ncv::measure_robustly_usec([&] () { conv3d.output(idata, odata_ret); }, trials);
+                row_output << ncv::measure_robustly_usec([&] () { lconv3d.output(lidata, lodata_ret); }, trials);
 
                 // gradient wrt input
                 row_ginput << measure_ginput(ncv::math::corr2d_egb_t(), idata_ret, kdata, odata, trials);
@@ -105,6 +121,7 @@ namespace
                 row_ginput << measure_ginput(ncv::math::corr2d_mdo_t(), idata_ret, kdata, odata, trials);
                 row_ginput << measure_ginput(ncv::math::corr2d_dyn_t(), idata_ret, kdata, odata, trials);
                 row_ginput << ncv::measure_robustly_usec([&] () { conv3d.ginput(idata_ret, odata); }, trials);
+                row_ginput << ncv::measure_robustly_usec([&] () { lconv3d.ginput(lidata_ret, lodata); }, trials);
 
                 // gradient wrt parameters
                 row_gparam << measure_gparam(math::conv2d_eig_t(), idata, kdata_ret, odata, trials);
@@ -113,6 +130,7 @@ namespace
                 row_gparam << measure_gparam(math::conv2d_mad_t(), idata, kdata_ret, odata, trials);
                 row_gparam << measure_gparam(math::conv2d_dyn_t(), idata, kdata_ret, odata, trials);
                 row_gparam << ncv::measure_robustly_usec([&] () { conv3d.gparam(idata, kdata_ret, odata); }, trials);
+                row_gparam << ncv::measure_robustly_usec([&] () { lconv3d.gparam(lidata, lkdata_ret, lodata); }, trials);
         }
 }
 
@@ -134,7 +152,8 @@ int main(int, char* [])
                 << "2D (dot)"
                 << "2D (mad)"
                 << "2D (dyn)"
-                << "3D (lin)";
+                << "3D (lin)"
+                << "3D (l-lin)";
 
         tabulator_t table_ginput("size\\ginput [us]");
         table_ginput.header()
@@ -144,7 +163,8 @@ int main(int, char* [])
                 << "2D (mkd)"
                 << "2D (mko)"
                 << "2D (dyn)"
-                << "3D (lin)";
+                << "3D (lin)"
+                << "3D (l-lin)";
 
         tabulator_t table_gparam("size\\gparam [us]");
         table_gparam.header()
@@ -153,7 +173,8 @@ int main(int, char* [])
                 << "2D (dot)"
                 << "2D (mad)"
                 << "2D (dyn)"
-                << "3D (lin)";
+                << "3D (lin)"
+                << "3D (l-lin)";
 
         for (int isize = min_isize; isize <= max_isize; isize += 4)
         {
