@@ -44,10 +44,6 @@ namespace ncv
                 virtual scalar_t* save_params(scalar_t* params) const override { return params; }
                 virtual const scalar_t* load_params(const scalar_t* params) override { return params; }
 
-                // serialize parameters (to disk)
-                virtual boost::archive::binary_oarchive& save(boost::archive::binary_oarchive& oa) const override { return oa; }
-                virtual boost::archive::binary_iarchive& load(boost::archive::binary_iarchive& ia) override { return ia; }
-
                 // process inputs (compute outputs & gradients)
                 virtual const tensor_t& output(const tensor_t& input) override { return _output(input); }
                 virtual const tensor_t& ginput(const tensor_t& output) override { return _ginput(output); }

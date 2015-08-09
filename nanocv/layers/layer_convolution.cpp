@@ -85,20 +85,6 @@ namespace ncv
                 return params;
         }
 
-        boost::archive::binary_oarchive& conv_layer_t::save(boost::archive::binary_oarchive& oa) const
-        {
-                return oa << m_kdata << m_bdata;
-        }
-
-        boost::archive::binary_iarchive& conv_layer_t::load(boost::archive::binary_iarchive& ia)
-        {
-                ia >> m_kdata >> m_bdata;
-
-                params_changed();
-
-                return ia;
-        }
-
         size_t conv_layer_t::psize() const
         {
                 return m_kdata.size() + m_bdata.size();

@@ -3,8 +3,6 @@
 #include "nanocv/arch.h"
 #include "nanocv/tensor.h"
 #include "nanocv/manager.hpp"
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
 
 namespace ncv
 {
@@ -59,12 +57,6 @@ namespace ncv
                 ///
                 virtual scalar_t* save_params(scalar_t* params) const = 0;
                 virtual const scalar_t* load_params(const scalar_t* params) = 0;
-
-                ///
-                /// \brief serialize parameters (to disk)
-                ///
-                virtual boost::archive::binary_oarchive& save(boost::archive::binary_oarchive& oa) const = 0;
-                virtual boost::archive::binary_iarchive& load(boost::archive::binary_iarchive& ia) = 0;
 
                 ///
                 /// \brief compute the output

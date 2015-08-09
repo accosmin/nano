@@ -168,10 +168,10 @@ namespace ncv
         {
                 oa << m_configuration;
 
-                for (rlayers_t::const_iterator it = m_layers.begin(); it != m_layers.end(); ++ it)
-                {
-                        (*it)->save(oa);
-                }
+                vector_t params;
+                save_params(params);
+
+                oa << params;
 
                 return true;
         }
@@ -181,10 +181,10 @@ namespace ncv
                 ia >> m_configuration;
                 resize(true);
 
-                for (rlayers_t::const_iterator it = m_layers.begin(); it != m_layers.end(); ++ it)
-                {
-                        (*it)->load(ia);
-                }
+                vector_t params;
+                ia >> params;
+
+                load_params(params);
 
                 return true;
         }
