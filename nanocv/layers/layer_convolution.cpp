@@ -56,7 +56,7 @@ namespace ncv
                 m_kdata.setZero();
                 m_bdata.setZero();
 
-                resetKConv();
+                params_changed();
         }
 
         void conv_layer_t::random_params(scalar_t min, scalar_t max)
@@ -64,7 +64,7 @@ namespace ncv
                 tensor::set_random(m_kdata, random_t<scalar_t>(min, max));
                 tensor::set_random(m_bdata, random_t<scalar_t>(min, max));
 
-                resetKConv();
+                params_changed();
         }
 
         scalar_t* conv_layer_t::save_params(scalar_t* params) const
@@ -80,7 +80,7 @@ namespace ncv
                 params = tensor::load(m_kdata, params);
                 params = tensor::load(m_bdata, params);
 
-                resetKConv();
+                params_changed();
 
                 return params;
         }
@@ -94,7 +94,7 @@ namespace ncv
         {
                 ia >> m_kdata >> m_bdata;
 
-                resetKConv();
+                params_changed();
 
                 return ia;
         }
@@ -104,7 +104,7 @@ namespace ncv
                 return m_kdata.size() + m_bdata.size();
         }
 
-        void conv_layer_t::resetKConv()
+        void conv_layer_t::params_changed()
         {
                 m_kconv.reset(m_kdata, idims(), odims());
         }

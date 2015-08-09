@@ -72,7 +72,7 @@ namespace ncv
                 size_t ippsize() const { return m_idata.planeSize(); }
                 size_t kppsize() const { return m_kdata.planeSize(); }
 
-                void resetKConv();
+                void params_changed();
 
         private:
 
