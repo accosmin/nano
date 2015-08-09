@@ -22,6 +22,9 @@ namespace ncv
                              const string_t&)
                 >                                       comparator_t;
 
+                ///
+                /// \brief return the selected column index from all columns of a row
+                ///
                 typedef std::function
                 <
                         size_t(const strings_t&)
