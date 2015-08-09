@@ -35,13 +35,13 @@ static void test_mad(size_t size, tabulator_t::row_t& row)
         scalar_t wei = vec1(0) + vec2(3);
 
         test_mad(row, ncv::math::mad<scalar_t>, vec1, vec2, wei);
-        test_mad(row, ncv::math::mad_unroll<scalar_t, 2>, vec1, vec2, wei);
-        test_mad(row, ncv::math::mad_unroll<scalar_t, 3>, vec1, vec2, wei);
-        test_mad(row, ncv::math::mad_unroll<scalar_t, 4>, vec1, vec2, wei);
-        test_mad(row, ncv::math::mad_unroll<scalar_t, 5>, vec1, vec2, wei);
-        test_mad(row, ncv::math::mad_unroll<scalar_t, 6>, vec1, vec2, wei);
-        test_mad(row, ncv::math::mad_unroll<scalar_t, 7>, vec1, vec2, wei);
-        test_mad(row, ncv::math::mad_unroll<scalar_t, 8>, vec1, vec2, wei);
+        test_mad(row, ncv::math::mad_unroll2<scalar_t>, vec1, vec2, wei);
+        test_mad(row, ncv::math::mad_unroll3<scalar_t>, vec1, vec2, wei);
+        test_mad(row, ncv::math::mad_unroll4<scalar_t>, vec1, vec2, wei);
+        test_mad(row, ncv::math::mad_unroll5<scalar_t>, vec1, vec2, wei);
+        test_mad(row, ncv::math::mad_unroll6<scalar_t>, vec1, vec2, wei);
+        test_mad(row, ncv::math::mad_unroll7<scalar_t>, vec1, vec2, wei);
+        test_mad(row, ncv::math::mad_unroll8<scalar_t>, vec1, vec2, wei);
         test_mad(row, ncv::tensor::mad<scalar_t>, vec1, vec2, wei);
 }
 

@@ -37,13 +37,13 @@ namespace test
                 scalar_t wei = vec1(0) + vec2(3);
 
                 const scalar_t mad    = test_mad(ncv::math::mad<scalar_t>, vec1, vec2, wei);
-                const scalar_t madul2 = test_mad(ncv::math::mad_unroll<scalar_t, 2>, vec1, vec2, wei);
-                const scalar_t madul3 = test_mad(ncv::math::mad_unroll<scalar_t, 3>, vec1, vec2, wei);
-                const scalar_t madul4 = test_mad(ncv::math::mad_unroll<scalar_t, 4>, vec1, vec2, wei);
-                const scalar_t madul5 = test_mad(ncv::math::mad_unroll<scalar_t, 5>, vec1, vec2, wei);
-                const scalar_t madul6 = test_mad(ncv::math::mad_unroll<scalar_t, 6>, vec1, vec2, wei);
-                const scalar_t madul7 = test_mad(ncv::math::mad_unroll<scalar_t, 7>, vec1, vec2, wei);
-                const scalar_t madul8 = test_mad(ncv::math::mad_unroll<scalar_t, 8>, vec1, vec2, wei);
+                const scalar_t madul2 = test_mad(ncv::math::mad_unroll2<scalar_t>, vec1, vec2, wei);
+                const scalar_t madul3 = test_mad(ncv::math::mad_unroll3<scalar_t>, vec1, vec2, wei);
+                const scalar_t madul4 = test_mad(ncv::math::mad_unroll4<scalar_t>, vec1, vec2, wei);
+                const scalar_t madul5 = test_mad(ncv::math::mad_unroll5<scalar_t>, vec1, vec2, wei);
+                const scalar_t madul6 = test_mad(ncv::math::mad_unroll6<scalar_t>, vec1, vec2, wei);
+                const scalar_t madul7 = test_mad(ncv::math::mad_unroll7<scalar_t>, vec1, vec2, wei);
+                const scalar_t madul8 = test_mad(ncv::math::mad_unroll8<scalar_t>, vec1, vec2, wei);
                 const scalar_t madeig = test_mad(ncv::tensor::mad<scalar_t>, vec1, vec2, wei);
 
                 const scalar_t epsilon = math::epsilon1<scalar_t>();
