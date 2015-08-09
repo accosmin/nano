@@ -69,6 +69,7 @@ int main(int, char* [])
                 test_mad(size, row);
         }
 
+        table.mark_min_number();
         table.print(std::cout);
 
 	return EXIT_SUCCESS;

@@ -162,6 +162,11 @@ namespace ncv
                 bool mark(const marker_t& op, const char* marker_string = " (*)");
 
                 ///
+                /// \brief mark row-wise the minimum element
+                ///
+                bool mark_min_number(const char* marker_string = " (*)");
+
+                ///
                 /// \brief pretty-print its content
                 ///
                 bool print(std::ostream& os,

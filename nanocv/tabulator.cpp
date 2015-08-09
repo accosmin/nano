@@ -87,6 +87,24 @@ namespace ncv
                 return true;
         }
 
+        namespace
+        {
+                const auto op_comp = [] (const std::string& value1, const std::string& value2)
+                {
+                        return text::from_string<double>(value1) < text::from_string<double>(value2);
+                };
+
+                const auto op_marker = [] (const tabulator_t::strings_t& values)
+                {
+                        return std::min_element(values.begin(), values.end(), op_comp) - values.begin();
+                };
+        }
+
+        bool tabulator_t::mark_min_number(const char* marker_string)
+        {
+                return mark(op_marker, marker_string);
+        }
+
         std::size_t tabulator_t::border() const
         {
                 return 4;

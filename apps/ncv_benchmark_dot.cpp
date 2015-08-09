@@ -65,6 +65,7 @@ int main(int, char* [])
                 test_dot(size, row);
         }
 
+        table.mark_min_number();
         table.print(std::cout);
 
 	return EXIT_SUCCESS;
