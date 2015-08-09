@@ -33,13 +33,13 @@ namespace test
                 vec2.array() *= scalar_t(1) / std::cbrt(scalar_t(size));
 
                 const scalar_t dot    = test_dot(ncv::math::dot<scalar_t>, vec1, vec2);
-                const scalar_t dotul2 = test_dot(ncv::math::dot_unroll<scalar_t, 2>, vec1, vec2);
-                const scalar_t dotul3 = test_dot(ncv::math::dot_unroll<scalar_t, 3>, vec1, vec2);
-                const scalar_t dotul4 = test_dot(ncv::math::dot_unroll<scalar_t, 4>, vec1, vec2);
-                const scalar_t dotul5 = test_dot(ncv::math::dot_unroll<scalar_t, 5>, vec1, vec2);
-                const scalar_t dotul6 = test_dot(ncv::math::dot_unroll<scalar_t, 6>, vec1, vec2);
-                const scalar_t dotul7 = test_dot(ncv::math::dot_unroll<scalar_t, 7>, vec1, vec2);
-                const scalar_t dotul8 = test_dot(ncv::math::dot_unroll<scalar_t, 8>, vec1, vec2);
+                const scalar_t dotul2 = test_dot(ncv::math::dot_unroll2<scalar_t>, vec1, vec2);
+                const scalar_t dotul3 = test_dot(ncv::math::dot_unroll3<scalar_t>, vec1, vec2);
+                const scalar_t dotul4 = test_dot(ncv::math::dot_unroll4<scalar_t>, vec1, vec2);
+                const scalar_t dotul5 = test_dot(ncv::math::dot_unroll5<scalar_t>, vec1, vec2);
+                const scalar_t dotul6 = test_dot(ncv::math::dot_unroll6<scalar_t>, vec1, vec2);
+                const scalar_t dotul7 = test_dot(ncv::math::dot_unroll7<scalar_t>, vec1, vec2);
+                const scalar_t dotul8 = test_dot(ncv::math::dot_unroll8<scalar_t>, vec1, vec2);
                 const scalar_t doteig = test_dot(ncv::tensor::dot<scalar_t>, vec1, vec2);
 
                 BOOST_CHECK_LE(math::abs(dot - dot), math::epsilon1<scalar_t>());

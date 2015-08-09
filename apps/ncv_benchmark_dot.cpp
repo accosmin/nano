@@ -31,13 +31,13 @@ static void test_dot(size_t size, tabulator_t::row_t& row)
         vec2.setRandom();
 
         test_dot(row, ncv::math::dot<scalar_t>, vec1, vec2);
-        test_dot(row, ncv::math::dot_unroll<scalar_t, 2>, vec1, vec2);
-        test_dot(row, ncv::math::dot_unroll<scalar_t, 3>, vec1, vec2);
-        test_dot(row, ncv::math::dot_unroll<scalar_t, 4>, vec1, vec2);
-        test_dot(row, ncv::math::dot_unroll<scalar_t, 5>, vec1, vec2);
-        test_dot(row, ncv::math::dot_unroll<scalar_t, 6>, vec1, vec2);
-        test_dot(row, ncv::math::dot_unroll<scalar_t, 7>, vec1, vec2);
-        test_dot(row, ncv::math::dot_unroll<scalar_t, 8>, vec1, vec2);
+        test_dot(row, ncv::math::dot_unroll2<scalar_t>, vec1, vec2);
+        test_dot(row, ncv::math::dot_unroll3<scalar_t>, vec1, vec2);
+        test_dot(row, ncv::math::dot_unroll4<scalar_t>, vec1, vec2);
+        test_dot(row, ncv::math::dot_unroll5<scalar_t>, vec1, vec2);
+        test_dot(row, ncv::math::dot_unroll6<scalar_t>, vec1, vec2);
+        test_dot(row, ncv::math::dot_unroll7<scalar_t>, vec1, vec2);
+        test_dot(row, ncv::math::dot_unroll8<scalar_t>, vec1, vec2);
         test_dot(row, ncv::tensor::dot<scalar_t>, vec1, vec2);
 }
 
