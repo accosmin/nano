@@ -169,6 +169,16 @@ int main(int, char* [])
         const int idims = 16;
         const int odims = 32;
 
+        const auto op_comp = [] (const string_t& value1, const string_t& value2)
+        {
+                return text::from_string<size_t>(value1) < text::from_string<size_t>(value2);
+        };
+
+        const auto op_marker = [=] (const strings_t& values)
+        {
+                return std::min_element(values.begin(), values.end(), op_comp) - values.begin();
+        };
+
         // output
         {
                 tabulator_t table("size\\output [us]");
@@ -189,6 +199,7 @@ int main(int, char* [])
                         }
                 }
 
+                table.mark(op_marker);
                 table.print(std::cout);
         }
 
@@ -212,6 +223,7 @@ int main(int, char* [])
                         }
                 }
 
+                table.mark(op_marker);
                 table.print(std::cout);
         }
 
@@ -236,6 +248,7 @@ int main(int, char* [])
                         }
                 }
 
+                table.mark(op_marker);
                 table.print(std::cout);
         }
 

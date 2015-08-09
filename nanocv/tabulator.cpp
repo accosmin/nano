@@ -73,6 +73,20 @@ namespace ncv
                 }
         }
 
+        bool tabulator_t::mark(const marker_t& op, const char* marker_string)
+        {
+                for (auto& row : m_rows)
+                {
+                        const auto col = op(row.values());
+                        if (col < cols())
+                        {
+                                row[col] += marker_string;
+                        }
+                }
+
+                return true;
+        }
+
         std::size_t tabulator_t::border() const
         {
                 return 4;

@@ -22,6 +22,11 @@ namespace ncv
                              const string_t&)
                 >                                       comparator_t;
 
+                typedef std::function
+                <
+                        size_t(const strings_t&)
+                >                                       marker_t;
+
                 enum class sorting
                 {
                         ascending,
@@ -104,6 +109,8 @@ namespace ncv
                         const strings_t& values() const { return m_values; }
                         const string_t& operator[](size_t i) const { return m_values[i]; }
 
+                        string_t& operator[](size_t i) { return m_values[i]; }
+
                         ///
                         /// \brief retrieve the number of columns
                         ///
@@ -145,6 +152,11 @@ namespace ncv
                 /// \brief sort by transforming to numeric values the given column
                 ///
                 bool sort_as_number(size_t col, sorting mode);
+
+                ///
+                /// \brief mark row-wise the selected element with the given operator
+                ///
+                bool mark(const marker_t& op, const char* marker_string = " (*)");
 
                 ///
                 /// \brief pretty-print its content
