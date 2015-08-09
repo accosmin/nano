@@ -14,6 +14,43 @@ using namespace ncv;
 
 namespace
 {
+        string_t make_header(const int idims, const int isize, const int ksize, const int odims)
+        {
+                const int osize = isize - ksize + 1;
+
+                return  "(" +
+                        text::to_string(idims) + "x" +
+                        text::to_string(isize) + "x" +
+                        text::to_string(isize) + " @ " +
+                        text::to_string(ksize) + "x" +
+                        text::to_string(ksize) + " -> " +
+                        text::to_string(odims) + "x" +
+                        text::to_string(osize) + "x" +
+                        text::to_string(osize) +
+                        ")";
+        }
+
+        template
+        <
+                typename ttensor
+        >
+        void make_tensors(const int isize, const int idims, const int ksize, const int odims,
+                ttensor& idata, ttensor& kdata, ttensor& odata)
+        {
+                const int osize = isize - ksize + 1;
+                const int kdims = odims * idims;
+
+                random_t<typename ttensor::Scalar> rng(-1.0 / isize, 1.0 / isize);
+
+                idata.resize(idims, isize, isize);
+                kdata.resize(kdims, ksize, ksize);
+                odata.resize(odims, osize, osize);
+
+                tensor::set_random(idata, rng);
+                tensor::set_random(kdata, rng);
+                tensor::set_random(odata, rng);
+        }
+
         template
         <
                 typename top,
@@ -62,75 +99,62 @@ namespace
                 }, trials);
         }
 
-        void test_config(int isize, int idims, int ksize, int odims,
-                tabulator_t::row_t& row_output,
-                tabulator_t::row_t& row_ginput,
-                tabulator_t::row_t& row_gparam)
+        void test_config_output(const int isize, const int idims, const int ksize, const int odims,
+                tabulator_t::row_t& row, const size_t trials = 16)
         {
-                const int osize = isize - ksize + 1;
-                const int kdims = odims * idims;
-
-                random_t<scalar_t> rng(-1.0 / isize, 1.0 / isize);
-
-                tensor_t idata(idims, isize, isize);
-                tensor_t kdata(kdims, ksize, ksize);
-                tensor_t odata(odims, osize, osize);
-
-                ltensor_t lidata(idims, isize, isize);
-                ltensor_t lkdata(kdims, ksize, ksize);
-                ltensor_t lodata(odims, osize, osize);
-
-                tensor::set_random(idata, rng);
-                tensor::set_random(kdata, rng);
-                tensor::set_random(odata, rng);
-
-                tensor::set_random(lidata, rng);
-                tensor::set_random(lkdata, rng);
-                tensor::set_random(lodata, rng);
-
-                tensor_t idata_ret = idata;
-                tensor_t kdata_ret = kdata;
-                tensor_t odata_ret = odata;
-
-                ltensor_t lidata_ret = lidata;
-                ltensor_t lkdata_ret = lkdata;
-                ltensor_t lodata_ret = lodata;
+                tensor_t idata, kdata, odata;
+                make_tensors(isize, idims, ksize, odims, idata, kdata, odata);
 
                 tensor::conv3d_t<tensor_t> conv3d;
                 conv3d.reset(kdata, idims, odims);
 
-                tensor::conv3d_t<ltensor_t> lconv3d;
-                lconv3d.reset(lkdata, idims, odims);
+                tensor_t odata_ret = odata;
 
-                const size_t trials = 16;
+                row << measure_output(math::conv2d_eig_t(), idata, kdata, odata_ret, trials);
+                row << measure_output(math::conv2d_cpp_t(), idata, kdata, odata_ret, trials);
+                row << measure_output(math::conv2d_dot_t(), idata, kdata, odata_ret, trials);
+                row << measure_output(math::conv2d_mad_t(), idata, kdata, odata_ret, trials);
+                row << measure_output(math::conv2d_dyn_t(), idata, kdata, odata_ret, trials);
+                row << ncv::measure_robustly_usec([&] () { conv3d.output(idata, odata_ret); }, trials);
+        }
 
-                // output
-                row_output << measure_output(math::conv2d_eig_t(), idata, kdata, odata_ret, trials);
-                row_output << measure_output(math::conv2d_cpp_t(), idata, kdata, odata_ret, trials);
-                row_output << measure_output(math::conv2d_dot_t(), idata, kdata, odata_ret, trials);
-                row_output << measure_output(math::conv2d_mad_t(), idata, kdata, odata_ret, trials);
-                row_output << measure_output(math::conv2d_dyn_t(), idata, kdata, odata_ret, trials);
-                row_output << ncv::measure_robustly_usec([&] () { conv3d.output(idata, odata_ret); }, trials);
-                row_output << ncv::measure_robustly_usec([&] () { lconv3d.output(lidata, lodata_ret); }, trials);
+        void test_config_ginput(const int isize, const int idims, const int ksize, const int odims,
+                tabulator_t::row_t& row, const size_t trials = 16)
+        {
+                tensor_t idata, kdata, odata;
+                make_tensors(isize, idims, ksize, odims, idata, kdata, odata);
 
-                // gradient wrt input
-                row_ginput << measure_ginput(ncv::math::corr2d_egb_t(), idata_ret, kdata, odata, trials);
-                row_ginput << measure_ginput(ncv::math::corr2d_egr_t(), idata_ret, kdata, odata, trials);
-                row_ginput << measure_ginput(ncv::math::corr2d_cpp_t(), idata_ret, kdata, odata, trials);
-                row_ginput << measure_ginput(ncv::math::corr2d_mdk_t(), idata_ret, kdata, odata, trials);
-                row_ginput << measure_ginput(ncv::math::corr2d_mdo_t(), idata_ret, kdata, odata, trials);
-                row_ginput << measure_ginput(ncv::math::corr2d_dyn_t(), idata_ret, kdata, odata, trials);
-                row_ginput << ncv::measure_robustly_usec([&] () { conv3d.ginput(idata_ret, odata); }, trials);
-                row_ginput << ncv::measure_robustly_usec([&] () { lconv3d.ginput(lidata_ret, lodata); }, trials);
+                tensor::conv3d_t<tensor_t> conv3d;
+                conv3d.reset(kdata, idims, odims);
 
-                // gradient wrt parameters
-                row_gparam << measure_gparam(math::conv2d_eig_t(), idata, kdata_ret, odata, trials);
-                row_gparam << measure_gparam(math::conv2d_cpp_t(), idata, kdata_ret, odata, trials);
-                row_gparam << measure_gparam(math::conv2d_dot_t(), idata, kdata_ret, odata, trials);
-                row_gparam << measure_gparam(math::conv2d_mad_t(), idata, kdata_ret, odata, trials);
-                row_gparam << measure_gparam(math::conv2d_dyn_t(), idata, kdata_ret, odata, trials);
-                row_gparam << ncv::measure_robustly_usec([&] () { conv3d.gparam(idata, kdata_ret, odata); }, trials);
-                row_gparam << ncv::measure_robustly_usec([&] () { lconv3d.gparam(lidata, lkdata_ret, lodata); }, trials);
+                tensor_t idata_ret = idata;
+
+                row << measure_ginput(ncv::math::corr2d_egb_t(), idata_ret, kdata, odata, trials);
+                row << measure_ginput(ncv::math::corr2d_egr_t(), idata_ret, kdata, odata, trials);
+                row << measure_ginput(ncv::math::corr2d_cpp_t(), idata_ret, kdata, odata, trials);
+                row << measure_ginput(ncv::math::corr2d_mdk_t(), idata_ret, kdata, odata, trials);
+                row << measure_ginput(ncv::math::corr2d_mdo_t(), idata_ret, kdata, odata, trials);
+                row << measure_ginput(ncv::math::corr2d_dyn_t(), idata_ret, kdata, odata, trials);
+                row << ncv::measure_robustly_usec([&] () { conv3d.ginput(idata_ret, odata); }, trials);
+        }
+
+        void test_config_gparam(const int isize, const int idims, const int ksize, const int odims,
+                tabulator_t::row_t& row, const size_t trials = 16)
+        {
+                tensor_t idata, kdata, odata;
+                make_tensors(isize, idims, ksize, odims, idata, kdata, odata);
+
+                tensor::conv3d_t<tensor_t> conv3d;
+                conv3d.reset(kdata, idims, odims);
+
+                tensor_t kdata_ret = kdata;
+
+                row << measure_gparam(math::conv2d_eig_t(), idata, kdata_ret, odata, trials);
+                row << measure_gparam(math::conv2d_cpp_t(), idata, kdata_ret, odata, trials);
+                row << measure_gparam(math::conv2d_dot_t(), idata, kdata_ret, odata, trials);
+                row << measure_gparam(math::conv2d_mad_t(), idata, kdata_ret, odata, trials);
+                row << measure_gparam(math::conv2d_dyn_t(), idata, kdata_ret, odata, trials);
+                row << ncv::measure_robustly_usec([&] () { conv3d.gparam(idata, kdata_ret, odata); }, trials);
         }
 }
 
@@ -145,70 +169,74 @@ int main(int, char* [])
         const int idims = 16;
         const int odims = 32;
 
-        tabulator_t table_output("size\\output [us]");
-        table_output.header()
-                << "2D (eig)"
-                << "2D (cpp)"
-                << "2D (dot)"
-                << "2D (mad)"
-                << "2D (dyn)"
-                << "3D (lin)"
-                << "3D (l-lin)";
-
-        tabulator_t table_ginput("size\\ginput [us]");
-        table_ginput.header()
-                << "2D (egb)"
-                << "2D (egr)"
-                << "2D (cpp)"
-                << "2D (mkd)"
-                << "2D (mko)"
-                << "2D (dyn)"
-                << "3D (lin)"
-                << "3D (l-lin)";
-
-        tabulator_t table_gparam("size\\gparam [us]");
-        table_gparam.header()
-                << "2D (eig)"
-                << "2D (cpp)"
-                << "2D (dot)"
-                << "2D (mad)"
-                << "2D (dyn)"
-                << "3D (lin)"
-                << "3D (l-lin)";
-
-        for (int isize = min_isize; isize <= max_isize; isize += 4)
+        // output
         {
-                table_output.clear();
-                table_ginput.clear();
-                table_gparam.clear();
+                tabulator_t table("size\\output [us]");
+                table.header()
+                        << "2D (eig)"
+                        << "2D (cpp)"
+                        << "2D (dot)"
+                        << "2D (mad)"
+                        << "2D (dyn)"
+                        << "3D (lin)";
 
-                for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ksize += 2)
+                for (int isize = min_isize; isize <= max_isize; isize += 4)
                 {
-                        const int osize = isize - ksize + 1;
-
-                        const string_t header =
-                                "(" +
-                                text::to_string(idims) + "x" +
-                                text::to_string(isize) + "x" +
-                                text::to_string(isize) + " @ " +
-                                text::to_string(ksize) + "x" +
-                                text::to_string(ksize) + " -> " +
-                                text::to_string(odims) + "x" +
-                                text::to_string(osize) + "x" +
-                                text::to_string(osize) +
-                                ")";
-
-                        test_config(isize, idims, ksize, odims,
-                                    table_output.append(header),
-                                    table_ginput.append(header),
-                                    table_gparam.append(header));
+                        for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ksize += 2)
+                        {
+                                const string_t header = make_header(idims, isize, ksize, odims);
+                                test_config_output(isize, idims, ksize, odims, table.append(header));
+                        }
                 }
 
-                table_output.print(std::cout);
-                table_ginput.print(std::cout);
-                table_gparam.print(std::cout);
+                table.print(std::cout);
+        }
 
-                std::cout << std::endl;
+        // gradient wrt parameters
+        {
+                tabulator_t table("size\\gparam [us]");
+                table.header()
+                        << "2D (eig)"
+                        << "2D (cpp)"
+                        << "2D (dot)"
+                        << "2D (mad)"
+                        << "2D (dyn)"
+                        << "3D (lin)";
+
+                for (int isize = min_isize; isize <= max_isize; isize += 4)
+                {
+                        for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ksize += 2)
+                        {
+                                const string_t header = make_header(idims, isize, ksize, odims);
+                                test_config_gparam(isize, idims, ksize, odims, table.append(header));
+                        }
+                }
+
+                table.print(std::cout);
+        }
+
+        // gradient wrt inputs
+        {
+                tabulator_t table("size\\ginput [us]");
+                table.header()
+                        << "2D (egb)"
+                        << "2D (egr)"
+                        << "2D (cpp)"
+                        << "2D (mkd)"
+                        << "2D (mko)"
+                        << "2D (dyn)"
+                        << "3D (lin)";
+
+                for (int isize = min_isize; isize <= max_isize; isize += 4)
+                {
+                        for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ksize += 2)
+                        {
+                                const string_t header = make_header(idims, isize, ksize, odims);
+                                test_config_ginput(isize, idims, ksize, odims, table.append(header));
+                        }
+                }
+
+                table.print(std::cout);
         }
 
 	return EXIT_SUCCESS;
