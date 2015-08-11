@@ -34,7 +34,7 @@ namespace test
                 vec1.setRandom();
                 vec2.setRandom();
 
-                scalar_t wei = vec1(0) + vec2(3);
+                const scalar_t wei = vec1(0) + vec2(3);
 
                 const scalar_t mad    = test_mad(ncv::math::mad<scalar_t>, vec1, vec2, wei);
                 const scalar_t madul2 = test_mad(ncv::math::mad_unroll2<scalar_t>, vec1, vec2, wei);
