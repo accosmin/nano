@@ -52,8 +52,7 @@ namespace ncv
                 assert(!m_layers.empty());
 
                 // output (gradient)
-                tensor_t output(osize(), 1, 1);
-                tensor::load(output, _output.data());
+                const tensor_t output = tensor::map_tensor(_output.data(), osize(), size_t(1), size_t(1));
 
                 // backward step
                 const tensor_t* poutput = &output;
@@ -73,8 +72,7 @@ namespace ncv
                 assert(!m_layers.empty());
 
                 // output (gradient)
-                tensor_t output(osize(), 1, 1);
-                tensor::load(output, _output.data());
+                const tensor_t output = tensor::map_tensor(_output.data(), osize(), size_t(1), size_t(1));
 
                 // parameter gradient
                 vector_t gradient(psize());
