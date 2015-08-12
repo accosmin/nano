@@ -7,7 +7,7 @@ namespace ncv
         namespace math
         {
                 ///
-                /// \brief 2D convolution: odata += idata @ kdata (using plain array indexing)
+                /// \brief 2D convolution: odata += idata @ kdata (for 3x3 fixed-size kernels)
                 ///
                 struct conv2d_3x3_t
                 {
@@ -28,31 +28,21 @@ namespace ncv
                                 const auto orows = odata.rows();
                                 const auto ocols = odata.cols();
 
-                                const auto k00 = kdata(0, 0), k01 = kdata(0, 1), k02 = kdata(0, 2);
-                                const auto k10 = kdata(1, 0), k11 = kdata(1, 1), k12 = kdata(1, 2);
-                                const auto k20 = kdata(2, 0), k21 = kdata(2, 1), k22 = kdata(2, 2);
-
                                 for (auto r = 0; r < orows; r ++)
                                 {
-                                        for (auto c = 0; c < ocols; c ++)
-                                        {
-                                                const tscalar sum00 = idata(r + 0, c + 0) * k00;
-                                                const tscalar sum01 = idata(r + 0, c + 1) * k01;
-                                                const tscalar sum02 = idata(r + 0, c + 2) * k02;
+                                        odata.row(r) +=
 
-                                                const tscalar sum10 = idata(r + 1, c + 0) * k10;
-                                                const tscalar sum11 = idata(r + 1, c + 1) * k11;
-                                                const tscalar sum12 = idata(r + 1, c + 2) * k12;
+                                        idata.row(r + 0).segment(0, ocols) * kdata(0, 0) +
+                                        idata.row(r + 0).segment(1, ocols) * kdata(0, 1) +
+                                        idata.row(r + 0).segment(2, ocols) * kdata(0, 2) +
 
-                                                const tscalar sum20 = idata(r + 2, c + 0) * k20;
-                                                const tscalar sum21 = idata(r + 2, c + 1) * k21;
-                                                const tscalar sum22 = idata(r + 2, c + 2) * k22;
+                                        idata.row(r + 1).segment(0, ocols) * kdata(1, 0) +
+                                        idata.row(r + 1).segment(1, ocols) * kdata(1, 1) +
+                                        idata.row(r + 1).segment(2, ocols) * kdata(1, 2) +
 
-                                                odata(r, c) +=
-                                                sum00 + sum01 + sum02 +
-                                                sum10 + sum11 + sum12 +
-                                                sum20 + sum21 + sum22;
-                                        }
+                                        idata.row(r + 2).segment(0, ocols) * kdata(2, 0) +
+                                        idata.row(r + 2).segment(1, ocols) * kdata(2, 1) +
+                                        idata.row(r + 2).segment(2, ocols) * kdata(2, 2) ;
                                 }
                         }
                 };
