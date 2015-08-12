@@ -20,7 +20,7 @@ namespace ncv
                                                  size_t(1), size_t(4096));
 
                 // resize buffers
-                m_idata.resize(idims, 1, 1);
+                m_idata.resize(tensor.dims(), tensor.rows(), tensor.cols());
                 m_odata.resize(odims, 1, 1);
 
                 m_wdata.resize(odims, idims);

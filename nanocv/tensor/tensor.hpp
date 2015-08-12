@@ -41,10 +41,10 @@ namespace ncv
                         ///
                         template
                         <
-                                typename tscalar_
+                                typename tmap
                         >
-                        tensor_t(const tensor_map_t<tscalar_>& other)
-                                :       tbase(other.dims(), other.rows(), other.cols())
+                        tensor_t(const tensor_map_t<tmap>& other)
+                                :       tensor_t(other.dims(), other.rows(), other.cols())
                         {
                                 this->vector() = other.vector().template cast<tscalar>();
                         }
