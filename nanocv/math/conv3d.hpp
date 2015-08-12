@@ -1,6 +1,9 @@
 #pragma once
 
 #include "conv2d.hpp"
+#include "conv2d_3x3.hpp"
+#include "conv2d_5x5.hpp"
+#include "conv2d_7x7.hpp"
 
 namespace ncv
 {
@@ -45,8 +48,6 @@ namespace ncv
                 >
                 void conv3d_output(const ttensori& idata, const ttensork& kdata, ttensoro&& odata)
                 {
-                        odata.setZero();
-
                         if (kdata.rows() == 3 && kdata.cols() == 3)
                         {
                                 conv3d_output(conv2d_3x3_t(), idata, kdata, odata);
@@ -54,6 +55,10 @@ namespace ncv
                         else if (kdata.rows() == 5 && kdata.cols() == 5)
                         {
                                 conv3d_output(conv2d_5x5_t(), idata, kdata, odata);
+                        }
+                        else if (kdata.rows() == 7 && kdata.cols() == 7)
+                        {
+                                conv3d_output(conv2d_7x7_t(), idata, kdata, odata);
                         }
                         else
                         {

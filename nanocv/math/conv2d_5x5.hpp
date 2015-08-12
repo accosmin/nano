@@ -7,7 +7,7 @@ namespace ncv
         namespace math
         {
                 ///
-                /// \brief 2D convolution: odata += idata @ kdata (for 5x5 fixed-size kernels)
+                /// \brief 2D convolution: odata += idata @ kdata (for 5x5 kernels)
                 ///
                 struct conv2d_5x5_t
                 {
