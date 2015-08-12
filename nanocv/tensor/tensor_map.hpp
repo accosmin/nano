@@ -11,15 +11,14 @@ namespace ncv
                 ///
                 template
                 <
-                        typename tscalar,
-                        typename tvector = vector_t<tscalar>,
-                        typename tmap = Eigen::Map<tvector>
+                        typename tmap
                 >
                 class tensor_map_t : public tensor_base_t<tmap>
                 {
                 public:
 
                         typedef tensor_base_t<tmap>     tbase;
+                        typedef typename tbase::tscalar tscalar;
                         typedef typename tbase::tsize   tsize;
 
                         // Eigen compatible
@@ -29,8 +28,8 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        tensor_map_t(tscalar* data, tsize dims, tsize rows, tsize cols)
-                                :       tbase(dims, rows, cols, tensor::map_vector(data, dims * rows * cols))
+                        tensor_map_t(const tmap& map, tsize dims, tsize rows, tsize cols)
+                                :       tbase(dims, rows, cols, map)
                         {
                         }
                 };
@@ -43,11 +42,11 @@ namespace ncv
                         typename tvalue_,
                         typename tsize,
                         typename tvalue = typename std::remove_const<tvalue_>::type,
-                        typename tresult = tensor_map_t<tvalue>
+                        typename tresult = tensor_map_t<Eigen::Map<vector_t<tvalue>>>
                 >
                 tresult map_tensor(tvalue_* data, tsize dims, tsize rows, tsize cols)
                 {
-                        return tresult(data, dims, rows, cols);
+                        return tresult(tensor::map_vector(data, dims * rows * cols), dims, rows, cols);
                 }
 
                 ///
@@ -58,11 +57,11 @@ namespace ncv
                         typename tvalue_,
                         typename tsize,
                         typename tvalue = typename std::remove_const<tvalue_>::type,
-                        typename tresult = tensor_map_t<tvalue>
+                        typename tresult = tensor_map_t<Eigen::Map<const vector_t<tvalue>>>
                 >
                 tresult map_tensor(const tvalue_* data, tsize dims, tsize rows, tsize cols)
                 {
-                        return tresult(data, dims, rows, cols);
+                        return tresult(tensor::map_vector(data, dims * rows * cols), dims, rows, cols);
                 }
         }
 }
