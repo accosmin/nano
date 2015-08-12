@@ -115,6 +115,7 @@ namespace
                 row << measure_output(math::conv2d_dot_t(), idata, kdata, odata_ret, trials);
                 row << measure_output(math::conv2d_mad_t(), idata, kdata, odata_ret, trials);
                 row << measure_output(math::conv2d_dyn_t(), idata, kdata, odata_ret, trials);
+                row << ncv::measure_robustly_usec([&] () { math::conv3d_output(idata, kdata, odata_ret); }, trials);
                 row << ncv::measure_robustly_usec([&] () { conv3d.output(idata, odata_ret); }, trials);
         }
 
@@ -178,6 +179,7 @@ int main(int, char* [])
                         << "2D (dot)"
                         << "2D (mad)"
                         << "2D (dyn)"
+                        << "2D (fix)"
                         << "3D (lin)";
 
                 for (int isize = min_isize; isize <= max_isize; isize += 4)

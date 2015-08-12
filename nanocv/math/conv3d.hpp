@@ -1,5 +1,7 @@
 #pragma once
 
+#include "conv2d.hpp"
+
 namespace ncv
 {
         namespace math
@@ -29,6 +31,33 @@ namespace ncv
 
                                         conv2d_op(imap, kmap, omap);
                                 }
+                        }
+                }
+
+                ///
+                /// \brief 3D convolution output: odata(o) = sum(i, idata(i) @ kdata(i, o))
+                ///
+                template
+                <
+                        typename ttensori,
+                        typename ttensork,
+                        typename ttensoro
+                >
+                void conv3d_output(const ttensori& idata, const ttensork& kdata, ttensoro&& odata)
+                {
+                        odata.setZero();
+
+                        if (kdata.rows() == 3 && kdata.cols() == 3)
+                        {
+                                conv3d_output(conv2d_3x3_t(), idata, kdata, odata);
+                        }
+                        else if (kdata.rows() == 5 && kdata.cols() == 5)
+                        {
+                                conv3d_output(conv2d_5x5_t(), idata, kdata, odata);
+                        }
+                        else
+                        {
+                                conv3d_output(conv2d_dyn_t(), idata, kdata, odata);
                         }
                 }
 
