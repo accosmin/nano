@@ -4,6 +4,7 @@
 #include "conv2d_3x3.hpp"
 #include "conv2d_5x5.hpp"
 #include "conv2d_7x7.hpp"
+#include "conv2d_9x9.hpp"
 
 namespace ncv
 {
@@ -59,6 +60,10 @@ namespace ncv
                         else if (kdata.rows() == 7 && kdata.cols() == 7)
                         {
                                 conv3d_output(conv2d_7x7_t(), idata, kdata, odata);
+                        }
+                        else if (kdata.rows() == 9 && kdata.cols() == 9)
+                        {
+                                conv3d_output(conv2d_9x9_t(), idata, kdata, odata);
                         }
                         else
                         {
