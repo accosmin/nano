@@ -66,15 +66,15 @@ BOOST_AUTO_TEST_CASE(test_conv3d)
         using namespace ncv;
 
         const int min_isize = 4;
-        const int max_isize = 16;
+        const int max_isize = 32;
 
         const int min_ksize = 1;
-        const int max_ksize = 9;
+        const int max_ksize = 15;
 
-        const int idims = 16;
-        const int odims = 32;
+        const int idims = 4;
+        const int odims = 8;
 
-        const int n_tests = 16;
+        const int n_tests = 8;
 
         for (int isize = min_isize; isize <= max_isize; isize += 4)
         {
