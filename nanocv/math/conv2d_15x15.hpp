@@ -32,22 +32,28 @@ namespace ncv
                                 {
                                         for (int kr = 0; kr < 15; kr ++)
                                         {
+                                                const auto irow = idata.row(r + kr);
+
                                                 odata.row(r) +=
-                                                idata.row(r + kr).segment(0, ocols) * kdata(kr, 0) +
-                                                idata.row(r + kr).segment(1, ocols) * kdata(kr, 1) +
-                                                idata.row(r + kr).segment(2, ocols) * kdata(kr, 2) +
-                                                idata.row(r + kr).segment(3, ocols) * kdata(kr, 3) +
-                                                idata.row(r + kr).segment(4, ocols) * kdata(kr, 4) +
-                                                idata.row(r + kr).segment(5, ocols) * kdata(kr, 5) +
-                                                idata.row(r + kr).segment(6, ocols) * kdata(kr, 6) +
-                                                idata.row(r + kr).segment(7, ocols) * kdata(kr, 7) +
-                                                idata.row(r + kr).segment(8, ocols) * kdata(kr, 8) +
-                                                idata.row(r + kr).segment(9, ocols) * kdata(kr, 9) +
-                                                idata.row(r + kr).segment(10, ocols) * kdata(kr, 10) +
-                                                idata.row(r + kr).segment(11, ocols) * kdata(kr, 11) +
-                                                idata.row(r + kr).segment(12, ocols) * kdata(kr, 12) +
-                                                idata.row(r + kr).segment(13, ocols) * kdata(kr, 13) +
-                                                idata.row(r + kr).segment(14, ocols) * kdata(kr, 14);
+                                                irow.segment(0, ocols) * kdata(kr, 0) +
+                                                irow.segment(1, ocols) * kdata(kr, 1) +
+                                                irow.segment(2, ocols) * kdata(kr, 2) +
+                                                irow.segment(3, ocols) * kdata(kr, 3) +
+                                                irow.segment(4, ocols) * kdata(kr, 4);
+
+                                                odata.row(r) +=
+                                                irow.segment(5, ocols) * kdata(kr, 5) +
+                                                irow.segment(6, ocols) * kdata(kr, 6) +
+                                                irow.segment(7, ocols) * kdata(kr, 7) +
+                                                irow.segment(8, ocols) * kdata(kr, 8) +
+                                                irow.segment(9, ocols) * kdata(kr, 9);
+
+                                                odata.row(r) +=
+                                                irow.segment(10, ocols) * kdata(kr, 10) +
+                                                irow.segment(11, ocols) * kdata(kr, 11) +
+                                                irow.segment(12, ocols) * kdata(kr, 12) +
+                                                irow.segment(13, ocols) * kdata(kr, 13) +
+                                                irow.segment(14, ocols) * kdata(kr, 14);
                                         }
                                 }
                         }

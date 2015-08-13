@@ -8,6 +8,7 @@
 #include "conv2d_11x11.hpp"
 #include "conv2d_13x13.hpp"
 #include "conv2d_15x15.hpp"
+#include "conv2d_nxn.hpp"
 
 namespace ncv
 {
@@ -54,31 +55,31 @@ namespace ncv
                 {
                         if (kdata.rows() == 3 && kdata.cols() == 3)
                         {
-                                conv3d_output(conv2d_3x3_t(), idata, kdata, odata);
+                                conv3d_output(conv2d_nxn_t<3>(), idata, kdata, odata);
                         }
                         else if (kdata.rows() == 5 && kdata.cols() == 5)
                         {
-                                conv3d_output(conv2d_5x5_t(), idata, kdata, odata);
+                                conv3d_output(conv2d_nxn_t<5>(), idata, kdata, odata);
                         }
                         else if (kdata.rows() == 7 && kdata.cols() == 7)
                         {
-                                conv3d_output(conv2d_7x7_t(), idata, kdata, odata);
+                                conv3d_output(conv2d_nxn_t<7>(), idata, kdata, odata);
                         }
                         else if (kdata.rows() == 9 && kdata.cols() == 9)
                         {
-                                conv3d_output(conv2d_9x9_t(), idata, kdata, odata);
+                                conv3d_output(conv2d_nxn_t<9>(), idata, kdata, odata);
                         }
                         else if (kdata.rows() == 11 && kdata.cols() == 11)
                         {
-                                conv3d_output(conv2d_11x11_t(), idata, kdata, odata);
+                                conv3d_output(conv2d_nxn_t<11>(), idata, kdata, odata);
                         }
                         else if (kdata.rows() == 13 && kdata.cols() == 13)
                         {
-                                conv3d_output(conv2d_13x13_t(), idata, kdata, odata);
+                                conv3d_output(conv2d_nxn_t<13>(), idata, kdata, odata);
                         }
                         else if (kdata.rows() == 15 && kdata.cols() == 15)
                         {
-                                conv3d_output(conv2d_15x15_t(), idata, kdata, odata);
+                                conv3d_output(conv2d_nxn_t<15>(), idata, kdata, odata);
                         }
                         else
                         {
