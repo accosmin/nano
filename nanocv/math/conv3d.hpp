@@ -1,14 +1,6 @@
 #pragma once
 
 #include "conv2d.hpp"
-#include "conv2d_3x3.hpp"
-#include "conv2d_5x5.hpp"
-#include "conv2d_7x7.hpp"
-#include "conv2d_9x9.hpp"
-#include "conv2d_11x11.hpp"
-#include "conv2d_13x13.hpp"
-#include "conv2d_15x15.hpp"
-#include "conv2d_nxn.hpp"
 
 namespace ncv
 {
@@ -39,51 +31,6 @@ namespace ncv
 
                                         conv2d_op(imap, kmap, omap);
                                 }
-                        }
-                }
-
-                ///
-                /// \brief 3D convolution output: odata(o) = sum(i, idata(i) @ kdata(i, o))
-                ///
-                template
-                <
-                        typename ttensori,
-                        typename ttensork,
-                        typename ttensoro
-                >
-                void conv3d_output(const ttensori& idata, const ttensork& kdata, ttensoro&& odata)
-                {
-                        if (kdata.rows() == 3 && kdata.cols() == 3)
-                        {
-                                conv3d_output(conv2d_3x3_t(), idata, kdata, odata);
-                        }
-                        else if (kdata.rows() == 5 && kdata.cols() == 5)
-                        {
-                                conv3d_output(conv2d_5x5_t(), idata, kdata, odata);
-                        }
-                        else if (kdata.rows() == 7 && kdata.cols() == 7)
-                        {
-                                conv3d_output(conv2d_7x7_t(), idata, kdata, odata);
-                        }
-                        else if (kdata.rows() == 9 && kdata.cols() == 9)
-                        {
-                                conv3d_output(conv2d_9x9_t(), idata, kdata, odata);
-                        }
-                        else if (kdata.rows() == 11 && kdata.cols() == 11)
-                        {
-                                conv3d_output(conv2d_11x11_t(), idata, kdata, odata);
-                        }
-                        else if (kdata.rows() == 13 && kdata.cols() == 13)
-                        {
-                                conv3d_output(conv2d_13x13_t(), idata, kdata, odata);
-                        }
-                        else if (kdata.rows() == 15 && kdata.cols() == 15)
-                        {
-                                conv3d_output(conv2d_15x15_t(), idata, kdata, odata);
-                        }
-                        else
-                        {
-                                conv3d_output(conv2d_dyn_t(), idata, kdata, odata);
                         }
                 }
 

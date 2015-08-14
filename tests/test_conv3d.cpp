@@ -38,7 +38,7 @@ namespace test
 
                 ttensor idata_dyn = idata, idata_lin = idata;
                 ttensor kdata_dyn = kdata, kdata_lin = kdata;
-                ttensor odata_dyn = odata, odata_fix = odata, odata_lin = odata;
+                ttensor odata_dyn = odata, odata_lin = odata;
 
                 tensor::conv3d_t<ttensor> conv3d;
                 BOOST_CHECK(conv3d.reset(kdata, idims, odims));
@@ -50,16 +50,12 @@ namespace test
                 math::conv3d_gparam(math::conv2d_dyn_t(), idata, kdata_dyn, odata);
                 math::conv3d_ginput(math::corr2d_dyn_t(), idata_dyn, kdata, odata);
 
-                math::conv3d_output(idata, kdata, odata_fix);
-
                 // linearized tensors-based
                 BOOST_CHECK(conv3d.output(idata, odata_lin));
                 BOOST_CHECK(conv3d.gparam(idata, kdata_lin, odata));
                 BOOST_CHECK(conv3d.ginput(idata_lin, odata));
 
                 // check results
-                BOOST_CHECK_LE((odata_dyn.vector() - odata_fix.vector()).template lpNorm<Eigen::Infinity>(), epsilon);
-
                 BOOST_CHECK_LE((odata_dyn.vector() - odata_lin.vector()).template lpNorm<Eigen::Infinity>(), epsilon);
                 BOOST_CHECK_LE((kdata_dyn.vector() - kdata_lin.vector()).template lpNorm<Eigen::Infinity>(), epsilon);
                 BOOST_CHECK_LE((idata_dyn.vector() - idata_lin.vector()).template lpNorm<Eigen::Infinity>(), epsilon);

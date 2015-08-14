@@ -31,7 +31,6 @@ namespace ncv
                                 {
                                         switch (kcols)
                                         {
-                                        case 1:         conv2d_doti_t<1>()(idata, kdata, odata); break;
                                         case 3:         conv2d_doti_t<3>()(idata, kdata, odata); break;
                                         case 5:         conv2d_doti_t<5>()(idata, kdata, odata); break;
                                         case 7:         conv2d_doti_t<7>()(idata, kdata, odata); break;
@@ -46,7 +45,6 @@ namespace ncv
                                 {
                                         switch (ocols)
                                         {
-                                        case 1:         conv2d_madi_t<1>()(idata, kdata, odata); break;
                                         case 3:         conv2d_madi_t<3>()(idata, kdata, odata); break;
                                         case 5:         conv2d_madi_t<5>()(idata, kdata, odata); break;
                                         case 7:         conv2d_madi_t<7>()(idata, kdata, odata); break;

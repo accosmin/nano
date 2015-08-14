@@ -28,7 +28,6 @@ namespace ncv
                                 // decode at run-time the kernel size
                                 switch (kcols)
                                 {
-                                case 1:         corr2d_mdki_t<1>()(odata, kdata, idata); break;
                                 case 3:         corr2d_mdki_t<3>()(odata, kdata, idata); break;
                                 case 5:         corr2d_mdki_t<5>()(odata, kdata, idata); break;
                                 case 7:         corr2d_mdki_t<7>()(odata, kdata, idata); break;
