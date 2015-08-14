@@ -16,7 +16,11 @@ namespace test
 {
         using namespace ncv;
 
-        template <typename tscalar, typename ttensor = tensor::tensor_t<tscalar>>
+        template
+        <
+                typename ttensor,
+                typename tscalar = typename ttensor::Scalar
+        >
         void test_conv3d(int isize, int idims, int ksize, int odims)
         {
                 const int osize = isize - ksize + 1;
@@ -83,8 +87,8 @@ BOOST_AUTO_TEST_CASE(test_conv3d)
                 {
                         for (int t = 0; t < n_tests; t ++)
                         {
-                                test::test_conv3d<lscalar_t>(isize, idims, ksize, odims);
-                                test::test_conv3d<hscalar_t>(isize, idims, ksize, odims);
+                                test::test_conv3d<ltensor_t>(isize, idims, ksize, odims);
+                                test::test_conv3d<htensor_t>(isize, idims, ksize, odims);
                         }
                 }
         }

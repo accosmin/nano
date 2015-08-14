@@ -99,16 +99,20 @@ namespace
                 }, trials);
         }
 
+        template
+        <
+                typename ttensor
+        >
         void test_config_output(const int isize, const int idims, const int ksize, const int odims,
                 tabulator_t::row_t& row, const size_t trials = 16)
         {
-                tensor_t idata, kdata, odata;
+                ttensor idata, kdata, odata;
                 make_tensors(isize, idims, ksize, odims, idata, kdata, odata);
 
-                tensor::conv3d_t<tensor_t> conv3d;
+                tensor::conv3d_t<ttensor> conv3d;
                 conv3d.reset(kdata, idims, odims);
 
-                tensor_t odata_ret = odata;
+                ttensor odata_ret = odata;
 
                 row << measure_output(math::conv2d_eig_t(), idata, kdata, odata_ret, trials);
                 row << measure_output(math::conv2d_cpp_t(), idata, kdata, odata_ret, trials);
@@ -119,16 +123,20 @@ namespace
                 row << ncv::measure_robustly_usec([&] () { conv3d.output(idata, odata_ret); }, trials);
         }
 
+        template
+        <
+                typename ttensor
+        >
         void test_config_ginput(const int isize, const int idims, const int ksize, const int odims,
                 tabulator_t::row_t& row, const size_t trials = 16)
         {
-                tensor_t idata, kdata, odata;
+                ttensor idata, kdata, odata;
                 make_tensors(isize, idims, ksize, odims, idata, kdata, odata);
 
-                tensor::conv3d_t<tensor_t> conv3d;
+                tensor::conv3d_t<ttensor> conv3d;
                 conv3d.reset(kdata, idims, odims);
 
-                tensor_t idata_ret = idata;
+                ttensor idata_ret = idata;
 
                 row << measure_ginput(ncv::math::corr2d_egb_t(), idata_ret, kdata, odata, trials);
                 row << measure_ginput(ncv::math::corr2d_egr_t(), idata_ret, kdata, odata, trials);
@@ -139,16 +147,20 @@ namespace
                 row << ncv::measure_robustly_usec([&] () { conv3d.ginput(idata_ret, odata); }, trials);
         }
 
+        template
+        <
+                typename ttensor
+        >
         void test_config_gparam(const int isize, const int idims, const int ksize, const int odims,
                 tabulator_t::row_t& row, const size_t trials = 16)
         {
-                tensor_t idata, kdata, odata;
+                ttensor idata, kdata, odata;
                 make_tensors(isize, idims, ksize, odims, idata, kdata, odata);
 
-                tensor::conv3d_t<tensor_t> conv3d;
+                tensor::conv3d_t<ttensor> conv3d;
                 conv3d.reset(kdata, idims, odims);
 
-                tensor_t kdata_ret = kdata;
+                ttensor kdata_ret = kdata;
 
                 row << measure_gparam(math::conv2d_eig_t(), idata, kdata_ret, odata, trials);
                 row << measure_gparam(math::conv2d_cpp_t(), idata, kdata_ret, odata, trials);
@@ -187,7 +199,7 @@ int main(int, char* [])
                         for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ksize += 2)
                         {
                                 const string_t header = make_header(idims, isize, ksize, odims);
-                                test_config_output(isize, idims, ksize, odims, table.append(header));
+                                test_config_output<ltensor_t>(isize, idims, ksize, odims, table.append(header));
                         }
                 }
 
@@ -211,7 +223,7 @@ int main(int, char* [])
                         for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ksize += 2)
                         {
                                 const string_t header = make_header(idims, isize, ksize, odims);
-                                test_config_gparam(isize, idims, ksize, odims, table.append(header));
+                                test_config_gparam<ltensor_t>(isize, idims, ksize, odims, table.append(header));
                         }
                 }
 
@@ -236,7 +248,7 @@ int main(int, char* [])
                         for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ksize += 2)
                         {
                                 const string_t header = make_header(idims, isize, ksize, odims);
-                                test_config_ginput(isize, idims, ksize, odims, table.append(header));
+                                test_config_ginput<ltensor_t>(isize, idims, ksize, odims, table.append(header));
                         }
                 }
 
