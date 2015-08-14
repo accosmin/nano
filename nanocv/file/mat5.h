@@ -118,7 +118,7 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        section_t(size_t begin = 0);
+                        explicit section_t(size_t begin = 0);
 
                         bool load(size_t offset, size_t end, uint32_t dtype, uint32_t bytes);
                         bool load(std::ifstream& istream);

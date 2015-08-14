@@ -27,7 +27,7 @@ namespace ncv
         {
         public:
 
-                model_t(const string_t& parameters);
+                explicit model_t(const string_t& parameters);
 
                 ///
                 /// \brief constructor

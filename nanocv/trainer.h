@@ -29,7 +29,7 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                trainer_t(const string_t& configuration)
+                explicit trainer_t(const string_t& configuration)
                         :       clonable_t<trainer_t>(configuration)
                 {
                 }

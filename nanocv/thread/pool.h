@@ -106,7 +106,7 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        worker_t(data_t& data) : m_data(data)
+                        explicit worker_t(data_t& data) : m_data(data)
                         {
                         }
 

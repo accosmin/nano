@@ -27,7 +27,7 @@ namespace ncv
 
                 const auto edges_exp = (-beta * targets.array() * scores.array()).exp();
 
-                return ibeta * std::log(1.0 + edges_exp.array().sum());
+                return ibeta * std::log1p(edges_exp.array().sum());
         }
         
         vector_t logistic_loss_t::vgrad(const vector_t& targets, const vector_t& scores) const

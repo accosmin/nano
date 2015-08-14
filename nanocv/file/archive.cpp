@@ -136,8 +136,7 @@ namespace ncv
                         archive_read_support_format_all(ar);
                         archive_read_support_format_raw(ar);
 
-                        int r;
-                        if ((r = archive_read_open_memory(ar, (void*)mem_data.data(), mem_data.size())))
+                        if (archive_read_open_memory(ar, (void*)mem_data.data(), mem_data.size()))
                         {
                                 log_error() << log_header << "failed to open archive!";
                                 log_error() << log_header << "error <" << archive_error_string(ar) << ">!";
@@ -156,8 +155,7 @@ namespace ncv
                 archive_read_support_format_all(ar);
                 archive_read_support_format_raw(ar);
 
-                int r;
-                if ((r = archive_read_open_filename(ar, path.c_str(), 10240)))
+                if (archive_read_open_filename(ar, path.c_str(), 10240))
                 {
                         log_error() << log_header << "failed to open archive <" << path << ">!";
                         log_error() << log_header << "error <" << archive_error_string(ar) << ">!";

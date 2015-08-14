@@ -20,7 +20,7 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                forward_network_t(const string_t& parameters = string_t());
+                explicit forward_network_t(const string_t& parameters = string_t());
 
                 ///
                 /// \brief copy constructor
