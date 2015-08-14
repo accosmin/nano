@@ -16,29 +16,30 @@ namespace test
 {
         using namespace ncv;
 
+        template <typename tscalar, typename ttensor = tensor::tensor_t<tscalar>>
         void test_conv3d(int isize, int idims, int ksize, int odims)
         {
                 const int osize = isize - ksize + 1;
                 const int kdims = odims * idims;
 
-                random_t<scalar_t> rng(-1.0 / isize, 1.0 / isize);
+                random_t<tscalar> rng(-1.0 / isize, 1.0 / isize);
 
-                tensor_t idata(idims, isize, isize);
-                tensor_t kdata(kdims, ksize, ksize);
-                tensor_t odata(odims, osize, osize);
+                ttensor idata(idims, isize, isize);
+                ttensor kdata(kdims, ksize, ksize);
+                ttensor odata(odims, osize, osize);
 
                 tensor::set_random(idata, rng);
                 tensor::set_random(kdata, rng);
                 tensor::set_random(odata, rng);
 
-                tensor_t idata_dyn = idata, idata_lin = idata;
-                tensor_t kdata_dyn = kdata, kdata_lin = kdata;
-                tensor_t odata_dyn = odata, odata_fix = odata, odata_lin = odata;
+                ttensor idata_dyn = idata, idata_lin = idata;
+                ttensor kdata_dyn = kdata, kdata_lin = kdata;
+                ttensor odata_dyn = odata, odata_fix = odata, odata_lin = odata;
 
-                tensor::conv3d_t<tensor_t> conv3d;
+                tensor::conv3d_t<ttensor> conv3d;
                 BOOST_CHECK(conv3d.reset(kdata, idims, odims));
 
-                const scalar_t epsilon = math::epsilon1<scalar_t>();
+                const tscalar epsilon = math::epsilon1<tscalar>();
 
                 // 2D convolution-based
                 math::conv3d_output(math::conv2d_dyn_t(), idata, kdata, odata_dyn);
@@ -53,11 +54,11 @@ namespace test
                 BOOST_CHECK(conv3d.ginput(idata_lin, odata));
 
                 // check results
-                BOOST_CHECK_LE((odata_dyn.vector() - odata_fix.vector()).lpNorm<Eigen::Infinity>(), epsilon);
+                BOOST_CHECK_LE((odata_dyn.vector() - odata_fix.vector()).template lpNorm<Eigen::Infinity>(), epsilon);
 
-                BOOST_CHECK_LE((odata_dyn.vector() - odata_lin.vector()).lpNorm<Eigen::Infinity>(), epsilon);
-                BOOST_CHECK_LE((kdata_dyn.vector() - kdata_lin.vector()).lpNorm<Eigen::Infinity>(), epsilon);
-                BOOST_CHECK_LE((idata_dyn.vector() - idata_lin.vector()).lpNorm<Eigen::Infinity>(), epsilon);
+                BOOST_CHECK_LE((odata_dyn.vector() - odata_lin.vector()).template lpNorm<Eigen::Infinity>(), epsilon);
+                BOOST_CHECK_LE((kdata_dyn.vector() - kdata_lin.vector()).template lpNorm<Eigen::Infinity>(), epsilon);
+                BOOST_CHECK_LE((idata_dyn.vector() - idata_lin.vector()).template lpNorm<Eigen::Infinity>(), epsilon);
         }
 }
 
@@ -82,7 +83,8 @@ BOOST_AUTO_TEST_CASE(test_conv3d)
                 {
                         for (int t = 0; t < n_tests; t ++)
                         {
-                                test::test_conv3d(isize, idims, ksize, odims);
+                                test::test_conv3d<lscalar_t>(isize, idims, ksize, odims);
+                                test::test_conv3d<hscalar_t>(isize, idims, ksize, odims);
                         }
                 }
         }
