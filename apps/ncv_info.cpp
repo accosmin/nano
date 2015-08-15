@@ -1,27 +1,27 @@
 #include "nanocv/nanocv.h"
-#include "nanocv/logger.h"
-
-using namespace ncv;
+#include "nanocv/tabulator.h"
+#include <iostream>
 
 template
 <
         typename tobject
 >
-void print(const string_t& name, const manager_t<tobject>& manager)
+void print(const ncv::string_t& name, const ncv::manager_t<tobject>& manager)
 {
+        using namespace ncv;
+
         const strings_t ids = manager.ids();
         const strings_t descriptions = manager.descriptions();
 
-        std::cout << string_t(120, '-') << std::endl;
-        std::cout << text::resize(name + " id", 24, align::left)
-                  << text::resize(name + " description", 64, align::left) << std::endl;
+        tabulator_t table(name);
+        table.header() << "description";
 
-        std::cout << string_t(120, '=') << std::endl;
         for (size_t i = 0; i < ids.size(); i ++)
         {
-                std::cout << text::resize(ids[i], 24) << descriptions[i] << std::endl;
+                table.append(ids[i]) << descriptions[i];
         }
-        std::cout << std::endl << std::endl;
+        table.print(std::cout);
+        std::cout << std::endl;
 }
 
 int main(int, char* [])
@@ -36,6 +36,5 @@ int main(int, char* [])
         print("criterion",      ncv::get_criteria());
 
         // OK
-        ncv::log_info() << ncv::done;
         return EXIT_SUCCESS;
 }
