@@ -20,6 +20,8 @@ namespace ncv
                         unknown
                 };
 
+                using namespace io;
+
                 archive_type decode_archive_type(const std::string& path)
                 {
                         if (    text::iends_with(path, ".tar.gz") ||
@@ -52,7 +54,7 @@ namespace ncv
                         }
                 }
 
-                bool copy(archive* ar, io::buffer_t& data)
+                bool copy(archive* ar, buffer_t& data)
                 {
                         while (true)
                         {
@@ -72,9 +74,9 @@ namespace ncv
                         return true;
                 }
 
-                bool decode(const io::buffer_t& mem_data, const std::string& log_header, const io::buffer_callback_t& callback);
+                bool decode(const buffer_t& mem_data, const std::string& log_header, const buffer_callback_t& callback);
 
-                bool decode(archive* ar, const std::string& log_header, const io::buffer_callback_t& callback)
+                bool decode(archive* ar, const std::string& log_header, const buffer_callback_t& callback)
                 {
                         bool ok = true;
                         while (ok)
@@ -96,7 +98,7 @@ namespace ncv
                                 const detail::archive_type filetype = detail::decode_archive_type(filename);
 //                                const int64_t filesize = archive_entry_size(entry);
 
-                                io::buffer_t data;
+                                buffer_t data;
                                 if (!detail::copy(ar, data))
                                 {
                                         log_error() << log_header << "failed to read archive!";
@@ -128,7 +130,7 @@ namespace ncv
                         return ok;
                 }
 
-                bool decode(const io::buffer_t& mem_data, const std::string& log_header, const io::buffer_callback_t& callback)
+                bool decode(const buffer_t& mem_data, const std::string& log_header, const buffer_callback_t& callback)
                 {
                         archive* ar = archive_read_new();
 

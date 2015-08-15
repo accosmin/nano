@@ -197,7 +197,7 @@ int main(int, char* [])
                         for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ksize += 2)
                         {
                                 const string_t header = make_header(idims, isize, ksize, odims);
-                                test_config_output<ltensor_t>(isize, idims, ksize, odims, table.append(header));
+                                test_config_output<htensor_t>(isize, idims, ksize, odims, table.append(header));
                         }
                 }
 
@@ -221,7 +221,7 @@ int main(int, char* [])
                         for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ksize += 2)
                         {
                                 const string_t header = make_header(idims, isize, ksize, odims);
-                                test_config_gparam<ltensor_t>(isize, idims, ksize, odims, table.append(header));
+                                test_config_gparam<htensor_t>(isize, idims, ksize, odims, table.append(header));
                         }
                 }
 
@@ -246,7 +246,7 @@ int main(int, char* [])
                         for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ksize += 2)
                         {
                                 const string_t header = make_header(idims, isize, ksize, odims);
-                                test_config_ginput<ltensor_t>(isize, idims, ksize, odims, table.append(header));
+                                test_config_ginput<htensor_t>(isize, idims, ksize, odims, table.append(header));
                         }
                 }
 

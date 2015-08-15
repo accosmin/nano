@@ -2,7 +2,7 @@
 
 #include "timer.h"
 #include "logger.h"
-#include "math/stats.hpp"
+#include <limits>
 #include <cstdlib>
 
 namespace ncv
@@ -55,15 +55,19 @@ namespace ncv
         >
         std::size_t measure_robustly_usec(const toperator& op, std::size_t trials)
         {
-                ncv::stats_t<double> stats;
+                std::size_t best_time = std::numeric_limits<std::size_t>::max();
 
                 for (std::size_t t = 0; t < trials; t ++)
                 {
                         const timer_t timer;
                         op();
-                        stats(timer.microseconds());
+                        const std::size_t time = timer.microseconds();
+                        if (time < best_time)
+                        {
+                                best_time = time;
+                        }
                 }
 
-                return static_cast<std::size_t>(stats.min());
+                return best_time;
         }
 }

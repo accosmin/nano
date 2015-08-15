@@ -2,8 +2,6 @@
 
 #include <string>
 #include <vector>
-#include <iosfwd>
-#include <cstring>
 #include <functional>
 
 namespace ncv

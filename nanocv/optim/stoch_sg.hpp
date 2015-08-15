@@ -1,6 +1,6 @@
 #pragma once
 
-#include "nanocv/optim/stoch_params.hpp"
+#include "stoch_params.hpp"
 
 namespace ncv
 {
