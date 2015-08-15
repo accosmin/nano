@@ -7,7 +7,7 @@ namespace ncv
         ///
         /// \brief pooling layer:
         ///     down-sample by 2 from a 3x3 neighbouring region using a soft weighting function
-        ///     that approximates min/max/avg depending on the <alpha> parameter:
+        ///     that approximates min/max/avg depending on the alpha parameter:
         ///     * min           - large negative alpha
         ///     * avg           - close to zero alpha
         ///     * max           - large positive alpha

@@ -6,9 +6,6 @@ namespace ncv
 {
         class logger_t;
 
-        ///
-        /// utilities to read Matlab files version 5
-        ///
         namespace mat5
         {
                 using std::size_t;
