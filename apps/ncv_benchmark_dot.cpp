@@ -7,38 +7,41 @@
 
 using namespace ncv;
 
-template
-<
-        typename top,
-        typename tvector,
-        typename tscalar = typename tvector::Scalar
->
-static void test_dot(tabulator_t::row_t& row, top op, const tvector& vec1, const tvector& vec2)
+namespace
 {
-        const size_t trials = 16;
-
-        row << ncv::measure_robustly_usec([&] ()
+        template
+        <
+                typename top,
+                typename tvector,
+                typename tscalar = typename tvector::Scalar
+        >
+        void test_dot(tabulator_t::row_t& row, top op, const tvector& vec1, const tvector& vec2)
         {
-                const volatile tscalar ret = op(vec1.data(), vec2.data(), vec1.size());
-                ret;
-        }, trials);
-}
+                const size_t trials = 16;
 
-static void test_dot(size_t size, tabulator_t::row_t& row)
-{
-        vector_t vec1(size), vec2(size);
-        vec1.setRandom();
-        vec2.setRandom();
+                row << ncv::measure_robustly_usec([&] ()
+                {
+                        const volatile tscalar ret = op(vec1.data(), vec2.data(), vec1.size());
+                        ret;
+                }, trials);
+        }
 
-        test_dot(row, ncv::math::dot<scalar_t>, vec1, vec2);
-        test_dot(row, ncv::math::dot_unroll2<scalar_t>, vec1, vec2);
-        test_dot(row, ncv::math::dot_unroll3<scalar_t>, vec1, vec2);
-        test_dot(row, ncv::math::dot_unroll4<scalar_t>, vec1, vec2);
-        test_dot(row, ncv::math::dot_unroll5<scalar_t>, vec1, vec2);
-        test_dot(row, ncv::math::dot_unroll6<scalar_t>, vec1, vec2);
-        test_dot(row, ncv::math::dot_unroll7<scalar_t>, vec1, vec2);
-        test_dot(row, ncv::math::dot_unroll8<scalar_t>, vec1, vec2);
-        test_dot(row, ncv::tensor::dot<scalar_t>, vec1, vec2);
+        void test_dot(size_t size, tabulator_t::row_t& row)
+        {
+                vector_t vec1(size), vec2(size);
+                vec1.setRandom();
+                vec2.setRandom();
+
+                test_dot(row, ncv::math::dot<scalar_t>, vec1, vec2);
+                test_dot(row, ncv::math::dot_unroll2<scalar_t>, vec1, vec2);
+                test_dot(row, ncv::math::dot_unroll3<scalar_t>, vec1, vec2);
+                test_dot(row, ncv::math::dot_unroll4<scalar_t>, vec1, vec2);
+                test_dot(row, ncv::math::dot_unroll5<scalar_t>, vec1, vec2);
+                test_dot(row, ncv::math::dot_unroll6<scalar_t>, vec1, vec2);
+                test_dot(row, ncv::math::dot_unroll7<scalar_t>, vec1, vec2);
+                test_dot(row, ncv::math::dot_unroll8<scalar_t>, vec1, vec2);
+                test_dot(row, ncv::tensor::dot<scalar_t>, vec1, vec2);
+        }
 }
 
 int main(int, char* [])

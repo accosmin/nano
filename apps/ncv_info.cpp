@@ -2,26 +2,29 @@
 #include "nanocv/tabulator.h"
 #include <iostream>
 
-template
-<
-        typename tobject
->
-void print(const ncv::string_t& name, const ncv::manager_t<tobject>& manager)
+namespace
 {
-        using namespace ncv;
-
-        const strings_t ids = manager.ids();
-        const strings_t descriptions = manager.descriptions();
-
-        tabulator_t table(name);
-        table.header() << "description";
-
-        for (size_t i = 0; i < ids.size(); i ++)
+        template
+        <
+                typename tobject
+        >
+        void print(const ncv::string_t& name, const ncv::manager_t<tobject>& manager)
         {
-                table.append(ids[i]) << descriptions[i];
+                using namespace ncv;
+
+                const strings_t ids = manager.ids();
+                const strings_t descriptions = manager.descriptions();
+
+                tabulator_t table(name);
+                table.header() << "description";
+
+                for (size_t i = 0; i < ids.size(); i ++)
+                {
+                        table.append(ids[i]) << descriptions[i];
+                }
+                table.print(std::cout);
+                std::cout << std::endl;
         }
-        table.print(std::cout);
-        std::cout << std::endl;
 }
 
 int main(int, char* [])

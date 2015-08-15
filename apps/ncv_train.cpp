@@ -6,21 +6,24 @@
 
 using namespace ncv;
 
-static string_t describe(const strings_t& ids)
+namespace
 {
-        return text::concatenate(ids, ", ");
-}
-
-static string_t describe(const strings_t& ids, const strings_t& descriptions)
-{
-        string_t po_desc;
-        for (size_t i = 0; i < ids.size(); i ++)
+        string_t describe(const strings_t& ids)
         {
-                po_desc += "  " + text::resize(ids[i], 16) +
-                           text::resize(descriptions[i], 32) + (i + 1 == ids.size() ? "" : "\n");
+                return text::concatenate(ids, ", ");
         }
 
-        return po_desc;
+        string_t describe(const strings_t& ids, const strings_t& descriptions)
+        {
+                string_t po_desc;
+                for (size_t i = 0; i < ids.size(); i ++)
+                {
+                        po_desc += "  " + text::resize(ids[i], 16) +
+                                   text::resize(descriptions[i], 32) + (i + 1 == ids.size() ? "" : "\n");
+                }
+
+                return po_desc;
+        }
 }
 
 int main(int argc, char *argv[])

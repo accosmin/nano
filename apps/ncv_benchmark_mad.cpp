@@ -7,42 +7,45 @@
 
 using namespace ncv;
 
-template
-<
-        typename top,
-        typename tvector,
-        typename tscalar = typename tvector::Scalar
->
-static void test_mad(tabulator_t::row_t& row, top op, const tvector& vec1, const tvector& vec2, tscalar wei)
+namespace
 {
-        vector_t cvec1 = vec1;
-        vector_t cvec2 = vec2;
-
-        const size_t trials = 16;
-
-        row << ncv::measure_robustly_usec([&] ()
+        template
+        <
+                typename top,
+                typename tvector,
+                typename tscalar = typename tvector::Scalar
+        >
+        void test_mad(tabulator_t::row_t& row, top op, const tvector& vec1, const tvector& vec2, tscalar wei)
         {
-                op(cvec1.data(), wei, cvec1.size(), cvec2.data());
-        }, trials);
-}
+                vector_t cvec1 = vec1;
+                vector_t cvec2 = vec2;
 
-static void test_mad(size_t size, tabulator_t::row_t& row)
-{
-        vector_t vec1(size), vec2(size);
-        vec1.setRandom();
-        vec2.setRandom();
+                const size_t trials = 16;
 
-        scalar_t wei = vec1(0) + vec2(3);
+                row << ncv::measure_robustly_usec([&] ()
+                {
+                        op(cvec1.data(), wei, cvec1.size(), cvec2.data());
+                }, trials);
+        }
 
-        test_mad(row, ncv::math::mad<scalar_t>, vec1, vec2, wei);
-        test_mad(row, ncv::math::mad_unroll2<scalar_t>, vec1, vec2, wei);
-        test_mad(row, ncv::math::mad_unroll3<scalar_t>, vec1, vec2, wei);
-        test_mad(row, ncv::math::mad_unroll4<scalar_t>, vec1, vec2, wei);
-        test_mad(row, ncv::math::mad_unroll5<scalar_t>, vec1, vec2, wei);
-        test_mad(row, ncv::math::mad_unroll6<scalar_t>, vec1, vec2, wei);
-        test_mad(row, ncv::math::mad_unroll7<scalar_t>, vec1, vec2, wei);
-        test_mad(row, ncv::math::mad_unroll8<scalar_t>, vec1, vec2, wei);
-        test_mad(row, ncv::tensor::mad<scalar_t>, vec1, vec2, wei);
+        void test_mad(size_t size, tabulator_t::row_t& row)
+        {
+                vector_t vec1(size), vec2(size);
+                vec1.setRandom();
+                vec2.setRandom();
+
+                scalar_t wei = vec1(0) + vec2(3);
+
+                test_mad(row, ncv::math::mad<scalar_t>, vec1, vec2, wei);
+                test_mad(row, ncv::math::mad_unroll2<scalar_t>, vec1, vec2, wei);
+                test_mad(row, ncv::math::mad_unroll3<scalar_t>, vec1, vec2, wei);
+                test_mad(row, ncv::math::mad_unroll4<scalar_t>, vec1, vec2, wei);
+                test_mad(row, ncv::math::mad_unroll5<scalar_t>, vec1, vec2, wei);
+                test_mad(row, ncv::math::mad_unroll6<scalar_t>, vec1, vec2, wei);
+                test_mad(row, ncv::math::mad_unroll7<scalar_t>, vec1, vec2, wei);
+                test_mad(row, ncv::math::mad_unroll8<scalar_t>, vec1, vec2, wei);
+                test_mad(row, ncv::tensor::mad<scalar_t>, vec1, vec2, wei);
+        }
 }
 
 int main(int, char* [])
