@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mad.hpp"
+#include "dot.hpp"
 #include <cassert>
 
 namespace ncv
@@ -8,9 +8,13 @@ namespace ncv
         namespace math
         {
                 ///
-                /// \brief 2D convolution: odata += idata @ kdata (using a mad operator)
+                /// \brief 2D convolution: odata += idata @ kdata (using a dot operator with a fixed kernel size)
                 ///
-                struct conv2d_mad_t
+                template
+                <
+                        int kcols
+                >
+                struct conv2d_doti_t
                 {
                         template
                         <
@@ -20,13 +24,9 @@ namespace ncv
                         >
                         void operator()(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata) const
                         {
-                                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
-                                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
-
                                 const auto orows = odata.rows();
                                 const auto ocols = odata.cols();
                                 const auto krows = kdata.rows();
-                                const auto kcols = kdata.cols();
                                 const auto icols = idata.cols();
 
                                 for (auto r = 0; r < orows; r ++)
@@ -38,9 +38,9 @@ namespace ncv
                                                 const auto* pidata = idata.data() + (r + kr) * icols;
                                                 const auto* pkdata = kdata.data() + kr * kcols;
 
-                                                for (auto kc = 0; kc < kcols; kc ++)
+                                                for (auto c = 0; c < ocols; c ++)
                                                 {
-                                                        math::mad(pidata + kc, pkdata[kc], ocols, podata);
+                                                        podata[c] += math::dot<kcols>(pidata + c, pkdata);
                                                 }
                                         }
                                 }

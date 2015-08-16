@@ -1,7 +1,9 @@
 #pragma once
 
 #include "conv2d_dot.hpp"
+#include "conv2d_doti.hpp"
 #include "conv2d_mad.hpp"
+#include "conv2d_madi.hpp"
 
 namespace ncv
 {

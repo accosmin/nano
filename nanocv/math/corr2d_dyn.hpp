@@ -1,7 +1,9 @@
 #pragma once
 
 #include "corr2d_mdk.hpp"
+#include "corr2d_mdki.hpp"
 #include "corr2d_mdo.hpp"
+#include "corr2d_mdoi.hpp"
 
 namespace ncv
 {

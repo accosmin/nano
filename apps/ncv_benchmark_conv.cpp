@@ -2,12 +2,17 @@
 #include "nanocv/string.h"
 #include "nanocv/tabulator.h"
 #include "nanocv/measure.hpp"
-#include "nanocv/math/conv2d.hpp"
-#include "nanocv/math/corr2d.hpp"
 #include "nanocv/math/conv3d.hpp"
 #include "nanocv/math/random.hpp"
 #include "nanocv/tensor/conv3d.hpp"
 #include "nanocv/tensor/random.hpp"
+#include "nanocv/math/conv2d_cpp.hpp"
+#include "nanocv/math/conv2d_dyn.hpp"
+#include "nanocv/math/conv2d_eig.hpp"
+#include "nanocv/math/corr2d_cpp.hpp"
+#include "nanocv/math/corr2d_dyn.hpp"
+#include "nanocv/math/corr2d_egb.hpp"
+#include "nanocv/math/corr2d_egr.hpp"
 #include <iostream>
 
 using namespace ncv;

@@ -4,8 +4,10 @@
 #include <boost/test/unit_test.hpp>
 #include "nanocv/tensor.h"
 #include "nanocv/math/abs.hpp"
-#include "nanocv/math/conv2d.hpp"
 #include "nanocv/math/epsilon.hpp"
+#include "nanocv/math/conv2d_cpp.hpp"
+#include "nanocv/math/conv2d_dyn.hpp"
+#include "nanocv/math/conv2d_eig.hpp"
 
 namespace test
 {
