@@ -37,11 +37,7 @@ namespace ncv
         ///
         /// \brief compare two points
         ///
-        inline bool operator==(const point_t& point1, const point_t& point2)
-        {
-                return  point1.x() == point2.x() &&
-                        point1.y() == point2.y();
-        }
+        NANOCV_PUBLIC bool operator==(const point_t& point1, const point_t& point2);
 
         ///
         /// \brief stream a point

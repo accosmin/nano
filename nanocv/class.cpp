@@ -2,7 +2,22 @@
 
 namespace ncv
 {
-        vector_t class_target(size_t ilabel, size_t n_labels)
+        scalar_t pos_target()
+        {
+                return +1.0;
+        }
+
+        scalar_t neg_target()
+        {
+                return -1.0;
+        }
+
+        bool is_pos_target(const scalar_t target)
+        {
+                return target > 0.5;
+        }
+
+        vector_t class_target(const size_t ilabel, const size_t n_labels)
         {
                 vector_t target(n_labels);
                 target.setConstant(neg_target());

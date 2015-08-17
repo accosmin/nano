@@ -73,8 +73,8 @@ namespace ncv
 
                         if (section.m_dtype != mat5::buffer_type::miCOMPRESSED)
                         {
-                                log_error() << "SVHN: invalid data type <" << mat5::to_string(section.m_dtype)
-                                            << ">! expecting " << mat5::to_string(mat5::buffer_type::miCOMPRESSED) << "!";
+                                log_error() << "SVHN: invalid data type <" << to_string(section.m_dtype)
+                                            << ">! expecting " << to_string(mat5::buffer_type::miCOMPRESSED) << "!";
                                 return 0;
                         }
 

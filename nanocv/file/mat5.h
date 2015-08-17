@@ -37,75 +37,12 @@ namespace ncv
                 ///
                 /// \brief map a data type to string (logging issues)
                 ///
-                inline std::string to_string(const buffer_type& type)
-                {
-                        if (type == buffer_type::miINT8) return "miINT8";
-                        else if (type == buffer_type::miUINT8) return "miUINT8";
-                        else if (type == buffer_type::miINT16) return "miINT16";
-                        else if (type == buffer_type::miUINT16) return "miUINT16";
-                        else if (type == buffer_type::miINT32) return "miINT32";
-                        else if (type == buffer_type::miUINT32) return "miUINT32";
-                        else if (type == buffer_type::miSINGLE) return "miSINGLE";
-                        else if (type == buffer_type::miDOUBLE) return "miDOUBLE";
-                        else if (type == buffer_type::miINT64) return "miINT64";
-                        else if (type == buffer_type::miUINT64) return "miUINT64";
-                        else if (type == buffer_type::miMATRIX) return "miMATRIX";
-                        else if (type == buffer_type::miCOMPRESSED) return "miCOMPRESSED";
-                        else if (type == buffer_type::miUTF8) return "miUTF8";
-                        else if (type == buffer_type::miUTF16) return "miUTF16";
-                        else if (type == buffer_type::miUTF32) return "miUTF32";
-                        else return "miUNKNOWN";
-                }
+                std::string to_string(const buffer_type& type);
 
                 ///
                 /// \brief map a data type to its size in bytes
                 ///
-                inline size_t to_bytes(const buffer_type& type)
-                {
-                        if (type == buffer_type::miINT8) return 1;
-                        else if (type == buffer_type::miUINT8) return 1;
-                        else if (type == buffer_type::miINT16) return 2;
-                        else if (type == buffer_type::miUINT16) return 2;
-                        else if (type == buffer_type::miINT32) return 4;
-                        else if (type == buffer_type::miUINT32) return 4;
-                        else if (type == buffer_type::miSINGLE) return 4;
-                        else if (type == buffer_type::miDOUBLE) return 8;
-                        else if (type == buffer_type::miINT64) return 8;
-                        else if (type == buffer_type::miUINT64) return 8;
-                        else if (type == buffer_type::miMATRIX) return 0;
-                        else if (type == buffer_type::miCOMPRESSED) return 0;
-                        else if (type == buffer_type::miUTF8) return 0;
-                        else if (type == buffer_type::miUTF16) return 0;
-                        else if (type == buffer_type::miUTF32) return 0;
-                        else return 0;
-                }
-
-                ///
-                /// \brief map an integer to a data type
-                ///
-                template
-                <
-                        typename tint
-                >
-                buffer_type make_buffer_type(tint code)
-                {
-                        if (code == 1) return buffer_type::miINT8;
-                        else if (code == 2) return buffer_type::miUINT8;
-                        else if (code == 3) return buffer_type::miINT16;
-                        else if (code == 4) return buffer_type::miUINT16;
-                        else if (code == 5) return buffer_type::miINT32;
-                        else if (code == 6) return buffer_type::miUINT32;
-                        else if (code == 7) return buffer_type::miSINGLE;
-                        else if (code == 9) return buffer_type::miDOUBLE;
-                        else if (code == 12) return buffer_type::miINT64;
-                        else if (code == 13) return buffer_type::miUINT64;
-                        else if (code == 14) return buffer_type::miMATRIX;
-                        else if (code == 15) return buffer_type::miCOMPRESSED;
-                        else if (code == 16) return buffer_type::miUTF8;
-                        else if (code == 17) return buffer_type::miUTF16;
-                        else if (code == 18) return buffer_type::miUTF32;
-                        else return buffer_type::miUNKNOWN;
-                }
+                size_t to_bytes(const buffer_type& type);
 
                 ///
                 /// \brief section

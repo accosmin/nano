@@ -7,10 +7,78 @@
 namespace ncv
 {
         using std::uint32_t;
+        using mat5::buffer_type;
 
-        static uint32_t make_uint32(const char* data)
+        namespace
         {
-                return *reinterpret_cast<const uint32_t*>(data);
+                uint32_t make_uint32(const char* data)
+                {
+                        return *reinterpret_cast<const uint32_t*>(data);
+                }
+
+                template
+                <
+                        typename tint
+                >
+                buffer_type make_buffer_type(tint code)
+                {
+                        if (code == 1) return buffer_type::miINT8;
+                        else if (code == 2) return buffer_type::miUINT8;
+                        else if (code == 3) return buffer_type::miINT16;
+                        else if (code == 4) return buffer_type::miUINT16;
+                        else if (code == 5) return buffer_type::miINT32;
+                        else if (code == 6) return buffer_type::miUINT32;
+                        else if (code == 7) return buffer_type::miSINGLE;
+                        else if (code == 9) return buffer_type::miDOUBLE;
+                        else if (code == 12) return buffer_type::miINT64;
+                        else if (code == 13) return buffer_type::miUINT64;
+                        else if (code == 14) return buffer_type::miMATRIX;
+                        else if (code == 15) return buffer_type::miCOMPRESSED;
+                        else if (code == 16) return buffer_type::miUTF8;
+                        else if (code == 17) return buffer_type::miUTF16;
+                        else if (code == 18) return buffer_type::miUTF32;
+                        else return buffer_type::miUNKNOWN;
+                }
+        }
+
+        std::string mat5::to_string(const buffer_type& type)
+        {
+                if (type == buffer_type::miINT8) return "miINT8";
+                else if (type == buffer_type::miUINT8) return "miUINT8";
+                else if (type == buffer_type::miINT16) return "miINT16";
+                else if (type == buffer_type::miUINT16) return "miUINT16";
+                else if (type == buffer_type::miINT32) return "miINT32";
+                else if (type == buffer_type::miUINT32) return "miUINT32";
+                else if (type == buffer_type::miSINGLE) return "miSINGLE";
+                else if (type == buffer_type::miDOUBLE) return "miDOUBLE";
+                else if (type == buffer_type::miINT64) return "miINT64";
+                else if (type == buffer_type::miUINT64) return "miUINT64";
+                else if (type == buffer_type::miMATRIX) return "miMATRIX";
+                else if (type == buffer_type::miCOMPRESSED) return "miCOMPRESSED";
+                else if (type == buffer_type::miUTF8) return "miUTF8";
+                else if (type == buffer_type::miUTF16) return "miUTF16";
+                else if (type == buffer_type::miUTF32) return "miUTF32";
+                else return "miUNKNOWN";
+        }
+
+        size_t mat5::to_bytes(const buffer_type& type)
+        {
+                if (type == buffer_type::miINT8) return 1;
+                else if (type == buffer_type::miUINT8) return 1;
+                else if (type == buffer_type::miINT16) return 2;
+                else if (type == buffer_type::miUINT16) return 2;
+                else if (type == buffer_type::miINT32) return 4;
+                else if (type == buffer_type::miUINT32) return 4;
+                else if (type == buffer_type::miSINGLE) return 4;
+                else if (type == buffer_type::miDOUBLE) return 8;
+                else if (type == buffer_type::miINT64) return 8;
+                else if (type == buffer_type::miUINT64) return 8;
+                else if (type == buffer_type::miMATRIX) return 0;
+                else if (type == buffer_type::miCOMPRESSED) return 0;
+                else if (type == buffer_type::miUTF8) return 0;
+                else if (type == buffer_type::miUTF16) return 0;
+                else if (type == buffer_type::miUTF32) return 0;
+                else return 0;
         }
 
         mat5::section_t::section_t(size_t begin)
@@ -87,7 +155,7 @@ namespace ncv
                 if (header.m_dtype != buffer_type::miMATRIX)
                 {
                         log_error() << "invalid array type: expecting "
-                                    << mat5::to_string(buffer_type::miMATRIX) << "!";
+                                    << to_string(buffer_type::miMATRIX) << "!";
                         return false;
                 }
 
@@ -97,7 +165,7 @@ namespace ncv
                         return false;
                 }
 
-                log_info() << "array header: dtype = " << mat5::to_string(header.m_dtype)
+                log_info() << "array header: dtype = " << to_string(header.m_dtype)
                            << ", bytes = " << header.size() << "/" << data.size() << ".";
 
                 // read & check sections
@@ -111,7 +179,7 @@ namespace ncv
                                 break;
                         }
 
-                        log_info() << "array section: dtype = " << mat5::to_string(section.m_dtype)
+                        log_info() << "array section: dtype = " << to_string(section.m_dtype)
                                    << ", range = [" << section.begin() << ", " << section.end()
                                    << "], drange = [" << section.dbegin() << ", " << section.dend()
                                    << "], bytes = " << section.dsize() << "/" << section.size() << ".";
