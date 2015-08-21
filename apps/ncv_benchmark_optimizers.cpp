@@ -109,8 +109,8 @@ namespace
                                << "#fvals"
                                << "#grads";
 
-                thread_pool_t pool;
-                thread_pool_t::mutex_t mutex;
+                thread::pool_t pool;
+                std::mutex mutex;
 
                 for (optim::batch_optimizer optimizer : optimizers)
                         for (optim::ls_initializer ls_initializer : ls_initializers)
@@ -123,7 +123,7 @@ namespace
                         stats_t<scalar_t> fvals;
                         stats_t<scalar_t> grads;
 
-                        thread_loopi(trials, pool, [&] (size_t t)
+                        thread::loopi(trials, pool, [&] (size_t t)
                         {
                                 const vector_t& x0 = x0s[t];
 
@@ -131,7 +131,7 @@ namespace
                                 const opt_problem_t problem(fn_size, fn_fval, fn_grad);
                                 if (problem.grad_accuracy(x0) > math::epsilon2<scalar_t>())
                                 {
-                                        const thread_pool_t::lock_t lock(mutex);
+                                        const std::lock_guard<std::mutex> lock(mutex);
 
                                         log_error() << "invalid gradient for problem [" << problem_name << "]!";
                                 }
@@ -146,7 +146,7 @@ namespace
                                 const scalar_t crit = state.convergence_criteria();
 
                                 // update stats
-                                const thread_pool_t::lock_t lock(mutex);
+                                const std::lock_guard<std::mutex> lock(mutex);
 
                                 times(timer.microseconds());
                                 crits(crit);

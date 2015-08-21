@@ -3,6 +3,7 @@
 #include <set>
 #include <tuple>
 #include <cmath>
+#include <mutex>
 #include <algorithm>
 
 namespace ncv
@@ -112,10 +113,7 @@ namespace ncv
                 std::set<trecord> history;
 
                 // synchronization
-                typedef typename tpool::mutex_t         tmutex;
-                typedef typename tpool::lock_t          tlock;
-
-                tmutex mutex;
+                std::mutex mutex;
                 
                 splits = std::max(tsize(4), splits);
                 
@@ -131,7 +129,7 @@ namespace ncv
                                         const trecord value = tune_log10_detail::evaluate(op, minlog + i * varlog);
 
                                         // synchronize per thread
-                                        const tlock lock(mutex);
+                                        const std::lock_guard<std::mutex> lock(mutex);
                                         history.insert(value);
                                 });
                         }

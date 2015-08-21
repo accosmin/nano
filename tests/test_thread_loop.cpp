@@ -77,7 +77,7 @@ namespace test
                 {
                         const ncv::timer_t timer;
 
-                        thread_loopi(size, op);
+                        thread::loopi(size, op);
 
                         timings(timer.miliseconds());
                 }
@@ -92,14 +92,14 @@ namespace test
         >
         stats_t<scalar_t> test_ncv_pool(int size, int trials, toperator op)
         {
-                static thread_pool_t pool;
+                static thread::pool_t pool;
 
                 stats_t<scalar_t> timings;
                 for (int t = 0; t < trials; t ++)
                 {
                         const ncv::timer_t timer;
 
-                        thread_loopi(size, pool, op);
+                        thread::loopi(size, pool, op);
 
                         timings(timer.miliseconds());
                 }

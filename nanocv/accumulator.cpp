@@ -31,7 +31,7 @@ namespace ncv
                 }
                 
                 // attributes
-                thread_pool_t                   m_pool;         ///< thread pool
+                thread::pool_t                  m_pool;         ///< thread pool
                 rcriterion_t                    m_cache;        ///< global (cumulated) criterion
                 std::vector<rcriterion_t>       m_caches;       ///< cached criterion / thread
         };        
@@ -100,7 +100,7 @@ namespace ncv
 
                 else
                 {
-                        thread_loopit(samples.size(), m_impl->m_pool, [&] (size_t i, size_t th)
+                        thread::loopit(samples.size(), m_impl->m_pool, [&] (size_t i, size_t th)
                         {
                                 m_impl->m_caches[th]->update(task, samples[i], loss);
                         });
@@ -121,7 +121,7 @@ namespace ncv
 
                 else
                 {
-                        thread_loopit(inputs.size(), m_impl->m_pool, [&] (size_t i, size_t th)
+                        thread::loopit(inputs.size(), m_impl->m_pool, [&] (size_t i, size_t th)
                         {
                                 m_impl->m_caches[th]->update(inputs[i], targets[i], loss);
                         });
@@ -142,7 +142,7 @@ namespace ncv
 
                 else
                 {
-                        thread_loopit(inputs.size(), m_impl->m_pool, [&] (size_t i, size_t th)
+                        thread::loopit(inputs.size(), m_impl->m_pool, [&] (size_t i, size_t th)
                         {
                                 m_impl->m_caches[th]->update(inputs[i], targets[i], loss);
                         });

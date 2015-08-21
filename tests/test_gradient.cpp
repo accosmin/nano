@@ -17,7 +17,7 @@ namespace test
 {
         using namespace ncv;
 
-        thread_pool_t::mutex_t mutex;
+        std::mutex mutex;
 
         size_t n_checks = 0;
         size_t n_failures1 = 0;
@@ -90,7 +90,7 @@ namespace test
                         const scalar_t delta = problem.grad_accuracy(params);
 
                         // update statistics
-                        const thread_pool_t::lock_t lock(test::mutex);
+                        const std::lock_guard<std::mutex> lock(test::mutex);
 
                         n_checks ++;
                         if (!math::close(delta, scalar_t(0), math::epsilon1<scalar_t>()))
@@ -191,7 +191,7 @@ namespace test
                         const scalar_t delta = (analytic_inputs_grad - aproxdif_inputs_grad).lpNorm<Eigen::Infinity>();
 
                         // update statistics
-                        const thread_pool_t::lock_t lock(test::mutex);
+                        const std::lock_guard<std::mutex> lock(test::mutex);
 
                         n_checks ++;
                         if (!math::close(delta, scalar_t(0), math::epsilon1<scalar_t>()))
@@ -228,7 +228,7 @@ BOOST_AUTO_TEST_CASE(test_gradient)
         auto configs = test::make_grad_configs(cmd_irows, cmd_icols, cmd_outputs, cmd_color);
 
         // test each configuration
-        thread_pool_t pool;
+        thread::pool_t pool;
         for (auto config : configs)
         {
                 pool.enqueue([=] ()
@@ -237,7 +237,7 @@ BOOST_AUTO_TEST_CASE(test_gradient)
                         const string_t loss_id = config.second;                        
 
                         {
-                                const thread_pool_t::lock_t lock(test::mutex);
+                                const std::lock_guard<std::mutex> lock(test::mutex);
                                 log_info() << desc;
                         }
 
@@ -245,7 +245,7 @@ BOOST_AUTO_TEST_CASE(test_gradient)
                         const rmodel_t model = ncv::get_models().get("forward-network", desc);
                         BOOST_CHECK_EQUAL(model.operator bool(), true);
                         {
-                                const thread_pool_t::lock_t lock(test::mutex);
+                                const std::lock_guard<std::mutex> lock(test::mutex);
 
                                 model->resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color, false);
                                 BOOST_CHECK_EQUAL(model->irows(), cmd_irows);

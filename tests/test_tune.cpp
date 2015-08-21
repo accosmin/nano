@@ -5,6 +5,7 @@
 #include "nanocv/scalar.h"
 #include "nanocv/math/abs.hpp"
 #include "nanocv/thread/pool.h"
+#include "nanocv/thread/thread.h"
 #include "nanocv/math/random.hpp"
 #include "nanocv/math/epsilon.hpp"
 #include "nanocv/trainers/tune_log10.hpp"
@@ -25,7 +26,7 @@ namespace test
                 std::tie(stfx, stx) = ncv::tune_log10(op, minlog, maxlog, epslog, splits);
 
                 // multi-threaded version
-                thread_pool_t pool(splits);
+                thread::pool_t pool(splits);
                 scalar_t mtfx, mtx;
                 std::tie(mtfx, mtx) = ncv::tune_log10_mt(op, pool, minlog, maxlog, epslog, splits);
 

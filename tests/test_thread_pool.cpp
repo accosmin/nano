@@ -4,15 +4,16 @@
 #include <boost/test/unit_test.hpp>
 #include "nanocv/logger.h"
 #include "nanocv/thread/pool.h"
+#include "nanocv/thread/thread.h"
 #include "nanocv/math/random.hpp"
 
 BOOST_AUTO_TEST_CASE(test_thread_pool)
 {
         using namespace ncv;
 
-        thread_pool_t pool;
+        thread::pool_t pool;
 
-        thread_pool_t::mutex_t mutex;
+        std::mutex mutex;
 
         // check that there is no job to do
         BOOST_CHECK_EQUAL(pool.n_workers(), ncv::n_threads());
@@ -41,7 +42,7 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
                                 std::this_thread::sleep_for(std::chrono::milliseconds(sleep1));
 
                                 {
-                                        const thread_pool_t::lock_t lock(mutex);
+                                        const std::lock_guard<std::mutex> lock(mutex);
 
                                         log_info() << "#job [" << (j + 1) << "/" << n_tasks << "@"
                                                    << (t + 1) << "/" << n_tests << "] started ...";
@@ -51,7 +52,7 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
                                 std::this_thread::sleep_for(std::chrono::milliseconds(sleep2));
 
                                 {
-                                        const thread_pool_t::lock_t lock(mutex);
+                                        const std::lock_guard<std::mutex> lock(mutex);
 
                                         log_info() << "#job [" << (j + 1) << "/" << n_tasks << "@"
                                                    << (t + 1) << "/" << n_tests << "] done.";

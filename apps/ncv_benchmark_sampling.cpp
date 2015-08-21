@@ -3,6 +3,7 @@
 #include "nanocv/tabulator.h"
 #include "nanocv/measure.hpp"
 #include "nanocv/thread/loopi.hpp"
+#include "nanocv/thread/thread.h"
 #include "nanocv/tasks/task_synthetic_shapes.h"
 #include <boost/program_options.hpp>
 
@@ -80,11 +81,11 @@ int main(int argc, char *argv[])
                 // process the samples
                 for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; nthreads ++)
                 {
-                        ncv::thread_pool_t pool(nthreads);
+                        ncv::thread::pool_t pool(nthreads);
 
                         const auto micros = ncv::measure_robustly_usec([&]
                         {
-                                ncv::thread_loopi(samples.size(), pool, [&] (size_t i)
+                                ncv::thread::loopi(samples.size(), pool, [&] (size_t i)
                                 {
                                         const sample_t& sample = samples[i];
                                         const image_t& image = task.image(sample.m_index);
