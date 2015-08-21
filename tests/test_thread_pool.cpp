@@ -31,9 +31,11 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
                 log_info() << "@pool [" << (t + 1) << "/" << n_tests
                            << "]: creating " << n_tasks << " jobs ...";
 
+                std::vector<size_t> tasks_done;
+
                 for (size_t j = 0; j < n_tasks; j ++)
                 {
-                        pool.enqueue([=, &mutex]()
+                        pool.enqueue([=, &mutex, &tasks_done]()
                         {
                                 const size_t sleep1 = random_t<size_t>(5, 20)();
                                 std::this_thread::sleep_for(std::chrono::milliseconds(sleep1));
@@ -53,6 +55,8 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
 
                                         log_info() << "#job [" << (j + 1) << "/" << n_tasks << "@"
                                                    << (t + 1) << "/" << n_tests << "] done.";
+
+                                        tasks_done.push_back(j + 1);
                                 }
                         });
                 }
@@ -69,5 +73,11 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
                 // check that all jobs are done
                 BOOST_CHECK_EQUAL(pool.n_workers(), ncv::n_threads());
                 BOOST_CHECK_EQUAL(pool.n_tasks(), 0);
+
+                BOOST_CHECK_EQUAL(tasks_done.size(), n_tasks);
+                for (size_t j = 0; j < n_tasks; j ++)
+                {
+                        BOOST_CHECK(std::find(tasks_done.begin(), tasks_done.end(), j + 1) != tasks_done.end());
+                }
         }
 }
