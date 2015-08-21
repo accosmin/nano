@@ -2,6 +2,7 @@
 .directory
 *.kdev4
 *.txt.user
+build*
 build-release
 build-debug*
 install
