@@ -13,7 +13,9 @@
 #include "nanocv/math/corr2d_dyn.hpp"
 #include "nanocv/math/corr2d_egb.hpp"
 #include "nanocv/math/corr2d_egr.hpp"
+
 #include <iostream>
+#include <boost/program_options.hpp>
 
 using namespace ncv;
 
@@ -175,7 +177,7 @@ namespace
         }
 }
 
-int main(int, char* [])
+int main(int argc, char* argv[])
 {
         const int min_isize = 4;
         const int max_isize = 48;
@@ -186,7 +188,33 @@ int main(int, char* [])
         const int idims = 16;
         const int odims = 32;
 
+        // parse the command line
+        boost::program_options::options_description po_desc("", 160);
+        po_desc.add_options()("help,h",         "benchmark 3D convolutions");
+        po_desc.add_options()("output",         "output");
+        po_desc.add_options()("gparam",         "gradient wrt parameters (kernels)");
+        po_desc.add_options()("ginput",         "gradient wrt inputs");
+
+        boost::program_options::variables_map po_vm;
+        boost::program_options::store(
+                boost::program_options::command_line_parser(argc, argv).options(po_desc).run(),
+                po_vm);
+        boost::program_options::notify(po_vm);
+
+        // check arguments and options
+        if (	po_vm.empty() ||
+                po_vm.count("help"))
+        {
+                std::cout << po_desc;
+                return EXIT_FAILURE;
+        }
+
+        const bool has_output = po_vm.count("output") > 0;
+        const bool has_gparam = po_vm.count("gparam") > 0;
+        const bool has_ginput = po_vm.count("ginput") > 0;
+
         // output
+        if (has_output)
         {
                 tabulator_t table("size\\output [us]");
                 table.header()
@@ -211,6 +239,7 @@ int main(int, char* [])
         }
 
         // gradient wrt parameters
+        if (has_gparam)
         {
                 tabulator_t table("size\\gparam [us]");
                 table.header()
@@ -235,6 +264,7 @@ int main(int, char* [])
         }
 
         // gradient wrt inputs
+        if (has_ginput)
         {
                 tabulator_t table("size\\ginput [us]");
                 table.header()
