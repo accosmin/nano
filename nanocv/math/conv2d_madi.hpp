@@ -33,14 +33,15 @@ namespace ncv
 
                                 for (auto r = 0; r < orows; r ++)
                                 {
+                                        auto orow = odata.row(r);
+
                                         for (auto kr = 0; kr < krows; kr ++)
                                         {
                                                 const auto irow = idata.row(r + kr);
 
                                                 for (auto kc = 0; kc < kcols; kc ++)
                                                 {
-                                                        odata.row(r) +=
-                                                        irow.template segment<ocols>(kc) * kdata(kr, kc);
+                                                        orow += irow.template segment<ocols>(kc) * kdata(kr, kc);
                                                 }
                                         }
                                 }
