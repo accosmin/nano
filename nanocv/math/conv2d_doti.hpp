@@ -1,6 +1,5 @@
 #pragma once
 
-#include "dot.hpp"
 #include <cassert>
 
 namespace ncv
@@ -24,23 +23,24 @@ namespace ncv
                         >
                         void operator()(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata) const
                         {
+                                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+                                assert(kdata.cols() == kcols);
+
                                 const auto orows = odata.rows();
                                 const auto ocols = odata.cols();
                                 const auto krows = kdata.rows();
-                                const auto icols = idata.cols();
 
                                 for (auto r = 0; r < orows; r ++)
                                 {
-                                        auto* podata = odata.data() + r * ocols;
-
                                         for (auto kr = 0; kr < krows; kr ++)
                                         {
-                                                const auto* pidata = idata.data() + (r + kr) * icols;
-                                                const auto* pkdata = kdata.data() + kr * kcols;
+                                                const auto irow = idata.row(r + kr);
+                                                const auto krow = kdata.row(kr).template segment<kcols>(0);
 
                                                 for (auto c = 0; c < ocols; c ++)
                                                 {
-                                                        podata[c] += math::dot<kcols>(pidata + c, pkdata);
+                                                        odata(r, c) += irow.template segment<kcols>(c).dot(krow);
                                                 }
                                         }
                                 }

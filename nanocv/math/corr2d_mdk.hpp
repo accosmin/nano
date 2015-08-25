@@ -1,6 +1,5 @@
 #pragma once
 
-#include "mad.hpp"
 #include <cassert>
 
 namespace ncv
@@ -27,20 +26,17 @@ namespace ncv
                                 const auto ocols = odata.cols();
                                 const auto krows = kdata.rows();
                                 const auto kcols = kdata.cols();
-                                const auto icols = idata.cols();
 
                                 for (auto r = 0; r < orows; r ++)
                                 {
-                                        const auto* podata = odata.data() + r * ocols;
-
                                         for (auto kr = 0; kr < krows; kr ++)
                                         {
-                                                auto* pidata = idata.data() + (r + kr) * icols;
-                                                const auto* pkdata = kdata.data() + kr * kcols;
+                                                const auto krow = kdata.row(kr);
 
                                                 for (auto c = 0; c < ocols; c ++)
                                                 {
-                                                        math::mad(pkdata, podata[c], kcols, pidata + c);
+                                                        idata.row(r + kr).segment(c, kcols) +=
+                                                        krow * odata(r, c);
                                                 }
                                         }
                                 }

@@ -27,25 +27,19 @@ namespace ncv
                                 const auto ocols = odata.cols();
                                 const auto krows = kdata.rows();
                                 const auto kcols = kdata.cols();
-                                const auto icols = idata.cols();
 
                                 for (auto r = 0; r < orows; r ++)
                                 {
-                                        auto* podata = odata.data() + r * ocols;
-
                                         for (auto kr = 0; kr < krows; kr ++)
                                         {
-                                                const auto* pidata = idata.data() + (r + kr) * icols;
-                                                const auto* pkdata = kdata.data() + kr * kcols;
-
                                                 for (auto c = 0; c < ocols; c ++)
                                                 {
                                                         tscalar sum = 0;
                                                         for (auto kc = 0; kc < kcols; kc ++)
                                                         {
-                                                                sum += pidata[c + kc] * pkdata[kc];
+                                                                sum += idata(r + kr, c + kc) * kdata(kr, kc);
                                                         }
-                                                        podata[c] += sum;
+                                                        odata(r, c) += sum;
                                                 }
                                         }
                                 }

@@ -26,24 +26,22 @@ namespace ncv
                         {
                                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+                                assert(kdata.cols() == kcols);
 
                                 const auto orows = odata.rows();
                                 const auto ocols = odata.cols();
                                 const auto krows = kdata.rows();
-                                const auto icols = idata.cols();
 
                                 for (auto r = 0; r < orows; r ++)
                                 {
-                                        const auto* podata = odata.data() + r * ocols;
-
                                         for (auto kr = 0; kr < krows; kr ++)
                                         {
-                                                auto* pidata = idata.data() + (r + kr) * icols;
-                                                const auto* pkdata = kdata.data() + kr * kcols;
+                                                const auto krow = kdata.row(kr);
 
                                                 for (auto c = 0; c < ocols; c ++)
                                                 {
-                                                        math::mad<kcols>(pkdata, podata[c], pidata + c);
+                                                        idata.row(r + kr).template segment<kcols>(c) +=
+                                                        krow * odata(r, c);
                                                 }
                                         }
                                 }

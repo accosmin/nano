@@ -15,8 +15,7 @@ namespace ncv
                         <
                                 typename tmatrixi,
                                 typename tmatrixk = tmatrixi,
-                                typename tmatrixo = tmatrixi,
-                                typename tscalar = typename tmatrixi::Scalar
+                                typename tmatrixo = tmatrixi
                         >
                         void operator()(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata) const
                         {
