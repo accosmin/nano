@@ -2,11 +2,9 @@
 #define BOOST_TEST_MODULE "test_optimizers"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/timer.h"
 #include "nanocv/logger.h"
 #include "nanocv/minimize.h"
 #include "nanocv/math/abs.hpp"
-#include "nanocv/math/stats.hpp"
 #include "nanocv/math/random.hpp"
 #include "nanocv/math/numeric.hpp"
 #include "nanocv/math/epsilon.hpp"
@@ -110,10 +108,6 @@ namespace test
                         {
                                 const vector_t& x0 = x0s[t];
 
-                                // check gradient
-                                const opt_problem_t problem(fn_size, fn_fval, fn_grad);
-                                BOOST_CHECK_LE(problem.grad_accuracy(x0), math::epsilon2<scalar_t>());
-
                                 // optimize
                                 const opt_state_t state = ncv::minimize(
                                         fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
@@ -127,8 +121,6 @@ namespace test
 
         static void check_problems(const std::vector<test::function_t>& funcs)
         {
-                BOOST_CHECK_EQUAL(funcs.empty(), false);
-
                 for (const test::function_t& func : funcs)
                 {
                         test::check_problem(func.m_name, func.m_opsize, func.m_opfval, func.m_opgrad, func.m_solutions);
