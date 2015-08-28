@@ -37,5 +37,9 @@ BOOST_AUTO_TEST_CASE(test_color_rgba)
                 BOOST_CHECK_EQUAL(rgba, color::set_green(rgba, g));
                 BOOST_CHECK_EQUAL(rgba, color::set_blue(rgba, b));
                 BOOST_CHECK_EQUAL(rgba, color::set_alpha(rgba, a));
+
+                BOOST_CHECK_EQUAL(r, color::make_luma(color::make_rgba(r, r, r)));
+                BOOST_CHECK_EQUAL(g, color::make_luma(color::make_rgba(g, g, g)));
+                BOOST_CHECK_EQUAL(b, color::make_luma(color::make_rgba(b, b, b)));
         }
 }
