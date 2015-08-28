@@ -53,12 +53,32 @@ BOOST_AUTO_TEST_CASE(test_image_io_matrix)
                 const auto rows = rng();
                 const auto cols = rng();
 
-                if (test % 2 == 0)
                 {
-                        const auto rgba = color::make_random_rgba();
-
+                        // load RGBA as RGBA
                         rgba_matrix_t data(rows, cols);
-                        data.setConstant(rgba);
+                        data.setConstant(color::make_random_rgba());
+
+                        image_t image;
+                        BOOST_CHECK_EQUAL(image.load_rgba(data), true);
+                        BOOST_CHECK_EQUAL(image.is_luma(), false);
+                        BOOST_CHECK_EQUAL(image.is_rgba(), true);
+                        BOOST_CHECK_EQUAL(image.rows(), rows);
+                        BOOST_CHECK_EQUAL(image.cols(), cols);
+                        BOOST_CHECK(image.mode() == color_mode::rgba);
+
+                        const auto& rgba = image.rgba();
+                        BOOST_REQUIRE_EQUAL(rgba.size(), data.size());
+
+                        for (int i = 0; i < rgba.size(); i ++)
+                        {
+                                BOOST_CHECK_EQUAL(rgba(i), data(i));
+                        }
+                }
+
+                {
+                        // load RGBA as LUMA
+                        rgba_matrix_t data(rows, cols);
+                        data.setConstant(color::make_random_rgba());
 
                         image_t image;
                         BOOST_CHECK_EQUAL(image.load_luma(data), true);
@@ -66,17 +86,40 @@ BOOST_AUTO_TEST_CASE(test_image_io_matrix)
                         BOOST_CHECK_EQUAL(image.is_rgba(), false);
                         BOOST_CHECK_EQUAL(image.rows(), rows);
                         BOOST_CHECK_EQUAL(image.cols(), cols);
-                        BOOST_REQUIRE(data.size() == image.luma().size());
+                        BOOST_CHECK(image.mode() == color_mode::luma);
 
-//                        const auto& luma = image.luma();
-//                        for (int i = 0; i < luma.size(); i ++)
-//                        {
-//                                BOOST_CHECK_EQUAL(luma(i), color::make_luma(data(i)));
-//                        }
+                        const auto& luma = image.luma();
+                        BOOST_REQUIRE_EQUAL(luma.size(), data.size());
+
+                        for (int i = 0; i < luma.size(); i ++)
+                        {
+                                BOOST_CHECK_EQUAL(luma(i), color::make_luma(data(i)));
+                        }
+                }
+
+                {
+                        // load LUMA as LUMA
+                        luma_matrix_t data(rows, cols);
+                        data.setConstant(color::make_luma(color::make_random_rgba()));
+
+                        image_t image;
+                        BOOST_CHECK_EQUAL(image.load_luma(data), true);
+                        BOOST_CHECK_EQUAL(image.is_luma(), true);
+                        BOOST_CHECK_EQUAL(image.is_rgba(), false);
+                        BOOST_CHECK_EQUAL(image.rows(), rows);
+                        BOOST_CHECK_EQUAL(image.cols(), cols);
+                        BOOST_CHECK(image.mode() == color_mode::luma);
+
+                        const auto& luma = image.luma();
+                        BOOST_REQUIRE_EQUAL(luma.size(), data.size());
+
+                        for (int i = 0; i < luma.size(); i ++)
+                        {
+                                BOOST_CHECK_EQUAL(luma(i), data(i));
+                        }
                 }
         }
 }
-
 
 BOOST_AUTO_TEST_CASE(test_image_io)
 {

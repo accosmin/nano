@@ -115,7 +115,7 @@ namespace ncv
         bool image_t::load_luma(const rgba_matrix_t& data)
         {
                 m_luma.resize(data.rows(), data.cols());
-                tensor::transform(data, m_luma, [] (rgba_t c) { return color::get_luma(c); });
+                tensor::transform(data, m_luma, [] (rgba_t c) { return color::make_luma(c); });
 
                 return setup_luma();
         }
