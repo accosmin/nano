@@ -7,6 +7,7 @@
 #include "fill_circle.hpp"
 #include "fill_ellipse.hpp"
 #include "fill_triangle.hpp"
+#include "nanocv/math/cast.hpp"
 #include "nanocv/tensor/random.hpp"
 
 namespace ncv
@@ -138,7 +139,7 @@ namespace ncv
                         m_luma.resize(data.rows(), data.cols());
                         tensor::transform(gmap, m_luma, [=] (scalar_t l)
                         {
-                                const rgba_t luma = static_cast<rgba_t>(l * scale) & 0xFF;
+                                const rgba_t luma = math::cast<rgba_t>(l * scale) & 0xFF;
                                 return static_cast<luma_t>(luma);
                         });
 
@@ -154,9 +155,9 @@ namespace ncv
                         m_rgba.resize(data.rows(), data.cols());
                         tensor::transform(rmap, gmap, bmap, m_rgba, [=] (scalar_t r, scalar_t g, scalar_t b)
                         {
-                                const rgba_t rr = static_cast<rgba_t>(r * scale) & 0xFF;
-                                const rgba_t gg = static_cast<rgba_t>(g * scale) & 0xFF;
-                                const rgba_t bb = static_cast<rgba_t>(b * scale) & 0xFF;
+                                const rgba_t rr = math::cast<rgba_t>(r * scale) & 0xFF;
+                                const rgba_t gg = math::cast<rgba_t>(g * scale) & 0xFF;
+                                const rgba_t bb = math::cast<rgba_t>(b * scale) & 0xFF;
                                 return color::make_rgba(rr, gg, bb);
                         });
 
@@ -203,9 +204,9 @@ namespace ncv
                 case color_mode::luma:
                         {
                                 tensor_t data(1, rows, cols);
-                                auto gmap = data.matrix(0);
+                                auto lmap = data.matrix(0);
 
-                                tensor::transform(m_luma.block(top, left, rows, cols), gmap, [=] (luma_t luma)
+                                tensor::transform(m_luma.block(top, left, rows, cols), lmap, [=] (luma_t luma)
                                 {
                                         return scale * luma;
                                 });

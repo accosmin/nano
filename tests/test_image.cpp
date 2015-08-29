@@ -4,6 +4,8 @@
 #include <boost/test/unit_test.hpp>
 #include "nanocv/vision/image.h"
 #include "nanocv/math/random.hpp"
+#include "nanocv/math/epsilon.hpp"
+#include <cstdio>
 
 BOOST_AUTO_TEST_CASE(test_image_construct)
 {
@@ -121,7 +123,7 @@ BOOST_AUTO_TEST_CASE(test_image_io_matrix)
         }
 }
 
-BOOST_AUTO_TEST_CASE(test_image_io)
+BOOST_AUTO_TEST_CASE(test_image_io_file)
 {
         using namespace ncv;
 
@@ -131,30 +133,120 @@ BOOST_AUTO_TEST_CASE(test_image_io)
 
                 const auto rows = rng();
                 const auto cols = rng();
-                const auto mode = (test % 2 == 0) ? color_mode::luma : color_mode::rgba;
 
-                image_t image(rows, cols, mode);
+                rgba_matrix_t data(rows, cols);
+                data.setConstant(color::make_random_rgba());
 
-                BOOST_CHECK_EQUAL(image.is_luma(), mode == color_mode::luma);
-                BOOST_CHECK_EQUAL(image.is_rgba(), mode == color_mode::rgba);
-                BOOST_CHECK_EQUAL(image.rows(), rows);
-                BOOST_CHECK_EQUAL(image.cols(), cols);
+                image_t image;
+                BOOST_CHECK_EQUAL(image.load_rgba(data), true);
+
+                const auto path = "test-image.png";
+
+                BOOST_CHECK_EQUAL(image.save(path), true);
+
+                // load RGBA as LUMA
+                {
+                        BOOST_CHECK_EQUAL(image.load_luma(path), true);
+                        BOOST_CHECK_EQUAL(image.is_luma(), true);
+                        BOOST_CHECK_EQUAL(image.is_rgba(), false);
+                        BOOST_CHECK_EQUAL(image.rows(), rows);
+                        BOOST_CHECK_EQUAL(image.cols(), cols);
+                        BOOST_CHECK(image.mode() == color_mode::luma);
+
+                        const auto& luma = image.luma();
+                        BOOST_REQUIRE_EQUAL(luma.size(), data.size());
+
+                        for (int i = 0; i < luma.size(); i ++)
+                        {
+                                BOOST_CHECK_EQUAL(luma(i), color::make_luma(data(i)));
+                        }
+                }
+
+                // load RGBA as RGBA
+                {
+                        BOOST_CHECK_EQUAL(image.load_rgba(path), true);
+                        BOOST_CHECK_EQUAL(image.is_luma(), false);
+                        BOOST_CHECK_EQUAL(image.is_rgba(), true);
+                        BOOST_CHECK_EQUAL(image.rows(), rows);
+                        BOOST_CHECK_EQUAL(image.cols(), cols);
+                        BOOST_CHECK(image.mode() == color_mode::rgba);
+
+                        const auto& rgba = image.rgba();
+                        BOOST_REQUIRE_EQUAL(rgba.size(), data.size());
+
+                        for (int i = 0; i < rgba.size(); i ++)
+                        {
+                                BOOST_CHECK_EQUAL(rgba(i), data(i));
+                        }
+                }
+
+                // cleanup
+                std::remove(path);
         }
-
-//        * create images (RGBA + grayscale) - check basic accessors
-//        * save images to disk (png) - check save
-//        * load images from disk - check loading and that same pixels are loaded
-//        * transform to graycale/rgba - check results
-//        * load image from disk as opposite type
-//        * check saving to scaled tensors
 }
 
-BOOST_AUTO_TEST_CASE(test_image_tensor)
+BOOST_AUTO_TEST_CASE(test_image_io_tensor)
 {
-//        * create images (RGBA + grayscale) - check basic accessors
-//        * save images to disk (png) - check save
-//        * load images from disk - check loading and that same pixels are loaded
-//        * transform to graycale/rgba - check results
-//        * load image from disk as opposite type
-//        * check saving to scaled tensors
+        using namespace ncv;
+
+        for (size_t test = 0; test < 16; test ++)
+        {
+                random_t<coord_t> rng(16, 64);
+
+                const auto rows = rng();
+                const auto cols = rng();
+
+                tensor_t data;
+
+                {
+                        image_t image;
+                        BOOST_CHECK_EQUAL(image.load(data), false);
+                }
+
+                const auto eps = math::epsilon0<scalar_t>();
+
+                // load from RGBA tensor
+                {
+                        data.resize(3, rows, cols);
+                        data.matrix(0).setConstant(((test * rng()) % 256) / 255.0);
+                        data.matrix(1).setConstant(((test * rng()) % 256) / 255.0);
+                        data.matrix(2).setConstant(((test * rng()) % 256) / 255.0);
+
+                        image_t image;
+                        BOOST_CHECK_EQUAL(image.load(data), true);
+                        BOOST_CHECK_EQUAL(image.is_luma(), false);
+                        BOOST_CHECK_EQUAL(image.is_rgba(), true);
+                        BOOST_CHECK_EQUAL(image.rows(), rows);
+                        BOOST_CHECK_EQUAL(image.cols(), cols);
+                        BOOST_CHECK(image.mode() == color_mode::rgba);
+
+                        const auto idata = image.to_tensor();
+
+                        BOOST_REQUIRE_EQUAL(data.dims(), idata.dims());
+                        BOOST_REQUIRE_EQUAL(data.rows(), idata.rows());
+                        BOOST_REQUIRE_EQUAL(data.cols(), idata.cols());
+                        BOOST_CHECK_LE((data.vector() - idata.vector()).lpNorm<Eigen::Infinity>(), eps);
+                }
+
+                // load from LUMA tensor
+                {
+                        data.resize(1, rows, cols);
+                        data.matrix(0).setConstant(((test * rng()) % 256) / 255.0);
+
+                        image_t image;
+                        BOOST_CHECK_EQUAL(image.load(data), true);
+                        BOOST_CHECK_EQUAL(image.is_luma(), true);
+                        BOOST_CHECK_EQUAL(image.is_rgba(), false);
+                        BOOST_CHECK_EQUAL(image.rows(), rows);
+                        BOOST_CHECK_EQUAL(image.cols(), cols);
+                        BOOST_CHECK(image.mode() == color_mode::luma);
+
+                        const auto idata = image.to_tensor();
+
+                        BOOST_REQUIRE_EQUAL(data.dims(), idata.dims());
+                        BOOST_REQUIRE_EQUAL(data.rows(), idata.rows());
+                        BOOST_REQUIRE_EQUAL(data.cols(), idata.cols());
+                        BOOST_CHECK_LE((data.vector() - idata.vector()).lpNorm<Eigen::Infinity>(), eps);
+                }
+        }
 }

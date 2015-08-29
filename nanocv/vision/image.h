@@ -51,7 +51,7 @@ namespace ncv
 
                 ///
                 /// \brief load image from scaled [0, 1] tensor
-                ///     having 1 (lumascale) or 3 (rgba) planes
+                ///     having 1 (luma) or 3 (rgba) planes
                 ///
                 bool load(const tensor_t& data);
 
