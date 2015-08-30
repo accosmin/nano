@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
 
         os_source << "#include " << boost::filesystem::path(path_header).filename() << "\n";
         os_source << "\n";
-        os_source << retname << " ncv::" << funcname << "()\n";
+        os_source << "ncv::" << retname << " ncv::" << funcname << "()\n";
         os_source << "{\n";
         {
                 const auto op = [&] (const auto& buff)
