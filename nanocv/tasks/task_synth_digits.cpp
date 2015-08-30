@@ -2,8 +2,7 @@
 #include "nanocv/class.h"
 #include "syn_digits_courier.h"
 #include "nanocv/math/random.hpp"
-
-#include "nanocv/logger.h"
+#include "nanocv/vision/filter_resize.hpp"
 
 namespace ncv
 {
@@ -65,11 +64,13 @@ namespace ncv
                                 const size_t o = rng_output();
 
                                 // generate random image background
-                                image_t image(irows(), icols(), color());
-//                                image.fill(back_color);
+                                const auto patch1 = get_object_patch(digit_patches, o - 1, osize());
 
-                                const auto digit_patch = get_object_patch(digit_patches, o - 1, osize());
-                                image.copy(0, 0, digit_patch);
+                                resize_filter_t resizer(irows(), icols());
+                                const auto patch2 = resizer(color::to_tensor(patch1));
+
+                                image_t image;
+                                image.load(patch2);
 
 //                                const rgba_t back_color = color::make_random_rgba();
 //                                const rgba_t shape_color = color::make_opposite_random_rgba(back_color);

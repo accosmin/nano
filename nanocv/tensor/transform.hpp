@@ -15,7 +15,7 @@ namespace ncv
                         typename tout_tensor,
                         typename toperator
                 >
-                void transform(const tin_tensor& in, tout_tensor& out, toperator op)
+                void transform(const tin_tensor& in, tout_tensor&& out, toperator op)
                 {
                         std::transform(in.data(), in.data() + in.size(), out.data(), op);
                 }
@@ -30,7 +30,7 @@ namespace ncv
                         typename tout_tensor,
                         typename toperator
                 >
-                void transform(const tin1_tensor& in1, const tin2_tensor& in2, tout_tensor& out, toperator op)
+                void transform(const tin1_tensor& in1, const tin2_tensor& in2, tout_tensor&& out, toperator op)
                 {
                         std::transform(in1.data(), in1.data() + in1.size(), in2.data(), out.data(), op);
                 }
@@ -47,7 +47,7 @@ namespace ncv
                         typename toperator
                 >
                 void transform(const tin1_tensor& in1, const tin2_tensor& in2, const tin3_tensor& in3,
-                        tout_tensor& out, toperator op)
+                        tout_tensor&& out, toperator op)
                 {
                         auto in1_it = in1.data(), in1_end = in1.data() + in1.size();
                         auto in2_it = in2.data();

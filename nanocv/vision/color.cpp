@@ -2,8 +2,7 @@
 #include "nanocv/math/abs.hpp"
 #include "nanocv/math/random.hpp"
 #include "nanocv/math/numeric.hpp"
-
-#include <iostream>
+#include "nanocv/tensor/transform.hpp"
 
 namespace ncv
 {
@@ -223,5 +222,73 @@ namespace ncv
                                  static_cast<rgba_t>(math::clamp(cg + rng(), 0, 255)),
                                  static_cast<rgba_t>(math::clamp(cb + rng(), 0, 255)),
                                  255);
+        }
+
+        tensor_t color::to_tensor(const luma_matrix_t& luma)
+        {
+                const scalar_t scale = 1.0 / 255.0;
+
+                tensor_t data(1, luma.rows(), luma.cols());
+
+                tensor::transform(luma, data, [=] (luma_t l)
+                {
+                        return scale * l;
+                });
+
+                return data;
+        }
+
+        tensor_t color::to_tensor(const rgba_matrix_t& rgba)
+        {
+                const scalar_t scale = 1.0 / 255.0;
+
+                tensor_t data(3, rgba.rows(), rgba.cols());
+
+                tensor::transform(rgba, data.matrix(0), [=] (rgba_t c)
+                {
+                        return scale * color::get_red(c);
+                });
+                tensor::transform(rgba, data.matrix(1), [=] (rgba_t c)
+                {
+                        return scale * color::get_green(c);
+                });
+                tensor::transform(rgba, data.matrix(2), [=] (rgba_t c)
+                {
+                        return scale * color::get_blue(c);
+                });
+
+                return data;
+        }
+
+        luma_matrix_t color::from_luma_tensor(const tensor_t& data)
+        {
+                assert(data.dims() == 1);
+
+                luma_matrix_t luma(data.rows(), data.cols());
+
+                tensor::transform(data.matrix(0), luma, [=] (scalar_t l)
+                {
+                        return math::cast<luma_t>(math::clamp(255.0 * l, scalar_t(0), scalar_t(255)));
+                });
+
+                return luma;
+        }
+
+        rgba_matrix_t color::from_rgba_tensor(const tensor_t& data)
+        {
+                assert(data.dims() == 3);
+
+                rgba_matrix_t rgba(data.rows(), data.cols());
+
+                tensor::transform(data.matrix(0), data.matrix(1), data.matrix(2), rgba,
+                                  [=] (scalar_t r, scalar_t g, scalar_t b)
+                {
+                        return  color::make_rgba(
+                                math::cast<rgba_t>(math::clamp(255.0 * r, scalar_t(0), scalar_t(255))),
+                                math::cast<rgba_t>(math::clamp(255.0 * g, scalar_t(0), scalar_t(255))),
+                                math::cast<rgba_t>(math::clamp(255.0 * b, scalar_t(0), scalar_t(255))));
+                });
+
+                return rgba;
         }
 }

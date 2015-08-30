@@ -1,10 +1,9 @@
 #pragma once
 
-#include "nanocv/scalar.h"
+#include "nanocv/tensor.h"
 #include "nanocv/text.hpp"
 #include "nanocv/math/cast.hpp"
 #include "nanocv/math/clamp.hpp"
-#include "nanocv/tensor/tensor.hpp"
 #include <cstdint>
 
 namespace ncv
@@ -126,6 +125,26 @@ namespace ncv
                 /// \brief create random RGBA color as opposite as possible from the source color
                 ///
                 NANOCV_PUBLIC rgba_t make_opposite_random_rgba(const rgba_t source);
+
+                ///
+                /// \brief transform patch to scaled [0, 1] tensor with 1 plane (luma)
+                ///
+                NANOCV_PUBLIC tensor_t to_tensor(const luma_matrix_t& patch);
+
+                ///
+                /// \brief transform patch to scaled [0, 1] tensor with 3 planes (rgb)
+                ///
+                NANOCV_PUBLIC tensor_t to_tensor(const rgba_matrix_t& patch);
+
+                ///
+                /// \brief transform 1 plane scaled [0, 1] patch to luma matrix
+                ///
+                NANOCV_PUBLIC luma_matrix_t from_luma_tensor(const tensor_t& patch);
+
+                ///
+                /// \brief transform 3 planes scaled [0, 1] patch to rgba matrix
+                ///
+                NANOCV_PUBLIC rgba_matrix_t from_rgba_tensor(const tensor_t& patch);
 
                 ///
                 /// \brief minimum color range

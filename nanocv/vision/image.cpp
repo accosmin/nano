@@ -130,36 +130,16 @@ namespace ncv
 
         bool image_t::load(const tensor_t& data)
         {
-                const scalar_t scale = 255;
-
                 if (data.dims() == 1)
                 {
-                        const auto gmap = data.matrix(0);
-
-                        m_luma.resize(data.rows(), data.cols());
-                        tensor::transform(gmap, m_luma, [=] (scalar_t l)
-                        {
-                                const rgba_t luma = math::cast<rgba_t>(l * scale) & 0xFF;
-                                return static_cast<luma_t>(luma);
-                        });
+                        m_luma = color::from_luma_tensor(data);
 
                         return setup_luma();
                 }
 
                 else if (data.dims() == 3)
                 {
-                        const auto rmap = data.matrix(0);
-                        const auto gmap = data.matrix(1);
-                        const auto bmap = data.matrix(2);
-
-                        m_rgba.resize(data.rows(), data.cols());
-                        tensor::transform(rmap, gmap, bmap, m_rgba, [=] (scalar_t r, scalar_t g, scalar_t b)
-                        {
-                                const rgba_t rr = math::cast<rgba_t>(r * scale) & 0xFF;
-                                const rgba_t gg = math::cast<rgba_t>(g * scale) & 0xFF;
-                                const rgba_t bb = math::cast<rgba_t>(b * scale) & 0xFF;
-                                return color::make_rgba(rr, gg, bb);
-                        });
+                        m_rgba = color::from_rgba_tensor(data);
 
                         return setup_rgba();
                 }
@@ -197,45 +177,13 @@ namespace ncv
                 const coord_t rows = region.rows();
                 const coord_t cols = region.cols();
 
-                const scalar_t scale = scalar_t(1) / scalar_t(255);
-
                 switch (m_mode)
                 {
                 case color_mode::luma:
-                        {
-                                tensor_t data(1, rows, cols);
-                                auto lmap = data.matrix(0);
-
-                                tensor::transform(m_luma.block(top, left, rows, cols), lmap, [=] (luma_t luma)
-                                {
-                                        return scale * luma;
-                                });
-
-                                return data;
-                        }
+                        return color::to_tensor(luma_matrix_t(m_luma.block(top, left, rows, cols)));
 
                 case color_mode::rgba:
-                        {
-                                tensor_t data(3, rows, cols);
-                                auto rmap = data.matrix(0);
-                                auto gmap = data.matrix(1);
-                                auto bmap = data.matrix(2);
-
-                                tensor::transform(m_rgba.block(top, left, rows, cols), rmap, [=] (rgba_t rgba)
-                                {
-                                        return scale * color::get_red(rgba);
-                                });
-                                tensor::transform(m_rgba.block(top, left, rows, cols), gmap, [=] (rgba_t rgba)
-                                {
-                                        return scale * color::get_green(rgba);
-                                });
-                                tensor::transform(m_rgba.block(top, left, rows, cols), bmap, [=] (rgba_t rgba)
-                                {
-                                        return scale * color::get_blue(rgba);
-                                });
-
-                                return data;
-                        }
+                        return color::to_tensor(rgba_matrix_t(m_rgba.block(top, left, rows, cols)));
 
                 default:
                         return tensor_t();
