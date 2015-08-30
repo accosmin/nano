@@ -115,15 +115,14 @@ int main(int argc, char *argv[])
                         os_source << "\n";
                         for (coord_t r = 0; r < image.rows(); r ++)
                         {
-                                os_source << tab;
+                                os_source << tab << "data.row(" << r << ") << \n" << tab;
                                 for (coord_t c = 0; c < image.cols(); c ++)
                                 {
-                                        os_source << "data(" << r << ", " << c << ") = " << std::to_string(buff(r, c))
-                                                  << ((c + 1 == image.cols()) ? "" : ", ");
+                                        os_source << std::to_string(buff(r, c)) << ((c + 1 == image.cols()) ? "" : ", ");
                                 }
                                 os_source << ";\n\n";
                         }
-                        os_source << "return data;\n";
+                        os_source << tab << "return data;\n";
                 };
 
                 if (cmd_luma)
