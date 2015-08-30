@@ -15,7 +15,8 @@ set(nanocv_programs
         ncv_info_task
         ncv_train
         ncv_evaluate
-        ncv_generate)
+        ncv_generate
+        ncv_image2cpp)
 
 install(TARGETS
         ${nanocv_programs}
