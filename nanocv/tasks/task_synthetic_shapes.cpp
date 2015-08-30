@@ -1,7 +1,7 @@
 #include "task_synthetic_shapes.h"
 #include "nanocv/class.h"
-#include "nanocv/math/numeric.hpp"
 #include "nanocv/math/random.hpp"
+#include "nanocv/math/numeric.hpp"
 
 namespace ncv
 {
