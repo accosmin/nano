@@ -20,7 +20,7 @@ namespace ncv
                 ///
                 /// \brief constructor
                 ///
-                image_t(coord_t rows = 0, coord_t cols = 0, color_mode mode = color_mode::rgba);
+                explicit image_t(coord_t rows = 0, coord_t cols = 0, color_mode mode = color_mode::rgba);
 
                 ///
                 /// \brief resize to new dimensions
