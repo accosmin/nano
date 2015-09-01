@@ -291,4 +291,10 @@ namespace ncv
 
                 return rgba;
         }
+
+        std::ostream& operator<<(std::ostream& os, color_mode mode)
+        {
+                return os << text::to_string(mode);
+        }
+
 }

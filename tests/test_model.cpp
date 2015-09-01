@@ -7,7 +7,7 @@
 #include "nanocv/evaluate.h"
 #include "nanocv/math/abs.hpp"
 #include "nanocv/math/epsilon.hpp"
-#include "nanocv/tasks/task_synthetic_shapes.h"
+#include "nanocv/tasks/task_synth_digits.h"
 #include <cstdio>
 
 BOOST_AUTO_TEST_CASE(test_model_io)
@@ -16,10 +16,8 @@ BOOST_AUTO_TEST_CASE(test_model_io)
 
         using namespace ncv;
 
-        synthetic_shapes_task_t task(28, 28, 10, color_mode::rgba, 1024);
+        synthetic_digits_task_t task(28, 28, color_mode::luma, 1024);
         BOOST_CHECK_EQUAL(task.load(""), true);
-
-        const size_t cmd_outputs = task.osize();
 
         const size_t n_tests = 8;
 
@@ -35,7 +33,7 @@ BOOST_AUTO_TEST_CASE(test_model_io)
         cmodel = cmodel + "conv:dims=8,rows=5,cols=5;pool-max;act-snorm;";
         cmodel = cmodel + "conv:dims=8,rows=3,cols=3;act-snorm;";
 
-        const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
+        const string_t outlayer = "linear:dims=" + text::to_string(task.osize()) + ";";
 
         strings_t cmd_networks =
         {
@@ -63,7 +61,7 @@ BOOST_AUTO_TEST_CASE(test_model_io)
                 BOOST_CHECK_EQUAL(model->irows(), task.irows());
                 BOOST_CHECK_EQUAL(model->icols(), task.icols());
                 BOOST_CHECK_EQUAL(model->osize(), task.osize());
-                BOOST_CHECK_EQUAL(static_cast<int>(model->color()), static_cast<int>(task.color()));
+                BOOST_CHECK_EQUAL(model->color(), task.color());
 
                 // test random networks
                 for (size_t t = 0; t < n_tests; t ++)

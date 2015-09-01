@@ -4,9 +4,6 @@
 #include "filter.hpp"
 #include "bilinear.hpp"
 #include "translate.hpp"
-#include "fill_circle.hpp"
-#include "fill_ellipse.hpp"
-#include "fill_triangle.hpp"
 #include "nanocv/math/cast.hpp"
 #include "nanocv/tensor/random.hpp"
 
@@ -428,31 +425,6 @@ namespace ncv
                 m_luma.transposeInPlace();
         }
 
-        bool image_t::scale(scalar_t factor)
-        {
-                switch (m_mode)
-                {
-                case color_mode::luma:
-                        {
-                                luma_matrix_t luma_scaled;
-                                ncv::bilinear(m_luma, luma_scaled, factor, color::luma_mixer);
-                                m_luma = luma_scaled;
-                        }
-                        return setup_luma();
-
-                case color_mode::rgba:
-                        {
-                                rgba_matrix_t rgba_scaled;
-                                ncv::bilinear(m_rgba, rgba_scaled, factor, color::rgba_mixer);
-                                m_rgba = rgba_scaled;
-                        }
-                        return setup_rgba();
-
-                default:
-                        return false;
-                }
-        }
-
         bool image_t::random()
         {
                 switch (m_mode)
@@ -553,71 +525,6 @@ namespace ncv
                                        inplace_separable_filter(kernel, range, m_rgba, color::get_green, color::set_green) &&
                                        inplace_separable_filter(kernel, range, m_rgba, color::get_blue, color::set_blue);
                         }
-
-                default:
-                        return false;
-                }
-        }
-
-        bool image_t::fill_rectangle(const rect_t& rect, rgba_t rgba)
-        {
-                return fill(rect, rgba);
-        }
-
-        bool image_t::fill_circle(const rect_t& rect, rgba_t rgba)
-        {
-                switch (m_mode)
-                {
-                case color_mode::luma:
-                        return ncv::fill_circle(rect, m_luma, color::get_luma(rgba));
-
-                case color_mode::rgba:
-                        return ncv::fill_circle(rect, m_rgba, rgba);
-
-                default:
-                        return false;
-                }
-        }
-
-        bool image_t::fill_ellipse(const rect_t& rect, rgba_t rgba)
-        {
-                switch (m_mode)
-                {
-                case color_mode::luma:
-                        return ncv::fill_ellipse(rect, m_luma, color::get_luma(rgba));
-
-                case color_mode::rgba:
-                        return ncv::fill_ellipse(rect, m_rgba, rgba);
-
-                default:
-                        return false;
-                }
-        }
-
-        bool image_t::fill_up_triangle(const rect_t& rect, rgba_t rgba)
-        {
-                switch (m_mode)
-                {
-                case color_mode::luma:
-                        return ncv::fill_up_triangle(rect, m_luma, color::get_luma(rgba));
-
-                case color_mode::rgba:
-                        return ncv::fill_up_triangle(rect, m_rgba, rgba);
-
-                default:
-                        return false;
-                }
-        }
-
-        bool image_t::fill_down_triangle(const rect_t& rect, rgba_t rgba)
-        {
-                switch (m_mode)
-                {
-                case color_mode::luma:
-                        return ncv::fill_down_triangle(rect, m_luma, color::get_luma(rgba));
-
-                case color_mode::rgba:
-                        return ncv::fill_down_triangle(rect, m_rgba, rgba);
 
                 default:
                         return false;

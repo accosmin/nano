@@ -4,6 +4,7 @@
 #include "nanocv/text.hpp"
 #include "nanocv/math/cast.hpp"
 #include "nanocv/math/clamp.hpp"
+#include <iosfwd>
 #include <cstdint>
 
 namespace ncv
@@ -44,6 +45,8 @@ namespace ncv
                 luma,                   ///< process only grayscale color channel
                 rgba                    ///< process red, green & blue color channels
         };
+
+        NANOCV_PUBLIC std::ostream& operator<<(std::ostream&, color_mode);
 
         // manipulate colors
         namespace color

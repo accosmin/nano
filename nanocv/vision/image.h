@@ -102,11 +102,6 @@ namespace ncv
                 void transpose_in_place();
 
                 ///
-                /// \brief scale with the given factor
-                ///
-                bool scale(scalar_t factor);
-
-                ///
                 /// \brief set pixels to random values
                 ///
                 bool random();
@@ -127,31 +122,6 @@ namespace ncv
                 /// \brief blur the given color channel with a Gaussian filter having the given sigma
                 ///
                 bool gauss(color_channel channel, scalar_t sigma);
-
-                ///
-                /// \brief fill rectangle with the given color
-                ///
-                bool fill_rectangle(const rect_t& rect, rgba_t rgba);
-
-                ///
-                /// \brief fill rectangle-centered circle with the given color
-                ///
-                bool fill_circle(const rect_t& rect, rgba_t rgba);
-
-                ///
-                /// \brief fill rectangle-centered ellipse with the given color
-                ///
-                bool fill_ellipse(const rect_t& rect, rgba_t rgba);
-
-                ///
-                /// \brief fill rectangle-centered triangle with the given color
-                ///
-                bool fill_up_triangle(const rect_t& rect, rgba_t rgba);
-
-                ///
-                /// \brief fill rectangle-centered triangle with the given color
-                ///
-                bool fill_down_triangle(const rect_t& rect, rgba_t rgba);
 
                 ///
                 /// \brief check if the given rectangle is within image bounds

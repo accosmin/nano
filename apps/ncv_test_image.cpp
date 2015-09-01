@@ -63,8 +63,6 @@ int main(int argc, char *argv[])
 
         const string_t cmd_input = po_vm["input"].as<string_t>();
 
-        const scalar_t cmd_scale = math::clamp(po_vm["scale"].as<scalar_t>(), 0.1, 10.0);
-
         const coord_t cmd_translate_range = math::clamp(po_vm["translate"].as<coord_t>(), 0, 256);
 
         const scalar_t cmd_noise_offset = math::clamp(po_vm["noise-offset"].as<scalar_t>(), -100.0, +100.0);
@@ -92,15 +90,6 @@ int main(int argc, char *argv[])
                [&] () { return (cmd_luma ? image.load_luma(cmd_input) : image.load_rgba(cmd_input)); },
                "loaded image from <" + cmd_input + ">",
                "failed to load image from <" + cmd_input + ">");
-
-        log_info () << "image: " << image.cols() << "x" << image.rows() << " pixels, "
-                    << (image.is_luma() ? "[luma]" : "[rgba]") << ".";
-
-        // scale the image
-        ncv::measure_critical_and_log(
-                [&] () { return image.scale(cmd_scale); },
-                "scaled image",
-                "failed to scale image");
 
         log_info () << "image: " << image.cols() << "x" << image.rows() << " pixels, "
                     << (image.is_luma() ? "[luma]" : "[rgba]") << ".";

@@ -7,7 +7,7 @@
 #include "nanocv/math/random.hpp"
 #include "nanocv/thread/thread.h"
 #include "nanocv/tensor/random.hpp"
-#include "nanocv/tasks/task_synthetic_shapes.h"
+#include "nanocv/tasks/task_synth_digits.h"
 #include <boost/program_options.hpp>
 
 namespace
@@ -78,20 +78,19 @@ int main(int argc, char *argv[])
 
         const size_t cmd_rows = 28;
         const size_t cmd_cols = 28;
-        const size_t cmd_outputs = 10;
         const color_mode cmd_color = color_mode::luma;
 
         const size_t cmd_min_nthreads = 1;
         const size_t cmd_max_nthreads = ncv::n_threads();
 
+        // generate synthetic task
+        synthetic_digits_task_t task(cmd_rows, cmd_cols, cmd_color, cmd_samples);
+        task.load("");
+
         // generate random samples
         tensors_t inputs;
         vectors_t targets;
-        make_random_samples(cmd_samples, cmd_rows, cmd_cols, cmd_outputs, cmd_color, inputs, targets);
-
-        // generate synthetic task
-        synthetic_shapes_task_t task(cmd_rows, cmd_cols, cmd_outputs, cmd_color, cmd_samples);
-        task.load("");
+        make_random_samples(cmd_samples, cmd_rows, cmd_cols, task.osize(), cmd_color, inputs, targets);
 
         // construct models
         const string_t lmodel0;
@@ -113,7 +112,7 @@ int main(int argc, char *argv[])
         cmodel3 = cmodel3 + "conv:dims=32,rows=5,cols=5;pool-max;act-snorm;";
         cmodel3 = cmodel3 + "conv:dims=64,rows=3,cols=3;act-snorm;";
 
-        const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
+        const string_t outlayer = "linear:dims=" + text::to_string(task.osize()) + ";";
 
         strings_t cmd_networks =
         {
@@ -179,7 +178,7 @@ int main(int argc, char *argv[])
                 // create feed-forward network
                 const rmodel_t model = ncv::get_models().get("forward-network", cmd_network);
                 assert(model);
-                model->resize(cmd_rows, cmd_cols, cmd_outputs, cmd_color, true);
+                model->resize(cmd_rows, cmd_cols, task.osize(), cmd_color, true);
                 model->random_params();
 
                 // select random samples

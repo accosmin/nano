@@ -6,7 +6,7 @@
 #include "nanocv/trainers/batch.h"
 #include "nanocv/trainers/minibatch.h"
 #include "nanocv/trainers/stochastic.h"
-#include "nanocv/tasks/task_synthetic_shapes.h"
+#include "nanocv/tasks/task_synth_digits.h"
 
 using namespace ncv;
 
@@ -147,14 +147,15 @@ int main(int, char* [])
 
         const size_t cmd_rows = 16;
         const size_t cmd_cols = 16;
-        const size_t cmd_outputs = 2;
         const size_t cmd_samples = ncv::n_threads() * 16 * 10;
         const color_mode cmd_color = color_mode::rgba;
 
         // create task
-        synthetic_shapes_task_t task(cmd_rows, cmd_cols, cmd_outputs, cmd_color, cmd_samples);
+        synthetic_digits_task_t task(cmd_rows, cmd_cols, cmd_color, cmd_samples);
         task.load("");
 	task.describe();
+
+        const size_t cmd_outputs = task.osize();
 
         // create training & validation samples
         sampler_t tsampler(task);

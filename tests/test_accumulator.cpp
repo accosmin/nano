@@ -2,14 +2,14 @@
 #define BOOST_TEST_MODULE "test_accumulator"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/tasks/task_synthetic_shapes.h"
 #include "nanocv/timer.h"
 #include "nanocv/logger.h"
 #include "nanocv/nanocv.h"
 #include "nanocv/math/abs.hpp"
-#include "nanocv/math/epsilon.hpp"
-#include "nanocv/thread/thread.h"
 #include "nanocv/accumulator.h"
+#include "nanocv/thread/thread.h"
+#include "nanocv/math/epsilon.hpp"
+#include "nanocv/tasks/task_synth_digits.h"
 
 namespace test
 {
@@ -29,10 +29,9 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
         ncv::init();
 
         const size_t cmd_samples = 256;
-        const size_t cmd_outputs = 3;
         const scalar_t cmd_epsilon = math::epsilon1<scalar_t>();
 
-        synthetic_shapes_task_t task(16, 16, cmd_outputs, color_mode::luma, cmd_samples);
+        synthetic_digits_task_t task(16, 16, color_mode::luma, cmd_samples);
         BOOST_CHECK_EQUAL(task.load(""), true);
 
         const samples_t samples = task.samples();
@@ -46,7 +45,7 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
         cmodel = cmodel + "conv:dims=3,rows=5,cols=5;pool-max;act-snorm;";
         cmodel = cmodel + "conv:dims=5,rows=3,cols=3;pool-max;act-snorm;";
 
-        const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
+        const string_t outlayer = "linear:dims=" + text::to_string(task.osize()) + ";";
 
         strings_t cmd_networks =
         {

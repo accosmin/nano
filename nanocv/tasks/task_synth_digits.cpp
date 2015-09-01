@@ -2,7 +2,7 @@
 #include "nanocv/class.h"
 #include "syn_digits_courier.h"
 #include "nanocv/math/random.hpp"
-#include "nanocv/vision/filter_resize.hpp"
+#include "nanocv/vision/bilinear.hpp"
 
 namespace ncv
 {
@@ -63,11 +63,11 @@ namespace ncv
                                 // random output class: digit
                                 const size_t o = rng_output();
 
-                                // generate random image background
+                                //
                                 const auto patch1 = get_object_patch(digit_patches, o - 1, osize());
+                                const auto patch2 = bilinear(color::to_tensor(patch1), irows(), icols());
 
-                                resize_filter_t resizer(irows(), icols());
-                                const auto patch2 = resizer(color::to_tensor(patch1));
+//                                image.random_noise(color_channel::rgba, -40.0, +40.0, rng_gauss());
 
                                 image_t image;
                                 image.load(patch2);
@@ -90,8 +90,6 @@ namespace ncv
 //                                case 10:        make_hollow_down_triangle(image, back_color, shape_color); break;
 //                                default:        break;
 //                                }
-
-                                image.random_noise(color_channel::rgba, -40.0, +40.0, rng_gauss());
 
                                 add_image(image);
 

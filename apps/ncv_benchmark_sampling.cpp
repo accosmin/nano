@@ -2,9 +2,9 @@
 #include "nanocv/sampler.h"
 #include "nanocv/tabulator.h"
 #include "nanocv/measure.hpp"
-#include "nanocv/thread/loopi.hpp"
 #include "nanocv/thread/thread.h"
-#include "nanocv/tasks/task_synthetic_shapes.h"
+#include "nanocv/thread/loopi.hpp"
+#include "nanocv/tasks/task_synth_digits.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
@@ -38,7 +38,6 @@ int main(int argc, char *argv[])
 
         const size_t cmd_rows = 28;
         const size_t cmd_cols = 28;
-        const size_t cmd_outputs = 10;
         const color_mode cmd_color = color_mode::luma;
 
         const size_t cmd_min_samples = cmd_samples / 8;
@@ -48,7 +47,7 @@ int main(int argc, char *argv[])
         const size_t cmd_max_nthreads = ncv::n_threads();
 
         // create synthetic task
-        synthetic_shapes_task_t task(cmd_rows, cmd_cols, cmd_outputs, cmd_color, cmd_samples);
+        synthetic_digits_task_t task(cmd_rows, cmd_cols, cmd_color, cmd_samples);
         task.load("");
 
         tensors_t inputs(cmd_max_samples);
