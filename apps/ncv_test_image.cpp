@@ -109,12 +109,6 @@ int main(int argc, char *argv[])
                 "applied noise",
                 "failed to apply noise");
 
-        // apply bluring
-        ncv::measure_critical_and_log(
-                [&] () { return image.gauss(cmd_gauss_channel, cmd_gauss_sigma); },
-                "blurred",
-                "failed to blur");
-
         // save output image
         ncv::measure_critical_and_log(
                 [&] () { return image.save(cmd_output); },

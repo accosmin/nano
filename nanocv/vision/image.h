@@ -2,7 +2,6 @@
 
 #include "rect.h"
 #include "color.h"
-#include "nanocv/tensor.h"
 
 namespace ncv
 {
@@ -117,11 +116,6 @@ namespace ncv
                 /// \brief apply a random translation [-range, +range]
                 ///
                 bool random_translate(coord_t range);
-
-                ///
-                /// \brief blur the given color channel with a Gaussian filter having the given sigma
-                ///
-                bool gauss(color_channel channel, scalar_t sigma);
 
                 ///
                 /// \brief check if the given rectangle is within image bounds

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "filter.hpp"
-#include "nanocv/math/gauss.hpp"
+#include "gaussian.hpp"
+#include "nanocv/math/range.hpp"
 #include "nanocv/math/random.hpp"
 #include "nanocv/tensor/matrix.hpp"
 #include "nanocv/tensor/transform.hpp"
@@ -28,20 +28,20 @@ namespace ncv
         {
                 random_t<tscalar> noiser(noise_range.min(), noise_range.max());
 
-                // create random noise map
-                typename tensor::matrix_t<tscalar> noisemap(src.rows(), src.cols());
-                tensor::transform(noisemap, noisemap, [&] (tvalue) { return noiser(); });
+//                // create random noise map
+//                typename tensor::matrix_t<tscalar> noisemap(src.rows(), src.cols());
+//                tensor::transform(noisemap, noisemap, [&] (tvalue) { return noiser(); });
 
-                // smooth the noise map
-                inplace_separable_filter(kernel, range_t<tscalar>(noiser.min(), noiser.max()), noisemap,
-                         [] (tscalar v) { return v; },
-                         [] (tscalar, tscalar v) { return v; });
+//                // smooth the noise map
+//                inplace_separable_filter(kernel, range_t<tscalar>(noiser.min(), noiser.max()), noisemap,
+//                         [] (tscalar v) { return v; },
+//                         [] (tscalar, tscalar v) { return v; });
 
-                // add the noise map to the input matrix
-                tensor::transform(src, noisemap, src, [&] (tvalue value, tscalar noise)
-                {
-                        return setter(value, math::cast<tvalue>(output_range.clamp(noise + getter(value))));
-                });
+//                // add the noise map to the input matrix
+//                tensor::transform(src, noisemap, src, [&] (tvalue value, tscalar noise)
+//                {
+//                        return setter(value, math::cast<tvalue>(output_range.clamp(noise + getter(value))));
+//                });
 
                 // OK
                 return true;

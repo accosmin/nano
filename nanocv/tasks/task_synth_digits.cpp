@@ -3,6 +3,7 @@
 #include "syn_digits_courier.h"
 #include "nanocv/math/random.hpp"
 #include "nanocv/vision/bilinear.hpp"
+#include "nanocv/vision/gaussian.hpp"
 
 namespace ncv
 {
@@ -66,11 +67,12 @@ namespace ncv
                                 //
                                 const auto patch1 = get_object_patch(digit_patches, o - 1, osize());
                                 const auto patch2 = bilinear(color::to_tensor(patch1), irows(), icols());
+                                const auto patch3 = gaussian(patch2, rng_gauss());
 
 //                                image.random_noise(color_channel::rgba, -40.0, +40.0, rng_gauss());
 
                                 image_t image;
-                                image.load(patch2);
+                                image.load(patch3);
 
 //                                const rgba_t back_color = color::make_random_rgba();
 //                                const rgba_t shape_color = color::make_opposite_random_rgba(back_color);

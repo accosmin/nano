@@ -54,7 +54,7 @@ namespace ncv
                 typename ttensor,
                 typename tsize
         >
-        ttensor bilinear(const ttensor& src, tsize dstrows, tsize dstcols)
+        ttensor bilinear(const ttensor& src, const tsize dstrows, const tsize dstcols)
         {
                 ttensor dst(src.dims(), dstrows, dstcols);
 

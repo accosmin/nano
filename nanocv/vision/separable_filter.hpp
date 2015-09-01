@@ -1,7 +1,9 @@
 #pragma once
 
-#include "nanocv/math/range.hpp"
 #include <vector>
+#include <cassert>
+#include <algorithm>
+#include "nanocv/math/cast.hpp"
 
 namespace ncv
 {
@@ -12,14 +14,11 @@ namespace ncv
         <
                 typename tkernel,                       ///< 1D kernel that composes the 2D filter
                 typename tmatrix,                       ///< source data
-                typename tgetter,                       ///< extract value from element (e.g. pixel)
-                typename tsetter,                       ///< set value to element (e.g. pixel)
 
                 typename tscalar = typename tkernel::tscalar,
                 typename tvalue = typename tmatrix::Scalar
         >
-        bool inplace_separable_filter(const tkernel& kernel, const range_t<tscalar>& range,
-                tmatrix& src, tgetter getter, tsetter setter)
+        void inplace_separable_filter(const tkernel& kernel, tmatrix&& src)
         {
                 const int rows = static_cast<int>(src.rows());
                 const int cols = static_cast<int>(src.cols());
@@ -27,10 +26,7 @@ namespace ncv
                 const int ksize = static_cast<int>(kernel.size());
                 const int krad = ksize / 2;
 
-                if (ksize != (2 * krad + 1))
-                {
-                        return false;
-                }
+                assert(ksize == 2 * krad + 1);
 
                 std::vector<tscalar> buff(std::max(rows, cols));
 
@@ -39,7 +35,7 @@ namespace ncv
                 {
                         for (int c = 0; c < cols; c ++)
                         {
-                                buff[c] = math::cast<tscalar>(getter(src(r, c)));
+                                buff[c] = math::cast<tscalar>(src(r, c));
                         }
 
                         for (int c = 0; c < cols; c ++)
@@ -51,7 +47,7 @@ namespace ncv
                                         v += kernel[k + krad] * buff[cc];
                                 }
 
-                                src(r, c) = setter(src(r, c), math::cast<tvalue>(range.clamp(v)));
+                                src(r, c) = math::cast<tvalue>(v);
                         }
                 }
 
@@ -60,7 +56,7 @@ namespace ncv
                 {
                         for (int r = 0; r < rows; r ++)
                         {
-                                buff[r] = math::cast<tscalar>(getter(src(r, c)));
+                                buff[r] = math::cast<tscalar>(src(r, c));
                         }
 
                         for (int r = 0; r < rows; r ++)
@@ -72,12 +68,9 @@ namespace ncv
                                         v += kernel[k + krad] * buff[rr];
                                 }
 
-                                src(r, c) = setter(src(r, c), math::cast<tvalue>(range.clamp(v)));
+                                src(r, c) = math::cast<tvalue>(v);
                         }
                 }
-
-                // OK
-                return true;
         }
 }
 

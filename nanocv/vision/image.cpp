@@ -1,10 +1,10 @@
 #include "io.h"
 #include "image.h"
 #include "noise.hpp"
-#include "filter.hpp"
 #include "bilinear.hpp"
 #include "translate.hpp"
 #include "nanocv/math/cast.hpp"
+#include "nanocv/math/range.hpp"
 #include "nanocv/tensor/random.hpp"
 
 namespace ncv
@@ -489,42 +489,6 @@ namespace ncv
 
                 case color_mode::rgba:
                         return ncv::random_translate(m_rgba, range, color::rgba_mixer);
-
-                default:
-                        return false;
-                }
-        }
-
-        bool image_t::gauss(color_channel channel, scalar_t sigma)
-        {
-                const gauss_kernel_t<scalar_t> kernel(sigma);
-                const range_t<scalar_t> range(0, 255);
-
-                switch (m_mode)
-                {
-                case color_mode::luma:
-                        return inplace_separable_filter(kernel, range, m_luma, color::get_luma, color::set_luma);
-
-                case color_mode::rgba:
-                        switch (channel)
-                        {
-                        case color_channel::red:
-                                return inplace_separable_filter(kernel, range, m_rgba, color::get_red, color::set_red);
-
-                        case color_channel::green:
-                                return inplace_separable_filter(kernel, range, m_rgba, color::get_green, color::set_green);
-
-                        case color_channel::blue:
-                                return inplace_separable_filter(kernel, range, m_rgba, color::get_blue, color::set_blue);
-
-                        case color_channel::alpha:
-                                return inplace_separable_filter(kernel, range, m_rgba, color::get_alpha, color::set_alpha);
-
-                        default:
-                                return inplace_separable_filter(kernel, range, m_rgba, color::get_red, color::set_red) &&
-                                       inplace_separable_filter(kernel, range, m_rgba, color::get_green, color::set_green) &&
-                                       inplace_separable_filter(kernel, range, m_rgba, color::get_blue, color::set_blue);
-                        }
 
                 default:
                         return false;
