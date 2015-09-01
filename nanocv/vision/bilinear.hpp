@@ -17,6 +17,9 @@ namespace ncv
         >
         void bilinear(const tmatrixi& srcplane, tmatrixo&& dstplane)
         {
+                assert(srcplane.rows() > 0);
+                assert(srcplane.cols() > 0);
+
                 const int irows = static_cast<int>(srcplane.rows());
                 const int icols = static_cast<int>(srcplane.cols());
                 const int orows = static_cast<int>(dstplane.rows());

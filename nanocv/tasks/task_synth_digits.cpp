@@ -1,6 +1,7 @@
 #include "task_synth_digits.h"
 #include "nanocv/class.h"
 #include "syn_digits_courier.h"
+#include "nanocv/math/clamp.hpp"
 #include "nanocv/math/random.hpp"
 #include "nanocv/vision/bilinear.hpp"
 #include "nanocv/vision/gaussian.hpp"
@@ -33,14 +34,23 @@ namespace ncv
                 <
                         typename tmatrix
                 >
-                tmatrix get_object_patch(const tmatrix& image, const size_t oindex, const size_t outputs)
+                tmatrix get_object_patch(const tmatrix& image,
+                        const size_t object_index, const size_t objects, const scalar_t max_offset)
                 {
-                        const auto patch_cols =
-                                static_cast<scalar_t>(image.cols()) /
-                                static_cast<scalar_t>(outputs);
+                        random_t<scalar_t> rng(-max_offset, max_offset);
 
-                        return image.block(0, static_cast<int>(patch_cols * oindex),
-                                           image.rows(), static_cast<int>(patch_cols));
+                        const auto icols = static_cast<int>(image.cols());
+                        const auto irows = static_cast<int>(image.rows());
+
+                        const auto dx = static_cast<scalar_t>(icols) / static_cast<scalar_t>(objects);
+
+                        const auto ppx = math::clamp(math::cast<int>(dx * object_index + rng()), 0, icols - 1);
+                        const auto ppw = math::clamp(math::cast<int>(dx + rng()), 0, icols - ppx);
+
+                        const auto ppy = math::clamp(math::cast<int>(rng()), 0, irows - 1);
+                        const auto pph = math::clamp(math::cast<int>(irows + rng()), 0, irows - ppy);
+
+                        return image.block(ppy, ppx, pph, ppw);
                 }
         }
 
@@ -65,7 +75,7 @@ namespace ncv
                                 const size_t o = rng_output();
 
                                 //
-                                const auto patch1 = get_object_patch(digit_patches, o - 1, osize());
+                                const auto patch1 = get_object_patch(digit_patches, o - 1, osize(), 1.0);
                                 const auto patch2 = bilinear(color::to_tensor(patch1), irows(), icols());
                                 const auto patch3 = gaussian(patch2, rng_gauss());
 
