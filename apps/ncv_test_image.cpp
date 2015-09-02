@@ -63,16 +63,6 @@ int main(int argc, char *argv[])
 
         const string_t cmd_input = po_vm["input"].as<string_t>();
 
-        const coord_t cmd_translate_range = math::clamp(po_vm["translate"].as<coord_t>(), 0, 256);
-
-        const scalar_t cmd_noise_offset = math::clamp(po_vm["noise-offset"].as<scalar_t>(), -100.0, +100.0);
-        const scalar_t cmd_noise_range = math::clamp(po_vm["noise-range"].as<scalar_t>(), 0.0, 100.0);
-        const scalar_t cmd_noise_sigma = math::clamp(po_vm["noise-sigma"].as<scalar_t>(), 0.0, 10.0);
-        const color_channel cmd_noise_channel = text::from_string<color_channel>(po_vm["noise-channel"].as<string_t>());
-
-        const scalar_t cmd_gauss_sigma = math::clamp(po_vm["gauss-sigma"].as<scalar_t>(), 0.0, 10.0);
-        const color_channel cmd_gauss_channel = text::from_string<color_channel>(po_vm["gauss-channel"].as<string_t>());
-
         const string_t cmd_output = po_vm["output"].as<string_t>();
         const bool cmd_luma = po_vm.count("luma");
         const bool cmd_rgba = po_vm.count("rgba");        
@@ -94,20 +84,8 @@ int main(int argc, char *argv[])
         log_info () << "image: " << image.cols() << "x" << image.rows() << " pixels, "
                     << (image.is_luma() ? "[luma]" : "[rgba]") << ".";
 
-        // translate the image
-        ncv::measure_critical_and_log(
-                [&] () { return image.random_translate(cmd_translate_range); },
-                "translated image",
-                "failed to translate image");
-
         log_info () << "image: " << image.cols() << "x" << image.rows() << " pixels, "
                     << (image.is_luma() ? "[luma]" : "[rgba]") << ".";
-
-        // apply random (additive) noise
-        ncv::measure_critical_and_log(
-                [&] () { return image.random_noise(cmd_noise_channel, cmd_noise_offset, cmd_noise_range, cmd_noise_sigma); },
-                "applied noise",
-                "failed to apply noise");
 
         // save output image
         ncv::measure_critical_and_log(

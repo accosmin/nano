@@ -292,6 +292,36 @@ namespace ncv
                 return rgba;
         }
 
+        scalar_t color::min(color_channel ch)
+        {
+                switch (ch)
+                {
+                case color_channel::red:        return 0.0;
+                case color_channel::green:      return 0.0;
+                case color_channel::blue:       return 0.0;
+                case color_channel::luma:       return 0.0;
+                case color_channel::cielab_l:   return 0.0;
+                case color_channel::cielab_a:   return -86.1846;
+                case color_channel::cielab_b:   return -107.864;
+                default:                        return 0.0;
+                }
+        }
+
+        scalar_t color::max(color_channel ch)
+        {
+                switch (ch)
+                {
+                case color_channel::red:        return 255.0;
+                case color_channel::green:      return 255.0;
+                case color_channel::blue:       return 255.0;
+                case color_channel::luma:       return 255.0;
+                case color_channel::cielab_l:   return 100.0;
+                case color_channel::cielab_a:   return 98.2542;
+                case color_channel::cielab_b:   return 94.4825;
+                default:                        return 255.0;
+                }
+        }
+
         std::ostream& operator<<(std::ostream& os, color_mode mode)
         {
                 return os << text::to_string(mode);

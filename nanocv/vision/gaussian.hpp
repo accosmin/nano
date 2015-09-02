@@ -21,7 +21,7 @@ namespace ncv
 
                 for (int _od = 0; _od < src.dims(); _od ++)
                 {
-                        inplace_separable_filter(kernel, dst.matrix(_od));
+                        separable_filter(kernel, dst.matrix(_od));
                 }
 
                 return dst;

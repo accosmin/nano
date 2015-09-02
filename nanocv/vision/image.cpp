@@ -1,11 +1,9 @@
 #include "io.h"
 #include "image.h"
-#include "noise.hpp"
-#include "bilinear.hpp"
-#include "translate.hpp"
 #include "nanocv/math/cast.hpp"
-#include "nanocv/math/range.hpp"
+#include "nanocv/math/random.hpp"
 #include "nanocv/tensor/random.hpp"
+#include "nanocv/tensor/transform.hpp"
 
 namespace ncv
 {
@@ -437,58 +435,6 @@ namespace ncv
                         tensor::set_random(m_rgba, random_t<rgba_t>());
                         tensor::transform(m_rgba, m_rgba, [] (rgba_t c) { return color::set_alpha(c, 255); });
                         return true;
-
-                default:
-                        return false;
-                }
-        }
-
-        bool image_t::random_noise(color_channel channel, scalar_t offset, scalar_t variance, scalar_t sigma)
-        {
-                const range_t<scalar_t> nrange(offset - variance, offset + variance);
-                const gauss_kernel_t<scalar_t> nkernel(sigma);
-                const range_t<scalar_t> orange(0, 255);
-
-                switch (m_mode)
-                {
-                case color_mode::luma:
-                        return additive_noise(nrange, nkernel, orange, m_luma, color::get_luma, color::set_luma);
-
-                case color_mode::rgba:
-                        switch (channel)
-                        {
-                        case color_channel::red:
-                                return additive_noise(nrange, nkernel, orange, m_rgba, color::get_red, color::set_red);
-
-                        case color_channel::green:
-                                return additive_noise(nrange, nkernel, orange, m_rgba, color::get_green, color::set_green);
-
-                        case color_channel::blue:
-                                return additive_noise(nrange, nkernel, orange, m_rgba, color::get_blue, color::set_blue);
-
-                        case color_channel::alpha:
-                                return additive_noise(nrange, nkernel, orange, m_rgba, color::get_alpha, color::set_alpha);
-
-                        default:
-                                return additive_noise(nrange, nkernel, orange, m_rgba, color::get_red, color::set_red) &&
-                                       additive_noise(nrange, nkernel, orange, m_rgba, color::get_green, color::set_green) &&
-                                       additive_noise(nrange, nkernel, orange, m_rgba, color::get_blue, color::set_blue);
-                        }
-
-                default:
-                        return false;
-                }
-        }
-
-        bool image_t::random_translate(coord_t range)
-        {
-                switch (m_mode)
-                {
-                case color_mode::luma:
-                        return ncv::random_translate(m_luma, range, color::luma_mixer);
-
-                case color_mode::rgba:
-                        return ncv::random_translate(m_rgba, range, color::rgba_mixer);
 
                 default:
                         return false;

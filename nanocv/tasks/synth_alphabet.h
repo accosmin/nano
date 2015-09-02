@@ -4,6 +4,6 @@
 
 namespace ncv
 {
-        luma_matrix_t get_digits_courier();
+        rgba_matrix_t get_synth_alphabet();
 }
 

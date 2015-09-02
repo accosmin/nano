@@ -1,7 +1,6 @@
 #pragma once
 
-#include "gaussian.hpp"
-#include "nanocv/math/range.hpp"
+#include "nanocv/math/gauss.hpp"
 #include "nanocv/math/random.hpp"
 #include "nanocv/tensor/matrix.hpp"
 #include "nanocv/tensor/transform.hpp"
@@ -13,38 +12,31 @@ namespace ncv
         ///
         template
         <
-                typename tscalar = double,
                 typename tmatrix,
-                typename tgetter,                       ///< extract value from element (e.g. pixel)
-                typename tsetter,                       ///< set value to element (e.g. pixel)
-
+                typename tscalar,
+                typename trange,
                 typename tvalue = typename tmatrix::Scalar
         >
-        bool additive_noise(
-                const range_t<tscalar>& noise_range,
-                const gauss_kernel_t<tscalar>& kernel,
-                const range_t<tscalar>& output_range,
-                tmatrix& src, tgetter getter, tsetter setter)
+        void additive_noise(
+                tmatrix&& srcplane,
+                const trange noise_range,               ///< noise range
+                const tscalar sigma,                    ///< Gaussian sigma
+                const trange output_range)
         {
                 random_t<tscalar> noiser(noise_range.min(), noise_range.max());
 
-//                // create random noise map
-//                typename tensor::matrix_t<tscalar> noisemap(src.rows(), src.cols());
-//                tensor::transform(noisemap, noisemap, [&] (tvalue) { return noiser(); });
+                // create random noise map
+                typename tensor::matrix_t<tscalar> noisemap(srcplane.rows(), srcplane.cols());
+                tensor::transform(noisemap, noisemap, [&] (tvalue) { return noiser(); });
 
-//                // smooth the noise map
-//                inplace_separable_filter(kernel, range_t<tscalar>(noiser.min(), noiser.max()), noisemap,
-//                         [] (tscalar v) { return v; },
-//                         [] (tscalar, tscalar v) { return v; });
+                // smooth the noise map
+                separable_filter(gauss_kernel_t<tscalar>(sigma).get(), noisemap);
 
-//                // add the noise map to the input matrix
-//                tensor::transform(src, noisemap, src, [&] (tvalue value, tscalar noise)
-//                {
-//                        return setter(value, math::cast<tvalue>(output_range.clamp(noise + getter(value))));
-//                });
-
-                // OK
-                return true;
+                // add the noise map to the input matrix
+                tensor::transform(srcplane, noisemap, srcplane, [&] (tvalue value, tscalar noise)
+                {
+                        return math::cast<tvalue>(output_range.clamp(value + noise));
+                });
         }
 }
 

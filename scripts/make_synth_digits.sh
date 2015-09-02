@@ -1,7 +1,7 @@
 #!/bin/bash
 
 text="0123456789"
-name="digits"
+name="synth_digits"
 
 #font="DejaVu-Sans-Mono-Bold"
 # -font ${font}

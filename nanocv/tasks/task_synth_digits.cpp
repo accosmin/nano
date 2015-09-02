@@ -1,6 +1,6 @@
 #include "task_synth_digits.h"
 #include "nanocv/class.h"
-#include "syn_digits_courier.h"
+#include "synth_digits.h"
 #include "nanocv/math/clamp.hpp"
 #include "nanocv/math/random.hpp"
 #include "nanocv/vision/bilinear.hpp"
@@ -62,7 +62,7 @@ namespace ncv
                 random_t<size_t> rng_output(1, osize());
                 random_t<scalar_t> rng_gauss(scalar_t(0.5), scalar_t(2.0));
 
-                const auto digit_patches = ncv::get_digits_courier();
+                const auto digit_patches = ncv::get_synth_digits();
 
                 for (size_t f = 0; f < fsize(); f ++)
                 {
@@ -77,6 +77,7 @@ namespace ncv
                                 //
                                 const auto patch1 = get_object_patch(digit_patches, o - 1, osize(), 1.0);
                                 const auto patch2 = bilinear(color::to_tensor(patch1), irows(), icols());
+
                                 const auto patch3 = gaussian(patch2, rng_gauss());
 
 //                                image.random_noise(color_channel::rgba, -40.0, +40.0, rng_gauss());

@@ -18,7 +18,7 @@ namespace ncv
                 typename tscalar = typename tkernel::tscalar,
                 typename tvalue = typename tmatrix::Scalar
         >
-        void inplace_separable_filter(const tkernel& kernel, tmatrix&& src)
+        void separable_filter(const tkernel& kernel, tmatrix&& src)
         {
                 const int rows = static_cast<int>(src.rows());
                 const int cols = static_cast<int>(src.cols());
