@@ -224,40 +224,51 @@ namespace ncv
                                  255);
         }
 
-        tensor_t color::to_tensor(const luma_matrix_t& luma)
+        tensor_t color::to_luma_tensor(const luma_matrix_t& luma)
         {
                 const scalar_t scale = 1.0 / 255.0;
 
                 tensor_t data(1, luma.rows(), luma.cols());
-
-                tensor::transform(luma, data, [=] (luma_t l)
-                {
-                        return scale * l;
-                });
+                tensor::transform(luma, data, [=] (luma_t l) { return scale * l; });
 
                 return data;
         }
 
-        tensor_t color::to_tensor(const rgba_matrix_t& rgba)
+        tensor_t color::to_rgb_tensor(const rgba_matrix_t& rgba)
         {
                 const scalar_t scale = 1.0 / 255.0;
 
                 tensor_t data(3, rgba.rows(), rgba.cols());
-
-                tensor::transform(rgba, data.matrix(0), [=] (rgba_t c)
-                {
-                        return scale * color::get_red(c);
-                });
-                tensor::transform(rgba, data.matrix(1), [=] (rgba_t c)
-                {
-                        return scale * color::get_green(c);
-                });
-                tensor::transform(rgba, data.matrix(2), [=] (rgba_t c)
-                {
-                        return scale * color::get_blue(c);
-                });
+                tensor::transform(rgba, data.matrix(0), [=] (rgba_t c) { return scale * color::get_red(c); });
+                tensor::transform(rgba, data.matrix(1), [=] (rgba_t c) { return scale * color::get_green(c); });
+                tensor::transform(rgba, data.matrix(2), [=] (rgba_t c) { return scale * color::get_blue(c); });
 
                 return data;
+        }
+
+        tensor_t color::to_rgba_tensor(const rgba_matrix_t& rgba)
+        {
+                const scalar_t scale = 1.0 / 255.0;
+
+                tensor_t data(4, rgba.rows(), rgba.cols());
+                tensor::transform(rgba, data.matrix(0), [=] (rgba_t c) { return scale * color::get_red(c); });
+                tensor::transform(rgba, data.matrix(1), [=] (rgba_t c) { return scale * color::get_green(c); });
+                tensor::transform(rgba, data.matrix(2), [=] (rgba_t c) { return scale * color::get_blue(c); });
+                tensor::transform(rgba, data.matrix(3), [=] (rgba_t c) { return scale * color::get_alpha(c); });
+
+                return data;
+        }
+
+        namespace
+        {
+                template
+                <
+                        typename tinput
+                >
+                luma_t to_byte(const tinput value)
+                {
+                        return math::cast<luma_t>(math::clamp(value, tinput(0), tinput(255)));
+                }
         }
 
         luma_matrix_t color::from_luma_tensor(const tensor_t& data)
@@ -265,28 +276,36 @@ namespace ncv
                 assert(data.dims() == 1);
 
                 luma_matrix_t luma(data.rows(), data.cols());
-
-                tensor::transform(data.matrix(0), luma, [=] (scalar_t l)
-                {
-                        return math::cast<luma_t>(math::clamp(255.0 * l, scalar_t(0), scalar_t(255)));
-                });
+                tensor::transform(data.matrix(0), luma, [=] (scalar_t l) { return to_byte(255.0 * l); });
 
                 return luma;
         }
 
-        rgba_matrix_t color::from_rgba_tensor(const tensor_t& data)
+        rgba_matrix_t color::from_rgb_tensor(const tensor_t& data)
         {
                 assert(data.dims() == 3);
 
                 rgba_matrix_t rgba(data.rows(), data.cols());
-
                 tensor::transform(data.matrix(0), data.matrix(1), data.matrix(2), rgba,
                                   [=] (scalar_t r, scalar_t g, scalar_t b)
                 {
-                        return  color::make_rgba(
-                                math::cast<rgba_t>(math::clamp(255.0 * r, scalar_t(0), scalar_t(255))),
-                                math::cast<rgba_t>(math::clamp(255.0 * g, scalar_t(0), scalar_t(255))),
-                                math::cast<rgba_t>(math::clamp(255.0 * b, scalar_t(0), scalar_t(255))));
+                        return
+                        color::make_rgba(to_byte(255.0 * r), to_byte(255.0 * g), to_byte(255.0 * b));
+                });
+
+                return rgba;
+        }
+
+        rgba_matrix_t color::from_rgba_tensor(const tensor_t& data)
+        {
+                assert(data.dims() ==4);
+
+                rgba_matrix_t rgba(data.rows(), data.cols());
+                tensor::transform(data.matrix(0), data.matrix(1), data.matrix(2), data.matrix(3), rgba,
+                                  [=] (scalar_t r, scalar_t g, scalar_t b, scalar_t a)
+                {
+                        return
+                        color::make_rgba(to_byte(255.0 * r), to_byte(255.0 * g), to_byte(255.0 * b), to_byte(255.0 * a));
                 });
 
                 return rgba;

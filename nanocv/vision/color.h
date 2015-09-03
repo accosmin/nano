@@ -100,12 +100,17 @@ namespace ncv
                 ///
                 /// \brief transform patch to scaled [0, 1] tensor with 1 plane (luma)
                 ///
-                NANOCV_PUBLIC tensor_t to_tensor(const luma_matrix_t& patch);
+                NANOCV_PUBLIC tensor_t to_luma_tensor(const luma_matrix_t& patch);
 
                 ///
                 /// \brief transform patch to scaled [0, 1] tensor with 3 planes (rgb)
                 ///
-                NANOCV_PUBLIC tensor_t to_tensor(const rgba_matrix_t& patch);
+                NANOCV_PUBLIC tensor_t to_rgb_tensor(const rgba_matrix_t& patch);
+
+                ///
+                /// \brief transform patch to scaled [0, 1] tensor with 4 planes (rgba)
+                ///
+                NANOCV_PUBLIC tensor_t to_rgba_tensor(const rgba_matrix_t& patch);
 
                 ///
                 /// \brief transform 1 plane scaled [0, 1] patch to luma matrix
@@ -113,7 +118,12 @@ namespace ncv
                 NANOCV_PUBLIC luma_matrix_t from_luma_tensor(const tensor_t& patch);
 
                 ///
-                /// \brief transform 3 planes scaled [0, 1] patch to rgba matrix
+                /// \brief transform 3 planes scaled [0, 1] patch to rgb matrix
+                ///
+                NANOCV_PUBLIC rgba_matrix_t from_rgb_tensor(const tensor_t& patch);
+
+                ///
+                /// \brief transform 4 planes scaled [0, 1] patch to rgba matrix
                 ///
                 NANOCV_PUBLIC rgba_matrix_t from_rgba_tensor(const tensor_t& patch);
 

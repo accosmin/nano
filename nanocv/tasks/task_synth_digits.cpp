@@ -76,7 +76,7 @@ namespace ncv
 
                                 //
                                 const auto patch1 = get_object_patch(digit_patches, o - 1, osize(), 1.0);
-                                const auto patch2 = bilinear(color::to_tensor(patch1), irows(), icols());
+                                const auto patch2 = bilinear(color::to_rgba_tensor(patch1), irows(), icols());
 
                                 const auto patch3 = gaussian(patch2, rng_gauss());
 

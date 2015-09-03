@@ -175,10 +175,10 @@ namespace ncv
                 switch (m_mode)
                 {
                 case color_mode::luma:
-                        return color::to_tensor(luma_matrix_t(m_luma.block(top, left, rows, cols)));
+                        return color::to_luma_tensor(luma_matrix_t(m_luma.block(top, left, rows, cols)));
 
                 case color_mode::rgba:
-                        return color::to_tensor(rgba_matrix_t(m_rgba.block(top, left, rows, cols)));
+                        return color::to_rgb_tensor(rgba_matrix_t(m_rgba.block(top, left, rows, cols)));
 
                 default:
                         return tensor_t();
