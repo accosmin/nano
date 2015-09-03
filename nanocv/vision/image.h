@@ -49,19 +49,13 @@ namespace ncv
                 bool load_luma(const luma_matrix_t& data);
 
                 ///
-                /// \brief load image from scaled [0, 1] tensor
-                ///     having 1 (luma) or 3 (rgba) planes
-                ///
-                bool load(const tensor_t& data);
-
-                ///
                 /// \brief save image to disk
                 ///
                 bool save(const std::string& path) const;
 
                 ///
                 /// \brief save image to scaled [0, 1] tensor
-                ///     with 1 (luma) or 3 (rgba) planes
+                ///     with 1 (luma) or 3 (rgb) planes
                 ///
                 tensor_t to_tensor() const;
                 tensor_t to_tensor(const rect_t& region) const;

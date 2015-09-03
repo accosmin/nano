@@ -123,28 +123,6 @@ namespace ncv
                 return setup_luma();
         }
 
-        bool image_t::load(const tensor_t& data)
-        {
-                if (data.dims() == 1)
-                {
-                        m_luma = color::from_luma_tensor(data);
-
-                        return setup_luma();
-                }
-
-                else if (data.dims() == 3)
-                {
-                        m_rgba = color::from_rgba_tensor(data);
-
-                        return setup_rgba();
-                }
-
-                else
-                {
-                        return false;
-                }
-        }
-
         bool image_t::save(const string_t& path) const
         {
                 switch (m_mode)
@@ -212,7 +190,7 @@ namespace ncv
 
                 case color_mode::rgba:
                         m_luma.resize(rows(), cols());
-                        tensor::transform(m_rgba, m_luma, [] (rgba_t c) { return color::get_luma(c); });
+                        tensor::transform(m_rgba, m_luma, [] (rgba_t c) { return color::make_luma(c); });
 
                         return setup_luma();
 
@@ -226,7 +204,7 @@ namespace ncv
                 switch (m_mode)
                 {
                 case color_mode::luma:
-                        m_luma.setConstant(color::get_luma(rgba));
+                        m_luma.setConstant(color::make_luma(rgba));
                         return true;
 
                 case color_mode::rgba:

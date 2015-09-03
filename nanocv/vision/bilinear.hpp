@@ -48,25 +48,5 @@ namespace ncv
                         }
                 }
         }
-
-        ///
-        /// \brief resize the input tensor to the given size (using bilinear interpolation)
-        ///
-        template
-        <
-                typename ttensor,
-                typename tsize
-        >
-        ttensor bilinear(const ttensor& src, const tsize dstrows, const tsize dstcols)
-        {
-                ttensor dst(src.dims(), dstrows, dstcols);
-
-                for (int _od = 0; _od < src.dims(); _od ++)
-                {
-                        bilinear(src.matrix(_od), dst.matrix(_od));
-                }
-
-                return dst;
-        }
 }
 

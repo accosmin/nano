@@ -76,10 +76,11 @@ int main(int argc, char *argv[])
                 {
                         for (size_t c = 0; c < cmd_save_group_cols; c ++)
                         {
-                                const tensor_t input = ncv::generate_match_target(*rmodel, target);
+                                const auto data = ncv::generate_match_target(*rmodel, target);
+                                const auto rgba = color::from_rgba_tensor(data);
 
                                 image_t image;
-                                if (!image.load(input))
+                                if (!image.load_rgba(rgba))
                                 {
                                         log_error() << "failed to map the generated input to RGBA image!";
                                         return EXIT_FAILURE;

@@ -273,40 +273,95 @@ namespace ncv
 
         luma_matrix_t color::from_luma_tensor(const tensor_t& data)
         {
-                assert(data.dims() == 1);
-
                 luma_matrix_t luma(data.rows(), data.cols());
-                tensor::transform(data.matrix(0), luma, [=] (scalar_t l) { return to_byte(255.0 * l); });
+
+                switch (data.dims())
+                {
+                case 1:
+                        tensor::transform(data.matrix(0), luma,
+                                          [=] (scalar_t l)
+                        {
+                                return to_byte(255.0 * l);
+                        });
+                        break;
+
+                case 3:
+                case 4:
+                        tensor::transform(data.matrix(0), data.matrix(1), data.matrix(2), luma,
+                                          [=] (scalar_t r, scalar_t g, scalar_t b)
+                        {
+                                return make_rgba(to_byte(255.0 * r), to_byte(255.0 * g), to_byte(255.0 * b));
+                        });
+                        break;
+
+                default:
+                        throw std::runtime_error("can transform to luma only 1, 3 or 4-band tensors!");
+                }
 
                 return luma;
         }
 
         rgba_matrix_t color::from_rgb_tensor(const tensor_t& data)
         {
-                assert(data.dims() == 3);
-
                 rgba_matrix_t rgba(data.rows(), data.cols());
-                tensor::transform(data.matrix(0), data.matrix(1), data.matrix(2), rgba,
-                                  [=] (scalar_t r, scalar_t g, scalar_t b)
+
+                switch (data.dims())
                 {
-                        return
-                        color::make_rgba(to_byte(255.0 * r), to_byte(255.0 * g), to_byte(255.0 * b));
-                });
+                case 1:
+                        tensor::transform(data.matrix(0), rgba, [=] (scalar_t l)
+                        {
+                                return make_rgba(to_byte(255.0 * l));
+                        });
+                        break;
+
+                case 3:
+                case 4:
+                        tensor::transform(data.matrix(0), data.matrix(1), data.matrix(2), rgba,
+                                          [=] (scalar_t r, scalar_t g, scalar_t b)
+                        {
+                                return make_rgba(to_byte(255.0 * r), to_byte(255.0 * g), to_byte(255.0 * b));
+                        });
+                        break;
+
+                default:
+                        throw std::runtime_error("can transform to rgb only 1, 3 or 4-band tensors!");
+                }
 
                 return rgba;
         }
 
         rgba_matrix_t color::from_rgba_tensor(const tensor_t& data)
         {
-                assert(data.dims() ==4);
-
                 rgba_matrix_t rgba(data.rows(), data.cols());
-                tensor::transform(data.matrix(0), data.matrix(1), data.matrix(2), data.matrix(3), rgba,
-                                  [=] (scalar_t r, scalar_t g, scalar_t b, scalar_t a)
+
+                switch (data.dims())
                 {
-                        return
-                        color::make_rgba(to_byte(255.0 * r), to_byte(255.0 * g), to_byte(255.0 * b), to_byte(255.0 * a));
-                });
+                case 1:
+                        tensor::transform(data.matrix(0), rgba, [=] (scalar_t l)
+                        {
+                                return make_rgba(to_byte(255.0 * l));
+                        });
+                        break;
+
+                case 3:
+                        tensor::transform(data.matrix(0), data.matrix(1), data.matrix(2), rgba,
+                                          [=] (scalar_t r, scalar_t g, scalar_t b)
+                        {
+                                return make_rgba(to_byte(255.0 * r), to_byte(255.0 * g), to_byte(255.0 * b));
+                        });
+                        break;
+
+                case 4:
+                        tensor::transform(data.matrix(0), data.matrix(1), data.matrix(2), data.matrix(3), rgba,
+                                          [=] (scalar_t r, scalar_t g, scalar_t b, scalar_t a)
+                        {
+                                return make_rgba(to_byte(255.0 * r), to_byte(255.0 * g), to_byte(255.0 * b), to_byte(255.0 * a));
+                        });
+                        break;
+
+                default:
+                        throw std::runtime_error("can transform to rgba only 1, 3 or 4-band tensors!");
+                }
 
                 return rgba;
         }

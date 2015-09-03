@@ -64,7 +64,7 @@ namespace ncv
                 ncv::get_tasks().add("stl10", stl10_task_t());
                 ncv::get_tasks().add("svhn", svhn_task_t());
                 ncv::get_tasks().add("norb", norb_task_t());
-                ncv::get_tasks().add("syn-digits", synthetic_digits_task_t());
+                ncv::get_tasks().add("synth-digits", synthetic_digits_task_t());
 
                 // register layers
                 ncv::get_layers().add("act-unit", unit_activation_layer_t());

@@ -1,10 +1,11 @@
 #include "task_synth_digits.h"
 #include "nanocv/class.h"
 #include "synth_digits.h"
+#include "nanocv/math/gauss.hpp"
 #include "nanocv/math/clamp.hpp"
 #include "nanocv/math/random.hpp"
 #include "nanocv/vision/bilinear.hpp"
-#include "nanocv/vision/gaussian.hpp"
+#include "nanocv/vision/separable_filter.hpp"
 
 namespace ncv
 {
@@ -74,16 +75,32 @@ namespace ncv
                                 // random output class: digit
                                 const size_t o = rng_output();
 
-                                //
-                                const auto patch1 = get_object_patch(digit_patches, o - 1, osize(), 1.0);
-                                const auto patch2 = bilinear(color::to_rgba_tensor(patch1), irows(), icols());
+                                // image: original object patch
+                                const tensor_t patch1 = color::to_rgba_tensor(get_object_patch(digit_patches, o - 1, osize(), 1.0));
 
-                                const auto patch3 = gaussian(patch2, rng_gauss());
+                                // image: resize to the input size
+                                tensor_t patch2(4, irows(), icols());
+                                ncv::bilinear(patch1.matrix(0), patch2.matrix(0));
+                                ncv::bilinear(patch1.matrix(1), patch2.matrix(1));
+                                ncv::bilinear(patch1.matrix(2), patch2.matrix(2));
+                                ncv::bilinear(patch1.matrix(3), patch2.matrix(3));
+
+                                // image: gaussian filter
+                                const ncv::gauss_kernel_t<scalar_t> gauss(rng_gauss());
+
+                                tensor_t patch3 = patch2;
+                                ncv::separable_filter(gauss, patch3.matrix(0));
+                                ncv::separable_filter(gauss, patch3.matrix(1));
+                                ncv::separable_filter(gauss, patch3.matrix(2));
 
 //                                image.random_noise(color_channel::rgba, -40.0, +40.0, rng_gauss());
 
                                 image_t image;
-                                image.load(patch3);
+                                switch (color())
+                                {
+                                case color_mode::luma:  image.load_luma(color::from_luma_tensor(patch3)); break;
+                                case color_mode::rgba:  image.load_rgba(color::from_rgb_tensor(patch3)); break;
+                                }
 
 //                                const rgba_t back_color = color::make_random_rgba();
 //                                const rgba_t shape_color = color::make_opposite_random_rgba(back_color);

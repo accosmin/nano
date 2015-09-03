@@ -56,13 +56,11 @@ namespace ncv
                 inline rgba_t get_green(rgba_t rgba)                    { return (rgba >> 16) & 0xFF; }
                 inline rgba_t get_blue(rgba_t rgba)                     { return (rgba >>  8) & 0xFF; }
                 inline rgba_t get_alpha(rgba_t rgba)                    { return (rgba >>  0) & 0xFF; }
-                inline luma_t get_luma(luma_t luma)                     { return luma; }
 
                 inline rgba_t set_red(rgba_t rgba, rgba_t v)            { return (rgba & 0x00FFFFFF) | (v << 24); }
                 inline rgba_t set_green(rgba_t rgba, rgba_t v)          { return (rgba & 0xFF00FFFF) | (v << 16); }
                 inline rgba_t set_blue(rgba_t rgba, rgba_t v)           { return (rgba & 0xFFFF00FF) | (v <<  8); }
                 inline rgba_t set_alpha(rgba_t rgba, rgba_t v)          { return (rgba & 0xFFFFFF00) | (v <<  0); }
-                inline luma_t set_luma(luma_t, luma_t v)                { return v; }
 
                 inline luma_t make_luma(rgba_t r, rgba_t g, rgba_t b)
                 {
@@ -86,6 +84,16 @@ namespace ncv
                 }
 
                 NANOCV_PUBLIC rgba_t make_rgba(const cielab_t& cielab);
+
+                ///
+                /// \brief minimum color range
+                ///
+                NANOCV_PUBLIC scalar_t min(color_channel ch);
+
+                ///
+                /// \brief maximum color range
+                ///
+                NANOCV_PUBLIC scalar_t max(color_channel ch);
 
                 ///
                 /// \brief create random RGBA color
@@ -126,16 +134,6 @@ namespace ncv
                 /// \brief transform 4 planes scaled [0, 1] patch to rgba matrix
                 ///
                 NANOCV_PUBLIC rgba_matrix_t from_rgba_tensor(const tensor_t& patch);
-
-                ///
-                /// \brief minimum color range
-                ///
-                NANOCV_PUBLIC scalar_t min(color_channel ch);
-
-                ///
-                /// \brief maximum color range
-                ///
-                NANOCV_PUBLIC scalar_t max(color_channel ch);
         }
 
         // string cast for enumerations

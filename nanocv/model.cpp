@@ -67,7 +67,7 @@ namespace ncv
 
         tensor_t model_t::make_input(const image_t& image, coord_t x, coord_t y) const
         {
-                const rect_t region = rect_t(x, y, icols(), irows());
+                const auto region = rect_t(x, y, icols(), irows());
                 return image.to_tensor(region);
         }
 
