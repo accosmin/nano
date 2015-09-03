@@ -2,12 +2,12 @@
 
 #font="DejaVu-Sans-Mono-Bold"
 # -font ${font}
-# -gravity center
 
 params=""
-params=${params}" -background rgba(0,0,0,0)"
-#params=${params}" -undercolor rgba(0,0,0,0)"
-params=${params}" -fill rgba(0,0,0,255)"
+params=${params}" -channel RGBA"
+params=${params}" -background transparent"
+params=${params}" -undercolor transparent"
+params=${params}" -fill black"
 params=${params}" -pointsize 32"
 params=${params}" -depth 32"
 #params=${params}" -gravity center"
