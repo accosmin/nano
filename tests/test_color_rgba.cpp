@@ -62,6 +62,26 @@ BOOST_AUTO_TEST_CASE(test_color_tensor)
 
                 // load from RGBA tensor
                 {
+                        tensor_t data(4, rows, cols);
+                        data.matrix(0).setConstant(((test * rng()) % 256) / 255.0);
+                        data.matrix(1).setConstant(((test * rng()) % 256) / 255.0);
+                        data.matrix(2).setConstant(((test * rng()) % 256) / 255.0);
+                        data.matrix(3).setConstant(((test * rng()) % 256) / 255.0);
+
+                        const auto rgba = color::from_rgba_tensor(data);
+                        BOOST_CHECK_EQUAL(rgba.rows(), data.rows());
+                        BOOST_CHECK_EQUAL(rgba.cols(), data.cols());
+
+                        const auto idata = color::to_rgba_tensor(rgba);
+
+                        BOOST_REQUIRE_EQUAL(data.dims(), idata.dims());
+                        BOOST_REQUIRE_EQUAL(data.rows(), idata.rows());
+                        BOOST_REQUIRE_EQUAL(data.cols(), idata.cols());
+                        BOOST_CHECK_LE((data.vector() - idata.vector()).lpNorm<Eigen::Infinity>(), eps);
+                }
+
+                // load from RGB tensor
+                {
                         tensor_t data(3, rows, cols);
                         data.matrix(0).setConstant(((test * rng()) % 256) / 255.0);
                         data.matrix(1).setConstant(((test * rng()) % 256) / 255.0);

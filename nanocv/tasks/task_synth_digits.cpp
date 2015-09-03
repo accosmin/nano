@@ -4,8 +4,12 @@
 #include "nanocv/math/gauss.hpp"
 #include "nanocv/math/clamp.hpp"
 #include "nanocv/math/random.hpp"
+#include "nanocv/tensor/for_each.hpp"
+#include "nanocv/tensor/transform.hpp"
 #include "nanocv/vision/bilinear.hpp"
 #include "nanocv/vision/separable_filter.hpp"
+
+#include "nanocv/logger.h"
 
 namespace ncv
 {
@@ -53,6 +57,47 @@ namespace ncv
 
                         return image.block(ppy, ppx, pph, ppw);
                 }
+
+                tensor_t make_random_rgba_image(const size_t rows, const size_t cols, const rgba_t back_color,
+                        const scalar_t max_noise, const scalar_t sigma)
+                {
+                        const scalar_t ir = ncv::color::get_red(back_color) / 255.0;
+                        const scalar_t ig = ncv::color::get_green(back_color) / 255.0;
+                        const scalar_t ib = ncv::color::get_blue(back_color) / 255.0;
+
+                        tensor_t image(4, rows, cols);
+
+                        // noisy background
+                        random_t<scalar_t> back_noise(-max_noise, +max_noise);
+                        tensor::for_each(image.matrix(0), [&] (scalar_t& value) { value = ir + back_noise(); });
+                        tensor::for_each(image.matrix(1), [&] (scalar_t& value) { value = ig + back_noise(); });
+                        tensor::for_each(image.matrix(2), [&] (scalar_t& value) { value = ib + back_noise(); });
+                        image.matrix(3).setConstant(1.0);
+
+                        // smooth background
+                        const gauss_kernel_t<scalar_t> back_gauss(sigma);
+                        ncv::separable_filter(back_gauss, image.matrix(0));
+                        ncv::separable_filter(back_gauss, image.matrix(1));
+                        ncv::separable_filter(back_gauss, image.matrix(2));
+
+                        return image;
+                }
+
+                tensor_t alpha_blend(const tensor_t& mask, const tensor_t& img1, const tensor_t& img2)
+                {
+                        const auto op = [] (const auto a, const auto v1, const auto v2)
+                        {
+                                return (1.0 - a) * v1 + a * v2;
+                        };
+
+                        tensor_t imgb(4, mask.rows(), mask.cols());
+                        tensor::transform(mask.matrix(0), img1.matrix(0), img2.matrix(0), imgb.matrix(0), op);
+                        tensor::transform(mask.matrix(1), img1.matrix(1), img2.matrix(1), imgb.matrix(1), op);
+                        tensor::transform(mask.matrix(2), img1.matrix(2), img2.matrix(2), imgb.matrix(2), op);
+                        imgb.matrix(3).setConstant(1.0);
+
+                        return imgb;
+                }
         }
 
         bool synthetic_digits_task_t::load(const string_t &)
@@ -61,7 +106,7 @@ namespace ncv
 
                 random_t<size_t> rng_protocol(1, 10);
                 random_t<size_t> rng_output(1, osize());
-                random_t<scalar_t> rng_gauss(scalar_t(0.5), scalar_t(2.0));
+                random_t<scalar_t> rng_gauss(scalar_t(0.1), scalar_t(2.0));
 
                 const auto digit_patches = ncv::get_synth_digits();
 
@@ -69,58 +114,63 @@ namespace ncv
                 {
                         for (size_t i = 0; i < m_size; i ++)
                         {
-                                // random protocol: train vs. test
+                                // random protocol: train vs. test (90% training, 10% testing)
                                 const protocol p = (rng_protocol() < 9) ? protocol::train : protocol::test;
 
                                 // random output class: digit
                                 const size_t o = rng_output();
 
                                 // image: original object patch
-                                const tensor_t patch1 = color::to_rgba_tensor(get_object_patch(digit_patches, o - 1, osize(), 1.0));
+                                const tensor_t opatch = ncv::color::to_rgba_tensor(digit_patches);
+//                                        get_object_patch(digit_patches, o - 1, osize(), 1.0));
+
+                                log_info() << "opatch = " << opatch.dims() << "x" << opatch.rows() << "x" << opatch.cols();
+                                log_info() << "opatch(0) = [" << opatch.matrix(0).minCoeff() << ", " << opatch.matrix(0).maxCoeff() << "]";
+                                log_info() << "opatch(1) = [" << opatch.matrix(1).minCoeff() << ", " << opatch.matrix(1).maxCoeff() << "]";
+                                log_info() << "opatch(2) = [" << opatch.matrix(2).minCoeff() << ", " << opatch.matrix(2).maxCoeff() << "]";
+                                log_info() << "opatch(3) = [" << opatch.matrix(3).minCoeff() << ", " << opatch.matrix(3).maxCoeff() << "]";
 
                                 // image: resize to the input size
-                                tensor_t patch2(4, irows(), icols());
-                                ncv::bilinear(patch1.matrix(0), patch2.matrix(0));
-                                ncv::bilinear(patch1.matrix(1), patch2.matrix(1));
-                                ncv::bilinear(patch1.matrix(2), patch2.matrix(2));
-                                ncv::bilinear(patch1.matrix(3), patch2.matrix(3));
+                                tensor_t mpatch(4, irows(), icols());
+                                ncv::bilinear(opatch.matrix(0), mpatch.matrix(0));
+                                ncv::bilinear(opatch.matrix(1), mpatch.matrix(1));
+                                ncv::bilinear(opatch.matrix(2), mpatch.matrix(2));
+                                ncv::bilinear(opatch.matrix(3), mpatch.matrix(3));
 
-                                // image: gaussian filter
-                                const ncv::gauss_kernel_t<scalar_t> gauss(rng_gauss());
+                                log_info() << "mpatch(0) = [" << mpatch.matrix(0).minCoeff() << ", " << mpatch.matrix(0).maxCoeff() << "]";
+                                log_info() << "mpatch(1) = [" << mpatch.matrix(1).minCoeff() << ", " << mpatch.matrix(1).maxCoeff() << "]";
+                                log_info() << "mpatch(2) = [" << mpatch.matrix(2).minCoeff() << ", " << mpatch.matrix(2).maxCoeff() << "]";
+                                log_info() << "mpatch(3) = [" << mpatch.matrix(3).minCoeff() << ", " << mpatch.matrix(3).maxCoeff() << "]";
 
-                                tensor_t patch3 = patch2;
-                                ncv::separable_filter(gauss, patch3.matrix(0));
-                                ncv::separable_filter(gauss, patch3.matrix(1));
-                                ncv::separable_filter(gauss, patch3.matrix(2));
+                                // image: background & foreground layer
+                                const auto bcolor = ncv::color::make_random_rgba();
+                                const auto fcolor = ncv::color::make_opposite_random_rgba(bcolor);
 
-//                                image.random_noise(color_channel::rgba, -40.0, +40.0, rng_gauss());
+                                const auto bnoise = 0.2;
+                                const auto fnoise = 0.2;
+
+                                const auto bsigma = rng_gauss();
+                                const auto fsigma = 0.5 * rng_gauss();
+
+//                                const auto bpatch = make_random_rgba_image(irows(), icols(), bcolor, bnoise, bsigma);
+//                                const auto fpatch = make_random_rgba_image(irows(), icols(), fcolor, fnoise, fsigma);
+
+                                const auto bpatch = mpatch;
+                                const auto fpatch = mpatch;
+
+                                // TODO: random warping (using Bottou's paper!)
+
+                                // image: alpha-blend the background & foreground layer
+                                const tensor_t patch = alpha_blend(mpatch, bpatch, fpatch);
 
                                 image_t image;
                                 switch (color())
                                 {
-                                case color_mode::luma:  image.load_luma(color::from_luma_tensor(patch3)); break;
-                                case color_mode::rgba:  image.load_rgba(color::from_rgb_tensor(patch3)); break;
+                                case color_mode::luma:  image.load_luma(color::from_luma_tensor(patch)); break;
+                                case color_mode::rgba:  image.load_rgba(color::from_rgb_tensor(patch)); break;
                                 }
 
-//                                const rgba_t back_color = color::make_random_rgba();
-//                                const rgba_t shape_color = color::make_opposite_random_rgba(back_color);
-
-//                                // generate images
-//                                switch (o)
-//                                {
-//                                case 1:         break;
-//                                case 2:         make_filled_rect(image, shape_color); break;
-//                                case 3:         make_hollow_rect(image, back_color, shape_color); break;
-//                                case 4:         make_filled_ellipse(image, shape_color); break;
-//                                case 5:         make_hollow_ellipse(image, back_color, shape_color); break;
-//                                case 6:         make_cross(image, shape_color); break;
-//                                case 7:         make_filled_up_triangle(image, shape_color); break;
-//                                case 8:         make_hollow_up_triangle(image, back_color, shape_color); break;
-//                                case 9:         make_filled_down_triangle(image, shape_color); break;
-//                                case 10:        make_hollow_down_triangle(image, back_color, shape_color); break;
-//                                default:        break;
-//                                }
-
+                                // generate image
                                 add_image(image);
 
                                 // generate sample

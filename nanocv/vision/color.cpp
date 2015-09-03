@@ -229,7 +229,7 @@ namespace ncv
                 const scalar_t scale = 1.0 / 255.0;
 
                 tensor_t data(1, luma.rows(), luma.cols());
-                tensor::transform(luma, data, [=] (luma_t l) { return scale * l; });
+                tensor::transform(luma, data.matrix(0), [=] (luma_t l) { return scale * l; });
 
                 return data;
         }
