@@ -121,8 +121,8 @@ namespace ncv
                                 const size_t o = rng_output();
 
                                 // image: original object patch
-                                const tensor_t opatch = ncv::color::to_rgba_tensor(digit_patches);
-//                                        get_object_patch(digit_patches, o - 1, osize(), 1.0));
+                                const tensor_t opatch = ncv::color::to_rgba_tensor(
+                                        get_object_patch(digit_patches, o - 1, osize(), 1.0));
 
                                 log_info() << "opatch = " << opatch.dims() << "x" << opatch.rows() << "x" << opatch.cols();
                                 log_info() << "opatch(0) = [" << opatch.matrix(0).minCoeff() << ", " << opatch.matrix(0).maxCoeff() << "]";
@@ -152,11 +152,8 @@ namespace ncv
                                 const auto bsigma = rng_gauss();
                                 const auto fsigma = 0.5 * rng_gauss();
 
-//                                const auto bpatch = make_random_rgba_image(irows(), icols(), bcolor, bnoise, bsigma);
-//                                const auto fpatch = make_random_rgba_image(irows(), icols(), fcolor, fnoise, fsigma);
-
-                                const auto bpatch = mpatch;
-                                const auto fpatch = mpatch;
+                                const auto bpatch = make_random_rgba_image(irows(), icols(), bcolor, bnoise, bsigma);
+                                const auto fpatch = make_random_rgba_image(irows(), icols(), fcolor, fnoise, fsigma);
 
                                 // TODO: random warping (using Bottou's paper!)
 
