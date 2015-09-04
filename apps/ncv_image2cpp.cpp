@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
                     << (image.is_luma() ? "[luma]" : "[rgba]") << ".";
 
         const string_t funcname = "get_" + boost::filesystem::basename(cmd_input);
+        const string_t pixname = (cmd_luma ? "luma_t" : "rgba_t");
         const string_t retname = (cmd_luma ? "luma_matrix_t" : "rgba_matrix_t");
         const string_t tab(8, ' ');
 
@@ -111,18 +112,24 @@ int main(int argc, char *argv[])
         {
                 const auto op = [&] (const auto& buff)
                 {
-                        os_source << tab << retname << " data(" << image.rows() << ", " << image.cols() << ");\n";
-                        os_source << "\n";
-                        for (coord_t r = 0; r < image.rows(); r ++)
+                        os_source << tab << "static const " << pixname << " data[] = \n";
+                        os_source << tab << "{\n";
+                        for (coord_t r = 0; r < buff.rows(); r ++)
                         {
-                                os_source << tab << "data.row(" << r << ") << \n" << tab;
-                                for (coord_t c = 0; c < image.cols(); c ++)
+                                os_source << tab << tab;
+                                for (coord_t c = 0; c < buff.cols(); c ++)
                                 {
-                                        os_source << std::to_string(buff(r, c)) << ((c + 1 == image.cols()) ? "" : ", ");
+                                        os_source << std::to_string(buff(r, c));
+                                        if ((c + 1 < buff.cols()) || (r + 1 < buff.rows()))
+                                        {
+                                                os_source << ", ";
+                                        }
                                 }
-                                os_source << ";\n\n";
+                                os_source << "\n";
+                                std::cout << "\n";
                         }
-                        os_source << tab << "return data;\n";
+                        os_source << tab << "};\n\n";
+                        os_source << tab << "return tensor::map_matrix(data, " << buff.rows() << ", " << buff.cols() << ");\n";
                 };
 
                 if (cmd_luma)

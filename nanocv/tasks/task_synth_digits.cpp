@@ -163,8 +163,8 @@ namespace ncv
                                 image_t image;
                                 switch (color())
                                 {
-                                case color_mode::luma:  image.load_luma(color::from_luma_tensor(patch)); break;
-                                case color_mode::rgba:  image.load_rgba(color::from_rgb_tensor(patch)); break;
+                                case color_mode::luma:  image.load_luma(color::from_luma_tensor(mpatch)); break;
+                                case color_mode::rgba:  image.load_rgba(color::from_rgb_tensor(mpatch)); break;
                                 }
 
                                 // generate image

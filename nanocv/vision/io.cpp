@@ -7,13 +7,13 @@ namespace ncv
         static bool load_image(color_mode mode, rgba_matrix_t& rgba, luma_matrix_t& luma)
         {
                 bool ret = false;
-                
+
                 if (ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
                 {
                         const ILint cols = ilGetInteger(IL_IMAGE_WIDTH);
                         const ILint rows = ilGetInteger(IL_IMAGE_HEIGHT);
                         const ILubyte* data = ilGetData();
-                        
+
                         switch (mode)
                         {
                         case color_mode::luma:

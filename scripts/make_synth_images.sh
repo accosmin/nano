@@ -4,13 +4,13 @@
 # -font ${font}
 
 params=""
-params=${params}" -channel RGBA"
-params=${params}" -background transparent"
-params=${params}" -undercolor transparent"
-params=${params}" -fill black"
+params=${params}" -colorspace sRGB"
+params=${params}" -background #00000000"
+params=${params}" -undercolor #00000000"
+params=${params}" -fill #010101FF"
 params=${params}" -pointsize 32"
-params=${params}" -depth 32"
-#params=${params}" -gravity center"
+params=${params}" -density 196"
+params=${params}" -gravity south"
 
 # digits
 text="0123456789"
