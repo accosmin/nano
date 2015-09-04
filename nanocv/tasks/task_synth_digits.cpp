@@ -91,9 +91,9 @@ namespace ncv
                         };
 
                         tensor_t imgb(4, mask.rows(), mask.cols());
-                        tensor::transform(mask.matrix(0), img1.matrix(0), img2.matrix(0), imgb.matrix(0), op);
-                        tensor::transform(mask.matrix(1), img1.matrix(1), img2.matrix(1), imgb.matrix(1), op);
-                        tensor::transform(mask.matrix(2), img1.matrix(2), img2.matrix(2), imgb.matrix(2), op);
+                        tensor::transform(mask.matrix(3), img1.matrix(0), img2.matrix(0), imgb.matrix(0), op);
+                        tensor::transform(mask.matrix(3), img1.matrix(1), img2.matrix(1), imgb.matrix(1), op);
+                        tensor::transform(mask.matrix(3), img1.matrix(2), img2.matrix(2), imgb.matrix(2), op);
                         imgb.matrix(3).setConstant(1.0);
 
                         return imgb;
@@ -124,23 +124,12 @@ namespace ncv
                                 const tensor_t opatch = ncv::color::to_rgba_tensor(
                                         get_object_patch(digit_patches, o - 1, osize(), 1.0));
 
-                                log_info() << "opatch = " << opatch.dims() << "x" << opatch.rows() << "x" << opatch.cols();
-                                log_info() << "opatch(0) = [" << opatch.matrix(0).minCoeff() << ", " << opatch.matrix(0).maxCoeff() << "]";
-                                log_info() << "opatch(1) = [" << opatch.matrix(1).minCoeff() << ", " << opatch.matrix(1).maxCoeff() << "]";
-                                log_info() << "opatch(2) = [" << opatch.matrix(2).minCoeff() << ", " << opatch.matrix(2).maxCoeff() << "]";
-                                log_info() << "opatch(3) = [" << opatch.matrix(3).minCoeff() << ", " << opatch.matrix(3).maxCoeff() << "]";
-
                                 // image: resize to the input size
                                 tensor_t mpatch(4, irows(), icols());
                                 ncv::bilinear(opatch.matrix(0), mpatch.matrix(0));
                                 ncv::bilinear(opatch.matrix(1), mpatch.matrix(1));
                                 ncv::bilinear(opatch.matrix(2), mpatch.matrix(2));
                                 ncv::bilinear(opatch.matrix(3), mpatch.matrix(3));
-
-                                log_info() << "mpatch(0) = [" << mpatch.matrix(0).minCoeff() << ", " << mpatch.matrix(0).maxCoeff() << "]";
-                                log_info() << "mpatch(1) = [" << mpatch.matrix(1).minCoeff() << ", " << mpatch.matrix(1).maxCoeff() << "]";
-                                log_info() << "mpatch(2) = [" << mpatch.matrix(2).minCoeff() << ", " << mpatch.matrix(2).maxCoeff() << "]";
-                                log_info() << "mpatch(3) = [" << mpatch.matrix(3).minCoeff() << ", " << mpatch.matrix(3).maxCoeff() << "]";
 
                                 // image: background & foreground layer
                                 const auto bcolor = ncv::color::make_random_rgba();
@@ -163,8 +152,8 @@ namespace ncv
                                 image_t image;
                                 switch (color())
                                 {
-                                case color_mode::luma:  image.load_luma(color::from_luma_tensor(mpatch)); break;
-                                case color_mode::rgba:  image.load_rgba(color::from_rgb_tensor(mpatch)); break;
+                                case color_mode::luma:  image.load_luma(color::from_luma_tensor(patch)); break;
+                                case color_mode::rgba:  image.load_rgba(color::from_rgba_tensor(patch)); break;
                                 }
 
                                 // generate image
