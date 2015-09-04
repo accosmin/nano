@@ -4,7 +4,7 @@
 #include "nanocv/math/gauss.hpp"
 #include "nanocv/math/clamp.hpp"
 #include "nanocv/math/random.hpp"
-#include "nanocv/vision/filter.hpp"
+#include "nanocv/vision/convolve.hpp"
 #include "nanocv/tensor/for_each.hpp"
 #include "nanocv/tensor/transform.hpp"
 #include "nanocv/vision/bilinear.hpp"
