@@ -25,7 +25,8 @@ A trainer optimizes the parameters of a given model to produce the correct outpu
 
 Use a C++14 compiler (gcc 4.9+, clang) and install Boost, Eigen3, LibArchive and DevIL. 
 
-NanoCV is tested on ArchLinux (gcc 4.9+, CMake 3.1+, Ninja) and OSX (clang, homebrew, CMake 3.1+, Ninja). The code is written to be cross-platform, so it may work (with minor fixes) on other plaforms (e.g. Windows/MSVC).
+NanoCV is tested on ArchLinux (gcc 4.9+, CMake 3.1+, Ninja) and OSX (clang, homebrew, CMake 3.1+, Ninja). The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. 
+Windows/MSVC).
 
 The easiest way to compile (and install) is to run the `build_release.sh` bash script. The test programs and utilities will be found in the `build-release` directory.
 
