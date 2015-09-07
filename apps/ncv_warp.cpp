@@ -6,6 +6,7 @@
 #include "nanocv/tensor/random.hpp"
 #include "nanocv/vision/gradient.hpp"
 #include "nanocv/vision/convolve.hpp"
+#include "nanocv/vision/image_grid.h"
 #include <boost/program_options.hpp>
 
 namespace
@@ -143,14 +144,27 @@ int main(int argc, char *argv[])
                     << (iimage.is_luma() ? "[luma]" : "[rgba]") << ".";
 
         // randomly warp the input image
-        image_t oimage;
-        ncv::measure_and_log(
-                [&] () { oimage = warp(iimage); },
-                "warped image");
+        const size_t grid_rows = std::max(size_t(2), size_t(1024) / iimage.rows());
+        const size_t grid_cols = std::max(size_t(2), size_t(1024) / iimage.cols());
+
+        image_grid_t grid(iimage.rows(), iimage.cols(), grid_rows, grid_cols);
+
+        for (size_t gr = 0; gr < grid_rows; gr ++)
+        {
+                for (size_t gc = 0; gc < grid_cols; gc ++)
+                {
+                        image_t oimage;
+                        ncv::measure_and_log(
+                                [&] () { oimage = warp(iimage); },
+                                "warped image");
+
+                        grid.set(gr, gc, oimage);
+                }
+        }
 
         // save output image
         ncv::measure_critical_and_log(
-                [&] () { return oimage.save(cmd_output); },
+                [&] () { return grid.image().save(cmd_output); },
                 "saved image to <" + cmd_output + ">",
                 "failed to save to <" + cmd_output + ">");
 		
