@@ -290,7 +290,7 @@ namespace ncv
                         tensor::transform(data.matrix(0), data.matrix(1), data.matrix(2), luma,
                                           [=] (scalar_t r, scalar_t g, scalar_t b)
                         {
-                                return make_rgba(to_byte(255.0 * r), to_byte(255.0 * g), to_byte(255.0 * b));
+                                return make_luma(to_byte(255.0 * r), to_byte(255.0 * g), to_byte(255.0 * b));
                         });
                         break;
 
