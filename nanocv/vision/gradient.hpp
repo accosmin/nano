@@ -13,7 +13,7 @@ namespace ncv
                 typename tmatrixi,
                 typename tmatrixo
         >
-        void xgradient(const tmatrixi& srcplane, tmatrixo&& xplane)
+        void gradientx(const tmatrixi& srcplane, tmatrixo&& xplane)
         {
                 assert(srcplane.rows() == xplane.rows());
                 assert(srcplane.cols() == xplane.cols());
@@ -41,7 +41,7 @@ namespace ncv
                 typename tmatrixi,
                 typename tmatrixo
         >
-        void ygradient(const tmatrixi& srcplane, tmatrixo&& yplane)
+        void gradienty(const tmatrixi& srcplane, tmatrixo&& yplane)
         {
                 assert(srcplane.rows() == yplane.rows());
                 assert(srcplane.cols() == yplane.cols());

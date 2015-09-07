@@ -16,7 +16,7 @@ namespace ncv
                 typename tmatrix,                       ///< source data
 
                 typename tscalar = typename tkernel::tscalar,
-                typename tvalue = typename tmatrix::Scalar
+                typename tvalue = typename std::remove_reference<tmatrix>::type::Scalar
         >
         void separable_filter(const tkernel& kernel, tmatrix&& src)
         {
