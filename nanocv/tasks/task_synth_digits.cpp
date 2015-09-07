@@ -139,7 +139,7 @@ namespace ncv
                 random_t<scalar_t> rng_gauss(scalar_t(0.1), scalar_t(2.0));
 
                 random_t<scalar_t> rng_alpha(-2.0, +2.0);
-                random_t<scalar_t> rng_beta(-1.0, +1.0);
+                random_t<scalar_t> rng_beta(-2.0, +2.0);
 
                 const auto digit_patches = ncv::get_synth_digits();
 
@@ -155,7 +155,7 @@ namespace ncv
 
                                 // image: original object patch
                                 const tensor_t opatch = ncv::color::to_rgba_tensor(
-                                        get_object_patch(digit_patches, o - 1, osize(), 1.0));
+                                        get_object_patch(digit_patches, o - 1, osize(), 0.0));
 
                                 // image: resize to the input size
                                 tensor_t mpatch(4, irows(), icols());
@@ -195,11 +195,11 @@ namespace ncv
                                 const auto bcolor = ncv::color::make_random_rgba();
                                 const auto fcolor = ncv::color::make_opposite_random_rgba(bcolor);
 
-                                const auto bnoise = 0.2;
-                                const auto fnoise = 0.2;
+                                const auto bnoise = 0.1;
+                                const auto fnoise = 0.1;
 
                                 const auto bsigma = rng_gauss();
-                                const auto fsigma = 0.5 * rng_gauss();
+                                const auto fsigma = rng_gauss();
 
                                 const auto bpatch = make_random_rgba_image(irows(), icols(), bcolor, bnoise, bsigma);
                                 const auto fpatch = make_random_rgba_image(irows(), icols(), fcolor, fnoise, fsigma);
