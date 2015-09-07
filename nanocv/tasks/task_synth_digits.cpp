@@ -76,9 +76,9 @@ namespace ncv
 
                         // smooth background
                         const gauss_kernel_t<scalar_t> back_gauss(sigma);
-                        ncv::separable_filter(back_gauss, image.matrix(0));
-                        ncv::separable_filter(back_gauss, image.matrix(1));
-                        ncv::separable_filter(back_gauss, image.matrix(2));
+                        ncv::convolve(back_gauss, image.matrix(0));
+                        ncv::convolve(back_gauss, image.matrix(1));
+                        ncv::convolve(back_gauss, image.matrix(2));
 
                         return image;
                 }
@@ -107,7 +107,7 @@ namespace ncv
                         tensor::set_random(field, rng);
 
                         const gauss_kernel_t<scalar_t> gauss(sigma);
-                        ncv::separable_filter(gauss, field);
+                        ncv::convolve(gauss, field);
 
                         return field;
                 }

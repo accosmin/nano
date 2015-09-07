@@ -18,7 +18,7 @@ namespace ncv
                 typename tscalar = typename tkernel::tscalar,
                 typename tvalue = typename std::remove_reference<tmatrix>::type::Scalar
         >
-        void separable_filter(const tkernel& kernel, tmatrix&& src)
+        void convolve(const tkernel& kernel, tmatrix&& src)
         {
                 const int rows = static_cast<int>(src.rows());
                 const int cols = static_cast<int>(src.cols());
