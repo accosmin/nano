@@ -6,7 +6,8 @@
 #include "nanocv/tensor/random.hpp"
 #include "nanocv/vision/gradient.hpp"
 #include "nanocv/vision/convolve.hpp"
-#include "nanocv/vision/image_grid.h"
+
+#include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
 namespace
@@ -51,7 +52,7 @@ namespace
                 x.array() +=
                         alphax * fieldx.array() * gradx.array() +
                         alphay * fieldy.array() * grady.array() +
-                        beta * (fieldx.array().square() + fieldy.array().square()).sqrt();
+                        beta * (gradx.array().square() + grady.array().square()).sqrt();
         }
 
         image_t warp(const image_t& iimage)
@@ -74,24 +75,34 @@ namespace
 
                 // generate random fields
                 random_t<scalar_t> rng_delta(-4.0, +4.0);
-                random_t<scalar_t> rng_noise(+0.0, +4.0);
-                random_t<scalar_t> rng_sigma(+0.0, +2.0);
+                random_t<scalar_t> rng_noise(+0.0, +1.0);
+                random_t<scalar_t> rng_sigma(+1.0, +1.0 + scalar_t(std::min(iimage.rows(), iimage.cols())) / 16.0);
 
-                const matrix_t fieldx = make_translation_field(patch.rows(), patch.cols(), rng_delta(), rng_noise(), rng_sigma());
-                const matrix_t fieldy = make_translation_field(patch.rows(), patch.cols(), rng_delta(), rng_noise(), rng_sigma());
+                const auto fieldx = make_translation_field(patch.rows(), patch.cols(), rng_delta(), rng_noise(), rng_sigma());
+                const auto fieldy = make_translation_field(patch.rows(), patch.cols(), rng_delta(), rng_noise(), rng_sigma());
 
                 // warp
                 random_t<scalar_t> rng_alpha(-1.0, +1.0);
-                random_t<scalar_t> rng_beta(-1.0, +1.0);
+                random_t<scalar_t> rng_beta (-2.0, +2.0);
 
                 const scalar_t alphax = rng_alpha();
                 const scalar_t alphay = rng_alpha();
                 const scalar_t beta = rng_beta();
 
+                log_info() << "patch(0) = [" << patch.matrix(0).minCoeff() << ", " << patch.matrix(0).maxCoeff() << "]";
+                log_info() << "patch(1) = [" << patch.matrix(1).minCoeff() << ", " << patch.matrix(1).maxCoeff() << "]";
+                log_info() << "patch(2) = [" << patch.matrix(2).minCoeff() << ", " << patch.matrix(2).maxCoeff() << "]";
+                log_info() << "patch(3) = [" << patch.matrix(3).minCoeff() << ", " << patch.matrix(3).maxCoeff() << "]";
+
                 warp_by_field(patch.matrix(0), alphax, fieldx, patchgx.matrix(0), alphay, fieldy, patchgy.matrix(0), beta);
                 warp_by_field(patch.matrix(1), alphax, fieldx, patchgx.matrix(1), alphay, fieldy, patchgy.matrix(1), beta);
                 warp_by_field(patch.matrix(2), alphax, fieldx, patchgx.matrix(2), alphay, fieldy, patchgy.matrix(2), beta);
                 warp_by_field(patch.matrix(3), alphax, fieldx, patchgx.matrix(3), alphay, fieldy, patchgy.matrix(3), beta);
+
+                log_info() << "*patch(0) = [" << patch.matrix(0).minCoeff() << ", " << patch.matrix(0).maxCoeff() << "]";
+                log_info() << "*patch(1) = [" << patch.matrix(1).minCoeff() << ", " << patch.matrix(1).maxCoeff() << "]";
+                log_info() << "*patch(2) = [" << patch.matrix(2).minCoeff() << ", " << patch.matrix(2).maxCoeff() << "]";
+                log_info() << "*patch(3) = [" << patch.matrix(3).minCoeff() << ", " << patch.matrix(3).maxCoeff() << "]";
 
                 // OK
                 image_t oimage;
@@ -110,6 +121,9 @@ int main(int argc, char *argv[])
         po_desc.add_options()("input,i",
                 boost::program_options::value<ncv::string_t>(),
                 "input image path");
+        po_desc.add_options()("count,c",
+                boost::program_options::value<ncv::size_t>()->default_value(32),
+                "number of random warpings to generate");
         po_desc.add_options()("output,o",
                 boost::program_options::value<ncv::string_t>(),
                 "output (warped) image path");
@@ -132,6 +146,7 @@ int main(int argc, char *argv[])
 
         const string_t cmd_input = po_vm["input"].as<string_t>();
         const string_t cmd_output = po_vm["output"].as<string_t>();
+        const size_t cmd_count = po_vm["count"].as<size_t>();
 
         // load input image
         image_t iimage;
@@ -144,29 +159,24 @@ int main(int argc, char *argv[])
                     << (iimage.is_luma() ? "[luma]" : "[rgba]") << ".";
 
         // randomly warp the input image
-        const size_t grid_rows = std::max(size_t(2), size_t(1024) / iimage.rows());
-        const size_t grid_cols = std::max(size_t(2), size_t(1024) / iimage.cols());
-
-        image_grid_t grid(iimage.rows(), iimage.cols(), grid_rows, grid_cols);
-
-        for (size_t gr = 0; gr < grid_rows; gr ++)
+        for (size_t c = 0; c < cmd_count; c ++)
         {
-                for (size_t gc = 0; gc < grid_cols; gc ++)
-                {
-                        image_t oimage;
-                        ncv::measure_and_log(
-                                [&] () { oimage = warp(iimage); },
-                                "warped image");
+                const string_t path =
+                        (boost::filesystem::path(cmd_output).parent_path() /
+                         boost::filesystem::path(cmd_output).stem()).string() +
+                         text::to_string(c + 1) +
+                         boost::filesystem::path(cmd_output).extension().string();
 
-                        grid.set(gr, gc, oimage);
-                }
+                image_t oimage;
+                ncv::measure_and_log(
+                        [&] () { oimage = warp(iimage); },
+                        "warped image");
+
+                ncv::measure_critical_and_log(
+                        [&] () { return oimage.save(path); },
+                        "saved image to <" + path + ">",
+                        "failed to save to <" + path + ">");
         }
-
-        // save output image
-        ncv::measure_critical_and_log(
-                [&] () { return grid.image().save(cmd_output); },
-                "saved image to <" + cmd_output + ">",
-                "failed to save to <" + cmd_output + ">");
 		
         // OK
         log_info() << ncv::done;
