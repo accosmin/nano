@@ -3,6 +3,7 @@
 #include "nanocv/math/gauss.hpp"
 #include "nanocv/vision/image.h"
 #include "nanocv/math/random.hpp"
+#include "nanocv/math/numeric.hpp"
 #include "nanocv/tensor/random.hpp"
 #include "nanocv/vision/gradient.hpp"
 #include "nanocv/vision/convolve.hpp"
@@ -16,26 +17,68 @@ namespace
 
         /// \todo move these to library (once the warping algorithm works OK)
 
+        void smooth_field(matrix_t& field, const scalar_t sigma)
+        {
+                const gauss_kernel_t<scalar_t> gauss(sigma);
+                ncv::convolve(gauss, field);
+        }
+
         matrix_t make_random_field(
-                const size_t rows, const size_t cols,
-                const scalar_t min_delta, const scalar_t max_delta, const scalar_t sigma)
+                const size_t rows, const size_t cols, random_t<scalar_t> rng, const scalar_t sigma)
         {
                 matrix_t field(rows, cols);
 
-                random_t<scalar_t> rng(min_delta, max_delta);
                 tensor::set_random(field, rng);
 
-                const gauss_kernel_t<scalar_t> gauss(sigma);
-                ncv::convolve(gauss, field);
+                smooth_field(field, sigma);
 
                 return field;
         }
 
-        matrix_t make_translation_field(
+        std::tuple<matrix_t, matrix_t> make_translation_fields(
                 const size_t rows, const size_t cols,
-                const scalar_t delta, const scalar_t max_noise, const scalar_t sigma)
+                const scalar_t delta, const scalar_t noise, const scalar_t sigma)
         {
-                return make_random_field(rows, cols, delta - max_noise, delta + max_noise, sigma);
+                matrix_t fieldx(rows, cols), fieldy(rows, cols);
+
+                tensor::set_random(fieldx, random_t<scalar_t>(delta - noise, delta + noise));
+                tensor::set_random(fieldy, random_t<scalar_t>(delta - noise, delta + noise));
+
+                smooth_field(fieldx, sigma);
+                smooth_field(fieldy, sigma);
+
+                return std::make_tuple(fieldx, fieldy);
+        }
+
+        std::tuple<matrix_t, matrix_t> make_rotation_fields(
+                const size_t rows, const size_t cols,
+                const scalar_t delta,
+                const scalar_t theta,
+                const scalar_t sigma)
+        {
+                matrix_t fieldx(rows, cols), fieldy(rows, cols);
+
+                const scalar_t cx = 0.5 * cols;
+                const scalar_t cy = 0.5 * rows;
+                const scalar_t id = 1.0 / (math::square(cx) + math::square(cy));
+
+                random_t<scalar_t> rng(-delta, +delta);
+
+                for (size_t r = 0; r < rows; r ++)
+                {
+                        for (size_t c = 0; c < cols; c ++)
+                        {
+                                const auto dist = math::square(scalar_t(r) - cy) + math::square(scalar_t(c) - cx);
+
+                                fieldx(r, c) = id * dist * std::cos(theta) + rng();
+                                fieldy(r, c) = id * dist * std::sin(theta) + rng();
+                        }
+                }
+
+                smooth_field(fieldx, sigma);
+                smooth_field(fieldy, sigma);
+
+                return std::make_tuple(fieldx, fieldy);
         }
 
         template
@@ -74,20 +117,30 @@ namespace
                 ncv::gradienty(patch.matrix(3), patchgy.matrix(3));
 
                 // generate random fields
-                random_t<scalar_t> rng_delta(-4.0, +4.0);
-                random_t<scalar_t> rng_noise(+0.0, +1.0);
-                random_t<scalar_t> rng_sigma(+1.0, +1.0 + scalar_t(std::min(iimage.rows(), iimage.cols())) / 16.0);
+                const scalar_t pi = std::atan2(0.0, -0.0);
+                const auto max_delta = scalar_t(std::min(iimage.rows(), iimage.cols())) / 16.0;
+                const auto max_sigma = scalar_t(std::min(iimage.rows(), iimage.cols())) / 16.0;
 
-                const auto fieldx = make_translation_field(patch.rows(), patch.cols(), rng_delta(), rng_noise(), rng_sigma());
-                const auto fieldy = make_translation_field(patch.rows(), patch.cols(), rng_delta(), rng_noise(), rng_sigma());
+                random_t<scalar_t> rng_theta(-pi / 8.0, +pi / 8.0);
+                random_t<scalar_t> rng_delta(-max_delta, +max_delta);
+                random_t<scalar_t> rng_sigma(+1.0, +1.0 + max_sigma);
+                random_t<scalar_t> rng_noise(+0.0, max_delta / 4.0);
+
+                matrix_t fieldx, fieldy;
+
+//                std::tie(fieldx, fieldy) = make_translation_fields(patch.rows(), patch.cols(),
+//                        rng_delta(), rng_noise(), rng_sigma());
+
+                std::tie(fieldx, fieldy) = make_rotation_fields(patch.rows(), patch.cols(),
+                        /*rng_delta()*/ 0.0, rng_theta(), rng_sigma());
 
                 // warp
                 random_t<scalar_t> rng_alpha(-1.0, +1.0);
-                random_t<scalar_t> rng_beta (-2.0, +2.0);
+                random_t<scalar_t> rng_beta (-1.0, +1.0);
 
-                const scalar_t alphax = rng_alpha();
-                const scalar_t alphay = rng_alpha();
-                const scalar_t beta = rng_beta();
+                const scalar_t alphax = 8.0 * rng_alpha();
+                const scalar_t alphay = 8.0 * rng_alpha();
+                const scalar_t beta = 0.0;//rng_beta();
 
                 log_info() << "patch(0) = [" << patch.matrix(0).minCoeff() << ", " << patch.matrix(0).maxCoeff() << "]";
                 log_info() << "patch(1) = [" << patch.matrix(1).minCoeff() << ", " << patch.matrix(1).maxCoeff() << "]";
