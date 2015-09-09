@@ -7,6 +7,7 @@
 #include "nanocv/tensor/random.hpp"
 #include "nanocv/vision/gradient.hpp"
 #include "nanocv/vision/convolve.hpp"
+#include "nanocv/tensor/transform.hpp"
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
@@ -14,6 +15,8 @@
 namespace
 {
         using namespace ncv;
+
+        /// \todo move these to library (once the warping algorithm works OK)
 
         enum class field_type
         {
@@ -39,7 +42,27 @@ namespace
                 scalar_t        m_sigma;
         };
 
-        /// \todo move these to library (once the warping algorithm works OK)
+        image_t image_field(const matrix_t& fieldx, const matrix_t& fieldy)
+        {
+                assert(fieldx.rows() == fieldy.rows());
+                assert(fieldx.cols() == fieldy.cols());
+
+                rgba_matrix_t rgba(fieldx.rows(), fieldx.cols());
+                tensor::transform(fieldx, fieldy, rgba, [] (const scalar_t fx, const scalar_t fy)
+                {
+                        const auto red  = math::clamp(255.0 * 0.5 * (fx + 1.0), 0.0, 255.0);
+                        const auto blue = math::clamp(255.0 * 0.5 * (fy + 1.0), 0.0, 255.0);
+
+                        return color::make_rgba(
+                                math::cast<rgba_t>(red),
+                                0,
+                                math::cast<rgba_t>(blue));
+                });
+
+                image_t image;
+                image.load_rgba(rgba);
+                return image;
+        }
 
         void smooth_field(matrix_t& field, const scalar_t sigma)
         {
@@ -123,7 +146,7 @@ namespace
                         beta * (gradx.array().square() + grady.array().square()).sqrt();
         }
 
-        image_t warp(const image_t& iimage, const field_params& fparams)
+        image_t warp(const image_t& iimage, const field_params& fparams, image_t* fimage = nullptr)
         {
                 tensor_t patch = ncv::color::to_rgba_tensor(iimage.rgba());
 
@@ -167,12 +190,19 @@ namespace
                         break;
                 }
 
-                // warp
-                random_t<scalar_t> rng_alpha(-1.0, +1.0);
-                random_t<scalar_t> rng_beta (-1.0, +1.0);
+                // visualize the fields (if requested)
+                if (fimage)
+                {
+                        *fimage = image_field(fieldx, fieldy);
+                }
 
-                const scalar_t alphax = rng_alpha();
-                const scalar_t alphay = rng_alpha();
+                // warp
+                random_t<scalar_t> rng_alphax(-1.0, +1.0);
+                random_t<scalar_t> rng_alphay(-1.0, +1.0);
+                random_t<scalar_t> rng_beta  (-1.0, +1.0);
+
+                const scalar_t alphax = rng_alphax();
+                const scalar_t alphay = rng_alphay();
                 const scalar_t beta = rng_beta();
 
                 log_info() << "patch(0) = [" << patch.matrix(0).minCoeff() << ", " << patch.matrix(0).maxCoeff() << "]";
@@ -273,21 +303,34 @@ int main(int argc, char *argv[])
         // randomly warp the input image
         for (size_t c = 0; c < cmd_count; c ++)
         {
-                const string_t path =
+                image_t oimage, fimage;
+                ncv::measure_and_log(
+                        [&] () { oimage = warp(iimage, fparams, &fimage); },
+                        "warped image");
+
+                // save warped image
+                const string_t opath =
                         (boost::filesystem::path(cmd_output).parent_path() /
                          boost::filesystem::path(cmd_output).stem()).string() +
                          text::to_string(c + 1) +
                          boost::filesystem::path(cmd_output).extension().string();
 
-                image_t oimage;
-                ncv::measure_and_log(
-                        [&] () { oimage = warp(iimage, fparams); },
-                        "warped image");
+                ncv::measure_critical_and_log(
+                        [&] () { return oimage.save(opath); },
+                        "saved image to <" + opath + ">",
+                        "failed to save to <" + opath + ">");
+
+                // save field image
+                const string_t fpath =
+                        (boost::filesystem::path(cmd_output).parent_path() /
+                         boost::filesystem::path(cmd_output).stem()).string() +
+                         text::to_string(c + 1) + "_field" +
+                         boost::filesystem::path(cmd_output).extension().string();
 
                 ncv::measure_critical_and_log(
-                        [&] () { return oimage.save(path); },
-                        "saved image to <" + path + ">",
-                        "failed to save to <" + path + ">");
+                        [&] () { return fimage.save(fpath); },
+                        "saved field image to <" + fpath + ">",
+                        "failed to save to <" + fpath + ">");
         }
 		
         // OK
