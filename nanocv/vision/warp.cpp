@@ -16,18 +16,22 @@ namespace ncv
                         assert(fieldx.rows() == fieldy.rows());
                         assert(fieldx.cols() == fieldy.cols());
 
+                        const scalar_t pi = std::atan2(0.0, -0.0);
+                        const scalar_t ipi = 1.0 / pi;
+
                         tensor_t image(4, fieldx.rows(), fieldx.cols());
-                        tensor::transform(fieldx, fieldy, image.matrix(0), [] (const scalar_t fx, const scalar_t)
+
+                        tensor::transform(fieldx, fieldy, image.matrix(0), [=] (const scalar_t fx, const scalar_t fy)
                         {
-                                return math::clamp(0.5 * (fx + 1.0), 0.0, 1.0);
+                                return math::clamp(std::sqrt(0.5 * (fx * fx + fy * fy)), 0.0, 1.0);
                         });
-                        tensor::transform(fieldx, fieldy, image.matrix(1), [] (const scalar_t, const scalar_t)
+                        tensor::transform(fieldx, fieldy, image.matrix(1), [=] (const scalar_t, const scalar_t)
                         {
                                 return 0.0;
                         });
-                        tensor::transform(fieldx, fieldy, image.matrix(2), [] (const scalar_t, const scalar_t fy)
+                        tensor::transform(fieldx, fieldy, image.matrix(2), [=] (const scalar_t fx, const scalar_t fy)
                         {
-                                return math::clamp(0.5 * (fy + 1.0), 0.0, 1.0);
+                                return 0.5 * math::clamp(0.5 * (ipi * atan2(fy, fx) + 1.0), 0.0, 1.0);
                         });
                         tensor::transform(fieldx, fieldy, image.matrix(3), [] (const scalar_t, const scalar_t)
                         {

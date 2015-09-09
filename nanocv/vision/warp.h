@@ -19,7 +19,7 @@ namespace ncv
                 explicit warp_params(
                         field_type ftype = field_type::random,
                         scalar_t noise = 0.1,
-                        scalar_t sigma = 0.1)
+                        scalar_t sigma = 4.0)
                         :       m_ftype(ftype),
                                 m_noise(noise),
                                 m_sigma(sigma)
