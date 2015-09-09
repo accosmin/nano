@@ -15,6 +15,30 @@ namespace
 {
         using namespace ncv;
 
+        enum class field_type
+        {
+                translation,
+                rotation,
+                random,
+        };
+
+        struct field_params
+        {
+                explicit field_params(
+                        field_type ftype = field_type::random,
+                        scalar_t noise = 0.1,
+                        scalar_t sigma = 0.1)
+                        :       m_ftype(ftype),
+                                m_noise(noise),
+                                m_sigma(sigma)
+                {
+                }
+
+                field_type      m_ftype;
+                scalar_t        m_noise;
+                scalar_t        m_sigma;
+        };
+
         /// \todo move these to library (once the warping algorithm works OK)
 
         void smooth_field(matrix_t& field, const scalar_t sigma)
@@ -23,16 +47,19 @@ namespace
                 ncv::convolve(gauss, field);
         }
 
-        matrix_t make_random_field(
-                const size_t rows, const size_t cols, random_t<scalar_t> rng, const scalar_t sigma)
+        std::tuple<matrix_t, matrix_t> make_random_fields(
+                const size_t rows, const size_t cols,
+                const scalar_t noise, const scalar_t sigma)
         {
-                matrix_t field(rows, cols);
+                matrix_t fieldx(rows, cols), fieldy(rows, cols);
 
-                tensor::set_random(field, rng);
+                tensor::set_random(fieldx, random_t<scalar_t>(-noise, +noise));
+                tensor::set_random(fieldy, random_t<scalar_t>(-noise, +noise));
 
-                smooth_field(field, sigma);
+                smooth_field(fieldx, sigma);
+                smooth_field(fieldy, sigma);
 
-                return field;
+                return std::make_tuple(fieldx, fieldy);
         }
 
         std::tuple<matrix_t, matrix_t> make_translation_fields(
@@ -52,9 +79,7 @@ namespace
 
         std::tuple<matrix_t, matrix_t> make_rotation_fields(
                 const size_t rows, const size_t cols,
-                const scalar_t delta,
-                const scalar_t theta,
-                const scalar_t sigma)
+                const scalar_t theta, const scalar_t noise, const scalar_t sigma)
         {
                 matrix_t fieldx(rows, cols), fieldy(rows, cols);
 
@@ -62,7 +87,7 @@ namespace
                 const scalar_t cy = 0.5 * rows;
                 const scalar_t id = 1.0 / (math::square(cx) + math::square(cy));
 
-                random_t<scalar_t> rng(-delta, +delta);
+                random_t<scalar_t> rng(-noise, +noise);
 
                 for (size_t r = 0; r < rows; r ++)
                 {
@@ -98,7 +123,7 @@ namespace
                         beta * (gradx.array().square() + grady.array().square()).sqrt();
         }
 
-        image_t warp(const image_t& iimage)
+        image_t warp(const image_t& iimage, const field_params& fparams)
         {
                 tensor_t patch = ncv::color::to_rgba_tensor(iimage.rgba());
 
@@ -118,29 +143,37 @@ namespace
 
                 // generate random fields
                 const scalar_t pi = std::atan2(0.0, -0.0);
-                const auto max_delta = scalar_t(std::min(iimage.rows(), iimage.cols())) / 16.0;
-                const auto max_sigma = scalar_t(std::min(iimage.rows(), iimage.cols())) / 16.0;
 
                 random_t<scalar_t> rng_theta(-pi / 8.0, +pi / 8.0);
-                random_t<scalar_t> rng_delta(-max_delta, +max_delta);
-                random_t<scalar_t> rng_sigma(+1.0, +1.0 + max_sigma);
-                random_t<scalar_t> rng_noise(+0.0, max_delta / 4.0);
+                random_t<scalar_t> rng_delta(-1.0, +1.0);
 
                 matrix_t fieldx, fieldy;
+                switch (fparams.m_ftype)
+                {
+                case field_type::translation:
+                        std::tie(fieldx, fieldy) =
+                        make_translation_fields(patch.rows(), patch.cols(), rng_delta(), fparams.m_noise, fparams.m_sigma);
+                        break;
 
-//                std::tie(fieldx, fieldy) = make_translation_fields(patch.rows(), patch.cols(),
-//                        rng_delta(), rng_noise(), rng_sigma());
+                case field_type::rotation:
+                        std::tie(fieldx, fieldy) =
+                        make_rotation_fields(patch.rows(), patch.cols(), rng_theta(), fparams.m_noise, fparams.m_sigma);
+                        break;
 
-                std::tie(fieldx, fieldy) = make_rotation_fields(patch.rows(), patch.cols(),
-                        /*rng_delta()*/ 0.0, rng_theta(), rng_sigma());
+                case field_type::random:
+                default:
+                        std::tie(fieldx, fieldy) =
+                        make_random_fields(patch.rows(), patch.cols(), fparams.m_noise, fparams.m_sigma);
+                        break;
+                }
 
                 // warp
                 random_t<scalar_t> rng_alpha(-1.0, +1.0);
                 random_t<scalar_t> rng_beta (-1.0, +1.0);
 
-                const scalar_t alphax = 8.0 * rng_alpha();
-                const scalar_t alphay = 8.0 * rng_alpha();
-                const scalar_t beta = 0.0;//rng_beta();
+                const scalar_t alphax = rng_alpha();
+                const scalar_t alphay = rng_alpha();
+                const scalar_t beta = rng_beta();
 
                 log_info() << "patch(0) = [" << patch.matrix(0).minCoeff() << ", " << patch.matrix(0).maxCoeff() << "]";
                 log_info() << "patch(1) = [" << patch.matrix(1).minCoeff() << ", " << patch.matrix(1).maxCoeff() << "]";
@@ -177,6 +210,12 @@ int main(int argc, char *argv[])
         po_desc.add_options()("count,c",
                 boost::program_options::value<ncv::size_t>()->default_value(32),
                 "number of random warpings to generate");
+        po_desc.add_options()("translation",
+                "use translation fields");
+        po_desc.add_options()("rotation",
+                "use rotation fields");
+        po_desc.add_options()("random",
+                "use random fields");
         po_desc.add_options()("output,o",
                 boost::program_options::value<ncv::string_t>(),
                 "output (warped) image path");
@@ -201,6 +240,26 @@ int main(int argc, char *argv[])
         const string_t cmd_output = po_vm["output"].as<string_t>();
         const size_t cmd_count = po_vm["count"].as<size_t>();
 
+        const bool cmd_ftype_trs = po_vm.count("translation");
+        const bool cmd_ftype_rot = po_vm.count("rotation");
+        const bool cmd_ftype_rnd = po_vm.count("random");
+
+        field_type ftype = field_type::random;
+        if (cmd_ftype_trs)
+        {
+                ftype = field_type::translation;
+        }
+        else if (cmd_ftype_rot)
+        {
+                ftype = field_type::rotation;
+        }
+        else if (cmd_ftype_rnd)
+        {
+                ftype = field_type::random;
+        }
+
+        const field_params fparams(ftype);
+
         // load input image
         image_t iimage;
         ncv::measure_critical_and_log(
@@ -222,7 +281,7 @@ int main(int argc, char *argv[])
 
                 image_t oimage;
                 ncv::measure_and_log(
-                        [&] () { oimage = warp(iimage); },
+                        [&] () { oimage = warp(iimage, fparams); },
                         "warped image");
 
                 ncv::measure_critical_and_log(
