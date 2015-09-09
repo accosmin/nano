@@ -12,18 +12,32 @@ params=${params}" -pointsize 32"
 params=${params}" -density 196"
 params=${params}" -gravity south"
 
-# digits
-text="0123456789"
-name="synth_digits.png"
+flist="fonts.list"
 
-rm -f ${name}
-convert ${params} label:${text} ${name}
+# use all monospace fonts
+convert -list font | grep -i mono | grep -i font: > ${flist}
+while read font
+do
+    fname=${font/Font: /}
+    echo ${fname}
+    
+    # digits
+    text="0123456789"
+    name="synth_digits_${fname}.png"
 
-# alphabet
-text="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-name="synth_alphabet.png"
+    rm -f ${name}
+    convert ${params} -font ${fname} label:${text} ${name}
 
-rm -f ${name}
-convert ${params} label:${text} ${name}
+    # alphabet
+    text="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    name="synth_alphabet_${fname}.png"
+
+    rm -f ${name}
+    convert ${params} -font ${fname} label:${text} ${name}    
+done < ${flist}
+
+rm -f ${flist}
+
+
 
 
