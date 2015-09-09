@@ -25,6 +25,12 @@ int main(int argc, char *argv[])
                 "use rotation fields");
         po_desc.add_options()("random",
                 "use random fields");
+        po_desc.add_options()("alpha",
+                boost::program_options::value<ncv::scalar_t>()->default_value(1.0),
+                "field mixing maximum coefficient");
+        po_desc.add_options()("beta",
+                boost::program_options::value<ncv::scalar_t>()->default_value(1.0),
+                "gradient magnitue mixing maximum coefficient");
         po_desc.add_options()("save-fields",
                 "save fields as image");
         po_desc.add_options()("output,o",
@@ -51,10 +57,12 @@ int main(int argc, char *argv[])
         const string_t cmd_output = po_vm["output"].as<string_t>();
         const bool cmd_save_fields = po_vm.count("save-fields");
 
-        const size_t cmd_count = po_vm["count"].as<size_t>();
-        const bool cmd_ftype_trs = po_vm.count("translation");
-        const bool cmd_ftype_rot = po_vm.count("rotation");
-        const bool cmd_ftype_rnd = po_vm.count("random");
+        const auto cmd_count = po_vm["count"].as<size_t>();
+        const auto cmd_alpha = po_vm["alpha"].as<scalar_t>();
+        const auto cmd_beta = po_vm["beta"].as<scalar_t>();
+        const auto cmd_ftype_trs = po_vm.count("translation");
+        const auto cmd_ftype_rot = po_vm.count("rotation");
+        const auto cmd_ftype_rnd = po_vm.count("random");
 
         field_type ftype = field_type::random;
         if (cmd_ftype_trs)
@@ -70,7 +78,7 @@ int main(int argc, char *argv[])
                 ftype = field_type::random;
         }
 
-        const warp_params params(ftype);
+        const warp_params params(ftype, 0.1, 4.0, cmd_alpha, cmd_beta);
 
         // load input image
         image_t iimage;

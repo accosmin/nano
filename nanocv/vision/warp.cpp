@@ -124,6 +124,20 @@ namespace ncv
                 }
         }
 
+        warp_params::warp_params(
+                field_type ftype,
+                scalar_t noise,
+                scalar_t sigma,
+                scalar_t alpha,
+                scalar_t beta)
+                :       m_ftype(ftype),
+                        m_noise(noise),
+                        m_sigma(sigma),
+                        m_alpha(alpha),
+                        m_beta(beta)
+        {
+        }
+
         tensor_t warp(const tensor_t& image, const warp_params& params, tensor_t* fimage)
         {
                 tensor_t patch = image;
@@ -175,9 +189,9 @@ namespace ncv
                 }
 
                 // warp
-                random_t<scalar_t> rng_alphax(-1.0, +1.0);
-                random_t<scalar_t> rng_alphay(-1.0, +1.0);
-                random_t<scalar_t> rng_beta  (-1.0, +1.0);
+                random_t<scalar_t> rng_alphax(-params.m_alpha, +params.m_alpha);
+                random_t<scalar_t> rng_alphay(-params.m_alpha, +params.m_alpha);
+                random_t<scalar_t> rng_beta  (-params.m_beta, +params.m_beta);
 
                 const scalar_t alphax = rng_alphax();
                 const scalar_t alphay = rng_alphay();
