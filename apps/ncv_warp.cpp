@@ -148,21 +148,22 @@ namespace
 
         image_t warp(const image_t& iimage, const field_params& fparams, image_t* fimage = nullptr)
         {
+                assert(iimage.is_rgba());
                 tensor_t patch = ncv::color::to_rgba_tensor(iimage.rgba());
 
                 // x gradient (directional gradient)
-                tensor_t patchgx(4, patch.rows(), patch.cols());
-                ncv::gradientx(patch.matrix(0), patchgx.matrix(0));
-                ncv::gradientx(patch.matrix(1), patchgx.matrix(1));
-                ncv::gradientx(patch.matrix(2), patchgx.matrix(2));
-                ncv::gradientx(patch.matrix(3), patchgx.matrix(3));
+                tensor_t gradx(4, patch.rows(), patch.cols());
+                ncv::gradientx(patch.matrix(0), gradx.matrix(0));
+                ncv::gradientx(patch.matrix(1), gradx.matrix(1));
+                ncv::gradientx(patch.matrix(2), gradx.matrix(2));
+                ncv::gradientx(patch.matrix(3), gradx.matrix(3));
 
                 // y gradient (directional gradient)
-                tensor_t patchgy(4, patch.rows(), patch.cols());
-                ncv::gradienty(patch.matrix(0), patchgy.matrix(0));
-                ncv::gradienty(patch.matrix(1), patchgy.matrix(1));
-                ncv::gradienty(patch.matrix(2), patchgy.matrix(2));
-                ncv::gradienty(patch.matrix(3), patchgy.matrix(3));
+                tensor_t grady(4, patch.rows(), patch.cols());
+                ncv::gradienty(patch.matrix(0), grady.matrix(0));
+                ncv::gradienty(patch.matrix(1), grady.matrix(1));
+                ncv::gradienty(patch.matrix(2), grady.matrix(2));
+                ncv::gradienty(patch.matrix(3), grady.matrix(3));
 
                 // generate random fields
                 const scalar_t pi = std::atan2(0.0, -0.0);
@@ -205,20 +206,10 @@ namespace
                 const scalar_t alphay = rng_alphay();
                 const scalar_t beta = rng_beta();
 
-                log_info() << "patch(0) = [" << patch.matrix(0).minCoeff() << ", " << patch.matrix(0).maxCoeff() << "]";
-                log_info() << "patch(1) = [" << patch.matrix(1).minCoeff() << ", " << patch.matrix(1).maxCoeff() << "]";
-                log_info() << "patch(2) = [" << patch.matrix(2).minCoeff() << ", " << patch.matrix(2).maxCoeff() << "]";
-                log_info() << "patch(3) = [" << patch.matrix(3).minCoeff() << ", " << patch.matrix(3).maxCoeff() << "]";
-
-                warp_by_field(patch.matrix(0), alphax, fieldx, patchgx.matrix(0), alphay, fieldy, patchgy.matrix(0), beta);
-                warp_by_field(patch.matrix(1), alphax, fieldx, patchgx.matrix(1), alphay, fieldy, patchgy.matrix(1), beta);
-                warp_by_field(patch.matrix(2), alphax, fieldx, patchgx.matrix(2), alphay, fieldy, patchgy.matrix(2), beta);
-                warp_by_field(patch.matrix(3), alphax, fieldx, patchgx.matrix(3), alphay, fieldy, patchgy.matrix(3), beta);
-
-                log_info() << "*patch(0) = [" << patch.matrix(0).minCoeff() << ", " << patch.matrix(0).maxCoeff() << "]";
-                log_info() << "*patch(1) = [" << patch.matrix(1).minCoeff() << ", " << patch.matrix(1).maxCoeff() << "]";
-                log_info() << "*patch(2) = [" << patch.matrix(2).minCoeff() << ", " << patch.matrix(2).maxCoeff() << "]";
-                log_info() << "*patch(3) = [" << patch.matrix(3).minCoeff() << ", " << patch.matrix(3).maxCoeff() << "]";
+                warp_by_field(patch.matrix(0), alphax, fieldx, gradx.matrix(0), alphay, fieldy, grady.matrix(0), beta);
+                warp_by_field(patch.matrix(1), alphax, fieldx, gradx.matrix(1), alphay, fieldy, grady.matrix(1), beta);
+                warp_by_field(patch.matrix(2), alphax, fieldx, gradx.matrix(2), alphay, fieldy, grady.matrix(2), beta);
+                warp_by_field(patch.matrix(3), alphax, fieldx, gradx.matrix(3), alphay, fieldy, grady.matrix(3), beta);
 
                 // OK
                 image_t oimage;
