@@ -25,6 +25,8 @@ int main(int argc, char *argv[])
                 "use rotation fields");
         po_desc.add_options()("random",
                 "use random fields");
+        po_desc.add_options()("save-fields",
+                "save fields as image");
         po_desc.add_options()("output,o",
                 boost::program_options::value<ncv::string_t>(),
                 "output (warped) image path");
@@ -47,8 +49,9 @@ int main(int argc, char *argv[])
 
         const string_t cmd_input = po_vm["input"].as<string_t>();
         const string_t cmd_output = po_vm["output"].as<string_t>();
-        const size_t cmd_count = po_vm["count"].as<size_t>();
+        const bool cmd_save_fields = po_vm.count("save-fields");
 
+        const size_t cmd_count = po_vm["count"].as<size_t>();
         const bool cmd_ftype_trs = po_vm.count("translation");
         const bool cmd_ftype_rot = po_vm.count("rotation");
         const bool cmd_ftype_rnd = po_vm.count("random");
@@ -82,38 +85,44 @@ int main(int argc, char *argv[])
         // randomly warp the input image
         for (size_t c = 0; c < cmd_count; c ++)
         {
+                // warp
                 tensor_t otensor, ftensor;
                 ncv::measure_and_log(
                         [&] () { otensor = warp(color::to_rgba_tensor(iimage.rgba()), params, &ftensor); },
                         "warped image");
 
-                image_t oimage, fimage;
-                oimage.load_rgba(color::from_rgba_tensor(otensor));
-                fimage.load_rgba(color::from_rgba_tensor(ftensor));
+                // prepare output paths
+                const string_t basename =
+                        (boost::filesystem::path(cmd_output).parent_path() /
+                         boost::filesystem::path(cmd_output).stem()).string();
+                const string_t extension =
+                         boost::filesystem::path(cmd_output).extension().string();
+
+                const string_t opath = basename + text::to_string(c + 1) + extension;
+                const string_t fpath = basename + text::to_string(c + 1) + "_field" + extension;
 
                 // save warped image
-                const string_t opath =
-                        (boost::filesystem::path(cmd_output).parent_path() /
-                         boost::filesystem::path(cmd_output).stem()).string() +
-                         text::to_string(c + 1) +
-                         boost::filesystem::path(cmd_output).extension().string();
+                {
+                        image_t image;
+                        image.load_rgba(color::from_rgba_tensor(otensor));
 
-                ncv::measure_critical_and_log(
-                        [&] () { return oimage.save(opath); },
-                        "saved image to <" + opath + ">",
-                        "failed to save to <" + opath + ">");
+                        ncv::measure_critical_and_log(
+                                [&] () { return image.save(opath); },
+                                "saved warped image to <" + opath + ">",
+                                "failed to save warped image to <" + opath + ">");
+                }
 
                 // save field image
-                const string_t fpath =
-                        (boost::filesystem::path(cmd_output).parent_path() /
-                         boost::filesystem::path(cmd_output).stem()).string() +
-                         text::to_string(c + 1) + "_field" +
-                         boost::filesystem::path(cmd_output).extension().string();
+                if (cmd_save_fields)
+                {
+                        image_t image;
+                        image.load_rgba(color::from_rgba_tensor(ftensor));
 
-                ncv::measure_critical_and_log(
-                        [&] () { return fimage.save(fpath); },
-                        "saved field image to <" + fpath + ">",
-                        "failed to save to <" + fpath + ">");
+                        ncv::measure_critical_and_log(
+                                [&] () { return image.save(fpath); },
+                                "saved field image to <" + fpath + ">",
+                                "failed to save field image to <" + fpath + ">");
+                }
         }
 		
         // OK
