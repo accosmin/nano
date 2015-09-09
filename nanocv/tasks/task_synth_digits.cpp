@@ -1,6 +1,7 @@
 #include "task_synth_digits.h"
 #include "nanocv/class.h"
 #include "synth_digits.h"
+#include "nanocv/vision/warp.h"
 #include "nanocv/math/gauss.hpp"
 #include "nanocv/math/clamp.hpp"
 #include "nanocv/math/random.hpp"
@@ -98,36 +99,6 @@ namespace ncv
 
                         return imgb;
                 }
-
-                matrix_t make_field(const size_t rows, const size_t cols, const scalar_t range, const scalar_t sigma)
-                {
-                        random_t<scalar_t> rng(-range, +range);
-
-                        matrix_t field(rows, cols);
-                        tensor::set_random(field, rng);
-
-                        const gauss_kernel_t<scalar_t> gauss(sigma);
-                        ncv::convolve(gauss, field);
-
-                        return field;
-                }
-
-                template
-                <
-                        typename tmatrixio,
-                        typename tmatrixf,
-                        typename tmatrixt
-                >
-                void warp_by_field(tmatrixio&& x,
-                        const scalar_t alphax, const tmatrixf& fieldx, const tmatrixt& gradx,
-                        const scalar_t alphay, const tmatrixf& fieldy, const tmatrixt& grady,
-                        const scalar_t beta)
-                {
-                        x.array() +=
-                                alphax * fieldx.array() * gradx.array() +
-                                alphay * fieldy.array() * grady.array() +
-                                beta * (fieldx.array().square() + fieldy.array().square()).sqrt();
-                }
         }
 
         bool synthetic_digits_task_t::load(const string_t &)
@@ -167,29 +138,7 @@ namespace ncv
                                 // image: random warping like described in
                                 //      "Training Invariant Support Vector Machines using Selective Sampling", by
                                 //      Gaelle Loosli, Stephane Canu & Leon Bottou
-                                const auto fieldx = make_field(irows(), icols(), 2.0, 1.0);
-                                const auto fieldy = make_field(irows(), icols(), 2.0, 1.0);
-
-                                tensor_t gradx(4, irows(), icols());
-                                ncv::gradientx(mpatch.matrix(0), gradx.matrix(0));
-                                ncv::gradientx(mpatch.matrix(1), gradx.matrix(1));
-                                ncv::gradientx(mpatch.matrix(2), gradx.matrix(2));
-                                ncv::gradientx(mpatch.matrix(3), gradx.matrix(3));
-
-                                tensor_t grady(4, irows(), icols());
-                                ncv::gradienty(mpatch.matrix(0), grady.matrix(0));
-                                ncv::gradienty(mpatch.matrix(1), grady.matrix(1));
-                                ncv::gradienty(mpatch.matrix(2), grady.matrix(2));
-                                ncv::gradienty(mpatch.matrix(3), grady.matrix(3));
-
-                                const auto alphax = rng_alpha();
-                                const auto alphay = rng_alpha();
-                                const auto beta = rng_beta();
-
-                                warp_by_field(mpatch.matrix(0), alphax, fieldx, gradx.matrix(0), alphay, fieldy, grady.matrix(0), beta);
-                                warp_by_field(mpatch.matrix(1), alphax, fieldx, gradx.matrix(1), alphay, fieldy, grady.matrix(1), beta);
-                                warp_by_field(mpatch.matrix(2), alphax, fieldx, gradx.matrix(2), alphay, fieldy, grady.matrix(2), beta);
-                                warp_by_field(mpatch.matrix(3), alphax, fieldx, gradx.matrix(3), alphay, fieldy, grady.matrix(3), beta);
+                                mpatch = ncv::warp(mpatch, warp_params(field_type::translation));
 
                                 // image: background & foreground layer
                                 const auto bcolor = ncv::color::make_random_rgba();

@@ -1,6 +1,7 @@
 #include "nanocv/string.h"
 #include "nanocv/measure.hpp"
 #include "nanocv/vision/warp.h"
+#include "nanocv/vision/image.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
@@ -81,10 +82,14 @@ int main(int argc, char *argv[])
         // randomly warp the input image
         for (size_t c = 0; c < cmd_count; c ++)
         {
-                image_t oimage, fimage;
+                tensor_t otensor, ftensor;
                 ncv::measure_and_log(
-                        [&] () { oimage = warp(iimage, params, &fimage); },
+                        [&] () { otensor = warp(color::to_rgba_tensor(iimage.rgba()), params, &ftensor); },
                         "warped image");
+
+                image_t oimage, fimage;
+                oimage.load_rgba(color::from_rgba_tensor(otensor));
+                fimage.load_rgba(color::from_rgba_tensor(ftensor));
 
                 // save warped image
                 const string_t opath =

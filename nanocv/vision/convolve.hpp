@@ -4,6 +4,7 @@
 #include <cassert>
 #include <algorithm>
 #include "nanocv/math/cast.hpp"
+#include "nanocv/math/clamp.hpp"
 
 namespace ncv
 {

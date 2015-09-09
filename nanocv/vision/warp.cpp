@@ -11,25 +11,29 @@ namespace ncv
 {
         namespace
         {
-                image_t image_field(const matrix_t& fieldx, const matrix_t& fieldy)
+                tensor_t image_field(const matrix_t& fieldx, const matrix_t& fieldy)
                 {
                         assert(fieldx.rows() == fieldy.rows());
                         assert(fieldx.cols() == fieldy.cols());
 
-                        rgba_matrix_t rgba(fieldx.rows(), fieldx.cols());
-                        tensor::transform(fieldx, fieldy, rgba, [] (const scalar_t fx, const scalar_t fy)
+                        tensor_t image(4, fieldx.rows(), fieldx.cols());
+                        tensor::transform(fieldx, fieldy, image.matrix(0), [] (const scalar_t fx, const scalar_t)
                         {
-                                const auto red  = math::clamp(255.0 * 0.5 * (fx + 1.0), 0.0, 255.0);
-                                const auto blue = math::clamp(255.0 * 0.5 * (fy + 1.0), 0.0, 255.0);
-
-                                return color::make_rgba(
-                                        math::cast<rgba_t>(red),
-                                        0,
-                                        math::cast<rgba_t>(blue));
+                                return math::clamp(0.5 * (fx + 1.0), 0.0, 1.0);
+                        });
+                        tensor::transform(fieldx, fieldy, image.matrix(1), [] (const scalar_t, const scalar_t)
+                        {
+                                return 0.0;
+                        });
+                        tensor::transform(fieldx, fieldy, image.matrix(2), [] (const scalar_t, const scalar_t fy)
+                        {
+                                return math::clamp(0.5 * (fy + 1.0), 0.0, 1.0);
+                        });
+                        tensor::transform(fieldx, fieldy, image.matrix(3), [] (const scalar_t, const scalar_t)
+                        {
+                                return 1.0;
                         });
 
-                        image_t image;
-                        image.load_rgba(rgba);
                         return image;
                 }
 
@@ -116,24 +120,23 @@ namespace ncv
                 }
         }
 
-        image_t warp(const image_t& image, const warp_params& params, image_t* fimage)
+        tensor_t warp(const tensor_t& image, const warp_params& params, tensor_t* fimage)
         {
-                assert(image.is_rgba());
-                tensor_t patch = ncv::color::to_rgba_tensor(image.rgba());
+                tensor_t patch = image;
 
                 // x gradient (directional gradient)
-                tensor_t gradx(4, patch.rows(), patch.cols());
-                ncv::gradientx(patch.matrix(0), gradx.matrix(0));
-                ncv::gradientx(patch.matrix(1), gradx.matrix(1));
-                ncv::gradientx(patch.matrix(2), gradx.matrix(2));
-                ncv::gradientx(patch.matrix(3), gradx.matrix(3));
+                tensor_t gradx(patch.dims(), patch.rows(), patch.cols());
+                for (auto d = 0; d < patch.dims(); d ++)
+                {
+                        ncv::gradientx(patch.matrix(d), gradx.matrix(d));
+                }
 
                 // y gradient (directional gradient)
-                tensor_t grady(4, patch.rows(), patch.cols());
-                ncv::gradienty(patch.matrix(0), grady.matrix(0));
-                ncv::gradienty(patch.matrix(1), grady.matrix(1));
-                ncv::gradienty(patch.matrix(2), grady.matrix(2));
-                ncv::gradienty(patch.matrix(3), grady.matrix(3));
+                tensor_t grady(patch.dims(), patch.rows(), patch.cols());
+                for (auto d = 0; d < patch.dims(); d ++)
+                {
+                        ncv::gradienty(patch.matrix(d), grady.matrix(d));
+                }
 
                 // generate random fields
                 const scalar_t pi = std::atan2(0.0, -0.0);
@@ -176,14 +179,15 @@ namespace ncv
                 const scalar_t alphay = rng_alphay();
                 const scalar_t beta = rng_beta();
 
-                warp_by_field(patch.matrix(0), alphax, fieldx, gradx.matrix(0), alphay, fieldy, grady.matrix(0), beta);
-                warp_by_field(patch.matrix(1), alphax, fieldx, gradx.matrix(1), alphay, fieldy, grady.matrix(1), beta);
-                warp_by_field(patch.matrix(2), alphax, fieldx, gradx.matrix(2), alphay, fieldy, grady.matrix(2), beta);
-                warp_by_field(patch.matrix(3), alphax, fieldx, gradx.matrix(3), alphay, fieldy, grady.matrix(3), beta);
+                for (auto d = 0; d < patch.dims(); d ++)
+                {
+                        warp_by_field(patch.matrix(d),
+                                      alphax, fieldx, gradx.matrix(d),
+                                      alphay, fieldy, grady.matrix(d),
+                                      beta);
+                }
 
                 // OK
-                image_t oimage;
-                oimage.load_rgba(color::from_rgba_tensor(patch));
-                return oimage;
+                return patch;
         }
 }
