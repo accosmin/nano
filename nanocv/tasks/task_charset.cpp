@@ -141,9 +141,8 @@ namespace ncv
         {
                 const string_t characters =
                         "0123456789" \
-                        "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
                         "abcdefghijklmnopqrstuvwxyz" \
-                        "?!*()[]+-/_=|<>";
+                        "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
                 const size_t n_chars = characters.size();
 

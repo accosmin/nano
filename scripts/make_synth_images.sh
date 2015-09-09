@@ -11,9 +11,8 @@ params=${params}" -gravity south"
 
 text=""
 text=${text}"0123456789"
-text=${text}"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 text=${text}"abcdefghijklmnopqrstuvwxyz"
-text=${text}"?!*()[]+-/_=|<>"
+text=${text}"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 echo "characters ${text}"
 
