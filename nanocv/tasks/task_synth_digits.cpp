@@ -107,10 +107,7 @@ namespace ncv
 
                 random_t<size_t> rng_protocol(1, 10);
                 random_t<size_t> rng_output(1, osize());
-                random_t<scalar_t> rng_gauss(scalar_t(0.1), scalar_t(2.0));
-
-                random_t<scalar_t> rng_alpha(-2.0, +2.0);
-                random_t<scalar_t> rng_beta(-2.0, +2.0);
+                random_t<scalar_t> rng_gauss(0.0, 2.0);
 
                 const auto digit_patches = ncv::get_synth_digits();
 
