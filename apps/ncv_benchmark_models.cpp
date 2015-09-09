@@ -7,7 +7,7 @@
 #include "nanocv/math/random.hpp"
 #include "nanocv/thread/thread.h"
 #include "nanocv/tensor/random.hpp"
-#include "nanocv/tasks/task_synth_digits.h"
+#include "nanocv/tasks/task_charset.h"
 #include <boost/program_options.hpp>
 
 namespace
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
         const size_t cmd_max_nthreads = ncv::n_threads();
 
         // generate synthetic task
-        synthetic_digits_task_t task(charset::numeric, cmd_rows, cmd_cols, cmd_color, cmd_samples);
+        charset_task_t task(charset::numeric, cmd_rows, cmd_cols, cmd_color, cmd_samples);
         task.load("");
 
         // generate random samples

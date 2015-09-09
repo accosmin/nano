@@ -11,7 +11,7 @@
 #include "tasks/task_stl10.h"
 #include "tasks/task_svhn.h"
 #include "tasks/task_norb.h"
-#include "tasks/task_synth_digits.h"
+#include "tasks/task_charset.h"
 
 #include "layers/layer_activation_unit.h"
 #include "layers/layer_activation_tanh.h"
@@ -64,7 +64,7 @@ namespace ncv
                 ncv::get_tasks().add("stl10", stl10_task_t());
                 ncv::get_tasks().add("svhn", svhn_task_t());
                 ncv::get_tasks().add("norb", norb_task_t());
-                ncv::get_tasks().add("synth-digits", synthetic_digits_task_t());
+                ncv::get_tasks().add("charset", charset_task_t());
 
                 // register layers
                 ncv::get_layers().add("act-unit", unit_activation_layer_t());

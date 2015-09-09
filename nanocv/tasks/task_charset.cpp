@@ -1,4 +1,4 @@
-#include "task_synth_digits.h"
+#include "task_charset.h"
 #include "nanocv/class.h"
 #include "nanocv/vision/warp.h"
 #include "nanocv/math/gauss.hpp"
@@ -39,17 +39,16 @@ namespace ncv
                 {
                         return
                         {
-                                { charset::numeric, "numeric" },
-                                { charset::lalphabet, "lalphabet" },
-                                { charset::ualphabet, "ualphabet" },
-                                { charset::alphabet, "alphabet" },
-                                { charset::alphanumeric, "alphanumeric" },
-                                { charset::punctuation, "punctuation" }
+                                { charset::numeric, "digit" },
+                                { charset::lalphabet, "lalpha" },
+                                { charset::ualphabet, "ualpha" },
+                                { charset::alphabet, "alpha" },
+                                { charset::alphanumeric, "alphanum" }
                         };
                 }
         }
 
-        synthetic_digits_task_t::synthetic_digits_task_t(const string_t& configuration)
+        charset_task_t::charset_task_t(const string_t& configuration)
                 :       task_t(configuration),
                         m_charset(text::from_params<charset>(configuration, "type", charset::numeric)),
                         m_rows(math::clamp(text::from_params<size_t>(configuration, "rows", 32), 16, 128)),
@@ -60,9 +59,9 @@ namespace ncv
         {
         }
 
-        synthetic_digits_task_t::synthetic_digits_task_t(
+        charset_task_t::charset_task_t(
                 charset cs, size_t rows, size_t cols, color_mode color, size_t size)
-                :       synthetic_digits_task_t(
+                :       charset_task_t(
                         "type=" + text::to_string(cs) + "," +
                         "rows=" + text::to_string(rows) + "," +
                         "cols=" + text::to_string(cols) + "," +
@@ -138,7 +137,7 @@ namespace ncv
                 }
         }
 
-        bool synthetic_digits_task_t::load(const string_t &)
+        bool charset_task_t::load(const string_t &)
         {
                 const string_t characters =
                         "0123456789" \
@@ -173,7 +172,7 @@ namespace ncv
                 const size_t n_fonts = sizeof(char_patches) / sizeof(rgba_matrix_t);
 
                 random_t<size_t> rng_protocol(1, 10);
-                random_t<size_t> rng_output(1, osize());
+                random_t<size_t> rng_output(obegin(), oend() - 1);
                 random_t<size_t> rng_font(1, n_fonts);
                 random_t<scalar_t> rng_gauss(0.0, 2.0);
 
@@ -186,12 +185,12 @@ namespace ncv
                                 // random protocol: train vs. test (90% training, 10% testing)
                                 const protocol p = (rng_protocol() < 9) ? protocol::train : protocol::test;
 
-                                // random output class: digit
+                                // random output class: character
                                 const size_t o = rng_output();
 
                                 // image: original object patch
                                 const tensor_t opatch = ncv::color::to_rgba_tensor(
-                                        get_object_patch(char_patches[rng_font() - 1], o - 1, n_chars, 0.0));
+                                        get_object_patch(char_patches[rng_font() - 1], o, n_chars, 0.0));
 
                                 // image: resize to the input size
                                 tensor_t mpatch(4, irows(), icols());
@@ -200,9 +199,7 @@ namespace ncv
                                 ncv::bilinear(opatch.matrix(2), mpatch.matrix(2));
                                 ncv::bilinear(opatch.matrix(3), mpatch.matrix(3));
 
-                                // image: random warping like described in
-                                //      "Training Invariant Support Vector Machines using Selective Sampling", by
-                                //      Gaelle Loosli, Stephane Canu & Leon Bottou
+                                // image: random warping
                                 mpatch = ncv::warp(mpatch, warp_params(field_type::random, 0.1, 4.0, 16.0, 2.0));
 
                                 // image: background & foreground layer
@@ -233,8 +230,8 @@ namespace ncv
 
                                 // generate sample
                                 sample_t sample(n_images() - 1, sample_region(0, 0));
-                                sample.m_label = "digit" + text::to_string(o - 1);
-                                sample.m_target = ncv::class_target(o - 1, osize());
+                                sample.m_label = string_t("char") + characters[o];
+                                sample.m_target = ncv::class_target(o - obegin(), osize());
                                 sample.m_fold = {f, p};
                                 add_sample(sample);
                         }
@@ -243,12 +240,12 @@ namespace ncv
                 return true;
         }
 
-        size_t synthetic_digits_task_t::osize() const
+        size_t charset_task_t::osize() const
         {
                 return oend() - obegin();
         }
 
-        size_t synthetic_digits_task_t::obegin() const
+        size_t charset_task_t::obegin() const
         {
                 switch (m_charset)
                 {
@@ -257,12 +254,11 @@ namespace ncv
                 case charset::ualphabet:        return 0 + 10 + 26;
                 case charset::alphabet:         return 0;
                 case charset::alphanumeric:     return 0;
-                case charset::punctuation:      return 0 + 10 + 26 + 26;
                 default:                        assert(false); return 0;
                 }
         }
 
-        size_t synthetic_digits_task_t::oend() const
+        size_t charset_task_t::oend() const
         {
                 switch (m_charset)
                 {
@@ -271,7 +267,6 @@ namespace ncv
                 case charset::ualphabet:        return 10 + 26 + 26;
                 case charset::alphabet:         return 10 + 26 + 26;
                 case charset::alphanumeric:     return 10 + 26 + 26;
-                case charset::punctuation:      return 10 + 26 + 26 + 15;
                 default:                        assert(false); return 0;
                 }
         }

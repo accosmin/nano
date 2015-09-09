@@ -4,7 +4,7 @@
 #include "nanocv/measure.hpp"
 #include "nanocv/thread/thread.h"
 #include "nanocv/thread/loopi.hpp"
-#include "nanocv/tasks/task_synth_digits.h"
+#include "nanocv/tasks/task_charset.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
         const size_t cmd_max_nthreads = ncv::n_threads();
 
         // create synthetic task
-        synthetic_digits_task_t task(charset::numeric, cmd_rows, cmd_cols, cmd_color, cmd_samples);
+        charset_task_t task(charset::numeric, cmd_rows, cmd_cols, cmd_color, cmd_samples);
         task.load("");
 
         tensors_t inputs(cmd_max_samples);

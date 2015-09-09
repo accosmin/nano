@@ -7,7 +7,7 @@
 #include "nanocv/evaluate.h"
 #include "nanocv/math/abs.hpp"
 #include "nanocv/math/epsilon.hpp"
-#include "nanocv/tasks/task_synth_digits.h"
+#include "nanocv/tasks/task_charset.h"
 #include <cstdio>
 
 BOOST_AUTO_TEST_CASE(test_model_io)
@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(test_model_io)
 
         using namespace ncv;
 
-        synthetic_digits_task_t task(charset::numeric, 28, 28, color_mode::luma, 1024);
+        charset_task_t task(charset::numeric, 28, 28, color_mode::luma, 1024);
         BOOST_CHECK_EQUAL(task.load(""), true);
 
         const size_t n_tests = 8;

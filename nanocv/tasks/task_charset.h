@@ -11,34 +11,33 @@ namespace ncv
                 ualphabet,      ///< A-Z
                 alphabet,       ///< a-zA-Z
                 alphanumeric,   ///< A-Za-z0-9
-                punctuation,
         };
 
         ///
         /// \brief synthetic task to classify characters
         ///
         /// parameters:
-        ///     type=numeric[lalphabet,ualphabet,alphabet,alphanumeric,punctuation] - character set
-        ///     rows=32[16,128]         - patch size in pixels (rows)
-        ///     cols=32[16,128]         - patch size in pixels (columns)
-        ///     color=rgba[,luma]       - color mode        ///     
+        ///     type=digit[lalpha,ualpha,alpha,alphanum] - character set
+        ///     rows=32[16,128]         - sample size in pixels (rows)
+        ///     cols=32[16,128]         - sample size in pixels (columns)
+        ///     color=rgba[,luma]       - color mode
         ///     size=1024[256,64*1024]  - number of samples (training + validation)
         ///
-        class NANOCV_PUBLIC synthetic_digits_task_t : public task_t
+        class NANOCV_PUBLIC charset_task_t : public task_t
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(synthetic_digits_task_t,
-                                     "synthetic task (digits classification), "\
-                                     "parameters: type=numeric[lalphabet,ualphabet,alphabet,alphanumeric,punctuation],"\
+                NANOCV_MAKE_CLONABLE(charset_task_t,
+                                     "synthetic (character classification), "\
+                                     "parameters: type=digit[lalpha,ualpha,alpha,alphanum],"\
                                      "rows=32[16,128],cols=32[16,128],"\
                                      "color=rgba[,luma],size=1024[256,64*1024]")
 
                 // constructor
-                explicit synthetic_digits_task_t(const string_t& configuration = string_t());
+                explicit charset_task_t(const string_t& configuration = string_t());
 
                 // constructor
-                synthetic_digits_task_t(charset, size_t rows, size_t cols, color_mode, size_t size);
+                charset_task_t(charset, size_t rows, size_t cols, color_mode, size_t size);
 
                 // load images from the given directory
                 virtual bool load(const string_t&) override;

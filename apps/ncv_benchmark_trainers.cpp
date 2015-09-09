@@ -4,9 +4,9 @@
 #include "nanocv/accumulator.h"
 #include "nanocv/thread/thread.h"
 #include "nanocv/trainers/batch.h"
+#include "nanocv/tasks/task_charset.h"
 #include "nanocv/trainers/minibatch.h"
 #include "nanocv/trainers/stochastic.h"
-#include "nanocv/tasks/task_synth_digits.h"
 
 using namespace ncv;
 
@@ -151,7 +151,7 @@ int main(int, char* [])
         const color_mode cmd_color = color_mode::rgba;
 
         // create task
-        synthetic_digits_task_t task(charset::numeric, cmd_rows, cmd_cols, cmd_color, cmd_samples);
+        charset_task_t task(charset::numeric, cmd_rows, cmd_cols, cmd_color, cmd_samples);
         task.load("");
 	task.describe();
 
