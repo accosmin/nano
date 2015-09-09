@@ -12,22 +12,14 @@
 #include "nanocv/tensor/transform.hpp"
 
 #include "synth_bitstream_vera_sans_mono_bold.h"
-#include "synth_bitstream_vera_sans_mono_bold_oblique.h"
 #include "synth_bitstream_vera_sans_mono.h"
-#include "synth_bitstream_vera_sans_mono_oblique.h"
 #include "synth_dejavu_sans_mono_bold.h"
-#include "synth_dejavu_sans_mono_bold_oblique.h"
 #include "synth_dejavu_sans_mono.h"
-#include "synth_dejavu_sans_mono_oblique.h"
 #include "synth_droid_sans_mono.h"
 #include "synth_liberation_mono_bold.h"
-#include "synth_liberation_mono_bold_italic.h"
 #include "synth_liberation_mono.h"
-#include "synth_liberation_mono_italic.h"
 #include "synth_nimbus_mono_bold.h"
-#include "synth_nimbus_mono_bold_oblique.h"
 #include "synth_nimbus_mono.h"
-#include "synth_nimbus_mono_oblique.h"
 #include "synth_oxygen_mono.h"
 
 namespace ncv
@@ -149,22 +141,14 @@ namespace ncv
                 const rgba_matrix_t char_patches[] =
                 {
                         ncv::get_synth_bitstream_vera_sans_mono_bold(),
-                        ncv::get_synth_bitstream_vera_sans_mono_bold_oblique(),
                         ncv::get_synth_bitstream_vera_sans_mono(),
-                        ncv::get_synth_bitstream_vera_sans_mono_oblique(),
                         ncv::get_synth_dejavu_sans_mono_bold(),
-                        ncv::get_synth_dejavu_sans_mono_bold_oblique(),
                         ncv::get_synth_dejavu_sans_mono(),
-                        ncv::get_synth_dejavu_sans_mono_oblique(),
                         ncv::get_synth_droid_sans_mono(),
                         ncv::get_synth_liberation_mono_bold(),
-                        ncv::get_synth_liberation_mono_bold_italic(),
                         ncv::get_synth_liberation_mono(),
-                        ncv::get_synth_liberation_mono_italic(),
                         ncv::get_synth_nimbus_mono_bold(),
-                        ncv::get_synth_nimbus_mono_bold_oblique(),
                         ncv::get_synth_nimbus_mono(),
-                        ncv::get_synth_nimbus_mono_oblique(),
                         ncv::get_synth_oxygen_mono()
                 };
 

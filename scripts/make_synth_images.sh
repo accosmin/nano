@@ -19,7 +19,7 @@ echo "characters ${text}"
 flist="fonts.list"
 
 # use all available monospace fonts
-convert -list font | grep -i mono | grep -i font: > ${flist}
+convert -list font | grep -i mono | grep -vi italic | grep -vi oblique | grep -i font: > ${flist}
 while read fname
 do
     font=${fname/Font: /}
