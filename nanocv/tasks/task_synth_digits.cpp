@@ -138,7 +138,7 @@ namespace ncv
                                 // image: random warping like described in
                                 //      "Training Invariant Support Vector Machines using Selective Sampling", by
                                 //      Gaelle Loosli, Stephane Canu & Leon Bottou
-                                mpatch = ncv::warp(mpatch, warp_params(field_type::translation));
+                                mpatch = ncv::warp(mpatch, warp_params(field_type::random, 0.1, 4.0, 16.0, 2.0));
 
                                 // image: background & foreground layer
                                 const auto bcolor = ncv::color::make_random_rgba();
