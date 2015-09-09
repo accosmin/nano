@@ -1,6 +1,5 @@
 #include "task_synth_digits.h"
 #include "nanocv/class.h"
-#include "synth_digits.h"
 #include "nanocv/vision/warp.h"
 #include "nanocv/math/gauss.hpp"
 #include "nanocv/math/clamp.hpp"
@@ -8,9 +7,28 @@
 #include "nanocv/tensor/random.hpp"
 #include "nanocv/vision/convolve.hpp"
 #include "nanocv/vision/gradient.hpp"
+#include "nanocv/vision/bilinear.hpp"
 #include "nanocv/tensor/for_each.hpp"
 #include "nanocv/tensor/transform.hpp"
-#include "nanocv/vision/bilinear.hpp"
+
+#include "synth_bitstream_vera_sans_mono_bold.h"
+#include "synth_bitstream_vera_sans_mono_bold_oblique.h"
+#include "synth_bitstream_vera_sans_mono.h"
+#include "synth_bitstream_vera_sans_mono_oblique.h"
+#include "synth_dejavu_sans_mono_bold.h"
+#include "synth_dejavu_sans_mono_bold_oblique.h"
+#include "synth_dejavu_sans_mono.h"
+#include "synth_dejavu_sans_mono_oblique.h"
+#include "synth_droid_sans_mono.h"
+#include "synth_liberation_mono_bold.h"
+#include "synth_liberation_mono_bold_italic.h"
+#include "synth_liberation_mono.h"
+#include "synth_liberation_mono_italic.h"
+#include "synth_nimbus_mono_bold.h"
+#include "synth_nimbus_mono_bold_oblique.h"
+#include "synth_nimbus_mono.h"
+#include "synth_nimbus_mono_oblique.h"
+#include "synth_oxygen_mono.h"
 
 namespace ncv
 {
@@ -103,13 +121,44 @@ namespace ncv
 
         bool synthetic_digits_task_t::load(const string_t &)
         {
-                clear_memory(0);
+                const string_t characters =
+                        "0123456789" \
+                        "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
+                        "abcdefghijklmnopqrstuvwxyz" \
+                        "?!*()[]+-/_=|<>";
+
+                const size_t n_chars = characters.size();
+
+                const rgba_matrix_t char_patches[] =
+                {
+                        ncv::get_synth_bitstream_vera_sans_mono_bold(),
+                        ncv::get_synth_bitstream_vera_sans_mono_bold_oblique(),
+                        ncv::get_synth_bitstream_vera_sans_mono(),
+                        ncv::get_synth_bitstream_vera_sans_mono_oblique(),
+                        ncv::get_synth_dejavu_sans_mono_bold(),
+                        ncv::get_synth_dejavu_sans_mono_bold_oblique(),
+                        ncv::get_synth_dejavu_sans_mono(),
+                        ncv::get_synth_dejavu_sans_mono_oblique(),
+                        ncv::get_synth_droid_sans_mono(),
+                        ncv::get_synth_liberation_mono_bold(),
+                        ncv::get_synth_liberation_mono_bold_italic(),
+                        ncv::get_synth_liberation_mono(),
+                        ncv::get_synth_liberation_mono_italic(),
+                        ncv::get_synth_nimbus_mono_bold(),
+                        ncv::get_synth_nimbus_mono_bold_oblique(),
+                        ncv::get_synth_nimbus_mono(),
+                        ncv::get_synth_nimbus_mono_oblique(),
+                        ncv::get_synth_oxygen_mono()
+                };
+
+                const size_t n_fonts = sizeof(char_patches) / sizeof(rgba_matrix_t);
 
                 random_t<size_t> rng_protocol(1, 10);
                 random_t<size_t> rng_output(1, osize());
+                random_t<size_t> rng_font(1, n_fonts);
                 random_t<scalar_t> rng_gauss(0.0, 2.0);
 
-                const auto digit_patches = ncv::get_synth_digits();
+                clear_memory(0);
 
                 for (size_t f = 0; f < fsize(); f ++)
                 {
@@ -123,7 +172,7 @@ namespace ncv
 
                                 // image: original object patch
                                 const tensor_t opatch = ncv::color::to_rgba_tensor(
-                                        get_object_patch(digit_patches, o - 1, osize(), 0.0));
+                                        get_object_patch(char_patches[rng_font() - 1], o - 1, n_chars, 0.0));
 
                                 // image: resize to the input size
                                 tensor_t mpatch(4, irows(), icols());

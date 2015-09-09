@@ -4,6 +4,6 @@
 
 namespace ncv
 {
-        rgba_matrix_t get_synth_alphabet();
+        rgba_matrix_t get_synth_bitstream_vera_sans_mono();
 }
 

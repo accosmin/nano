@@ -64,13 +64,13 @@ int main(int argc, char *argv[])
         log_info () << "image: " << image.cols() << "x" << image.rows() << " pixels, "
                     << (image.is_luma() ? "[luma]" : "[rgba]") << ".";
 
-        const string_t funcname = "get_" + boost::filesystem::basename(cmd_input);
+        const string_t funcname = "get_" + text::lower(text::replace(boost::filesystem::basename(cmd_input), '-', '_'));
         const string_t pixname = (cmd_luma ? "luma_t" : "rgba_t");
         const string_t retname = (cmd_luma ? "luma_matrix_t" : "rgba_matrix_t");
         const string_t tab(8, ' ');
 
-        const string_t path_header = cmd_output + ".h";
-        const string_t path_source = cmd_output + ".cpp";
+        const string_t path_header = text::lower(text::replace(cmd_output, '-', '_')) + ".h";
+        const string_t path_source = text::lower(text::replace(cmd_output, '-', '_')) + ".cpp";
 
         // generate header
         std::ofstream os_header(path_header.c_str(), std::ios::out);

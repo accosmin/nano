@@ -1,39 +1,35 @@
 #!/bin/bash
 
-#font="DejaVu-Sans-Mono-Bold"
-# -font ${font}
-
 params=""
 params=${params}" -colorspace sRGB"
 params=${params}" -background #00000000"
 params=${params}" -undercolor #00000000"
 params=${params}" -fill #010101FF"
-params=${params}" -pointsize 32"
+params=${params}" -pointsize 16"
 params=${params}" -density 196"
 params=${params}" -gravity south"
 
+text=""
+text=${text}"0123456789"
+text=${text}"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+text=${text}"abcdefghijklmnopqrstuvwxyz"
+text=${text}"?!*()[]+-/_=|<>"
+
+echo "characters ${text}"
+
 flist="fonts.list"
 
-# use all monospace fonts
+# use all available monospace fonts
 convert -list font | grep -i mono | grep -i font: > ${flist}
-while read font
+while read fname
 do
-    fname=${font/Font: /}
-    echo ${fname}
+    font=${fname/Font: /}
+    echo "using font ${font} ..."    
+        
+    ipath="synth_${font}.png"
     
-    # digits
-    text="0123456789"
-    name="synth_digits_${fname}.png"
-
-    rm -f ${name}
-    convert ${params} -font ${fname} label:${text} ${name}
-
-    # alphabet
-    text="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    name="synth_alphabet_${fname}.png"
-
-    rm -f ${name}
-    convert ${params} -font ${fname} label:${text} ${name}    
+    rm -f ${ipath}
+    convert ${params} -font ${font} label:${text} ${ipath}   
 done < ${flist}
 
 rm -f ${flist}
