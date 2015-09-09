@@ -109,4 +109,11 @@ namespace ncv
         {
                 return impl_equals(str1, str2, [] (char c1, char c2) { return std::tolower(c1) == std::tolower(c2); });
         }
+
+        std::string text::replace(const std::string& str, const char token, const char newtoken)
+        {
+                std::string ret = str;
+                std::transform(str.begin(), str.end(), ret.begin(), [=] (char c) { return (c == token) ? newtoken : c; });
+                return ret;
+        }
 }

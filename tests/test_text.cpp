@@ -141,6 +141,16 @@ BOOST_AUTO_TEST_CASE(test_text_from_string)
         BOOST_CHECK_EQUAL(text::from_string<long int>("124545"), 124545);
 }
 
+BOOST_AUTO_TEST_CASE(test_text_replace)
+{
+        using namespace ncv;
+
+        BOOST_CHECK_EQUAL(text::replace("token-", '-', '_'), "token_");
+        BOOST_CHECK_EQUAL(text::replace("t-ken-", '-', '_'), "t_ken_");
+        BOOST_CHECK_EQUAL(text::replace("-token", '-', '_'), "_token");
+        BOOST_CHECK_EQUAL(text::replace("token_", '-', '_'), "token_");
+}
+
 BOOST_AUTO_TEST_CASE(test_text_concatenate)
 {
         using namespace ncv;

@@ -58,6 +58,11 @@ namespace ncv
                 /// \brief check if two strings are equal (case insensitive)
                 ///
                 NANOCV_PUBLIC bool iequals(const std::string& str1, const std::string& str2);
+
+                ///
+                /// \brief replace a character with another one
+                ///
+                NANOCV_PUBLIC std::string replace(const std::string& str, const char token, const char newtoken);
         }
 }
 
