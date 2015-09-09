@@ -178,7 +178,7 @@ namespace ncv
                 case field_type::random:
                 default:
                         std::tie(fieldx, fieldy) =
-                        make_random_fields(patch.rows(), patch.cols(), params.m_noise, params.m_sigma);
+                        make_random_fields(patch.rows(), patch.cols(), 1.0, params.m_sigma);
                         break;
                 }
 
