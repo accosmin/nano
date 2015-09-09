@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
         const size_t cmd_samples = 256;
         const scalar_t cmd_epsilon = math::epsilon1<scalar_t>();
 
-        synthetic_digits_task_t task(16, 16, color_mode::luma, cmd_samples);
+        synthetic_digits_task_t task(charset::numeric, 16, 16, color_mode::luma, cmd_samples);
         BOOST_CHECK_EQUAL(task.load(""), true);
 
         const samples_t samples = task.samples();

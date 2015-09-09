@@ -32,8 +32,26 @@
 
 namespace ncv
 {
+        namespace text
+        {
+                template <>
+                inline std::map<charset, std::string> enum_string<charset>()
+                {
+                        return
+                        {
+                                { charset::numeric, "numeric" },
+                                { charset::lalphabet, "lalphabet" },
+                                { charset::ualphabet, "ualphabet" },
+                                { charset::alphabet, "alphabet" },
+                                { charset::alphanumeric, "alphanumeric" },
+                                { charset::punctuation, "punctuation" }
+                        };
+                }
+        }
+
         synthetic_digits_task_t::synthetic_digits_task_t(const string_t& configuration)
                 :       task_t(configuration),
+                        m_charset(text::from_params<charset>(configuration, "type", charset::numeric)),
                         m_rows(math::clamp(text::from_params<size_t>(configuration, "rows", 32), 16, 128)),
                         m_cols(math::clamp(text::from_params<size_t>(configuration, "cols", 32), 16, 128)),
                         m_folds(1),
@@ -43,8 +61,9 @@ namespace ncv
         }
 
         synthetic_digits_task_t::synthetic_digits_task_t(
-                size_t rows, size_t cols, color_mode color, size_t size)
+                charset cs, size_t rows, size_t cols, color_mode color, size_t size)
                 :       synthetic_digits_task_t(
+                        "type=" + text::to_string(cs) + "," +
                         "rows=" + text::to_string(rows) + "," +
                         "cols=" + text::to_string(cols) + "," +
                         "color=" + text::to_string(color) + "," +
@@ -222,5 +241,38 @@ namespace ncv
                 }
 
                 return true;
+        }
+
+        size_t synthetic_digits_task_t::osize() const
+        {
+                return oend() - obegin();
+        }
+
+        size_t synthetic_digits_task_t::obegin() const
+        {
+                switch (m_charset)
+                {
+                case charset::numeric:          return 0;
+                case charset::lalphabet:        return 0 + 10;
+                case charset::ualphabet:        return 0 + 10 + 26;
+                case charset::alphabet:         return 0;
+                case charset::alphanumeric:     return 0;
+                case charset::punctuation:      return 0 + 10 + 26 + 26;
+                default:                        assert(false); return 0;
+                }
+        }
+
+        size_t synthetic_digits_task_t::oend() const
+        {
+                switch (m_charset)
+                {
+                case charset::numeric:          return 10;
+                case charset::lalphabet:        return 10 + 26;
+                case charset::ualphabet:        return 10 + 26 + 26;
+                case charset::alphabet:         return 10 + 26 + 26;
+                case charset::alphanumeric:     return 10 + 26 + 26;
+                case charset::punctuation:      return 10 + 26 + 26 + 15;
+                default:                        assert(false); return 0;
+                }
         }
 }

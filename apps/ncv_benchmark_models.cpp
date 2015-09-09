@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
         const size_t cmd_max_nthreads = ncv::n_threads();
 
         // generate synthetic task
-        synthetic_digits_task_t task(cmd_rows, cmd_cols, cmd_color, cmd_samples);
+        synthetic_digits_task_t task(charset::numeric, cmd_rows, cmd_cols, cmd_color, cmd_samples);
         task.load("");
 
         // generate random samples

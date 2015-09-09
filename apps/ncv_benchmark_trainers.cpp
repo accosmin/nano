@@ -151,7 +151,7 @@ int main(int, char* [])
         const color_mode cmd_color = color_mode::rgba;
 
         // create task
-        synthetic_digits_task_t task(cmd_rows, cmd_cols, cmd_color, cmd_samples);
+        synthetic_digits_task_t task(charset::numeric, cmd_rows, cmd_cols, cmd_color, cmd_samples);
         task.load("");
 	task.describe();
 

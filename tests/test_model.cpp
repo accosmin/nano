@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(test_model_io)
 
         using namespace ncv;
 
-        synthetic_digits_task_t task(28, 28, color_mode::luma, 1024);
+        synthetic_digits_task_t task(charset::numeric, 28, 28, color_mode::luma, 1024);
         BOOST_CHECK_EQUAL(task.load(""), true);
 
         const size_t n_tests = 8;
