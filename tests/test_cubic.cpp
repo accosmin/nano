@@ -3,8 +3,8 @@
 
 #include <boost/test/unit_test.hpp>
 #include "nanocv/math/abs.hpp"
-#include "nanocv/math/cubic.hpp"
 #include "nanocv/math/random.hpp"
+#include "nanocv/optim/cubic.hpp"
 #include "nanocv/math/epsilon.hpp"
 
 BOOST_AUTO_TEST_CASE(test_cubic)

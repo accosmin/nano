@@ -4,37 +4,39 @@
 #include <boost/test/unit_test.hpp>
 #include "nanocv/math/abs.hpp"
 #include "nanocv/math/epsilon.hpp"
-#include "nanocv/math/average_scalar.hpp"
+#include "nanocv/optim/average_scalar.hpp"
 
 namespace test
 {
         using namespace ncv;
 
-        void check_average(size_t range)
+        template
+        <
+                typename tscalar
+        >
+        void check_average(const size_t range)
         {
-                typedef double test_scalar_t;
-
-                average_scalar_t<test_scalar_t> running_average;
+                average_scalar_t<tscalar> running_average;
 
                 for (size_t i = 0; i <= range; i ++)
                 {
-                        running_average.update(static_cast<test_scalar_t>(i), test_scalar_t(1));
+                        running_average.update(static_cast<tscalar>(i), tscalar(1));
                 }
 
-                const test_scalar_t real_average = static_cast<test_scalar_t>(range) / static_cast<test_scalar_t>(2);
+                const tscalar real_average = static_cast<tscalar>(range) / static_cast<tscalar>(2);
 
-                BOOST_CHECK_LE(math::abs(running_average.value() - real_average), math::epsilon1<test_scalar_t>());
+                BOOST_CHECK_LE(math::abs(running_average.value() - real_average), math::epsilon1<tscalar>());
         }
 }
 
 BOOST_AUTO_TEST_CASE(test_average)
 {
-        test::check_average(1);
-        test::check_average(5);
-        test::check_average(17);
-        test::check_average(85);
-        test::check_average(187);
-        test::check_average(1561);
-        test::check_average(14332);
-        test::check_average(123434);
+        test::check_average<double>(1);
+        test::check_average<double>(5);
+        test::check_average<double>(17);
+        test::check_average<double>(85);
+        test::check_average<double>(187);
+        test::check_average<double>(1561);
+        test::check_average<double>(14332);
+        test::check_average<double>(123434);
 }

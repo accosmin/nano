@@ -5,7 +5,7 @@
 #include "nanocv/math/abs.hpp"
 #include "nanocv/math/random.hpp"
 #include "nanocv/math/epsilon.hpp"
-#include "nanocv/math/quadratic.hpp"
+#include "nanocv/optim/quadratic.hpp"
 
 BOOST_AUTO_TEST_CASE(test_quadratic)
 {

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "nanocv/arch.h"
-
 namespace ncv
 {
         namespace optim
@@ -16,12 +14,8 @@ namespace ncv
                 >
                 struct ag_no_restart_t
                 {
-                        void operator()(const tvector& gx, const tvector& crtx, const tvector& prvx, tsize& iter) const
+                        void operator()(const tvector&, const tvector&, const tvector&, tsize&) const
                         {
-                                NANOCV_UNUSED1(gx);
-                                NANOCV_UNUSED1(crtx);
-                                NANOCV_UNUSED1(prvx);
-                                NANOCV_UNUSED1(iter);
                         }
                 };
 

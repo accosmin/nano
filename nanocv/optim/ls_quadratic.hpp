@@ -1,6 +1,6 @@
 #pragma once
 
-#include "nanocv/math/quadratic.hpp"
+#include "quadratic.hpp"
 
 namespace ncv
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "nanocv/math/cubic.hpp"
+#include "cubic.hpp"
 #include <utility>
 
 namespace ncv

@@ -3,7 +3,7 @@
 namespace ncv
 {
         ///
-        /// \brief running average for scalars
+        /// \brief moving weighted-average for scalars
         ///
         template
         <
