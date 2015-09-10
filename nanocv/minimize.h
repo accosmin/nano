@@ -1,5 +1,6 @@
 #pragma once
 
+#include "nanocv/arch.h"
 #include "nanocv/optimizer.h"
 
 namespace ncv

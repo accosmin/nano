@@ -1,7 +1,6 @@
 #pragma once
 
 #include "tensor_map.hpp"
-#include "nanocv/arch.h"
 #include <boost/serialization/access.hpp>
 
 namespace ncv
@@ -86,10 +85,8 @@ namespace ncv
                         <
                                 class tarchive
                         >
-                        void serialize(tarchive & ar, const unsigned int version)
+                        void serialize(tarchive & ar, const unsigned int)
                         {
-                                NANOCV_UNUSED1(version);
-
                                 ar & this->m_dims;
                                 ar & this->m_rows;
                                 ar & this->m_cols;

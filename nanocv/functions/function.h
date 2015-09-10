@@ -1,5 +1,6 @@
 #pragma once
 
+#include "nanocv/arch.h"
 #include "nanocv/string.h"
 #include "nanocv/optimizer.h"
 

@@ -2,7 +2,6 @@
 
 #include "matrix.hpp"
 #include <cassert>
-#include "nanocv/arch.h"
 
 namespace ncv
 {
@@ -23,13 +22,10 @@ namespace ncv
                 {
                         const tsize orows = odata.rows();
                         const tsize ocols = odata.cols();
-                        const tsize irows = orows + krows - 1;
                         const tsize icols = ocols + kcols - 1;
 
-                        NANOCV_UNUSED1_RELEASE(irows);
-
                         assert(ldata.rows() == krows * kcols);
-                        assert(ldata.cols() == irows * icols);
+                        assert(ldata.cols() == (orows + krows - 1) * icols);
 
                         ldata.setZero();
 
