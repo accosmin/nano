@@ -21,7 +21,7 @@ namespace ncv
         ///     rows=32[16,128]         - sample size in pixels (rows)
         ///     cols=32[16,128]         - sample size in pixels (columns)
         ///     color=rgba[,luma]       - color mode
-        ///     size=1024[256,64*1024]  - number of samples (training + validation)
+        ///     size=1024[16,1024*1024] - number of samples (training + validation)
         ///
         class NANOCV_PUBLIC charset_task_t : public task_t
         {
@@ -31,7 +31,7 @@ namespace ncv
                                      "synthetic (character classification), "\
                                      "parameters: type=digit[lalpha,ualpha,alpha,alphanum],"\
                                      "rows=32[16,128],cols=32[16,128],"\
-                                     "color=rgba[,luma],size=1024[256,64*1024]")
+                                     "color=rgba[,luma],size=1024[16,1024*1024]")
 
                 // constructor
                 explicit charset_task_t(const string_t& configuration = string_t());

@@ -47,7 +47,7 @@ namespace ncv
                         m_cols(math::clamp(text::from_params<size_t>(configuration, "cols", 32), 16, 128)),
                         m_folds(1),
                         m_color(text::from_params<color_mode>(configuration, "color", color_mode::rgba)),
-                        m_size(math::clamp(text::from_params<size_t>(configuration, "size", 1024), 256, 64 * 1024))
+                        m_size(math::clamp(text::from_params<size_t>(configuration, "size", 1024), 16, 1024 * 1024))
         {
         }
 
@@ -235,7 +235,7 @@ namespace ncv
                 case charset::numeric:          return 0;
                 case charset::lalphabet:        return 0 + 10;
                 case charset::ualphabet:        return 0 + 10 + 26;
-                case charset::alphabet:         return 0;
+                case charset::alphabet:         return 10;
                 case charset::alphanumeric:     return 0;
                 default:                        assert(false); return 0;
                 }
