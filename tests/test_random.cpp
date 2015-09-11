@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_random"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/math/random.hpp"
+#include "libmath/random.hpp"
 
 BOOST_AUTO_TEST_CASE(test_random)
 {

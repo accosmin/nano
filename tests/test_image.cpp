@@ -3,8 +3,8 @@
 
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/vision/image.h"
-#include "libnanocv/math/random.hpp"
-#include "libnanocv/math/epsilon.hpp"
+#include "libmath/random.hpp"
+#include "libmath/epsilon.hpp"
 #include <cstdio>
 
 BOOST_AUTO_TEST_CASE(test_image_construct)

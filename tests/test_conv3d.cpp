@@ -3,10 +3,10 @@
 
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/tensor.h"
-#include "libnanocv/math/abs.hpp"
+#include "libmath/abs.hpp"
 #include "libnanocv/math/conv3d.hpp"
-#include "libnanocv/math/random.hpp"
-#include "libnanocv/math/epsilon.hpp"
+#include "libmath/random.hpp"
+#include "libmath/epsilon.hpp"
 #include "libtensor/conv3d.hpp"
 #include "libtensor/random.hpp"
 #include "libnanocv/math/conv2d_cpp.hpp"

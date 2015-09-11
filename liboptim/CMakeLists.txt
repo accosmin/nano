@@ -1,5 +1,5 @@
 # build library
-file(GLOB libmin_sources ${CMAKE_CURRENT_SOURCE_DIR}
+file(GLOB liboptim_sources ${CMAKE_CURRENT_SOURCE_DIR}
         *.*)
 
 # install library

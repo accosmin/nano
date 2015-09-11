@@ -5,10 +5,10 @@
 #include "libnanocv/timer.h"
 #include "libnanocv/logger.h"
 #include "libnanocv/nanocv.h"
-#include "libnanocv/math/abs.hpp"
+#include "libmath/abs.hpp"
 #include "libnanocv/accumulator.h"
 #include "libnanocv/thread/thread.h"
-#include "libnanocv/math/epsilon.hpp"
+#include "libmath/epsilon.hpp"
 #include "libnanocv/tasks/task_charset.h"
 
 namespace test

@@ -4,10 +4,10 @@
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/logger.h"
 #include "libnanocv/minimize.h"
-#include "libnanocv/math/abs.hpp"
-#include "libnanocv/math/random.hpp"
-#include "libnanocv/math/numeric.hpp"
-#include "libnanocv/math/epsilon.hpp"
+#include "libmath/abs.hpp"
+#include "libmath/random.hpp"
+#include "libmath/numeric.hpp"
+#include "libmath/epsilon.hpp"
 #include "libnanocv/text/to_string.hpp"
 
 #include "libnanocv/functions/function_trid.h"

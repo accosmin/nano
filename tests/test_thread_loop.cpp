@@ -6,8 +6,8 @@
 #include "libnanocv/scalar.h"
 #include "libnanocv/string.h"
 #include "libnanocv/tabulator.h"
-#include "libnanocv/math/abs.hpp"
-#include "libnanocv/math/stats.hpp"
+#include "libmath/abs.hpp"
+#include "libmath/stats.hpp"
 #include "libnanocv/thread/loopi.hpp"
 #include <iostream>
 #include <numeric>

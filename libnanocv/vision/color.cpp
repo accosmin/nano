@@ -1,7 +1,7 @@
 #include "color.h"
-#include "libnanocv/math/abs.hpp"
-#include "libnanocv/math/random.hpp"
-#include "libnanocv/math/numeric.hpp"
+#include "libmath/abs.hpp"
+#include "libmath/random.hpp"
+#include "libmath/numeric.hpp"
 #include "libtensor/transform.hpp"
 
 namespace ncv

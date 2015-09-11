@@ -2,8 +2,8 @@
 
 #include "libnanocv/tensor.h"
 #include "libnanocv/text.hpp"
-#include "libnanocv/math/cast.hpp"
-#include "libnanocv/math/clamp.hpp"
+#include "libmath/cast.hpp"
+#include "libmath/clamp.hpp"
 #include <iosfwd>
 #include <cstdint>
 

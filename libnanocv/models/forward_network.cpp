@@ -1,7 +1,7 @@
 #include "forward_network.h"
 #include "libnanocv/logger.h"
-#include "libnanocv/math/numeric.hpp"
-#include "libnanocv/math/cast.hpp"
+#include "libmath/numeric.hpp"
+#include "libmath/cast.hpp"
 #include "libtensor/serialize.hpp"
 #include <iomanip>
 

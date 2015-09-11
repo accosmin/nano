@@ -1,6 +1,6 @@
 #include "sampler.h"
 #include "task.h"
-#include "libnanocv/math/usampling.hpp"
+#include "libmath/usampling.hpp"
 #include <algorithm>
 
 namespace ncv

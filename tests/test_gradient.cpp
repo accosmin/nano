@@ -8,9 +8,9 @@
 #include "libnanocv/optimizer.h"
 #include "libnanocv/accumulator.h"
 #include "libnanocv/thread/pool.h"
-#include "libnanocv/math/close.hpp"
-#include "libnanocv/math/random.hpp"
-#include "libnanocv/math/epsilon.hpp"
+#include "libmath/close.hpp"
+#include "libmath/random.hpp"
+#include "libmath/epsilon.hpp"
 #include "nanocv-test/test_models.h"
 
 namespace test

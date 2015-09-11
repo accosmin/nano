@@ -3,8 +3,8 @@
 
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/minimize.h"
-#include "libnanocv/math/random.hpp"
-#include "libnanocv/math/epsilon.hpp"
+#include "libmath/random.hpp"
+#include "libmath/epsilon.hpp"
 
 #include "libnanocv/functions/function_trid.h"
 #include "libnanocv/functions/function_beale.h"

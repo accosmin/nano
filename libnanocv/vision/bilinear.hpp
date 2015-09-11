@@ -2,7 +2,7 @@
 
 #include <cassert>
 #include <algorithm>
-#include "libnanocv/math/cast.hpp"
+#include "libmath/cast.hpp"
 
 namespace ncv
 {

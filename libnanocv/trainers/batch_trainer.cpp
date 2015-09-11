@@ -1,7 +1,7 @@
 #include "batch_trainer.h"
 #include "libnanocv/logger.h"
 #include "libnanocv/model.h"
-#include "libnanocv/math/numeric.hpp"
+#include "libmath/numeric.hpp"
 #include "libnanocv/sampler.h"
 #include "batch.h"
 

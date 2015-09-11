@@ -4,7 +4,7 @@
 #include "libnanocv/tabulator.h"
 #include "libnanocv/measure.hpp"
 #include "libnanocv/accumulator.h"
-#include "libnanocv/math/random.hpp"
+#include "libmath/random.hpp"
 #include "libnanocv/thread/thread.h"
 #include "libtensor/random.hpp"
 #include "libnanocv/tasks/task_charset.h"

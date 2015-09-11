@@ -1,6 +1,6 @@
 #include "loss_classnll.h"
 #include "libnanocv/class.h"
-#include "libnanocv/math/numeric.hpp"
+#include "libmath/numeric.hpp"
 #include <cassert>
 
 namespace ncv

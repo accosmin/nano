@@ -5,8 +5,8 @@
 #include "libnanocv/nanocv.h"
 #include "libnanocv/logger.h"
 #include "libnanocv/evaluate.h"
-#include "libnanocv/math/abs.hpp"
-#include "libnanocv/math/epsilon.hpp"
+#include "libmath/abs.hpp"
+#include "libmath/epsilon.hpp"
 #include "libnanocv/tasks/task_charset.h"
 #include <cstdio>
 

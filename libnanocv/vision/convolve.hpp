@@ -3,8 +3,8 @@
 #include <vector>
 #include <cassert>
 #include <algorithm>
-#include "libnanocv/math/cast.hpp"
-#include "libnanocv/math/clamp.hpp"
+#include "libmath/cast.hpp"
+#include "libmath/clamp.hpp"
 
 namespace ncv
 {

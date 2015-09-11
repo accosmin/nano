@@ -1,6 +1,6 @@
 #include "task_stl10.h"
 #include "libnanocv/logger.h"
-#include "libnanocv/math/cast.hpp"
+#include "libmath/cast.hpp"
 #include "libnanocv/file/stream.h"
 #include "libnanocv/file/archive.h"
 #include "libnanocv/class.h"

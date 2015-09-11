@@ -1,8 +1,8 @@
 #include "layer_convolution.h"
 #include "libnanocv/logger.h"
 #include "libnanocv/text.hpp"
-#include "libnanocv/math/clamp.hpp"
-#include "libnanocv/math/random.hpp"
+#include "libmath/clamp.hpp"
+#include "libmath/random.hpp"
 #include "libtensor/random.hpp"
 #include "libtensor/serialize.hpp"
 

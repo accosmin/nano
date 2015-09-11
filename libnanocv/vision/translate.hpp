@@ -1,7 +1,7 @@
 #pragma once
 
 #include "bilinear.hpp"
-#include "libnanocv/math/random.hpp"
+#include "libmath/random.hpp"
 
 namespace ncv
 {

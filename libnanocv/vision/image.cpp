@@ -1,7 +1,7 @@
 #include "io.h"
 #include "image.h"
-#include "libnanocv/math/cast.hpp"
-#include "libnanocv/math/random.hpp"
+#include "libmath/cast.hpp"
+#include "libmath/random.hpp"
 #include "libtensor/random.hpp"
 #include "libtensor/transform.hpp"
 

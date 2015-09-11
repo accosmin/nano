@@ -1,8 +1,8 @@
 #pragma once
 
 #include "libnanocv/tensor.h"
-#include "libmin/types.h"
-#include "libmin/problem.hpp"
+#include "liboptim/types.h"
+#include "liboptim/problem.hpp"
 #include "libnanocv/text/enum_string.hpp"
 
 namespace ncv

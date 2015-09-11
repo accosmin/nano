@@ -5,7 +5,7 @@
 #include "libnanocv/string.h"
 #include "libnanocv/logger.h"
 #include "losses/loss_square.h"
-#include "libnanocv/math/random.hpp"
+#include "libmath/random.hpp"
 #include "libtensor/random.hpp"
 #include <fstream>
 

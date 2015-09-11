@@ -3,8 +3,8 @@
 
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/vision/color.h"
-#include "libnanocv/math/random.hpp"
-#include "libnanocv/math/epsilon.hpp"
+#include "libmath/random.hpp"
+#include "libmath/epsilon.hpp"
 
 BOOST_AUTO_TEST_CASE(test_color_rgba_transform)
 {

@@ -1,7 +1,7 @@
 #include "task_cifar100.h"
 #include "libnanocv/logger.h"
 #include "libnanocv/file/stream.h"
-#include "libnanocv/math/cast.hpp"
+#include "libmath/cast.hpp"
 #include "libnanocv/file/archive.h"
 #include "libnanocv/class.h"
 

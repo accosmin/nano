@@ -3,7 +3,7 @@
 #include "libnanocv/logger.h"
 #include "libnanocv/model.h"
 #include "libnanocv/sampler.h"
-#include "libnanocv/math/numeric.hpp"
+#include "libmath/numeric.hpp"
 
 namespace ncv
 {

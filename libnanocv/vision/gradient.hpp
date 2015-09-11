@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cassert>
-#include "libnanocv/math/clamp.hpp"
+#include "libmath/clamp.hpp"
 
 namespace ncv
 {

@@ -2,10 +2,10 @@
 #define BOOST_TEST_MODULE "test_cubic"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/math/abs.hpp"
-#include "libnanocv/math/random.hpp"
-#include "libmin/cubic.hpp"
-#include "libnanocv/math/epsilon.hpp"
+#include "libmath/abs.hpp"
+#include "libmath/random.hpp"
+#include "liboptim/cubic.hpp"
+#include "libmath/epsilon.hpp"
 
 BOOST_AUTO_TEST_CASE(test_cubic)
 {

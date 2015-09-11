@@ -2,9 +2,9 @@
 #define BOOST_TEST_MODULE "test_stats"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/math/abs.hpp"
-#include "libnanocv/math/stats.hpp"
-#include "libnanocv/math/random.hpp"
+#include "libmath/abs.hpp"
+#include "libmath/stats.hpp"
+#include "libmath/random.hpp"
 
 namespace test
 {

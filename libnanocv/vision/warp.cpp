@@ -1,9 +1,9 @@
 #include "warp.h"
 #include "convolve.hpp"
 #include "gradient.hpp"
-#include "libnanocv/math/gauss.hpp"
-#include "libnanocv/math/random.hpp"
-#include "libnanocv/math/numeric.hpp"
+#include "libmath/gauss.hpp"
+#include "libmath/random.hpp"
+#include "libmath/numeric.hpp"
 #include "libtensor/random.hpp"
 #include "libtensor/transform.hpp"
 

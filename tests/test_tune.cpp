@@ -3,11 +3,11 @@
 
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/scalar.h"
-#include "libnanocv/math/abs.hpp"
+#include "libmath/abs.hpp"
 #include "libnanocv/thread/pool.h"
 #include "libnanocv/thread/thread.h"
-#include "libnanocv/math/random.hpp"
-#include "libnanocv/math/epsilon.hpp"
+#include "libmath/random.hpp"
+#include "libmath/epsilon.hpp"
 #include "libnanocv/trainers/tune_log10.hpp"
 
 namespace test

@@ -5,7 +5,7 @@
 #include "libnanocv/logger.h"
 #include "libnanocv/thread/pool.h"
 #include "libnanocv/thread/thread.h"
-#include "libnanocv/math/random.hpp"
+#include "libmath/random.hpp"
 
 BOOST_AUTO_TEST_CASE(test_thread_pool)
 {
