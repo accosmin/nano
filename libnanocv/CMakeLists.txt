@@ -33,8 +33,8 @@ install(TARGETS
         DESTINATION lib)
 
 # install headers
-install(DIRECTORY ${nanocv_SOURCE_DIR}/nanocv/
-        DESTINATION include/nanocv
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        DESTINATION include
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
 
 
