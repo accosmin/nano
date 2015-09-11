@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_text"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/text.hpp"
+#include "libnanocv/text.hpp"
 #include <list>
 #include <set>
 

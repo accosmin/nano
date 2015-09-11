@@ -2,14 +2,14 @@
 #define BOOST_TEST_MODULE "test_accumulator"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/timer.h"
-#include "nanocv/logger.h"
-#include "nanocv/nanocv.h"
-#include "nanocv/math/abs.hpp"
-#include "nanocv/accumulator.h"
-#include "nanocv/thread/thread.h"
-#include "nanocv/math/epsilon.hpp"
-#include "nanocv/tasks/task_charset.h"
+#include "libnanocv/timer.h"
+#include "libnanocv/logger.h"
+#include "libnanocv/nanocv.h"
+#include "libnanocv/math/abs.hpp"
+#include "libnanocv/accumulator.h"
+#include "libnanocv/thread/thread.h"
+#include "libnanocv/math/epsilon.hpp"
+#include "libnanocv/tasks/task_charset.h"
 
 namespace test
 {

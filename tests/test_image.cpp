@@ -2,9 +2,9 @@
 #define BOOST_TEST_MODULE "test_image"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/vision/image.h"
-#include "nanocv/math/random.hpp"
-#include "nanocv/math/epsilon.hpp"
+#include "libnanocv/vision/image.h"
+#include "libnanocv/math/random.hpp"
+#include "libnanocv/math/epsilon.hpp"
 #include <cstdio>
 
 BOOST_AUTO_TEST_CASE(test_image_construct)

@@ -1,8 +1,8 @@
-#include "nanocv/nanocv.h"
-#include "nanocv/class.h"
-#include "nanocv/generate.h"
-#include "nanocv/measure.hpp"
-#include "nanocv/vision/image_grid.h"
+#include "libnanocv/nanocv.h"
+#include "libnanocv/class.h"
+#include "libnanocv/generate.h"
+#include "libnanocv/measure.hpp"
+#include "libnanocv/vision/image_grid.h"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 

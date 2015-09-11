@@ -2,11 +2,11 @@
 #define BOOST_TEST_MODULE "test_loss"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/class.h"
-#include "nanocv/nanocv.h"
-#include "nanocv/optimizer.h"
-#include "nanocv/math/random.hpp"
-#include "nanocv/math/epsilon.hpp"
+#include "libnanocv/class.h"
+#include "libnanocv/nanocv.h"
+#include "libnanocv/optimizer.h"
+#include "libnanocv/math/random.hpp"
+#include "libnanocv/math/epsilon.hpp"
 
 namespace test
 {

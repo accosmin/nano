@@ -1,13 +1,13 @@
-#include "nanocv/class.h"
-#include "nanocv/nanocv.h"
-#include "nanocv/sampler.h"
-#include "nanocv/tabulator.h"
-#include "nanocv/measure.hpp"
-#include "nanocv/accumulator.h"
-#include "nanocv/math/random.hpp"
-#include "nanocv/thread/thread.h"
-#include "nanocv/tensor/random.hpp"
-#include "nanocv/tasks/task_charset.h"
+#include "libnanocv/class.h"
+#include "libnanocv/nanocv.h"
+#include "libnanocv/sampler.h"
+#include "libnanocv/tabulator.h"
+#include "libnanocv/measure.hpp"
+#include "libnanocv/accumulator.h"
+#include "libnanocv/math/random.hpp"
+#include "libnanocv/thread/thread.h"
+#include "libtensor/random.hpp"
+#include "libnanocv/tasks/task_charset.h"
 #include <boost/program_options.hpp>
 
 namespace

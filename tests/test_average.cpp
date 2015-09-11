@@ -2,9 +2,9 @@
 #define BOOST_TEST_MODULE "test_average"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/math/abs.hpp"
-#include "nanocv/math/epsilon.hpp"
-#include "nanocv/optim/average_scalar.hpp"
+#include "libnanocv/math/abs.hpp"
+#include "libnanocv/math/epsilon.hpp"
+#include "libmin/average_scalar.hpp"
 
 namespace test
 {

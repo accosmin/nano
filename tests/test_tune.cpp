@@ -2,13 +2,13 @@
 #define BOOST_TEST_MODULE "test_tune"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/scalar.h"
-#include "nanocv/math/abs.hpp"
-#include "nanocv/thread/pool.h"
-#include "nanocv/thread/thread.h"
-#include "nanocv/math/random.hpp"
-#include "nanocv/math/epsilon.hpp"
-#include "nanocv/trainers/tune_log10.hpp"
+#include "libnanocv/scalar.h"
+#include "libnanocv/math/abs.hpp"
+#include "libnanocv/thread/pool.h"
+#include "libnanocv/thread/thread.h"
+#include "libnanocv/math/random.hpp"
+#include "libnanocv/math/epsilon.hpp"
+#include "libnanocv/trainers/tune_log10.hpp"
 
 namespace test
 {

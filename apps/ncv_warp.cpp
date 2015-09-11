@@ -1,7 +1,7 @@
-#include "nanocv/string.h"
-#include "nanocv/measure.hpp"
-#include "nanocv/vision/warp.h"
-#include "nanocv/vision/image.h"
+#include "libnanocv/string.h"
+#include "libnanocv/measure.hpp"
+#include "libnanocv/vision/warp.h"
+#include "libnanocv/vision/image.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>

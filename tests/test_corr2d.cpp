@@ -2,13 +2,13 @@
 #define BOOST_TEST_MODULE "test_corr2d"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/tensor.h"
-#include "nanocv/math/abs.hpp"
-#include "nanocv/math/epsilon.hpp"
-#include "nanocv/math/corr2d_cpp.hpp"
-#include "nanocv/math/corr2d_dyn.hpp"
-#include "nanocv/math/corr2d_egb.hpp"
-#include "nanocv/math/corr2d_egr.hpp"
+#include "libnanocv/tensor.h"
+#include "libnanocv/math/abs.hpp"
+#include "libnanocv/math/epsilon.hpp"
+#include "libnanocv/math/corr2d_cpp.hpp"
+#include "libnanocv/math/corr2d_dyn.hpp"
+#include "libnanocv/math/corr2d_egb.hpp"
+#include "libnanocv/math/corr2d_egr.hpp"
 
 namespace test
 {

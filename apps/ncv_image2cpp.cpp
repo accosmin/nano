@@ -1,6 +1,6 @@
-#include "nanocv/string.h"
-#include "nanocv/logger.h"
-#include "nanocv/vision/image.h"
+#include "libnanocv/string.h"
+#include "libnanocv/logger.h"
+#include "libnanocv/vision/image.h"
 #include <fstream>
 #include <iostream>
 #include <boost/filesystem.hpp>

@@ -2,10 +2,10 @@
 #define BOOST_TEST_MODULE "test_quadratic"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/math/abs.hpp"
-#include "nanocv/math/random.hpp"
-#include "nanocv/math/epsilon.hpp"
-#include "nanocv/optim/quadratic.hpp"
+#include "libnanocv/math/abs.hpp"
+#include "libnanocv/math/random.hpp"
+#include "libnanocv/math/epsilon.hpp"
+#include "libmin/quadratic.hpp"
 
 BOOST_AUTO_TEST_CASE(test_quadratic)
 {

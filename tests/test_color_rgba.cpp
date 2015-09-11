@@ -2,9 +2,9 @@
 #define BOOST_TEST_MODULE "test_color_rgba"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/vision/color.h"
-#include "nanocv/math/random.hpp"
-#include "nanocv/math/epsilon.hpp"
+#include "libnanocv/vision/color.h"
+#include "libnanocv/math/random.hpp"
+#include "libnanocv/math/epsilon.hpp"
 
 BOOST_AUTO_TEST_CASE(test_color_rgba_transform)
 {

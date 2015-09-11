@@ -1,5 +1,5 @@
-#include "nanocv/nanocv.h"
-#include "nanocv/tabulator.h"
+#include "libnanocv/nanocv.h"
+#include "libnanocv/tabulator.h"
 #include <iostream>
 #include <boost/program_options.hpp>
 

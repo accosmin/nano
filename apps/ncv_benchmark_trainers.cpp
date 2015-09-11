@@ -1,12 +1,12 @@
-#include "nanocv/nanocv.h"
-#include "nanocv/measure.hpp"
-#include "nanocv/tabulator.h"
-#include "nanocv/accumulator.h"
-#include "nanocv/thread/thread.h"
-#include "nanocv/trainers/batch.h"
-#include "nanocv/tasks/task_charset.h"
-#include "nanocv/trainers/minibatch.h"
-#include "nanocv/trainers/stochastic.h"
+#include "libnanocv/nanocv.h"
+#include "libnanocv/measure.hpp"
+#include "libnanocv/tabulator.h"
+#include "libnanocv/accumulator.h"
+#include "libnanocv/thread/thread.h"
+#include "libnanocv/trainers/batch.h"
+#include "libnanocv/tasks/task_charset.h"
+#include "libnanocv/trainers/minibatch.h"
+#include "libnanocv/trainers/stochastic.h"
 
 using namespace ncv;
 

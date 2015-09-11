@@ -1,10 +1,10 @@
-#include "nanocv/nanocv.h"
-#include "nanocv/sampler.h"
-#include "nanocv/tabulator.h"
-#include "nanocv/measure.hpp"
-#include "nanocv/thread/thread.h"
-#include "nanocv/thread/loopi.hpp"
-#include "nanocv/tasks/task_charset.h"
+#include "libnanocv/nanocv.h"
+#include "libnanocv/sampler.h"
+#include "libnanocv/tabulator.h"
+#include "libnanocv/measure.hpp"
+#include "libnanocv/thread/thread.h"
+#include "libnanocv/thread/loopi.hpp"
+#include "libnanocv/tasks/task_charset.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])

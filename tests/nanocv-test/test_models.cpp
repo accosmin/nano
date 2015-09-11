@@ -1,6 +1,6 @@
 #include "test_models.h"
-#include "nanocv/loss.h"
-#include "nanocv/math/random.hpp"
+#include "libnanocv/loss.h"
+#include "libnanocv/math/random.hpp"
 #include <set>
 
 namespace test

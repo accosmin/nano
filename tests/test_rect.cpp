@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_rect"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/vision/rect.h"
+#include "libnanocv/vision/rect.h"
 
 namespace test
 {

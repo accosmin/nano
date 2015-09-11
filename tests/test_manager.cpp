@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_manager"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/manager.hpp"
+#include "libnanocv/manager.hpp"
 
 namespace test
 {

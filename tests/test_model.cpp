@@ -2,12 +2,12 @@
 #define BOOST_TEST_MODULE "test_model_io"
 
 #include <boost/test/unit_test.hpp>
-#include "nanocv/nanocv.h"
-#include "nanocv/logger.h"
-#include "nanocv/evaluate.h"
-#include "nanocv/math/abs.hpp"
-#include "nanocv/math/epsilon.hpp"
-#include "nanocv/tasks/task_charset.h"
+#include "libnanocv/nanocv.h"
+#include "libnanocv/logger.h"
+#include "libnanocv/evaluate.h"
+#include "libnanocv/math/abs.hpp"
+#include "libnanocv/math/epsilon.hpp"
+#include "libnanocv/tasks/task_charset.h"
 #include <cstdio>
 
 BOOST_AUTO_TEST_CASE(test_model_io)
