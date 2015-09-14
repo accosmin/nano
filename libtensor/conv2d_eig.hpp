@@ -4,7 +4,7 @@
 
 namespace ncv
 {
-        namespace math
+        namespace tensor
         {
                 ///
                 /// \brief 2D convolution: odata += idata @ kdata (using Eigen 2D blocks)

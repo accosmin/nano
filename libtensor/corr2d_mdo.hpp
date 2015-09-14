@@ -4,16 +4,12 @@
 
 namespace ncv
 {
-        namespace math
+        namespace tensor
         {
                 ///
-                /// \brief 2D correlation: idata += odata @ kdata (using a fixed-size mad product by kdata columns)
+                /// \brief 2D correlation: idata += odata @ kdata (using a mad product by odata columns)
                 ///
-                template
-                <
-                        int kcols
-                >
-                struct corr2d_mdki_t
+                struct corr2d_mdo_t
                 {
                         template
                         <
@@ -25,22 +21,22 @@ namespace ncv
                         {
                                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
-                                assert(kdata.cols() == kcols);
 
                                 const auto orows = odata.rows();
                                 const auto ocols = odata.cols();
                                 const auto krows = kdata.rows();
+                                const auto kcols = kdata.cols();
 
                                 for (auto r = 0; r < orows; r ++)
                                 {
                                         for (auto kr = 0; kr < krows; kr ++)
                                         {
-                                                const auto krow = kdata.row(kr);
+                                                const auto orow = odata.row(r);
 
-                                                for (auto c = 0; c < ocols; c ++)
+                                                for (auto kc = 0; kc < kcols; kc ++)
                                                 {
-                                                        idata.row(r + kr).template segment<kcols>(c) +=
-                                                        krow * odata(r, c);
+                                                        idata.row(r + kr).segment(kc, ocols) +=
+                                                        orow * kdata(kr, kc);
                                                 }
                                         }
                                 }

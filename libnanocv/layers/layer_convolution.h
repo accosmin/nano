@@ -1,7 +1,7 @@
 #pragma once
 
 #include "libnanocv/layer.h"
-#include "libtensor/conv3d.hpp"
+#include "libtensor/conv3d_lin.hpp"
 
 namespace ncv
 {
@@ -78,7 +78,7 @@ namespace ncv
                 tensor_t                m_kdata;        ///< convolution kernels:       idims x odims x krows x kcols
                 tensor_t                m_bdata;        ///< convolution bias:          odims x 1 x 1
 
-                tensor::conv3d_t
+                tensor::conv3d_lin_t
                 <tensor_t>              m_kconv;        ///< convolution kernel
         };
 }

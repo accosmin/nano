@@ -4,7 +4,7 @@
 
 namespace ncv
 {
-        namespace math
+        namespace tensor
         {
                 ///
                 /// \brief 2D correlation: idata += odata @ kdata (using Eigen 2D blocks)

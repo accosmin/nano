@@ -4,18 +4,18 @@
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/tensor.h"
 #include "libmath/abs.hpp"
-#include "libnanocv/math/conv3d.hpp"
 #include "libmath/random.hpp"
 #include "libmath/epsilon.hpp"
-#include "libtensor/conv3d.hpp"
 #include "libtensor/random.hpp"
-#include "libnanocv/math/conv2d_cpp.hpp"
-#include "libnanocv/math/conv2d_dyn.hpp"
-#include "libnanocv/math/conv2d_eig.hpp"
-#include "libnanocv/math/corr2d_cpp.hpp"
-#include "libnanocv/math/corr2d_dyn.hpp"
-#include "libnanocv/math/corr2d_egb.hpp"
-#include "libnanocv/math/corr2d_egr.hpp"
+#include "libtensor/conv3d.hpp"
+#include "libtensor/conv3d_lin.hpp"
+#include "libtensor/conv2d_cpp.hpp"
+#include "libtensor/conv2d_dyn.hpp"
+#include "libtensor/conv2d_eig.hpp"
+#include "libtensor/corr2d_cpp.hpp"
+#include "libtensor/corr2d_dyn.hpp"
+#include "libtensor/corr2d_egb.hpp"
+#include "libtensor/corr2d_egr.hpp"
 
 namespace test
 {
@@ -45,15 +45,15 @@ namespace test
                 ttensor kdata_dyn = kdata, kdata_lin = kdata;
                 ttensor odata_dyn = odata, odata_lin = odata;
 
-                tensor::conv3d_t<ttensor> conv3d;
+                tensor::conv3d_lin_t<ttensor> conv3d;
                 BOOST_CHECK(conv3d.reset(kdata, idims, odims));
 
                 const tscalar epsilon = math::epsilon1<tscalar>();
 
                 // 2D convolution-based
-                math::conv3d_output(math::conv2d_dyn_t(), idata, kdata, odata_dyn);
-                math::conv3d_gparam(math::conv2d_dyn_t(), idata, kdata_dyn, odata);
-                math::conv3d_ginput(math::corr2d_dyn_t(), idata_dyn, kdata, odata);
+                tensor::conv3d_output(tensor::conv2d_dyn_t(), idata, kdata, odata_dyn);
+                tensor::conv3d_gparam(tensor::conv2d_dyn_t(), idata, kdata_dyn, odata);
+                tensor::conv3d_ginput(tensor::corr2d_dyn_t(), idata_dyn, kdata, odata);
 
                 // linearized tensors-based
                 BOOST_CHECK(conv3d.output(idata, odata_lin));

@@ -2,17 +2,17 @@
 #include "libnanocv/string.h"
 #include "libnanocv/tabulator.h"
 #include "libnanocv/measure.hpp"
-#include "libnanocv/math//conv3d.hpp"
 #include "libmath/random.hpp"
 #include "libtensor/conv3d.hpp"
 #include "libtensor/random.hpp"
-#include "libnanocv/math/conv2d_cpp.hpp"
-#include "libnanocv/math/conv2d_dyn.hpp"
-#include "libnanocv/math/conv2d_eig.hpp"
-#include "libnanocv/math/corr2d_cpp.hpp"
-#include "libnanocv/math/corr2d_dyn.hpp"
-#include "libnanocv/math/corr2d_egb.hpp"
-#include "libnanocv/math/corr2d_egr.hpp"
+#include "libtensor/conv3d_lin.hpp"
+#include "libtensor/conv2d_cpp.hpp"
+#include "libtensor/conv2d_dyn.hpp"
+#include "libtensor/conv2d_eig.hpp"
+#include "libtensor/corr2d_cpp.hpp"
+#include "libtensor/corr2d_dyn.hpp"
+#include "libtensor/corr2d_egb.hpp"
+#include "libtensor/corr2d_egr.hpp"
 
 #include <iostream>
 #include <boost/program_options.hpp>
@@ -70,7 +70,7 @@ namespace
         {
                 return ncv::measure_robustly_usec([&] ()
                 {
-                        math::conv3d_output(op, idata, kdata, odata);
+                        tensor::conv3d_output(op, idata, kdata, odata);
                 }, trials);
         }
 
@@ -86,7 +86,7 @@ namespace
         {
                 return ncv::measure_robustly_usec([&] ()
                 {
-                        math::conv3d_ginput(op, idata, kdata, odata);
+                        tensor::conv3d_ginput(op, idata, kdata, odata);
                 }, trials);
         }
 
@@ -102,7 +102,7 @@ namespace
         {
                 return ncv::measure_robustly_usec([&] ()
                 {
-                        math::conv3d_gparam(op, idata, kdata, odata);
+                        tensor::conv3d_gparam(op, idata, kdata, odata);
                 }, trials);
         }
 
@@ -116,16 +116,16 @@ namespace
                 ttensor idata, kdata, odata;
                 make_tensors(isize, idims, ksize, odims, idata, kdata, odata);
 
-                tensor::conv3d_t<ttensor> conv3d;
+                tensor::conv3d_lin_t<ttensor> conv3d;
                 conv3d.reset(kdata, idims, odims);
 
                 ttensor odata_ret = odata;
 
-                row << measure_output(math::conv2d_eig_t(), idata, kdata, odata_ret, trials);
-                row << measure_output(math::conv2d_cpp_t(), idata, kdata, odata_ret, trials);
-                row << measure_output(math::conv2d_dot_t(), idata, kdata, odata_ret, trials);
-                row << measure_output(math::conv2d_mad_t(), idata, kdata, odata_ret, trials);
-                row << measure_output(math::conv2d_dyn_t(), idata, kdata, odata_ret, trials);
+                row << measure_output(tensor::conv2d_eig_t(), idata, kdata, odata_ret, trials);
+                row << measure_output(tensor::conv2d_cpp_t(), idata, kdata, odata_ret, trials);
+                row << measure_output(tensor::conv2d_dot_t(), idata, kdata, odata_ret, trials);
+                row << measure_output(tensor::conv2d_mad_t(), idata, kdata, odata_ret, trials);
+                row << measure_output(tensor::conv2d_dyn_t(), idata, kdata, odata_ret, trials);
                 row << ncv::measure_robustly_usec([&] () { conv3d.output(idata, odata_ret); }, trials);
         }
 
@@ -139,17 +139,17 @@ namespace
                 ttensor idata, kdata, odata;
                 make_tensors(isize, idims, ksize, odims, idata, kdata, odata);
 
-                tensor::conv3d_t<ttensor> conv3d;
+                tensor::conv3d_lin_t<ttensor> conv3d;
                 conv3d.reset(kdata, idims, odims);
 
                 ttensor idata_ret = idata;
 
-                row << measure_ginput(ncv::math::corr2d_egb_t(), idata_ret, kdata, odata, trials);
-                row << measure_ginput(ncv::math::corr2d_egr_t(), idata_ret, kdata, odata, trials);
-                row << measure_ginput(ncv::math::corr2d_cpp_t(), idata_ret, kdata, odata, trials);
-                row << measure_ginput(ncv::math::corr2d_mdk_t(), idata_ret, kdata, odata, trials);
-                row << measure_ginput(ncv::math::corr2d_mdo_t(), idata_ret, kdata, odata, trials);
-                row << measure_ginput(ncv::math::corr2d_dyn_t(), idata_ret, kdata, odata, trials);
+                row << measure_ginput(ncv::tensor::corr2d_egb_t(), idata_ret, kdata, odata, trials);
+                row << measure_ginput(ncv::tensor::corr2d_egr_t(), idata_ret, kdata, odata, trials);
+                row << measure_ginput(ncv::tensor::corr2d_cpp_t(), idata_ret, kdata, odata, trials);
+                row << measure_ginput(ncv::tensor::corr2d_mdk_t(), idata_ret, kdata, odata, trials);
+                row << measure_ginput(ncv::tensor::corr2d_mdo_t(), idata_ret, kdata, odata, trials);
+                row << measure_ginput(ncv::tensor::corr2d_dyn_t(), idata_ret, kdata, odata, trials);
                 row << ncv::measure_robustly_usec([&] () { conv3d.ginput(idata_ret, odata); }, trials);
         }
 
@@ -163,16 +163,16 @@ namespace
                 ttensor idata, kdata, odata;
                 make_tensors(isize, idims, ksize, odims, idata, kdata, odata);
 
-                tensor::conv3d_t<ttensor> conv3d;
+                tensor::conv3d_lin_t<ttensor> conv3d;
                 conv3d.reset(kdata, idims, odims);
 
                 ttensor kdata_ret = kdata;
 
-                row << measure_gparam(math::conv2d_eig_t(), idata, kdata_ret, odata, trials);
-                row << measure_gparam(math::conv2d_cpp_t(), idata, kdata_ret, odata, trials);
-                row << measure_gparam(math::conv2d_dot_t(), idata, kdata_ret, odata, trials);
-                row << measure_gparam(math::conv2d_mad_t(), idata, kdata_ret, odata, trials);
-                row << measure_gparam(math::conv2d_dyn_t(), idata, kdata_ret, odata, trials);
+                row << measure_gparam(tensor::conv2d_eig_t(), idata, kdata_ret, odata, trials);
+                row << measure_gparam(tensor::conv2d_cpp_t(), idata, kdata_ret, odata, trials);
+                row << measure_gparam(tensor::conv2d_dot_t(), idata, kdata_ret, odata, trials);
+                row << measure_gparam(tensor::conv2d_mad_t(), idata, kdata_ret, odata, trials);
+                row << measure_gparam(tensor::conv2d_dyn_t(), idata, kdata_ret, odata, trials);
                 row << ncv::measure_robustly_usec([&] () { conv3d.gparam(idata, kdata_ret, odata); }, trials);
         }
 }

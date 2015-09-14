@@ -4,12 +4,12 @@
 
 namespace ncv
 {
-        namespace math
+        namespace tensor
         {
                 ///
-                /// \brief 2D correlation: idata += odata @ kdata (using a mad product by odata columns)
+                /// \brief 2D correlation: idata += odata @ kdata (using Eigen 1D row-blocks)
                 ///
-                struct corr2d_mdo_t
+                struct corr2d_egr_t
                 {
                         template
                         <
@@ -22,21 +22,14 @@ namespace ncv
                                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
 
-                                const auto orows = odata.rows();
-                                const auto ocols = odata.cols();
-                                const auto krows = kdata.rows();
-                                const auto kcols = kdata.cols();
-
-                                for (auto r = 0; r < orows; r ++)
+                                for (auto r = 0; r < odata.rows(); r ++)
                                 {
-                                        for (auto kr = 0; kr < krows; kr ++)
+                                        for (auto kr = 0; kr < kdata.rows(); kr ++)
                                         {
-                                                const auto orow = odata.row(r);
-
-                                                for (auto kc = 0; kc < kcols; kc ++)
+                                                for (auto kc = 0; kc < kdata.cols(); kc ++)
                                                 {
-                                                        idata.row(r + kr).segment(kc, ocols) +=
-                                                        orow * kdata(kr, kc);
+                                                        idata.block(r + kr, kc, 1, odata.cols()) +=
+                                                        odata.row(r) * kdata(kr, kc);
                                                 }
                                         }
                                 }

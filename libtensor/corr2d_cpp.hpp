@@ -4,20 +4,20 @@
 
 namespace ncv
 {
-        namespace math
+        namespace tensor
         {
                 ///
-                /// \brief 2D convolution: odata += idata @ kdata (using a mad operator)
+                /// \brief 2D correlation: idata += odata @ kdata (using plain array indexing)
                 ///
-                struct conv2d_mad_t
+                struct corr2d_cpp_t
                 {
                         template
                         <
-                                typename tmatrixi,
-                                typename tmatrixk = tmatrixi,
-                                typename tmatrixo = tmatrixi
+                                typename tmatrixo,
+                                typename tmatrixk = tmatrixo,
+                                typename tmatrixi = tmatrixo
                         >
-                        void operator()(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata) const
+                        void operator()(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata) const
                         {
                                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
@@ -29,15 +29,14 @@ namespace ncv
 
                                 for (auto r = 0; r < orows; r ++)
                                 {
-                                        auto orow = odata.row(r);
-
                                         for (auto kr = 0; kr < krows; kr ++)
                                         {
-                                                const auto irow = idata.row(r + kr);
-
-                                                for (auto kc = 0; kc < kcols; kc ++)
+                                                for (auto c = 0; c < ocols; c ++)
                                                 {
-                                                        orow += irow.segment(kc, ocols) * kdata(kr, kc);
+                                                        for (auto kc = 0; kc < kcols; kc ++)
+                                                        {
+                                                                idata(r + kr, c + kc) += kdata(kr, kc) * odata(r, c);
+                                                        }
                                                 }
                                         }
                                 }

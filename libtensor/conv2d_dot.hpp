@@ -4,20 +4,20 @@
 
 namespace ncv
 {
-        namespace math
+        namespace tensor
         {
                 ///
-                /// \brief 2D correlation: idata += odata @ kdata (using a mad product by kdata columns)
+                /// \brief 2D convolution: odata += idata @ kdata (using a dot operator)
                 ///
-                struct corr2d_mdk_t
+                struct conv2d_dot_t
                 {
                         template
                         <
-                                typename tmatrixo,
-                                typename tmatrixk = tmatrixo,
-                                typename tmatrixi = tmatrixo
+                                typename tmatrixi,
+                                typename tmatrixk = tmatrixi,
+                                typename tmatrixo = tmatrixi
                         >
-                        void operator()(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata) const
+                        void operator()(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata) const
                         {
                                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
@@ -31,12 +31,12 @@ namespace ncv
                                 {
                                         for (auto kr = 0; kr < krows; kr ++)
                                         {
+                                                const auto irow = idata.row(r + kr);
                                                 const auto krow = kdata.row(kr);
 
                                                 for (auto c = 0; c < ocols; c ++)
                                                 {
-                                                        idata.row(r + kr).segment(c, kcols) +=
-                                                        krow * odata(r, c);
+                                                        odata(r, c) += irow.segment(c, kcols).dot(krow);
                                                 }
                                         }
                                 }

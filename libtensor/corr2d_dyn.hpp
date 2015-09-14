@@ -7,7 +7,7 @@
 
 namespace ncv
 {
-        namespace math
+        namespace tensor
         {
                 ///
                 /// \brief 2D correlation: idata += odata @ kdata (by decoding the kernel size at runtime)

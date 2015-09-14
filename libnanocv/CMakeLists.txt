@@ -6,7 +6,6 @@ file(GLOB libnanocv_sources ${CMAKE_CURRENT_SOURCE_DIR}
         functions/*.*
         layers/*.*
         losses/*.*
-        math/*.*
         models/*.*
         tasks/*.*
         text/*.*

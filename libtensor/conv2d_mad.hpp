@@ -4,44 +4,40 @@
 
 namespace ncv
 {
-        namespace math
+        namespace tensor
         {
                 ///
-                /// \brief 2D correlation: idata += odata @ kdata (using a fixed-size mad product by odata columns)
+                /// \brief 2D convolution: odata += idata @ kdata (using a mad operator)
                 ///
-                template
-                <
-                        int ocols
-                >
-                struct corr2d_mdoi_t
+                struct conv2d_mad_t
                 {
                         template
                         <
-                                typename tmatrixo,
-                                typename tmatrixk = tmatrixo,
-                                typename tmatrixi = tmatrixo,
-                                typename tscalar = typename tmatrixi::Scalar
+                                typename tmatrixi,
+                                typename tmatrixk = tmatrixi,
+                                typename tmatrixo = tmatrixi
                         >
-                        void operator()(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata) const
+                        void operator()(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata) const
                         {
                                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
-                                assert(odata.cols() == ocols);
 
                                 const auto orows = odata.rows();
+                                const auto ocols = odata.cols();
                                 const auto krows = kdata.rows();
                                 const auto kcols = kdata.cols();
 
                                 for (auto r = 0; r < orows; r ++)
                                 {
+                                        auto orow = odata.row(r);
+
                                         for (auto kr = 0; kr < krows; kr ++)
                                         {
-                                                const auto orow = odata.row(r);
+                                                const auto irow = idata.row(r + kr);
 
                                                 for (auto kc = 0; kc < kcols; kc ++)
                                                 {
-                                                        idata.row(r + kr).template segment<ocols>(kc) +=
-                                                        orow * kdata(kr, kc);
+                                                        orow += irow.segment(kc, ocols) * kdata(kr, kc);
                                                 }
                                         }
                                 }

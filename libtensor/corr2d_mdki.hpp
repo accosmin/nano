@@ -4,24 +4,24 @@
 
 namespace ncv
 {
-        namespace math
+        namespace tensor
         {
                 ///
-                /// \brief 2D convolution: odata += idata @ kdata (using a dot operator with a fixed kernel size)
+                /// \brief 2D correlation: idata += odata @ kdata (using a fixed-size mad product by kdata columns)
                 ///
                 template
                 <
                         int kcols
                 >
-                struct conv2d_doti_t
+                struct corr2d_mdki_t
                 {
                         template
                         <
-                                typename tmatrixi,
-                                typename tmatrixk = tmatrixi,
-                                typename tmatrixo = tmatrixi
+                                typename tmatrixo,
+                                typename tmatrixk = tmatrixo,
+                                typename tmatrixi = tmatrixo
                         >
-                        void operator()(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata) const
+                        void operator()(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata) const
                         {
                                 assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                                 assert(idata.cols() + 1 == kdata.cols() + odata.cols());
@@ -35,12 +35,12 @@ namespace ncv
                                 {
                                         for (auto kr = 0; kr < krows; kr ++)
                                         {
-                                                const auto irow = idata.row(r + kr);
-                                                const auto krow = kdata.row(kr).template segment<kcols>(0);
+                                                const auto krow = kdata.row(kr);
 
                                                 for (auto c = 0; c < ocols; c ++)
                                                 {
-                                                        odata(r, c) += irow.template segment<kcols>(c).dot(krow);
+                                                        idata.row(r + kr).template segment<kcols>(c) +=
+                                                        krow * odata(r, c);
                                                 }
                                         }
                                 }
