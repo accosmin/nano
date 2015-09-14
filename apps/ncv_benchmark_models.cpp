@@ -1,7 +1,7 @@
 #include "libnanocv/class.h"
 #include "libnanocv/nanocv.h"
 #include "libnanocv/sampler.h"
-#include "libnanocv/tabulator.h"
+#include "libnanocv/table.h"
 #include "libnanocv/measure.hpp"
 #include "libnanocv/accumulator.h"
 #include "libmath/random.hpp"
@@ -146,11 +146,11 @@ int main(int argc, char *argv[])
         assert(loss);
 
         // construct tables to compare models
-        tabulator_t ftable_rand("model-forward (rand)\\threads");
-        tabulator_t ftable_task("model-forward (task)\\threads");
+        table_t ftable_rand("model-forward (rand)\\threads");
+        table_t ftable_task("model-forward (task)\\threads");
 
-        tabulator_t btable_rand("model-backward (rand)\\threads");
-        tabulator_t btable_task("model-backward (task)\\threads");
+        table_t btable_rand("model-backward (rand)\\threads");
+        table_t btable_task("model-backward (task)\\threads");
 
         for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; nthreads ++)
         {
@@ -167,11 +167,11 @@ int main(int argc, char *argv[])
                 const string_t cmd_network = cmd_networks[im];
                 const string_t cmd_name = cmd_names[im];
 
-                tabulator_t::row_t& frow_rand = ftable_rand.append(cmd_name + "(rand)");
-                tabulator_t::row_t& frow_task = ftable_task.append(cmd_name + "(task)");
+                table_row_t& frow_rand = ftable_rand.append(cmd_name + "(rand)");
+                table_row_t& frow_task = ftable_task.append(cmd_name + "(task)");
 
-                tabulator_t::row_t& brow_rand = btable_rand.append(cmd_name + "(rand)");
-                tabulator_t::row_t& brow_task = btable_task.append(cmd_name + "(task)");
+                table_row_t& brow_rand = btable_rand.append(cmd_name + "(rand)");
+                table_row_t& brow_task = btable_task.append(cmd_name + "(task)");
 
                 log_info() << "<<< running network [" << cmd_network << "] ...";
 

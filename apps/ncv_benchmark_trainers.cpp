@@ -1,6 +1,6 @@
 #include "libnanocv/nanocv.h"
 #include "libnanocv/measure.hpp"
-#include "libnanocv/tabulator.h"
+#include "libnanocv/table.h"
 #include "libnanocv/accumulator.h"
 #include "libnanocv/thread/thread.h"
 #include "libnanocv/trainers/batch.h"
@@ -26,7 +26,7 @@ namespace
         <
                 typename ttrainer
         >
-        void test_optimizer(model_t& model, const string_t& name, tabulator_t& table, const vectors_t& x0s,
+        void test_optimizer(model_t& model, const string_t& name, table_t& table, const vectors_t& x0s,
                 ttrainer trainer)
         {
                 stats_t<scalar_t> terrors;
@@ -59,7 +59,7 @@ namespace
 
         void test_optimizers(
                 const task_t& task, model_t& model, const sampler_t& tsampler, const sampler_t& vsampler,
-                const loss_t& loss, const string_t& criterion, tabulator_t& table)
+                const loss_t& loss, const string_t& criterion, table_t& table)
         {
                 const size_t cmd_trials = 16;
 
@@ -207,7 +207,7 @@ int main(int, char* [])
                         const rloss_t loss = ncv::get_losses().get(cmd_loss);
                         assert(loss);
 
-                        tabulator_t table("optimizer\\");
+                        table_t table("optimizer\\");
                         table.header() << "train error"
                                        << "valid error"
                                        << "time [msec]";

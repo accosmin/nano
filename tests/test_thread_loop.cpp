@@ -4,8 +4,7 @@
 #include <boost/test/unit_test.hpp>
 #include "libnanocv/timer.h"
 #include "libnanocv/scalar.h"
-#include "libnanocv/string.h"
-#include "libnanocv/tabulator.h"
+#include "libnanocv/table.h"
 #include "libmath/abs.hpp"
 #include "libmath/stats.hpp"
 #include "libnanocv/thread/loopi.hpp"
@@ -122,7 +121,7 @@ BOOST_AUTO_TEST_CASE(test_thread_loop)
 
         const size_t trials = 16;
 
-        tabulator_t table("method");
+        table_t table("method");
         table.header() << "cpu";
 #ifdef _OPENMP
         table.header() << "openmp";

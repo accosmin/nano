@@ -1,5 +1,5 @@
 #include "libnanocv/nanocv.h"
-#include "libnanocv/tabulator.h"
+#include "libnanocv/table.h"
 #include <iostream>
 #include <boost/program_options.hpp>
 
@@ -16,7 +16,7 @@ namespace
                 const strings_t ids = manager.ids();
                 const strings_t descriptions = manager.descriptions();
 
-                tabulator_t table(name);
+                table_t table(name);
                 table.header() << "description";
 
                 for (size_t i = 0; i < ids.size(); i ++)

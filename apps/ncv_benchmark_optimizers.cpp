@@ -1,7 +1,7 @@
 #include "libnanocv/timer.h"
 #include "libnanocv/logger.h"
 #include "libnanocv/minimize.h"
-#include "libnanocv/tabulator.h"
+#include "libnanocv/table.h"
 #include "libmath/abs.hpp"
 #include "libmath/clamp.hpp"
 #include "libmath/stats.hpp"
@@ -101,7 +101,7 @@ namespace
                         optim::ls_strategy::cg_descent
                 };
 
-                tabulator_t table(text::align(problem_name, 32));
+                table_t table(text::align(problem_name, 32));
                 table.header() << "cost"
                                << "time [us]"
                                << "|grad|/|fval|"
@@ -184,7 +184,7 @@ namespace
                 }
 
                 // print stats
-                table.sort_as_number(2, tabulator_t::sorting::ascending);
+                table.sort_as_number(2, table_t::sorting::ascending);
                 table.print(std::cout);
         }
 
@@ -217,7 +217,7 @@ int main(int, char* [])
         check_problems(ncv::make_rotated_ellipsoid_funcs(128));
 
         // show global statistics
-        tabulator_t table(text::align("optimizer", 32));
+        table_t table(text::align("optimizer", 32));
         table.header() << "cost"
                        << "time [us]"
                        << "|grad|/|fval|"
@@ -240,7 +240,7 @@ int main(int, char* [])
                                    << stat.m_grads.sum();
         }
 
-        table.sort_as_number(2, tabulator_t::sorting::ascending);
+        table.sort_as_number(2, table_t::sorting::ascending);
         table.print(std::cout);
 
         // OK

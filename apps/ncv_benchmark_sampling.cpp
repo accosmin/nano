@@ -1,6 +1,6 @@
 #include "libnanocv/nanocv.h"
 #include "libnanocv/sampler.h"
-#include "libnanocv/tabulator.h"
+#include "libnanocv/table.h"
 #include "libnanocv/measure.hpp"
 #include "libnanocv/thread/thread.h"
 #include "libnanocv/thread/loopi.hpp"
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
         vectors_t targets(cmd_max_samples);
 
         // construct tables to compare sampling
-        tabulator_t table("sampling\\threads");
+        table_t table("sampling\\threads");
 
         for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; nthreads ++)
         {
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
         {
                 const string_t cmd_name = "sample size " + text::to_string(is);
 
-                tabulator_t::row_t& row = table.append(cmd_name);
+                table_row_t& row = table.append(cmd_name);
 
                 log_info() << "<<< running test [" << cmd_name << "] ...";
 

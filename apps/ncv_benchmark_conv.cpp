@@ -1,6 +1,5 @@
 #include "libnanocv/tensor.h"
-#include "libnanocv/string.h"
-#include "libnanocv/tabulator.h"
+#include "libnanocv/table.h"
 #include "libnanocv/measure.hpp"
 #include "libmath/random.hpp"
 #include "libtensor/conv3d.hpp"
@@ -111,7 +110,7 @@ namespace
                 typename ttensor
         >
         void test_config_output(const int isize, const int idims, const int ksize, const int odims,
-                tabulator_t::row_t& row, const size_t trials = 16)
+                table_row_t& row, const size_t trials = 16)
         {
                 ttensor idata, kdata, odata;
                 make_tensors(isize, idims, ksize, odims, idata, kdata, odata);
@@ -134,7 +133,7 @@ namespace
                 typename ttensor
         >
         void test_config_ginput(const int isize, const int idims, const int ksize, const int odims,
-                tabulator_t::row_t& row, const size_t trials = 16)
+                table_row_t& row, const size_t trials = 16)
         {
                 ttensor idata, kdata, odata;
                 make_tensors(isize, idims, ksize, odims, idata, kdata, odata);
@@ -158,7 +157,7 @@ namespace
                 typename ttensor
         >
         void test_config_gparam(const int isize, const int idims, const int ksize, const int odims,
-                tabulator_t::row_t& row, const size_t trials = 16)
+                table_row_t& row, const size_t trials = 16)
         {
                 ttensor idata, kdata, odata;
                 make_tensors(isize, idims, ksize, odims, idata, kdata, odata);
@@ -216,7 +215,7 @@ int main(int argc, char* argv[])
         // output
         if (has_output)
         {
-                tabulator_t table("size\\output [us]");
+                table_t table("size\\output [us]");
                 table.header()
                         << "2D (eig)"
                         << "2D (cpp)"
@@ -241,7 +240,7 @@ int main(int argc, char* argv[])
         // gradient wrt parameters
         if (has_gparam)
         {
-                tabulator_t table("size\\gparam [us]");
+                table_t table("size\\gparam [us]");
                 table.header()
                         << "2D (eig)"
                         << "2D (cpp)"
@@ -266,7 +265,7 @@ int main(int argc, char* argv[])
         // gradient wrt inputs
         if (has_ginput)
         {
-                tabulator_t table("size\\ginput [us]");
+                table_t table("size\\ginput [us]");
                 table.header()
                         << "2D (egb)"
                         << "2D (egr)"
