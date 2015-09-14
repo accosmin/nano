@@ -37,10 +37,10 @@ namespace ncv
                         std::stable_sort(m_rows.begin(), m_rows.end(), [&] (const auto& row1, const auto& row2)
                         {
                                 assert(col < row1.size());
-                                assert(row1.size() == cols());
+                                assert(row1.size() == this->cols());
 
                                 assert(col < row2.size());
-                                assert(row2.size() == cols());
+                                assert(row2.size() == this->cols());
 
                                 return comp(row1.values()[col], row2.values()[col]);
                         });
