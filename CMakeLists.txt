@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.1)
 
 project(nanocv)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
+
 ######################################################################
 # external dependencies
 ######################################################################
@@ -39,6 +41,8 @@ if(OPENMP_FOUND)
 endif()
 
 # Eigen
+find_package(Eigen3)
+include_directories(${EIGEN3_INCLUDE_DIR})
 add_definitions(-DEIGEN_DONT_PARALLELIZE)
 
 #set(CMAKE_C_COMPILER                    "/usr/bin/clang")
