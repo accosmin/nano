@@ -67,8 +67,8 @@ namespace ncv
                 operator bool() const
                 {
                         return  std::isfinite(m_a) &&
-                                        std::isfinite(m_b) &&
-                                        std::isfinite(m_c);
+                                std::isfinite(m_b) &&
+                                std::isfinite(m_c);
                 }
 
                 ///
