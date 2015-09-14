@@ -2,7 +2,13 @@
 #define BOOST_TEST_MODULE "test_text"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/text.hpp"
+#include "libtext/align.hpp"
+#include "libtext/lower.hpp"
+#include "libtext/upper.hpp"
+#include "libtext/ends_with.hpp"
+#include "libtext/from_params.hpp"
+#include "libtext/concatenate.hpp"
+#include "libtext/replace.hpp"
 #include <list>
 #include <set>
 
@@ -10,9 +16,9 @@ BOOST_AUTO_TEST_CASE(test_text_resize)
 {
         using namespace ncv;
 
-        BOOST_CHECK_EQUAL(text::resize("text", 10, align::left, '='),   "text======");
-        BOOST_CHECK_EQUAL(text::resize("text", 10, align::right, '='),  "======text");
-        BOOST_CHECK_EQUAL(text::resize("text", 10, align::center, '='), "===text===");
+        BOOST_CHECK_EQUAL(text::align("text", 10, align::left, '='),   "text======");
+        BOOST_CHECK_EQUAL(text::align("text", 10, align::right, '='),  "======text");
+        BOOST_CHECK_EQUAL(text::align("text", 10, align::center, '='), "===text===");
 }
 
 BOOST_AUTO_TEST_CASE(test_text_split)

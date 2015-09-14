@@ -1,7 +1,10 @@
 #include "tabulator.h"
+#include "libtext/align.hpp"
+#include "libtext/from_string.hpp"
 #include <cassert>
 #include <numeric>
 #include <iostream>
+#include <algorithm>
 
 namespace ncv
 {
@@ -159,10 +162,10 @@ namespace ncv
                 // display header
                 os << string_t(rowsize, table_delim) << std::endl;
 
-                os << text::resize(m_title, ncolsize);
+                os << text::align(m_title, ncolsize);
                 for (size_t c = 0; c < cols(); c ++)
                 {
-                        os << text::resize(col_delim + m_header[c], vcolsizes[c]);
+                        os << text::align(col_delim + m_header[c], vcolsizes[c]);
                 }
                 os << std::endl;
 
@@ -178,10 +181,10 @@ namespace ncv
                                 os << string_t(rowsize, row_delim) << std::endl;
                         }
 
-                        os << text::resize(row.name(), ncolsize);
+                        os << text::align(row.name(), ncolsize);
                         for (size_t c = 0; c < std::min(cols(), row.size()); c ++)
                         {
-                                os << text::resize(col_delim + row[c], vcolsizes[c]);
+                                os << text::align(col_delim + row[c], vcolsizes[c]);
                         }
                         os << std::endl;
                 }

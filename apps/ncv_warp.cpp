@@ -2,6 +2,7 @@
 #include "libnanocv/measure.hpp"
 #include "libnanocv/vision/warp.h"
 #include "libnanocv/vision/image.h"
+#include "libtext/to_string.hpp"
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>

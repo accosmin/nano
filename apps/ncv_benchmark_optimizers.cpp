@@ -8,6 +8,7 @@
 #include "libmath/random.hpp"
 #include "libmath/numeric.hpp"
 #include "libmath/epsilon.hpp"
+#include "libtext/align.hpp"
 #include "libnanocv/thread/loopi.hpp"
 
 #include "libnanocv/functions/function_trid.h"
@@ -100,7 +101,7 @@ namespace
                         optim::ls_strategy::cg_descent
                 };
 
-                tabulator_t table(text::resize(problem_name, 32));
+                tabulator_t table(text::align(problem_name, 32));
                 table.header() << "cost"
                                << "time [us]"
                                << "|grad|/|fval|"
@@ -216,7 +217,7 @@ int main(int, char* [])
         check_problems(ncv::make_rotated_ellipsoid_funcs(128));
 
         // show global statistics
-        tabulator_t table(text::resize("optimizer", 32));
+        tabulator_t table(text::align("optimizer", 32));
         table.header() << "cost"
                        << "time [us]"
                        << "|grad|/|fval|"

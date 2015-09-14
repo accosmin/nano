@@ -7,6 +7,7 @@
 #include "libnanocv/evaluate.h"
 #include "libmath/abs.hpp"
 #include "libmath/epsilon.hpp"
+#include "libtext/to_string.hpp"
 #include "libnanocv/tasks/task_charset.h"
 #include <cstdio>
 

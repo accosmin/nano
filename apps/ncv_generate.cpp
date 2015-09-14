@@ -2,6 +2,7 @@
 #include "libnanocv/class.h"
 #include "libnanocv/generate.h"
 #include "libnanocv/measure.hpp"
+#include "libtext/concatenate.hpp"
 #include "libnanocv/vision/image_grid.h"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>

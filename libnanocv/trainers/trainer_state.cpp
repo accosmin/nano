@@ -1,5 +1,6 @@
 #include "trainer_state.h"
-#include "libnanocv/text.hpp"
+#include "libtext/align.hpp"
+#include "libtext/to_string.hpp"
 #include <fstream>
 #include <limits>
 #include <cmath>
@@ -53,24 +54,24 @@ namespace ncv
                 
                 // header
                 ofs 
-                << text::resize("train-loss", colsize) << delim
-                << text::resize("train-error-average", colsize) << delim
-                << text::resize("train-error-variance", colsize) << delim
-                << text::resize("valid-loss", colsize) << delim
-                << text::resize("valid-error-average", colsize) << delim
-                << text::resize("valid-error-variance", colsize) << delim
+                << text::align("train-loss", colsize) << delim
+                << text::align("train-error-average", colsize) << delim
+                << text::align("train-error-variance", colsize) << delim
+                << text::align("valid-loss", colsize) << delim
+                << text::align("valid-error-average", colsize) << delim
+                << text::align("valid-error-variance", colsize) << delim
                 << std::endl;
 
                 // optimization states
                 for (const trainer_state_t& state : states)
                 {
                         ofs 
-                        << text::resize(text::to_string(state.m_tvalue), colsize) << delim
-                        << text::resize(text::to_string(state.m_terror_avg), colsize) << delim
-                        << text::resize(text::to_string(state.m_terror_var), colsize) << delim
-                        << text::resize(text::to_string(state.m_vvalue), colsize) << delim
-                        << text::resize(text::to_string(state.m_verror_avg), colsize) << delim
-                        << text::resize(text::to_string(state.m_verror_var), colsize) << delim
+                        << text::align(text::to_string(state.m_tvalue), colsize) << delim
+                        << text::align(text::to_string(state.m_terror_avg), colsize) << delim
+                        << text::align(text::to_string(state.m_terror_var), colsize) << delim
+                        << text::align(text::to_string(state.m_vvalue), colsize) << delim
+                        << text::align(text::to_string(state.m_verror_avg), colsize) << delim
+                        << text::align(text::to_string(state.m_verror_var), colsize) << delim
                         << std::endl;
                 }
 

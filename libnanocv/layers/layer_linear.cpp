@@ -1,6 +1,6 @@
 #include "layer_linear.h"
 #include "linear.hpp"
-#include "libnanocv/text.hpp"
+#include "libtext/from_params.hpp"
 #include "libmath/clamp.hpp"
 #include "libmath/random.hpp"
 #include "libtensor/random.hpp"

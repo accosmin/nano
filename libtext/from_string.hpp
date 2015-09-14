@@ -2,8 +2,7 @@
 
 #include <typeinfo>
 #include <stdexcept>
-#include <algorithm>
-#include "algorithms.h"
+#include "equals.hpp"
 #include "enum_string.hpp"
 
 namespace ncv

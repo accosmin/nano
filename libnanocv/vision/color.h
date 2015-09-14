@@ -1,7 +1,8 @@
 #pragma once
 
+#include "libtext/enum_string.hpp"
+#include "libnanocv/arch.h"
 #include "libnanocv/tensor.h"
-#include "libnanocv/text.hpp"
 #include "libmath/cast.hpp"
 #include "libmath/clamp.hpp"
 #include <iosfwd>

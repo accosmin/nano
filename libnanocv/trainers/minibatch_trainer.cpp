@@ -4,6 +4,8 @@
 #include "libnanocv/model.h"
 #include "libnanocv/sampler.h"
 #include "libmath/numeric.hpp"
+#include "libtext/from_params.hpp"
+#include "libtext/concatenate.hpp"
 
 namespace ncv
 {

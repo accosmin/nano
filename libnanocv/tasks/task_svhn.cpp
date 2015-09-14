@@ -1,4 +1,5 @@
 #include "task_svhn.h"
+#include "libtext/to_string.hpp"
 #include "libnanocv/logger.h"
 #include "libnanocv/file/gzip.h"
 #include "libnanocv/file/mat5.h"

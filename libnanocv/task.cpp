@@ -1,5 +1,6 @@
 #include "task.h"
 #include "sampler.h"
+#include "libtext/to_string.hpp"
 #include "libnanocv/logger.h"
 #include "libnanocv/vision/image_grid.h"
 

@@ -3,7 +3,7 @@
 #include "libnanocv/tensor.h"
 #include "liboptim/types.h"
 #include "liboptim/problem.hpp"
-#include "libnanocv/text/enum_string.hpp"
+#include "libtext/enum_string.hpp"
 
 namespace ncv
 {

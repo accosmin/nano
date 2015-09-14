@@ -8,7 +8,7 @@
 #include "libmath/random.hpp"
 #include "libmath/numeric.hpp"
 #include "libmath/epsilon.hpp"
-#include "libnanocv/text/to_string.hpp"
+#include "libtext/to_string.hpp"
 
 #include "libnanocv/functions/function_trid.h"
 #include "libnanocv/functions/function_beale.h"

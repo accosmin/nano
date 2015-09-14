@@ -31,6 +31,8 @@
 #include "criteria/avg_l2_criterion.h"
 #include "criteria/avg_var_criterion.h"
 
+#include "libtext/to_string.hpp"
+
 #include <cfenv>
 
 namespace ncv

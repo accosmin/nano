@@ -2,6 +2,8 @@
 #include "libnanocv/logger.h"
 #include "libmath/numeric.hpp"
 #include "libmath/cast.hpp"
+#include "libtext/split.hpp"
+#include "libtext/to_string.hpp"
 #include "libtensor/serialize.hpp"
 #include <iomanip>
 

@@ -1,5 +1,6 @@
 #include "batch.h"
 #include "tune_log10.hpp"
+#include "libtext/to_string.hpp"
 #include "libnanocv/timer.h"
 #include "libnanocv/logger.h"
 #include "libnanocv/sampler.h"

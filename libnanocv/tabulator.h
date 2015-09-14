@@ -1,7 +1,8 @@
 #pragma once
 
-#include "text.hpp"
+#include "libtext/to_string.hpp"
 #include "libnanocv/arch.h"
+#include <vector>
 #include <functional>
 
 namespace ncv

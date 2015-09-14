@@ -1,6 +1,8 @@
 #include "libnanocv/nanocv.h"
 #include "libnanocv/evaluate.h"
 #include "libnanocv/measure.hpp"
+#include "libtext/align.hpp"
+#include "libtext/concatenate.hpp"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 
@@ -18,8 +20,8 @@ namespace
                 string_t po_desc;
                 for (size_t i = 0; i < ids.size(); i ++)
                 {
-                        po_desc += "  " + text::resize(ids[i], 16) +
-                                   text::resize(descriptions[i], 32) + (i + 1 == ids.size() ? "" : "\n");
+                        po_desc += "  " + text::align(ids[i], 16) +
+                                   text::align(descriptions[i], 32) + (i + 1 == ids.size() ? "" : "\n");
                 }
 
                 return po_desc;

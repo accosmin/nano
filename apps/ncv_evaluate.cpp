@@ -2,6 +2,7 @@
 #include "libnanocv/measure.hpp"
 #include "libnanocv/evaluate.h"
 #include "libnanocv/sampler.h"
+#include "libtext/concatenate.hpp"
 #include <boost/program_options.hpp>
 #include <algorithm>
 

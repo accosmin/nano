@@ -1,5 +1,6 @@
 #pragma once
 
+#include "split.hpp"
 #include "from_string.hpp"
 
 namespace ncv

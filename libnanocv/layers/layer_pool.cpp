@@ -1,6 +1,6 @@
 #include "layer_pool.h"
 #include "pooling.hpp"
-#include "libnanocv/text.hpp"
+#include "libtext/from_params.hpp"
 #include "libmath/clamp.hpp"
 
 namespace ncv

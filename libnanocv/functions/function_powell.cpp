@@ -1,6 +1,6 @@
 #include "function_powell.h"
 #include "libmath/numeric.hpp"
-#include "libnanocv/text/to_string.hpp"
+#include "libtext/to_string.hpp"
 
 namespace ncv
 {

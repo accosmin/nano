@@ -1,6 +1,6 @@
 #pragma once
 
-#include "libnanocv/text/enum_string.hpp"
+#include "libtext/enum_string.hpp"
 
 namespace ncv
 {

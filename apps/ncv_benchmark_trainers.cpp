@@ -7,6 +7,7 @@
 #include "libnanocv/tasks/task_charset.h"
 #include "libnanocv/trainers/minibatch.h"
 #include "libnanocv/trainers/stochastic.h"
+#include "libtext/concatenate.hpp"
 
 using namespace ncv;
 

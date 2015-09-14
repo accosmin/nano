@@ -9,6 +9,7 @@
 #include "libnanocv/accumulator.h"
 #include "libnanocv/thread/thread.h"
 #include "libmath/epsilon.hpp"
+#include "libtext/to_string.hpp"
 #include "libnanocv/tasks/task_charset.h"
 
 namespace test

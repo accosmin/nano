@@ -1,5 +1,5 @@
 #include "trainer_result.h"
-#include "libnanocv/text.hpp"
+#include "libtext/concatenate.hpp"
 
 namespace ncv
 {

@@ -4,6 +4,7 @@
 #include "libmath/cast.hpp"
 #include "libnanocv/file/archive.h"
 #include "libnanocv/class.h"
+#include "libtext/ends_with.hpp"
 
 namespace ncv
 {

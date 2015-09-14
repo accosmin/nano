@@ -5,6 +5,7 @@
 #include "libnanocv/timer.h"
 #include "libnanocv/logger.h"
 #include "libnanocv/sampler.h"
+#include "libtext/to_string.hpp"
 #include "libnanocv/tasks/task_charset.h"
 
 namespace test

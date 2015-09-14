@@ -2,6 +2,7 @@
 #include "libmath/abs.hpp"
 #include "libmath/random.hpp"
 #include "libmath/numeric.hpp"
+#include "libtext/to_string.hpp"
 #include "libtensor/transform.hpp"
 
 namespace ncv

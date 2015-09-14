@@ -1,6 +1,7 @@
 #include "layer_convolution.h"
 #include "libnanocv/logger.h"
-#include "libnanocv/text.hpp"
+#include "libtext/to_string.hpp"
+#include "libtext/from_params.hpp"
 #include "libmath/clamp.hpp"
 #include "libmath/random.hpp"
 #include "libtensor/random.hpp"

@@ -3,6 +3,8 @@
 #include "libnanocv/model.h"
 #include "libmath/numeric.hpp"
 #include "libnanocv/sampler.h"
+#include "libtext/from_params.hpp"
+#include "libtext/concatenate.hpp"
 #include "batch.h"
 
 namespace ncv

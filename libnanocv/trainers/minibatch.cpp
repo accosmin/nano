@@ -7,6 +7,7 @@
 #include "libnanocv/sampler.h"
 #include "libnanocv/minimize.h"
 #include "libnanocv/accumulator.h"
+#include "libtext/to_string.hpp"
 #include <tuple>
 
 namespace ncv
