@@ -1,14 +1,14 @@
 #pragma once
 
-#include <limits>
 #include <cmath>
+#include <limits>
 
 namespace ncv
 {
         namespace math
         {
                 ///
-                /// \brief precision level [0=very precise, 1=quite precise, 2=precise, 3=loose] for different scalar types
+                /// \brief precision level [0=very precise, 1=quite precise, 2=precise, 3=loose] for different scalars
                 ///
                 template
                 <
