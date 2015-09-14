@@ -1,6 +1,6 @@
 #include "stochastic.h"
-#include "tune_fixed.hpp"
-#include "tune_log10.hpp"
+#include "libmath/tune_fixed.hpp"
+#include "libmath/tune_log10.hpp"
 #include "libnanocv/timer.h"
 #include "libnanocv/logger.h"
 #include "libnanocv/thread/thread.h"
@@ -145,7 +145,7 @@ namespace ncv
                         const auto decays = tunable_decays(optimizer);
                         const auto alphas = tunable_alphas(optimizer);
 
-                        return tune_fixed(op, batches, decays, alphas);
+                        return math::tune_fixed(op, batches, decays, alphas);
                 }
         }
 
@@ -179,7 +179,7 @@ namespace ncv
 
                 if (data.m_lacc.can_regularize())
                 {
-                        return std::get<0>(tune_log10(op, -6.0, +0.0, 0.5, 4));
+                        return std::get<0>(math::tune_log10(op, -6.0, +0.0, 0.5, 4));
                 }
                 else
                 {

@@ -8,7 +8,7 @@
 #include "libnanocv/thread/thread.h"
 #include "libmath/random.hpp"
 #include "libmath/epsilon.hpp"
-#include "libnanocv/trainers/tune_log10.hpp"
+#include "libmath/tune_log10_mt.hpp"
 
 namespace test
 {
@@ -23,12 +23,12 @@ namespace test
 
                 // single-threaded version
                 scalar_t stfx, stx;
-                std::tie(stfx, stx) = ncv::tune_log10(op, minlog, maxlog, epslog, splits);
+                std::tie(stfx, stx) = math::tune_log10(op, minlog, maxlog, epslog, splits);
 
                 // multi-threaded version
                 thread::pool_t pool(splits);
                 scalar_t mtfx, mtx;
-                std::tie(mtfx, mtx) = ncv::tune_log10_mt(op, pool, minlog, maxlog, epslog, splits);
+                std::tie(mtfx, mtx) = math::tune_log10_mt(op, pool, minlog, maxlog, epslog, splits);
 
                 const scalar_t epsilon = math::epsilon2<scalar_t>();
 

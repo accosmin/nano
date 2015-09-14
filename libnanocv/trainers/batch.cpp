@@ -1,5 +1,5 @@
 #include "batch.h"
-#include "tune_log10.hpp"
+#include "libmath/tune_log10.hpp"
 #include "libtext/to_string.hpp"
 #include "libnanocv/timer.h"
 #include "libnanocv/logger.h"
@@ -92,7 +92,7 @@ namespace ncv
 
                 if (data.m_lacc.can_regularize())
                 {
-                        return std::get<0>(tune_log10(op, -6.0, +0.0, 0.5, 4));
+                        return std::get<0>(math::tune_log10(op, -6.0, +0.0, 0.5, 4));
                 }
                 else
                 {
