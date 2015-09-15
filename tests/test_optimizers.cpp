@@ -97,12 +97,12 @@ namespace test
                 // optimizers to try
                 const auto optimizers =
                 {
-                        optim::batch_optimizer::GD,
-                        optim::batch_optimizer::CGD,
-                        optim::batch_optimizer::LBFGS
+                        min::batch_optimizer::GD,
+                        min::batch_optimizer::CGD,
+                        min::batch_optimizer::LBFGS
                 };
 
-                for (optim::batch_optimizer optimizer : optimizers)
+                for (min::batch_optimizer optimizer : optimizers)
                 {
                         for (size_t t = 0; t < trials; t ++)
                         {

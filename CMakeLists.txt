@@ -159,11 +159,12 @@ message("-----------------------------------------------------------------------
 
 include_directories(${nanocv_SOURCE_DIR})
 
+add_subdirectory(libmin)
 add_subdirectory(libmath)
-add_subdirectory(liboptim)
 add_subdirectory(libtext)
 add_subdirectory(libtensor)
 add_subdirectory(libnanocv)
+
 add_subdirectory(apps)
 add_subdirectory(tests)
 

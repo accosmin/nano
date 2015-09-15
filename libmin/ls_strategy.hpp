@@ -7,7 +7,7 @@
 
 namespace ncv
 {
-        namespace optim
+        namespace min
         {
                 template
                 <

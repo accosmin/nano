@@ -72,33 +72,33 @@ namespace
                 // optimizers to try
                 const auto optimizers =
                 {
-        //                optim::batch_optimizer::GD,
-        //                optim::batch_optimizer::CGD_CD,
-        //                optim::batch_optimizer::CGD_DY,
-        //                optim::batch_optimizer::CGD_FR,
-        //                optim::batch_optimizer::CGD_HS,
-        //                optim::batch_optimizer::CGD_LS,
-        //                optim::batch_optimizer::CGD_DYCD,
-                        optim::batch_optimizer::CGD_DYHS,
-                        optim::batch_optimizer::CGD_PRP,
-                        optim::batch_optimizer::CGD_N,
-                        optim::batch_optimizer::LBFGS
+        //                min::batch_optimizer::GD,
+        //                min::batch_optimizer::CGD_CD,
+        //                min::batch_optimizer::CGD_DY,
+        //                min::batch_optimizer::CGD_FR,
+        //                min::batch_optimizer::CGD_HS,
+        //                min::batch_optimizer::CGD_LS,
+        //                min::batch_optimizer::CGD_DYCD,
+                        min::batch_optimizer::CGD_DYHS,
+                        min::batch_optimizer::CGD_PRP,
+                        min::batch_optimizer::CGD_N,
+                        min::batch_optimizer::LBFGS
                 };
 
                 const auto ls_initializers =
                 {
-                        optim::ls_initializer::unit,
-                        optim::ls_initializer::quadratic,
-                        optim::ls_initializer::consistent
+                        min::ls_initializer::unit,
+                        min::ls_initializer::quadratic,
+                        min::ls_initializer::consistent
                 };
 
                 const auto ls_strategies =
                 {
-                        optim::ls_strategy::backtrack_armijo,
-                        optim::ls_strategy::backtrack_wolfe,
-                        optim::ls_strategy::backtrack_strong_wolfe,
-                        optim::ls_strategy::interpolation,
-                        optim::ls_strategy::cg_descent
+                        min::ls_strategy::backtrack_armijo,
+                        min::ls_strategy::backtrack_wolfe,
+                        min::ls_strategy::backtrack_strong_wolfe,
+                        min::ls_strategy::interpolation,
+                        min::ls_strategy::cg_descent
                 };
 
                 table_t table(text::align(problem_name, 32));
@@ -113,9 +113,9 @@ namespace
                 thread::pool_t pool;
                 std::mutex mutex;
 
-                for (optim::batch_optimizer optimizer : optimizers)
-                        for (optim::ls_initializer ls_initializer : ls_initializers)
-                                for (optim::ls_strategy ls_strategy : ls_strategies)
+                for (min::batch_optimizer optimizer : optimizers)
+                        for (min::ls_initializer ls_initializer : ls_initializers)
+                                for (min::ls_strategy ls_strategy : ls_strategies)
                 {
                         stats_t<scalar_t> times;
                         stats_t<scalar_t> crits;

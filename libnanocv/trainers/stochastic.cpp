@@ -14,11 +14,11 @@ namespace ncv
 {
         namespace
         {
-                scalars_t tunable_alphas(const optim::stoch_optimizer optimizer)
+                scalars_t tunable_alphas(const min::stoch_optimizer optimizer)
                 {
                         switch (optimizer)
                         {
-                        case optim::stoch_optimizer::ADADELTA:
+                        case min::stoch_optimizer::ADADELTA:
                                 return { 0.0 };
 
                         default:
@@ -26,13 +26,13 @@ namespace ncv
                         }
                 }
 
-                scalars_t tunable_decays(const optim::stoch_optimizer optimizer)
+                scalars_t tunable_decays(const min::stoch_optimizer optimizer)
                 {
                         switch (optimizer)
                         {
-                        case optim::stoch_optimizer::AG:
-                        case optim::stoch_optimizer::ADAGRAD:
-                        case optim::stoch_optimizer::ADADELTA:
+                        case min::stoch_optimizer::AG:
+                        case min::stoch_optimizer::ADAGRAD:
+                        case min::stoch_optimizer::ADADELTA:
                                 return { 1.00 };
 
                         default:
@@ -49,7 +49,7 @@ namespace ncv
 
                 trainer_result_t train(
                         trainer_data_t& data,
-                        optim::stoch_optimizer optimizer, size_t epochs, size_t batch, scalar_t alpha0, scalar_t decay,
+                        min::stoch_optimizer optimizer, size_t epochs, size_t batch, scalar_t alpha0, scalar_t decay,
                         bool verbose)
                 {
                         trainer_result_t result;
@@ -118,7 +118,7 @@ namespace ncv
 
                 // <result, batch size, decay rate, learning rate>
                 decltype(auto) tune_batch_decay_lrate(trainer_data_t& data,
-                        optim::stoch_optimizer optimizer, bool verbose)
+                        min::stoch_optimizer optimizer, bool verbose)
                 {
                         const auto op = [&] (size_t batch, scalar_t decay, scalar_t alpha)
                         {
@@ -153,7 +153,7 @@ namespace ncv
                 const model_t& model,
                 const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, const string_t& criterion,
-                optim::stoch_optimizer optimizer, size_t epochs, bool verbose)
+                min::stoch_optimizer optimizer, size_t epochs, bool verbose)
         {
                 vector_t x0;
                 model.save_params(x0);

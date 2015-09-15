@@ -9,7 +9,7 @@
 
 namespace ncv
 {
-        namespace optim
+        namespace min
         {
                 ///
                 /// \brief interpolation-based line-search (More & Thuente -like?!),

@@ -44,7 +44,7 @@ namespace ncv
                 // parameters
                 const size_t epochs = math::clamp(text::from_params<size_t>(configuration(), "epoch", 16), 1, 1024);
 
-                const optim::stoch_optimizer optimizer = text::from_string<optim::stoch_optimizer>
+                const min::stoch_optimizer optimizer = text::from_string<min::stoch_optimizer>
                         (text::from_params<string_t>(configuration(), "opt", "sg"));
 
                 // train the model

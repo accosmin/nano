@@ -16,7 +16,7 @@ namespace ncv
                 const opt_opelog_t& fn_elog,
                 const opt_opulog_t& fn_ulog,
                 const vector_t& x0,
-                optim::batch_optimizer, size_t iterations, scalar_t epsilon,
+                min::batch_optimizer, size_t iterations, scalar_t epsilon,
                 size_t history_size = 6);
 
         ///
@@ -30,9 +30,9 @@ namespace ncv
                 const opt_opelog_t& fn_elog,
                 const opt_opulog_t& fn_ulog,
                 const vector_t& x0,
-                optim::batch_optimizer, size_t iterations, scalar_t epsilon,
-                optim::ls_initializer,
-                optim::ls_strategy,
+                min::batch_optimizer, size_t iterations, scalar_t epsilon,
+                min::ls_initializer,
+                min::ls_strategy,
                 size_t history_size = 6);
 
         ///
@@ -46,7 +46,7 @@ namespace ncv
                 const opt_opelog_t& fn_elog,
                 const opt_opulog_t& fn_ulog,
                 const vector_t& x0,
-                optim::stoch_optimizer, size_t epochs, size_t epoch_size, scalar_t alpha0, scalar_t decay = 0.50);
+                min::stoch_optimizer, size_t epochs, size_t epoch_size, scalar_t alpha0, scalar_t decay = 0.50);
 
         ///
         /// \brief warning logging operator

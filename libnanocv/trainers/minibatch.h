@@ -13,5 +13,5 @@ namespace ncv
         NANOCV_PUBLIC trainer_result_t minibatch_train(
                 const model_t&, const task_t&, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t&, const string_t& criterion,
-                optim::batch_optimizer optimizer, size_t epochs, scalar_t epsilon, bool verbose = true);
+                min::batch_optimizer optimizer, size_t epochs, scalar_t epsilon, bool verbose = true);
 }

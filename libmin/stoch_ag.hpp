@@ -5,7 +5,7 @@
 
 namespace ncv
 {
-        namespace optim
+        namespace min
         {
                 ///
                 /// \brief stochastic Nesterov's accelerated gradient (descent)

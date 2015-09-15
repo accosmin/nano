@@ -4,7 +4,7 @@
 
 namespace ncv
 {
-        namespace optim
+        namespace min
         {
                 // these variations have been implemented following:
                 //      (1) "A survey of nonlinear conjugate gradient methods"

@@ -5,7 +5,7 @@
 
 namespace ncv
 {
-        namespace optim
+        namespace min
         {
                 ///
                 /// \brief stochastic iterative average gradient (descent)

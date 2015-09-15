@@ -5,7 +5,7 @@
 
 namespace ncv
 {
-        namespace optim
+        namespace min
         {
                 ///
                 /// \brief heuristics to initialize the step length,

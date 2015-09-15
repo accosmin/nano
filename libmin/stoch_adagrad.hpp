@@ -5,17 +5,20 @@
 
 namespace ncv
 {
-        namespace optim
+        namespace min
         {
                 ///
-                /// \brief stochastic AdaDelta,
-                ///     see "ADADELTA: An Adaptive Learning Rate Method", by Matthew D. Zeiler
+                /// \brief stochastic AdaGrad
+                ///     see "Adaptive subgradient methods for online learning and stochastic optimization"
+                ///     by J. C. Duchi, E. Hazan, and Y. Singer
+                ///
+                ///     see http://xcorr.net/2014/01/23/adagrad-eliminating-learning-rates-in-stochastic-gradient-descent/
                 ///
                 template
                 <
                         typename tproblem               ///< optimization problem
                 >
-                struct stoch_adadelta_t
+                struct stoch_adagrad_t
                 {
                         typedef stoch_params_t<tproblem>        param_t;
                         typedef typename param_t::tscalar       tscalar;
@@ -29,7 +32,7 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        stoch_adadelta_t(tsize epochs,
+                        stoch_adagrad_t(tsize epochs,
                                         tsize epoch_size,
                                         tscalar alpha0,
                                         tscalar decay,
@@ -53,24 +56,21 @@ namespace ncv
                                 // running-weighted-averaged-per-dimension-squared gradient
                                 average_vector_t<tscalar, tvector> gavg(x0.size());
 
-                                // running-weighted-averaged-per-dimension-squared step updates
-                                average_vector_t<tscalar, tvector> davg(x0.size());
-
                                 for (tsize e = 0, k = 1; e < m_param.m_epochs; e ++)
                                 {
                                         for (tsize i = 0; i < m_param.m_epoch_size; i ++, k ++)
                                         {
-                                                // descent direction
+                                                // learning rate
+                                                const tscalar alpha = m_param.m_alpha0;
+
+                                                // descent direction                                                
                                                 gavg.update(cstate.g.array().square(), m_param.weight(k));
 
-                                                cstate.d = -cstate.g.array() *
-                                                           (m_param.m_epsilon + davg.value().array()).sqrt() /
+                                                cstate.d = -cstate.g.array() /
                                                            (m_param.m_epsilon + gavg.value().array()).sqrt();
 
-                                                davg.update(cstate.d.array().square(), m_param.weight(k));
-
                                                 // update solution
-                                                cstate.update(problem, tscalar(1));
+                                                cstate.update(problem, alpha);
                                         }
 
                                         m_param.ulog(cstate);

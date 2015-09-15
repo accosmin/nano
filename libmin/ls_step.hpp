@@ -6,7 +6,7 @@
 
 namespace ncv
 {
-        namespace optim
+        namespace min
         {
                 ///
                 /// \brief line-search (scalar) step

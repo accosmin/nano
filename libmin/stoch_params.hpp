@@ -6,7 +6,7 @@
 
 namespace ncv
 {
-        namespace optim
+        namespace min
         {
                 ///
                 /// \brief common parameters for stochastic optimization
@@ -57,7 +57,7 @@ namespace ncv
                         ///
                         tscalar alpha(tsize iter) const
                         {
-                                return optim::decay(m_alpha0, iter, m_decay);
+                                return min::decay(m_alpha0, iter, m_decay);
                         }
 
                         ///

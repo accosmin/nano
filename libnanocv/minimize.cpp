@@ -1,13 +1,13 @@
 #include "minimize.h"
-#include "liboptim/batch_gd.hpp"
-#include "liboptim/batch_cgd.hpp"
-#include "liboptim/batch_lbfgs.hpp"
-#include "liboptim/stoch_ag.hpp"
-#include "liboptim/stoch_sg.hpp"
-#include "liboptim/stoch_sga.hpp"
-#include "liboptim/stoch_sia.hpp"
-#include "liboptim/stoch_adagrad.hpp"
-#include "liboptim/stoch_adadelta.hpp"
+#include "libmin/batch_gd.hpp"
+#include "libmin/batch_cgd.hpp"
+#include "libmin/batch_lbfgs.hpp"
+#include "libmin/stoch_ag.hpp"
+#include "libmin/stoch_sg.hpp"
+#include "libmin/stoch_sga.hpp"
+#include "libmin/stoch_sia.hpp"
+#include "libmin/stoch_adagrad.hpp"
+#include "libmin/stoch_adadelta.hpp"
 #include "libnanocv/logger.h"
 #include "libnanocv/string.h"
 
@@ -99,36 +99,36 @@ namespace ncv
                 const opt_opelog_t& fn_elog,
                 const opt_opulog_t& fn_ulog,
                 const vector_t& x0,
-                optim::batch_optimizer optimizer, size_t iterations, scalar_t epsilon, size_t history_size)
+                min::batch_optimizer optimizer, size_t iterations, scalar_t epsilon, size_t history_size)
         {
                 switch (optimizer)
                 {
-                case optim::batch_optimizer::LBFGS:
+                case min::batch_optimizer::LBFGS:
                         return minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog, x0,
                                         optimizer, iterations, epsilon,
-                                        optim::ls_initializer::unit, optim::ls_strategy::interpolation,
+                                        min::ls_initializer::unit, min::ls_strategy::interpolation,
                                         history_size);
 
-                case optim::batch_optimizer::CGD:
-                case optim::batch_optimizer::CGD_CD:
-                case optim::batch_optimizer::CGD_DY:
-                case optim::batch_optimizer::CGD_FR:
-                case optim::batch_optimizer::CGD_HS:
-                case optim::batch_optimizer::CGD_LS:
-                case optim::batch_optimizer::CGD_N:
-                case optim::batch_optimizer::CGD_PRP:
-                case optim::batch_optimizer::CGD_DYCD:
-                case optim::batch_optimizer::CGD_DYHS:
+                case min::batch_optimizer::CGD:
+                case min::batch_optimizer::CGD_CD:
+                case min::batch_optimizer::CGD_DY:
+                case min::batch_optimizer::CGD_FR:
+                case min::batch_optimizer::CGD_HS:
+                case min::batch_optimizer::CGD_LS:
+                case min::batch_optimizer::CGD_N:
+                case min::batch_optimizer::CGD_PRP:
+                case min::batch_optimizer::CGD_DYCD:
+                case min::batch_optimizer::CGD_DYHS:
                         return minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog, x0,
                                         optimizer, iterations, epsilon,
-                                        optim::ls_initializer::quadratic, optim::ls_strategy::interpolation,
+                                        min::ls_initializer::quadratic, min::ls_strategy::interpolation,
                                         history_size);
 
-                case optim::batch_optimizer::GD:
+                case min::batch_optimizer::GD:
                 default:
                         return minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog, x0,
                                         optimizer, iterations, epsilon,
-                                        optim::ls_initializer::quadratic, optim::ls_strategy::backtrack_wolfe,
+                                        min::ls_initializer::quadratic, min::ls_strategy::backtrack_wolfe,
                                         history_size);
                 }
         }
@@ -141,75 +141,75 @@ namespace ncv
                 const opt_opelog_t& fn_elog,
                 const opt_opulog_t& fn_ulog,
                 const vector_t& x0,
-                optim::batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
-                optim::ls_initializer lsinit, optim::ls_strategy lsstrat,
+                min::batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
+                min::ls_initializer lsinit, min::ls_strategy lsstrat,
                 size_t history_size)
         {
                 const opt_problem_t problem(fn_size, fn_fval, fn_grad);
 
                 switch (optimizer)
                 {
-//                case optim::batch_optimizer::libLBFGS:
+//                case min::batch_optimizer::libLBFGS:
 //                        return liblbfgs::minimize(problem, x0, iterations, epsilon, history_size);
 
-                case optim::batch_optimizer::LBFGS:
-                        return  optim::batch_lbfgs_t<opt_problem_t>
+                case min::batch_optimizer::LBFGS:
+                        return  min::batch_lbfgs_t<opt_problem_t>
                                 (iterations, epsilon, lsinit, lsstrat, history_size, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
-                case optim::batch_optimizer::CGD:
-                        return  optim::batch_cgd_n_t<opt_problem_t>
+                case min::batch_optimizer::CGD:
+                        return  min::batch_cgd_n_t<opt_problem_t>
                                 (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
-                case optim::batch_optimizer::CGD_CD:
-                        return  optim::batch_cgd_cd_t<opt_problem_t>
+                case min::batch_optimizer::CGD_CD:
+                        return  min::batch_cgd_cd_t<opt_problem_t>
                                 (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
-                case optim::batch_optimizer::CGD_DY:
-                        return  optim::batch_cgd_dy_t<opt_problem_t>
+                case min::batch_optimizer::CGD_DY:
+                        return  min::batch_cgd_dy_t<opt_problem_t>
                                 (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
-                case optim::batch_optimizer::CGD_FR:
-                        return  optim::batch_cgd_fr_t<opt_problem_t>
+                case min::batch_optimizer::CGD_FR:
+                        return  min::batch_cgd_fr_t<opt_problem_t>
                                 (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
-                case optim::batch_optimizer::CGD_HS:
-                        return  optim::batch_cgd_hs_t<opt_problem_t>
+                case min::batch_optimizer::CGD_HS:
+                        return  min::batch_cgd_hs_t<opt_problem_t>
                                 (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
-                case optim::batch_optimizer::CGD_LS:
-                        return  optim::batch_cgd_ls_t<opt_problem_t>
+                case min::batch_optimizer::CGD_LS:
+                        return  min::batch_cgd_ls_t<opt_problem_t>
                                 (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
-                case optim::batch_optimizer::CGD_N:
-                        return  optim::batch_cgd_n_t<opt_problem_t>
+                case min::batch_optimizer::CGD_N:
+                        return  min::batch_cgd_n_t<opt_problem_t>
                                 (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
-                case optim::batch_optimizer::CGD_PRP:
-                        return  optim::batch_cgd_prp_t<opt_problem_t>
+                case min::batch_optimizer::CGD_PRP:
+                        return  min::batch_cgd_prp_t<opt_problem_t>
                                 (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
-                case optim::batch_optimizer::CGD_DYCD:
-                        return  optim::batch_cgd_dycd_t<opt_problem_t>
+                case min::batch_optimizer::CGD_DYCD:
+                        return  min::batch_cgd_dycd_t<opt_problem_t>
                                 (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
-                case optim::batch_optimizer::CGD_DYHS:
-                        return  optim::batch_cgd_dyhs_t<opt_problem_t>
+                case min::batch_optimizer::CGD_DYHS:
+                        return  min::batch_cgd_dyhs_t<opt_problem_t>
                                 (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
-                case optim::batch_optimizer::GD:
+                case min::batch_optimizer::GD:
                 default:
-                        return  optim::batch_gd_t<opt_problem_t>
+                        return  min::batch_gd_t<opt_problem_t>
                                 (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
                 }
@@ -223,45 +223,45 @@ namespace ncv
                 const opt_opelog_t& fn_elog,
                 const opt_opulog_t& fn_ulog,
                 const vector_t& x0,
-                optim::stoch_optimizer optimizer, size_t epochs, size_t epoch_size, scalar_t alpha0, scalar_t decay)
+                min::stoch_optimizer optimizer, size_t epochs, size_t epoch_size, scalar_t alpha0, scalar_t decay)
         {
                 const opt_problem_t problem(fn_size, fn_fval, fn_grad);
 
                 switch (optimizer)
                 {
-                case optim::stoch_optimizer::SGA:
-                        return  optim::stoch_sga_t<opt_problem_t>
+                case min::stoch_optimizer::SGA:
+                        return  min::stoch_sga_t<opt_problem_t>
                                 (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
-                case optim::stoch_optimizer::SIA:
-                        return  optim::stoch_sia_t<opt_problem_t>
+                case min::stoch_optimizer::SIA:
+                        return  min::stoch_sia_t<opt_problem_t>
                                 (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
-                case optim::stoch_optimizer::AG:
-                        return  optim::stoch_ag_t<opt_problem_t>
+                case min::stoch_optimizer::AG:
+                        return  min::stoch_ag_t<opt_problem_t>
                                 (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
-                case optim::stoch_optimizer::AGGR:
-                        return  optim::stoch_aggr_t<opt_problem_t>
+                case min::stoch_optimizer::AGGR:
+                        return  min::stoch_aggr_t<opt_problem_t>
                                 (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
-                case optim::stoch_optimizer::ADAGRAD:
-                        return  optim::stoch_adagrad_t<opt_problem_t>
+                case min::stoch_optimizer::ADAGRAD:
+                        return  min::stoch_adagrad_t<opt_problem_t>
                                 (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
-                case optim::stoch_optimizer::ADADELTA:
-                        return  optim::stoch_adadelta_t<opt_problem_t>
+                case min::stoch_optimizer::ADADELTA:
+                        return  min::stoch_adadelta_t<opt_problem_t>
                                 (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
-                case optim::stoch_optimizer::SG:
+                case min::stoch_optimizer::SG:
                 default:
-                        return  optim::stoch_sg_t<opt_problem_t>
+                        return  min::stoch_sg_t<opt_problem_t>
                                 (epochs, epoch_size, alpha0, decay, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
                 }

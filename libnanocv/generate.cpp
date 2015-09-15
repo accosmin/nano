@@ -59,7 +59,7 @@ namespace ncv
                 };
 
                 // assembly optimization problem & optimize the input
-                const optim::batch_optimizer optimizer = optim::batch_optimizer::LBFGS;
+                const min::batch_optimizer optimizer = min::batch_optimizer::LBFGS;
                 const size_t iterations = 256;
                 const scalar_t epsilon = 1e-6;
 

@@ -2,7 +2,7 @@
 
 namespace ncv
 {
-        namespace optim
+        namespace min
         {
                 ///
                 /// \brief restart strategy for Nesterov's accelerated gradient: no restart.

@@ -13,7 +13,7 @@ namespace ncv
         {        
                 opt_state_t train_batch(
                         trainer_data_t& data,
-                        optim::batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
+                        min::batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
                         timer_t& timer, trainer_result_t& result, bool verbose)
                 {
                         size_t iteration = 0;
@@ -65,7 +65,7 @@ namespace ncv
         trainer_result_t batch_train(
                 const model_t& model, const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, const string_t& criterion, 
-                optim::batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
+                min::batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
                 bool verbose)
         {
                 vector_t x0;
