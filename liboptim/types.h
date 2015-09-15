@@ -9,11 +9,11 @@ namespace ncv
                 ///
                 enum class batch_optimizer
                 {
-                        GD,                     ///< gradient descent
-                        CGD,                    ///< conjugate gradient descent (default version)
-                        LBFGS,                  ///< limited-memory BFGS
+                        GD,                             ///< gradient descent
+                        CGD,                            ///< conjugate gradient descent (default version)
+                        LBFGS,                          ///< limited-memory BFGS
 
-                        CGD_HS,                 ///< various conjugate gradient descent versions
+                        CGD_HS,                         ///< various conjugate gradient descent versions
                         CGD_FR,
                         CGD_PRP,
                         CGD_CD,
@@ -29,13 +29,13 @@ namespace ncv
                 ///
                 enum class stoch_optimizer
                 {
-                        SG,                     ///< stochastic gradient
-                        SGA,                    ///< stochastic gradient averaging
-                        SIA,                    ///< stochastic iterate averaging
-                        AG,                     ///< Nesterov's accelerated gradient
-                        AGGR,                   ///< Nesterov's accelerated gradient (with gradient check-based restarts)
-                        ADAGRAD,                ///< AdaGrad
-                        ADADELTA                ///< AdaDelta
+                        SG,                             ///< stochastic gradient
+                        SGA,                            ///< stochastic gradient averaging
+                        SIA,                            ///< stochastic iterate averaging
+                        AG,                             ///< Nesterov's accelerated gradient
+                        AGGR,                           ///< Nesterov's accelerated gradient (with gradient check-based restarts)
+                        ADAGRAD,                        ///< AdaGrad
+                        ADADELTA                        ///< AdaDelta
                 };
 
                 ///
@@ -63,7 +63,7 @@ namespace ncv
 
                         // see CG_DESCENT, Hager & Zhang, 2005 - regular and approximate Wolfe only
                         cg_descent                      ///< CG_DESCENT
-                };
+                };                       
         }
 }
 
