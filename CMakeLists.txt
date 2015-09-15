@@ -163,8 +163,11 @@ add_subdirectory(libmin)
 add_subdirectory(libmath)
 add_subdirectory(libtext)
 add_subdirectory(libtensor)
+
 add_subdirectory(libnanocv)
 
-add_subdirectory(apps)
+add_subdirectory(libfunc)
 add_subdirectory(tests)
+
+add_subdirectory(apps)
 
