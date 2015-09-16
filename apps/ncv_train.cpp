@@ -1,7 +1,7 @@
-#include "libnanocv/nanocv.h"
-#include "libnanocv/evaluate.h"
-#include "libnanocv/measure.hpp"
 #include "libtext/align.hpp"
+#include "libnanocv/nanocv.h"
+#include "libcore/measure.hpp"
+#include "libnanocv/evaluate.h"
 #include "libtext/concatenate.hpp"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>

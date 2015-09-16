@@ -7,10 +7,7 @@ file(GLOB libnanocv_sources ${CMAKE_CURRENT_SOURCE_DIR}
         losses/*.*
         models/*.*
         tasks/*.*
-        text/*.*
-        thread/*.*
-        trainers/*.*
-        vision/*.*)
+        trainers/*.*)
 
 set(libs "${libs};${Boost_SERIALIZATION_LIBRARY}")
 set(libs "${libs};${Boost_PROGRAM_OPTIONS_LIBRARY}")
@@ -23,11 +20,10 @@ set(libs "${libs};${LibArchive_LIBRARIES}")
 set(libs "${libs};${IL_LIBRARIES}")
 
 add_library(nanocv SHARED ${libnanocv_sources})
-target_link_libraries(nanocv ${libs})
+target_link_libraries(nanocv ${libs} thread core)
 
 # install library
-install(TARGETS
-        nanocv
+install(TARGETS nanocv
         DESTINATION lib)
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}

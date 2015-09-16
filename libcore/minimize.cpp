@@ -1,4 +1,6 @@
 #include "minimize.h"
+#include "logger.h"
+#include "string.h"
 #include "libmin/batch_gd.hpp"
 #include "libmin/batch_cgd.hpp"
 #include "libmin/batch_lbfgs.hpp"
@@ -8,8 +10,6 @@
 #include "libmin/stoch_sia.hpp"
 #include "libmin/stoch_adagrad.hpp"
 #include "libmin/stoch_adadelta.hpp"
-#include "libnanocv/logger.h"
-#include "libnanocv/string.h"
 
 //#define USE_SSE2
 //#define LBFGS_FLOAT     64

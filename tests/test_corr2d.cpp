@@ -2,8 +2,8 @@
 #define BOOST_TEST_MODULE "test_corr2d"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/tensor.h"
 #include "libmath/abs.hpp"
+#include "libcore/tensor.h"
 #include "libmath/epsilon.hpp"
 #include "libtensor/corr2d_cpp.hpp"
 #include "libtensor/corr2d_dyn.hpp"

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "point.h"
-#include "libnanocv/scalar.h"
+#include "scalar.h"
 
 namespace ncv
 {

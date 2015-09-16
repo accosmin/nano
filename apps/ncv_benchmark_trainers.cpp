@@ -1,8 +1,8 @@
+#include "libcore/table.h"
 #include "libnanocv/nanocv.h"
-#include "libnanocv/measure.hpp"
-#include "libnanocv/table.h"
+#include "libthread/thread.h"
+#include "libcore/measure.hpp"
 #include "libnanocv/accumulator.h"
-#include "libnanocv/thread/thread.h"
 #include "libnanocv/trainers/batch.h"
 #include "libnanocv/tasks/task_charset.h"
 #include "libnanocv/trainers/minibatch.h"
@@ -159,10 +159,10 @@ int main(int, char* [])
         const size_t cmd_outputs = task.osize();
 
         // create training & validation samples
-        sampler_t tsampler(task);
+        sampler_t tsampler(task.samples());
         tsampler.setup(sampler_t::atype::annotated);
 
-        sampler_t vsampler(task);
+        sampler_t vsampler(task.samples());
         tsampler.split(80, vsampler);
 
         // construct models

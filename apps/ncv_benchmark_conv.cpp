@@ -1,7 +1,7 @@
-#include "libnanocv/tensor.h"
-#include "libnanocv/table.h"
-#include "libnanocv/measure.hpp"
+#include "libcore/tensor.h"
+#include "libcore/table.h"
 #include "libmath/random.hpp"
+#include "libcore/measure.hpp"
 #include "libtensor/conv3d.hpp"
 #include "libtensor/random.hpp"
 #include "libtensor/conv3d_lin.hpp"
@@ -12,7 +12,6 @@
 #include "libtensor/corr2d_dyn.hpp"
 #include "libtensor/corr2d_egb.hpp"
 #include "libtensor/corr2d_egr.hpp"
-
 #include <iostream>
 #include <boost/program_options.hpp>
 

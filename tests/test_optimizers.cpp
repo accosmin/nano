@@ -2,9 +2,9 @@
 #define BOOST_TEST_MODULE "test_optimizers"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/logger.h"
-#include "libnanocv/minimize.h"
 #include "libmath/abs.hpp"
+#include "libcore/logger.h"
+#include "libcore/minimize.h"
 #include "libmath/random.hpp"
 #include "libmath/numeric.hpp"
 #include "libmath/epsilon.hpp"

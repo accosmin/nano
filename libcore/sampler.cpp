@@ -1,15 +1,9 @@
 #include "sampler.h"
-#include "task.h"
 #include "libmath/usampling.hpp"
 #include <algorithm>
 
 namespace ncv
 {
-        sampler_t::sampler_t(const task_t& task)
-                :       sampler_t(task.samples())
-        {
-        }
-
         sampler_t::sampler_t(const samples_t& samples)
                 :       m_osamples(samples),
                         m_samples(samples),

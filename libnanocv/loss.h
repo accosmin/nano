@@ -1,8 +1,8 @@
 #pragma once
 
-#include "libnanocv/arch.h"
-#include "libnanocv/tensor.h"
-#include "libnanocv/manager.hpp"
+#include "libcore/arch.h"
+#include "libcore/tensor.h"
+#include "libcore/manager.hpp"
 
 namespace ncv
 {

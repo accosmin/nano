@@ -1,9 +1,9 @@
+#include "libcore/table.h"
+#include "libcore/sampler.h"
 #include "libnanocv/nanocv.h"
-#include "libnanocv/sampler.h"
-#include "libnanocv/table.h"
-#include "libnanocv/measure.hpp"
-#include "libnanocv/thread/thread.h"
-#include "libnanocv/thread/loopi.hpp"
+#include "libthread/thread.h"
+#include "libcore/measure.hpp"
+#include "libthread/loopi.hpp"
 #include "libnanocv/tasks/task_charset.h"
 #include <boost/program_options.hpp>
 
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
                 log_info() << "<<< running test [" << cmd_name << "] ...";
 
                 // select random samples
-                sampler_t sampler(task);
+                sampler_t sampler(task.samples());
                 sampler.setup(sampler_t::stype::uniform, is);
                 sampler.setup(sampler_t::atype::annotated);
 

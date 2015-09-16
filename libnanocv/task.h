@@ -1,8 +1,8 @@
 #pragma once
 
-#include "sample.h"
-#include "libnanocv/manager.hpp"
-#include "libnanocv/vision/image.h"
+#include "libcore/image.h"
+#include "libcore/sample.h"
+#include "libcore/manager.hpp"
 
 namespace ncv
 {

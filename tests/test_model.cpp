@@ -2,11 +2,11 @@
 #define BOOST_TEST_MODULE "test_model_io"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/nanocv.h"
-#include "libnanocv/logger.h"
-#include "libnanocv/evaluate.h"
 #include "libmath/abs.hpp"
+#include "libcore/logger.h"
+#include "libnanocv/nanocv.h"
 #include "libmath/epsilon.hpp"
+#include "libnanocv/evaluate.h"
 #include "libtext/to_string.hpp"
 #include "libnanocv/tasks/task_charset.h"
 #include <cstdio>

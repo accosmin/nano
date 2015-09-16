@@ -2,9 +2,9 @@
 #define BOOST_TEST_MODULE "test_sampler"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/timer.h"
-#include "libnanocv/logger.h"
-#include "libnanocv/sampler.h"
+#include "libcore/timer.h"
+#include "libcore/logger.h"
+#include "libcore/sampler.h"
 #include "libtext/to_string.hpp"
 #include "libnanocv/tasks/task_charset.h"
 
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(test_sampler)
                 const ncv::timer_t timer;
 
                 // batch training samples
-                sampler_t sampler(task);
+                sampler_t sampler(task.samples());
                 sampler.reset();
                 sampler.setup(train_fold);
                 sampler.setup(sampler_t::stype::batch);

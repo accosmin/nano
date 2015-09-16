@@ -1,12 +1,12 @@
-#include "libnanocv/class.h"
+#include "libcore/class.h"
+#include "libcore/table.h"
+#include "libcore/sampler.h"
 #include "libnanocv/nanocv.h"
-#include "libnanocv/sampler.h"
-#include "libnanocv/table.h"
-#include "libnanocv/measure.hpp"
-#include "libnanocv/accumulator.h"
 #include "libmath/random.hpp"
-#include "libnanocv/thread/thread.h"
+#include "libthread/thread.h"
+#include "libcore/measure.hpp"
 #include "libtensor/random.hpp"
+#include "libnanocv/accumulator.h"
 #include "libnanocv/tasks/task_charset.h"
 #include <boost/program_options.hpp>
 
@@ -182,7 +182,7 @@ int main(int argc, char *argv[])
                 model->random_params();
 
                 // select random samples
-                sampler_t sampler(task);
+                sampler_t sampler(task.samples());
                 sampler.setup(sampler_t::stype::uniform, cmd_samples);
                 sampler.setup(sampler_t::atype::annotated);
 

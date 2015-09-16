@@ -1,13 +1,14 @@
 #include "evaluate.h"
-#include "sampler.h"
+#include "task.h"
 #include "accumulator.h"
+#include "libcore/sampler.h"
 
 namespace ncv
 {
         size_t evaluate(const task_t& task, const fold_t& fold, const loss_t& loss, const model_t& model,
                 scalar_t& lvalue, scalar_t& lerror)
         {
-                sampler_t sampler(task);
+                sampler_t sampler(task.samples());
                 sampler.setup(fold).setup(sampler_t::atype::annotated);
 
                 accumulator_t accumulator(model, 0, "avg", criterion_t::type::value, 0.0);

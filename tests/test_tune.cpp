@@ -2,10 +2,10 @@
 #define BOOST_TEST_MODULE "test_tune"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/scalar.h"
 #include "libmath/abs.hpp"
-#include "libnanocv/thread/pool.h"
-#include "libnanocv/thread/thread.h"
+#include "libcore/scalar.h"
+#include "libthread/pool.h"
+#include "libthread/thread.h"
 #include "libmath/random.hpp"
 #include "libmath/epsilon.hpp"
 #include "libmath/tune_log10_mt.hpp"

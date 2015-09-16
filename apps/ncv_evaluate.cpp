@@ -1,7 +1,7 @@
+#include "libcore/sampler.h"
 #include "libnanocv/nanocv.h"
-#include "libnanocv/measure.hpp"
+#include "libcore/measure.hpp"
 #include "libnanocv/evaluate.h"
-#include "libnanocv/sampler.h"
 #include "libtext/concatenate.hpp"
 #include <boost/program_options.hpp>
 #include <algorithm>
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
                 estats(lerror);
 
 		// per-label error rates
-		sampler_t sampler(*rtask);
+                sampler_t sampler(rtask->samples());
                 sampler.setup(test_fold);
                 sampler.setup(sampler_t::atype::annotated);
                 sampler.setup(sampler_t::stype::batch);

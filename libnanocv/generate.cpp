@@ -1,13 +1,12 @@
 #include "generate.h"
 #include "model.h"
-#include "minimize.h"
-#include "libnanocv/timer.h"
-#include "libnanocv/string.h"
-#include "libnanocv/logger.h"
-#include "losses/loss_square.h"
+#include "libcore/timer.h"
+#include "libcore/string.h"
+#include "libcore/logger.h"
 #include "libmath/random.hpp"
 #include "libtensor/random.hpp"
-#include <fstream>
+#include "losses/loss_square.h"
+#include "libcore/minimize.h"
 
 namespace ncv
 {

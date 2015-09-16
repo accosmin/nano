@@ -1,10 +1,10 @@
 #include "task_cifar10.h"
-#include "libnanocv/logger.h"
+#include "libcore/class.h"
+#include "libcore/logger.h"
 #include "libmath/cast.hpp"
+#include "libtext/ends_with.hpp"
 #include "libnanocv/file/stream.h"
 #include "libnanocv/file/archive.h"
-#include "libnanocv/class.h"
-#include "libtext/ends_with.hpp"
 
 namespace ncv
 {

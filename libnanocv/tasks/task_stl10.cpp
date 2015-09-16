@@ -1,12 +1,12 @@
 #include "task_stl10.h"
-#include "libnanocv/logger.h"
+#include "libcore/class.h"
+#include "libcore/logger.h"
 #include "libmath/cast.hpp"
-#include "libtext/from_string.hpp"
-#include "libtext/ends_with.hpp"
 #include "libtext/split.hpp"
+#include "libtext/ends_with.hpp"
+#include "libtext/from_string.hpp"
 #include "libnanocv/file/stream.h"
 #include "libnanocv/file/archive.h"
-#include "libnanocv/class.h"
 
 namespace ncv
 {

@@ -1,7 +1,7 @@
 #include "logger.h"
-#include <iomanip>
-#include <string>
 #include <ctime>
+#include <string>
+#include <iomanip>
 
 namespace ncv
 {

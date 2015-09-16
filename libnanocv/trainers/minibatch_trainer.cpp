@@ -1,8 +1,8 @@
 #include "minibatch_trainer.h"
 #include "minibatch.h"
-#include "libnanocv/logger.h"
+#include "libcore/logger.h"
 #include "libnanocv/model.h"
-#include "libnanocv/sampler.h"
+#include "libcore/sampler.h"
 #include "libmath/numeric.hpp"
 #include "libtext/from_params.hpp"
 #include "libtext/concatenate.hpp"
@@ -29,10 +29,10 @@ namespace ncv
                 model.random_params();
 
                 // prune training & validation data
-                sampler_t tsampler(task);
+                sampler_t tsampler(task.samples());
                 tsampler.setup(fold).setup(sampler_t::atype::annotated);
 
-                sampler_t vsampler(task);
+                sampler_t vsampler(task.samples());
                 tsampler.split(80, vsampler);
 
                 if (tsampler.empty() || vsampler.empty())

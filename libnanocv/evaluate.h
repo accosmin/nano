@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sample.h"
+#include "libcore/sample.h"
 
 namespace ncv
 {

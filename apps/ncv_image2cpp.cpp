@@ -1,6 +1,6 @@
-#include "libnanocv/string.h"
-#include "libnanocv/logger.h"
-#include "libnanocv/vision/image.h"
+#include "libcore/image.h"
+#include "libcore/string.h"
+#include "libcore/logger.h"
 #include "libtext/lower.hpp"
 #include "libtext/replace.hpp"
 #include <fstream>

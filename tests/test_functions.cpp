@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_functions"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/minimize.h"
+#include "libcore/minimize.h"
 #include "libmath/random.hpp"
 #include "libmath/epsilon.hpp"
 

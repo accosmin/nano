@@ -1,7 +1,7 @@
 #pragma once
 
 #include "color.h"
-#include "libnanocv/string.h"
+#include "string.h"
 
 namespace ncv
 {

@@ -1,5 +1,5 @@
 #include "libnanocv/nanocv.h"
-#include "libnanocv/measure.hpp"
+#include "libcore/measure.hpp"
 #include "libtext/concatenate.hpp"
 #include <boost/program_options.hpp>
 

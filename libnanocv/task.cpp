@@ -1,8 +1,8 @@
 #include "task.h"
-#include "sampler.h"
+#include "libcore/logger.h"
+#include "libcore/sampler.h"
+#include "libcore/image_grid.h"
 #include "libtext/to_string.hpp"
-#include "libnanocv/logger.h"
-#include "libnanocv/vision/image_grid.h"
 
 namespace ncv
 {
@@ -53,7 +53,7 @@ namespace ncv
                 {
                         const string_t label = l < labels.size() ? labels[l] : string_t();
 
-                        sampler_t sampler(*this);
+                        sampler_t sampler(this->samples());
                         sampler.setup(fold).setup(label);
                         const samples_t samples = sampler.get();
 
@@ -131,7 +131,7 @@ namespace ncv
                 {
                         for (protocol p : {protocol::train, protocol::test})
                         {
-                                sampler_t sampler(*this);
+                                sampler_t sampler(this->samples());
                                 sampler.setup({f, p});
 
                                 ncv::print("fold [" + text::to_string(f + 1) + "/" + text::to_string(fsize()) + "] " +

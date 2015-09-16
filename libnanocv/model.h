@@ -1,7 +1,7 @@
 #pragma once
 
-#include "libnanocv/manager.hpp"
-#include "libnanocv/vision/image.h"
+#include "libcore/image.h"
+#include "libcore/manager.hpp"
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 

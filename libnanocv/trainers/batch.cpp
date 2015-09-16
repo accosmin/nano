@@ -1,10 +1,10 @@
 #include "batch.h"
-#include "libmath/tune_log10.hpp"
+#include "libcore/timer.h"
+#include "libcore/logger.h"
+#include "libcore/sampler.h"
+#include "libcore/minimize.h"
 #include "libtext/to_string.hpp"
-#include "libnanocv/timer.h"
-#include "libnanocv/logger.h"
-#include "libnanocv/sampler.h"
-#include "libnanocv/minimize.h"
+#include "libmath/tune_log10.hpp"
 #include "libnanocv/accumulator.h"
 
 namespace ncv

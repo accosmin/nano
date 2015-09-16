@@ -1,7 +1,7 @@
 #pragma once
 
-#include "libnanocv/arch.h"
-#include "libnanocv/tensor.h"
+#include "arch.h"
+#include "tensor.h"
 
 namespace ncv
 {

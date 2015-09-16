@@ -2,7 +2,7 @@
 #include <limits>
 #include <fstream>
 #include <cstdint>
-#include "libnanocv/logger.h"
+#include "libcore/logger.h"
 
 namespace ncv
 {

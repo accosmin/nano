@@ -1,6 +1,6 @@
 #include "accumulator.h"
 #include "criterion.h"
-#include "libnanocv/thread/loopit.hpp"
+#include "libthread/loopit.hpp"
 #include <cassert>
 
 namespace ncv

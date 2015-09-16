@@ -1,10 +1,10 @@
 #include "task_svhn.h"
-#include "libtext/to_string.hpp"
-#include "libnanocv/logger.h"
+#include "libcore/color.h"
+#include "libcore/class.h"
+#include "libcore/logger.h"
 #include "libnanocv/file/gzip.h"
 #include "libnanocv/file/mat5.h"
-#include "libnanocv/vision/color.h"
-#include "libnanocv/class.h"
+#include "libtext/to_string.hpp"
 #include <fstream>
 #include <memory>
 

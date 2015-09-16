@@ -1,6 +1,6 @@
 #pragma once
 
-#include "libnanocv/tensor.h"
+#include "tensor.h"
 #include "libmin/types.h"
 #include "libmin/problem.hpp"
 #include "libtext/enum_string.hpp"

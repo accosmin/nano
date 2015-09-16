@@ -1,8 +1,8 @@
 #pragma once
 
+#include "arch.h"
 #include "table_row.h"
 #include "table_header.h"
-#include "libnanocv/arch.h"
 #include <functional>
 
 namespace ncv

@@ -1,5 +1,5 @@
+#include "libcore/table.h"
 #include "libnanocv/nanocv.h"
-#include "libnanocv/table.h"
 #include <iostream>
 #include <boost/program_options.hpp>
 

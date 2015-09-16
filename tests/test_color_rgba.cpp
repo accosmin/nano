@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_color_rgba"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/vision/color.h"
+#include "libcore/color.h"
 #include "libmath/random.hpp"
 #include "libmath/epsilon.hpp"
 

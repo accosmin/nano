@@ -1,7 +1,7 @@
 #pragma once
 
-#include "libnanocv/arch.h"
-#include "libnanocv/optimizer.h"
+#include "arch.h"
+#include "optimizer.h"
 
 namespace ncv
 {
@@ -51,10 +51,10 @@ namespace ncv
         ///
         /// \brief warning logging operator
         ///
-        opt_opwlog_t make_opwlog();
+        NANOCV_PUBLIC opt_opwlog_t make_opwlog();
 
         ///
         /// \brief error logging operator
         ///
-        opt_opelog_t make_opelog();
+        NANOCV_PUBLIC opt_opelog_t make_opelog();
 }

@@ -2,12 +2,12 @@
 #define BOOST_TEST_MODULE "test_thread_loop"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/timer.h"
-#include "libnanocv/scalar.h"
-#include "libnanocv/table.h"
 #include "libmath/abs.hpp"
+#include "libcore/timer.h"
+#include "libcore/table.h"
+#include "libcore/scalar.h"
 #include "libmath/stats.hpp"
-#include "libnanocv/thread/loopi.hpp"
+#include "libthread/loopi.hpp"
 #include <iostream>
 #include <numeric>
 

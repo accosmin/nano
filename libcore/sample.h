@@ -1,9 +1,9 @@
 #pragma once
 
+#include "rect.h"
+#include "tensor.h"
+#include "string.h"
 #include "protocol.h"
-#include "libnanocv/string.h"
-#include "libnanocv/tensor.h"
-#include "libnanocv/vision/rect.h"
 
 namespace ncv
 {
@@ -48,8 +48,8 @@ namespace ncv
         ///
         /// \brief collect the distinct labels of the given samples
         ///
-        strings_t labels(const samples_t& samples);
-        strings_t labels(samples_const_it_t begin, samples_const_it_t end);
+        NANOCV_PUBLIC strings_t labels(const samples_t& samples);
+        NANOCV_PUBLIC strings_t labels(samples_const_it_t begin, samples_const_it_t end);
 
         ///
         /// \brief compare two samples (to order them for fast caching)

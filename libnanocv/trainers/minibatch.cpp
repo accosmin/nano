@@ -1,13 +1,13 @@
 #include "minibatch.h"
+#include "libcore/timer.h"
+#include "libcore/logger.h"
+#include "libcore/sampler.h"
+#include "libcore/minimize.h"
+#include "libthread/thread.h"
+#include "libtext/to_string.hpp"
 #include "libmath/tune_fixed.hpp"
 #include "libmath/tune_log10.hpp"
-#include "libnanocv/timer.h"
-#include "libnanocv/logger.h"
-#include "libnanocv/thread/thread.h"
-#include "libnanocv/sampler.h"
-#include "libnanocv/minimize.h"
 #include "libnanocv/accumulator.h"
-#include "libtext/to_string.hpp"
 #include <tuple>
 
 namespace ncv

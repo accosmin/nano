@@ -1,6 +1,6 @@
 #include "model.h"
 #include "task.h"
-#include "libnanocv/logger.h"
+#include "libcore/logger.h"
 #include <fstream>
 
 namespace ncv

@@ -1,5 +1,5 @@
 #include "loss_classnll.h"
-#include "libnanocv/class.h"
+#include "libcore/class.h"
 #include "libmath/numeric.hpp"
 #include <cassert>
 

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <map>
-#include "libnanocv/tensor.h"
 #include "trainer_state.h"
+#include "libcore/tensor.h"
 #include "libtext/enum_string.hpp"
 
 namespace ncv

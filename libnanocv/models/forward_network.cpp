@@ -1,8 +1,8 @@
 #include "forward_network.h"
-#include "libnanocv/logger.h"
-#include "libmath/numeric.hpp"
+#include "libcore/logger.h"
 #include "libmath/cast.hpp"
 #include "libtext/split.hpp"
+#include "libmath/numeric.hpp"
 #include "libtext/to_string.hpp"
 #include "libtensor/serialize.hpp"
 #include <iomanip>

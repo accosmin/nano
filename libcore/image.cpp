@@ -1,5 +1,5 @@
-#include "io.h"
 #include "image.h"
+#include "image_io.h"
 #include "libmath/cast.hpp"
 #include "libmath/random.hpp"
 #include "libtensor/random.hpp"

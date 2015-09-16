@@ -1,10 +1,10 @@
 #pragma once
 
-#include "libtext/enum_string.hpp"
-#include "libnanocv/arch.h"
-#include "libnanocv/tensor.h"
+#include "libcore/arch.h"
+#include "libcore/tensor.h"
 #include "libmath/cast.hpp"
 #include "libmath/clamp.hpp"
+#include "libtext/enum_string.hpp"
 #include <iosfwd>
 #include <cstdint>
 

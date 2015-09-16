@@ -1,6 +1,6 @@
 #pragma once
 
-#include "libnanocv/string.h"
+#include "libcore/string.h"
 #include "libnanocv/model.h"
 #include "libnanocv/layer.h"
 

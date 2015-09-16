@@ -2,8 +2,8 @@
 #define BOOST_TEST_MODULE "test_conv3d"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/tensor.h"
 #include "libmath/abs.hpp"
+#include "libcore/tensor.h"
 #include "libmath/random.hpp"
 #include "libmath/epsilon.hpp"
 #include "libtensor/random.hpp"

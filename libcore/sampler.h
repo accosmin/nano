@@ -4,12 +4,8 @@
 
 namespace ncv
 {
-        class task_t;
-
         ///
-        /// \brief generic computer vision task consisting of a set of (annotated) images
-        /// and a protocol (training + testing).
-        /// samples for training & testing models can be drawn from these image.
+        /// \brief sampling from a potentially large collection of samples.
         ///
         class NANOCV_PUBLIC sampler_t
 	{
@@ -26,11 +22,6 @@ namespace ncv
                         unlabeled,      ///< un-labeled samples
                         annotated       ///< annotated samples
                 };
-
-                ///
-                /// \brief constructor
-                ///
-                explicit sampler_t(const task_t& task);
 
                 ///
                 /// \brief constructor

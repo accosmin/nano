@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_image"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/vision/image.h"
+#include "libcore/image.h"
 #include "libmath/random.hpp"
 #include "libmath/epsilon.hpp"
 #include <cstdio>

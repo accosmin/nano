@@ -1,8 +1,8 @@
 #pragma once
 
-#include "libnanocv/arch.h"
-#include "libnanocv/string.h"
-#include "libnanocv/optimizer.h"
+#include "libcore/arch.h"
+#include "libcore/string.h"
+#include "libcore/optimizer.h"
 
 namespace ncv
 {

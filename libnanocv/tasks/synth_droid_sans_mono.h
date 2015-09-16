@@ -1,6 +1,6 @@
 #pragma once
 
-#include "libnanocv/vision/color.h"
+#include "libcore/color.h"
 
 namespace ncv
 {

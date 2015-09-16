@@ -1,6 +1,6 @@
-#include "libnanocv/timer.h"
-#include "libnanocv/logger.h"
-#include "libnanocv/string.h"
+#include "libcore/timer.h"
+#include "libcore/logger.h"
+#include "libcore/string.h"
 #include "libnanocv/file/archive.h"
 #include <boost/program_options.hpp>
 
