@@ -1,13 +1,13 @@
-#include "libcore/table.h"
-#include "libnanocv/nanocv.h"
-#include "libthread/thread.h"
-#include "libcore/measure.hpp"
-#include "libnanocv/accumulator.h"
-#include "libnanocv/trainers/batch.h"
-#include "libnanocv/tasks/task_charset.h"
-#include "libnanocv/trainers/minibatch.h"
-#include "libnanocv/trainers/stochastic.h"
-#include "libtext/concatenate.hpp"
+#include "core/table.h"
+#include "nanocv/nanocv.h"
+#include "thread/thread.h"
+#include "core/measure.hpp"
+#include "nanocv/accumulator.h"
+#include "nanocv/trainers/batch.h"
+#include "nanocv/tasks/task_charset.h"
+#include "nanocv/trainers/minibatch.h"
+#include "nanocv/trainers/stochastic.h"
+#include "text/concatenate.hpp"
 
 using namespace ncv;
 

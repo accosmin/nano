@@ -1,8 +1,8 @@
-#include "libcore/sampler.h"
-#include "libnanocv/nanocv.h"
-#include "libcore/measure.hpp"
-#include "libnanocv/evaluate.h"
-#include "libtext/concatenate.hpp"
+#include "core/sampler.h"
+#include "nanocv/nanocv.h"
+#include "core/measure.hpp"
+#include "nanocv/evaluate.h"
+#include "text/concatenate.hpp"
 #include <boost/program_options.hpp>
 #include <algorithm>
 

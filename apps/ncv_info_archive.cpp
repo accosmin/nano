@@ -1,7 +1,7 @@
-#include "libcore/timer.h"
-#include "libcore/logger.h"
-#include "libcore/string.h"
-#include "libnanocv/file/archive.h"
+#include "core/timer.h"
+#include "core/logger.h"
+#include "core/string.h"
+#include "nanocv/file/archive.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])

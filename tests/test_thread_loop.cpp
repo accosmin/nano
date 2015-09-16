@@ -2,12 +2,12 @@
 #define BOOST_TEST_MODULE "test_thread_loop"
 
 #include <boost/test/unit_test.hpp>
-#include "libmath/abs.hpp"
-#include "libcore/timer.h"
-#include "libcore/table.h"
-#include "libcore/scalar.h"
-#include "libmath/stats.hpp"
-#include "libthread/loopi.hpp"
+#include "math/abs.hpp"
+#include "core/timer.h"
+#include "core/table.h"
+#include "core/scalar.h"
+#include "math/stats.hpp"
+#include "thread/loopi.hpp"
 #include <iostream>
 #include <numeric>
 

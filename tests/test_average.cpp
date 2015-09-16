@@ -2,10 +2,10 @@
 #define BOOST_TEST_MODULE "test_average"
 
 #include <boost/test/unit_test.hpp>
-#include "libmath/abs.hpp"
-#include "libmath/epsilon.hpp"
-#include "libmin/average_scalar.hpp"
-#include "libmin/average_vector.hpp"
+#include "math/abs.hpp"
+#include "math/epsilon.hpp"
+#include "min/average_scalar.hpp"
+#include "min/average_vector.hpp"
 #include <eigen3/Eigen/Core>
 
 namespace test

@@ -2,9 +2,9 @@
 #define BOOST_TEST_MODULE "test_stats"
 
 #include <boost/test/unit_test.hpp>
-#include "libmath/abs.hpp"
-#include "libmath/stats.hpp"
-#include "libmath/random.hpp"
+#include "math/abs.hpp"
+#include "math/stats.hpp"
+#include "math/random.hpp"
 
 namespace test
 {

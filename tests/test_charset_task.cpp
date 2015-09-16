@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_charset_task"
 
 #include <boost/test/unit_test.hpp>
-#include "libnanocv/tasks/task_charset.h"
+#include "nanocv/tasks/task_charset.h"
 
 BOOST_AUTO_TEST_CASE(test_charset_task)
 {

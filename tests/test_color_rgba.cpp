@@ -2,9 +2,9 @@
 #define BOOST_TEST_MODULE "test_color_rgba"
 
 #include <boost/test/unit_test.hpp>
-#include "libcore/color.h"
-#include "libmath/random.hpp"
-#include "libmath/epsilon.hpp"
+#include "core/color.h"
+#include "math/random.hpp"
+#include "math/epsilon.hpp"
 
 BOOST_AUTO_TEST_CASE(test_color_rgba_transform)
 {

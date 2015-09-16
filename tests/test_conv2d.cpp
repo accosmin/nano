@@ -2,12 +2,12 @@
 #define BOOST_TEST_MODULE "test_conv2d"
 
 #include <boost/test/unit_test.hpp>
-#include "libmath/abs.hpp"
-#include "libcore/tensor.h"
-#include "libmath/epsilon.hpp"
-#include "libtensor/conv2d_cpp.hpp"
-#include "libtensor/conv2d_dyn.hpp"
-#include "libtensor/conv2d_eig.hpp"
+#include "math/abs.hpp"
+#include "core/tensor.h"
+#include "math/epsilon.hpp"
+#include "tensor/conv2d_cpp.hpp"
+#include "tensor/conv2d_dyn.hpp"
+#include "tensor/conv2d_eig.hpp"
 
 namespace test
 {

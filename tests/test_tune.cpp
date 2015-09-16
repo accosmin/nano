@@ -2,13 +2,13 @@
 #define BOOST_TEST_MODULE "test_tune"
 
 #include <boost/test/unit_test.hpp>
-#include "libmath/abs.hpp"
-#include "libcore/scalar.h"
-#include "libthread/pool.h"
-#include "libthread/thread.h"
-#include "libmath/random.hpp"
-#include "libmath/epsilon.hpp"
-#include "libmath/tune_log10_mt.hpp"
+#include "math/abs.hpp"
+#include "core/scalar.h"
+#include "thread/pool.h"
+#include "thread/thread.h"
+#include "math/random.hpp"
+#include "math/epsilon.hpp"
+#include "math/tune_log10_mt.hpp"
 
 namespace test
 {

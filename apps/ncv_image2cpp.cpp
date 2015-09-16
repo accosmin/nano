@@ -1,8 +1,8 @@
-#include "libcore/image.h"
-#include "libcore/string.h"
-#include "libcore/logger.h"
-#include "libtext/lower.hpp"
-#include "libtext/replace.hpp"
+#include "core/image.h"
+#include "core/string.h"
+#include "core/logger.h"
+#include "text/lower.hpp"
+#include "text/replace.hpp"
 #include <fstream>
 #include <iostream>
 #include <boost/filesystem.hpp>

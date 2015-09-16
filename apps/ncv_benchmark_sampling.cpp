@@ -1,10 +1,10 @@
-#include "libcore/table.h"
-#include "libcore/sampler.h"
-#include "libnanocv/nanocv.h"
-#include "libthread/thread.h"
-#include "libcore/measure.hpp"
-#include "libthread/loopi.hpp"
-#include "libnanocv/tasks/task_charset.h"
+#include "core/table.h"
+#include "core/sampler.h"
+#include "nanocv/nanocv.h"
+#include "thread/thread.h"
+#include "core/measure.hpp"
+#include "thread/loopi.hpp"
+#include "nanocv/tasks/task_charset.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])

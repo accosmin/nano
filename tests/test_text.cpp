@@ -2,13 +2,13 @@
 #define BOOST_TEST_MODULE "test_text"
 
 #include <boost/test/unit_test.hpp>
-#include "libtext/align.hpp"
-#include "libtext/lower.hpp"
-#include "libtext/upper.hpp"
-#include "libtext/ends_with.hpp"
-#include "libtext/from_params.hpp"
-#include "libtext/concatenate.hpp"
-#include "libtext/replace.hpp"
+#include "text/align.hpp"
+#include "text/lower.hpp"
+#include "text/upper.hpp"
+#include "text/ends_with.hpp"
+#include "text/from_params.hpp"
+#include "text/concatenate.hpp"
+#include "text/replace.hpp"
 #include <list>
 #include <set>
 

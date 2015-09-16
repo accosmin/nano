@@ -2,10 +2,10 @@
 #define BOOST_TEST_MODULE "test_quadratic"
 
 #include <boost/test/unit_test.hpp>
-#include "libmath/abs.hpp"
-#include "libmath/random.hpp"
-#include "libmath/epsilon.hpp"
-#include "libmin/quadratic.hpp"
+#include "math/abs.hpp"
+#include "math/random.hpp"
+#include "math/epsilon.hpp"
+#include "min/quadratic.hpp"
 
 BOOST_AUTO_TEST_CASE(test_quadratic)
 {

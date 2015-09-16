@@ -2,10 +2,10 @@
 #define BOOST_TEST_MODULE "test_thread_pool"
 
 #include <boost/test/unit_test.hpp>
-#include "libcore/logger.h"
-#include "libthread/pool.h"
-#include "libthread/thread.h"
-#include "libmath/random.hpp"
+#include "core/logger.h"
+#include "thread/pool.h"
+#include "thread/thread.h"
+#include "math/random.hpp"
 
 BOOST_AUTO_TEST_CASE(test_thread_pool)
 {

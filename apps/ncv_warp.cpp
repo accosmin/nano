@@ -1,8 +1,8 @@
-#include "libcore/warp.h"
-#include "libcore/image.h"
-#include "libcore/string.h"
-#include "libcore/measure.hpp"
-#include "libtext/to_string.hpp"
+#include "core/warp.h"
+#include "core/image.h"
+#include "core/string.h"
+#include "core/measure.hpp"
+#include "text/to_string.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 

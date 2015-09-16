@@ -1,13 +1,13 @@
-#include "libcore/class.h"
-#include "libcore/table.h"
-#include "libcore/sampler.h"
-#include "libnanocv/nanocv.h"
-#include "libmath/random.hpp"
-#include "libthread/thread.h"
-#include "libcore/measure.hpp"
-#include "libtensor/random.hpp"
-#include "libnanocv/accumulator.h"
-#include "libnanocv/tasks/task_charset.h"
+#include "core/class.h"
+#include "core/table.h"
+#include "core/sampler.h"
+#include "nanocv/nanocv.h"
+#include "math/random.hpp"
+#include "thread/thread.h"
+#include "core/measure.hpp"
+#include "tensor/random.hpp"
+#include "nanocv/accumulator.h"
+#include "nanocv/tasks/task_charset.h"
 #include <boost/program_options.hpp>
 
 namespace

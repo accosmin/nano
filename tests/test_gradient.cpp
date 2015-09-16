@@ -2,16 +2,16 @@
 #define BOOST_TEST_MODULE "test_gradient"
 
 #include <boost/test/unit_test.hpp>
-#include "libcore/class.h"
-#include "libcore/logger.h"
-#include "libthread/pool.h"
-#include "libmath/close.hpp"
-#include "libnanocv/nanocv.h"
-#include "libmath/random.hpp"
-#include "libcore/optimizer.h"
-#include "libmath/epsilon.hpp"
-#include "libtext/to_string.hpp"
-#include "libnanocv/accumulator.h"
+#include "core/class.h"
+#include "core/logger.h"
+#include "thread/pool.h"
+#include "math/close.hpp"
+#include "nanocv/nanocv.h"
+#include "math/random.hpp"
+#include "core/optimizer.h"
+#include "math/epsilon.hpp"
+#include "text/to_string.hpp"
+#include "nanocv/accumulator.h"
 #include <set>
 
 namespace test

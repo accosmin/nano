@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_tensor"
 
 #include <boost/test/unit_test.hpp>
-#include "libcore/tensor.h"
+#include "core/tensor.h"
 
 namespace
 {
