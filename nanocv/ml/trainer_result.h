@@ -1,8 +1,8 @@
 #pragma once
 
 #include <map>
-#include "trainer_state.h"
 #include "core/tensor.h"
+#include "trainer_state.h"
 #include "text/enum_string.hpp"
 
 namespace ncv

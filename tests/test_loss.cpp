@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_loss"
 
 #include <boost/test/unit_test.hpp>
-#include "core/class.h"
+#include "ml/class.h"
 #include "nanocv/nanocv.h"
 #include "math/random.hpp"
 #include "core/optimizer.h"

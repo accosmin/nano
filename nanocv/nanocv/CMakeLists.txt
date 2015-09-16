@@ -18,7 +18,7 @@ set(libs "${libs};${BZIP2_LIBRARIES}")
 set(libs "${libs};${LibArchive_LIBRARIES}")
 
 add_library(nanocv SHARED ${libnanocv_sources})
-target_link_libraries(nanocv ${libs} thread core)
+target_link_libraries(nanocv ${libs} thread ml core)
 
 # install library
 install(TARGETS nanocv

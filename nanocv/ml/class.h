@@ -1,7 +1,7 @@
 #pragma once
 
-#include "arch.h"
-#include "tensor.h"
+#include "core/arch.h"
+#include "core/tensor.h"
 
 namespace ncv
 {

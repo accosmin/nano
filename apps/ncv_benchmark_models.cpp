@@ -1,12 +1,12 @@
-#include "core/class.h"
+#include "ml/class.h"
+#include "ml/sampler.h"
 #include "core/table.h"
-#include "core/sampler.h"
 #include "nanocv/nanocv.h"
 #include "math/random.hpp"
 #include "thread/thread.h"
 #include "core/measure.hpp"
+#include "ml/accumulator.h"
 #include "tensor/random.hpp"
-#include "nanocv/accumulator.h"
 #include "nanocv/tasks/task_charset.h"
 #include <boost/program_options.hpp>
 

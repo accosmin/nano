@@ -1,5 +1,5 @@
+#include "accumulator.h"
 #include "trainer_data.h"
-#include "nanocv/accumulator.h"
 
 namespace ncv
 {

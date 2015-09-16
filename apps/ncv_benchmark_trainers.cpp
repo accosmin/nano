@@ -1,13 +1,13 @@
+#include "ml/batch.h"
 #include "core/table.h"
+#include "ml/minibatch.h"
+#include "ml/stochastic.h"
 #include "nanocv/nanocv.h"
 #include "thread/thread.h"
 #include "core/measure.hpp"
-#include "nanocv/accumulator.h"
-#include "nanocv/trainers/batch.h"
-#include "nanocv/tasks/task_charset.h"
-#include "nanocv/trainers/minibatch.h"
-#include "nanocv/trainers/stochastic.h"
+#include "ml/accumulator.h"
 #include "text/concatenate.hpp"
+#include "nanocv/tasks/task_charset.h"
 
 using namespace ncv;
 

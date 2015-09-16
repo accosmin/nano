@@ -1,9 +1,9 @@
-#include "stochastic_trainer.h"
-#include "stochastic.h"
+#include "ml/model.h"
+#include "ml/sampler.h"
 #include "core/logger.h"
-#include "core/sampler.h"
-#include "nanocv/model.h"
+#include "ml/stochastic.h"
 #include "math/numeric.hpp"
+#include "stochastic_trainer.h"
 #include "text/from_params.hpp"
 #include "text/concatenate.hpp"
 

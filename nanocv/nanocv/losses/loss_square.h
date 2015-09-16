@@ -1,6 +1,6 @@
 #pragma once
 
-#include "nanocv/loss.h"
+#include "ml/loss.h"
 
 namespace ncv
 {

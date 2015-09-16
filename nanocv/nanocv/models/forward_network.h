@@ -1,8 +1,8 @@
 #pragma once
 
+#include "ml/model.h"
+#include "ml/layer.h"
 #include "core/string.h"
-#include "nanocv/model.h"
-#include "nanocv/layer.h"
 
 namespace ncv
 {

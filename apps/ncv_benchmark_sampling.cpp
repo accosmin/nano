@@ -1,5 +1,5 @@
 #include "core/table.h"
-#include "core/sampler.h"
+#include "ml/sampler.h"
 #include "nanocv/nanocv.h"
 #include "thread/thread.h"
 #include "core/measure.hpp"

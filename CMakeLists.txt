@@ -166,6 +166,7 @@ add_subdirectory(nanocv/tensor)
 
 add_subdirectory(nanocv/core)
 add_subdirectory(nanocv/func)
+add_subdirectory(nanocv/ml)
 add_subdirectory(nanocv/thread)
 
 add_subdirectory(nanocv/nanocv)

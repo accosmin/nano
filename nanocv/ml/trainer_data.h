@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/sampler.h"
+#include "ml/sampler.h"
 #include "core/optimizer.h"
 
 namespace ncv

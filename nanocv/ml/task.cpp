@@ -1,6 +1,6 @@
 #include "task.h"
+#include "sampler.h"
 #include "core/logger.h"
-#include "core/sampler.h"
 #include "core/image_grid.h"
 #include "text/to_string.hpp"
 

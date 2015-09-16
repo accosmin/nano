@@ -1,8 +1,8 @@
 #include "mat5.h"
+#include "ml/class.h"
 #include "task_svhn.h"
 #include "core/gzip.h"
 #include "core/color.h"
-#include "core/class.h"
 #include "core/logger.h"
 #include "text/to_string.hpp"
 #include <fstream>

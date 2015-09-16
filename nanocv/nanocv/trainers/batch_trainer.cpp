@@ -1,11 +1,11 @@
 #include "batch_trainer.h"
+#include "ml/batch.h"
+#include "ml/model.h"
+#include "ml/sampler.h"
 #include "core/logger.h"
-#include "core/sampler.h"
-#include "nanocv/model.h"
 #include "math/numeric.hpp"
 #include "text/from_params.hpp"
 #include "text/concatenate.hpp"
-#include "batch.h"
 
 namespace ncv
 {

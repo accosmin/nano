@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_gradient"
 
 #include <boost/test/unit_test.hpp>
-#include "core/class.h"
+#include "ml/class.h"
 #include "core/logger.h"
 #include "thread/pool.h"
 #include "math/close.hpp"
@@ -10,8 +10,8 @@
 #include "math/random.hpp"
 #include "core/optimizer.h"
 #include "math/epsilon.hpp"
+#include "ml/accumulator.h"
 #include "text/to_string.hpp"
-#include "nanocv/accumulator.h"
 #include <set>
 
 namespace test

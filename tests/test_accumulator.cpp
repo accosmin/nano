@@ -7,9 +7,9 @@
 #include "core/logger.h"
 #include "nanocv/nanocv.h"
 #include "thread/thread.h"
+#include "ml/accumulator.h"
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
-#include "nanocv/accumulator.h"
 #include "nanocv/tasks/task_charset.h"
 
 namespace test

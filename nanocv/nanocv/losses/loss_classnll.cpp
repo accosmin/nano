@@ -1,5 +1,5 @@
 #include "loss_classnll.h"
-#include "core/class.h"
+#include "ml/class.h"
 #include "math/numeric.hpp"
 #include <cassert>
 

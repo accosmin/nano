@@ -1,7 +1,7 @@
 #pragma once
 
 #include "model.h"
-#include "core/sample.h"
+#include "sample.h"
 #include "math/stats.hpp"
 
 namespace ncv

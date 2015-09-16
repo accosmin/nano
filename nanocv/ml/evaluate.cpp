@@ -1,7 +1,7 @@
-#include "evaluate.h"
 #include "task.h"
+#include "sampler.h"
+#include "evaluate.h"
 #include "accumulator.h"
-#include "core/sampler.h"
 
 namespace ncv
 {

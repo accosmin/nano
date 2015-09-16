@@ -3,10 +3,10 @@
 
 #include <boost/test/unit_test.hpp>
 #include "math/abs.hpp"
+#include "ml/evaluate.h"
 #include "core/logger.h"
 #include "nanocv/nanocv.h"
 #include "math/epsilon.hpp"
-#include "nanocv/evaluate.h"
 #include "text/to_string.hpp"
 #include "nanocv/tasks/task_charset.h"
 #include <cstdio>

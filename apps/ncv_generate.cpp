@@ -1,8 +1,8 @@
-#include "core/class.h"
+#include "ml/class.h"
+#include "ml/generate.h"
 #include "nanocv/nanocv.h"
 #include "core/measure.hpp"
 #include "core/image_grid.h"
-#include "nanocv/generate.h"
 #include "text/concatenate.hpp"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>

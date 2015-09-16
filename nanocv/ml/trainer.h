@@ -1,7 +1,7 @@
 #pragma once
 
 #include "task.h"
-#include "trainers/trainer_result.h"
+#include "trainer_result.h"
 
 namespace ncv
 {

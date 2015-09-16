@@ -1,5 +1,5 @@
 #include "task_cifar100.h"
-#include "core/class.h"
+#include "ml/class.h"
 #include "core/logger.h"
 #include "math/cast.hpp"
 #include "core/mstream.h"

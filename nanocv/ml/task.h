@@ -1,7 +1,7 @@
 #pragma once
 
+#include "sample.h"
 #include "core/image.h"
-#include "core/sample.h"
 #include "core/manager.hpp"
 
 namespace ncv

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/sample.h"
+#include "sample.h"
 
 namespace ncv
 {

@@ -1,5 +1,5 @@
 #include "task_norb.h"
-#include "core/class.h"
+#include "ml/class.h"
 #include "core/logger.h"
 #include "core/archive.h"
 #include "core/mstream.h"

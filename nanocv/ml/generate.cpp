@@ -3,17 +3,24 @@
 #include "core/timer.h"
 #include "core/string.h"
 #include "core/logger.h"
+#include "core/minimize.h"
 #include "math/random.hpp"
 #include "tensor/random.hpp"
-#include "losses/loss_square.h"
-#include "core/minimize.h"
 
 namespace ncv
 {
+        scalar_t loss_value(const vector_t& targets, const vector_t& scores)
+        {
+                return 0.5 * (scores - targets).array().square().sum();
+        }
+
+        vector_t loss_vgrad(const vector_t& targets, const vector_t& scores)
+        {
+                return (scores - targets);
+        }
+
         tensor_t generate_match_target(const model_t& model, const vector_t& target)
         {
-                const square_loss_t loss;
-
                 // construct the optimization problem
                 const timer_t timer;
 
@@ -26,17 +33,17 @@ namespace ncv
                 {
                         const tensor_t output = model.output(x);
 
-                        return loss.value(target, output.vector());
+                        return loss_value(target, output.vector());
                 };
 
                 auto fn_grad = [&] (const vector_t& x, vector_t& gx)
                 {
                         const tensor_t output = model.output(x);
-                        const vector_t ograd = loss.vgrad(target, output.vector());
+                        const vector_t ograd = loss_vgrad(target, output.vector());
 
                         gx = model.ginput(ograd).vector();
 
-                        return loss.value(target, output.vector());
+                        return loss_value(target, output.vector());
                 };
 
                 auto fn_wlog = [] (const string_t& message)

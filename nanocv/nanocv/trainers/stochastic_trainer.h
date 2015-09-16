@@ -1,6 +1,6 @@
 #pragma once
 
-#include "nanocv/trainer.h"
+#include "ml/trainer.h"
 
 namespace ncv
 {

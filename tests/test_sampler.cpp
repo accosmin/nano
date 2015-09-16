@@ -2,9 +2,9 @@
 #define BOOST_TEST_MODULE "test_sampler"
 
 #include <boost/test/unit_test.hpp>
+#include "ml/sampler.h"
 #include "core/timer.h"
 #include "core/logger.h"
-#include "core/sampler.h"
 #include "text/to_string.hpp"
 #include "nanocv/tasks/task_charset.h"
 
