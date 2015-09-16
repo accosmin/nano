@@ -3,10 +3,10 @@
 #include "core/logger.h"
 #include "math/cast.hpp"
 #include "text/split.hpp"
+#include "core/archive.h"
+#include "core/mstream.h"
 #include "text/ends_with.hpp"
 #include "text/from_string.hpp"
-#include "nanocv/file/stream.h"
-#include "nanocv/file/archive.h"
 
 namespace ncv
 {
@@ -47,7 +47,7 @@ namespace ncv
 
                 clear_memory(n_test + n_train + n_unlabeled);
                 
-                const auto op = [&] (const string_t& filename, const io::buffer_t& data)
+                const auto op = [&] (const string_t& filename, const buffer_t& data)
                 {
                         if (text::iends_with(filename, train_ifile))
                         {
@@ -81,14 +81,14 @@ namespace ncv
                 
                 log_info() << "STL-10: loading file <" << bfile << "> ...";
 
-                return  io::decode(bfile, "STL-10: ", op);
+                return unarchive(bfile, "STL-10: ", op);
         }
         
         bool stl10_task_t::load_ifile(const string_t& ifile, const char* bdata, size_t bdata_size, bool unlabeled, size_t count)
         {
                 log_info() << "STL-10: loading file <" << ifile << "> ...";
 
-                io::stream_t stream(bdata, bdata_size);
+                mstream_t stream(bdata, bdata_size);
 
                 std::vector<char> buffer(irows() * icols() * 3);
 
@@ -121,7 +121,7 @@ namespace ncv
         {
                 log_info() << "STL-10: loading file <" << gfile << "> ...";
 
-                io::stream_t stream(bdata, bdata_size);
+                mstream_t stream(bdata, bdata_size);
 
                 char label;
 
@@ -157,7 +157,7 @@ namespace ncv
 
                 // NB: samples arranged line [n_test][n_train][n_unlabeled]
 
-                io::stream_t stream(bdata, bdata_size);
+                mstream_t stream(bdata, bdata_size);
                 
                 const samples_t orig_samples = this->samples();
                 clear_samples(0);

@@ -20,8 +20,6 @@ namespace ncv
                         unknown
                 };
 
-                using namespace io;
-
                 archive_type decode_archive_type(const std::string& path)
                 {
                         if (    text::iends_with(path, ".tar.gz") ||
@@ -149,7 +147,7 @@ namespace ncv
                 }
         }
 
-        bool io::decode(const std::string& path, const std::string& log_header, const buffer_callback_t& callback)
+        bool unarchive(const std::string& path, const std::string& log_header, const buffer_callback_t& callback)
         {
                 archive* ar = archive_read_new();
 

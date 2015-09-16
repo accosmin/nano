@@ -2,9 +2,9 @@
 #include "core/class.h"
 #include "core/logger.h"
 #include "math/cast.hpp"
+#include "core/mstream.h"
+#include "core/archive.h"
 #include "text/to_string.hpp"
-#include "nanocv/file/stream.h"
-#include "nanocv/file/archive.h"
 
 namespace ncv
 {
@@ -39,9 +39,9 @@ namespace ncv
                 char label[2];
 
                 // load images
-                const auto iop = [&] (const string_t&, const io::buffer_t& data)
+                const auto iop = [&] (const string_t&, const buffer_t& data)
                 {
-                        io::stream_t stream(data.data(), data.size());
+                        mstream_t stream(data.data(), data.size());
 
                         stream.read(buffer.data(), 16);
                         while (stream.read(buffer.data(), buffer.size()))
@@ -57,16 +57,16 @@ namespace ncv
                 };
 
                 log_info() << "MNIST: loading file <" << ifile << "> ...";
-                if (!io::decode(ifile, "MNIST: ", iop))
+                if (!unarchive(ifile, "MNIST: ", iop))
                 {
                         log_error() << "MNIST: failed to load file <" << ifile << ">!";
                         return false;
                 }
 
                 // load ground truth
-                const auto gop = [&] (const string_t&, const io::buffer_t& data)
+                const auto gop = [&] (const string_t&, const buffer_t& data)
                 {
-                        io::stream_t stream(data.data(), data.size());
+                        mstream_t stream(data.data(), data.size());
 
                         stream.read(buffer.data(), 8);
                         while (stream.read(label, 1) && stream.gcount() == 1)
@@ -91,7 +91,7 @@ namespace ncv
                 };
 
                 log_info() << "MNIST: loading file <" << gfile << "> ...";
-                if (!io::decode(gfile, "MNIST: ", gop))
+                if (!unarchive(gfile, "MNIST: ", gop))
                 {
                         log_error() << "MNIST: failed to load file <" << gfile << ">!";
                         return false;

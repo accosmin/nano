@@ -1,7 +1,7 @@
 #pragma once
 
 #include "nanocv/task.h"
-#include "nanocv/file/buffer.h"
+#include "core/buffer.h"
 
 namespace ncv
 {
@@ -38,7 +38,7 @@ namespace ncv
                 size_t load(const string_t& bfile, protocol p);
 
                 // decode the uncompressed bytes (images + labels)
-                size_t decode(const io::buffer_t& image_data, const io::buffer_t& label_data, const protocol p);
+                size_t decode(const buffer_t& image_data, const buffer_t& label_data, const protocol p);
         };
 }
 

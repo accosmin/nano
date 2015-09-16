@@ -1,4 +1,4 @@
-#include "stream.h"
+#include "mstream.h"
 #include <algorithm>
 
 namespace ncv
@@ -8,7 +8,7 @@ namespace ncv
                 return (c == '\n') || (c == '\r');
         }
 
-        io::stream_t::stream_t(const char* data, size_t size)
+        mstream_t::mstream_t(const char* data, std::size_t size)
                 :       m_data(data),
                         m_size(size),
                         m_tellg(0),
@@ -16,7 +16,7 @@ namespace ncv
         {
         }
 
-        bool io::stream_t::read(char* bytes, size_t num_bytes)
+        bool mstream_t::read(char* bytes, std::size_t num_bytes)
         {
                 if (tellg() + num_bytes <= size())
                 {
@@ -32,7 +32,7 @@ namespace ncv
                 }
         }
 
-        bool io::stream_t::getline(std::string& line)
+        bool mstream_t::getline(std::string& line)
         {
                 char c;
 
@@ -49,7 +49,7 @@ namespace ncv
                 return !line.empty();
         }
 
-        bool io::stream_t::skip(size_t num_bytes)
+        bool mstream_t::skip(std::size_t num_bytes)
         {
                 if (tellg() + num_bytes <= size())
                 {
@@ -63,22 +63,22 @@ namespace ncv
                 }
         }
 
-        size_t io::stream_t::gcount() const
+        std::size_t mstream_t::gcount() const
         {
                 return m_gcount;
         }
 
-        size_t io::stream_t::tellg() const
+        std::size_t mstream_t::tellg() const
         {
                 return m_tellg;        
         }
 
-        size_t io::stream_t::size() const
+        std::size_t mstream_t::size() const
         {
                 return m_size;
         }
 
-        io::stream_t::operator bool() const
+        mstream_t::operator bool() const
         {
                 return tellg() < size();
         }

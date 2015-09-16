@@ -1,17 +1,15 @@
 #include "gzip.h"
-#include "stream.h"
+#include "mstream.h"
 #include <zlib.h>
 #include <fstream>
 
 namespace ncv
 {
-        using io::size_t;
-
         template
         <
                 typename tstream
         >
-        bool io_uncompress_gzip(tstream& istream, size_t num_bytes, io::buffer_t& data)
+        bool io_uncompress_gzip(tstream& istream, std::size_t num_bytes, buffer_t& data)
         {
                 // zlib decompression buffers
                 static const std::streamsize chunk_size = 64 * 1024;
@@ -69,19 +67,19 @@ namespace ncv
                 return (num_bytes == std::string::npos) ? true : (num_bytes == 0);
         }
 
-        bool io::uncompress_gzip(std::istream& istream, size_t num_bytes, buffer_t& data)
+        bool uncompress_gzip(std::istream& istream, std::size_t num_bytes, buffer_t& data)
         {
                 return io_uncompress_gzip(istream, num_bytes, data);
         }
 
-        bool io::uncompress_gzip(std::istream& istream, buffer_t& data)
+        bool uncompress_gzip(std::istream& istream, buffer_t& data)
         {
                 return uncompress_gzip(istream, std::string::npos, data);
         }
 
-        bool io::uncompress_gzip(const buffer_t& istream, buffer_t& data)
+        bool uncompress_gzip(const buffer_t& istream, buffer_t& data)
         {
-                stream_t stream(istream.data(), istream.size());
+                mstream_t stream(istream.data(), istream.size());
                 return io_uncompress_gzip(stream, stream.size(), data);
         }
 }

@@ -1,9 +1,9 @@
+#include "mat5.h"
 #include "task_svhn.h"
+#include "core/gzip.h"
 #include "core/color.h"
 #include "core/class.h"
 #include "core/logger.h"
-#include "nanocv/file/gzip.h"
-#include "nanocv/file/mat5.h"
 #include "text/to_string.hpp"
 #include <fstream>
 #include <memory>
@@ -60,8 +60,8 @@ namespace ncv
                 }
 
                 // data sections (image rgb + labels)
-                io::buffer_t image_data;
-                io::buffer_t label_data;
+                buffer_t image_data;
+                buffer_t label_data;
                 for (int isection = 0; isection < 2; isection ++)
                 {
                         // section header
@@ -81,8 +81,8 @@ namespace ncv
 
                         log_info() << "SVHN: uncompressing " << section.dsize() << " bytes ...";
 
-                        io::buffer_t& data = (isection == 0) ? image_data : label_data;
-                        if (!io::uncompress_gzip(istream, section.dsize(), data))
+                        buffer_t& data = (isection == 0) ? image_data : label_data;
+                        if (!uncompress_gzip(istream, section.dsize(), data))
                         {
                                 log_error() << "SVHN: failed to read compressed data!";
                                 return 0;
@@ -95,7 +95,7 @@ namespace ncv
                 return decode(image_data, label_data, p);
         }
 
-        size_t svhn_task_t::decode(const io::buffer_t& idata, const io::buffer_t& ldata, const protocol p)
+        size_t svhn_task_t::decode(const buffer_t& idata, const buffer_t& ldata, const protocol p)
         {
                 // decode image & label arrays
                 mat5::array_t iarray, larray;

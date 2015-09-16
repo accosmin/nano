@@ -1,7 +1,7 @@
 #include "core/timer.h"
 #include "core/logger.h"
 #include "core/string.h"
-#include "nanocv/file/archive.h"
+#include "core/archive.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
         // decode archive
         ncv::timer_t timer;
-        if (!io::decode(cmd_input, "decode: ", callback))
+        if (!unarchive(cmd_input, "decode: ", callback))
         {
                 return EXIT_FAILURE;
         }

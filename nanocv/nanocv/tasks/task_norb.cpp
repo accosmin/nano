@@ -1,8 +1,8 @@
 #include "task_norb.h"
 #include "core/class.h"
 #include "core/logger.h"
-#include "nanocv/file/stream.h"
-#include "nanocv/file/archive.h"
+#include "core/archive.h"
+#include "core/mstream.h"
 
 namespace ncv
 {
@@ -43,7 +43,7 @@ namespace ncv
                         load(dir + "/norb-5x01235x9x18x6x2x108x108-testing-02", protocol::test, n_test_samples);
         }
 
-        static bool read_header(io::stream_t& stream, int32_t& magic, std::vector<int32_t>& dims)
+        static bool read_header(mstream_t& stream, int32_t& magic, std::vector<int32_t>& dims)
         {
                 // read data type & #dimensions
                 int32_t ndims;
@@ -93,9 +93,9 @@ namespace ncv
                 size_t gcount = 0;
                 
                 // load images
-                const auto iop = [&] (const string_t&, const io::buffer_t& data)
+                const auto iop = [&] (const string_t&, const buffer_t& data)
                 {
-                        io::stream_t stream(data.data(), data.size());
+                        mstream_t stream(data.data(), data.size());
                         
                         // read header
                         int32_t magic;
@@ -139,18 +139,18 @@ namespace ncv
                 };
                                 
                 log_info() << "NORB: loading file <" << ifile << "> ...";
-                if (!io::decode(ifile, "NORB: ", iop))
+                if (!unarchive(ifile, "NORB: ", iop))
                 {
                         log_error() << "NORB: failed to load file <" << ifile << ">!";
                         return false;
                 }
 
                 // load ground truth
-                const auto gop = [&] (const string_t& filename, const io::buffer_t& data)
+                const auto gop = [&] (const string_t& filename, const buffer_t& data)
                 {
                         NANOCV_UNUSED1(filename);
 
-                        io::stream_t stream(data.data(), data.size());
+                        mstream_t stream(data.data(), data.size());
                         
                         // read header
                         int32_t magic;
@@ -199,7 +199,7 @@ namespace ncv
                 };
                 
                 log_info() << "NORB: loading file <" << gfile << "> ...";
-                if (!io::decode(gfile, "NORB: ", gop))
+                if (!unarchive(gfile, "NORB: ", gop))
                 {
                         log_error() << "NORB: failed to load file <" << gfile << ">!";
                         return false;

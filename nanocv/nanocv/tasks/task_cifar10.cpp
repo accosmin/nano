@@ -2,9 +2,9 @@
 #include "core/class.h"
 #include "core/logger.h"
 #include "math/cast.hpp"
+#include "core/archive.h"
+#include "core/mstream.h"
 #include "text/ends_with.hpp"
-#include "nanocv/file/stream.h"
-#include "nanocv/file/archive.h"
 
 namespace ncv
 {
@@ -43,7 +43,7 @@ namespace ncv
 
                 clear_memory(n_train_samples + n_test_samples);
 
-                const auto op = [&] (const string_t& filename, const io::buffer_t& data)
+                const auto op = [&] (const string_t& filename, const buffer_t& data)
                 {
                         if (    text::iends_with(filename, train_bfile1) ||
                                 text::iends_with(filename, train_bfile2) ||
@@ -65,7 +65,7 @@ namespace ncv
 
                 log_info() << "CIFAR-10: loading file <" << bfile << "> ...";
 
-                return io::decode(bfile, "CIFAR-10: ", op);
+                return unarchive(bfile, "CIFAR-10: ", op);
         }
 
         bool cifar10_task_t::load(const string_t& filename, const char* bdata, size_t bdata_size, protocol p, size_t count)
@@ -75,7 +75,7 @@ namespace ncv
                 std::vector<char> buffer(irows() * icols() * 3);
                 char label[1];
 
-                io::stream_t stream(bdata, bdata_size);
+                mstream_t stream(bdata, bdata_size);
 
                 size_t icount = 0;
                 while ( stream.read(label, 1) &&
