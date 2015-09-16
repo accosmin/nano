@@ -6,6 +6,6 @@ build*
 build-release
 build-debug*
 install
-doxygen/html
+docs/html
 *~
 *.bak
