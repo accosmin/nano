@@ -8,7 +8,11 @@ set(libs "${libs};${BZIP2_LIBRARIES}")
 set(libs "${libs};${LibArchive_LIBRARIES}")
 
 add_library(core SHARED ${libcore_sources})
-target_link_libraries(core ${libs})
+target_link_libraries(core PRIVATE
+        ${IL_LIBRARIES}
+        ${ZLIB_LIBRARIES}
+        ${BZIP2_LIBRARIES}
+        ${LibArchive_LIBRARIES})
 
 # install library
 install(TARGETS core

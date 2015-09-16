@@ -8,13 +8,9 @@ file(GLOB libnanocv_sources ${CMAKE_CURRENT_SOURCE_DIR}
         tasks/*.*
         trainers/*.*)
 
-set(libs "${libs};${Boost_PROGRAM_OPTIONS_LIBRARY}")
-set(libs "${libs};${Boost_SYSTEM_LIBRARY}")
-set(libs "${libs};${Boost_FILESYSTEM_LIBRARY}")
-set(libs "${libs};${Boost_IOSTREAMS_LIBRARY}")
-
 add_library(nanocv SHARED ${libnanocv_sources})
-target_link_libraries(nanocv ${libs} ml)
+target_link_libraries(nanocv
+        ml)
 
 # install library
 install(TARGETS nanocv

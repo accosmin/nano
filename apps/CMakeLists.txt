@@ -6,7 +6,11 @@ foreach(app ${nanocv_apps})
         get_filename_component(app_name ${app} NAME_WE)
 
         add_executable(${app_name} ${app})
-        target_link_libraries(${app_name} nanocv func thread ml core)
+        target_link_libraries(${app_name}
+                ${Boost_PROGRAM_OPTIONS_LIBRARY}
+                ${Boost_FILESYSTEM_LIBRARY}
+                ${Boost_SYSTEM_LIBRARY}
+                nanocv func thread ml core)
 endforeach()
 
 # install (some) programs
