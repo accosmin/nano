@@ -186,7 +186,7 @@ namespace
                 }
 
                 // print stats
-                table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({3, 2, 0})));
+                table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({2, 0})));
                 table.print(std::cout);
         }
 
@@ -203,20 +203,20 @@ int main(int, char* [])
 {
         using namespace ncv;
 
-//        check_problems(ncv::make_beale_funcs());
+        check_problems(ncv::make_beale_funcs());
         check_problems(ncv::make_booth_funcs());
         check_problems(ncv::make_matyas_funcs());
-        check_problems(ncv::make_trid_funcs(128));
-        check_problems(ncv::make_sphere_funcs(128));
-        check_problems(ncv::make_powell_funcs(128));
+        check_problems(ncv::make_trid_funcs(32));
+        check_problems(ncv::make_sphere_funcs(32));
+        check_problems(ncv::make_powell_funcs(32));
         check_problems(ncv::make_mccormick_funcs());
         check_problems(ncv::make_himmelblau_funcs());
         check_problems(ncv::make_rosenbrock_funcs(7));
         check_problems(ncv::make_3hump_camel_funcs());
-        check_problems(ncv::make_dixon_price_funcs(128));
-        check_problems(ncv::make_sum_squares_funcs(128));
-//        check_problems(ncv::make_goldstein_price_funcs());
-        check_problems(ncv::make_rotated_ellipsoid_funcs(128));
+        check_problems(ncv::make_dixon_price_funcs(32));
+        check_problems(ncv::make_sum_squares_funcs(32));
+        check_problems(ncv::make_goldstein_price_funcs());
+        check_problems(ncv::make_rotated_ellipsoid_funcs(32));
 
         // show global statistics
         table_t table(text::align("optimizer", 32));
@@ -242,7 +242,7 @@ int main(int, char* [])
                                    << stat.m_grads.sum();
         }
 
-        table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({3, 2, 0})));
+        table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({2, 0})));
         table.print(std::cout);
 
         // OK
