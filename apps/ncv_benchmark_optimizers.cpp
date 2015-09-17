@@ -35,8 +35,6 @@ using namespace ncv;
 
 namespace
 {
-        const size_t trials = 1024;
-
         struct optimizer_stat_t
         {
                 stats_t<scalar_t>       m_time;
@@ -56,15 +54,16 @@ namespace
         {
                 const size_t iterations = 1024;
                 const scalar_t epsilon = 1e-6;
+                const size_t trials = 1024;
 
                 const size_t dims = fn_size();
+
+                random_t<scalar_t> rgen(-1.0, +1.0);
 
                 // generate fixed random trials
                 vectors_t x0s;
                 for (size_t t = 0; t < trials; t ++)
                 {
-                        random_t<scalar_t> rgen(-1.0, +1.0);
-
                         vector_t x0(dims);
                         rgen(x0.data(), x0.data() + x0.size());
 
@@ -186,7 +185,7 @@ namespace
                 }
 
                 // print stats
-                table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({2, 0})));
+                table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({3, 0})));
                 table.print(std::cout);
         }
 
@@ -242,7 +241,7 @@ int main(int, char* [])
                                    << stat.m_grads.sum();
         }
 
-        table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({2, 0})));
+        table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({3, 0})));
         table.print(std::cout);
 
         // OK
