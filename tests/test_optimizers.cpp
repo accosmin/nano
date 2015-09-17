@@ -29,13 +29,14 @@ namespace test
 {
         using namespace ncv;
 
-        static void check_solution(const string_t&, const string_t&,
-                const opt_state_t& state, const std::vector<std::pair<vector_t, scalar_t>>& solutions)
+        static void check_solution(const string_t& problem, const string_t& optimizer,
+                const vector_t& x0, const opt_state_t& state, const std::vector<std::pair<vector_t, scalar_t>>& solutions)
         {
-                // Check convergence
-                BOOST_CHECK_LE(state.g.lpNorm<Eigen::Infinity>(), math::epsilon3<scalar_t>());
+                // check convergence
+                const scalar_t dg = state.g.lpNorm<Eigen::Infinity>();
+                BOOST_CHECK_LE(dg, math::epsilon3<scalar_t>());
 
-                // Find the closest solution
+                // find the closest solution
                 size_t best_index = std::string::npos;
                 scalar_t best_distance = std::numeric_limits<scalar_t>::max();
 
@@ -49,26 +50,25 @@ namespace test
                         }
                 }
 
-                // Check accuracy
-                BOOST_CHECK_LT(best_index, solutions.size());
-                if (best_index < solutions.size())
-                {
-                        const scalar_t dfx = math::abs(state.f - solutions[best_index].second);
-                        const scalar_t dx = (state.x - solutions[best_index].first).lpNorm<Eigen::Infinity>();
+                // check accuracy
+                BOOST_REQUIRE_LT(best_index, solutions.size());
 
-                        BOOST_CHECK_LE(dfx, math::epsilon3<scalar_t>());
-                        BOOST_CHECK_LE(dx, math::epsilon3<scalar_t>());
+                const scalar_t df = math::abs(state.f - solutions[best_index].second);
+                const scalar_t dx = (state.x - solutions[best_index].first).lpNorm<Eigen::Infinity>();
 
-//                        if (dx > math::epsilon3<scalar_t>())
-//                        {
-//                                log_info() << problem_name
-//                                           << ", x = (" << state.x.transpose() << ")"
-//                                           << ", dx = " << dx
-//                                           << ", x0 = (" << solutions[best_index].first.transpose() << ")"
-//                                           << ", fx = " << state.f
-//                                           << ", gx = " << state.g.lpNorm<Eigen::Infinity>();
-//                        }
-                }
+                BOOST_CHECK_LE(df, math::epsilon3<scalar_t>());
+                BOOST_CHECK_LE(dx, math::epsilon3<scalar_t>());
+
+                // debugging
+                BOOST_CHECK_MESSAGE(
+                        dx < math::epsilon3<scalar_t>(),
+                        "failed (x) for <" << problem << ">, <" << optimizer << "> and <" << x0.transpose() << ">!");
+                BOOST_CHECK_MESSAGE(
+                        df < math::epsilon3<scalar_t>(),
+                        "failed (f) for <" << problem << ">, <" << optimizer << "> and <" << x0.transpose() << ">!");
+                BOOST_CHECK_MESSAGE(
+                        dg < math::epsilon3<scalar_t>(),
+                        "failed (g) for <" << problem << ">, <" << optimizer << "> and <" << x0.transpose() << ">!");
         }
 
         static void check_problem(
@@ -76,18 +76,18 @@ namespace test
                 const opt_opsize_t& fn_size, const opt_opfval_t& fn_fval, const opt_opgrad_t& fn_grad,
                 const std::vector<std::pair<vector_t, scalar_t>>& solutions)
         {
-                const size_t iterations = 64 * 1024;
-                const scalar_t epsilon = math::epsilon2<scalar_t>();
-                const size_t trials = 1024;
+                const size_t iterations = 1024;
+                const scalar_t epsilon = 1e-6;
+                const size_t trials = 16 * 1024;
 
                 const size_t dims = fn_size();
+
+                random_t<scalar_t> rgen(-1.0, +1.0);
 
                 // generate fixed random trials
                 vectors_t x0s;
                 for (size_t t = 0; t < trials; t ++)
                 {
-                        random_t<scalar_t> rgen(-1.0, +1.0);
-
                         vector_t x0(dims);
                         rgen(x0.data(), x0.data() + x0.size());
 
@@ -98,7 +98,18 @@ namespace test
                 const auto optimizers =
                 {
                         min::batch_optimizer::GD,
+
                         min::batch_optimizer::CGD,
+//                        min::batch_optimizer::CGD_CD,
+//                        min::batch_optimizer::CGD_DY,
+//                        min::batch_optimizer::CGD_FR,
+//                        min::batch_optimizer::CGD_HS,
+//                        min::batch_optimizer::CGD_LS,
+                        min::batch_optimizer::CGD_N,
+                        min::batch_optimizer::CGD_PRP,
+//                        min::batch_optimizer::CGD_DYCD,
+                        min::batch_optimizer::CGD_DYHS,
+
                         min::batch_optimizer::LBFGS
                 };
 
@@ -111,10 +122,10 @@ namespace test
                                 // optimize
                                 const opt_state_t state = ncv::minimize(
                                         fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
-                                        x0, optimizer, iterations, 1e-2 * epsilon);
+                                        x0, optimizer, iterations, epsilon);
 
                                 // check solution
-                                check_solution(problem_name, text::to_string(optimizer), state, solutions);
+                                check_solution(problem_name, text::to_string(optimizer), x0, state, solutions);
                         }
                 }
         }
@@ -130,21 +141,21 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_optimizers)
 {
-        using namespace ncv;
+        using namespace ncv;        
 
 //        test::check_problems(ncv::make_beale_funcs());
         test::check_problems(ncv::make_booth_funcs());
         test::check_problems(ncv::make_matyas_funcs());
-//        test::check_problems(ncv::make_trid_funcs(32));
+//        test::check_problems(ncv::make_trid_funcs(8));
         test::check_problems(ncv::make_sphere_funcs(8));
-//        test::check_problems(ncv::make_powell_funcs(32));
+//        test::check_problems(ncv::make_powell_funcs(8));
 //        test::check_problems(ncv::make_mccormick_funcs());
         test::check_problems(ncv::make_himmelblau_funcs());
 //        test::check_problems(ncv::make_rosenbrock_funcs(7));
 //        test::check_problems(ncv::make_3hump_camel_funcs());
-//        test::check_problems(ncv::make_dixon_price_funcs(32));
-        test::check_problems(ncv::make_sum_squares_funcs(32));
+//        test::check_problems(ncv::make_dixon_price_funcs(8));
+        test::check_problems(ncv::make_sum_squares_funcs(8));
 //        test::check_problems(ncv::make_goldstein_price_funcs());
-        test::check_problems(ncv::make_rotated_ellipsoid_funcs(32));
+        test::check_problems(ncv::make_rotated_ellipsoid_funcs(8));
 }
 
