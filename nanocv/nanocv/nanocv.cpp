@@ -31,20 +31,10 @@
 #include "criteria/avg_l2_criterion.h"
 #include "criteria/avg_var_criterion.h"
 
-#include "core/version.h"
-#include "text/to_string.hpp"
-
 #include <cfenv>
 
 namespace ncv
 {
-        string_t version()
-        {
-                return  text::to_string(NANOCV_MAJOR_VERSION) + "." +
-                        text::to_string(NANOCV_MINOR_VERSION) + "." +
-                        text::to_string(NANOCV_REVISION_VERSION);
-        }
-
         void init()
         {
                 // round to nearest integer
