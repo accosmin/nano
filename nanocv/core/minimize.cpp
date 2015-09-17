@@ -121,7 +121,7 @@ namespace ncv
                 case min::batch_optimizer::CGD_DYHS:
                         return minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog, x0,
                                         optimizer, iterations, epsilon,
-                                        min::ls_initializer::quadratic, min::ls_strategy::interpolation,
+                                        min::ls_initializer::quadratic, min::ls_strategy::backtrack_wolfe,
                                         history_size);
 
                 case min::batch_optimizer::GD:
@@ -158,7 +158,7 @@ namespace ncv
                                 (problem, x0);
 
                 case min::batch_optimizer::CGD:
-                        return  min::batch_cgd_n_t<opt_problem_t>
+                        return  min::batch_cgd_dyhs_t<opt_problem_t>
                                 (iterations, epsilon, lsinit, lsstrat, fn_wlog, fn_elog, fn_ulog)
                                 (problem, x0);
 
