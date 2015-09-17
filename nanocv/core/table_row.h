@@ -41,10 +41,14 @@ namespace ncv
                 ///
                 /// \brief retrieve the column values
                 ///
-                const strings_t& values() const { return m_values; }
                 const string_t& operator[](size_t i) const { return m_values[i]; }
-
                 string_t& operator[](size_t i) { return m_values[i]; }
+
+                ///
+                /// \brief retrieve the column value range
+                ///
+                decltype(auto) begin() const { return m_values.cbegin(); }
+                decltype(auto) end() const { return m_values.cend(); }
 
                 ///
                 /// \brief retrieve the number of columns

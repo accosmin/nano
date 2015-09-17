@@ -100,6 +100,36 @@ namespace ncv
                         }
                         return it->first;
                 }
+
+                ///
+                /// \brief construct an operator to compare two strings numerically
+                ///
+                template
+                <
+                        typename tscalar
+                >
+                decltype(auto) make_less_from_string()
+                {
+                        return [] (const std::string& v1, const std::string& v2)
+                        {
+                                return from_string<tscalar>(v1) < from_string<tscalar>(v2);
+                        };
+                }
+
+                ///
+                /// \brief construct an operator to compare two strings numerically
+                ///
+                template
+                <
+                        typename tscalar
+                >
+                decltype(auto) make_greater_from_string()
+                {
+                        return [] (const std::string& v1, const std::string& v2)
+                        {
+                                return from_string<tscalar>(v1) > from_string<tscalar>(v2);
+                        };
+                }
         }
 }
 

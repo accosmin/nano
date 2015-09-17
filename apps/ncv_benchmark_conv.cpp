@@ -12,6 +12,7 @@
 #include "tensor/corr2d_dyn.hpp"
 #include "tensor/corr2d_egb.hpp"
 #include "tensor/corr2d_egr.hpp"
+#include "core/table_row_mark.h"
 #include <iostream>
 #include <boost/program_options.hpp>
 
@@ -232,7 +233,7 @@ int main(int argc, char* argv[])
                         }
                 }
 
-                table.mark_min_number();
+                table.mark(ncv::make_table_row_minimum_mark<size_t>());
                 table.print(std::cout);
         }
 
@@ -257,7 +258,7 @@ int main(int argc, char* argv[])
                         }
                 }
 
-                table.mark_min_number();
+                table.mark(ncv::make_table_row_minimum_mark<size_t>());
                 table.print(std::cout);
         }
 
@@ -283,7 +284,7 @@ int main(int argc, char* argv[])
                         }
                 }
 
-                table.mark_min_number();
+                table.mark(ncv::make_table_row_minimum_mark<size_t>());
                 table.print(std::cout);
         }
 

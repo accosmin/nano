@@ -1,10 +1,8 @@
 #include "table.h"
 #include "text/align.hpp"
-#include "text/from_string.hpp"
 #include <cassert>
 #include <numeric>
 #include <iostream>
-#include <algorithm>
 
 namespace ncv
 {
@@ -28,84 +26,6 @@ namespace ncv
         {
                 m_rows.emplace_back(name);
                 return *m_rows.rbegin();
-        }
-
-        bool table_t::sort(size_t col, const comparator_t& comp)
-        {
-                if (col < cols())
-                {
-                        std::stable_sort(m_rows.begin(), m_rows.end(), [&] (const auto& row1, const auto& row2)
-                        {
-                                assert(col < row1.size());
-                                assert(row1.size() == this->cols());
-
-                                assert(col < row2.size());
-                                assert(row2.size() == this->cols());
-
-                                return comp(row1.values()[col], row2.values()[col]);
-                        });
-
-                        return true;
-                }
-
-                else
-                {
-                        // invalid index
-                        return false;
-                }
-        }
-
-        bool table_t::sort_as_number(size_t col, sorting mode)
-        {
-                switch (mode)
-                {
-                case sorting::ascending:
-                        return sort(col, [] (const string_t& value1, const string_t& value2)
-                        {
-                                return text::from_string<double>(value1) < text::from_string<double>(value2);
-                        });
-
-                case sorting::descending:
-                        return sort(col, [] (const string_t& value1, const string_t& value2)
-                        {
-                                return text::from_string<double>(value1) > text::from_string<double>(value2);
-                        });
-
-                default:
-                        return false;
-                }
-        }
-
-        bool table_t::mark(const marker_t& op, const char* marker_string)
-        {
-                for (auto& row : m_rows)
-                {
-                        const auto col = op(row.values());
-                        if (col < cols())
-                        {
-                                row[col] += marker_string;
-                        }
-                }
-
-                return true;
-        }
-
-        namespace
-        {
-                const auto op_comp = [] (const string_t& value1, const string_t& value2)
-                {
-                        return text::from_string<double>(value1) < text::from_string<double>(value2);
-                };
-
-                const auto op_marker = [] (const strings_t& values)
-                {
-                        return std::min_element(values.begin(), values.end(), op_comp) - values.begin();
-                };
-        }
-
-        bool table_t::mark_min_number(const char* marker_string)
-        {
-                return mark(op_marker, marker_string);
         }
 
         std::size_t table_t::border() const

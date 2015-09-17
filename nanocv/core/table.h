@@ -3,7 +3,8 @@
 #include "arch.h"
 #include "table_row.h"
 #include "table_header.h"
-#include <functional>
+#include <cassert>
+#include <algorithm>
 
 namespace ncv
 {
@@ -13,26 +14,6 @@ namespace ncv
         class NANOCV_PUBLIC table_t
         {
         public:
-
-                typedef std::function
-                <
-                        bool(const string_t&,
-                             const string_t&)
-                >                                       comparator_t;
-
-                ///
-                /// \brief return the selected column index from all columns of a row
-                ///
-                typedef std::function
-                <
-                        size_t(const strings_t&)
-                >                                       marker_t;
-
-                enum class sorting
-                {
-                        ascending,
-                        descending
-                };
 
                 ///
                 /// \brief constructor
@@ -55,24 +36,33 @@ namespace ncv
                 table_row_t& append(const string_t& name);
 
                 ///
-                /// \brief sort the table by the given column and using the given comparison operator
+                /// \brief sort the table using the given row comparison
                 ///
-                bool sort(size_t col, const comparator_t& comp);
-
-                ///
-                /// \brief sort by transforming to numeric values the given column
-                ///
-                bool sort_as_number(size_t col, sorting mode);
+                template
+                <
+                        typename trow_comp
+                >
+                void sort(const trow_comp& comp)
+                {
+                        std::stable_sort(m_rows.begin(), m_rows.end(), comp);
+                }
 
                 ///
                 /// \brief mark row-wise the selected element with the given operator
                 ///
-                bool mark(const marker_t& op, const char* marker_string = " (*)");
-
-                ///
-                /// \brief mark row-wise the minimum element
-                ///
-                bool mark_min_number(const char* marker_string = " (*)");
+                template
+                <
+                        typename trow_mark
+                >
+                void mark(const trow_mark& mark, const char* marker_string = " (*)")
+                {
+                        for (auto& row : m_rows)
+                        {
+                                const auto col = mark(row);
+                                assert(col < cols());
+                                row[col] += marker_string;
+                        }
+                }
 
                 ///
                 /// \brief pretty-print its content

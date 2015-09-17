@@ -10,6 +10,8 @@
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "thread/loopi.hpp"
+#include "text/from_string.hpp"
+#include "core/table_row_comp.h"
 
 #include "func/function_trid.h"
 #include "func/function_beale.h"
@@ -72,13 +74,13 @@ namespace
                 // optimizers to try
                 const auto optimizers =
                 {
-        //                min::batch_optimizer::GD,
-        //                min::batch_optimizer::CGD_CD,
-        //                min::batch_optimizer::CGD_DY,
-        //                min::batch_optimizer::CGD_FR,
-        //                min::batch_optimizer::CGD_HS,
-        //                min::batch_optimizer::CGD_LS,
-        //                min::batch_optimizer::CGD_DYCD,
+                        min::batch_optimizer::GD,
+                        min::batch_optimizer::CGD_CD,
+                        min::batch_optimizer::CGD_DY,
+                        min::batch_optimizer::CGD_FR,
+                        min::batch_optimizer::CGD_HS,
+                        min::batch_optimizer::CGD_LS,
+                        min::batch_optimizer::CGD_DYCD,
                         min::batch_optimizer::CGD_DYHS,
                         min::batch_optimizer::CGD_PRP,
                         min::batch_optimizer::CGD_N,
@@ -184,7 +186,7 @@ namespace
                 }
 
                 // print stats
-                table.sort_as_number(2, table_t::sorting::ascending);
+                table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({3, 2, 0})));
                 table.print(std::cout);
         }
 
@@ -240,7 +242,7 @@ int main(int, char* [])
                                    << stat.m_grads.sum();
         }
 
-        table.sort_as_number(2, table_t::sorting::ascending);
+        table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({3, 2, 0})));
         table.print(std::cout);
 
         // OK
