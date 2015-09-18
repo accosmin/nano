@@ -2,8 +2,9 @@
 file(GLOB libmin_sources ${CMAKE_CURRENT_SOURCE_DIR}
         *.*)
 
-#add_library(min STATIC ${libmin_sources})
-#set_target_properties(min PROPERTIES LINKER_LANGUAGE CXX)
+add_library(min INTERFACE)
+target_include_directories(min INTERFACE
+        $<BUILD_INTERFACE:${libmin_sources}>)
 
 # install library
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
