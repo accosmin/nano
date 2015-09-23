@@ -68,7 +68,7 @@ namespace test
 
         static void check_problem(const test::function_t& func)
         {
-                const auto problem_name = func.m_name;
+                const auto func_name = func.m_name;
                 const auto fn_size = func.m_opsize;
                 const auto fn_fval = func.m_opfval;
                 const auto fn_grad = func.m_opgrad;
@@ -110,6 +110,8 @@ namespace test
 
                 for (min::batch_optimizer optimizer : optimizers)
                 {
+                        const auto opt_name = text::to_string(optimizer);
+
                         for (size_t t = 0; t < trials; t ++)
                         {
                                 const auto& x0 = x0s[t];
@@ -127,18 +129,26 @@ namespace test
                                 const auto fx = state.f;
                                 const auto fx_thres = f0 - 0.01 * math::abs(f0);
 
+                                #define NANOCV_TEST_OPTIMIZERS_DESCRIPTION \
+                                        ") for (" << func_name << ", " << opt_name << \
+                                        ", x0 = [" << x0t << "], " << it << " iterations)"
+
+                                BOOST_CHECK_MESSAGE(fx < f0,
+                                        "decrease failed (" << fx << " < " << f0 <<
+                                        NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
                                 BOOST_CHECK_MESSAGE(fx < fx_thres,
-                                        "decrease failed (" << problem_name << ", " << text::to_string(optimizer) <<
-                                        "): x0 = [" << x0t << "], f0 = " << f0 << ", it = " << it << ", fx = " << fx);
+                                        "sufficient decrease failed (" << fx << " < " << fx_thres <<
+                                        NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
 
-//                                // check convergence
-//                                const scalar_t gx = state.convergence_criteria();
-//                                const scalar_t gx_thres = epsilon;
+                                // check convergence
+                                const auto gx = state.convergence_criteria();
+                                const auto gx_thres = epsilon;
 
-//                                BOOST_CHECK_LE(gx, gx_thres);
-//                                BOOST_CHECK_MESSAGE(gx < gx_thres,
-//                                        "convergence failed (" << problem_name << ", " << text::to_string(optimizer) <<
-//                                        "): x0 = " << x0.transpose() << ", iters = " << state.n_iterations() << "!");
+                                BOOST_CHECK_MESSAGE(gx < gx_thres,
+                                        "convergence failed (" << gx << " < " << gx_thres <<
+                                        NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
+
+                                // todo: check local minimas (if any known)
                         }
                 }
         }
