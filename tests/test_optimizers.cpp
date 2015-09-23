@@ -75,7 +75,7 @@ namespace test
 
                 const auto iterations = size_t(1024);
                 const auto epsilon = scalar_t(1e-6);
-                const auto trials = size_t(16 * 1024);
+                const auto trials = size_t(1024);
 
                 const auto dims = fn_size();
 
