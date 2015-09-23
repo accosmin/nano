@@ -125,13 +125,13 @@ namespace test
 
                                 const auto it = state.n_iterations();
 
-                                // check function value decrease
-                                const auto fx = state.f;
-                                const auto fx_thres = f0 - 0.01 * math::abs(f0);
-
                                 #define NANOCV_TEST_OPTIMIZERS_DESCRIPTION \
                                         ") for (" << func_name << ", " << opt_name << \
                                         ", x0 = [" << x0t << "], " << it << " iterations)"
+
+                                // check function value decrease
+                                const auto fx = state.f;
+                                const auto fx_thres = f0 - epsilon * math::abs(f0);
 
                                 BOOST_CHECK_MESSAGE(fx < f0,
                                         "decrease failed (" << fx << " < " << f0 <<
