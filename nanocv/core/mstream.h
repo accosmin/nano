@@ -2,7 +2,7 @@
 
 #include "arch.h"
 #include <string>
-#include <utility>
+#include <cstddef>
 
 namespace ncv
 {
