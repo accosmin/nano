@@ -52,7 +52,7 @@ namespace
                 const opt_opsize_t& fn_size, const opt_opfval_t& fn_fval, const opt_opgrad_t& fn_grad,
                 const std::vector<std::pair<vector_t, scalar_t>>&)
         {
-                const size_t iterations = 64 * 1024;
+                const size_t iterations = 1024;
                 const scalar_t epsilon = 1e-6;
                 const size_t trials = 1024;
 
@@ -143,13 +143,11 @@ namespace
                                         fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
                                         x0, optimizer, iterations, epsilon, ls_initializer, ls_strategy);
 
-                                const scalar_t crit = state.convergence_criteria();
-
                                 // update stats
                                 const std::lock_guard<std::mutex> lock(mutex);
 
                                 times(timer.microseconds());
-                                crits(crit);
+                                crits(state.convergence_criteria());
                                 iters(state.n_iterations());
                                 fvals(state.n_fval_calls());
                                 grads(state.n_grad_calls());
@@ -164,10 +162,10 @@ namespace
                                 text::to_string(ls_strategy) + "]";
 
                         table.append(name)
-                                << static_cast<int>(fvals.sum() + 2 * grads.sum()) / trials
+                                << static_cast<size_t>(fvals.sum() + 2 * grads.sum()) / trials
                                 << times.avg()
                                 << crits.avg()
-                                << static_cast<int>(fails.sum())
+                                << static_cast<size_t>(fails.sum())
                                 << iters.avg()
                                 << fvals.avg()
                                 << grads.avg();
