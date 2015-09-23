@@ -48,7 +48,8 @@ namespace test
                                 rgen(x0.data(), x0.data() + x0.size());
 
                                 // check gradient
-                                const opt_problem_t problem(fn_size, fn_fval, fn_grad);
+                                const opt_problem_t problem(fn_size, fn_fval, fn_grad);                                
+                                BOOST_CHECK_EQUAL(problem.size(), dims);
                                 BOOST_CHECK_LE(problem.grad_accuracy(x0), math::epsilon2<scalar_t>());
                         }
                 }
