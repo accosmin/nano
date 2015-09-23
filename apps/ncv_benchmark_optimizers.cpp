@@ -52,7 +52,7 @@ namespace
                 const opt_opsize_t& fn_size, const opt_opfval_t& fn_fval, const opt_opgrad_t& fn_grad,
                 const std::vector<std::pair<vector_t, scalar_t>>&)
         {
-                const size_t iterations = 1024;
+                const size_t iterations = 64 * 1024;
                 const scalar_t epsilon = 1e-6;
                 const size_t trials = 1024;
 
@@ -61,13 +61,11 @@ namespace
                 random_t<scalar_t> rgen(-1.0, +1.0);
 
                 // generate fixed random trials
-                vectors_t x0s;
-                for (size_t t = 0; t < trials; t ++)
+                vectors_t x0s(trials);
+                for (auto& x0 : x0s)
                 {
-                        vector_t x0(dims);
+                        x0.resize(dims);
                         rgen(x0.data(), x0.data() + x0.size());
-
-                        x0s.push_back(x0);
                 }
 
                 // optimizers to try
@@ -203,19 +201,19 @@ int main(int, char* [])
         using namespace ncv;
 
         check_problems(ncv::make_beale_funcs());
-        check_problems(ncv::make_booth_funcs());
-        check_problems(ncv::make_matyas_funcs());
-        check_problems(ncv::make_trid_funcs(32));
-        check_problems(ncv::make_sphere_funcs(32));
-        check_problems(ncv::make_powell_funcs(32));
-        check_problems(ncv::make_mccormick_funcs());
-        check_problems(ncv::make_himmelblau_funcs());
-        check_problems(ncv::make_rosenbrock_funcs(7));
-        check_problems(ncv::make_3hump_camel_funcs());
-        check_problems(ncv::make_dixon_price_funcs(32));
-        check_problems(ncv::make_sum_squares_funcs(32));
-        check_problems(ncv::make_goldstein_price_funcs());
-        check_problems(ncv::make_rotated_ellipsoid_funcs(32));
+//        check_problems(ncv::make_booth_funcs());
+//        check_problems(ncv::make_matyas_funcs());
+//        check_problems(ncv::make_trid_funcs(32));
+//        check_problems(ncv::make_sphere_funcs(32));
+//        check_problems(ncv::make_powell_funcs(32));
+//        check_problems(ncv::make_mccormick_funcs());
+//        check_problems(ncv::make_himmelblau_funcs());
+//        check_problems(ncv::make_rosenbrock_funcs(7));
+//        check_problems(ncv::make_3hump_camel_funcs());
+//        check_problems(ncv::make_dixon_price_funcs(32));
+//        check_problems(ncv::make_sum_squares_funcs(32));
+//        check_problems(ncv::make_goldstein_price_funcs());
+//        check_problems(ncv::make_rotated_ellipsoid_funcs(32));
 
         // show global statistics
         table_t table(text::align("optimizer", 32));
