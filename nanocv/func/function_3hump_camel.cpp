@@ -2,17 +2,21 @@
 
 namespace ncv
 {
-        std::vector<function_t> make_3hump_camel_funcs()
+        struct function_3hump_camel_t : public function_t
         {
-                std::vector<function_t> functions;
-
+                virtual string_t name() const override
                 {
-                        const opt_opsize_t fn_size = [=] ()
+                        return "3hump camel";
+                }
+
+                virtual opt_problem_t problem() const override
+                {
+                        const opt_opsize_t fn_size = [] ()
                         {
                                 return 2;
                         };
 
-                        const opt_opfval_t fn_fval = [=] (const vector_t& x)
+                        const opt_opfval_t fn_fval = [] (const vector_t& x)
                         {
                                 const scalar_t a = x(0), b = x(1);
 
@@ -38,16 +42,27 @@ namespace ncv
                                 return fn_fval(x);
                         };
 
-                        std::vector<std::pair<vector_t, scalar_t>> solutions;
-                        {
-                                solutions.emplace_back(vector_t::Zero(2), 0.0);
-                        }
-
-                        functions.emplace_back("3hump camel",
-                                               fn_size, fn_fval, fn_grad, solutions);
+                        return opt_problem_t(fn_size, fn_fval, fn_grad);
                 }
 
-                return functions;
+                virtual bool is_valid(const vector_t& x) const override
+                {
+                        return  -5.0 <= x(0) && x(0) <= 5.0 &&
+                                -5.0 <= x(1) && x(1) <= 5.0;
+                }
+
+                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
+                {
+                        const vector_t xmin = vector_t::Zero(2);
+//                        const scalar_t fmin = 0.0;
+
+                        return (x - xmin).lpNorm<Eigen::Infinity>() < epsilon;
+                }
+        };
+
+        functions_t make_3hump_camel_funcs()
+        {
+                return { std::make_shared<function_3hump_camel_t>() };
         }
 }
 	

@@ -3,37 +3,42 @@
 #include "core/arch.h"
 #include "core/string.h"
 #include "core/optimizer.h"
+#include <memory>
 
 namespace ncv
 {
-        typedef std::pair<vector_t, scalar_t>           solution_t;
-        typedef std::vector<solution_t>                 solutions_t;
+        struct function_t;
+        typedef std::shared_ptr<function_t>             rfunction_t;
+        typedef std::vector<rfunction_t>                functions_t;
 
         ///
         /// \brief test optimization problem
         ///
         struct NANOCV_PUBLIC function_t
         {
-                function_t(const string_t& name = string_t(),
-                           const opt_opsize_t& opsize = opt_opsize_t(),
-                           const opt_opfval_t& opfval = opt_opfval_t(),
-                           const opt_opgrad_t& opgrad = opt_opgrad_t(),
-                           const solutions_t& solutions = solutions_t())
-                        :       m_name(name),
-                                m_opsize(opsize),
-                                m_opfval(opfval),
-                                m_opgrad(opgrad),
-                                m_solutions(solutions)
-                {
-                }
+                ///
+                /// \brief destructor
+                ///
+                virtual ~function_t() {}
 
-                // attributes
-                string_t        m_name;
+                ///
+                /// \brief function name to identify it in tests and benchmarks
+                ///
+                virtual string_t name() const = 0;
 
-                opt_opsize_t    m_opsize;
-                opt_opfval_t    m_opfval;
-                opt_opgrad_t    m_opgrad;
+                ///
+                /// \brief construct the associated optimization problem
+                ///
+                virtual opt_problem_t problem() const = 0;
 
-                solutions_t     m_solutions;
+                ///
+                /// \brief check if a point is contained in the function's domain
+                ///
+                virtual bool is_valid(const vector_t& x) const = 0;
+
+                ///
+                /// \brief check if a point is epsilon-close to a known local minima
+                ///
+                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const = 0;
         };
 }
