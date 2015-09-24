@@ -9,6 +9,7 @@
 #include "func/function_trid.h"
 #include "func/function_beale.h"
 #include "func/function_booth.h"
+#include "func/function_cauchy.h"
 #include "func/function_sphere.h"
 #include "func/function_matyas.h"
 #include "func/function_powell.h"
@@ -62,7 +63,8 @@ BOOST_AUTO_TEST_CASE(test_functions)
         test::check_function(ncv::make_booth_funcs());
         test::check_function(ncv::make_matyas_funcs());
         test::check_function(ncv::make_trid_funcs(32));
-        test::check_function(ncv::make_sphere_funcs(8));
+        test::check_function(ncv::make_cauchy_funcs(8));
+        test::check_function(ncv::make_sphere_funcs(8));        
         test::check_function(ncv::make_powell_funcs(32));
         test::check_function(ncv::make_mccormick_funcs());
         test::check_function(ncv::make_himmelblau_funcs());

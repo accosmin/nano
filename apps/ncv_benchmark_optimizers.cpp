@@ -16,6 +16,7 @@
 #include "func/function_trid.h"
 #include "func/function_beale.h"
 #include "func/function_booth.h"
+#include "func/function_cauchy.h"
 #include "func/function_sphere.h"
 #include "func/function_matyas.h"
 #include "func/function_powell.h"
@@ -198,10 +199,11 @@ int main(int, char* [])
 {
         using namespace ncv;
 
-        check_problems(ncv::make_beale_funcs());
+//        check_problems(ncv::make_beale_funcs());
 //        check_problems(ncv::make_booth_funcs());
 //        check_problems(ncv::make_matyas_funcs());
 //        check_problems(ncv::make_trid_funcs(32));
+        check_problems(ncv::make_cauchy_funcs(32));
 //        check_problems(ncv::make_sphere_funcs(32));
 //        check_problems(ncv::make_powell_funcs(32));
 //        check_problems(ncv::make_mccormick_funcs());

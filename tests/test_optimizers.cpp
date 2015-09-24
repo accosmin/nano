@@ -13,6 +13,7 @@
 #include "func/function_trid.h"
 #include "func/function_beale.h"
 #include "func/function_booth.h"
+#include "func/function_cauchy.h"
 #include "func/function_sphere.h"
 #include "func/function_matyas.h"
 #include "func/function_powell.h"
@@ -170,6 +171,7 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
         test::check_problems(ncv::make_booth_funcs());
         test::check_problems(ncv::make_matyas_funcs());
         test::check_problems(ncv::make_trid_funcs(8));
+        test::check_problems(ncv::make_cauchy_funcs(8));
         test::check_problems(ncv::make_sphere_funcs(8));
         test::check_problems(ncv::make_powell_funcs(8));
         test::check_problems(ncv::make_mccormick_funcs());
