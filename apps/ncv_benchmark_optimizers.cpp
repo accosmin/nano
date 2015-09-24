@@ -119,81 +119,78 @@ namespace
                         for (min::ls_initializer ls_initializer : ls_initializers)
                                 for (min::ls_strategy ls_strategy : ls_strategies)
                 {
-                        stats_t<scalar_t> times;
-                        stats_t<scalar_t> crits;
-                        stats_t<scalar_t> fails;
-                        stats_t<scalar_t> iters;
-                        stats_t<scalar_t> fvals;
-                        stats_t<scalar_t> grads;
-                        stats_t<scalar_t> speeds;
-
-                        thread::loopi(trials, pool, [&] (size_t t)
+                        pool.enqueue([&, optimizer = optimizer, ls_initializer = ls_initializer, ls_strategy = ls_strategy]
                         {
-                                const vector_t& x0 = x0s[t];
+                                stats_t<scalar_t> times;
+                                stats_t<scalar_t> crits;
+                                stats_t<scalar_t> fails;
+                                stats_t<scalar_t> iters;
+                                stats_t<scalar_t> fvals;
+                                stats_t<scalar_t> grads;
+                                stats_t<scalar_t> speeds;
 
-                                // check gradients
-                                const opt_problem_t problem(fn_size, fn_fval, fn_grad);
-                                if (problem.grad_accuracy(x0) > math::epsilon2<scalar_t>())
+                                for (size_t t = 0; t < trials; t ++)
                                 {
-                                        const std::lock_guard<std::mutex> lock(mutex);
+                                        const vector_t& x0 = x0s[t];
 
-                                        log_error() << "invalid gradient for problem [" << problem_name << "]!";
+                                        const opt_problem_t problem(fn_size, fn_fval, fn_grad);
+
+                                        // optimize
+                                        const ncv::timer_t timer;
+
+                                        const opt_state_t state = ncv::minimize(
+                                                fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
+                                                x0, optimizer, iterations, epsilon, ls_initializer, ls_strategy);
+
+                                        const auto crit = state.convergence_criteria();
+                                        const auto iter = state.n_iterations();
+
+                                        const opt_state_t state0(problem, x0);
+                                        const auto crit0 = state0.convergence_criteria();
+
+                                        const auto speed = std::pow(crit / crit0, 1.0 / (1.0 + iter));
+
+                                        // update stats
+                                        times(timer.microseconds());
+                                        crits(crit);
+                                        iters(state.n_iterations());
+                                        fvals(state.n_fval_calls());
+                                        grads(state.n_grad_calls());
+                                        speeds(speed);
+                                        fails(!state.converged(epsilon) ? 1.0 : 0.0);
                                 }
 
-                                // optimize
-                                const ncv::timer_t timer;
-
-                                const opt_state_t state = ncv::minimize(
-                                        fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
-                                        x0, optimizer, iterations, epsilon, ls_initializer, ls_strategy);
-
-                                const auto crit = state.convergence_criteria();
-                                const auto iter = state.n_iterations();
-
-                                const opt_state_t state0(problem, x0);
-                                const auto crit0 = state0.convergence_criteria();
-
-                                const auto speed = std::pow(crit / crit0, 1.0 / (1.0 + iter));
-
-                                // update stats
                                 const std::lock_guard<std::mutex> lock(mutex);
 
-                                times(timer.microseconds());
-                                crits(crit);
-                                iters(state.n_iterations());
-                                fvals(state.n_fval_calls());
-                                grads(state.n_grad_calls());
-                                speeds(speed);
+                                // update per-problem table
+                                const string_t name =
+                                        text::to_string(optimizer) + "[" +
+                                        text::to_string(ls_initializer) + "][" +
+                                        text::to_string(ls_strategy) + "]";
 
-                                fails(!state.converged(epsilon) ? 1.0 : 0.0);
+                                table.append(name)
+                                        << static_cast<size_t>(fvals.sum() + 2 * grads.sum()) / trials
+                                        << times.avg()
+                                        << crits.avg()
+                                        << static_cast<size_t>(fails.sum())
+                                        << iters.avg()
+                                        << fvals.avg()
+                                        << grads.avg()
+                                        << speeds.avg();
+
+                                // update global statistics
+                                optimizer_stat_t& stat = optimizer_stats[name];
+                                stat.m_time(times.avg());
+                                stat.m_crits(crits.avg());
+                                stat.m_fails(fails.sum());
+                                stat.m_iters(iters.avg());
+                                stat.m_fvals(fvals.avg());
+                                stat.m_grads(grads.avg());
+                                stat.m_speeds(speeds.avg());
                         });
-
-                        // update per-problem table
-                        const string_t name =
-                                text::to_string(optimizer) + "[" +
-                                text::to_string(ls_initializer) + "][" +
-                                text::to_string(ls_strategy) + "]";
-
-                        table.append(name)
-                                << static_cast<size_t>(fvals.sum() + 2 * grads.sum()) / trials
-                                << times.avg()
-                                << crits.avg()
-                                << static_cast<size_t>(fails.sum())
-                                << iters.avg()
-                                << fvals.avg()
-                                << grads.avg()
-                                << speeds.avg();
-
-                        // update global statistics
-                        optimizer_stat_t& stat = optimizer_stats[name];
-                        stat.m_time(times.avg());
-                        stat.m_crits(crits.avg());
-                        stat.m_fails(fails.sum());
-                        stat.m_iters(iters.avg());
-                        stat.m_fvals(fvals.avg());
-                        stat.m_grads(grads.avg());
-                        stat.m_speeds(speeds.avg());
                 }
+
+                pool.wait();
 
                 // print stats
                 table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({3, 0})));
@@ -213,11 +210,11 @@ int main(int, char* [])
 {
         using namespace ncv;
 
-//        check_problems(ncv::make_beale_funcs());
+        check_problems(ncv::make_beale_funcs());
 //        check_problems(ncv::make_booth_funcs());
 //        check_problems(ncv::make_matyas_funcs());
 //        check_problems(ncv::make_trid_funcs(32));
-        check_problems(ncv::make_cauchy_funcs(32));
+//        check_problems(ncv::make_cauchy_funcs(32));
 //        check_problems(ncv::make_sphere_funcs(32));
 //        check_problems(ncv::make_powell_funcs(32));
 //        check_problems(ncv::make_mccormick_funcs());
