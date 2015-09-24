@@ -54,7 +54,7 @@ namespace
                 const opt_opsize_t& fn_size, const opt_opfval_t& fn_fval, const opt_opgrad_t& fn_grad,
                 const std::vector<std::pair<vector_t, scalar_t>>&)
         {
-                const size_t iterations = 1024;
+                const size_t iterations = 64 * 1024;
                 const scalar_t epsilon = 1e-6;
                 const size_t trials = 1024;
 
@@ -86,6 +86,7 @@ namespace
                         min::batch_optimizer::LBFGS
                 };
 
+                // line search initialization methods to try
                 const auto ls_initializers =
                 {
                         min::ls_initializer::unit,
@@ -93,6 +94,7 @@ namespace
                         min::ls_initializer::consistent
                 };
 
+                // line search strategies to try
                 const auto ls_strategies =
                 {
                         min::ls_strategy::backtrack_armijo,
@@ -115,11 +117,12 @@ namespace
                 thread::pool_t pool;
                 std::mutex mutex;
 
+                // evaluate all possible combinations
                 for (min::batch_optimizer optimizer : optimizers)
-                        for (min::ls_initializer ls_initializer : ls_initializers)
-                                for (min::ls_strategy ls_strategy : ls_strategies)
+                        for (min::ls_initializer ls_init : ls_initializers)
+                                for (min::ls_strategy ls_strat : ls_strategies)
                 {
-                        pool.enqueue([&, optimizer = optimizer, ls_initializer = ls_initializer, ls_strategy = ls_strategy]
+                        pool.enqueue([&, optimizer = optimizer, ls_init = ls_init, ls_strat = ls_strat]
                         {
                                 stats_t<scalar_t> times;
                                 stats_t<scalar_t> crits;
@@ -140,7 +143,7 @@ namespace
 
                                         const opt_state_t state = ncv::minimize(
                                                 fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
-                                                x0, optimizer, iterations, epsilon, ls_initializer, ls_strategy);
+                                                x0, optimizer, iterations, epsilon, ls_init, ls_strat);
 
                                         const auto crit = state.convergence_criteria();
                                         const auto iter = state.n_iterations();
@@ -165,8 +168,8 @@ namespace
                                 // update per-problem table
                                 const string_t name =
                                         text::to_string(optimizer) + "[" +
-                                        text::to_string(ls_initializer) + "][" +
-                                        text::to_string(ls_strategy) + "]";
+                                        text::to_string(ls_init) + "][" +
+                                        text::to_string(ls_strat) + "]";
 
                                 table.append(name)
                                         << static_cast<size_t>(fvals.sum() + 2 * grads.sum()) / trials
@@ -211,20 +214,20 @@ int main(int, char* [])
         using namespace ncv;
 
         check_problems(ncv::make_beale_funcs());
-//        check_problems(ncv::make_booth_funcs());
-//        check_problems(ncv::make_matyas_funcs());
-//        check_problems(ncv::make_trid_funcs(32));
-//        check_problems(ncv::make_cauchy_funcs(32));
-//        check_problems(ncv::make_sphere_funcs(32));
-//        check_problems(ncv::make_powell_funcs(32));
-//        check_problems(ncv::make_mccormick_funcs());
-//        check_problems(ncv::make_himmelblau_funcs());
-//        check_problems(ncv::make_rosenbrock_funcs(7));
-//        check_problems(ncv::make_3hump_camel_funcs());
-//        check_problems(ncv::make_dixon_price_funcs(32));
-//        check_problems(ncv::make_sum_squares_funcs(32));
-//        check_problems(ncv::make_goldstein_price_funcs());
-//        check_problems(ncv::make_rotated_ellipsoid_funcs(32));
+        check_problems(ncv::make_booth_funcs());
+        check_problems(ncv::make_matyas_funcs());
+        check_problems(ncv::make_trid_funcs(32));
+        check_problems(ncv::make_cauchy_funcs(32));
+        check_problems(ncv::make_sphere_funcs(32));
+        check_problems(ncv::make_powell_funcs(32));
+        check_problems(ncv::make_mccormick_funcs());
+        check_problems(ncv::make_himmelblau_funcs());
+        check_problems(ncv::make_rosenbrock_funcs(7));
+        check_problems(ncv::make_3hump_camel_funcs());
+        check_problems(ncv::make_dixon_price_funcs(32));
+        check_problems(ncv::make_sum_squares_funcs(32));
+        check_problems(ncv::make_goldstein_price_funcs());
+        check_problems(ncv::make_rotated_ellipsoid_funcs(32));
 
         // show global statistics
         table_t table(text::align("optimizer", 32));
