@@ -44,6 +44,7 @@ namespace
                 stats_t<scalar_t>       m_iters;
                 stats_t<scalar_t>       m_fvals;
                 stats_t<scalar_t>       m_grads;
+                stats_t<scalar_t>       m_speeds;
         };
 
         std::map<string_t, optimizer_stat_t> optimizer_stats;
@@ -108,7 +109,8 @@ namespace
                                << "#fails"
                                << "#iters"
                                << "#fvals"
-                               << "#grads";
+                               << "#grads"
+                               << "speed";
 
                 thread::pool_t pool;
                 std::mutex mutex;
@@ -123,6 +125,7 @@ namespace
                         stats_t<scalar_t> iters;
                         stats_t<scalar_t> fvals;
                         stats_t<scalar_t> grads;
+                        stats_t<scalar_t> speeds;
 
                         thread::loopi(trials, pool, [&] (size_t t)
                         {
@@ -144,14 +147,23 @@ namespace
                                         fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
                                         x0, optimizer, iterations, epsilon, ls_initializer, ls_strategy);
 
+                                const auto crit = state.convergence_criteria();
+                                const auto iter = state.n_iterations();
+
+                                const opt_state_t state0(problem, x0);
+                                const auto crit0 = state0.convergence_criteria();
+
+                                const auto speed = std::pow(crit / crit0, 1.0 / (1.0 + iter));
+
                                 // update stats
                                 const std::lock_guard<std::mutex> lock(mutex);
 
                                 times(timer.microseconds());
-                                crits(state.convergence_criteria());
+                                crits(crit);
                                 iters(state.n_iterations());
                                 fvals(state.n_fval_calls());
                                 grads(state.n_grad_calls());
+                                speeds(speed);
 
                                 fails(!state.converged(epsilon) ? 1.0 : 0.0);
                         });
@@ -169,7 +181,8 @@ namespace
                                 << static_cast<size_t>(fails.sum())
                                 << iters.avg()
                                 << fvals.avg()
-                                << grads.avg();
+                                << grads.avg()
+                                << speeds.avg();
 
                         // update global statistics
                         optimizer_stat_t& stat = optimizer_stats[name];
@@ -179,6 +192,7 @@ namespace
                         stat.m_iters(iters.avg());
                         stat.m_fvals(fvals.avg());
                         stat.m_grads(grads.avg());
+                        stat.m_speeds(speeds.avg());
                 }
 
                 // print stats
@@ -223,7 +237,8 @@ int main(int, char* [])
                        << "#fails"
                        << "#iters"
                        << "#fvals"
-                       << "#grads";
+                       << "#grads"
+                       << "speed";
 
         for (const auto& it : optimizer_stats)
         {
@@ -236,7 +251,8 @@ int main(int, char* [])
                                    << static_cast<int>(stat.m_fails.sum())
                                    << stat.m_iters.sum()
                                    << stat.m_fvals.sum()
-                                   << stat.m_grads.sum();
+                                   << stat.m_grads.sum()
+                                   << stat.m_speeds.avg();
         }
 
         table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({3, 0})));
