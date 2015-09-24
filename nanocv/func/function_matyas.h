@@ -9,5 +9,5 @@ namespace ncv
         ///
         /// https://en.wikipedia.org/wiki/Test_functions_for_optimization
         ///
-        NANOCV_PUBLIC std::vector<function_t> make_matyas_funcs();
+        NANOCV_PUBLIC functions_t make_matyas_funcs();
 }

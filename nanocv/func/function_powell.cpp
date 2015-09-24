@@ -4,9 +4,9 @@
 
 namespace ncv
 {
-        std::vector<function_t> make_powell_funcs(ncv::size_t max_dims)
+        functions_t make_powell_funcs(ncv::size_t max_dims)
         {
-                std::vector<function_t> functions;
+                functions_t functions;
 
                 for (size_t dims = 4; dims <= max_dims; dims *= 4)
                 {

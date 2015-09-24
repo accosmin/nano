@@ -3,9 +3,9 @@
 
 namespace ncv
 {
-        std::vector<function_t> make_mccormick_funcs()
+        functions_t make_mccormick_funcs()
         {
-                std::vector<function_t> functions;
+                functions_t functions;
 
                 {
                         const opt_opsize_t fn_size = [=] ()

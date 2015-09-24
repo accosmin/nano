@@ -11,12 +11,12 @@ namespace ncv
 
                 virtual opt_problem_t problem() const override
                 {
-                        const opt_opsize_t fn_size = [] ()
+                        const opt_opsize_t fn_size = [=] ()
                         {
                                 return 2;
                         };
 
-                        const opt_opfval_t fn_fval = [] (const vector_t& x)
+                        const opt_opfval_t fn_fval = [=] (const vector_t& x)
                         {
                                 const scalar_t a = x(0), b = x(1);
 
@@ -47,14 +47,12 @@ namespace ncv
 
                 virtual bool is_valid(const vector_t& x) const override
                 {
-                        return  -5.0 <= x(0) && x(0) <= 5.0 &&
-                                -5.0 <= x(1) && x(1) <= 5.0;
+                        return x.lpNorm<Eigen::Infinity>() <= 5.0;
                 }
 
                 virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
                 {
                         const vector_t xmin = vector_t::Zero(2);
-//                        const scalar_t fmin = 0.0;
 
                         return (x - xmin).lpNorm<Eigen::Infinity>() < epsilon;
                 }

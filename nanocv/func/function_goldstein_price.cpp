@@ -2,10 +2,14 @@
 
 namespace ncv
 {
-        std::vector<function_t> make_goldstein_price_funcs()
+        struct function_goldstein_price_t : public function_t
         {
-                std::vector<function_t> functions;
+                virtual string_t name() const override
+                {
+                        return "Goldstein-Price";
+                }
 
+                virtual opt_problem_t problem() const override
                 {
                         const opt_opsize_t fn_size = [=] ()
                         {
@@ -57,37 +61,40 @@ namespace ncv
                                 return fn_fval(x);
                         };
 
-                        std::vector<std::pair<vector_t, scalar_t>> solutions;
-                        {
-                                vector_t x(2);
-                                x(0) = +0.0;
-                                x(1) = -1.0;
-                                solutions.emplace_back(x, 3.0);
-                        }
-                        {
-                                vector_t x(2);
-                                x(0) = +1.2;
-                                x(1) = +0.8;
-                                solutions.emplace_back(x, 840.0);
-                        }
-                        {
-                                vector_t x(2);
-                                x(0) = +1.8;
-                                x(1) = +0.2;
-                                solutions.emplace_back(x, 84.0);
-                        }
-                        {
-                                vector_t x(2);
-                                x(0) = -0.6;
-                                x(1) = -0.4;
-                                solutions.emplace_back(x, 30.0);
-                        }
-
-                        functions.emplace_back("Goldstein-Price",
-                                               fn_size, fn_fval, fn_grad, solutions);
+                        return opt_problem_t(fn_size, fn_fval, fn_grad);
                 }
 
-                return functions;
+                virtual bool is_valid(const vector_t& x) const override
+                {
+                        return  -2.0 <= x(0) && x(0) <= 2.0 &&
+                                -2.0 <= x(1) && x(1) <= 2.0;
+                }
+
+                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
+                {
+                        const auto xmins =
+                        {
+                                scalars_t{ +0.0, -1.0 },
+                                scalars_t{ +1.2, +0.8 },
+                                scalars_t{ +1.8, +0.2 },
+                                scalars_t{ -0.6, -0.4 }
+                        };
+
+                        for (const auto& xmin : xmins)
+                        {
+                                if ((tensor::map_vector(xmin.data(), 2) - x).lpNorm<Eigen::Infinity>() < epsilon)
+                                {
+                                        return true;
+                                }
+                        }
+
+                        return false;
+                }
+        };
+
+        functions_t make_goldstein_price_funcs()
+        {
+                return { std::make_shared<function_goldstein_price_t>() };
         }
 }
 	

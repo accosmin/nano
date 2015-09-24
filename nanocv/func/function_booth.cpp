@@ -2,10 +2,14 @@
 
 namespace ncv
 {
-        std::vector<function_t> make_booth_funcs()
+        struct function_booth_t : public function_t
         {
-                std::vector<function_t> functions;
+                virtual string_t name() const override
+                {
+                        return "Booth";
+                }
 
+                virtual opt_problem_t problem() const override
                 {
                         const opt_opsize_t fn_size = [=] ()
                         {
@@ -36,19 +40,36 @@ namespace ncv
                                 return fn_fval(x);
                         };
 
-                        std::vector<std::pair<vector_t, scalar_t>> solutions;
-                        {
-                                vector_t x(2);
-                                x(0) = 1.0;
-                                x(1) = 3.0;
-                                solutions.emplace_back(x, 0.0);
-                        }
-
-                        functions.emplace_back("Booth",
-                                               fn_size, fn_fval, fn_grad, solutions);
+                        return opt_problem_t(fn_size, fn_fval, fn_grad);
                 }
 
-                return functions;
+                virtual bool is_valid(const vector_t& x) const override
+                {
+                        return x.lpNorm<Eigen::Infinity>() <= 10.0;
+                }
+
+                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
+                {
+                        const auto xmins =
+                        {
+                                scalars_t{ 1.0, 3.0 }
+                        };
+
+                        for (const auto& xmin : xmins)
+                        {
+                                if ((tensor::map_vector(xmin.data(), 2) - x).lpNorm<Eigen::Infinity>() < epsilon)
+                                {
+                                        return true;
+                                }
+                        }
+
+                        return false;
+                }
+        };
+
+        functions_t make_booth_funcs()
+        {
+                return { std::make_shared<function_booth_t>() };
         }
 }
 	

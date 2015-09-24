@@ -4,9 +4,9 @@
 
 namespace ncv
 {
-        std::vector<function_t> make_trid_funcs(ncv::size_t max_dims)
+        functions_t make_trid_funcs(ncv::size_t max_dims)
         {
-                std::vector<function_t> functions;
+                functions_t functions;
 
                 for (size_t dims = 2; dims <= max_dims; dims *= 2)
                 {

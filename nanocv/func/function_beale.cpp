@@ -2,10 +2,14 @@
 
 namespace ncv
 {
-        std::vector<function_t> make_beale_funcs()
+        struct function_beale_t : public function_t
         {
-                std::vector<function_t> functions;
+                virtual string_t name() const override
+                {
+                        return "Beale";
+                }
 
+                virtual opt_problem_t problem() const override
                 {
                         const opt_opsize_t fn_size = [=] ()
                         {
@@ -40,21 +44,36 @@ namespace ncv
                                 return fn_fval(x);
                         };
 
-                        std::vector<std::pair<vector_t, scalar_t>> solutions;
-                        {
-                                vector_t x(2);
-                                x(0) = 3.0;
-                                x(1) = 0.5;
-                                solutions.emplace_back(x, 0);
-                        }
-
-//                        fixme: more local minimas?!
-
-                        functions.emplace_back("Beale",
-                                               fn_size, fn_fval, fn_grad, solutions);
+                        return opt_problem_t(fn_size, fn_fval, fn_grad);
                 }
 
-                return functions;
+                virtual bool is_valid(const vector_t& x) const override
+                {
+                        return x.lpNorm<Eigen::Infinity>() <= 4.5;
+                }
+
+                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
+                {
+                        const auto xmins =
+                        {
+                                scalars_t{ 3.0, 0.5 }
+                        };
+
+                        for (const auto& xmin : xmins)
+                        {
+                                if ((tensor::map_vector(xmin.data(), 2) - x).lpNorm<Eigen::Infinity>() < epsilon)
+                                {
+                                        return true;
+                                }
+                        }
+
+                        return false;
+                }
+        };
+
+        functions_t make_beale_funcs()
+        {
+                return { std::make_shared<function_beale_t>() };
         }
 }
 	
