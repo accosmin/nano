@@ -6,7 +6,7 @@
 #include "math/epsilon.hpp"
 #include "min/average_scalar.hpp"
 #include "min/average_vector.hpp"
-#include <Eigen/Core>
+#include <eigen3/Eigen/Core>
 
 namespace test
 {
