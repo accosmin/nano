@@ -1,7 +1,7 @@
 #pragma once
 
-#include <eigen3/Eigen/Core>
 #include <limits>
+#include <Eigen/Core>
 
 namespace ncv
 {
