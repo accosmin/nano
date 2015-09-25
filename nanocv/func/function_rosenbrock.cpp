@@ -56,7 +56,7 @@ namespace ncv
                         return true;
                 }
 
-                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const
+                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
                 {
                         {
                                 const vector_t xmin = vector_t::Ones(m_dims);
