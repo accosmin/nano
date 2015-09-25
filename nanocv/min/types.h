@@ -63,7 +63,17 @@ namespace ncv
 
                         // see CG_DESCENT, Hager & Zhang, 2005 - regular and approximate Wolfe only
                         cg_descent                      ///< CG_DESCENT
-                };                       
+                };
+
+                ///
+                /// \brief optimization return code
+                ///
+                enum class result
+                {
+                        converged,                      ///< converged within the maximum number of iterations
+                        max_iterations,                 ///< maximum number of iterations passed without convergence
+                        linesearch_failed               ///< linesearch failed (e.g. numerical precision, logical error)
+                };
         }
 }
 
