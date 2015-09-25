@@ -19,9 +19,7 @@ namespace ncv
                         typedef typename tproblem::tscalar      tscalar;
                         typedef typename tproblem::tsize        tsize;
                         typedef typename tproblem::tvector      tvector;
-                        typedef typename tproblem::tstate       tstate;         ///< optimization state
-                        typedef typename tproblem::twlog        twlog;
-                        typedef typename tproblem::telog        telog;
+                        typedef typename tproblem::tstate       tstate;
                         typedef typename tproblem::tulog        tulog;
 
                         ///
@@ -31,10 +29,8 @@ namespace ncv
                                         tscalar epsilon,
                                         ls_initializer lsinit,
                                         ls_strategy lsstrat,
-                                        const twlog& w = twlog(),
-                                        const telog& e = telog(),
                                         const tulog& u = tulog())
-                                :       params_t<tproblem>(w, e, u),
+                                :       params_t<tproblem>(u),
                                         m_max_iterations(max_iterations),
                                         m_epsilon(epsilon),
                                         m_ls_initializer(lsinit),

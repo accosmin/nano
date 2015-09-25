@@ -66,8 +66,6 @@ namespace ncv
                         auto fn_fval = ncv::make_opfval(data);
                         auto fn_grad = ncv::make_opgrad(data);
 
-                        auto fn_wlog = verbose ? ncv::make_opwlog() : nullptr;
-                        auto fn_elog = verbose ? ncv::make_opelog() : nullptr;
                         auto fn_ulog = [&] (const opt_state_t& state)
                         {
                                 // evaluate training samples
@@ -110,7 +108,7 @@ namespace ncv
                         };
 
                         // OK, optimize the model
-                        ncv::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_wlog, fn_elog, fn_ulog,
+                        ncv::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
                                       data.m_x0, optimizer, epochs, epoch_size, alpha0, decay);
 
                         return result;

@@ -23,8 +23,6 @@ namespace ncv
                         auto fn_fval = ncv::make_opfval(data);
                         auto fn_grad = ncv::make_opgrad(data);
 
-                        auto fn_wlog = verbose ? ncv::make_opwlog() : nullptr;
-                        auto fn_elog = verbose ? ncv::make_opelog() : nullptr;
                         auto fn_ulog = [&] (const opt_state_t& state)
                         {
                                 const scalar_t tvalue = data.m_gacc.value();
@@ -57,7 +55,7 @@ namespace ncv
                         };
 
                         // assembly optimization problem & optimize the model
-                        return ncv::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_wlog, fn_elog, fn_ulog,
+                        return ncv::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
                                              data.m_x0, optimizer, iterations, epsilon);
                 }
         }

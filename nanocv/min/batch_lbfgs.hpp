@@ -24,8 +24,6 @@ namespace ncv
                         typedef typename param_t::tsize         tsize;
                         typedef typename param_t::tvector       tvector;
                         typedef typename param_t::tstate        tstate;
-                        typedef typename param_t::twlog         twlog;
-                        typedef typename param_t::telog         telog;
                         typedef typename param_t::tulog         tulog;
 
                         ///
@@ -36,10 +34,8 @@ namespace ncv
                                         ls_initializer lsinit,
                                         ls_strategy lsstrat,
                                         tsize history_size,
-                                        const twlog& wlog = twlog(),
-                                        const telog& elog = telog(),
                                         const tulog& ulog = tulog())
-                                :       m_param(max_iterations, epsilon, lsinit, lsstrat, wlog, elog, ulog),
+                                :       m_param(max_iterations, epsilon, lsinit, lsstrat, ulog),
                                         m_hsize(history_size)
                         {
                         }
@@ -121,7 +117,7 @@ namespace ncv
                                         const tscalar t0 = ls_init(cstate);
                                         if (!ls_step.update(problem, t0, cstate))
                                         {
-                                                m_param.elog("line-search failed (LBFGS)!");
+//                                                m_param.elog("line-search failed (LBFGS)!");
                                                 break;
                                         }
 

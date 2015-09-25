@@ -1,9 +1,8 @@
 #pragma once
 
 #include "state.hpp"
-#include <type_traits>
 #include <functional>
-#include <string>
+#include <type_traits>
 
 namespace ncv
 {
@@ -27,18 +26,15 @@ namespace ncv
                 class problem_t
                 {
                 public:
-                        typedef tscalar_                                                tscalar;
-                        typedef tsize_                                                  tsize;
+                        typedef tscalar_                                tscalar;
+                        typedef tsize_                                  tsize;
 
                         /// optimization current/optimum state
-                        typedef state_t<tscalar, tsize>                                 tstate;
+                        typedef state_t<tscalar, tsize>                 tstate;
+                        typedef typename tstate::tvector                tvector;
 
-                        typedef typename tstate::tvector                                tvector;
-
-                        /// logging: warning, error, update (with the current state)
-                        typedef std::function<void(const std::string&)>                 twlog;
-                        typedef std::function<void(const std::string&)>                 telog;
-                        typedef std::function<bool(const tstate&)>                      tulog;
+                        /// log the current state
+                        typedef std::function<bool(const tstate&)>      tulog;
 
                         ///
                         /// \brief constructor (analytic gradient)
@@ -186,7 +182,6 @@ namespace ncv
                         top_size                m_op_size;
                         top_fval                m_op_fval;
                         top_grad                m_op_grad;
-                        tscalar                 m_eps;                  ///< finite difference approximation
                         mutable tsize           m_n_fvals;              ///< #function value evaluations
                         mutable tsize           m_n_grads;              ///< #function gradient evaluations
                 };

@@ -46,14 +46,6 @@ namespace ncv
                         return loss_value(target, output.vector());
                 };
 
-                auto fn_wlog = [] (const string_t& message)
-                {
-                        log_warning() << message;
-                };
-                auto fn_elog = [] (const string_t& message)
-                {
-                        log_error() << message;
-                };
                 auto fn_ulog = [&] (const opt_state_t& /*result*/)
                 {
 //                        log_info() << "[loss = " << result.f
@@ -73,7 +65,7 @@ namespace ncv
                 tensor::set_random(input, random_t<scalar_t>(0.0, 1.0));
 
                 const opt_state_t result = ncv::minimize(
-                        opt_problem_t(fn_size, fn_fval, fn_grad), fn_wlog, fn_elog, fn_ulog,
+                        opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
                         input.vector(), optimizer, iterations, epsilon);
 
                 input.vector() = result.x;

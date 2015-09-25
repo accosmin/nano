@@ -24,8 +24,6 @@ namespace ncv
                         typedef typename param_t::tsize         tsize;
                         typedef typename param_t::tvector       tvector;
                         typedef typename param_t::tstate        tstate;
-                        typedef typename param_t::twlog         twlog;
-                        typedef typename param_t::telog         telog;
                         typedef typename param_t::tulog         tulog;
 
                         ///
@@ -35,10 +33,8 @@ namespace ncv
                                         tscalar epsilon,
                                         ls_initializer lsinit,
                                         ls_strategy lsstrat,
-                                        const twlog& wlog = twlog(),
-                                        const telog& elog = telog(),
                                         const tulog& ulog = tulog())
-                                :       m_param(max_iterations, epsilon, lsinit, lsstrat, wlog, elog, ulog)
+                                :       m_param(max_iterations, epsilon, lsinit, lsstrat, ulog)
                         {
                         }
 
@@ -83,7 +79,7 @@ namespace ncv
                                         if (cstate.d.dot(cstate.g) > tscalar(0))
                                         {
                                                 cstate.d = -cstate.g;
-                                                m_param.wlog("not a descent direction (CGD)!");
+//                                                m_param.wlog("not a descent direction (CGD)!");
                                         }
 
                                         // line-search
@@ -92,7 +88,7 @@ namespace ncv
                                         const tscalar t0 = ls_init(cstate);
                                         if (!ls_step.update(problem, t0, cstate))
                                         {
-                                                m_param.elog("line-search failed (CGD)!");
+//                                                m_param.elog("line-search failed (CGD)!");
                                                 break;
                                         }
                                 }

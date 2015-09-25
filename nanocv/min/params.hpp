@@ -18,20 +18,14 @@ namespace ncv
                         typedef typename tproblem::tscalar      tscalar;
                         typedef typename tproblem::tsize        tsize;
                         typedef typename tproblem::tvector      tvector;
-                        typedef typename tproblem::tstate       tstate;         ///< optimization state
-                        typedef typename tproblem::twlog        twlog;
-                        typedef typename tproblem::telog        telog;
+                        typedef typename tproblem::tstate       tstate;
                         typedef typename tproblem::tulog        tulog;
 
                         ///
                         /// \brief constructor
                         ///
-                        params_t(       const twlog& w = twlog(),
-                                        const telog& e = telog(),
-                                        const tulog& u = tulog())
-                                :       m_wlog(w),
-                                        m_elog(e),
-                                        m_ulog(u)
+                        params_t(const tulog& u = tulog())
+                                :       m_ulog(u)
                         {
                         }
 
@@ -43,30 +37,6 @@ namespace ncv
                         }
 
                         ///
-                        /// \brief log warning message
-                        ///
-                        template
-                        <
-                                typename tstring
-                        >
-                        void wlog(const tstring& message) const
-                        {
-                                if (m_wlog) m_wlog(message);
-                        }
-
-                        ///
-                        /// \brief log error message
-                        ///
-                        template
-                        <
-                                typename tstring
-                        >
-                        void elog(const tstring& message) const
-                        {
-                                if (m_elog) m_elog(message);
-                        }
-
-                        ///
                         /// \brief log current optimization state
                         ///
                         bool ulog(const tstate& state) const
@@ -74,10 +44,6 @@ namespace ncv
                                 return m_ulog ? m_ulog(state) : true;
                         }
 
-                private:
-
-                        twlog           m_wlog;                 ///< warning log: (string message)
-                        telog           m_elog;                 ///< error log: (string message)
                         tulog           m_ulog;                 ///< update log: (tstate current_state_after_each_epoch)
                 };
         }

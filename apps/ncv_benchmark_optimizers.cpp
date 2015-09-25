@@ -153,7 +153,7 @@ namespace
                                 const ncv::timer_t timer;
 
                                 const auto state = ncv::minimize(
-                                        problem, nullptr, nullptr, nullptr,
+                                        problem, nullptr,
                                         x0, optimizer, iterations, epsilon, ls_init, ls_strat);
 
                                 const auto g = state.convergence_criteria();

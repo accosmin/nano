@@ -22,8 +22,6 @@ namespace ncv
                         typedef typename param_t::tsize         tsize;
                         typedef typename param_t::tvector       tvector;
                         typedef typename param_t::tstate        tstate;
-                        typedef typename param_t::twlog         twlog;
-                        typedef typename param_t::telog         telog;
                         typedef typename param_t::tulog         tulog;
 
                         ///
@@ -33,10 +31,8 @@ namespace ncv
                                         tsize epoch_size,
                                         tscalar alpha0,
                                         tscalar decay,
-                                        const twlog& wlog = twlog(),
-                                        const telog& elog = telog(),
                                         const tulog& ulog = tulog())
-                                :       m_param(epochs, epoch_size, alpha0, decay, wlog, elog, ulog)
+                                :       m_param(epochs, epoch_size, alpha0, decay, ulog)
                         {
                         }
 

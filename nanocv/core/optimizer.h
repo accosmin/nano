@@ -22,9 +22,6 @@ namespace ncv
         >                                                       opt_problem_t;
 
         typedef opt_problem_t::tstate                           opt_state_t;
-
-        typedef opt_problem_t::twlog                            opt_opwlog_t;
-        typedef opt_problem_t::telog                            opt_opelog_t;
         typedef opt_problem_t::tulog                            opt_opulog_t;
 
         // string cast for enumerations

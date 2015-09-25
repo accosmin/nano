@@ -80,7 +80,7 @@ namespace test
 
                                 // optimize
                                 const auto state = ncv::minimize(
-                                        problem, nullptr, nullptr, nullptr,
+                                        problem, nullptr,
                                         x0, optimizer, iterations, epsilon);
 
                                 const auto x = state.x;
