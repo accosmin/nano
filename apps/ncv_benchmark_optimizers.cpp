@@ -38,16 +38,31 @@ namespace
 {
         struct optimizer_stat_t
         {
-                stats_t<scalar_t>       m_time;
-                stats_t<scalar_t>       m_crits;
-                stats_t<scalar_t>       m_fails;
-                stats_t<scalar_t>       m_iters;
-                stats_t<scalar_t>       m_fvals;
-                stats_t<scalar_t>       m_grads;
-                stats_t<scalar_t>       m_speeds;
+                stats_t<scalar_t>       m_times;        ///< optimization time (microseconds)
+                stats_t<scalar_t>       m_crits;        ///< convergence criteria
+                stats_t<scalar_t>       m_fails;        ///< #convergence failures
+                stats_t<scalar_t>       m_iters;        ///< #iterations
+                stats_t<scalar_t>       m_fcalls;       ///< #function value calls
+                stats_t<scalar_t>       m_gcalls;       ///< #gradient calls
+                stats_t<scalar_t>       m_speeds;       ///< convergence speed (actually the average decrease ratio of the convergence criteria)
         };
 
         std::map<string_t, optimizer_stat_t> optimizer_stats;
+
+        stats_t<scalar_t> make_stats(const scalars_t& values, const scalars_t& flags)
+        {
+                assert(values.size() == flags.size());
+
+                stats_t<scalar_t> stats;
+                for (size_t i = 0; i < values.size(); i ++)
+                {
+                        if (flags[i] >= 0.0)
+                        {
+                                stats(values[i]);
+                        }
+                }
+                return stats;
+        }
 
         void check_problem(const function_t& func)
         {
@@ -101,93 +116,101 @@ namespace
                         min::ls_strategy::cg_descent
                 };
 
-                table_t table(text::align(func.name(), 32));
+                table_t table(text::align("function " + func.name(), 32));
                 table.header() << "cost"
                                << "time [us]"
                                << "|grad|/|fval|"
                                << "#fails"
                                << "#iters"
-                               << "#fvals"
-                               << "#grads"
+                               << "#fcalls"
+                               << "#gcalls"
                                << "speed";
 
+                scalars_t times(trials);
+                scalars_t crits(trials);
+                scalars_t fails(trials);
+                scalars_t iters(trials);
+                scalars_t fcalls(trials);
+                scalars_t gcalls(trials);
+                scalars_t speeds(trials);
+
                 thread::pool_t pool;
-                std::mutex mutex;
 
                 // evaluate all possible combinations
                 for (min::batch_optimizer optimizer : optimizers)
                         for (min::ls_initializer ls_init : ls_initializers)
                                 for (min::ls_strategy ls_strat : ls_strategies)
                 {
-                        pool.enqueue([&, optimizer = optimizer, ls_init = ls_init, ls_strat = ls_strat]
+                        thread::loopi(trials, pool, [&] (size_t t)
                         {
-                                stats_t<scalar_t> times;
-                                stats_t<scalar_t> crits;
-                                stats_t<scalar_t> fails;
-                                stats_t<scalar_t> iters;
-                                stats_t<scalar_t> fvals;
-                                stats_t<scalar_t> grads;
-                                stats_t<scalar_t> speeds;
+                                const vector_t& x0 = x0s[t];
 
-                                for (size_t t = 0; t < trials; t ++)
+                                const auto problem = func.problem();
+                                const auto state0 = opt_state_t(problem, x0);
+                                const auto g0 = state0.convergence_criteria();
+
+                                // optimize
+                                const ncv::timer_t timer;
+
+                                const auto state = ncv::minimize(
+                                        problem, nullptr, nullptr, nullptr,
+                                        x0, optimizer, iterations, epsilon, ls_init, ls_strat);
+
+                                const auto g = state.convergence_criteria();
+                                const auto speed = std::pow(g / g0, 1.0 / (1.0 + state.n_iterations()));
+
+                                // ignore out-of-domain solutions
+                                if (func.is_valid(state.x))
                                 {
-                                        const vector_t& x0 = x0s[t];
-
-                                        const opt_problem_t problem = func.problem();
-
-                                        // optimize
-                                        const ncv::timer_t timer;
-
-                                        const opt_state_t state = ncv::minimize(
-                                                problem, nullptr, nullptr, nullptr,
-                                                x0, optimizer, iterations, epsilon, ls_init, ls_strat);
-
-                                        const auto crit = state.convergence_criteria();
-                                        const auto iter = state.n_iterations();
-
-                                        const opt_state_t state0(problem, x0);
-                                        const auto crit0 = state0.convergence_criteria();
-
-                                        const auto speed = std::pow(crit / crit0, 1.0 / (1.0 + iter));
-
                                         // update stats
-                                        times(timer.microseconds());
-                                        crits(crit);
-                                        iters(state.n_iterations());
-                                        fvals(state.n_fval_calls());
-                                        grads(state.n_grad_calls());
-                                        speeds(speed);
-                                        fails(!state.converged(epsilon) ? 1.0 : 0.0);
+                                        times[t] = timer.microseconds();
+                                        crits[t] = g;
+                                        fails[t] = !state.converged(epsilon) ? 1.0 : 0.0;
+                                        iters[t] = state.n_iterations();
+                                        fcalls[t] = state.n_fval_calls();
+                                        gcalls[t] = state.n_grad_calls();
+                                        speeds[t] = speed;
                                 }
-
-                                const std::lock_guard<std::mutex> lock(mutex);
-
-                                // update per-problem table
-                                const string_t name =
-                                        text::to_string(optimizer) + "[" +
-                                        text::to_string(ls_init) + "][" +
-                                        text::to_string(ls_strat) + "]";
-
-                                table.append(name)
-                                        << static_cast<size_t>(fvals.sum() + 2 * grads.sum()) / trials
-                                        << times.avg()
-                                        << crits.avg()
-                                        << static_cast<size_t>(fails.sum())
-                                        << iters.avg()
-                                        << fvals.avg()
-                                        << grads.avg()
-                                        << speeds.avg();
-
-                                // update global statistics
-                                optimizer_stat_t& stat = optimizer_stats[name];
-                                stat.m_time(times.avg());
-                                stat.m_crits(crits.avg());
-                                stat.m_fails(fails.sum());
-                                stat.m_iters(iters.avg());
-                                stat.m_fvals(fvals.avg());
-                                stat.m_grads(grads.avg());
-                                stat.m_speeds(speeds.avg());
+                                else
+                                {
+                                        // skip this from statistics!
+                                        times[t] = -1.0;
+                                }
                         });
+
+                        // update per-problem table
+                        const string_t name =
+                                text::to_string(optimizer) + "[" +
+                                text::to_string(ls_init) + "][" +
+                                text::to_string(ls_strat) + "]";
+
+                        const auto stat_times = make_stats(times, times);
+                        const auto stat_crits = make_stats(crits, times);
+                        const auto stat_fails = make_stats(fails, times);
+                        const auto stat_iters = make_stats(iters, times);
+                        const auto stat_fcalls = make_stats(fcalls, times);
+                        const auto stat_gcalls = make_stats(gcalls, times);
+                        const auto stat_speeds = make_stats(speeds, times);
+
+                        table.append(name)
+                                << static_cast<size_t>(stat_fcalls.sum() + 2 * stat_gcalls.sum()) / trials
+                                << stat_times.avg()
+                                << stat_crits.avg()
+                                << static_cast<size_t>(stat_fails.sum())
+                                << stat_iters.avg()
+                                << stat_fcalls.avg()
+                                << stat_gcalls.avg()
+                                << stat_speeds.avg();
+
+                        // update global statistics
+                        optimizer_stat_t& stat = optimizer_stats[name];
+                        stat.m_times(stat_times.avg());
+                        stat.m_crits(stat_crits.avg());
+                        stat.m_fails(stat_fails.sum());
+                        stat.m_iters(stat_iters.avg());
+                        stat.m_fcalls(stat_fcalls.avg());
+                        stat.m_gcalls(stat_gcalls.avg());
+                        stat.m_speeds(stat_speeds.avg());
                 }
 
                 pool.wait();
@@ -233,8 +256,8 @@ int main(int, char* [])
                        << "|grad|/|fval|"
                        << "#fails"
                        << "#iters"
-                       << "#fvals"
-                       << "#grads"
+                       << "#fcalls"
+                       << "#gcalls"
                        << "speed";
 
         for (const auto& it : optimizer_stats)
@@ -242,13 +265,13 @@ int main(int, char* [])
                 const string_t& name = it.first;
                 const optimizer_stat_t& stat = it.second;
 
-                table.append(name) << static_cast<int>(stat.m_fvals.sum() + 2 * stat.m_grads.sum())
-                                   << stat.m_time.sum()
+                table.append(name) << static_cast<size_t>(stat.m_fcalls.sum() + 2 * stat.m_gcalls.sum())
+                                   << stat.m_times.sum()
                                    << stat.m_crits.avg()
-                                   << static_cast<int>(stat.m_fails.sum())
+                                   << static_cast<size_t>(stat.m_fails.sum())
                                    << stat.m_iters.sum()
-                                   << stat.m_fvals.sum()
-                                   << stat.m_grads.sum()
+                                   << stat.m_fcalls.sum()
+                                   << stat.m_gcalls.sum()
                                    << stat.m_speeds.avg();
         }
 
