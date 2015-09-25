@@ -2,10 +2,14 @@
 
 namespace ncv
 {
-        functions_t make_matyas_funcs()
+        struct function_matyas_t : public function_t
         {
-                functions_t functions;
+                virtual string_t name() const override
+                {
+                        return "Matyas";
+                }
 
+                virtual opt_problem_t problem() const override
                 {
                         const opt_opsize_t fn_size = [=] ()
                         {
@@ -30,16 +34,23 @@ namespace ncv
                                 return fn_fval(x);
                         };
 
-                        std::vector<std::pair<vector_t, scalar_t>> solutions;
-                        {
-                                solutions.emplace_back(vector_t::Zero(2), 0.0);
-                        }
-
-                        functions.emplace_back("Matyas",
-                                               fn_size, fn_fval, fn_grad, solutions);
+                        return opt_problem_t(fn_size, fn_fval, fn_grad);
                 }
 
-                return functions;
+                virtual bool is_valid(const vector_t& x) const override
+                {
+                        return x.lpNorm<Eigen::Infinity>() < 10.0;
+                }
+
+                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
+                {
+                        return (vector_t::Zero(2) - x).lpNorm<Eigen::Infinity>() < epsilon;
+                }
+        };
+
+        functions_t make_matyas_funcs()
+        {
+                return { std::make_shared<function_matyas_t>() };
         }
 }
 	

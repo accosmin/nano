@@ -92,7 +92,7 @@ namespace ncv
                                 train(data, epoch_size, batch, [&] ()
                                 {
                                         const opt_state_t state = ncv::minimize(
-                                                fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
+                                                opt_problem_t(fn_size, fn_fval, fn_grad), fn_wlog, fn_elog, fn_ulog,
                                                 x, optimizer, iterations, epsilon, history_size);
 
                                         x = state.x;

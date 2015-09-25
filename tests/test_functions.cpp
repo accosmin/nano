@@ -26,19 +26,15 @@ namespace test
 {
         using namespace ncv;
 
-        static void check_function(const std::vector<test::function_t>& funcs)
+        static void check_function(const functions_t& funcs)
         {
                 BOOST_CHECK_EQUAL(funcs.empty(), false);
 
-                for (const test::function_t& func : funcs)
+                for (const rfunction_t& func : funcs)
                 {
-                        const auto& fn_size = func.m_opsize;
-                        const auto& fn_fval = func.m_opfval;
-                        const auto& fn_grad = func.m_opgrad;
-
                         const size_t trials = 1024;
 
-                        const size_t dims = fn_size();
+                        const size_t dims = func->problem().size();
                         BOOST_CHECK_GT(dims, 0);
 
                         for (size_t t = 0; t < trials; t ++)
@@ -49,7 +45,7 @@ namespace test
                                 rgen(x0.data(), x0.data() + x0.size());
 
                                 // check gradient
-                                const opt_problem_t problem(fn_size, fn_fval, fn_grad);                                
+                                const opt_problem_t problem = func->problem();
                                 BOOST_CHECK_EQUAL(problem.size(), dims);
                                 BOOST_CHECK_LE(problem.grad_accuracy(x0), math::epsilon2<scalar_t>());
                         }

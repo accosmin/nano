@@ -49,16 +49,13 @@ namespace
 
         std::map<string_t, optimizer_stat_t> optimizer_stats;
 
-        void check_problem(
-                const string_t& problem_name,
-                const opt_opsize_t& fn_size, const opt_opfval_t& fn_fval, const opt_opgrad_t& fn_grad,
-                const std::vector<std::pair<vector_t, scalar_t>>&)
+        void check_problem(const function_t& func)
         {
                 const size_t iterations = 64 * 1024;
                 const scalar_t epsilon = 1e-6;
                 const size_t trials = 1024;
 
-                const size_t dims = fn_size();
+                const size_t dims = func.problem().size();
 
                 random_t<scalar_t> rgen(-1.0, +1.0);
 
@@ -104,7 +101,7 @@ namespace
                         min::ls_strategy::cg_descent
                 };
 
-                table_t table(text::align(problem_name, 32));
+                table_t table(text::align(func.name(), 32));
                 table.header() << "cost"
                                << "time [us]"
                                << "|grad|/|fval|"
@@ -136,13 +133,13 @@ namespace
                                 {
                                         const vector_t& x0 = x0s[t];
 
-                                        const opt_problem_t problem(fn_size, fn_fval, fn_grad);
+                                        const opt_problem_t problem = func.problem();
 
                                         // optimize
                                         const ncv::timer_t timer;
 
                                         const opt_state_t state = ncv::minimize(
-                                                fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
+                                                problem, nullptr, nullptr, nullptr,
                                                 x0, optimizer, iterations, epsilon, ls_init, ls_strat);
 
                                         const auto crit = state.convergence_criteria();
@@ -200,11 +197,11 @@ namespace
                 table.print(std::cout);
         }
 
-        void check_problems(const std::vector<ncv::function_t>& funcs)
+        void check_problems(const functions_t& funcs)
         {
-                for (const ncv::function_t& func : funcs)
+                for (const auto& func : funcs)
                 {
-                        check_problem(func.m_name, func.m_opsize, func.m_opfval, func.m_opgrad, func.m_solutions);
+                        check_problem(*func);
                 }
         }
 }

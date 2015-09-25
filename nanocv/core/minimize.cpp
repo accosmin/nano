@@ -92,9 +92,7 @@ namespace ncv
 //        }
 
         opt_state_t minimize(
-                const opt_opsize_t& fn_size,
-                const opt_opfval_t& fn_fval,
-                const opt_opgrad_t& fn_grad,
+                const opt_problem_t& problem,
                 const opt_opwlog_t& fn_wlog,
                 const opt_opelog_t& fn_elog,
                 const opt_opulog_t& fn_ulog,
@@ -104,7 +102,7 @@ namespace ncv
                 switch (optimizer)
                 {
                 case min::batch_optimizer::LBFGS:
-                        return minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog, x0,
+                        return minimize(problem, fn_wlog, fn_elog, fn_ulog, x0,
                                         optimizer, iterations, epsilon,
                                         min::ls_initializer::unit, min::ls_strategy::interpolation,
                                         history_size);
@@ -119,14 +117,14 @@ namespace ncv
                 case min::batch_optimizer::CGD_PRP:
                 case min::batch_optimizer::CGD_DYCD:
                 case min::batch_optimizer::CGD_DYHS:
-                        return minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog, x0,
+                        return minimize(problem, fn_wlog, fn_elog, fn_ulog, x0,
                                         optimizer, iterations, epsilon,
                                         min::ls_initializer::quadratic, min::ls_strategy::backtrack_wolfe,
                                         history_size);
 
                 case min::batch_optimizer::GD:
                 default:
-                        return minimize(fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog, x0,
+                        return minimize(problem, fn_wlog, fn_elog, fn_ulog, x0,
                                         optimizer, iterations, epsilon,
                                         min::ls_initializer::quadratic, min::ls_strategy::backtrack_wolfe,
                                         history_size);
@@ -134,9 +132,7 @@ namespace ncv
         }
 
         opt_state_t minimize(
-                const opt_opsize_t& fn_size,
-                const opt_opfval_t& fn_fval,
-                const opt_opgrad_t& fn_grad,
+                const opt_problem_t& problem,
                 const opt_opwlog_t& fn_wlog,
                 const opt_opelog_t& fn_elog,
                 const opt_opulog_t& fn_ulog,
@@ -145,8 +141,6 @@ namespace ncv
                 min::ls_initializer lsinit, min::ls_strategy lsstrat,
                 size_t history_size)
         {
-                const opt_problem_t problem(fn_size, fn_fval, fn_grad);
-
                 switch (optimizer)
                 {
 //                case min::batch_optimizer::libLBFGS:
@@ -216,17 +210,13 @@ namespace ncv
         }
 
         opt_state_t minimize(
-                const opt_opsize_t& fn_size,
-                const opt_opfval_t& fn_fval,
-                const opt_opgrad_t& fn_grad,
+                const opt_problem_t& problem,
                 const opt_opwlog_t& fn_wlog,
                 const opt_opelog_t& fn_elog,
                 const opt_opulog_t& fn_ulog,
                 const vector_t& x0,
                 min::stoch_optimizer optimizer, size_t epochs, size_t epoch_size, scalar_t alpha0, scalar_t decay)
         {
-                const opt_problem_t problem(fn_size, fn_fval, fn_grad);
-
                 switch (optimizer)
                 {
                 case min::stoch_optimizer::SGA:

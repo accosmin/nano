@@ -69,16 +69,11 @@ namespace test
 
         static void check_problem(const test::function_t& func)
         {
-                const auto func_name = func.m_name;
-                const auto fn_size = func.m_opsize;
-                const auto fn_fval = func.m_opfval;
-                const auto fn_grad = func.m_opgrad;
-
                 const auto iterations = size_t(1024);
                 const auto epsilon = scalar_t(1e-6);
                 const auto trials = size_t(1024);
 
-                const auto dims = fn_size();
+                const auto dims = func.problem().size();
 
                 random_t<scalar_t> rgen(-1.0, +1.0);
 
@@ -117,17 +112,25 @@ namespace test
                         {
                                 const auto& x0 = x0s[t];
                                 const auto x0t = x0.transpose();
-                                const auto f0 = fn_fval(x0);
+
+                                const auto problem = func.problem();
+                                const auto f0 = problem(x0);
 
                                 // optimize
                                 const auto state = ncv::minimize(
-                                        fn_size, fn_fval, fn_grad, nullptr, nullptr, nullptr,
+                                        problem, nullptr, nullptr, nullptr,
                                         x0, optimizer, iterations, epsilon);
 
                                 const auto it = state.n_iterations();
 
+                                // ignore out-of-domain solutions
+                                if (!func.is_valid(state.x))
+                                {
+                                        continue;
+                                }
+
                                 #define NANOCV_TEST_OPTIMIZERS_DESCRIPTION \
-                                        ") for (" << func_name << ", " << opt_name << \
+                                        ") for (" << func.name() << ", " << opt_name << \
                                         ", x0 = [" << x0t << "], " << it << " iterations)"
 
                                 // check function value decrease
@@ -154,11 +157,11 @@ namespace test
                 }
         }
 
-        static void check_problems(const std::vector<test::function_t>& funcs)
+        static void check_problems(const functions_t& funcs)
         {
                 for (const auto& func : funcs)
                 {
-                        test::check_problem(func);
+                        test::check_problem(*func);
                 }
         }
 }

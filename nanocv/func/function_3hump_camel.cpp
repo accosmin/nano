@@ -52,9 +52,7 @@ namespace ncv
 
                 virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
                 {
-                        const vector_t xmin = vector_t::Zero(2);
-
-                        return (x - xmin).lpNorm<Eigen::Infinity>() < epsilon;
+                        return (x - vector_t::Zero(2)).lpNorm<Eigen::Infinity>() < epsilon;
                 }
         };
 

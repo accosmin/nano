@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
                 boost::program_options::value<ncv::string_t>(),
                 "input image path");
         po_desc.add_options()("count,c",
-                boost::program_options::value<ncv::size_t>()->default_value(32),
+                boost::program_options::value<size_t>()->default_value(32),
                 "number of random warpings to generate");
         po_desc.add_options()("translation",
                 "use translation fields");

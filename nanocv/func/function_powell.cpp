@@ -4,21 +4,29 @@
 
 namespace ncv
 {
-        functions_t make_powell_funcs(ncv::size_t max_dims)
+        struct function_powell_t : public function_t
         {
-                functions_t functions;
+                explicit function_powell_t(const size_t dims)
+                        :       m_dims(dims)
+                {
+                }
 
-                for (size_t dims = 4; dims <= max_dims; dims *= 4)
+                virtual string_t name() const override
+                {
+                        return "Powell" + text::to_string(m_dims) + "D";
+                }
+
+                virtual opt_problem_t problem() const override
                 {
                         const opt_opsize_t fn_size = [=] ()
                         {
-                                return dims;
+                                return m_dims;
                         };
 
                         const opt_opfval_t fn_fval = [=] (const vector_t& x)
                         {
                                 scalar_t fx = 0;
-                                for (size_t i = 0, i4 = 0; i < dims / 4; i ++, i4 += 4)
+                                for (size_t i = 0, i4 = 0; i < m_dims / 4; i ++, i4 += 4)
                                 {
                                         fx += math::square(x(i4 + 0) + x(i4 + 1) * 10.0);
                                         fx += math::square(x(i4 + 2) - x(i4 + 3)) * 5.0;
@@ -31,9 +39,9 @@ namespace ncv
 
                         const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
                         {
-                                gx.resize(dims);
+                                gx.resize(m_dims);
                                 gx.setZero();
-                                for (size_t i = 0, i4 = 0; i < dims / 4; i ++, i4 += 4)
+                                for (size_t i = 0, i4 = 0; i < m_dims / 4; i ++, i4 += 4)
                                 {
                                         const scalar_t gfx1 = (x(i4 + 0) + x(i4 + 1) * 10.0) * 2.0;
                                         const scalar_t gfx2 = (x(i4 + 2) - x(i4 + 3)) * 5.0 * 2.0;
@@ -49,13 +57,29 @@ namespace ncv
                                 return fn_fval(x);
                         };
 
-                        std::vector<std::pair<vector_t, scalar_t>> solutions;
-                        {
-                                solutions.emplace_back(vector_t::Zero(dims), 0);
-                        }
+                        return opt_problem_t(fn_size, fn_fval, fn_grad);
+                }
 
-                        functions.emplace_back("Powell" + text::to_string(dims) + "D",
-                                               fn_size, fn_fval, fn_grad, solutions);
+                virtual bool is_valid(const vector_t& x) const override
+                {
+                        return -4.0 < x.minCoeff() && x.maxCoeff() < 5.0;
+                }
+
+                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
+                {
+                        return (x - vector_t::Zero(m_dims)).lpNorm<Eigen::Infinity>() < epsilon;
+                }
+
+                size_t  m_dims;
+        };
+
+        functions_t make_powell_funcs(size_t max_dims)
+        {
+                functions_t functions;
+
+                for (size_t dims = 4; dims <= max_dims; dims *= 4)
+                {
+                        functions.push_back(std::make_shared<function_powell_t>(dims));
                 }
 
                 return functions;

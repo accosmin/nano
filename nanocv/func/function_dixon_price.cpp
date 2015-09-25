@@ -4,21 +4,29 @@
 
 namespace ncv
 {
-        functions_t make_dixon_price_funcs(ncv::size_t max_dims)
+        struct function_dixon_price_t : public function_t
         {
-                functions_t functions;
+                explicit function_dixon_price_t(const size_t dims)
+                        :       m_dims(dims)
+                {
+                }
 
-                for (size_t dims = 1; dims <= max_dims; dims *= 2)
+                virtual string_t name() const override
+                {
+                        return "Dixon-Price" + text::to_string(m_dims) + "D";
+                }
+
+                virtual opt_problem_t problem() const override
                 {
                         const opt_opsize_t fn_size = [=] ()
                         {
-                                return dims;
+                                return m_dims;
                         };
 
                         const opt_opfval_t fn_fval = [=] (const vector_t& x)
                         {
                                 scalar_t fx = 0;
-                                for (size_t i = 0; i < dims; i ++)
+                                for (size_t i = 0; i < m_dims; i ++)
                                 {
                                         if (i == 0)
                                         {
@@ -35,9 +43,8 @@ namespace ncv
 
                         const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
                         {
-                                gx.resize(dims);
-                                gx.setZero();
-                                for (size_t i = 0; i < dims; i ++)
+                                gx = vector_t::Zero(m_dims);
+                                for (size_t i = 0; i < m_dims; i ++)
                                 {
                                         if (i == 0)
                                         {
@@ -55,21 +62,35 @@ namespace ncv
                                 return fn_fval(x);
                         };
 
-                        std::vector<std::pair<vector_t, scalar_t>> solutions;
+                        return opt_problem_t(fn_size, fn_fval, fn_grad);
+                }
+
+                virtual bool is_valid(const vector_t& x) const override
+                {
+                        return x.lpNorm<Eigen::Infinity>() < 10.0;
+                }
+
+                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
+                {
+                        vector_t xmin(m_dims);
+                        for (size_t i = 0; i < m_dims; i ++)
                         {
-                                const scalar_t fx = 0.0;
-
-                                vector_t x(dims);
-                                for (size_t i = 0; i < dims; i ++)
-                                {
-                                        x(i) = std::pow(2.0, -1.0 + std::pow(2.0, -i));
-                                }
-
-                                solutions.emplace_back(x, fx);
+                                xmin(i) = std::pow(2.0, -1.0 + std::pow(2.0, -i));
                         }
 
-                        functions.emplace_back("Dixon-Price" + text::to_string(dims) + "D",
-                                               fn_size, fn_fval, fn_grad, solutions);
+                        return (x - xmin).lpNorm<Eigen::Infinity>() < epsilon;
+                }
+
+                size_t  m_dims;
+        };
+
+        functions_t make_dixon_price_funcs(size_t max_dims)
+        {
+                functions_t functions;
+
+                for (size_t dims = 1; dims <= max_dims; dims *= 2)
+                {
+                        functions.push_back(std::make_shared<function_dixon_price_t>(dims));
                 }
 
                 return functions;

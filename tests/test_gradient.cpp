@@ -83,7 +83,7 @@ namespace test
         }
 
         std::vector<std::pair<ncv::string_t, ncv::string_t> > make_grad_configs(
-                ncv::size_t& irows, ncv::size_t& icols, ncv::size_t& outputs, ncv::color_mode& color)
+                size_t& irows, size_t& icols, size_t& outputs, ncv::color_mode& color)
         {
                 // evaluate the analytical gradient vs. the finite difference approximation for various:
                 //      * convolution layers

@@ -73,7 +73,7 @@ namespace ncv
                 tensor::set_random(input, random_t<scalar_t>(0.0, 1.0));
 
                 const opt_state_t result = ncv::minimize(
-                        fn_size, fn_fval, fn_grad, fn_wlog, fn_elog, fn_ulog,
+                        opt_problem_t(fn_size, fn_fval, fn_grad), fn_wlog, fn_elog, fn_ulog,
                         input.vector(), optimizer, iterations, epsilon);
 
                 input.vector() = result.x;

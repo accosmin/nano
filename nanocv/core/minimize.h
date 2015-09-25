@@ -9,9 +9,7 @@ namespace ncv
         /// \brief batch optimization
         ///
         NANOCV_PUBLIC opt_state_t minimize(
-                const opt_opsize_t& fn_size,
-                const opt_opfval_t& fn_fval,
-                const opt_opgrad_t& fn_grad,
+                const opt_problem_t& problem,
                 const opt_opwlog_t& fn_wlog,
                 const opt_opelog_t& fn_elog,
                 const opt_opulog_t& fn_ulog,
@@ -23,9 +21,7 @@ namespace ncv
         /// \brief batch optimization (can detail the line-search parameters)
         ///
         NANOCV_PUBLIC opt_state_t minimize(
-                const opt_opsize_t& fn_size,
-                const opt_opfval_t& fn_fval,
-                const opt_opgrad_t& fn_grad,
+                const opt_problem_t& problem,
                 const opt_opwlog_t& fn_wlog,
                 const opt_opelog_t& fn_elog,
                 const opt_opulog_t& fn_ulog,
@@ -39,9 +35,7 @@ namespace ncv
         /// \brief stochastic optimization
         ///
         NANOCV_PUBLIC opt_state_t minimize(
-                const opt_opsize_t& fn_size,
-                const opt_opfval_t& fn_fval,
-                const opt_opgrad_t& fn_grad,
+                const opt_problem_t& problem,
                 const opt_opwlog_t& fn_wlog,
                 const opt_opelog_t& fn_elog,
                 const opt_opulog_t& fn_ulog,

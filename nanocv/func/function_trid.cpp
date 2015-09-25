@@ -4,25 +4,33 @@
 
 namespace ncv
 {
-        functions_t make_trid_funcs(ncv::size_t max_dims)
+        struct function_trid_t : public function_t
         {
-                functions_t functions;
+                explicit function_trid_t(const size_t dims)
+                        :       m_dims(dims)
+                {
+                }
 
-                for (size_t dims = 2; dims <= max_dims; dims *= 2)
+                virtual string_t name() const override
+                {
+                        return "Trid" + text::to_string(m_dims) + "D";
+                }
+
+                virtual opt_problem_t problem() const override
                 {
                         const opt_opsize_t fn_size = [=] ()
                         {
-                                return dims;
+                                return m_dims;
                         };
 
                         const opt_opfval_t fn_fval = [=] (const vector_t& x)
                         {
                                 scalar_t fx = 0;
-                                for (size_t i = 0; i < dims; i ++)
+                                for (size_t i = 0; i < m_dims; i ++)
                                 {
                                         fx += math::square(x(i) - 1.0);
                                 }
-                                for (size_t i = 1; i < dims; i ++)
+                                for (size_t i = 1; i < m_dims; i ++)
                                 {
                                         fx -= x(i) * x(i - 1);
                                 }
@@ -32,13 +40,13 @@ namespace ncv
 
                         const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
                         {
-                                gx.resize(dims);
+                                gx.resize(m_dims);
                                 gx.setZero();
-                                for (size_t i = 0; i < dims; i ++)
+                                for (size_t i = 0; i < m_dims; i ++)
                                 {
                                         gx(i) += 2.0 * (x(i) - 1.0);
                                 }
-                                for (size_t i = 1; i < dims; i ++)
+                                for (size_t i = 1; i < m_dims; i ++)
                                 {
                                         gx(i) -= x(i - 1);
                                         gx(i - 1) -= x(i);
@@ -47,13 +55,29 @@ namespace ncv
                                 return fn_fval(x);
                         };
 
-                        std::vector<std::pair<vector_t, scalar_t>> solutions;
-                        {
-                                /// \todo
-                        }
+                        return opt_problem_t(fn_size, fn_fval, fn_grad);
+                }
 
-                        functions.emplace_back("Trid" + text::to_string(dims) + "D",
-                                               fn_size, fn_fval, fn_grad, solutions);
+                virtual bool is_valid(const vector_t& x) const override
+                {
+                        return x.lpNorm<Eigen::Infinity>() < m_dims * m_dims;
+                }
+
+                virtual bool is_minima(const vector_t&, const scalar_t) const override
+                {
+                        return false;
+                }
+
+                size_t  m_dims;
+        };
+
+        functions_t make_trid_funcs(size_t max_dims)
+        {
+                functions_t functions;
+
+                for (size_t dims = 2; dims <= max_dims; dims *= 2)
+                {
+                        functions.push_back(std::make_shared<function_trid_t>(dims));
                 }
 
                 return functions;

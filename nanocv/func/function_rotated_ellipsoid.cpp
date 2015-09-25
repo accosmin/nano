@@ -3,21 +3,29 @@
 
 namespace ncv
 {
-        functions_t make_rotated_ellipsoid_funcs(ncv::size_t max_dims)
+        struct function_rotated_ellipsoid_t : public function_t
         {
-                functions_t functions;
+                explicit function_rotated_ellipsoid_t(const size_t dims)
+                        :       m_dims(dims)
+                {
+                }
 
-                for (size_t dims = 2; dims <= max_dims; dims *= 2)
+                virtual string_t name() const override
+                {
+                        return "rotated ellipsoid" + text::to_string(m_dims) + "D";
+                }
+
+                virtual opt_problem_t problem() const override
                 {
                         const opt_opsize_t fn_size = [=] ()
                         {
-                                return dims;
+                                return m_dims;
                         };
 
                         const opt_opfval_t fn_fval = [=] (const vector_t& x)
                         {
                                 scalar_t fx = 0;
-                                for (size_t i = 0; i < dims; i ++)
+                                for (size_t i = 0; i < m_dims; i ++)
                                 {
                                         for (size_t j = 0; j <= i; j ++)
                                         {
@@ -30,9 +38,9 @@ namespace ncv
 
                         const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
                         {
-                                gx.resize(dims);
+                                gx.resize(m_dims);
                                 gx.setZero();
-                                for (size_t i = 0; i < dims; i ++)
+                                for (size_t i = 0; i < m_dims; i ++)
                                 {
                                         for (size_t j = 0; j <= i; j ++)
                                         {
@@ -43,13 +51,29 @@ namespace ncv
                                 return fn_fval(x);
                         };
 
-                        std::vector<std::pair<vector_t, scalar_t>> solutions;
-                        {
-                                solutions.emplace_back(vector_t::Zero(dims), 0);
-                        }
+                        return opt_problem_t(fn_size, fn_fval, fn_grad);
+                }
 
-                        functions.emplace_back("rotated ellipsoid" + text::to_string(dims) + "D",
-                                               fn_size, fn_fval, fn_grad, solutions);
+                virtual bool is_valid(const vector_t& x) const override
+                {
+                        return x.lpNorm<Eigen::Infinity>() < 65.536;
+                }
+
+                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
+                {
+                        return (x - vector_t::Zero(m_dims)).lpNorm<Eigen::Infinity>() < epsilon;
+                }
+
+                size_t  m_dims;
+        };
+
+        functions_t make_rotated_ellipsoid_funcs(size_t max_dims)
+        {
+                functions_t functions;
+
+                for (size_t dims = 2; dims <= max_dims; dims *= 2)
+                {
+                        functions.push_back(std::make_shared<function_rotated_ellipsoid_t>(dims));
                 }
 
                 return functions;

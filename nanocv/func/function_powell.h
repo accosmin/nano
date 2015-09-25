@@ -7,5 +7,5 @@ namespace ncv
         ///
         /// \brief create Powell function tests
         ///
-        NANOCV_PUBLIC functions_t make_powell_funcs(ncv::size_t max_dims = 32);
+        NANOCV_PUBLIC functions_t make_powell_funcs(size_t max_dims = 32);
 }
