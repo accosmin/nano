@@ -30,43 +30,6 @@ namespace test
 {
         using namespace ncv;
 
-//        static void check_solution(const string_t& problem, const string_t& optimizer,
-//                const vector_t& x0, const opt_state_t& state, const std::vector<std::pair<vector_t, scalar_t>>& solutions)
-//        {
-//                // find the closest solution
-//                size_t best_index = std::string::npos;
-//                scalar_t best_distance = std::numeric_limits<scalar_t>::max();
-
-//                for (size_t index = 0; index < solutions.size(); index ++)
-//                {
-//                        const scalar_t distance = (state.x - solutions[index].first).lpNorm<Eigen::Infinity>();
-//                        if (distance < best_distance)
-//                        {
-//                                best_distance = distance;
-//                                best_index = index;
-//                        }
-//                }
-
-//                // check accuracy
-//                BOOST_REQUIRE_LT(best_index, solutions.size());
-
-//                const scalar_t df = math::abs(state.f - solutions[best_index].second);
-//                const scalar_t dx = (state.x - solutions[best_index].first).lpNorm<Eigen::Infinity>();
-
-//                BOOST_CHECK_LE(df, math::epsilon3<scalar_t>());
-//                BOOST_CHECK_LE(dx, math::epsilon3<scalar_t>());
-
-//                // debugging
-//                BOOST_CHECK_MESSAGE(
-//                        dx < math::epsilon3<scalar_t>(),
-//                        "failed (x) after " << state.n_iterations() <<
-//                        " iterations for <" << problem << ">, <" << optimizer << "> and <" << x0.transpose() << ">!");
-//                BOOST_CHECK_MESSAGE(
-//                        df < math::epsilon3<scalar_t>(),
-//                        "failed (f) after " << state.n_iterations() <<
-//                        " iterations for <" << problem << ">, <" << optimizer << "> and <" << x0.transpose() << ">!");
-//        }
-
         static void check_problem(const test::function_t& func)
         {
                 const auto iterations = size_t(64 * 1024);
@@ -151,7 +114,9 @@ namespace test
                                 BOOST_CHECK_MESSAGE(g < g_thres,
                                         "convergence failed " << NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
 
-                                // todo: check local minimas (if any known)
+                                // check local minimas (if any known)
+                                BOOST_CHECK_MESSAGE(func.is_minima(x, 10.0 * epsilon),
+                                        "invalid minima " << NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
                         }
 
                         log_info() << "out of domain for (" << func.name() << ", " << text::to_string(optimizer)
