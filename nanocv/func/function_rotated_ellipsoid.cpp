@@ -56,12 +56,12 @@ namespace ncv
 
                 virtual bool is_valid(const vector_t& x) const override
                 {
-                        return x.lpNorm<Eigen::Infinity>() < 65.536;
+                        return norm(x) < 65.536;
                 }
 
                 virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
                 {
-                        return (x - vector_t::Zero(m_dims)).lpNorm<Eigen::Infinity>() < epsilon;
+                        return distance(x, vector_t::Zero(m_dims)) < epsilon;
                 }
 
                 size_t  m_dims;

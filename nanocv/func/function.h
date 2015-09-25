@@ -40,5 +40,30 @@ namespace ncv
                 /// \brief check if a point is epsilon-close to a known local minima
                 ///
                 virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const = 0;
+
+                ///
+                /// \brief compute the infinity-distance between two vectors
+                ///
+                template
+                <
+                        typename tvector1,
+                        typename tvector2
+                >
+                static scalar_t distance(const tvector1& a, const tvector2& b)
+                {
+                        return norm(a - b);
+                }
+
+                ///
+                /// \brief compute the infinity-norm of a vector
+                ///
+                template
+                <
+                        typename tvector
+                >
+                static scalar_t norm(const tvector& a)
+                {
+                        return a.template lpNorm<Eigen::Infinity>();
+                }
         };
 }

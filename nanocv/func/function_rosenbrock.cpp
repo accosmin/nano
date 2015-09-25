@@ -58,13 +58,27 @@ namespace ncv
 
                 virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const
                 {
-                        vector_t xmin = vector_t::Ones(m_dims);
-                        if (m_dims >= 4 && m_dims <= 7)
                         {
-                                xmin(0) = -1;
+                                const vector_t xmin = vector_t::Ones(m_dims);
+
+                                if (distance(x, xmin) < epsilon)
+                                {
+                                        return true;
+                                }
                         }
 
-                        return (x - xmin).lpNorm<Eigen::Infinity>() < epsilon;
+                        if (m_dims >= 4 && m_dims <= 7)
+                        {
+                                vector_t xmin = vector_t::Ones(m_dims);
+                                xmin(0) = -1;
+
+                                if (distance(x, xmin) < epsilon)
+                                {
+                                        return true;
+                                }
+                        }
+
+                        return false;
                 }
 
                 size_t  m_dims;

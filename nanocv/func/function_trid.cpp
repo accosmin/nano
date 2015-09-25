@@ -60,11 +60,12 @@ namespace ncv
 
                 virtual bool is_valid(const vector_t& x) const override
                 {
-                        return x.lpNorm<Eigen::Infinity>() < m_dims * m_dims;
+                        return norm(x) < m_dims * m_dims;
                 }
 
                 virtual bool is_minima(const vector_t&, const scalar_t) const override
                 {
+                        /// \todo known local minimas?!
                         return false;
                 }
 

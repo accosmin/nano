@@ -49,7 +49,7 @@ namespace ncv
 
                 virtual bool is_valid(const vector_t& x) const override
                 {
-                        return x.lpNorm<Eigen::Infinity>() <= 4.5;
+                        return norm(x) < 4.5;
                 }
 
                 virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
@@ -61,7 +61,7 @@ namespace ncv
 
                         for (const auto& xmin : xmins)
                         {
-                                if ((tensor::map_vector(xmin.data(), 2) - x).lpNorm<Eigen::Infinity>() < epsilon)
+                                if (distance(x, tensor::map_vector(xmin.data(), 2)) < epsilon)
                                 {
                                         return true;
                                 }

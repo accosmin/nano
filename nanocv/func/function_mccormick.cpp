@@ -53,7 +53,7 @@ namespace ncv
 
                         for (const auto& xmin : xmins)
                         {
-                                if ((tensor::map_vector(xmin.data(), 2) - x).lpNorm<Eigen::Infinity>() < epsilon)
+                                if (distance(x, tensor::map_vector(xmin.data(), 2)) < epsilon)
                                 {
                                         return true;
                                 }
