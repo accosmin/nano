@@ -78,8 +78,8 @@ namespace ncv
 
                                         if (cstate.d.dot(cstate.g) > tscalar(0))
                                         {
+                                                // reset to gradient descent, if not a descent direction!
                                                 cstate.d = -cstate.g;
-//                                                m_param.wlog("not a descent direction (CGD)!");
                                         }
 
                                         // line-search
@@ -88,12 +88,11 @@ namespace ncv
                                         const tscalar t0 = ls_init(cstate);
                                         if (!ls_step.update(problem, t0, cstate))
                                         {
-//                                                m_param.elog("line-search failed (CGD)!");
                                                 break;
                                         }
                                 }
 
-                                return cstate;
+                                return cstate.done(m_param.m_max_iterations, m_param.m_epsilon);
                         }
 
                         // attributes

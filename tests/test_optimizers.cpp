@@ -102,7 +102,7 @@ namespace test
                                         ", x = [" << x0.transpose() << "]/[" << x.transpose() << "]" << \
                                         ", f = " << f0 << "/" << f << \
                                         ", g = " << g << \
-                                        ", "<< state.iterations() << " iterations)"
+                                        ", "<< state.m_iterations << " iterations)"
 
                                 // check function value decrease
                                 BOOST_CHECK_MESSAGE(f < f0,
@@ -113,6 +113,10 @@ namespace test
                                 // check convergence
                                 BOOST_CHECK_MESSAGE(g < g_thres,
                                         "convergence failed " << NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
+                                BOOST_CHECK_MESSAGE(state.m_result != min::result::linesearch_failed,
+                                        "linesearch failed " << NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
+                                BOOST_CHECK_MESSAGE(state.m_result != min::result::max_iterations,
+                                        "maximum iterations reached " << NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
 
 //                                // check local minimas (if any known)
 //                                BOOST_CHECK_MESSAGE(func.is_minima(x, 100.0 * epsilon),

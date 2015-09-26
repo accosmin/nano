@@ -85,6 +85,17 @@ namespace ncv
                                 { min::ls_strategy::cg_descent,               "cgdescent" }
                         };
                 }
+
+                template <>
+                inline std::map<min::result, std::string> enum_string<min::result>()
+                {
+                        return
+                        {
+                                { min::result::converged,                       "converged" },
+                                { min::result::max_iterations,                  "maximum iterations" },
+                                { min::result::linesearch_failed,               "linesearch failed" }
+                        };
+                }
         }
 }
 

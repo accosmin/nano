@@ -182,7 +182,7 @@ namespace
                                         x0, optimizer, iterations, epsilon, ls_init, ls_strat);
 
                                 const auto g = state.convergence_criteria();
-                                const auto speed = std::pow(g / g0, 1.0 / (1.0 + state.iterations()));
+                                const auto speed = std::pow(g / g0, 1.0 / (1.0 + state.m_iterations));
 
                                 // ignore out-of-domain solutions
                                 if (func.is_valid(state.x))
@@ -191,9 +191,9 @@ namespace
                                         times[t] = timer.microseconds();
                                         crits[t] = g;
                                         fails[t] = !state.converged(epsilon) ? 1.0 : 0.0;
-                                        iters[t] = state.iterations();
-                                        fcalls[t] = state.fcalls();
-                                        gcalls[t] = state.gcalls();
+                                        iters[t] = state.m_iterations;
+                                        fcalls[t] = state.m_fcalls;
+                                        gcalls[t] = state.m_gcalls;
                                         speeds[t] = speed;
                                 }
                                 else

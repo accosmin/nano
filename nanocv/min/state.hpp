@@ -1,5 +1,6 @@
 #pragma once
 
+#include "types.h"
 #include <limits>
 #include <eigen3/Eigen/Core>
 
@@ -39,7 +40,8 @@ namespace ncv
                                         f(std::numeric_limits<tscalar>::max()),
                                         m_iterations(0),
                                         m_fcalls(0),
-                                        m_gcalls(0)
+                                        m_gcalls(0),
+                                        m_result(result::max_iterations)
                         {
                         }
 
@@ -108,17 +110,36 @@ namespace ncv
                                 return (g.template lpNorm<Eigen::Infinity>()) / (1.0 + std::fabs(f));
                         }
 
-                        // access functions
-                        tsize iterations() const { return m_iterations; }
-                        tsize fcalls() const { return m_fcalls; }
-                        tsize gcalls() const { return m_gcalls; }
+                        ///
+                        /// \brief optimization done, so setup the result code
+                        ///
+                        state_t& done(const tsize max_iterations, const tscalar epsilon)
+                        {
+                                if (converged(epsilon))
+                                {
+                                        m_result = result::converged;
+                                }
+                                else if (m_iterations >= max_iterations)
+                                {
+                                        m_result = result::max_iterations;
+                                }
+                                else
+                                {
+                                        /// \todo there might some other reasons the optimization failed!
+                                        m_result = result::linesearch_failed;
+                                }
+                                return *this;
+                        }
 
                         // attributes
                         tvector         x, g, d;                ///< parameter, gradient, descent direction
                         tscalar         f;                      ///< function value, step size
+
                         tsize           m_iterations;
                         tsize           m_fcalls;               ///< #function value evaluations
                         tsize           m_gcalls;               ///< #function gradient evaluations
+
+                        result          m_result;
                 };
 
                 ///

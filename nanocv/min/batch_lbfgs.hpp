@@ -117,7 +117,6 @@ namespace ncv
                                         const tscalar t0 = ls_init(cstate);
                                         if (!ls_step.update(problem, t0, cstate))
                                         {
-//                                                m_param.elog("line-search failed (LBFGS)!");
                                                 break;
                                         }
 
@@ -130,7 +129,7 @@ namespace ncv
                                         }
                                 }
 
-                                return cstate;
+                                return cstate.done(m_param.m_max_iterations, m_param.m_epsilon);
                         }
 
                         // attributes
