@@ -11,6 +11,7 @@
 #include "math/epsilon.hpp"
 #include "thread/loopi.hpp"
 #include "text/from_string.hpp"
+#include "text/starts_with.hpp"
 #include "core/table_row_comp.h"
 
 #include "func/function_trid.h"
@@ -47,8 +48,6 @@ namespace
                 stats_t<scalar_t>       m_speeds;       ///< convergence speed (actually the average decrease ratio of the convergence criteria)
         };
 
-        std::map<string_t, optimizer_stat_t> optimizer_stats;
-
         stats_t<scalar_t> make_stats(const scalars_t& values, const scalars_t& flags)
         {
                 assert(values.size() == flags.size());
@@ -64,7 +63,40 @@ namespace
                 return stats;
         }
 
-        void check_problem(const function_t& func)
+        void show_table(const std::map<string_t, optimizer_stat_t>& ostats)
+        {
+                // show global statistics
+                table_t table(text::align("optimizer", 32));
+                table.header() << "cost"
+                               << "time [us]"
+                               << "|grad|/|fval|"
+                               << "#fails"
+                               << "#iters"
+                               << "#fcalls"
+                               << "#gcalls"
+                               << "speed";
+
+                for (const auto& it : ostats)
+                {
+                        const auto& name = it.first;
+                        const auto& stat = it.second;
+
+                        table.append(name) << static_cast<size_t>(stat.m_fcalls.avg() + 2 * stat.m_gcalls.avg())
+                                           << stat.m_times.avg()
+                                           << stat.m_crits.avg()
+                                           << static_cast<size_t>(stat.m_fails.sum())
+                                           << stat.m_iters.avg()
+                                           << stat.m_fcalls.avg()
+                                           << stat.m_gcalls.avg()
+                                           << stat.m_speeds.avg();
+                }
+
+                table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({3, 0})));
+                table.print(std::cout);
+        }
+
+        template <typename tostats>
+        void check_problem(const function_t& func, tostats& ostats)
         {
                 const size_t iterations = 64 * 1024;
                 const scalar_t epsilon = 1e-6;
@@ -116,31 +148,24 @@ namespace
                         min::ls_strategy::cg_descent
                 };
 
-                table_t table(text::align("function " + func.name(), 32));
-                table.header() << "cost"
-                               << "time [us]"
-                               << "|grad|/|fval|"
-                               << "#fails"
-                               << "#iters"
-                               << "#fcalls"
-                               << "#gcalls"
-                               << "speed";
-
-                scalars_t times(trials);
-                scalars_t crits(trials);
-                scalars_t fails(trials);
-                scalars_t iters(trials);
-                scalars_t fcalls(trials);
-                scalars_t gcalls(trials);
-                scalars_t speeds(trials);
-
                 thread::pool_t pool;
+
+                // per-problem statistics
+                tostats stats;
 
                 // evaluate all possible combinations
                 for (min::batch_optimizer optimizer : optimizers)
                         for (min::ls_initializer ls_init : ls_initializers)
                                 for (min::ls_strategy ls_strat : ls_strategies)
                 {
+                        scalars_t times(trials);
+                        scalars_t crits(trials);
+                        scalars_t fails(trials);
+                        scalars_t iters(trials);
+                        scalars_t fcalls(trials);
+                        scalars_t gcalls(trials);
+                        scalars_t speeds(trials);
+
                         thread::loopi(trials, pool, [&] (size_t t)
                         {
                                 const vector_t& x0 = x0s[t];
@@ -178,53 +203,41 @@ namespace
                                 }
                         });
 
-                        // update per-problem table
+                        // update per-problem statistics
                         const string_t name =
                                 text::to_string(optimizer) + "[" +
                                 text::to_string(ls_init) + "][" +
                                 text::to_string(ls_strat) + "]";
 
-                        const auto stat_times = make_stats(times, times);
-                        const auto stat_crits = make_stats(crits, times);
-                        const auto stat_fails = make_stats(fails, times);
-                        const auto stat_iters = make_stats(iters, times);
-                        const auto stat_fcalls = make_stats(fcalls, times);
-                        const auto stat_gcalls = make_stats(gcalls, times);
-                        const auto stat_speeds = make_stats(speeds, times);
-
-                        table.append(name)
-                                << static_cast<size_t>(stat_fcalls.sum() + 2 * stat_gcalls.sum()) / trials
-                                << stat_times.avg()
-                                << stat_crits.avg()
-                                << static_cast<size_t>(stat_fails.sum())
-                                << stat_iters.avg()
-                                << stat_fcalls.avg()
-                                << stat_gcalls.avg()
-                                << stat_speeds.avg();
+                        optimizer_stat_t& stat = stats[name];
+                        stat.m_times(make_stats(times, times));
+                        stat.m_crits(make_stats(crits, times));
+                        stat.m_fails(make_stats(fails, times));
+                        stat.m_iters(make_stats(iters, times));
+                        stat.m_fcalls(make_stats(fcalls, times));
+                        stat.m_gcalls(make_stats(gcalls, times));
+                        stat.m_speeds(make_stats(speeds, times));
 
                         // update global statistics
-                        optimizer_stat_t& stat = optimizer_stats[name];
-                        stat.m_times(stat_times.avg());
-                        stat.m_crits(stat_crits.avg());
-                        stat.m_fails(stat_fails.sum());
-                        stat.m_iters(stat_iters.avg());
-                        stat.m_fcalls(stat_fcalls.avg());
-                        stat.m_gcalls(stat_gcalls.avg());
-                        stat.m_speeds(stat_speeds.avg());
+                        optimizer_stat_t& ostat = ostats[name];
+                        ostat.m_times(stat.m_times);
+                        ostat.m_crits(stat.m_crits);
+                        ostat.m_fails(stat.m_fails);
+                        ostat.m_iters(stat.m_iters);
+                        ostat.m_fcalls(stat.m_fcalls);
+                        ostat.m_gcalls(stat.m_gcalls);
+                        ostat.m_speeds(stat.m_speeds);
                 }
 
-                pool.wait();
-
-                // print stats
-                table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({3, 0})));
-                table.print(std::cout);
+                show_table(stats);
         }
 
-        void check_problems(const functions_t& funcs)
+        template <typename tstats>
+        void check_problems(const functions_t& funcs, tstats& ostats)
         {
                 for (const auto& func : funcs)
                 {
-                        check_problem(*func);
+                        check_problem(*func, ostats);
                 }
         }
 }
@@ -233,50 +246,58 @@ int main(int, char* [])
 {
         using namespace ncv;
 
-        check_problems(ncv::make_beale_funcs());
-        check_problems(ncv::make_booth_funcs());
-        check_problems(ncv::make_matyas_funcs());
-        check_problems(ncv::make_trid_funcs(32));
-        check_problems(ncv::make_cauchy_funcs(32));
-        check_problems(ncv::make_sphere_funcs(32));
-        check_problems(ncv::make_powell_funcs(32));
-        check_problems(ncv::make_mccormick_funcs());
-        check_problems(ncv::make_himmelblau_funcs());
-        check_problems(ncv::make_rosenbrock_funcs(7));
-        check_problems(ncv::make_3hump_camel_funcs());
-        check_problems(ncv::make_dixon_price_funcs(32));
-        check_problems(ncv::make_sum_squares_funcs(32));
-        check_problems(ncv::make_goldstein_price_funcs());
-        check_problems(ncv::make_rotated_ellipsoid_funcs(32));
+        std::map<string_t, optimizer_stat_t> ostats;
+
+        check_problems(ncv::make_beale_funcs(), ostats);
+//        check_problems(ncv::make_booth_funcs(), ostats);
+//        check_problems(ncv::make_matyas_funcs(), ostats);
+//        check_problems(ncv::make_trid_funcs(32), ostats);
+//        check_problems(ncv::make_cauchy_funcs(32), ostats);
+//        check_problems(ncv::make_sphere_funcs(32), ostats);
+//        check_problems(ncv::make_powell_funcs(32), ostats);
+//        check_problems(ncv::make_mccormick_funcs(), ostats);
+//        check_problems(ncv::make_himmelblau_funcs(), ostats);
+//        check_problems(ncv::make_rosenbrock_funcs(7), ostats);
+//        check_problems(ncv::make_3hump_camel_funcs(), ostats);
+//        check_problems(ncv::make_dixon_price_funcs(32), ostats);
+//        check_problems(ncv::make_sum_squares_funcs(32), ostats);
+//        check_problems(ncv::make_goldstein_price_funcs(), ostats);
+//        check_problems(ncv::make_rotated_ellipsoid_funcs(32), ostats);
 
         // show global statistics
-        table_t table(text::align("optimizer", 32));
-        table.header() << "cost"
-                       << "time [us]"
-                       << "|grad|/|fval|"
-                       << "#fails"
-                       << "#iters"
-                       << "#fcalls"
-                       << "#gcalls"
-                       << "speed";
+        show_table(ostats);
 
-        for (const auto& it : optimizer_stats)
+        // show global statistics per optimizer
+        const auto optimizers =
         {
-                const string_t& name = it.first;
-                const optimizer_stat_t& stat = it.second;
+                min::batch_optimizer::GD,
+                min::batch_optimizer::CGD_CD,
+                min::batch_optimizer::CGD_DY,
+                min::batch_optimizer::CGD_FR,
+                min::batch_optimizer::CGD_HS,
+                min::batch_optimizer::CGD_LS,
+                min::batch_optimizer::CGD_DYCD,
+                min::batch_optimizer::CGD_DYHS,
+                min::batch_optimizer::CGD_PRP,
+                min::batch_optimizer::CGD_N,
+                min::batch_optimizer::LBFGS
+        };
 
-                table.append(name) << static_cast<size_t>(stat.m_fcalls.sum() + 2 * stat.m_gcalls.sum())
-                                   << stat.m_times.sum()
-                                   << stat.m_crits.avg()
-                                   << static_cast<size_t>(stat.m_fails.sum())
-                                   << stat.m_iters.sum()
-                                   << stat.m_fcalls.sum()
-                                   << stat.m_gcalls.sum()
-                                   << stat.m_speeds.avg();
+        for (min::batch_optimizer optimizer : optimizers)
+        {
+                const string_t name = text::to_string(optimizer) + "[";
+
+                std::map<string_t, optimizer_stat_t> stats;
+                for (const auto& ostat : ostats)
+                {
+                        if (text::starts_with(ostat.first, name))
+                        {
+                                stats[ostat.first] = ostat.second;
+                        }
+                }
+
+                show_table(stats);
         }
-
-        table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({3, 0})));
-        table.print(std::cout);
 
         // OK
         log_info() << done;
