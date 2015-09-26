@@ -65,8 +65,8 @@ namespace ncv
                         ///
                         void reset() const
                         {
-                                m_n_fvals = 0;
-                                m_n_grads = 0;
+                                m_fcalls = 0;
+                                m_gcalls = 0;
                         }
 
                         ///
@@ -87,12 +87,12 @@ namespace ncv
                         ///
                         /// \brief number of function evalution calls
                         ///
-                        tsize n_fval_calls() const { return m_n_fvals; }
+                        tsize fcalls() const { return m_fcalls; }
 
                         ///
                         /// \brief number of function gradient calls
                         ///
-                        tsize n_grad_calls() const { return m_n_grads; }
+                        tsize gcalls() const { return m_gcalls; }
 
                         ///
                         /// \brief compute the gradient accuracy (given vs. finite difference approximation)
@@ -110,7 +110,7 @@ namespace ncv
                         // implementation: function value
                         tscalar _f(const tvector& x) const
                         {
-                                m_n_fvals ++;
+                                m_fcalls ++;
                                 return m_op_fval(x);
                         }
 
@@ -119,8 +119,8 @@ namespace ncv
                         {
                                 if (m_op_grad)
                                 {
-                                        m_n_fvals ++;
-                                        m_n_grads ++;
+                                        m_fcalls ++;
+                                        m_gcalls ++;
                                         return m_op_grad(x, g);
                                 }
                                 else
@@ -182,8 +182,8 @@ namespace ncv
                         top_size                m_op_size;
                         top_fval                m_op_fval;
                         top_grad                m_op_grad;
-                        mutable tsize           m_n_fvals;              ///< #function value evaluations
-                        mutable tsize           m_n_grads;              ///< #function gradient evaluations
+                        mutable tsize           m_fcalls;               ///< #function value evaluations
+                        mutable tsize           m_gcalls;               ///< #function gradient evaluations
                 };
         }
 }

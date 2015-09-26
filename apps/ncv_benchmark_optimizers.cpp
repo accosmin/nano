@@ -182,7 +182,7 @@ namespace
                                         x0, optimizer, iterations, epsilon, ls_init, ls_strat);
 
                                 const auto g = state.convergence_criteria();
-                                const auto speed = std::pow(g / g0, 1.0 / (1.0 + state.n_iterations()));
+                                const auto speed = std::pow(g / g0, 1.0 / (1.0 + state.iterations()));
 
                                 // ignore out-of-domain solutions
                                 if (func.is_valid(state.x))
@@ -191,9 +191,9 @@ namespace
                                         times[t] = timer.microseconds();
                                         crits[t] = g;
                                         fails[t] = !state.converged(epsilon) ? 1.0 : 0.0;
-                                        iters[t] = state.n_iterations();
-                                        fcalls[t] = state.n_fval_calls();
-                                        gcalls[t] = state.n_grad_calls();
+                                        iters[t] = state.iterations();
+                                        fcalls[t] = state.fcalls();
+                                        gcalls[t] = state.gcalls();
                                         speeds[t] = speed;
                                 }
                                 else
@@ -248,7 +248,7 @@ int main(int, char* [])
 
         std::map<string_t, optimizer_stat_t> ostats;
 
-        check_problems(ncv::make_beale_funcs(), ostats);
+//        check_problems(ncv::make_beale_funcs(), ostats);
 //        check_problems(ncv::make_booth_funcs(), ostats);
 //        check_problems(ncv::make_matyas_funcs(), ostats);
 //        check_problems(ncv::make_trid_funcs(32), ostats);
@@ -261,7 +261,7 @@ int main(int, char* [])
 //        check_problems(ncv::make_3hump_camel_funcs(), ostats);
 //        check_problems(ncv::make_dixon_price_funcs(32), ostats);
 //        check_problems(ncv::make_sum_squares_funcs(32), ostats);
-//        check_problems(ncv::make_goldstein_price_funcs(), ostats);
+        check_problems(ncv::make_goldstein_price_funcs(), ostats);
 //        check_problems(ncv::make_rotated_ellipsoid_funcs(32), ostats);
 
         // show global statistics

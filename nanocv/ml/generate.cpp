@@ -72,7 +72,7 @@ namespace ncv
 
                 log_info() << "[loss = " << result.f
                            << ", grad = " << result.g.lpNorm<Eigen::Infinity>()
-                           << ", funs = " << result.n_fval_calls() << "/" << result.n_grad_calls()
+                           << ", funs = " << result.fcalls() << "/" << result.gcalls()
                            << "] done in " << timer.elapsed() << ".";
 
                 // OK

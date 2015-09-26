@@ -48,7 +48,7 @@ namespace ncv
                                         << " (" << text::to_string(ret) << ")"
                                         << ", epoch = " << iteration << "/" << iterations
                                         << ", lambda = " << data.lambda()
-                                        << ", calls = " << state.n_fval_calls() << "/" << state.n_grad_calls()
+                                        << ", calls = " << state.fcalls() << "/" << state.gcalls()
                                         << "] done in " << timer.elapsed() << ".";
 
                                 return !ncv::is_done(ret);

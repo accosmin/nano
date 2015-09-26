@@ -9,11 +9,11 @@ namespace ncv
         {
                 ///
                 /// \brief optimization state described as:
-                /// current point (x),
-                /// function value (f),
-                /// gradient (g),
-                /// descent direction (d) &
-                /// line-search step (t)
+                ///     current point (x),
+                ///     function value (f),
+                ///     gradient (g),
+                ///     descent direction (d) &
+                ///     line-search step (t)
                 ///
                 template
                 <
@@ -22,14 +22,14 @@ namespace ncv
                 >
                 struct state_t
                 {
-                        typedef tscalar_                                                tscalar;
+                        typedef tscalar_                tscalar;
                         typedef Eigen::Matrix
                         <
                                 tscalar,
                                 Eigen::Dynamic,
                                 1,
                                 Eigen::ColMajor
-                        >                                                               tvector;
+                        >                               tvector;
 
                         ///
                         /// \brief constructor
@@ -38,8 +38,8 @@ namespace ncv
                                 :       x(size), g(size), d(size),
                                         f(std::numeric_limits<tscalar>::max()),
                                         m_iterations(0),
-                                        m_n_fvals(0),
-                                        m_n_grads(0)
+                                        m_fcalls(0),
+                                        m_gcalls(0)
                         {
                         }
 
@@ -58,7 +58,7 @@ namespace ncv
                         }
 
                         ///
-                        /// \brief update current state
+                        /// \brief update current state (move t along the chosen direction)
                         ///
                         template
                         <
@@ -70,12 +70,12 @@ namespace ncv
                                 f = problem(x, g);
 
                                 m_iterations ++;
-                                m_n_fvals = problem.n_fval_calls();
-                                m_n_grads = problem.n_grad_calls();
+                                m_fcalls = problem.fcalls();
+                                m_gcalls = problem.gcalls();
                         }
 
                         ///
-                        /// \brief update current state
+                        /// \brief update current state (move t along the chosen direction)
                         ///
                         template
                         <
@@ -88,8 +88,8 @@ namespace ncv
                                 g = gt;
 
                                 m_iterations ++;
-                                m_n_fvals = problem.n_fval_calls();
-                                m_n_grads = problem.n_grad_calls();
+                                m_fcalls = problem.fcalls();
+                                m_gcalls = problem.gcalls();
                         }
 
                         ///
@@ -109,16 +109,16 @@ namespace ncv
                         }
 
                         // access functions
-                        tsize n_iterations() const { return m_iterations; }
-                        tsize n_fval_calls() const { return m_n_fvals; }
-                        tsize n_grad_calls() const { return m_n_grads; }
+                        tsize iterations() const { return m_iterations; }
+                        tsize fcalls() const { return m_fcalls; }
+                        tsize gcalls() const { return m_gcalls; }
 
                         // attributes
                         tvector         x, g, d;                ///< parameter, gradient, descent direction
                         tscalar         f;                      ///< function value, step size
                         tsize           m_iterations;
-                        tsize           m_n_fvals;
-                        tsize           m_n_grads;
+                        tsize           m_fcalls;               ///< #function value evaluations
+                        tsize           m_gcalls;               ///< #function gradient evaluations
                 };
 
                 ///
