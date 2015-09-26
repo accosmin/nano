@@ -5,10 +5,11 @@
 #include "text/align.hpp"
 #include "text/lower.hpp"
 #include "text/upper.hpp"
+#include "text/replace.hpp"
 #include "text/ends_with.hpp"
 #include "text/from_params.hpp"
 #include "text/concatenate.hpp"
-#include "text/replace.hpp"
+#include "text/starts_with.hpp"
 #include <list>
 #include <set>
 
@@ -89,6 +90,42 @@ BOOST_AUTO_TEST_CASE(test_text_iends_with)
         BOOST_CHECK(text::iends_with("ToKeN", "ken"));
         BOOST_CHECK(text::iends_with("ToKeN", "oken"));
         BOOST_CHECK(text::iends_with("ToKeN", "Token"));
+}
+
+BOOST_AUTO_TEST_CASE(test_text_starts_with)
+{
+        using namespace ncv;
+
+        BOOST_CHECK(text::starts_with("ToKeN", ""));
+        BOOST_CHECK(text::starts_with("ToKeN", "T"));
+        BOOST_CHECK(text::starts_with("ToKeN", "To"));
+        BOOST_CHECK(text::starts_with("ToKeN", "ToK"));
+        BOOST_CHECK(text::starts_with("ToKeN", "ToKe"));
+        BOOST_CHECK(text::starts_with("ToKeN", "ToKeN"));
+
+        BOOST_CHECK(!text::starts_with("ToKeN", "t"));
+        BOOST_CHECK(!text::starts_with("ToKeN", "to"));
+        BOOST_CHECK(!text::starts_with("ToKeN", "tok"));
+        BOOST_CHECK(!text::starts_with("ToKeN", "toke"));
+        BOOST_CHECK(!text::starts_with("ToKeN", "Token"));
+}
+
+BOOST_AUTO_TEST_CASE(test_text_istarts_with)
+{
+        using namespace ncv;
+
+        BOOST_CHECK(text::istarts_with("ToKeN", ""));
+        BOOST_CHECK(text::istarts_with("ToKeN", "t"));
+        BOOST_CHECK(text::istarts_with("ToKeN", "to"));
+        BOOST_CHECK(text::istarts_with("ToKeN", "Tok"));
+        BOOST_CHECK(text::istarts_with("ToKeN", "toKe"));
+        BOOST_CHECK(text::istarts_with("ToKeN", "ToKeN"));
+
+        BOOST_CHECK(text::istarts_with("ToKeN", "t"));
+        BOOST_CHECK(text::istarts_with("ToKeN", "to"));
+        BOOST_CHECK(text::istarts_with("ToKeN", "tok"));
+        BOOST_CHECK(text::istarts_with("ToKeN", "toke"));
+        BOOST_CHECK(text::istarts_with("ToKeN", "Token"));
 }
 
 BOOST_AUTO_TEST_CASE(test_text_equals)
