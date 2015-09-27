@@ -1,8 +1,10 @@
 #pragma once
 
 #include "tensor.h"
-#include "min/types.h"
+#include "min/batch.h"
+#include "min/stoch.h"
 #include "min/problem.hpp"
+#include "min/linesearch.h"
 #include "text/enum_string.hpp"
 
 namespace ncv
@@ -87,13 +89,13 @@ namespace ncv
                 }
 
                 template <>
-                inline std::map<min::result, std::string> enum_string<min::result>()
+                inline std::map<min::status, std::string> enum_string<min::status>()
                 {
                         return
                         {
-                                { min::result::converged,                       "converged" },
-                                { min::result::max_iterations,                  "maximum iterations" },
-                                { min::result::linesearch_failed,               "linesearch failed" }
+                                { min::status::converged,                       "converged" },
+                                { min::status::max_iterations,                  "maximum iterations" },
+                                { min::status::linesearch_failed,               "linesearch failed" }
                         };
                 }
         }

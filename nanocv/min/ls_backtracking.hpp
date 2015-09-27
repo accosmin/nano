@@ -1,6 +1,6 @@
 #pragma once
 
-#include "types.h"
+#include "linesearch.h"
 #include "ls_step.hpp"
 
 namespace ncv

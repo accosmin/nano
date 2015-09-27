@@ -1,7 +1,7 @@
 #pragma once
 
-#include "types.h"
 #include "ls_step.hpp"
+#include "linesearch.h"
 #include "ls_cubic.hpp"
 #include "ls_bisection.hpp"
 #include "ls_quadratic.hpp"

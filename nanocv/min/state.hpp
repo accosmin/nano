@@ -1,6 +1,6 @@
 #pragma once
 
-#include "types.h"
+#include "status.h"
 #include <limits>
 #include <eigen3/Eigen/Core>
 
@@ -41,7 +41,7 @@ namespace ncv
                                         m_iterations(0),
                                         m_fcalls(0),
                                         m_gcalls(0),
-                                        m_result(result::max_iterations)
+                                        m_status(status::max_iterations)
                         {
                         }
 
@@ -111,22 +111,22 @@ namespace ncv
                         }
 
                         ///
-                        /// \brief optimization done, so setup the result code
+                        /// \brief optimization done, so setup the status code
                         ///
                         state_t& done(const tsize max_iterations, const tscalar epsilon)
                         {
                                 if (converged(epsilon))
                                 {
-                                        m_result = result::converged;
+                                        m_status = status::converged;
                                 }
                                 else if (m_iterations >= max_iterations)
                                 {
-                                        m_result = result::max_iterations;
+                                        m_status = status::max_iterations;
                                 }
                                 else
                                 {
                                         /// \todo there might some other reasons the optimization failed!
-                                        m_result = result::linesearch_failed;
+                                        m_status = status::linesearch_failed;
                                 }
                                 return *this;
                         }
@@ -139,7 +139,7 @@ namespace ncv
                         tsize           m_fcalls;               ///< #function value evaluations
                         tsize           m_gcalls;               ///< #function gradient evaluations
 
-                        result          m_result;
+                        status          m_status;
                 };
 
                 ///

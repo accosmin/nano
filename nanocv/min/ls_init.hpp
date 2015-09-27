@@ -1,6 +1,6 @@
 #pragma once
 
-#include "types.h"
+#include "linesearch.h"
 #include <algorithm>
 
 namespace ncv

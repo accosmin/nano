@@ -113,9 +113,9 @@ namespace test
                                 // check convergence
                                 BOOST_CHECK_MESSAGE(g < g_thres,
                                         "convergence failed " << NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
-                                BOOST_CHECK_MESSAGE(state.m_result != min::result::linesearch_failed,
+                                BOOST_CHECK_MESSAGE(state.m_status != min::status::linesearch_failed,
                                         "linesearch failed " << NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
-                                BOOST_CHECK_MESSAGE(state.m_result != min::result::max_iterations,
+                                BOOST_CHECK_MESSAGE(state.m_status != min::status::max_iterations,
                                         "maximum iterations reached " << NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
 
 //                                // check local minimas (if any known)

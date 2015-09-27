@@ -1,7 +1,7 @@
 #pragma once
 
 #include "params.hpp"
-#include "types.h"
+#include "linesearch.h"
 
 namespace ncv
 {
