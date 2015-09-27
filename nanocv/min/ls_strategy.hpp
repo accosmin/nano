@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include "state.hpp"
 #include "ls_cgdescent.hpp"
 #include "ls_backtracking.hpp"
 #include "ls_interpolation.hpp"
@@ -25,8 +26,8 @@ namespace ncv
                         ///
                         /// \brief constructor
                         ///
-                        linesearch_strategy_t(ls_strategy strategy,
-                                        tscalar c1 = 1e-4, tscalar c2 = 0.1)
+                        linesearch_strategy_t(const ls_strategy strategy,
+                                        const tscalar c1 = 1e-4, const tscalar c2 = 0.1)
                                 :       m_strategy(strategy),
                                         m_c1(c1),
                                         m_c2(c2)
@@ -48,12 +49,14 @@ namespace ncv
                                 const tscalar dg0 = state.d.dot(state.g);
                                 if (dg0 > -eps)
                                 {
+                                        state.m_status = status::ls_failed_not_descent;
                                         return false;
                                 }
 
                                 // check valid initial step
                                 if (t0 < eps)
                                 {
+                                        state.m_status = status::ls_failed_invalid_initial_step;
                                         return false;
                                 }
 
@@ -62,7 +65,7 @@ namespace ncv
                                 const tstep step = get_step(step0, t0);
                                 if (!step || !(step < step0))
                                 {
-                                        // failed to find a suitable line-search step
+                                        state.m_status = status::ls_failed_cannot_find_step;
                                         return false;
                                 }
                                 else

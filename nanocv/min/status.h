@@ -11,7 +11,10 @@ namespace ncv
                 {
                         converged,                      ///< converged within the maximum number of iterations
                         max_iterations,                 ///< maximum number of iterations passed without convergence
-                        linesearch_failed               ///< linesearch failed (e.g. numerical precision, logical error)
+
+                        ls_failed_not_descent,          ///< linesearch failed: chosen direction not a descent direction
+                        ls_failed_invalid_initial_step, ///< linesearch failed: negative initial step length
+                        ls_failed_cannot_find_step,     ///< linesearch failed: cannot find suitable step length
                 };
         }
 }

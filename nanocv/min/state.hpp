@@ -125,8 +125,7 @@ namespace ncv
                                 }
                                 else
                                 {
-                                        /// \todo there might some other reasons the optimization failed!
-                                        m_status = status::linesearch_failed;
+                                        // assuming specific status code was already set!
                                 }
                                 return *this;
                         }
