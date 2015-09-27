@@ -14,7 +14,8 @@ namespace ncv
 
                         ls_failed_not_descent,          ///< linesearch failed: chosen direction not a descent direction
                         ls_failed_invalid_initial_step, ///< linesearch failed: negative initial step length
-                        ls_failed_cannot_find_step,     ///< linesearch failed: cannot find suitable step length
+                        ls_failed_invalid_step,         ///< linesearch failed: found infinite step length
+                        ls_failed_not_decreasing_step,  ///< linesearch failed: found step length that increases the function's value
                 };
         }
 }

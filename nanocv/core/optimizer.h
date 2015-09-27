@@ -95,9 +95,10 @@ namespace ncv
                         {
                                 { min::status::converged,                       "converged" },
                                 { min::status::max_iterations,                  "maximum iterations" },
-                                { min::status::ls_failed_cannot_find_step,      "linesearch failed (cannot find step)" },
+                                { min::status::ls_failed_invalid_step,          "linesearch failed (invalid step)" },
+                                { min::status::ls_failed_not_decreasing_step,   "linesearch failed (not decreasing step)" },
                                 { min::status::ls_failed_invalid_initial_step,  "linesearch failed (invalid initial step)" },
-                                { min::status::ls_failed_not_descent,           "linesearch failed (not a descent direction)" }
+                                { min::status::ls_failed_not_descent,           "linesearch failed (not descent direction)" }
                         };
                 }
         }

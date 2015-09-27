@@ -116,9 +116,9 @@ namespace test
                                 BOOST_CHECK_MESSAGE(state.m_status == min::status::converged,
                                         text::to_string(state.m_status) << " " << NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
 
-//                                // check local minimas (if any known)
-//                                BOOST_CHECK_MESSAGE(func.is_minima(x, 100.0 * epsilon),
-//                                        "invalid minima " << NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
+                                // check local minimas (if any known)
+                                BOOST_CHECK_MESSAGE(func.is_minima(x, 100.0 * epsilon),
+                                        "invalid minima " << NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
                         }
 
                         log_info() << "out of domain for (" << func.name() << ", " << text::to_string(optimizer)

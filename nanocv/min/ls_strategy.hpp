@@ -63,9 +63,14 @@ namespace ncv
                                 tstep step0(problem, state);
 
                                 const tstep step = get_step(step0, t0);
-                                if (!step || !(step < step0))
+                                if (!step)
                                 {
-                                        state.m_status = status::ls_failed_cannot_find_step;
+                                        state.m_status = status::ls_failed_invalid_step;
+                                        return false;
+                                }
+                                else if (!(step < step0))
+                                {
+                                        state.m_status = status::ls_failed_not_decreasing_step;
                                         return false;
                                 }
                                 else

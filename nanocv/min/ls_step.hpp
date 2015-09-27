@@ -171,7 +171,7 @@ namespace ncv
                 };
 
                 ///
-                /// \brief compare two line-search step (based on the function value)
+                /// \brief compare two line-search steps (based on the function value)
                 ///
                 template
                 <

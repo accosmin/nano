@@ -120,7 +120,7 @@ namespace ncv
                 case min::batch_optimizer::GD:
                 default:
                         return minimize(problem, fn_ulog, x0, optimizer, iterations, epsilon,
-                                        min::ls_initializer::quadratic, min::ls_strategy::backtrack_wolfe,
+                                        min::ls_initializer::unit, min::ls_strategy::backtrack_wolfe,
                                         history_size);
                 }
         }
