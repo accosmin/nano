@@ -63,10 +63,15 @@ namespace ncv
                         return norm(x) < m_dims * m_dims;
                 }
 
-                virtual bool is_minima(const vector_t&, const scalar_t) const override
+                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
                 {
-                        /// \todo known local minimas?!
-                        return false;
+                        vector_t xmin(m_dims);
+                        for (size_t d = 0; d < m_dims; d ++)
+                        {
+                                xmin(d) = (d + 1.0) * (m_dims - d);
+                        }
+
+                        return distance(x, xmin) < epsilon;
                 }
 
                 size_t  m_dims;

@@ -117,7 +117,7 @@ namespace test
                                         text::to_string(state.m_status) << " " << NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
 
                                 // check local minimas (if any known)
-                                BOOST_CHECK_MESSAGE(func.is_minima(x, 100.0 * epsilon),
+                                BOOST_CHECK_MESSAGE(func.is_minima(x, std::sqrt(epsilon)),
                                         "invalid minima " << NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
                         }
 
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
 //        test::check_problems(ncv::make_beale_funcs());
 //        test::check_problems(ncv::make_booth_funcs());
 //        test::check_problems(ncv::make_matyas_funcs());
-//        test::check_problems(ncv::make_trid_funcs(8));
+        test::check_problems(ncv::make_trid_funcs(8));
 //        test::check_problems(ncv::make_cauchy_funcs(8));
 //        test::check_problems(ncv::make_sphere_funcs(8));
 //        test::check_problems(ncv::make_powell_funcs(8));
@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
 //        test::check_problems(ncv::make_3hump_camel_funcs());
 //        test::check_problems(ncv::make_dixon_price_funcs(8));
 //        test::check_problems(ncv::make_sum_squares_funcs(8));
-        test::check_problems(ncv::make_goldstein_price_funcs());
+//        test::check_problems(ncv::make_goldstein_price_funcs());
 //        test::check_problems(ncv::make_rotated_ellipsoid_funcs(8));
 }
 
