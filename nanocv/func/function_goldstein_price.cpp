@@ -18,47 +18,52 @@ namespace ncv
 
                         const opt_opfval_t fn_fval = [=] (const vector_t& x)
                         {
-                                const scalar_t a = x(0), b = x(1);
+                                const long double a = x(0), b = x(1);
 
-                                const scalar_t z0 = 1.0 + a + b;
-                                const scalar_t z1 = 19 - 14 * a + 3 * a * a - 14 * b + 6 * a * b + 3 * b * b;
-                                const scalar_t z2 = 2 * a - 3 * b;
-                                const scalar_t z3 = 18 - 32 * a + 12 * a * a + 48 * b - 36 * a * b + 27 * b * b;
+                                const long double z0 = 1 + a + b;
+                                const long double z1 = 19 - 14 * a + 3 * a * a - 14 * b + 6 * a * b + 3 * b * b;
+                                const long double z2 = 2 * a - 3 * b;
+                                const long double z3 = 18 - 32 * a + 12 * a * a + 48 * b - 36 * a * b + 27 * b * b;
 
-                                return (1 + z0 * z0 * z1) * (30 + z2 * z2 * z3);
+                                const long double u = 1 + z0 * z0 * z1;
+                                const long double v = 30 + z2 * z2 * z3;
+
+                                return static_cast<scalar_t>(u * v);
                         };
 
                         const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
                         {
-                                const scalar_t a = x(0), b = x(1);
+                                const long double a = x(0), b = x(1);
 
-                                const scalar_t z0 = 1.0 + a + b;
-                                const scalar_t z1 = 19 - 14 * a + 3 * a * a - 14 * b + 6 * a * b + 3 * b * b;
-                                const scalar_t z2 = 2 * a - 3 * b;
-                                const scalar_t z3 = 18 - 32 * a + 12 * a * a + 48 * b - 36 * a * b + 27 * b * b;
+                                const long double z0 = 1 + a + b;
+                                const long double z1 = 19 - 14 * a + 3 * a * a - 14 * b + 6 * a * b + 3 * b * b;
+                                const long double z2 = 2 * a - 3 * b;
+                                const long double z3 = 18 - 32 * a + 12 * a * a + 48 * b - 36 * a * b + 27 * b * b;
 
-                                const scalar_t u = 1 + z0 * z0 * z1;
-                                const scalar_t v = 30 + z2 * z2 * z3;
+                                const long double u = 1 + z0 * z0 * z1;
+                                const long double v = 30 + z2 * z2 * z3;
 
-                                const scalar_t z0da = 1;
-                                const scalar_t z0db = 1;
+                                const long double z0da = 1;
+                                const long double z0db = 1;
 
-                                const scalar_t z1da = -14 + 6 * a + 6 * b;
-                                const scalar_t z1db = -14 + 6 * a + 6 * b;
+                                const long double z1da = -14 + 6 * a + 6 * b;
+                                const long double z1db = -14 + 6 * a + 6 * b;
 
-                                const scalar_t z2da = 2;
-                                const scalar_t z2db = -3;
+                                const long double z2da = +2;
+                                const long double z2db = -3;
 
-                                const scalar_t z3da = -32 + 24 * a - 36 * b;
-                                const scalar_t z3db = 48 - 36 * a + 54 * b;
+                                const long double z3da = -32 + 24 * a - 36 * b;
+                                const long double z3db = +48 - 36 * a + 54 * b;
 
                                 gx.resize(2);
-                                gx(0) = u * (2 * z2 * z2da * z3 + z2 * z2 * z3da) +
-                                        v * (2 * z0 * z0da * z1 + z0 * z0 * z1da);
-                                gx(1) = u * (2 * z2 * z2db * z3 + z2 * z2 * z3db) +
-                                        v * (2 * z0 * z0db * z1 + z0 * z0 * z1db);
+                                gx(0) = static_cast<scalar_t>(
+                                        u * (2 * z2 * z2da * z3 + z2 * z2 * z3da) +
+                                        v * (2 * z0 * z0da * z1 + z0 * z0 * z1da));
+                                gx(1) = static_cast<scalar_t>(
+                                        u * (2 * z2 * z2db * z3 + z2 * z2 * z3db) +
+                                        v * (2 * z0 * z0db * z1 + z0 * z0 * z1db));
 
-                                return fn_fval(x);
+                                return static_cast<scalar_t>(u * v);
                         };
 
                         return opt_problem_t(fn_size, fn_fval, fn_grad);
