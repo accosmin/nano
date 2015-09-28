@@ -25,7 +25,7 @@ namespace ncv
 
                         const opt_opfval_t fn_fval = [=] (const vector_t& x)
                         {
-                                scalar_t fx = 0;
+                                long double fx = 0;
                                 for (size_t i = 0, i4 = 0; i < m_dims / 4; i ++, i4 += 4)
                                 {
                                         fx += math::square(x(i4 + 0) + x(i4 + 1) * 10.0);
@@ -34,24 +34,23 @@ namespace ncv
                                         fx += math::quartic(x(i4 + 0) - x(i4 + 3)) * 10.0;
                                 }
 
-                                return fx;
+                                return static_cast<scalar_t>(fx);
                         };
 
                         const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
                         {
                                 gx.resize(m_dims);
-                                gx.setZero();
                                 for (size_t i = 0, i4 = 0; i < m_dims / 4; i ++, i4 += 4)
                                 {
-                                        const scalar_t gfx1 = (x(i4 + 0) + x(i4 + 1) * 10.0) * 2.0;
-                                        const scalar_t gfx2 = (x(i4 + 2) - x(i4 + 3)) * 5.0 * 2.0;
-                                        const scalar_t gfx3 = math::cube(x(i4 + 1) - x(i4 + 2) * 2.0) * 4.0;
-                                        const scalar_t gfx4 = math::cube(x(i4 + 0) - x(i4 + 3)) * 10.0 * 4.0;
+                                        const long double gfx1 = (x(i4 + 0) + x(i4 + 1) * 10.0) * 2.0;
+                                        const long double gfx2 = (x(i4 + 2) - x(i4 + 3)) * 5.0 * 2.0;
+                                        const long double gfx3 = math::cube(x(i4 + 1) - x(i4 + 2) * 2.0) * 4.0;
+                                        const long double gfx4 = math::cube(x(i4 + 0) - x(i4 + 3)) * 10.0 * 4.0;
 
-                                        gx(i4 + 0) += gfx1 + gfx4;
-                                        gx(i4 + 1) += gfx1 * 10.0 + gfx3;
-                                        gx(i4 + 2) += gfx2 - 2.0 * gfx3;
-                                        gx(i4 + 3) += - gfx2 - gfx4;
+                                        gx(i4 + 0) = static_cast<scalar_t>(gfx1 + gfx4);
+                                        gx(i4 + 1) = static_cast<scalar_t>(gfx1 * 10.0 + gfx3);
+                                        gx(i4 + 2) = static_cast<scalar_t>(gfx2 - 2.0 * gfx3);
+                                        gx(i4 + 3) = static_cast<scalar_t>(- gfx2 - gfx4);
                                 }
 
                                 return fn_fval(x);
