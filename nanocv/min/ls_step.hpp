@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cmath>
 #include <limits>
 #include <functional>
 
@@ -43,7 +42,7 @@ namespace ncv
                         ///
                         /// \brief minimum allowed line-search step
                         ///
-                        static tscalar minimum() { return std::sqrt(std::numeric_limits<tscalar>::epsilon()); }
+                        static tscalar minimum() { return tscalar(10) * std::numeric_limits<tscalar>::epsilon(); }
 
                         ///
                         /// \brief maximum allowed line-search step
