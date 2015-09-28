@@ -47,7 +47,7 @@ namespace ncv
 
                                 // check descent direction
                                 const tscalar dg0 = state.d.dot(state.g);
-                                if (dg0 > -eps)
+                                if (dg0 >= tscalar(0))
                                 {
                                         state.m_status = status::ls_failed_not_descent;
                                         return false;

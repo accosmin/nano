@@ -9,6 +9,7 @@
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
+#include <iomanip>
 
 #include "func/function_trid.h"
 #include "func/function_beale.h"
@@ -33,8 +34,8 @@ namespace test
         static void check_problem(const test::function_t& func)
         {
                 const auto iterations = size_t(64 * 1024);
-                const auto epsilon = scalar_t(1e-6);
-                const auto trials = size_t(1024);
+                const auto epsilon = scalar_t(1e-8);
+                const auto trials = size_t(1);//024);
 
                 const auto dims = func.problem().size();
 
@@ -46,6 +47,9 @@ namespace test
                 {
                         x0.resize(dims);
                         rgen(x0.data(), x0.data() + x0.size());
+
+                        x0(0) = -0.902654596194;
+                        x0(1) = -0.641851626738;
                 }
 
                 // optimizers to try
@@ -53,7 +57,7 @@ namespace test
                 {
                         min::batch_optimizer::GD,
 
-                        min::batch_optimizer::CGD,
+//                        min::batch_optimizer::CGD,
 //                        min::batch_optimizer::CGD_CD,
 //                        min::batch_optimizer::CGD_DY,
 //                        min::batch_optimizer::CGD_FR,
@@ -64,7 +68,7 @@ namespace test
 //                        min::batch_optimizer::CGD_DYCD,
 //                        min::batch_optimizer::CGD_DYHS,
 
-                        min::batch_optimizer::LBFGS
+//                        min::batch_optimizer::LBFGS
                 };
 
                 for (min::batch_optimizer optimizer : optimizers)
@@ -99,10 +103,11 @@ namespace test
 
                                 #define NANOCV_TEST_OPTIMIZERS_DESCRIPTION \
                                         "for (" << func.name() << ", " << text::to_string(optimizer) << \
+                                        std::setprecision(12) << \
                                         ", x = [" << x0.transpose() << "]/[" << x.transpose() << "]" << \
                                         ", f = " << f0 << "/" << f << \
                                         ", g = " << g << \
-                                        ", "<< state.m_iterations << " iterations)"
+                                        ", i = " << state.m_iterations << ")"
 
                                 // check function value decrease
                                 BOOST_CHECK_MESSAGE(f < f0,
@@ -139,20 +144,20 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
 {
         using namespace ncv;        
 
-        test::check_problems(ncv::make_beale_funcs());
-        test::check_problems(ncv::make_booth_funcs());
-        test::check_problems(ncv::make_matyas_funcs());
-        test::check_problems(ncv::make_trid_funcs(8));
-        test::check_problems(ncv::make_cauchy_funcs(8));
-        test::check_problems(ncv::make_sphere_funcs(8));
-        test::check_problems(ncv::make_powell_funcs(8));
-        test::check_problems(ncv::make_mccormick_funcs());
-        test::check_problems(ncv::make_himmelblau_funcs());
-        test::check_problems(ncv::make_rosenbrock_funcs(7));
-        test::check_problems(ncv::make_3hump_camel_funcs());
-        test::check_problems(ncv::make_dixon_price_funcs(8));
-        test::check_problems(ncv::make_sum_squares_funcs(8));
-        test::check_problems(ncv::make_goldstein_price_funcs());
-        test::check_problems(ncv::make_rotated_ellipsoid_funcs(8));
+//        test::check_problems(ncv::make_beale_funcs());
+//        test::check_problems(ncv::make_booth_funcs());
+//        test::check_problems(ncv::make_matyas_funcs());
+        test::check_problems(ncv::make_trid_funcs(2));//8));
+//        test::check_problems(ncv::make_cauchy_funcs(8));
+//        test::check_problems(ncv::make_sphere_funcs(8));
+//        test::check_problems(ncv::make_powell_funcs(8));
+//        test::check_problems(ncv::make_mccormick_funcs());
+//        test::check_problems(ncv::make_himmelblau_funcs());
+//        test::check_problems(ncv::make_rosenbrock_funcs(7));
+//        test::check_problems(ncv::make_3hump_camel_funcs());
+//        test::check_problems(ncv::make_dixon_price_funcs(8));
+//        test::check_problems(ncv::make_sum_squares_funcs(8));
+//        test::check_problems(ncv::make_goldstein_price_funcs());
+//        test::check_problems(ncv::make_rotated_ellipsoid_funcs(8));
 }
 
