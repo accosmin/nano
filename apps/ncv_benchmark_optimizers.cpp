@@ -63,10 +63,10 @@ namespace
                 return stats;
         }
 
-        void show_table(const std::map<string_t, optimizer_stat_t>& ostats)
+        void show_table(const string_t& name, const std::map<string_t, optimizer_stat_t>& ostats)
         {
                 // show global statistics
-                table_t table(text::align("optimizer", 32));
+                table_t table(text::align(name + " optimizer", 32));
                 table.header() << "cost"
                                << "time [us]"
                                << "|grad|/|fval|"
@@ -229,7 +229,7 @@ namespace
                         ostat.m_speeds(stat.m_speeds);
                 }
 
-                show_table(stats);
+                show_table(func.name(), stats);
         }
 
         template <typename tstats>
@@ -248,24 +248,24 @@ int main(int, char* [])
 
         std::map<string_t, optimizer_stat_t> ostats;
 
-//        check_problems(ncv::make_beale_funcs(), ostats);
-//        check_problems(ncv::make_booth_funcs(), ostats);
-//        check_problems(ncv::make_matyas_funcs(), ostats);
-//        check_problems(ncv::make_trid_funcs(32), ostats);
-//        check_problems(ncv::make_cauchy_funcs(32), ostats);
-//        check_problems(ncv::make_sphere_funcs(32), ostats);
-//        check_problems(ncv::make_powell_funcs(32), ostats);
-//        check_problems(ncv::make_mccormick_funcs(), ostats);
-//        check_problems(ncv::make_himmelblau_funcs(), ostats);
-//        check_problems(ncv::make_rosenbrock_funcs(7), ostats);
-//        check_problems(ncv::make_3hump_camel_funcs(), ostats);
-//        check_problems(ncv::make_dixon_price_funcs(32), ostats);
-//        check_problems(ncv::make_sum_squares_funcs(32), ostats);
+        check_problems(ncv::make_beale_funcs(), ostats);
+        check_problems(ncv::make_booth_funcs(), ostats);
+        check_problems(ncv::make_matyas_funcs(), ostats);
+        check_problems(ncv::make_trid_funcs(32), ostats);
+        check_problems(ncv::make_cauchy_funcs(32), ostats);
+        check_problems(ncv::make_sphere_funcs(32), ostats);
+        check_problems(ncv::make_powell_funcs(32), ostats);
+        check_problems(ncv::make_mccormick_funcs(), ostats);
+        check_problems(ncv::make_himmelblau_funcs(), ostats);
+        check_problems(ncv::make_rosenbrock_funcs(7), ostats);
+        check_problems(ncv::make_3hump_camel_funcs(), ostats);
+        check_problems(ncv::make_dixon_price_funcs(32), ostats);
+        check_problems(ncv::make_sum_squares_funcs(32), ostats);
         check_problems(ncv::make_goldstein_price_funcs(), ostats);
-//        check_problems(ncv::make_rotated_ellipsoid_funcs(32), ostats);
+        check_problems(ncv::make_rotated_ellipsoid_funcs(32), ostats);
 
         // show global statistics
-        show_table(ostats);
+        show_table(string_t(), ostats);
 
         // show global statistics per optimizer
         const auto optimizers =
@@ -296,7 +296,7 @@ int main(int, char* [])
                         }
                 }
 
-                show_table(stats);
+                show_table(string_t(), stats);
         }
 
         // OK
