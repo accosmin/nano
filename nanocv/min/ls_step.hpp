@@ -72,7 +72,7 @@ namespace ncv
                         ///
                         bool has_armijo(const tscalar c1) const
                         {
-                                return phi() < phi0() + alpha() * c1 * gphi0();
+                                return phi() <= phi0() + alpha() * c1 * gphi0();
                         }
 
                         ///
@@ -80,7 +80,7 @@ namespace ncv
                         ///
                         bool has_wolfe(const tscalar c2)
                         {
-                                return gphi() > +c2 * gphi0();
+                                return gphi() >= +c2 * gphi0();
                         }
 
                         ///
@@ -88,8 +88,8 @@ namespace ncv
                         ///
                         bool has_strong_wolfe(const tscalar c2)
                         {
-                                return  gphi() > +c2 * gphi0() &&
-                                        gphi() < -c2 * gphi0();
+                                return  gphi() >= +c2 * gphi0() &&
+                                        gphi() <= -c2 * gphi0();
                         }
 
                         ///

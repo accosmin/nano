@@ -3,9 +3,6 @@
 #include "linesearch.h"
 #include "ls_step.hpp"
 
-#include <iomanip>
-#include <iostream>
-
 namespace ncv
 {
         namespace min
@@ -47,36 +44,20 @@ namespace ncv
 
                                 for (tsize i = 0; i < max_iters; i ++)
                                 {
-                                        std::cout << std::setprecision(12)
-                                                  << "ls_backtracking [" << i << "/" << max_iters
-                                                  << "]: t = " << t << "/" << t0 << "\n";
-
                                         if (!step.reset(t))
                                         {
-                                                std::cout << "ls_backtracking: cannot reset step!\n";
-
                                                 return step0;
                                         }
 
                                         // check Armijo condition
                                         if (!step.has_armijo(c1))
                                         {
-                                                std::cout << std::setprecision(12)
-                                                          << "t = " << t
-                                                          << ", phi = " << step.phi()
-                                                          << " < " << (step.phi0() + step.alpha() * c1 * step.gphi0())
-                                                          << ", phi0 = " << step.phi0()
-                                                          << ", gphi0 = " << step.gphi0()
-                                                          << "\n";
-
                                                 t *= decrement;
                                         }
                                         else
                                         {
                                                 if (strategy == ls_strategy::backtrack_armijo)
                                                 {
-                                                        std::cout << "ls_backtracking: exit armijo\n";
-
                                                         return step;
                                                 }
 
@@ -89,8 +70,6 @@ namespace ncv
                                                 {
                                                         if (strategy == ls_strategy::backtrack_wolfe)
                                                         {
-                                                                std::cout << "ls_backtracking: exit wolfe\n";
-
                                                                 return step;
                                                         }
 
