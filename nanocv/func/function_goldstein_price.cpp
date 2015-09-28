@@ -57,11 +57,11 @@ namespace ncv
 
                                 gx.resize(2);
                                 gx(0) = static_cast<scalar_t>(
-                                        u * (2 * z2 * z2da * z3 + z2 * z2 * z3da) +
-                                        v * (2 * z0 * z0da * z1 + z0 * z0 * z1da));
+                                        u * z2 * (2 * z2da * z3 + z2 * z3da) +
+                                        v * z0 * (2 * z0da * z1 + z0 * z1da));
                                 gx(1) = static_cast<scalar_t>(
-                                        u * (2 * z2 * z2db * z3 + z2 * z2 * z3db) +
-                                        v * (2 * z0 * z0db * z1 + z0 * z0 * z1db));
+                                        u * z2 * (2 * z2db * z3 + z2 * z3db) +
+                                        v * z0 * (2 * z0db * z1 + z0 * z1db));
 
                                 return static_cast<scalar_t>(u * v);
                         };

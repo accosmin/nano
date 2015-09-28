@@ -114,13 +114,13 @@ namespace ncv
                 case min::batch_optimizer::CGD_DYCD:
                 case min::batch_optimizer::CGD_DYHS:
                         return minimize(problem, fn_ulog, x0, optimizer, iterations, epsilon,
-                                        min::ls_initializer::quadratic, min::ls_strategy::backtrack_wolfe,
+                                        min::ls_initializer::quadratic, min::ls_strategy::cg_descent,
                                         history_size);
 
                 case min::batch_optimizer::GD:
                 default:
                         return minimize(problem, fn_ulog, x0, optimizer, iterations, epsilon,
-                                        min::ls_initializer::unit, min::ls_strategy::backtrack_wolfe,
+                                        min::ls_initializer::unit, min::ls_strategy::interpolation,
                                         history_size);
                 }
         }
