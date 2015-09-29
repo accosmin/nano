@@ -66,7 +66,7 @@ namespace
         void show_table(const string_t& name, const std::map<string_t, optimizer_stat_t>& ostats)
         {
                 // show global statistics
-                table_t table(text::align(name + " optimizer", 32));
+                table_t table(text::align(name.empty() ? string_t("optimizer") : (name + " optimizer"), 32));
                 table.header() << "cost"
                                << "time [us]"
                                << "|grad|/|fval|"
@@ -98,9 +98,9 @@ namespace
         template <typename tostats>
         void check_problem(const function_t& func, tostats& ostats)
         {
-                const opt_size_t iterations = 64 * 1024;
-                const opt_scalar_t epsilon = 1e-6;
-                const size_t trials = 1024;
+                const auto iterations = opt_size_t(8 * 1024);
+                const auto epsilon = math::epsilon0<opt_scalar_t>();
+                const auto trials = size_t(1024);
 
                 const size_t dims = func.problem().size();
 
@@ -190,7 +190,7 @@ namespace
                                         // update stats
                                         times[t] = timer.microseconds();
                                         crits[t] = g;
-                                        fails[t] = !state.converged(epsilon) ? 1.0 : 0.0;
+                                        fails[t] = !state.converged(math::epsilon2<opt_scalar_t>()) ? 1.0 : 0.0;
                                         iters[t] = state.m_iterations;
                                         fcalls[t] = state.m_fcalls;
                                         gcalls[t] = state.m_gcalls;
