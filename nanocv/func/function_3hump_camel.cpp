@@ -52,7 +52,30 @@ namespace ncv
 
                 virtual bool is_minima(const opt_vector_t& x, const opt_scalar_t epsilon) const override
                 {
-                        return distance(x, opt_vector_t::Zero(2)) < epsilon;
+                        const auto a = opt_scalar_t(4.2);
+                        const auto b = std::sqrt(opt_scalar_t(3.64));
+
+                        const auto xmp = std::sqrt(0.5 * (a + b));
+                        const auto xmn = std::sqrt(0.5 * (a - b));
+
+                        const auto xmins =
+                        {
+                                std::vector<opt_scalar_t>{ 0.0, 0.0 },
+                                std::vector<opt_scalar_t>{ xmp, -0.5 * xmp },
+                                std::vector<opt_scalar_t>{ xmn, -0.5 * xmn },
+                                std::vector<opt_scalar_t>{ -xmp, 0.5 * xmp },
+                                std::vector<opt_scalar_t>{ -xmn, 0.5 * xmn }
+                        };
+
+                        for (const auto& xmin : xmins)
+                        {
+                                if (distance(x, tensor::map_vector(xmin.data(), 2)) < epsilon)
+                                {
+                                        return true;
+                                }
+                        }
+
+                        return false;
                 }
         };
 
