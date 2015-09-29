@@ -44,12 +44,12 @@ namespace test
                 kdata /= ksize;
                 odata /= osize;
 
-                const scalar_t corrcpu_egb = test_cpu(ncv::tensor::corr2d_egb_t(), odata, kdata, idata);
-                const scalar_t corrcpu_egr = test_cpu(ncv::tensor::corr2d_egr_t(), odata, kdata, idata);
-                const scalar_t corrcpu_cpp = test_cpu(ncv::tensor::corr2d_cpp_t(), odata, kdata, idata);
-                const scalar_t corrcpu_mdk = test_cpu(ncv::tensor::corr2d_mdk_t(), odata, kdata, idata);
-                const scalar_t corrcpu_mdo = test_cpu(ncv::tensor::corr2d_mdo_t(), odata, kdata, idata);
-                const scalar_t corrcpu_dyn = test_cpu(ncv::tensor::corr2d_dyn_t(), odata, kdata, idata);
+                const scalar_t corrcpu_egb = test_cpu(tensor::corr2d_egb_t(), odata, kdata, idata);
+                const scalar_t corrcpu_egr = test_cpu(tensor::corr2d_egr_t(), odata, kdata, idata);
+                const scalar_t corrcpu_cpp = test_cpu(tensor::corr2d_cpp_t(), odata, kdata, idata);
+                const scalar_t corrcpu_mdk = test_cpu(tensor::corr2d_mdk_t(), odata, kdata, idata);
+                const scalar_t corrcpu_mdo = test_cpu(tensor::corr2d_mdo_t(), odata, kdata, idata);
+                const scalar_t corrcpu_dyn = test_cpu(tensor::corr2d_dyn_t(), odata, kdata, idata);
 
                 const scalar_t epsilon = math::epsilon1<scalar_t>();
 

@@ -43,11 +43,11 @@ namespace test
                 kdata /= ksize;
                 odata /= osize;
 
-                const scalar_t convcpu_eig = test_cpu(ncv::tensor::conv2d_eig_t(), idata, kdata, odata);
-                const scalar_t convcpu_cpp = test_cpu(ncv::tensor::conv2d_cpp_t(), idata, kdata, odata);
-                const scalar_t convcpu_dot = test_cpu(ncv::tensor::conv2d_dot_t(), idata, kdata, odata);
-                const scalar_t convcpu_mad = test_cpu(ncv::tensor::conv2d_mad_t(), idata, kdata, odata);
-                const scalar_t convcpu_dyn = test_cpu(ncv::tensor::conv2d_dyn_t(), idata, kdata, odata);
+                const scalar_t convcpu_eig = test_cpu(tensor::conv2d_eig_t(), idata, kdata, odata);
+                const scalar_t convcpu_cpp = test_cpu(tensor::conv2d_cpp_t(), idata, kdata, odata);
+                const scalar_t convcpu_dot = test_cpu(tensor::conv2d_dot_t(), idata, kdata, odata);
+                const scalar_t convcpu_mad = test_cpu(tensor::conv2d_mad_t(), idata, kdata, odata);
+                const scalar_t convcpu_dyn = test_cpu(tensor::conv2d_dyn_t(), idata, kdata, odata);
 
                 const scalar_t epsilon = math::epsilon1<scalar_t>();
 

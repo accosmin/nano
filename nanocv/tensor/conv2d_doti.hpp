@@ -2,50 +2,47 @@
 
 #include <cassert>
 
-namespace ncv
+namespace tensor
 {
-        namespace tensor
+        ///
+        /// \brief 2D convolution: odata += idata @ kdata (using a dot operator with a fixed kernel size)
+        ///
+        template
+        <
+                int kcols
+        >
+        struct conv2d_doti_t
         {
-                ///
-                /// \brief 2D convolution: odata += idata @ kdata (using a dot operator with a fixed kernel size)
-                ///
                 template
                 <
-                        int kcols
+                        typename tmatrixi,
+                        typename tmatrixk = tmatrixi,
+                        typename tmatrixo = tmatrixi
                 >
-                struct conv2d_doti_t
+                void operator()(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata) const
                 {
-                        template
-                        <
-                                typename tmatrixi,
-                                typename tmatrixk = tmatrixi,
-                                typename tmatrixo = tmatrixi
-                        >
-                        void operator()(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata) const
+                        assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                        assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+                        assert(kdata.cols() == kcols);
+
+                        const auto orows = odata.rows();
+                        const auto ocols = odata.cols();
+                        const auto krows = kdata.rows();
+
+                        for (auto r = 0; r < orows; r ++)
                         {
-                                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
-                                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
-                                assert(kdata.cols() == kcols);
-
-                                const auto orows = odata.rows();
-                                const auto ocols = odata.cols();
-                                const auto krows = kdata.rows();
-
-                                for (auto r = 0; r < orows; r ++)
+                                for (auto kr = 0; kr < krows; kr ++)
                                 {
-                                        for (auto kr = 0; kr < krows; kr ++)
-                                        {
-                                                const auto irow = idata.row(r + kr);
-                                                const auto krow = kdata.row(kr).template segment<kcols>(0);
+                                        const auto irow = idata.row(r + kr);
+                                        const auto krow = kdata.row(kr).template segment<kcols>(0);
 
-                                                for (auto c = 0; c < ocols; c ++)
-                                                {
-                                                        odata(r, c) += irow.template segment<kcols>(c).dot(krow);
-                                                }
+                                        for (auto c = 0; c < ocols; c ++)
+                                        {
+                                                odata(r, c) += irow.template segment<kcols>(c).dot(krow);
                                         }
                                 }
                         }
-                };
-        }
+                }
+        };
 }
 

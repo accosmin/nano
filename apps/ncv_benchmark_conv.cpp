@@ -143,12 +143,12 @@ namespace
 
                 ttensor idata_ret = idata;
 
-                row << measure_ginput(ncv::tensor::corr2d_egb_t(), idata_ret, kdata, odata, trials);
-                row << measure_ginput(ncv::tensor::corr2d_egr_t(), idata_ret, kdata, odata, trials);
-                row << measure_ginput(ncv::tensor::corr2d_cpp_t(), idata_ret, kdata, odata, trials);
-                row << measure_ginput(ncv::tensor::corr2d_mdk_t(), idata_ret, kdata, odata, trials);
-                row << measure_ginput(ncv::tensor::corr2d_mdo_t(), idata_ret, kdata, odata, trials);
-                row << measure_ginput(ncv::tensor::corr2d_dyn_t(), idata_ret, kdata, odata, trials);
+                row << measure_ginput(tensor::corr2d_egb_t(), idata_ret, kdata, odata, trials);
+                row << measure_ginput(tensor::corr2d_egr_t(), idata_ret, kdata, odata, trials);
+                row << measure_ginput(tensor::corr2d_cpp_t(), idata_ret, kdata, odata, trials);
+                row << measure_ginput(tensor::corr2d_mdk_t(), idata_ret, kdata, odata, trials);
+                row << measure_ginput(tensor::corr2d_mdo_t(), idata_ret, kdata, odata, trials);
+                row << measure_ginput(tensor::corr2d_dyn_t(), idata_ret, kdata, odata, trials);
                 row << ncv::measure_robustly_usec([&] () { conv3d.ginput(idata_ret, odata); }, trials);
         }
 

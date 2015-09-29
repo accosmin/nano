@@ -3,35 +3,32 @@
 #include <boost/serialization/vector.hpp>
 #include "vector.hpp"
 
-namespace ncv
+namespace tensor
 {
-        namespace tensor
+        ///
+        /// \brief serialize a tensor
+        ///
+        template
+        <
+                typename ttensor
+        >
+        typename ttensor::Scalar* save(const ttensor& t, typename ttensor::Scalar* data)
         {
-                ///
-                /// \brief serialize a tensor
-                ///
-                template
-                <
-                        typename ttensor
-                >
-                typename ttensor::Scalar* save(const ttensor& t, typename ttensor::Scalar* data)
-                {
-                        tensor::map_vector(data, t.size()) = tensor::map_vector(t.data(), t.size());
-                        return data + t.size();
-                }
+                tensor::map_vector(data, t.size()) = tensor::map_vector(t.data(), t.size());
+                return data + t.size();
+        }
 
-                ///
-                /// \brief serialize a tensor
-                ///
-                template
-                <
-                        typename ttensor
-                >
-                const typename ttensor::Scalar* load(ttensor& t, const typename ttensor::Scalar* data)
-                {
-                        tensor::map_vector(t.data(), t.size()) = tensor::map_vector(data, t.size());
-                        return data + t.size();
-                }
+        ///
+        /// \brief serialize a tensor
+        ///
+        template
+        <
+                typename ttensor
+        >
+        const typename ttensor::Scalar* load(ttensor& t, const typename ttensor::Scalar* data)
+        {
+                tensor::map_vector(t.data(), t.size()) = tensor::map_vector(data, t.size());
+                return data + t.size();
         }
 }
 

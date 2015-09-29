@@ -2,51 +2,48 @@
 
 #include <cassert>
 
-namespace ncv
+namespace tensor
 {
-        namespace tensor
+        ///
+        /// \brief 2D convolution: odata += idata @ kdata (using a mad operator for a fixed output size)
+        ///
+        template
+        <
+                int ocols
+        >
+        struct conv2d_madi_t
         {
-                ///
-                /// \brief 2D convolution: odata += idata @ kdata (using a mad operator for a fixed output size)
-                ///
                 template
                 <
-                        int ocols
+                        typename tmatrixi,
+                        typename tmatrixk = tmatrixi,
+                        typename tmatrixo = tmatrixi
                 >
-                struct conv2d_madi_t
+                void operator()(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata) const
                 {
-                        template
-                        <
-                                typename tmatrixi,
-                                typename tmatrixk = tmatrixi,
-                                typename tmatrixo = tmatrixi
-                        >
-                        void operator()(const tmatrixi& idata, const tmatrixk& kdata, tmatrixo& odata) const
+                        assert(idata.rows() + 1 == kdata.rows() + odata.rows());
+                        assert(idata.cols() + 1 == kdata.cols() + odata.cols());
+                        assert(odata.cols() == ocols);
+
+                        const auto orows = odata.rows();
+                        const auto krows = kdata.rows();
+                        const auto kcols = kdata.cols();
+
+                        for (auto r = 0; r < orows; r ++)
                         {
-                                assert(idata.rows() + 1 == kdata.rows() + odata.rows());
-                                assert(idata.cols() + 1 == kdata.cols() + odata.cols());
-                                assert(odata.cols() == ocols);
+                                auto orow = odata.row(r);
 
-                                const auto orows = odata.rows();
-                                const auto krows = kdata.rows();
-                                const auto kcols = kdata.cols();
-
-                                for (auto r = 0; r < orows; r ++)
+                                for (auto kr = 0; kr < krows; kr ++)
                                 {
-                                        auto orow = odata.row(r);
+                                        const auto irow = idata.row(r + kr);
 
-                                        for (auto kr = 0; kr < krows; kr ++)
+                                        for (auto kc = 0; kc < kcols; kc ++)
                                         {
-                                                const auto irow = idata.row(r + kr);
-
-                                                for (auto kc = 0; kc < kcols; kc ++)
-                                                {
-                                                        orow += irow.template segment<ocols>(kc) * kdata(kr, kc);
-                                                }
+                                                orow += irow.template segment<ocols>(kc) * kdata(kr, kc);
                                         }
                                 }
                         }
-                };
-        }
+                }
+        };
 }
 
