@@ -92,10 +92,7 @@ namespace tensor
                 tmatrix         m_kdata_lin;    ///< buffer to store linearized convolutions
         };
 
-        template
-        <
-                typename ttensor
-        >
+        template <typename ttensor>
         bool conv3d_lin_t<ttensor>::reset(const ttensor& kdata_io, const tsize idims, const tsize odims)
         {
                 if (idims * odims != kdata_io.dims())
@@ -124,15 +121,8 @@ namespace tensor
                 }
         }
 
-        template
-        <
-                typename ttensor
-        >
-        template
-        <
-                typename ttensori,
-                typename ttensoro
-        >
+        template <typename ttensor>
+        template <typename ttensori, typename ttensoro>
         bool conv3d_lin_t<ttensor>::output(const ttensori& idata, ttensoro&& odata)
         {
                 if (!check_inputs(idata, odata))
@@ -160,15 +150,8 @@ namespace tensor
                 return true;
         }
 
-        template
-        <
-                typename ttensor
-        >
-        template
-        <
-                typename ttensori,
-                typename ttensoro
-        >
+        template <typename ttensor>
+        template <typename ttensori, typename ttensoro>
         bool conv3d_lin_t<ttensor>::ginput(ttensori&& idata, const ttensoro& odata)
         {
                 if (!check_inputs(idata, odata))
@@ -196,16 +179,8 @@ namespace tensor
                 return true;
         }
 
-        template
-        <
-                typename ttensor
-        >
-        template
-        <
-                typename ttensori,
-                typename ttensork,
-                typename ttensoro
-        >
+        template <typename ttensor>
+        template <typename ttensori, typename ttensork, typename ttensoro>
         bool conv3d_lin_t<ttensor>::gparam(const ttensori& idata, ttensork&& kdata, const ttensoro& odata)
         {
                 if (    !check_inputs(idata, odata) ||
