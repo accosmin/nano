@@ -50,7 +50,7 @@ namespace test
                         // convolution part
                         for (size_t l = 0; l < n_layers && !conv_layer_id.empty(); l ++)
                         {
-                                random_t<size_t> rgen(2, 3);
+                                math::random_t<size_t> rgen(2, 3);
 
                                 string_t params;
                                 params += "dims=" + text::to_string(rgen());
@@ -67,7 +67,7 @@ namespace test
                         // fully-connected part
                         for (size_t l = 0; l < n_layers && !full_layer_id.empty(); l ++)
                         {
-                                random_t<size_t> rgen(1, 5);
+                                math::random_t<size_t> rgen(1, 5);
 
                                 string_t params;
                                 params += "dims=" + text::to_string(rgen());
@@ -123,7 +123,7 @@ namespace test
                 for (const string_t& desc : descs)
                 {
                         // pick a random loss (enough, because all the loss functions are tested separately)
-                        random_t<size_t> rng(0, loss_ids.size());
+                        math::random_t<size_t> rng(0, loss_ids.size());
 
                         const string_t loss_id = loss_ids[rng() % loss_ids.size()];
                         result.emplace_back(desc, loss_id);
@@ -140,7 +140,7 @@ namespace test
         void test_grad_params(const string_t& header, const string_t& loss_id, const model_t& model,
                 accumulator_t& acc_params)
         {
-                random_t<size_t> rand(3, 7);
+                math::random_t<size_t> rand(3, 7);
 
                 const size_t n_tests = 16;
                 const size_t n_samples = rand();
@@ -186,9 +186,9 @@ namespace test
 
                 for (size_t t = 0; t < n_tests; t ++)
                 {
-                        random_t<scalar_t> prgen(-0.1, +0.1);
-                        random_t<scalar_t> irgen(-0.1, +0.1);
-                        random_t<size_t> trgen(0, osize - 1);
+                        math::random_t<scalar_t> prgen(-0.1, +0.1);
+                        math::random_t<scalar_t> irgen(-0.1, +0.1);
+                        math::random_t<size_t> trgen(0, osize - 1);
 
                         prgen(params.data(), params.data() + psize);
                         for (vector_t& target : targets)
@@ -288,9 +288,9 @@ namespace test
 
                 for (size_t t = 0; t < n_tests; t ++)
                 {
-                        random_t<scalar_t> prgen(-1.0, +1.0);
-                        random_t<scalar_t> irgen(-0.1, +0.1);
-                        random_t<size_t> trgen(0, osize - 1);
+                        math::random_t<scalar_t> prgen(-1.0, +1.0);
+                        math::random_t<scalar_t> irgen(-0.1, +0.1);
+                        math::random_t<size_t> trgen(0, osize - 1);
 
                         prgen(params.data(), params.data() + psize);
                         target = ncv::class_target(trgen(), osize);

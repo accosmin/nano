@@ -39,20 +39,20 @@ namespace
 {
         struct optimizer_stat_t
         {
-                stats_t<scalar_t>       m_times;        ///< optimization time (microseconds)
-                stats_t<scalar_t>       m_crits;        ///< convergence criteria
-                stats_t<scalar_t>       m_fails;        ///< #convergence failures
-                stats_t<scalar_t>       m_iters;        ///< #iterations
-                stats_t<scalar_t>       m_fcalls;       ///< #function value calls
-                stats_t<scalar_t>       m_gcalls;       ///< #gradient calls
-                stats_t<scalar_t>       m_speeds;       ///< convergence speed (actually the average decrease ratio of the convergence criteria)
+                math::stats_t<scalar_t>       m_times;        ///< optimization time (microseconds)
+                math::stats_t<scalar_t>       m_crits;        ///< convergence criteria
+                math::stats_t<scalar_t>       m_fails;        ///< #convergence failures
+                math::stats_t<scalar_t>       m_iters;        ///< #iterations
+                math::stats_t<scalar_t>       m_fcalls;       ///< #function value calls
+                math::stats_t<scalar_t>       m_gcalls;       ///< #gradient calls
+                math::stats_t<scalar_t>       m_speeds;       ///< convergence speed (actually the average decrease ratio of the convergence criteria)
         };
 
-        stats_t<scalar_t> make_stats(const scalars_t& values, const scalars_t& flags)
+        math::stats_t<scalar_t> make_stats(const scalars_t& values, const scalars_t& flags)
         {
                 assert(values.size() == flags.size());
 
-                stats_t<scalar_t> stats;
+                math::stats_t<scalar_t> stats;
                 for (size_t i = 0; i < values.size(); i ++)
                 {
                         if (flags[i] >= 0.0)
@@ -98,13 +98,13 @@ namespace
         template <typename tostats>
         void check_problem(const function_t& func, tostats& ostats)
         {
-                const auto iterations = opt_size_t(8 * 1024);
+                const auto iterations = opt_size_t(64 * 1024);
                 const auto epsilon = math::epsilon0<opt_scalar_t>();
                 const auto trials = size_t(1024);
 
                 const size_t dims = func.problem().size();
 
-                random_t<opt_scalar_t> rgen(-1.0, +1.0);
+                math::random_t<opt_scalar_t> rgen(-1.0, +1.0);
 
                 // generate fixed random trials
                 std::vector<opt_vector_t> x0s(trials);

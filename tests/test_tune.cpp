@@ -54,8 +54,8 @@ BOOST_AUTO_TEST_CASE(test_tune)
 
         for (size_t t = 0; t < n_tests; t ++)
         {
-                random_t<scalar_t> agen(+0.1, +1.0);
-                random_t<scalar_t> bgen(-2.0, +2.0);
+                math::random_t<scalar_t> agen(+0.1, +1.0);
+                math::random_t<scalar_t> bgen(-2.0, +2.0);
 
                 test::check(agen(), bgen(), minlog, maxlog, epslog, splits);
         }

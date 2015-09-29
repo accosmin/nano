@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <algorithm>
 
-namespace ncv
+namespace math
 {
         ///
         /// \brief computes statistics: average, standard deviation etc.

@@ -37,8 +37,8 @@ namespace ncv
 
         void linear_layer_t::random_params(scalar_t min, scalar_t max)
         {
-                tensor::set_random(m_wdata, random_t<scalar_t>(min, max));
-                tensor::set_random(m_bdata, random_t<scalar_t>(min, max));
+                tensor::set_random(m_wdata, math::random_t<scalar_t>(min, max));
+                tensor::set_random(m_bdata, math::random_t<scalar_t>(min, max));
         }
 
         scalar_t* linear_layer_t::save_params(scalar_t* params) const

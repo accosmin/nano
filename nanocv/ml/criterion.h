@@ -156,7 +156,7 @@ namespace ncv
                 scalar_t                m_lambda;       ///< regularization weight (if any)                
                 type                    m_type;         ///<
 
-                stats_t<scalar_t>       m_estats;       ///< loss error statistics
+                math::stats_t<scalar_t> m_estats;       ///< loss error statistics
         };
 }
 

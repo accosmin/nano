@@ -8,12 +8,10 @@
 
 namespace test
 {
-        using namespace ncv;
-
         void check_stats(double avg, double var, size_t count)
         {
-                ncv::stats_t<double> stats;
-                ncv::random_t<double> rgen(-var, +var);
+                math::stats_t<double> stats;
+                math::random_t<double> rgen(-var, +var);
 
                 // generate random values
                 std::vector<double> values;

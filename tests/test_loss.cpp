@@ -48,7 +48,7 @@ namespace test
                 // check the gradient using random parameters
                 for (size_t t = 0; t < n_tests; t ++)
                 {
-                        random_t<scalar_t> rgen(-1.0, +1.0);
+                        math::random_t<scalar_t> rgen(-1.0, +1.0);
 
                         vector_t x(n_dims);
                         rgen(x.data(), x.data() + n_dims);

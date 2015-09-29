@@ -72,7 +72,7 @@ namespace ncv
                 tmatrix get_object_patch(const tmatrix& image,
                         const size_t object_index, const size_t objects, const scalar_t max_offset)
                 {
-                        random_t<scalar_t> rng(-max_offset, max_offset);
+                        math::random_t<scalar_t> rng(-max_offset, max_offset);
 
                         const auto icols = static_cast<int>(image.cols());
                         const auto irows = static_cast<int>(image.rows());
@@ -98,14 +98,14 @@ namespace ncv
                         tensor_t image(4, rows, cols);
 
                         // noisy background
-                        random_t<scalar_t> back_noise(-max_noise, +max_noise);
+                        math::random_t<scalar_t> back_noise(-max_noise, +max_noise);
                         tensor::for_each(image.matrix(0), [&] (scalar_t& value) { value = ir + back_noise(); });
                         tensor::for_each(image.matrix(1), [&] (scalar_t& value) { value = ig + back_noise(); });
                         tensor::for_each(image.matrix(2), [&] (scalar_t& value) { value = ib + back_noise(); });
                         image.matrix(3).setConstant(1.0);
 
                         // smooth background
-                        const gauss_kernel_t<scalar_t> back_gauss(sigma);
+                        const math::gauss_kernel_t<scalar_t> back_gauss(sigma);
                         ncv::convolve(back_gauss, image.matrix(0));
                         ncv::convolve(back_gauss, image.matrix(1));
                         ncv::convolve(back_gauss, image.matrix(2));
@@ -155,10 +155,10 @@ namespace ncv
 
                 const size_t n_fonts = sizeof(char_patches) / sizeof(rgba_matrix_t);
 
-                random_t<size_t> rng_protocol(1, 10);
-                random_t<size_t> rng_output(obegin(), oend() - 1);
-                random_t<size_t> rng_font(1, n_fonts);
-                random_t<scalar_t> rng_gauss(0.0, 2.0);
+                math::random_t<size_t> rng_protocol(1, 10);
+                math::random_t<size_t> rng_output(obegin(), oend() - 1);
+                math::random_t<size_t> rng_font(1, n_fonts);
+                math::random_t<scalar_t> rng_gauss(0.0, 2.0);
 
                 clear_memory(0);
 

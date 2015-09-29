@@ -12,10 +12,10 @@ BOOST_AUTO_TEST_CASE(test_color_rgba_transform)
 
         const size_t tests = 256 * 1024;
 
-        ncv::random_t<rgba_t> rgen(0, 255);
-        ncv::random_t<rgba_t> ggen(0, 255);
-        ncv::random_t<rgba_t> bgen(0, 255);
-        ncv::random_t<rgba_t> agen(0, 255);
+        math::random_t<rgba_t> rgen(0, 255);
+        math::random_t<rgba_t> ggen(0, 255);
+        math::random_t<rgba_t> bgen(0, 255);
+        math::random_t<rgba_t> agen(0, 255);
 
         // test RGBA transform
         for (size_t t = 0; t < tests; t ++)
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(test_color_tensor)
 
         for (size_t test = 0; test < tests; test ++)
         {
-                random_t<int> rng(16, 64);
+                math::random_t<int> rng(16, 64);
 
                 const auto rows = rng();
                 const auto cols = rng();

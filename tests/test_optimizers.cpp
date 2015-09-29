@@ -33,13 +33,13 @@ namespace test
 
         static void check_problem(const test::function_t& func)
         {
-                const auto iterations = opt_size_t(64 * 1024);
-                const auto epsilon = opt_scalar_t(1e-8);
+                const auto iterations = opt_size_t(8 * 1024);
+                const auto epsilon = math::epsilon0<opt_scalar_t>();
                 const auto trials = size_t(1024);
 
                 const auto dims = func.problem().size();
 
-                random_t<opt_scalar_t> rgen(-1.0, +1.0);
+                math::random_t<opt_scalar_t> rgen(-1.0, +1.0);
 
                 // generate fixed random trials
                 std::vector<opt_vector_t> x0s(trials);
@@ -89,8 +89,8 @@ namespace test
                                 const auto g = state.convergence_criteria();
 
                                 const auto f_thres = f0 - epsilon * math::abs(f0);
-                                const auto g_thres = 1e-5;
-                                const auto x_thres = 1e-3;
+                                const auto g_thres = math::epsilon2<opt_scalar_t>();
+                                const auto x_thres = math::epsilon3<opt_scalar_t>();
 
                                 // ignore out-of-domain solutions
                                 if (!func.is_valid(x))
@@ -153,19 +153,19 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
         using namespace ncv;        
 
         test::check_problems(ncv::make_beale_funcs());
-//        test::check_problems(ncv::make_booth_funcs());
-//        test::check_problems(ncv::make_matyas_funcs());
-//        test::check_problems(ncv::make_trid_funcs(8));
-//        test::check_problems(ncv::make_cauchy_funcs(8));
-//        test::check_problems(ncv::make_sphere_funcs(8));
-//        test::check_problems(ncv::make_powell_funcs(8));
-//        test::check_problems(ncv::make_mccormick_funcs());
-//        test::check_problems(ncv::make_himmelblau_funcs());
-//        test::check_problems(ncv::make_rosenbrock_funcs(7));
-//        test::check_problems(ncv::make_3hump_camel_funcs());
-//        test::check_problems(ncv::make_dixon_price_funcs(8));
-//        test::check_problems(ncv::make_sum_squares_funcs(8));
-//        test::check_problems(ncv::make_goldstein_price_funcs());
-//        test::check_problems(ncv::make_rotated_ellipsoid_funcs(8));
+        test::check_problems(ncv::make_booth_funcs());
+        test::check_problems(ncv::make_matyas_funcs());
+        test::check_problems(ncv::make_trid_funcs(8));
+        test::check_problems(ncv::make_cauchy_funcs(8));
+        test::check_problems(ncv::make_sphere_funcs(8));
+        test::check_problems(ncv::make_powell_funcs(8));
+        test::check_problems(ncv::make_mccormick_funcs());
+        test::check_problems(ncv::make_himmelblau_funcs());
+        test::check_problems(ncv::make_rosenbrock_funcs(7));
+        test::check_problems(ncv::make_3hump_camel_funcs());
+        test::check_problems(ncv::make_dixon_price_funcs(8));
+        test::check_problems(ncv::make_sum_squares_funcs(8));
+        test::check_problems(ncv::make_goldstein_price_funcs());
+        test::check_problems(ncv::make_rotated_ellipsoid_funcs(8));
 }
 

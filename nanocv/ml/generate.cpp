@@ -62,7 +62,7 @@ namespace ncv
                 const scalar_t epsilon = 1e-6;
 
                 tensor_t input(model.idims(), model.irows(), model.icols());
-                tensor::set_random(input, random_t<scalar_t>(0.0, 1.0));
+                tensor::set_random(input, math::random_t<scalar_t>(0.0, 1.0));
 
                 const opt_state_t result = ncv::minimize(
                         opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,

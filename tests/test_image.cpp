@@ -13,7 +13,7 @@ BOOST_AUTO_TEST_CASE(test_image_construct)
 
         for (size_t test = 0; test < 16; test ++)
         {
-                random_t<coord_t> rng(16, 64);
+                math::random_t<coord_t> rng(16, 64);
 
                 const auto rows = rng();
                 const auto cols = rng();
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(test_image_io_matrix)
 
         for (size_t test = 0; test < 16; test ++)
         {
-                random_t<coord_t> rng(16, 64);
+                math::random_t<coord_t> rng(16, 64);
 
                 const auto rows = rng();
                 const auto cols = rng();
@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE(test_image_io_file)
 
         for (size_t test = 0; test < 16; test ++)
         {
-                random_t<coord_t> rng(16, 64);
+                math::random_t<coord_t> rng(16, 64);
 
                 const auto rows = rng();
                 const auto cols = rng();

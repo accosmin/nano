@@ -9,13 +9,11 @@
 
 BOOST_AUTO_TEST_CASE(test_cubic)
 {
-        using namespace ncv;
-
         const size_t tests = 1327;
 
         for (size_t t = 0; t < tests; t ++)
         {
-                random_t<double> rnd(-1.0, +1.0);
+                math::random_t<double> rnd(-1.0, +1.0);
 
                 // build random cubic
                 const double a = rnd();

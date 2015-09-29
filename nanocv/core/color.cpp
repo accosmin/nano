@@ -206,7 +206,7 @@ namespace ncv
 
         rgba_t color::make_random_rgba()
         {
-                random_t<rgba_t> rng;
+                math::random_t<rgba_t> rng;
 
                 return make_rgba(rng() & 0xFF, rng() & 0xFF, rng() & 0xFF, 255);
         }
@@ -217,7 +217,7 @@ namespace ncv
                 const auto cg = 0xFF - get_green(source);
                 const auto cb = 0xFF - get_blue(source);
 
-                random_t<int> rng(-55, +55);
+                math::random_t<int> rng(-55, +55);
 
                 return make_rgba(static_cast<rgba_t>(math::clamp(cr + rng(), 0, 255)),
                                  static_cast<rgba_t>(math::clamp(cg + rng(), 0, 255)),

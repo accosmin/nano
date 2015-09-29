@@ -9,13 +9,11 @@
 
 BOOST_AUTO_TEST_CASE(test_quadratic)
 {
-        using namespace ncv;
-
         const size_t tests = 1327;
 
         for (size_t t = 0; t < tests; t ++)
         {
-                random_t<double> rnd(-1.0, +1.0);
+                math::random_t<double> rnd(-1.0, +1.0);
 
                 // build random quadratic
                 const double a = rnd();

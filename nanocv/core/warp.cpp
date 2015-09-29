@@ -43,7 +43,7 @@ namespace ncv
 
                 void smooth_field(matrix_t& field, const scalar_t sigma)
                 {
-                        const gauss_kernel_t<scalar_t> gauss(sigma);
+                        const math::gauss_kernel_t<scalar_t> gauss(sigma);
                         ncv::convolve(gauss, field);
                 }
 
@@ -53,8 +53,8 @@ namespace ncv
                 {
                         matrix_t fieldx(rows, cols), fieldy(rows, cols);
 
-                        tensor::set_random(fieldx, random_t<scalar_t>(-noise, +noise));
-                        tensor::set_random(fieldy, random_t<scalar_t>(-noise, +noise));
+                        tensor::set_random(fieldx, math::random_t<scalar_t>(-noise, +noise));
+                        tensor::set_random(fieldy, math::random_t<scalar_t>(-noise, +noise));
 
                         smooth_field(fieldx, sigma);
                         smooth_field(fieldy, sigma);
@@ -68,8 +68,8 @@ namespace ncv
                 {
                         matrix_t fieldx(rows, cols), fieldy(rows, cols);
 
-                        tensor::set_random(fieldx, random_t<scalar_t>(delta - noise, delta + noise));
-                        tensor::set_random(fieldy, random_t<scalar_t>(delta - noise, delta + noise));
+                        tensor::set_random(fieldx, math::random_t<scalar_t>(delta - noise, delta + noise));
+                        tensor::set_random(fieldy, math::random_t<scalar_t>(delta - noise, delta + noise));
 
                         smooth_field(fieldx, sigma);
                         smooth_field(fieldy, sigma);
@@ -87,7 +87,7 @@ namespace ncv
                         const scalar_t cy = 0.5 * rows;
                         const scalar_t id = 1.0 / (math::square(cx) + math::square(cy));
 
-                        random_t<scalar_t> rng(-noise, +noise);
+                        math::random_t<scalar_t> rng(-noise, +noise);
 
                         for (size_t r = 0; r < rows; r ++)
                         {
@@ -159,8 +159,8 @@ namespace ncv
                 // generate random fields
                 const scalar_t pi = std::atan2(0.0, -0.0);
 
-                random_t<scalar_t> rng_theta(-pi / 8.0, +pi / 8.0);
-                random_t<scalar_t> rng_delta(-1.0, +1.0);
+                math::random_t<scalar_t> rng_theta(-pi / 8.0, +pi / 8.0);
+                math::random_t<scalar_t> rng_delta(-1.0, +1.0);
 
                 matrix_t fieldx, fieldy;
                 switch (params.m_ftype)
@@ -189,9 +189,9 @@ namespace ncv
                 }
 
                 // warp
-                random_t<scalar_t> rng_alphax(-params.m_alpha, +params.m_alpha);
-                random_t<scalar_t> rng_alphay(-params.m_alpha, +params.m_alpha);
-                random_t<scalar_t> rng_beta  (-params.m_beta, +params.m_beta);
+                math::random_t<scalar_t> rng_alphax(-params.m_alpha, +params.m_alpha);
+                math::random_t<scalar_t> rng_alphay(-params.m_alpha, +params.m_alpha);
+                math::random_t<scalar_t> rng_beta  (-params.m_beta, +params.m_beta);
 
                 const scalar_t alphax = rng_alphax();
                 const scalar_t alphay = rng_alphay();

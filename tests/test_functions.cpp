@@ -39,7 +39,7 @@ namespace test
 
                         for (size_t t = 0; t < trials; t ++)
                         {
-                                random_t<opt_scalar_t> rgen(-1.0, +1.0);
+                                math::random_t<opt_scalar_t> rgen(-1.0, +1.0);
 
                                 opt_vector_t x0(dims);
                                 rgen(x0.data(), x0.data() + x0.size());

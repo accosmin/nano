@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <type_traits>
 
-namespace ncv
+namespace math
 {
         namespace gauss
         {

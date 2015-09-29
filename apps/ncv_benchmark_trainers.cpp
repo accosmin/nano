@@ -9,11 +9,11 @@
 #include "text/concatenate.hpp"
 #include "nanocv/tasks/task_charset.h"
 
-using namespace ncv;
-
 namespace
 {
-        string_t stats_to_string(const stats_t<scalar_t>& stats)
+        using namespace ncv;
+
+        string_t stats_to_string(const math::stats_t<scalar_t>& stats)
         {
                 return  text::to_string(stats.avg())
                         + "+/-" + text::to_string(stats.stdev())
@@ -29,8 +29,8 @@ namespace
         void test_optimizer(model_t& model, const string_t& name, table_t& table, const vectors_t& x0s,
                 ttrainer trainer)
         {
-                stats_t<scalar_t> terrors;
-                stats_t<scalar_t> verrors;
+                math::stats_t<scalar_t> terrors;
+                math::stats_t<scalar_t> verrors;
 
                 log_info() << "<<< running " << name << " ...";
 

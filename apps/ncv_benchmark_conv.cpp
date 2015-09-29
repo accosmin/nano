@@ -46,7 +46,7 @@ namespace
                 const int osize = isize - ksize + 1;
                 const int kdims = odims * idims;
 
-                random_t<typename ttensor::Scalar> rng(-1.0 / isize, 1.0 / isize);
+                math::random_t<typename ttensor::Scalar> rng(-1.0 / isize, 1.0 / isize);
 
                 idata.resize(idims, isize, isize);
                 kdata.resize(kdims, ksize, ksize);

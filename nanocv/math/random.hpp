@@ -4,7 +4,7 @@
 #include <limits>
 #include <type_traits>
 
-namespace ncv
+namespace math
 {
         ///
         /// \brief uniform random number generator in the [min, max] range.

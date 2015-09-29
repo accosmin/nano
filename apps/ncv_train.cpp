@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
         // train & test models
         std::map<scalar_t, std::tuple<rmodel_t, trainer_states_t>> models;
 
-        stats_t<scalar_t> lstats, estats;
+        math::stats_t<scalar_t> lstats, estats;
         for (size_t t = 0; t < cmd_trials; t ++)
         {
                 for (size_t f = 0; f < rtask->fsize(); f ++)

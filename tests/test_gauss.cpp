@@ -7,14 +7,12 @@
 
 BOOST_AUTO_TEST_CASE(test_gauss)
 {
-        using namespace ncv;
-
         using std::size_t;
 
         const std::vector<double> sigmas = { 0.2, 0.5, 0.7, 1.0, 1.5, 2.0, 2.5 };
         const std::vector<double> cutoffs = { 0.001, 0.01, 0.1 };
 
-        const gauss::kernel_normalization normalize = gauss::kernel_normalization::on;
+        const math::gauss::kernel_normalization normalize = math::gauss::kernel_normalization::on;
 
         // test various variances
         for (double sigma : sigmas)
@@ -22,7 +20,7 @@ BOOST_AUTO_TEST_CASE(test_gauss)
                 // test various cutoffs (skip low values in the kernel)
                 for (double cutoff : cutoffs)
                 {
-                        const auto kernel = gauss_kernel_t<double>(sigma, cutoff, normalize);
+                        const auto kernel = math::gauss_kernel_t<double>(sigma, cutoff, normalize);
 
                         std::cout << "sigma = " << sigma << ", cutoff = " << cutoff << std::endl;
                         std::cout << "kernel = {";

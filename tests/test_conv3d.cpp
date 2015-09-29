@@ -31,7 +31,7 @@ namespace test
                 const int osize = isize - ksize + 1;
                 const int kdims = odims * idims;
 
-                random_t<tscalar> rng(-1.0 / isize, 1.0 / isize);
+                math::random_t<tscalar> rng(-1.0 / isize, 1.0 / isize);
 
                 ttensor idata(idims, isize, isize);
                 ttensor kdata(kdims, ksize, ksize);

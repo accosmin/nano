@@ -10,8 +10,6 @@
 
 namespace test
 {
-        using namespace ncv;
-
         template
         <
                 typename tscalar
