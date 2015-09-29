@@ -36,22 +36,6 @@ namespace ncv
         /// \brief check if the training should be stopped based on the return code
         ///
         NANOCV_PUBLIC bool is_done(const trainer_result_return_t);
-
-        // string cast for enumerations
-        namespace text
-        {
-                template <>
-                inline std::map<trainer_result_return_t, std::string> enum_string<trainer_result_return_t>()
-                {
-                        return
-                        {
-                                { trainer_result_return_t::better,      "better" },
-                                { trainer_result_return_t::worse,       "worse" },
-                                { trainer_result_return_t::overfitting, "overfitting" },
-                                { trainer_result_return_t::solved,      "solved" }
-                        };
-                }
-        }
         
         ///
         /// \brief track the current/optimum model state
@@ -125,5 +109,20 @@ namespace ncv
         /// \brief compare two trainer results
         ///
         NANOCV_PUBLIC bool operator<(const trainer_result_t& one, const trainer_result_t& other);
+}
+
+namespace text
+{
+        template <>
+        inline std::map<ncv::trainer_result_return_t, std::string> enum_string<ncv::trainer_result_return_t>()
+        {
+                return
+                {
+                        { ncv::trainer_result_return_t::better,      "better" },
+                        { ncv::trainer_result_return_t::worse,       "worse" },
+                        { ncv::trainer_result_return_t::overfitting, "overfitting" },
+                        { ncv::trainer_result_return_t::solved,      "solved" }
+                };
+        }
 }
 

@@ -2,44 +2,41 @@
 
 #include <string>
 
-namespace ncv
+namespace text
 {
         ///
         /// \brief text alignment options
         ///
-        enum class align : int
+        enum class alignment : int
         {
                 left,
                 center,
                 right
         };
 
-        namespace text
+        ///
+        /// \brief align a string to fill the given size (if possible)
+        ///
+        inline std::string align(const std::string& str, const std::size_t str_size,
+                const alignment mode = alignment::left, const char fill_char = ' ')
         {
-                ///
-                /// \brief align a string to fill the given size (if possible)
-                ///
-                inline std::string align(const std::string& str, const std::size_t str_size,
-                        const ncv::align alignment = align::left, const char fill_char = ' ')
+                const std::size_t fill_size = str.size() > str_size ? 0 : str_size - str.size();
+
+                switch (mode)
                 {
-                        const std::size_t fill_size = str.size() > str_size ? 0 : str_size - str.size();
+                case alignment::center:
+                        return std::string(fill_size / 2, fill_char) +
+                               str +
+                               std::string(fill_size - fill_size / 2, fill_char);
 
-                        switch (alignment)
-                        {
-                        case ncv::align::center:
-                                return std::string(fill_size / 2, fill_char) +
-                                       str +
-                                       std::string(fill_size - fill_size / 2, fill_char);
+                case alignment::right:
+                        return std::string(fill_size, fill_char) +
+                               str;
 
-                        case ncv::align::right:
-                                return std::string(fill_size, fill_char) +
-                                       str;
-
-                        case ncv::align::left:
-                        default:
-                                return str +
-                                       std::string(fill_size, fill_char);
-                        }
+                case alignment::left:
+                default:
+                        return str +
+                               std::string(fill_size, fill_char);
                 }
         }
 }

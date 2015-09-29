@@ -15,17 +15,13 @@
 
 BOOST_AUTO_TEST_CASE(test_text_resize)
 {
-        using namespace ncv;
-
-        BOOST_CHECK_EQUAL(text::align("text", 10, align::left, '='),   "text======");
-        BOOST_CHECK_EQUAL(text::align("text", 10, align::right, '='),  "======text");
-        BOOST_CHECK_EQUAL(text::align("text", 10, align::center, '='), "===text===");
+        BOOST_CHECK_EQUAL(text::align("text", 10, text::alignment::left, '='),   "text======");
+        BOOST_CHECK_EQUAL(text::align("text", 10, text::alignment::right, '='),  "======text");
+        BOOST_CHECK_EQUAL(text::align("text", 10, text::alignment::center, '='), "===text===");
 }
 
 BOOST_AUTO_TEST_CASE(test_text_split)
 {
-        using namespace ncv;
-
         const auto tokens = text::split("= -token1 token2 something ", " =-");
 
         BOOST_REQUIRE(tokens.size() == 3);
@@ -36,8 +32,6 @@ BOOST_AUTO_TEST_CASE(test_text_split)
 
 BOOST_AUTO_TEST_CASE(test_text_lower)
 {
-        using namespace ncv;
-
         BOOST_CHECK_EQUAL(text::lower("Token"), "token");
         BOOST_CHECK_EQUAL(text::lower("ToKEN"), "token");
         BOOST_CHECK_EQUAL(text::lower("token"), "token");
@@ -47,8 +41,6 @@ BOOST_AUTO_TEST_CASE(test_text_lower)
 
 BOOST_AUTO_TEST_CASE(test_text_upper)
 {
-        using namespace ncv;
-
         BOOST_CHECK_EQUAL(text::upper("Token"), "TOKEN");
         BOOST_CHECK_EQUAL(text::upper("ToKEN"), "TOKEN");
         BOOST_CHECK_EQUAL(text::upper("token"), "TOKEN");
@@ -58,8 +50,6 @@ BOOST_AUTO_TEST_CASE(test_text_upper)
 
 BOOST_AUTO_TEST_CASE(test_text_ends_with)
 {
-        using namespace ncv;
-
         BOOST_CHECK(text::ends_with("ToKeN", ""));
         BOOST_CHECK(text::ends_with("ToKeN", "N"));
         BOOST_CHECK(text::ends_with("ToKeN", "eN"));
@@ -76,8 +66,6 @@ BOOST_AUTO_TEST_CASE(test_text_ends_with)
 
 BOOST_AUTO_TEST_CASE(test_text_iends_with)
 {
-        using namespace ncv;
-
         BOOST_CHECK(text::iends_with("ToKeN", ""));
         BOOST_CHECK(text::iends_with("ToKeN", "N"));
         BOOST_CHECK(text::iends_with("ToKeN", "eN"));
@@ -94,8 +82,6 @@ BOOST_AUTO_TEST_CASE(test_text_iends_with)
 
 BOOST_AUTO_TEST_CASE(test_text_starts_with)
 {
-        using namespace ncv;
-
         BOOST_CHECK(text::starts_with("ToKeN", ""));
         BOOST_CHECK(text::starts_with("ToKeN", "T"));
         BOOST_CHECK(text::starts_with("ToKeN", "To"));
@@ -112,8 +98,6 @@ BOOST_AUTO_TEST_CASE(test_text_starts_with)
 
 BOOST_AUTO_TEST_CASE(test_text_istarts_with)
 {
-        using namespace ncv;
-
         BOOST_CHECK(text::istarts_with("ToKeN", ""));
         BOOST_CHECK(text::istarts_with("ToKeN", "t"));
         BOOST_CHECK(text::istarts_with("ToKeN", "to"));
@@ -130,8 +114,6 @@ BOOST_AUTO_TEST_CASE(test_text_istarts_with)
 
 BOOST_AUTO_TEST_CASE(test_text_equals)
 {
-        using namespace ncv;
-
         BOOST_CHECK(!text::equals("ToKeN", ""));
         BOOST_CHECK(!text::equals("ToKeN", "N"));
         BOOST_CHECK(!text::equals("ToKeN", "eN"));
@@ -148,8 +130,6 @@ BOOST_AUTO_TEST_CASE(test_text_equals)
 
 BOOST_AUTO_TEST_CASE(test_text_iequals)
 {
-        using namespace ncv;
-
         BOOST_CHECK(!text::iequals("ToKeN", ""));
         BOOST_CHECK(!text::iequals("ToKeN", "N"));
         BOOST_CHECK(!text::iequals("ToKeN", "eN"));
@@ -166,8 +146,6 @@ BOOST_AUTO_TEST_CASE(test_text_iequals)
 
 BOOST_AUTO_TEST_CASE(test_text_to_string)
 {
-        using namespace ncv;
-
         BOOST_CHECK_EQUAL(text::to_string(1.7), "1.700000");
         BOOST_CHECK_EQUAL(text::to_string(-4.3f), "-4.300000");
         BOOST_CHECK_EQUAL(text::to_string(1), "1");
@@ -176,8 +154,6 @@ BOOST_AUTO_TEST_CASE(test_text_to_string)
 
 BOOST_AUTO_TEST_CASE(test_text_from_string)
 {
-        using namespace ncv;
-
         BOOST_CHECK_EQUAL(text::from_string<double>("1.7"), 1.7);
         BOOST_CHECK_EQUAL(text::from_string<float>("-4.3"), -4.3f);
         BOOST_CHECK_EQUAL(text::from_string<short>("1"), 1);
@@ -186,8 +162,6 @@ BOOST_AUTO_TEST_CASE(test_text_from_string)
 
 BOOST_AUTO_TEST_CASE(test_text_replace)
 {
-        using namespace ncv;
-
         BOOST_CHECK_EQUAL(text::replace("token-", '-', '_'), "token_");
         BOOST_CHECK_EQUAL(text::replace("t-ken-", '-', '_'), "t_ken_");
         BOOST_CHECK_EQUAL(text::replace("-token", '-', '_'), "_token");
@@ -196,8 +170,6 @@ BOOST_AUTO_TEST_CASE(test_text_replace)
 
 BOOST_AUTO_TEST_CASE(test_text_concatenate)
 {
-        using namespace ncv;
-
         BOOST_CHECK_EQUAL(text::concatenate(std::vector<int>({ 1, 2, 3 }), "-"),        "1-2-3");
         BOOST_CHECK_EQUAL(text::concatenate(std::list<int>({ 1, 2, 3 }), "="),          "1=2=3");
         BOOST_CHECK_EQUAL(text::concatenate(std::set<int>({ 1, 2, 3 }), ","),           "1,2,3");
@@ -205,8 +177,6 @@ BOOST_AUTO_TEST_CASE(test_text_concatenate)
 
 BOOST_AUTO_TEST_CASE(test_from_params)
 {
-        using namespace ncv;
-
         const auto config = "param1=1.7,param2=3";
 
         BOOST_CHECK_EQUAL(text::from_params(config, "param1", 2.0), 1.7);

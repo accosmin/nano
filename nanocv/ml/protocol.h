@@ -12,19 +12,19 @@ namespace ncv
                 train = 0,              ///< training
                 test                    ///< testing
         };
+}
 
-        // string cast for enumerations
-        namespace text
+// string cast for enumerations
+namespace text
+{
+        template <>
+        inline std::map<ncv::protocol, std::string> enum_string<ncv::protocol>()
         {
-                template <>
-                inline std::map<protocol, std::string> enum_string<protocol>()
+                return
                 {
-                        return
-                        {
-                                { protocol::train,      "train" },
-                                { protocol::test,       "test" }
-                        };
-                }
+                        { ncv::protocol::train,      "train" },
+                        { ncv::protocol::test,       "test" }
+                };
         }
 }
 

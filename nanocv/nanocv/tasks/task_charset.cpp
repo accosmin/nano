@@ -23,24 +23,24 @@
 #include "synth_nimbus_mono.h"
 #include "synth_oxygen_mono.h"
 
+namespace text
+{
+        template <>
+        inline std::map<ncv::charset, std::string> enum_string<ncv::charset>()
+        {
+                return
+                {
+                        { ncv::charset::numeric, "digit" },
+                        { ncv::charset::lalphabet, "lalpha" },
+                        { ncv::charset::ualphabet, "ualpha" },
+                        { ncv::charset::alphabet, "alpha" },
+                        { ncv::charset::alphanumeric, "alphanum" }
+                };
+        }
+}
+
 namespace ncv
 {
-        namespace text
-        {
-                template <>
-                inline std::map<charset, std::string> enum_string<charset>()
-                {
-                        return
-                        {
-                                { charset::numeric, "digit" },
-                                { charset::lalphabet, "lalpha" },
-                                { charset::ualphabet, "ualpha" },
-                                { charset::alphabet, "alpha" },
-                                { charset::alphanumeric, "alphanum" }
-                        };
-                }
-        }
-
         charset_task_t::charset_task_t(const string_t& configuration)
                 :       task_t(configuration),
                         m_charset(text::from_params<charset>(configuration, "type", charset::numeric)),

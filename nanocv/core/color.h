@@ -135,37 +135,36 @@ namespace ncv
                 /// \brief transform 4 planes scaled [0, 1] patch to rgba matrix
                 ///
                 NANOCV_PUBLIC rgba_matrix_t from_rgba_tensor(const tensor_t& patch);
+        }        
+}
+
+namespace text
+{
+        template <>
+        inline std::map<ncv::color_mode, std::string> enum_string<ncv::color_mode>()
+        {
+                return
+                {
+                        { ncv::color_mode::luma, "luma" },
+                        { ncv::color_mode::rgba, "rgba" }
+                };
         }
 
-        // string cast for enumerations
-        namespace text
+        template <>
+        inline std::map<ncv::color_channel, std::string> enum_string<ncv::color_channel>()
         {
-                template <>
-                inline std::map<color_mode, std::string> enum_string<color_mode>()
+                return
                 {
-                        return
-                        {
-                                { color_mode::luma, "luma" },
-                                { color_mode::rgba, "rgba" }
-                        };
-                }
-
-                template <>
-                inline std::map<color_channel, std::string> enum_string<color_channel>()
-                {
-                        return
-                        {
-                                { color_channel::red,           "red" },
-                                { color_channel::green,         "green" },
-                                { color_channel::blue,          "blue" },
-                                { color_channel::luma,          "luma" },
-                                { color_channel::rgba,          "rgba" },
-                                { color_channel::alpha,         "alpha" },
-                                { color_channel::cielab_l,      "cielab_l" },
-                                { color_channel::cielab_a,      "cielab_a" },
-                                { color_channel::cielab_b,      "cielab_b" }
-                        };
-                }
+                        { ncv::color_channel::red,           "red" },
+                        { ncv::color_channel::green,         "green" },
+                        { ncv::color_channel::blue,          "blue" },
+                        { ncv::color_channel::luma,          "luma" },
+                        { ncv::color_channel::rgba,          "rgba" },
+                        { ncv::color_channel::alpha,         "alpha" },
+                        { ncv::color_channel::cielab_l,      "cielab_l" },
+                        { ncv::color_channel::cielab_a,      "cielab_a" },
+                        { ncv::color_channel::cielab_b,      "cielab_b" }
+                };
         }
 }
 
