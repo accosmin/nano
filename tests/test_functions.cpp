@@ -34,14 +34,14 @@ namespace test
                 {
                         const size_t trials = 1024;
 
-                        const size_t dims = func->problem().size();
+                        const opt_size_t dims = func->problem().size();
                         BOOST_CHECK_GT(dims, 0);
 
                         for (size_t t = 0; t < trials; t ++)
                         {
-                                random_t<scalar_t> rgen(-1.0, +1.0);
+                                random_t<opt_scalar_t> rgen(-1.0, +1.0);
 
-                                vector_t x0(dims);
+                                opt_vector_t x0(dims);
                                 rgen(x0.data(), x0.data() + x0.size());
 
                                 // check gradient

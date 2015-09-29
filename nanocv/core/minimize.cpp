@@ -93,8 +93,8 @@ namespace ncv
         opt_state_t minimize(
                 const opt_problem_t& problem,
                 const opt_opulog_t& fn_ulog,
-                const vector_t& x0,
-                min::batch_optimizer optimizer, size_t iterations, scalar_t epsilon, size_t history_size)
+                const opt_vector_t& x0,
+                min::batch_optimizer optimizer, size_t iterations, opt_scalar_t epsilon, size_t history_size)
         {
                 switch (optimizer)
                 {
@@ -128,8 +128,8 @@ namespace ncv
         opt_state_t minimize(
                 const opt_problem_t& problem,
                 const opt_opulog_t& fn_ulog,
-                const vector_t& x0,
-                min::batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
+                const opt_vector_t& x0,
+                min::batch_optimizer optimizer, size_t iterations, opt_scalar_t epsilon,
                 min::ls_initializer lsinit, min::ls_strategy lsstrat,
                 size_t history_size)
         {
@@ -204,8 +204,8 @@ namespace ncv
         opt_state_t minimize(
                 const opt_problem_t& problem,
                 const opt_opulog_t& fn_ulog,
-                const vector_t& x0,
-                min::stoch_optimizer optimizer, size_t epochs, size_t epoch_size, scalar_t alpha0, scalar_t decay)
+                const opt_vector_t& x0,
+                min::stoch_optimizer optimizer, size_t epochs, size_t epoch_size, opt_scalar_t alpha0, opt_scalar_t decay)
         {
                 switch (optimizer)
                 {

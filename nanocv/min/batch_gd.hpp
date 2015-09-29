@@ -22,7 +22,7 @@ namespace ncv
                         typedef typename param_t::tsize         tsize;
                         typedef typename param_t::tvector       tvector;
                         typedef typename param_t::tstate        tstate;
-                        typedef typename param_t::tulog         tulog;
+                        typedef typename param_t::top_ulog      top_ulog;
 
                         ///
                         /// \brief constructor
@@ -31,7 +31,7 @@ namespace ncv
                                         tscalar epsilon,
                                         ls_initializer lsinit,
                                         ls_strategy lsstrat,
-                                        const tulog& ulog = tulog())
+                                        const top_ulog& ulog = top_ulog())
                                 :       m_param(max_iterations, epsilon, lsinit, lsstrat, ulog)
                         {
                         }

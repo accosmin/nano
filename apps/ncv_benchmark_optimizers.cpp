@@ -98,16 +98,16 @@ namespace
         template <typename tostats>
         void check_problem(const function_t& func, tostats& ostats)
         {
-                const size_t iterations = 64 * 1024;
-                const scalar_t epsilon = 1e-6;
+                const opt_size_t iterations = 64 * 1024;
+                const opt_scalar_t epsilon = 1e-6;
                 const size_t trials = 1024;
 
                 const size_t dims = func.problem().size();
 
-                random_t<scalar_t> rgen(-1.0, +1.0);
+                random_t<opt_scalar_t> rgen(-1.0, +1.0);
 
                 // generate fixed random trials
-                vectors_t x0s(trials);
+                std::vector<opt_vector_t> x0s(trials);
                 for (auto& x0 : x0s)
                 {
                         x0.resize(dims);
@@ -168,7 +168,7 @@ namespace
 
                         thread::loopi(trials, pool, [&] (size_t t)
                         {
-                                const vector_t& x0 = x0s[t];
+                                const auto& x0 = x0s[t];
 
                                 const auto problem = func.problem();
                                 const auto state0 = opt_state_t(problem, x0);

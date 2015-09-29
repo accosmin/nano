@@ -20,7 +20,7 @@ namespace ncv
                         typedef typename tproblem::tsize        tsize;
                         typedef typename tproblem::tvector      tvector;
                         typedef typename tproblem::tstate       tstate;
-                        typedef typename tproblem::tulog        tulog;
+                        typedef typename tproblem::top_ulog     top_ulog;
 
                         ///
                         /// \brief constructor
@@ -29,7 +29,7 @@ namespace ncv
                                         tscalar epsilon,
                                         ls_initializer lsinit,
                                         ls_strategy lsstrat,
-                                        const tulog& u = tulog())
+                                        const top_ulog& u = top_ulog())
                                 :       params_t<tproblem>(u),
                                         m_max_iterations(max_iterations),
                                         m_epsilon(epsilon),

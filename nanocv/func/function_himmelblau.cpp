@@ -16,22 +16,22 @@ namespace ncv
                                 return 2;
                         };
 
-                        const opt_opfval_t fn_fval = [=] (const vector_t& x)
+                        const opt_opfval_t fn_fval = [=] (const opt_vector_t& x)
                         {
-                                const scalar_t a = x(0), b = x(1);
+                                const opt_scalar_t a = x(0), b = x(1);
 
-                                const scalar_t u = a * a + b - 11;
-                                const scalar_t v = a + b * b - 7;
+                                const opt_scalar_t u = a * a + b - 11;
+                                const opt_scalar_t v = a + b * b - 7;
 
                                 return u * u + v * v;
                         };
 
-                        const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
+                        const opt_opgrad_t fn_grad = [=] (const opt_vector_t& x, opt_vector_t& gx)
                         {
-                                const scalar_t a = x(0), b = x(1);
+                                const opt_scalar_t a = x(0), b = x(1);
 
-                                const scalar_t u = a * a + b - 11;
-                                const scalar_t v = a + b * b - 7;
+                                const opt_scalar_t u = a * a + b - 11;
+                                const opt_scalar_t v = a + b * b - 7;
 
                                 gx.resize(2);
                                 gx(0) = 2 * u * 2 * a + 2 * v;
@@ -43,19 +43,19 @@ namespace ncv
                         return opt_problem_t(fn_size, fn_fval, fn_grad);
                 }
 
-                virtual bool is_valid(const vector_t&) const override
+                virtual bool is_valid(const opt_vector_t&) const override
                 {
                         return true;
                 }
 
-                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
+                virtual bool is_minima(const opt_vector_t& x, const opt_scalar_t epsilon) const override
                 {
                         const auto xmins =
                         {
-                                scalars_t{ 3.0, 2.0 },
-                                scalars_t{ -2.805118, 3.131312 },
-                                scalars_t{ -3.779310, -3.283186 },
-                                scalars_t{ 3.584428, -1.848126 }
+                                std::vector<opt_scalar_t>{ 3.0, 2.0 },
+                                std::vector<opt_scalar_t>{ -2.805118, 3.131312 },
+                                std::vector<opt_scalar_t>{ -3.779310, -3.283186 },
+                                std::vector<opt_scalar_t>{ 3.584428, -1.848126 }
                         };
 
                         for (const auto& xmin : xmins)

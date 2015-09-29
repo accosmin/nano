@@ -19,12 +19,12 @@ namespace ncv
                         typedef typename tproblem::tsize        tsize;
                         typedef typename tproblem::tvector      tvector;
                         typedef typename tproblem::tstate       tstate;
-                        typedef typename tproblem::tulog        tulog;
+                        typedef typename tproblem::top_ulog     top_ulog;
 
                         ///
                         /// \brief constructor
                         ///
-                        params_t(const tulog& u = tulog())
+                        params_t(const top_ulog& u = top_ulog())
                                 :       m_ulog(u)
                         {
                         }
@@ -44,7 +44,7 @@ namespace ncv
                                 return m_ulog ? m_ulog(state) : true;
                         }
 
-                        tulog           m_ulog;                 ///< update log: (tstate current_state_after_each_epoch)
+                        top_ulog        m_ulog;                 ///< update log: (tstate current_state_after_each_epoch)
                 };
         }
 }

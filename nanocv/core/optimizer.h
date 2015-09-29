@@ -9,22 +9,17 @@
 
 namespace ncv
 {
-        // optimization data types
-        typedef std::function<size_t(void)>                             opt_opsize_t;
-        typedef std::function<scalar_t(const vector_t&)>                opt_opfval_t;
-        typedef std::function<scalar_t(const vector_t&, vector_t&)>     opt_opgrad_t;
+        typedef min::problem_t<scalar_t>                opt_problem_t;
 
-        typedef min::problem_t
-        <
-                scalar_t,
-                size_t,
-                opt_opsize_t,
-                opt_opfval_t,
-                opt_opgrad_t
-        >                                                       opt_problem_t;
+        typedef typename opt_problem_t::tscalar         opt_scalar_t;
+        typedef typename opt_problem_t::tvector         opt_vector_t;
+        typedef typename opt_problem_t::tstate          opt_state_t;
+        typedef typename opt_problem_t::tsize           opt_size_t;
 
-        typedef opt_problem_t::tstate                           opt_state_t;
-        typedef opt_problem_t::tulog                            opt_opulog_t;
+        typedef typename opt_problem_t::top_size        opt_opsize_t;
+        typedef typename opt_problem_t::top_fval        opt_opfval_t;
+        typedef typename opt_problem_t::top_grad        opt_opgrad_t;
+        typedef typename opt_problem_t::top_ulog        opt_opulog_t;
 
         // string cast for enumerations
         namespace text

@@ -34,12 +34,12 @@ namespace ncv
                 ///
                 /// \brief check if a point is contained in the function's domain
                 ///
-                virtual bool is_valid(const vector_t& x) const = 0;
+                virtual bool is_valid(const opt_vector_t& x) const = 0;
 
                 ///
                 /// \brief check if a point is epsilon-close to a known local minima
                 ///
-                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const = 0;
+                virtual bool is_minima(const opt_vector_t& x, const opt_scalar_t epsilon) const = 0;
 
                 ///
                 /// \brief compute the infinity-distance between two vectors
@@ -49,7 +49,7 @@ namespace ncv
                         typename tvector1,
                         typename tvector2
                 >
-                static scalar_t distance(const tvector1& a, const tvector2& b)
+                static opt_scalar_t distance(const tvector1& a, const tvector2& b)
                 {
                         return norm(a - b);
                 }
@@ -61,7 +61,7 @@ namespace ncv
                 <
                         typename tvector
                 >
-                static scalar_t norm(const tvector& a)
+                static opt_scalar_t norm(const tvector& a)
                 {
                         return a.template lpNorm<Eigen::Infinity>();
                 }

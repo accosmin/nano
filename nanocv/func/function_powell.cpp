@@ -6,7 +6,7 @@ namespace ncv
 {
         struct function_powell_t : public function_t
         {
-                explicit function_powell_t(const size_t dims)
+                explicit function_powell_t(const opt_size_t dims)
                         :       m_dims(dims)
                 {
                 }
@@ -23,10 +23,10 @@ namespace ncv
                                 return m_dims;
                         };
 
-                        const opt_opfval_t fn_fval = [=] (const vector_t& x)
+                        const opt_opfval_t fn_fval = [=] (const opt_vector_t& x)
                         {
-                                long double fx = 0;
-                                for (size_t i = 0, i4 = 0; i < m_dims / 4; i ++, i4 += 4)
+                                opt_scalar_t fx = 0;
+                                for (opt_size_t i = 0, i4 = 0; i < m_dims / 4; i ++, i4 += 4)
                                 {
                                         fx += math::square(x(i4 + 0) + x(i4 + 1) * 10.0);
                                         fx += math::square(x(i4 + 2) - x(i4 + 3)) * 5.0;
@@ -34,23 +34,23 @@ namespace ncv
                                         fx += math::quartic(x(i4 + 0) - x(i4 + 3)) * 10.0;
                                 }
 
-                                return static_cast<scalar_t>(fx);
+                                return fx;
                         };
 
-                        const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
+                        const opt_opgrad_t fn_grad = [=] (const opt_vector_t& x, opt_vector_t& gx)
                         {
                                 gx.resize(m_dims);
-                                for (size_t i = 0, i4 = 0; i < m_dims / 4; i ++, i4 += 4)
+                                for (opt_size_t i = 0, i4 = 0; i < m_dims / 4; i ++, i4 += 4)
                                 {
-                                        const long double gfx1 = (x(i4 + 0) + x(i4 + 1) * 10.0) * 2.0;
-                                        const long double gfx2 = (x(i4 + 2) - x(i4 + 3)) * 5.0 * 2.0;
-                                        const long double gfx3 = math::cube(x(i4 + 1) - x(i4 + 2) * 2.0) * 4.0;
-                                        const long double gfx4 = math::cube(x(i4 + 0) - x(i4 + 3)) * 10.0 * 4.0;
+                                        const opt_scalar_t gfx1 = (x(i4 + 0) + x(i4 + 1) * 10.0) * 2.0;
+                                        const opt_scalar_t gfx2 = (x(i4 + 2) - x(i4 + 3)) * 5.0 * 2.0;
+                                        const opt_scalar_t gfx3 = math::cube(x(i4 + 1) - x(i4 + 2) * 2.0) * 4.0;
+                                        const opt_scalar_t gfx4 = math::cube(x(i4 + 0) - x(i4 + 3)) * 10.0 * 4.0;
 
-                                        gx(i4 + 0) = static_cast<scalar_t>(gfx1 + gfx4);
-                                        gx(i4 + 1) = static_cast<scalar_t>(gfx1 * 10.0 + gfx3);
-                                        gx(i4 + 2) = static_cast<scalar_t>(gfx2 - 2.0 * gfx3);
-                                        gx(i4 + 3) = static_cast<scalar_t>(- gfx2 - gfx4);
+                                        gx(i4 + 0) = gfx1 + gfx4;
+                                        gx(i4 + 1) = gfx1 * 10.0 + gfx3;
+                                        gx(i4 + 2) = gfx2 - 2.0 * gfx3;
+                                        gx(i4 + 3) = - gfx2 - gfx4;
                                 }
 
                                 return fn_fval(x);
@@ -59,24 +59,24 @@ namespace ncv
                         return opt_problem_t(fn_size, fn_fval, fn_grad);
                 }
 
-                virtual bool is_valid(const vector_t& x) const override
+                virtual bool is_valid(const opt_vector_t& x) const override
                 {
                         return -4.0 < x.minCoeff() && x.maxCoeff() < 5.0;
                 }
 
-                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
+                virtual bool is_minima(const opt_vector_t& x, const opt_scalar_t epsilon) const override
                 {
-                        return distance(x, vector_t::Zero(m_dims)) < epsilon;
+                        return distance(x, opt_vector_t::Zero(m_dims)) < epsilon;
                 }
 
-                size_t  m_dims;
+                opt_size_t      m_dims;
         };
 
-        functions_t make_powell_funcs(size_t max_dims)
+        functions_t make_powell_funcs(opt_size_t max_dims)
         {
                 functions_t functions;
 
-                for (size_t dims = 4; dims <= max_dims; dims *= 4)
+                for (opt_size_t dims = 4; dims <= max_dims; dims *= 4)
                 {
                         functions.push_back(std::make_shared<function_powell_t>(dims));
                 }

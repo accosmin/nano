@@ -5,7 +5,7 @@ namespace ncv
 {
         struct function_sphere_t : public function_t
         {
-                explicit function_sphere_t(const size_t dims)
+                explicit function_sphere_t(const opt_size_t dims)
                         :       m_dims(dims)
                 {
                 }
@@ -22,24 +22,14 @@ namespace ncv
                                 return m_dims;
                         };
 
-                        const opt_opfval_t fn_fval = [=] (const vector_t& x)
+                        const opt_opfval_t fn_fval = [=] (const opt_vector_t& x)
                         {
-                                scalar_t fx = 0;
-                                for (size_t i = 0; i < m_dims; i ++)
-                                {
-                                        fx += x(i) * x(i);
-                                }
-
-                                return fx;
+                                return x.dot(x);
                         };
 
-                        const opt_opgrad_t fn_grad = [=] (const vector_t& x, vector_t& gx)
+                        const opt_opgrad_t fn_grad = [=] (const opt_vector_t& x, opt_vector_t& gx)
                         {
-                                gx.resize(m_dims);
-                                for (size_t i = 0; i < m_dims; i ++)
-                                {
-                                        gx(i) = 2 * x(i);
-                                }
+                                gx = 2 * x;
 
                                 return fn_fval(x);
                         };
@@ -47,24 +37,24 @@ namespace ncv
                         return opt_problem_t(fn_size, fn_fval, fn_grad);
                 }
 
-                virtual bool is_valid(const vector_t& x) const override
+                virtual bool is_valid(const opt_vector_t& x) const override
                 {
                         return norm(x) < 5.12;
                 }
 
-                virtual bool is_minima(const vector_t& x, const scalar_t epsilon) const override
+                virtual bool is_minima(const opt_vector_t& x, const opt_scalar_t epsilon) const override
                 {
-                        return distance(x, vector_t::Zero(m_dims)) < epsilon;
+                        return distance(x, opt_vector_t::Zero(m_dims)) < epsilon;
                 }
 
-                size_t  m_dims;
+                opt_size_t      m_dims;
         };
 
-        functions_t make_sphere_funcs(size_t max_dims)
+        functions_t make_sphere_funcs(opt_size_t max_dims)
         {
                 functions_t functions;
 
-                for (size_t dims = 1; dims <= max_dims; dims *= 2)
+                for (opt_size_t dims = 1; dims <= max_dims; dims *= 2)
                 {
                         functions.push_back(std::make_shared<function_sphere_t>(dims));
                 }

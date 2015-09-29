@@ -19,18 +19,14 @@ namespace ncv
                 template
                 <
                         typename tscalar_,
-                        typename tsize
+                        typename tvector_ = Eigen::Matrix<tscalar_, Eigen::Dynamic, 1, Eigen::ColMajor>,
+                        typename tsize_ = typename tvector_::Index
                 >
                 struct state_t
                 {
                         typedef tscalar_                tscalar;
-                        typedef Eigen::Matrix
-                        <
-                                tscalar,
-                                Eigen::Dynamic,
-                                1,
-                                Eigen::ColMajor
-                        >                               tvector;
+                        typedef tvector_                tvector;
+                        typedef tsize_                  tsize;
 
                         ///
                         /// \brief constructor
