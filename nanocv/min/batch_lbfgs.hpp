@@ -119,7 +119,7 @@ namespace min
 
                                 ss.push_back(cstate.x - pstate.x);
                                 ys.push_back(cstate.g - pstate.g);
-                                if (ss.size() > m_hsize)
+                                if (static_cast<tsize>(ss.size()) > m_hsize)
                                 {
                                         ss.pop_front();
                                         ys.pop_front();
@@ -131,7 +131,7 @@ namespace min
 
                 // attributes
                 param_t         m_param;
-                tsize           m_hsize;///< number of previous iterations to approximate Hessian's inverse
+                tsize           m_hsize;        ///< number of previous iterations to approximate Hessian's inverse
         };
 }
 
