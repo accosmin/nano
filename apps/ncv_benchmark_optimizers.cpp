@@ -41,7 +41,10 @@ namespace
         {
                 math::stats_t<scalar_t>       m_times;        ///< optimization time (microseconds)
                 math::stats_t<scalar_t>       m_crits;        ///< convergence criteria
-                math::stats_t<scalar_t>       m_fails;        ///< #convergence failures
+                math::stats_t<scalar_t>       m_fail0s;       ///< #convergence failures
+                math::stats_t<scalar_t>       m_fail1s;       ///< #convergence failures
+                math::stats_t<scalar_t>       m_fail2s;       ///< #convergence failures
+                math::stats_t<scalar_t>       m_fail3s;       ///< #convergence failures
                 math::stats_t<scalar_t>       m_iters;        ///< #iterations
                 math::stats_t<scalar_t>       m_fcalls;       ///< #function value calls
                 math::stats_t<scalar_t>       m_gcalls;       ///< #gradient calls
@@ -70,7 +73,10 @@ namespace
                 table.header() << "cost"
                                << "time [us]"
                                << "|grad|/|fval|"
-                               << "#fails"
+                               << "#fails3"
+                               << "#fails2"
+                               << "#fails1"
+                               << "#fails0"
                                << "#iters"
                                << "#fcalls"
                                << "#gcalls"
@@ -84,21 +90,24 @@ namespace
                         table.append(name) << static_cast<size_t>(stat.m_fcalls.avg() + 2 * stat.m_gcalls.avg())
                                            << stat.m_times.avg()
                                            << stat.m_crits.avg()
-                                           << static_cast<size_t>(stat.m_fails.sum())
+                                           << static_cast<size_t>(stat.m_fail3s.sum())
+                                           << static_cast<size_t>(stat.m_fail2s.sum())
+                                           << static_cast<size_t>(stat.m_fail1s.sum())
+                                           << static_cast<size_t>(stat.m_fail0s.sum())
                                            << stat.m_iters.avg()
                                            << stat.m_fcalls.avg()
                                            << stat.m_gcalls.avg()
                                            << stat.m_speeds.avg();
                 }
 
-                table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({3, 0})));
+                table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({3, 4, 5, 6, 0})));
                 table.print(std::cout);
         }
 
         template <typename tostats>
         void check_problem(const function_t& func, tostats& ostats)
         {
-                const auto iterations = opt_size_t(64 * 1024);
+                const auto iterations = opt_size_t(8 * 1024);
                 const auto epsilon = math::epsilon0<opt_scalar_t>();
                 const auto trials = size_t(1024);
 
@@ -160,8 +169,11 @@ namespace
                 {
                         scalars_t times(trials);
                         scalars_t crits(trials);
-                        scalars_t fails(trials);
-                        scalars_t iters(trials);
+                        scalars_t iters(trials);                        
+                        scalars_t fail0s(trials);
+                        scalars_t fail1s(trials);
+                        scalars_t fail2s(trials);
+                        scalars_t fail3s(trials);
                         scalars_t fcalls(trials);
                         scalars_t gcalls(trials);
                         scalars_t speeds(trials);
@@ -190,8 +202,11 @@ namespace
                                         // update stats
                                         times[t] = timer.microseconds();
                                         crits[t] = g;
-                                        fails[t] = !state.converged(math::epsilon2<opt_scalar_t>()) ? 1.0 : 0.0;
                                         iters[t] = state.m_iterations;
+                                        fail0s[t] = !state.converged(math::epsilon0<opt_scalar_t>()) ? 1.0 : 0.0;
+                                        fail1s[t] = !state.converged(math::epsilon1<opt_scalar_t>()) ? 1.0 : 0.0;
+                                        fail2s[t] = !state.converged(math::epsilon2<opt_scalar_t>()) ? 1.0 : 0.0;
+                                        fail3s[t] = !state.converged(math::epsilon3<opt_scalar_t>()) ? 1.0 : 0.0;
                                         fcalls[t] = state.m_fcalls;
                                         gcalls[t] = state.m_gcalls;
                                         speeds[t] = speed;
@@ -212,8 +227,11 @@ namespace
                         optimizer_stat_t& stat = stats[name];
                         stat.m_times(make_stats(times, times));
                         stat.m_crits(make_stats(crits, times));
-                        stat.m_fails(make_stats(fails, times));
                         stat.m_iters(make_stats(iters, times));
+                        stat.m_fail0s(make_stats(fail0s, times));
+                        stat.m_fail1s(make_stats(fail1s, times));
+                        stat.m_fail2s(make_stats(fail2s, times));
+                        stat.m_fail3s(make_stats(fail3s, times));
                         stat.m_fcalls(make_stats(fcalls, times));
                         stat.m_gcalls(make_stats(gcalls, times));
                         stat.m_speeds(make_stats(speeds, times));
@@ -222,8 +240,11 @@ namespace
                         optimizer_stat_t& ostat = ostats[name];
                         ostat.m_times(stat.m_times);
                         ostat.m_crits(stat.m_crits);
-                        ostat.m_fails(stat.m_fails);
                         ostat.m_iters(stat.m_iters);
+                        ostat.m_fail0s(stat.m_fail0s);
+                        ostat.m_fail1s(stat.m_fail1s);
+                        ostat.m_fail2s(stat.m_fail2s);
+                        ostat.m_fail3s(stat.m_fail3s);
                         ostat.m_fcalls(stat.m_fcalls);
                         ostat.m_gcalls(stat.m_gcalls);
                         ostat.m_speeds(stat.m_speeds);
