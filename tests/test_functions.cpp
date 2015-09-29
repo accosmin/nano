@@ -21,6 +21,7 @@
 #include "func/function_3hump_camel.h"
 #include "func/function_sum_squares.h"
 #include "func/function_dixon_price.h"
+#include "func/function_bohachevsky.h"
 #include "func/function_goldstein_price.h"
 #include "func/function_styblinski_tang.h"
 #include "func/function_rotated_ellipsoid.h"
@@ -50,6 +51,7 @@ namespace test
                                 // check gradient
                                 const opt_problem_t problem = func->problem();
                                 BOOST_CHECK_EQUAL(problem.size(), dims);
+                                BOOST_CHECK_LE(problem.grad_accuracy(x0), math::epsilon2<scalar_t>());
                                 BOOST_CHECK_MESSAGE(problem.grad_accuracy(x0) < math::epsilon2<scalar_t>(),
                                         "invalid gradient for the " << func->name() << " function!");
                         }
@@ -70,6 +72,7 @@ BOOST_AUTO_TEST_CASE(test_functions)
         test::check_function(ncv::make_zakharov_funcs(8));
         test::check_function(ncv::make_mccormick_funcs());
         test::check_function(ncv::make_himmelblau_funcs());
+        test::check_function(ncv::make_bohachevsky_funcs());
         test::check_function(ncv::make_rosenbrock_funcs(7));
         test::check_function(ncv::make_3hump_camel_funcs());
         test::check_function(ncv::make_dixon_price_funcs(32));

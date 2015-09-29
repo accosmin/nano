@@ -63,10 +63,8 @@ namespace ncv
 
                 virtual bool is_minima(const opt_vector_t& x, const opt_scalar_t epsilon) const override
                 {
-                        return distance(x, opt_vector_t::Constant(1.0, m_dims)) < epsilon;
+                        return distance(x, opt_vector_t::Constant(1.0, 2)) < epsilon;
                 }
-
-                opt_size_t      m_dims;
         };
 
         functions_t make_colville_funcs()
