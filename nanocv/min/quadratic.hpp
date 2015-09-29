@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace ncv
+namespace min
 {
         ///
         /// \brief quadratic: a x^2 + b x + c

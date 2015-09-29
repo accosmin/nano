@@ -27,7 +27,7 @@ namespace test
         >
         void check_average(const size_t range)
         {
-                average_scalar_t<tscalar> runavg;
+                min::average_scalar_t<tscalar> runavg;
                 for (size_t i = 0; i <= range; i ++)
                 {
                         runavg.update(static_cast<tscalar>(i), tscalar(1));
@@ -46,7 +46,7 @@ namespace test
         >
         void check_average(const size_t dims, const size_t range)
         {
-                average_vector_t<tscalar, tvector> runavg(dims);
+                min::average_vector_t<tscalar, tvector> runavg(dims);
                 for (size_t i = 0; i <= range; i ++)
                 {
                         runavg.update(tvector::Constant(dims, static_cast<tscalar>(i)), tscalar(1));

@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace ncv
+namespace min
 {       
         ///
         /// \brief cubic: a x^3 + b x^2 + c x + d

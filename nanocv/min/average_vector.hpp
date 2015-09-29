@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ncv
+namespace min
 {
         ///
         /// \brief moving weighted-average for vectors
