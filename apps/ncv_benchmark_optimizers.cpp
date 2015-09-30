@@ -13,27 +13,7 @@
 #include "text/from_string.hpp"
 #include "text/starts_with.hpp"
 #include "core/table_row_comp.h"
-
-#include "func/function_trid.h"
-#include "func/function_beale.h"
-#include "func/function_booth.h"
-#include "func/function_cauchy.h"
-#include "func/function_sphere.h"
-#include "func/function_matyas.h"
-#include "func/function_powell.h"
-#include "func/function_colville.h"
-#include "func/function_zakharov.h"
-#include "func/function_mccormick.h"
-#include "func/function_himmelblau.h"
-#include "func/function_rosenbrock.h"
-#include "func/function_3hump_camel.h"
-#include "func/function_sum_squares.h"
-#include "func/function_dixon_price.h"
-#include "func/function_bohachevsky.h"
-#include "func/function_goldstein_price.h"
-#include "func/function_styblinski_tang.h"
-#include "func/function_rotated_ellipsoid.h"
-
+#include "func/make_functions.h"
 #include <map>
 #include <tuple>
 
@@ -273,25 +253,11 @@ int main(int, char* [])
 
         std::map<string_t, optimizer_stat_t> ostats;
 
-        check_function(ncv::make_beale_funcs(), ostats);
-        check_function(ncv::make_booth_funcs(), ostats);
-        check_function(ncv::make_matyas_funcs(), ostats);
-        check_function(ncv::make_trid_funcs(8), ostats);
-        check_function(ncv::make_cauchy_funcs(8), ostats);
-        check_function(ncv::make_sphere_funcs(8), ostats);
-        check_function(ncv::make_powell_funcs(8), ostats);
-        check_function(ncv::make_colville_funcs(), ostats);
-        check_function(ncv::make_zakharov_funcs(8), ostats);
-        check_function(ncv::make_mccormick_funcs(), ostats);
-        check_function(ncv::make_himmelblau_funcs(), ostats);
-        check_function(ncv::make_rosenbrock_funcs(), ostats);
-        check_function(ncv::make_bohachevsky_funcs(), ostats);
-        check_function(ncv::make_3hump_camel_funcs(), ostats);
-        check_function(ncv::make_dixon_price_funcs(8), ostats);
-        check_function(ncv::make_sum_squares_funcs(8), ostats);
-        check_function(ncv::make_goldstein_price_funcs(), ostats);
-        check_function(ncv::make_styblinski_tang_funcs(8), ostats);
-        check_function(ncv::make_rotated_ellipsoid_funcs(8), ostats);
+        const auto funcs = ncv::make_all_test_functions(8);
+        for (const auto& func : funcs)
+        {
+                check_function(*func, ostats);
+        }
 
         // show global statistics
         show_table(string_t(), ostats);

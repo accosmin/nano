@@ -1,5 +1,5 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_optimizers"
+#define BOOST_TEST_MODULE "test_stoch_optimizers"
 
 #include <boost/test/unit_test.hpp>
 #include "math/abs.hpp"
@@ -10,27 +10,8 @@
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
 #include "math/tune_fixed.hpp"
+#include "func/make_functions.h"
 #include <iomanip>
-
-#include "func/function_trid.h"
-#include "func/function_beale.h"
-#include "func/function_booth.h"
-#include "func/function_cauchy.h"
-#include "func/function_sphere.h"
-#include "func/function_matyas.h"
-#include "func/function_powell.h"
-#include "func/function_colville.h"
-#include "func/function_zakharov.h"
-#include "func/function_mccormick.h"
-#include "func/function_himmelblau.h"
-#include "func/function_rosenbrock.h"
-#include "func/function_3hump_camel.h"
-#include "func/function_sum_squares.h"
-#include "func/function_dixon_price.h"
-#include "func/function_bohachevsky.h"
-#include "func/function_goldstein_price.h"
-#include "func/function_styblinski_tang.h"
-#include "func/function_rotated_ellipsoid.h"
 
 namespace test
 {
@@ -146,38 +127,14 @@ namespace test
                                 << ": out of domain " << out_of_domain << "/" << trials << ".";
                 }
         }
-
-        static void check_function(const functions_t& funcs)
-        {
-                for (const auto& func : funcs)
-                {
-                        test::check_function(*func);
-                }
-        }
 }
 
-BOOST_AUTO_TEST_CASE(test_optimizers)
+BOOST_AUTO_TEST_CASE(test_stoch_optimizers)
 {
-        using namespace ncv;
-
-        test::check_function(ncv::make_beale_funcs());
-        test::check_function(ncv::make_booth_funcs());
-        test::check_function(ncv::make_matyas_funcs());
-        test::check_function(ncv::make_trid_funcs(8));
-        test::check_function(ncv::make_cauchy_funcs(8));
-        test::check_function(ncv::make_sphere_funcs(8));
-        test::check_function(ncv::make_powell_funcs(8));
-        test::check_function(ncv::make_colville_funcs());
-        test::check_function(ncv::make_zakharov_funcs(8));
-        test::check_function(ncv::make_mccormick_funcs());
-        test::check_function(ncv::make_himmelblau_funcs());
-        test::check_function(ncv::make_rosenbrock_funcs());
-        test::check_function(ncv::make_bohachevsky_funcs());
-        test::check_function(ncv::make_3hump_camel_funcs());
-        test::check_function(ncv::make_dixon_price_funcs(8));
-        test::check_function(ncv::make_sum_squares_funcs(8));
-        test::check_function(ncv::make_goldstein_price_funcs());
-        test::check_function(ncv::make_styblinski_tang_funcs(8));
-        test::check_function(ncv::make_rotated_ellipsoid_funcs(8));
+        const auto funcs = ncv::make_all_test_functions(8);
+        for (const auto& func : funcs)
+        {
+                test::check_function(*func);
+        }
 }
 
