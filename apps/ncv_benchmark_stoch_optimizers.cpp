@@ -9,7 +9,6 @@
 #include "core/minimize.h"
 #include "math/numeric.hpp"
 #include "thread/loopi.hpp"
-#include "math/tune_fixed.hpp"
 #include "text/from_string.hpp"
 #include "core/table_row_comp.h"
 #include "func/make_functions.h"
@@ -43,6 +42,7 @@ namespace
                                 stats(values[i]);
                         }
                 }
+
                 return stats;
         }
 
@@ -74,27 +74,6 @@ namespace
 
                 table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({2, 3, 4, 0})));
                 table.print(std::cout);
-        }
-
-        static decltype(auto) tune(const opt_problem_t problem, const opt_vector_t x0,
-                min::stoch_optimizer optimizer, opt_size_t epoch_size)
-        {
-                const std::vector<opt_scalar_t> alpha0s =
-                {
-                        1e+0, 1e-1, 1e-2, 1e-3
-                };
-                const std::vector<opt_scalar_t> decays =
-                {
-                        0.50, 0.75, 1.00
-                };
-
-                const auto op = [&] (const opt_scalar_t alpha0, const opt_scalar_t decay)
-                {
-                        const auto state = ncv::minimize(problem, nullptr, x0, optimizer, 1, epoch_size, alpha0, decay);
-                        return state.f;
-                };
-
-                return math::tune_fixed(op, alpha0s, decays);
         }
 
         template <typename tostats>
@@ -155,8 +134,8 @@ namespace
                                 // optimize
                                 const ncv::timer_t timer;
 
-                                opt_scalar_t alpha0, decay, ftune;
-                                std::tie(ftune, alpha0, decay) = tune(problem, x0, optimizer, epoch_size);
+                                opt_scalar_t alpha0, decay;
+                                ncv::tune_stochastic(problem, x0, optimizer, epoch_size, alpha0, decay);
 
                                 const auto state = ncv::minimize(
                                         problem, nullptr, x0, optimizer, epochs, epoch_size, alpha0, decay);

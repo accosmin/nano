@@ -9,33 +9,11 @@
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
-#include "math/tune_fixed.hpp"
 #include "func/make_functions.h"
 
 namespace test
 {
         using namespace ncv;
-
-        static decltype(auto) tune(const opt_problem_t problem, const opt_vector_t x0,
-                min::stoch_optimizer optimizer, opt_size_t epoch_size)
-        {
-                const std::vector<opt_scalar_t> alpha0s =
-                {
-                        1e+0, 1e-1, 1e-2, 1e-3
-                };
-                const std::vector<opt_scalar_t> decays =
-                {
-                        0.50, 0.75, 1.00
-                };
-
-                const auto op = [&] (const opt_scalar_t alpha0, const opt_scalar_t decay)
-                {
-                        const auto state = ncv::minimize(problem, nullptr, x0, optimizer, 1, epoch_size, alpha0, decay);
-                        return state.f;
-                };
-
-                return math::tune_fixed(op, alpha0s, decays);
-        }
 
         static void check_function(const test::function_t& func)
         {
@@ -79,8 +57,8 @@ namespace test
                                 const auto f0 = problem(x0);
 
                                 // optimize
-                                opt_scalar_t alpha0, decay, ftune;
-                                std::tie(ftune, alpha0, decay) = tune(problem, x0, optimizer, epoch_size);
+                                opt_scalar_t alpha0, decay;
+                                ncv::tune_stochastic(problem, x0, optimizer, epoch_size, alpha0, decay);
 
                                 const auto state = ncv::minimize(
                                         problem, nullptr, x0, optimizer, epochs, epoch_size, alpha0, decay);
@@ -104,7 +82,7 @@ namespace test
                                         << func.name() << ", " << text::to_string(optimizer)
                                         << " [" << (t + 1) << "/" << trials << "]"
                                         << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
-                                        << ", f = " << f0 << "/" << f << "/" << ftune
+                                        << ", f = " << f0 << "/" << f
                                         << ", g = " << g
                                         << ", alpha0 = " << alpha0
                                         << ", decay = " << decay << ".";

@@ -14,32 +14,6 @@ namespace ncv
 {
         namespace
         {
-                scalars_t tunable_alphas(const min::stoch_optimizer optimizer)
-                {
-                        switch (optimizer)
-                        {
-                        case min::stoch_optimizer::ADADELTA:
-                                return { 0.0 };
-
-                        default:
-                                return { 1e-3, 1e-2, 1e-1, 1.0 };
-                        }
-                }
-
-                scalars_t tunable_decays(const min::stoch_optimizer optimizer)
-                {
-                        switch (optimizer)
-                        {
-                        case min::stoch_optimizer::AG:
-                        case min::stoch_optimizer::ADAGRAD:
-                        case min::stoch_optimizer::ADADELTA:
-                                return { 1.00 };
-
-                        default:
-                                return { 0.50, 0.75 };
-                        }
-                }
-
                 sizes_t tunable_batches()
                 {
                         const size_t batch0 = ncv::n_threads();
