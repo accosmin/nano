@@ -95,7 +95,7 @@ namespace test
                                 const auto f = state.f;
                                 const auto g = state.convergence_criteria();
 
-                                const auto f_thres = f0 - epsilon * math::abs(f0);
+                                const auto f_thres = math::epsilon0<opt_scalar_t>();
                                 const auto g_thres = math::epsilon3<opt_scalar_t>() * slack;
                                 const auto x_thres = math::epsilon3<opt_scalar_t>() * slack * 1e+1;
 
@@ -106,29 +106,26 @@ namespace test
                                         continue;
                                 }
 
-                                #define NANOCV_TEST_OPTIMIZERS_DESCRIPTION \
-                                        "for (" << func.name() << ", " << text::to_string(optimizer) << \
-                                        std::setprecision(12) << \
-                                        ", x = [" << x0.transpose() << "]/[" << x.transpose() << "]" << \
-                                        ", f = " << f0 << "/" << f << \
-                                        ", g = " << g << \
-                                        ", i = " << state.m_iterations << ")"
+                                ncv::log_info()
+                                        << func.name() << ", " << text::to_string(optimizer)
+                                        << " [" << (t + 1) << "/" << trials << "]"
+                                        << std::setprecision(12)
+                                        << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
+                                        << ", f = " << f0 << "/" << f
+                                        << ", g = " << g
+                                        << ", i = " << state.m_iterations
+                                        << " (" << text::to_string(state.m_status) << ").";
 
                                 // check function value decrease
-                                BOOST_CHECK_MESSAGE(f < f0,
-                                        "decrease failed " << NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
-                                BOOST_CHECK_MESSAGE(f < f_thres,
-                                        "sufficient decrease failed " << NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
+                                BOOST_CHECK_LE(f, f0);
+                                BOOST_CHECK_LE(f, f0 - f_thres * math::abs(f0));
 
                                 // check convergence
-                                BOOST_CHECK_MESSAGE(g < g_thres,
-                                        "convergence failed " << NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
-//                                BOOST_CHECK_MESSAGE(state.m_status == min::status::converged,
-//                                        text::to_string(state.m_status) << " " << NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
+                                BOOST_CHECK_LE(g, g_thres);
+//                                BOOST_CHECK(state.m_status == min::status::converged)
 
                                 // check local minimas (if any known)
-                                BOOST_CHECK_MESSAGE(func.is_minima(x, x_thres),
-                                        "invalid minima " << NANOCV_TEST_OPTIMIZERS_DESCRIPTION);
+                                BOOST_CHECK(func.is_minima(x, x_thres));
                         }
 
                         log_info() << "out of domain for (" << func.name() << ", " << text::to_string(optimizer)
