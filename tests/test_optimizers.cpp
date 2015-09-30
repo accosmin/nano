@@ -39,7 +39,7 @@ namespace test
         {
                 const auto iterations = opt_size_t(8 * 1024);
                 const auto epsilon = math::epsilon0<opt_scalar_t>();
-                const auto trials = size_t(1024);
+                const auto trials = size_t(128);
 
                 const auto dims = func.problem().size();
 
@@ -53,27 +53,30 @@ namespace test
                         rgen(x0.data(), x0.data() + x0.size());
                 }
 
-                // optimizers to try
-                const auto optimizers =
+                // {optimizers, slack ~ expected convergence rate} to try
+                const std::map<min::batch_optimizer, opt_scalar_t> optimizers =
                 {
-//                        min::batch_optimizer::GD,
+                        { min::batch_optimizer::GD, 1e+3 },             // ok, but potentially very slow!
 
-//                        min::batch_optimizer::CGD,
-//                        min::batch_optimizer::CGD_CD,
-//                        min::batch_optimizer::CGD_DY,
-//                        min::batch_optimizer::CGD_FR,
-//                        min::batch_optimizer::CGD_HS,
-//                        min::batch_optimizer::CGD_LS,
-//                        min::batch_optimizer::CGD_N,
-//                        min::batch_optimizer::CGD_PRP,
-//                        min::batch_optimizer::CGD_DYCD,
-//                        min::batch_optimizer::CGD_DYHS,
+                        { min::batch_optimizer::CGD, 1e+1 },
+                        { min::batch_optimizer::CGD_CD, 1e+1 },
+                        { min::batch_optimizer::CGD_DY, 1e+10 },        // bad!
+                        { min::batch_optimizer::CGD_FR, 1e+10 },        // bad!
+                        { min::batch_optimizer::CGD_HS, 1e+10 },        // bad!
+                        { min::batch_optimizer::CGD_LS, 1e+1 },
+                        { min::batch_optimizer::CGD_N, 1e+1 },
+                        { min::batch_optimizer::CGD_PRP, 1e+1 },
+                        { min::batch_optimizer::CGD_DYCD, 1e+1 },
+                        { min::batch_optimizer::CGD_DYHS, 1e+1 },
 
-                        min::batch_optimizer::LBFGS
+                        { min::batch_optimizer::LBFGS, 1e+1 }
                 };
 
-                for (min::batch_optimizer optimizer : optimizers)
+                for (const auto& optslack : optimizers)
                 {
+                        const auto optimizer = optslack.first;
+                        const auto slack = optslack.second;
+
                         size_t out_of_domain = 0;
 
                         for (size_t t = 0; t < trials; t ++)
@@ -93,8 +96,8 @@ namespace test
                                 const auto g = state.convergence_criteria();
 
                                 const auto f_thres = f0 - epsilon * math::abs(f0);
-                                const auto g_thres = math::epsilon2<opt_scalar_t>();
-                                const auto x_thres = math::epsilon3<opt_scalar_t>();
+                                const auto g_thres = math::epsilon3<opt_scalar_t>() * slack;
+                                const auto x_thres = math::epsilon3<opt_scalar_t>() * slack * 1e+2;
 
                                 // ignore out-of-domain solutions
                                 if (!func.is_valid(x))
@@ -131,16 +134,6 @@ namespace test
                         log_info() << "out of domain for (" << func.name() << ", " << text::to_string(optimizer)
                                    << "): " << out_of_domain << "/" << trials << ".";
                 }
-
-                log_info() << std::setprecision(20) << "float"
-                           << ": sizeof = " << sizeof(float)
-                           << ", epsilon = " << std::numeric_limits<float>::epsilon();
-                log_info() << std::setprecision(20) << "double"
-                           << ": sizeof = " << sizeof(double)
-                           << ", epsilon = " << std::numeric_limits<double>::epsilon();
-                log_info() << std::setprecision(20) << "long double"
-                           << ": sizeof = " << sizeof(long double)
-                           << ", epsilon = " << std::numeric_limits<long double>::epsilon();
         }
 
         static void check_function(const functions_t& funcs)
