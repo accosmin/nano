@@ -21,13 +21,17 @@
 #include "func/function_sphere.h"
 #include "func/function_matyas.h"
 #include "func/function_powell.h"
+#include "func/function_colville.h"
+#include "func/function_zakharov.h"
 #include "func/function_mccormick.h"
 #include "func/function_himmelblau.h"
 #include "func/function_rosenbrock.h"
 #include "func/function_3hump_camel.h"
 #include "func/function_sum_squares.h"
 #include "func/function_dixon_price.h"
+#include "func/function_bohachevsky.h"
 #include "func/function_goldstein_price.h"
+#include "func/function_styblinski_tang.h"
 #include "func/function_rotated_ellipsoid.h"
 
 #include <map>
@@ -100,12 +104,12 @@ namespace
                                            << stat.m_speeds.avg();
                 }
 
-                table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({3, 4, 5, 6, 0})));
+                table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({3, 4, 0})));
                 table.print(std::cout);
         }
 
         template <typename tostats>
-        void check_problem(const function_t& func, tostats& ostats)
+        void check_function(const function_t& func, tostats& ostats)
         {
                 const auto iterations = opt_size_t(8 * 1024);
                 const auto epsilon = math::epsilon0<opt_scalar_t>();
@@ -254,11 +258,11 @@ namespace
         }
 
         template <typename tstats>
-        void check_problems(const functions_t& funcs, tstats& ostats)
+        void check_function(const functions_t& funcs, tstats& ostats)
         {
                 for (const auto& func : funcs)
                 {
-                        check_problem(*func, ostats);
+                        check_function(*func, ostats);
                 }
         }
 }
@@ -269,21 +273,25 @@ int main(int, char* [])
 
         std::map<string_t, optimizer_stat_t> ostats;
 
-        check_problems(ncv::make_beale_funcs(), ostats);
-        check_problems(ncv::make_booth_funcs(), ostats);
-        check_problems(ncv::make_matyas_funcs(), ostats);
-        check_problems(ncv::make_trid_funcs(32), ostats);
-        check_problems(ncv::make_cauchy_funcs(32), ostats);
-        check_problems(ncv::make_sphere_funcs(32), ostats);
-        check_problems(ncv::make_powell_funcs(32), ostats);
-        check_problems(ncv::make_mccormick_funcs(), ostats);
-        check_problems(ncv::make_himmelblau_funcs(), ostats);
-        check_problems(ncv::make_rosenbrock_funcs(7), ostats);
-        check_problems(ncv::make_3hump_camel_funcs(), ostats);
-        check_problems(ncv::make_dixon_price_funcs(32), ostats);
-        check_problems(ncv::make_sum_squares_funcs(32), ostats);
-        check_problems(ncv::make_goldstein_price_funcs(), ostats);
-        check_problems(ncv::make_rotated_ellipsoid_funcs(32), ostats);
+        check_function(ncv::make_beale_funcs(), ostats);
+        check_function(ncv::make_booth_funcs(), ostats);
+        check_function(ncv::make_matyas_funcs(), ostats);
+        check_function(ncv::make_trid_funcs(8), ostats);
+        check_function(ncv::make_cauchy_funcs(8), ostats);
+        check_function(ncv::make_sphere_funcs(8), ostats);
+        check_function(ncv::make_powell_funcs(8), ostats);
+        check_function(ncv::make_colville_funcs(), ostats);
+        check_function(ncv::make_zakharov_funcs(8), ostats);
+        check_function(ncv::make_mccormick_funcs(), ostats);
+        check_function(ncv::make_himmelblau_funcs(), ostats);
+        check_function(ncv::make_bohachevsky_funcs(), ostats);
+        check_function(ncv::make_rosenbrock_funcs(7), ostats);
+        check_function(ncv::make_3hump_camel_funcs(), ostats);
+        check_function(ncv::make_dixon_price_funcs(8), ostats);
+        check_function(ncv::make_sum_squares_funcs(8), ostats);
+        check_function(ncv::make_goldstein_price_funcs(), ostats);
+        check_function(ncv::make_styblinski_tang_funcs(8), ostats);
+        check_function(ncv::make_rotated_ellipsoid_funcs(8), ostats);
 
         // show global statistics
         show_table(string_t(), ostats);

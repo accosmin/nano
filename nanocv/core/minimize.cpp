@@ -104,14 +104,49 @@ namespace ncv
                                         history_size);
 
                 case min::batch_optimizer::CGD:
-                case min::batch_optimizer::CGD_CD:
-                case min::batch_optimizer::CGD_DY:
-                case min::batch_optimizer::CGD_FR:
-                case min::batch_optimizer::CGD_HS:
-                case min::batch_optimizer::CGD_LS:
-                case min::batch_optimizer::CGD_N:
+                        return minimize(problem, fn_ulog, x0, min::batch_optimizer::CGD_PRP, iterations, epsilon,
+                                        history_size);
+
                 case min::batch_optimizer::CGD_PRP:
+                        return minimize(problem, fn_ulog, x0, optimizer, iterations, epsilon,
+                                        min::ls_initializer::quadratic, min::ls_strategy::interpolation,
+                                        history_size);
+
+                case min::batch_optimizer::CGD_CD:
+                        return minimize(problem, fn_ulog, x0, optimizer, iterations, epsilon,
+                                        min::ls_initializer::unit, min::ls_strategy::interpolation,
+                                        history_size);
+
+                case min::batch_optimizer::CGD_DY:
+                        return minimize(problem, fn_ulog, x0, optimizer, iterations, epsilon,
+                                        min::ls_initializer::quadratic, min::ls_strategy::backtrack_wolfe,
+                                        history_size);
+
+                case min::batch_optimizer::CGD_FR:
+                        return minimize(problem, fn_ulog, x0, optimizer, iterations, epsilon,
+                                        min::ls_initializer::quadratic, min::ls_strategy::backtrack_armijo,
+                                        history_size);
+
+                case min::batch_optimizer::CGD_HS:
+                        return minimize(problem, fn_ulog, x0, optimizer, iterations, epsilon,
+                                        min::ls_initializer::quadratic, min::ls_strategy::backtrack_wolfe,
+                                        history_size);
+
+                case min::batch_optimizer::CGD_LS:
+                        return minimize(problem, fn_ulog, x0, optimizer, iterations, epsilon,
+                                        min::ls_initializer::quadratic, min::ls_strategy::interpolation,
+                                        history_size);
+
+                case min::batch_optimizer::CGD_N:                
+                        return minimize(problem, fn_ulog, x0, optimizer, iterations, epsilon,
+                                        min::ls_initializer::quadratic, min::ls_strategy::interpolation,
+                                        history_size);
+
                 case min::batch_optimizer::CGD_DYCD:
+                        return minimize(problem, fn_ulog, x0, optimizer, iterations, epsilon,
+                                        min::ls_initializer::unit, min::ls_strategy::interpolation,
+                                        history_size);
+
                 case min::batch_optimizer::CGD_DYHS:
                         return minimize(problem, fn_ulog, x0, optimizer, iterations, epsilon,
                                         min::ls_initializer::quadratic, min::ls_strategy::interpolation,
@@ -144,7 +179,7 @@ namespace ncv
                                 (problem, x0);
 
                 case min::batch_optimizer::CGD:
-                        return  min::batch_cgd_dyhs_t<opt_problem_t>
+                        return  min::batch_cgd_prp_t<opt_problem_t>
                                 (iterations, epsilon, lsinit, lsstrat, fn_ulog)
                                 (problem, x0);
 
