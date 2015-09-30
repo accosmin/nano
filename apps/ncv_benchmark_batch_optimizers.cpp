@@ -57,10 +57,10 @@ namespace
                 table.header() << "cost"
                                << "time [us]"
                                << "|grad|/|fval|"
-                               << "#fails3"
-                               << "#fails2"
-                               << "#fails1"
-                               << "#fails0"
+                               << "#>1e-6"
+                               << "#>1e-8"
+                               << "#>1e-10"
+                               << "#>1e-12"
                                << "#iters"
                                << "#fcalls"
                                << "#gcalls"
@@ -186,10 +186,10 @@ namespace
                                         times[t] = timer.microseconds();
                                         crits[t] = g;
                                         iters[t] = state.m_iterations;
-                                        fail0s[t] = !state.converged(math::epsilon0<opt_scalar_t>()) ? 1.0 : 0.0;
-                                        fail1s[t] = !state.converged(math::epsilon1<opt_scalar_t>()) ? 1.0 : 0.0;
-                                        fail2s[t] = !state.converged(math::epsilon2<opt_scalar_t>()) ? 1.0 : 0.0;
-                                        fail3s[t] = !state.converged(math::epsilon3<opt_scalar_t>()) ? 1.0 : 0.0;
+                                        fail0s[t] = !state.converged(1e-12) ? 1.0 : 0.0;
+                                        fail1s[t] = !state.converged(1e-10) ? 1.0 : 0.0;
+                                        fail2s[t] = !state.converged(1e-8) ? 1.0 : 0.0;
+                                        fail3s[t] = !state.converged(1e-6) ? 1.0 : 0.0;
                                         fcalls[t] = state.m_fcalls;
                                         gcalls[t] = state.m_gcalls;
                                         speeds[t] = speed;
