@@ -39,8 +39,8 @@ namespace test
 
         static void check_function(const test::function_t& func)
         {
-                const auto epochs = opt_size_t(32);
-                const auto epoch_size = opt_size_t(128);
+                const auto epochs = opt_size_t(128);
+                const auto epoch_size = opt_size_t(64);
                 const auto trials = size_t(128);
 
                 const auto dims = func.problem().size();
@@ -90,8 +90,8 @@ namespace test
                                 const auto g = state.convergence_criteria();
 
                                 const auto f_thres = math::epsilon0<opt_scalar_t>();
-//                                const auto g_thres = math::epsilon3<opt_scalar_t>() * slack;
-//                                const auto x_thres = math::epsilon3<opt_scalar_t>() * slack * 1e+1;
+                                const auto g_thres = math::epsilon3<opt_scalar_t>() * 1e+3;
+                                const auto x_thres = math::epsilon3<opt_scalar_t>() * 1e+3;
 
                                 // ignore out-of-domain solutions
                                 if (!func.is_valid(x))
@@ -113,12 +113,12 @@ namespace test
                                 BOOST_CHECK_LE(f, f0);
                                 BOOST_CHECK_LE(f, f0 - f_thres * math::abs(f0));
 
-//                                // check convergence
-//                                BOOST_CHECK_LE(g, g_thres);
-////                                BOOST_CHECK(state.m_status == min::status::converged)
+                                // check convergence
+                                BOOST_CHECK_LE(g, g_thres);
+//                                BOOST_CHECK(state.m_status == min::status::converged)
 
-//                                // check local minimas (if any known)
-//                                BOOST_CHECK(func.is_minima(x, x_thres));
+                                // check local minimas (if any known)
+                                BOOST_CHECK(func.is_minima(x, x_thres));
                         }
 
                         ncv::log_info()

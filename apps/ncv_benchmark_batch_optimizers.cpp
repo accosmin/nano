@@ -174,8 +174,7 @@ namespace
                                 const ncv::timer_t timer;
 
                                 const auto state = ncv::minimize(
-                                        problem, nullptr,
-                                        x0, optimizer, iterations, epsilon, ls_init, ls_strat);
+                                        problem, nullptr, x0, optimizer, iterations, epsilon, ls_init, ls_strat);
 
                                 const auto g = state.convergence_criteria();
                                 const auto speed = std::pow(g / g0, 1.0 / (1.0 + state.m_iterations));
