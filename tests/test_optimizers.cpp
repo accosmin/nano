@@ -18,20 +18,24 @@
 #include "func/function_sphere.h"
 #include "func/function_matyas.h"
 #include "func/function_powell.h"
+#include "func/function_colville.h"
+#include "func/function_zakharov.h"
 #include "func/function_mccormick.h"
 #include "func/function_himmelblau.h"
 #include "func/function_rosenbrock.h"
 #include "func/function_3hump_camel.h"
 #include "func/function_sum_squares.h"
 #include "func/function_dixon_price.h"
+#include "func/function_bohachevsky.h"
 #include "func/function_goldstein_price.h"
+#include "func/function_styblinski_tang.h"
 #include "func/function_rotated_ellipsoid.h"
 
 namespace test
 {
         using namespace ncv;
 
-        static void check_problem(const test::function_t& func)
+        static void check_function(const test::function_t& func)
         {
                 const auto iterations = opt_size_t(8 * 1024);
                 const auto epsilon = math::epsilon0<opt_scalar_t>();
@@ -52,9 +56,9 @@ namespace test
                 // optimizers to try
                 const auto optimizers =
                 {
-                        min::batch_optimizer::GD,
+//                        min::batch_optimizer::GD,
 
-                        min::batch_optimizer::CGD,
+//                        min::batch_optimizer::CGD,
 //                        min::batch_optimizer::CGD_CD,
 //                        min::batch_optimizer::CGD_DY,
 //                        min::batch_optimizer::CGD_FR,
@@ -139,33 +143,37 @@ namespace test
                            << ", epsilon = " << std::numeric_limits<long double>::epsilon();
         }
 
-        static void check_problems(const functions_t& funcs)
+        static void check_function(const functions_t& funcs)
         {
                 for (const auto& func : funcs)
                 {
-                        test::check_problem(*func);
+                        test::check_function(*func);
                 }
         }
 }
 
 BOOST_AUTO_TEST_CASE(test_optimizers)
 {
-        using namespace ncv;        
+        using namespace ncv;
 
-        test::check_problems(ncv::make_beale_funcs());
-        test::check_problems(ncv::make_booth_funcs());
-        test::check_problems(ncv::make_matyas_funcs());
-        test::check_problems(ncv::make_trid_funcs(8));
-        test::check_problems(ncv::make_cauchy_funcs(8));
-        test::check_problems(ncv::make_sphere_funcs(8));
-        test::check_problems(ncv::make_powell_funcs(8));
-        test::check_problems(ncv::make_mccormick_funcs());
-        test::check_problems(ncv::make_himmelblau_funcs());
-        test::check_problems(ncv::make_rosenbrock_funcs(7));
-        test::check_problems(ncv::make_3hump_camel_funcs());
-        test::check_problems(ncv::make_dixon_price_funcs(8));
-        test::check_problems(ncv::make_sum_squares_funcs(8));
-        test::check_problems(ncv::make_goldstein_price_funcs());
-        test::check_problems(ncv::make_rotated_ellipsoid_funcs(8));
+        test::check_function(ncv::make_beale_funcs());
+        test::check_function(ncv::make_booth_funcs());
+        test::check_function(ncv::make_matyas_funcs());
+        test::check_function(ncv::make_trid_funcs(8));
+        test::check_function(ncv::make_cauchy_funcs(8));
+        test::check_function(ncv::make_sphere_funcs(8));
+        test::check_function(ncv::make_powell_funcs(8));
+        test::check_function(ncv::make_colville_funcs());
+        test::check_function(ncv::make_zakharov_funcs(8));
+        test::check_function(ncv::make_mccormick_funcs());
+        test::check_function(ncv::make_himmelblau_funcs());
+        test::check_function(ncv::make_bohachevsky_funcs());
+        test::check_function(ncv::make_rosenbrock_funcs(7));
+        test::check_function(ncv::make_3hump_camel_funcs());
+        test::check_function(ncv::make_dixon_price_funcs(8));
+        test::check_function(ncv::make_sum_squares_funcs(8));
+        test::check_function(ncv::make_goldstein_price_funcs());
+        test::check_function(ncv::make_styblinski_tang_funcs(8));
+        test::check_function(ncv::make_rotated_ellipsoid_funcs(8));
 }
 

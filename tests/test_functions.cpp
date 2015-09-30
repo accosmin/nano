@@ -64,10 +64,10 @@ BOOST_AUTO_TEST_CASE(test_functions)
         test::check_function(ncv::make_beale_funcs());
         test::check_function(ncv::make_booth_funcs());
         test::check_function(ncv::make_matyas_funcs());
-        test::check_function(ncv::make_trid_funcs(32));
+        test::check_function(ncv::make_trid_funcs(8));
         test::check_function(ncv::make_cauchy_funcs(8));
         test::check_function(ncv::make_sphere_funcs(8));        
-        test::check_function(ncv::make_powell_funcs(32));
+        test::check_function(ncv::make_powell_funcs(8));
         test::check_function(ncv::make_colville_funcs());
         test::check_function(ncv::make_zakharov_funcs(8));
         test::check_function(ncv::make_mccormick_funcs());
@@ -75,10 +75,10 @@ BOOST_AUTO_TEST_CASE(test_functions)
         test::check_function(ncv::make_bohachevsky_funcs());
         test::check_function(ncv::make_rosenbrock_funcs(7));
         test::check_function(ncv::make_3hump_camel_funcs());
-        test::check_function(ncv::make_dixon_price_funcs(32));
-        test::check_function(ncv::make_sum_squares_funcs(32));
+        test::check_function(ncv::make_dixon_price_funcs(8));
+        test::check_function(ncv::make_sum_squares_funcs(8));
         test::check_function(ncv::make_goldstein_price_funcs());
-        test::check_function(ncv::make_styblinski_tang_funcs(32));
-        test::check_function(ncv::make_rotated_ellipsoid_funcs(32));
+        test::check_function(ncv::make_styblinski_tang_funcs(8));
+        test::check_function(ncv::make_rotated_ellipsoid_funcs(8));
 }
 

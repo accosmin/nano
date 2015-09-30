@@ -25,10 +25,10 @@ namespace ncv
                 {
                         switch (m_type)
                         {
-                        case btype::one:    return "Bohachevsky1";
-                        case btype::two:    return "Bohachevsky2";
-                        case btype::three:  return "Bohachevsky3";
-                        default:                        return "Bohachevskyx";
+                        case btype::one:        return "Bohachevsky1";
+                        case btype::two:        return "Bohachevsky2";
+                        case btype::three:      return "Bohachevsky3";
+                        default:                return "Bohachevskyx";
                         }
                 }
 
@@ -114,9 +114,11 @@ namespace ncv
                         return -100.0 < x.minCoeff() && x.maxCoeff() < 100.0;
                 }
 
-                virtual bool is_minima(const opt_vector_t& x, const opt_scalar_t epsilon) const override
+                virtual bool is_minima(const opt_vector_t&, const opt_scalar_t) const override
                 {
-                        return distance(x, opt_vector_t::Zero(2)) < epsilon;
+                        // NB: there are quite a few local minima that are not easy to compute!
+                        return true;
+//                        return distance(x, opt_vector_t::Zero(2)) < epsilon;
                 }
 
                 btype   m_type;

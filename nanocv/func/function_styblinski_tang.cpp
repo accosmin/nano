@@ -55,7 +55,16 @@ namespace ncv
 
                 virtual bool is_minima(const opt_vector_t& x, const opt_scalar_t epsilon) const override
                 {
-                        return distance(x, opt_vector_t::Constant(-2.903534, m_dims)) < epsilon;
+                        const opt_scalar_t u1 = -2.9035340;
+                        const opt_scalar_t u2 = +2.7468027;
+
+                        bool ok = true;
+                        for (opt_size_t i = 0; i < m_dims && ok; i ++)
+                        {
+                                ok = std::fabs(x(i) - u1) < epsilon || std::fabs(x(i) - u2) < epsilon;
+                        }
+
+                        return ok;
                 }
 
                 opt_size_t      m_dims;

@@ -70,15 +70,18 @@ namespace ncv
                         return norm(x) < 10.0;
                 }
 
-                virtual bool is_minima(const opt_vector_t& x, const opt_scalar_t epsilon) const override
+                virtual bool is_minima(const opt_vector_t&, const opt_scalar_t) const override
                 {
-                        opt_vector_t xmin(m_dims);
-                        for (opt_size_t i = 0; i < m_dims; i ++)
-                        {
-                                xmin(i) = std::pow(2.0, -1.0 + std::pow(2.0, -i));
-                        }
+                        // NB: there are quite a few local minima that are not easy to compute!
+                        return true;
 
-                        return distance(x, xmin) < epsilon;
+//                        opt_vector_t xmin(m_dims);
+//                        for (opt_size_t i = 0; i < m_dims; i ++)
+//                        {
+//                                xmin(i) = std::pow(2.0, -1.0 + std::pow(2.0, -i));
+//                        }
+
+//                        return distance(x, xmin) < epsilon;
                 }
 
                 opt_size_t      m_dims;
