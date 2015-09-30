@@ -88,8 +88,7 @@ namespace test
 
                                 // optimize
                                 const auto state = ncv::minimize(
-                                        problem, nullptr,
-                                        x0, optimizer, iterations, epsilon);
+                                        problem, nullptr, x0, optimizer, iterations, epsilon);
 
                                 const auto x = state.x;
                                 const auto f = state.f;
@@ -128,8 +127,9 @@ namespace test
                                 BOOST_CHECK(func.is_minima(x, x_thres));
                         }
 
-                        log_info() << "out of domain for (" << func.name() << ", " << text::to_string(optimizer)
-                                   << "): " << out_of_domain << "/" << trials << ".";
+                        ncv::log_info()
+                                << func.name() << ", " << text::to_string(optimizer)
+                                << ": out of domain " << out_of_domain << "/" << trials << ".";
                 }
         }
 
