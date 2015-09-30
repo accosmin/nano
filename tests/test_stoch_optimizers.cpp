@@ -11,7 +11,6 @@
 #include "text/to_string.hpp"
 #include "math/tune_fixed.hpp"
 #include "func/make_functions.h"
-#include <iomanip>
 
 namespace test
 {

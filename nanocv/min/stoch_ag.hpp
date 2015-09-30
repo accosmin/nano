@@ -77,14 +77,13 @@ namespace min
                                         const tscalar alpha = m_param.m_alpha0;
 
                                         // descent direction
-                                        problem(y, cstate.g);
                                         const tscalar m = tscalar(k - 1) / tscalar(k + 2);
 
-                                        cx = y - alpha * cstate.g;
                                         y = cx + m * (cx - px);
+                                        cx = y - alpha * cstate.g;
 
                                         // update solution
-                                        cstate.x = cx;
+                                        cstate.update(problem, cx);
 
                                         // next iteration
                                         restart(cstate.g, cx, px, k);

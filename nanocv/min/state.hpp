@@ -54,6 +54,23 @@ namespace min
                 }
 
                 ///
+                /// \brief update current state (move to another position)
+                ///
+                template
+                <
+                        typename tproblem
+                >
+                void update(const tproblem& problem, const tvector& xx)
+                {
+                        x = xx;
+                        f = problem(x, g);
+
+                        m_iterations ++;
+                        m_fcalls = problem.fcalls();
+                        m_gcalls = problem.gcalls();
+                }
+
+                ///
                 /// \brief update current state (move t along the chosen direction)
                 ///
                 template
@@ -71,7 +88,8 @@ namespace min
                 }
 
                 ///
-                /// \brief update current state (move t along the chosen direction)
+                /// \brief update current state (move t along the chosen direction,
+                /// but the function value & gradient are already computed)
                 ///
                 template
                 <
