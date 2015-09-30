@@ -72,8 +72,8 @@ BOOST_AUTO_TEST_CASE(test_functions)
         test::check_function(ncv::make_zakharov_funcs(8));
         test::check_function(ncv::make_mccormick_funcs());
         test::check_function(ncv::make_himmelblau_funcs());
+        test::check_function(ncv::make_rosenbrock_funcs());
         test::check_function(ncv::make_bohachevsky_funcs());
-        test::check_function(ncv::make_rosenbrock_funcs(7));
         test::check_function(ncv::make_3hump_camel_funcs());
         test::check_function(ncv::make_dixon_price_funcs(8));
         test::check_function(ncv::make_sum_squares_funcs(8));

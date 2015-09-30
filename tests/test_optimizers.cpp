@@ -97,7 +97,7 @@ namespace test
 
                                 const auto f_thres = f0 - epsilon * math::abs(f0);
                                 const auto g_thres = math::epsilon3<opt_scalar_t>() * slack;
-                                const auto x_thres = math::epsilon3<opt_scalar_t>() * slack * 1e+2;
+                                const auto x_thres = math::epsilon3<opt_scalar_t>() * slack * 1e+1;
 
                                 // ignore out-of-domain solutions
                                 if (!func.is_valid(x))
@@ -160,8 +160,8 @@ BOOST_AUTO_TEST_CASE(test_optimizers)
         test::check_function(ncv::make_zakharov_funcs(8));
         test::check_function(ncv::make_mccormick_funcs());
         test::check_function(ncv::make_himmelblau_funcs());
+        test::check_function(ncv::make_rosenbrock_funcs());
         test::check_function(ncv::make_bohachevsky_funcs());
-        test::check_function(ncv::make_rosenbrock_funcs(7));
         test::check_function(ncv::make_3hump_camel_funcs());
         test::check_function(ncv::make_dixon_price_funcs(8));
         test::check_function(ncv::make_sum_squares_funcs(8));

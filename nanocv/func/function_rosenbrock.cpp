@@ -51,13 +51,14 @@ namespace ncv
                         return opt_problem_t(fn_size, fn_fval, fn_grad);
                 }
 
-                virtual bool is_valid(const opt_vector_t&) const override
+                virtual bool is_valid(const opt_vector_t& x) const override
                 {
-                        return true;
+                        return norm(x) < 2.4;
                 }
 
                 virtual bool is_minima(const opt_vector_t& x, const opt_scalar_t epsilon) const override
                 {
+
                         {
                                 const opt_vector_t xmin = opt_vector_t::Ones(m_dims);
 
@@ -84,16 +85,13 @@ namespace ncv
                 opt_size_t      m_dims;
         };
 
-        functions_t make_rosenbrock_funcs(opt_size_t max_dims)
+        functions_t make_rosenbrock_funcs()
         {
-                functions_t functions;
-
-                for (opt_size_t dims = 2; dims <= max_dims; dims ++)
+                return
                 {
-                        functions.push_back(std::make_shared<function_rosenbrock_t>(dims));
-                }
-
-                return functions;
+                        std::make_shared<function_rosenbrock_t>(2),
+                        std::make_shared<function_rosenbrock_t>(3)
+                };
         }
 }
 	
