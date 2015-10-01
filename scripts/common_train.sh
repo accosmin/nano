@@ -4,10 +4,10 @@
 dir_exp=$HOME/experiments/results
 dir_db=$HOME/experiments/databases
 
-exe_trainer=../build-release/apps/ncv_train
-exe_tester=../build-release/apps/ncv_test
-exe_info=../build-release/apps/ncv_info
-exe_max_threads=../build-release/apps/ncv_max_threads
+exe_trainer=../build-release/apps/train
+exe_tester=../build-release/apps/test
+exe_info=../build-release/apps/info
+exe_max_threads=../build-release/apps/max_threads
 
 # datasets
 dir_db_svhn=${dir_db}/svhn/

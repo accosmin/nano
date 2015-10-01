@@ -15,13 +15,13 @@ endforeach()
 
 # install (some) programs
 set(nanocv_programs
-        ncv_max_threads
-        ncv_info
-        ncv_info_task
-        ncv_train
-        ncv_evaluate
-        ncv_generate
-        ncv_image2cpp)
+        max_threads
+        info
+        info_task
+        train
+        evaluate
+        generate
+        image2cpp)
 
 install(TARGETS
         ${nanocv_programs}
