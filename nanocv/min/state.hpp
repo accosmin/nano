@@ -107,9 +107,31 @@ namespace min
                 }
 
                 ///
+                /// \brief update the current state (if an improvement)
+                ///
+                bool update(const state_t& state)
+                {
+                        const bool better = state < (*this);
+                        if (better)
+                        {
+                                x = state.x;
+                                g = state.g;
+                                d = state.d;
+                                f = state.f;
+                        }
+
+                        m_iterations = state.m_iterations;
+                        m_fcalls = state.m_fcalls;
+                        m_gcalls = state.m_gcalls;
+                        m_status = state.m_status;
+
+                        return better;
+                }
+
+                ///
                 /// \brief check convergence: the gradient is relatively small
                 ///
-                bool converged(tscalar epsilon) const
+                bool converged(const tscalar epsilon) const
                 {
                         return convergence_criteria() < epsilon;
                 }

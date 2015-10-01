@@ -24,17 +24,9 @@ namespace min
                 ///
                 /// \brief update current state
                 ///
-                bool update(const tstate& state)
+                void update(const tstate& state)
                 {
-                        if (state < m_state)
-                        {
-                                m_state = state;
-                                return true;
-                        }
-                        else
-                        {
-                                return false;
-                        }
+                        m_state.update(state);
                 }
 
                 const tstate& get() const
