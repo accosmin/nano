@@ -64,7 +64,7 @@ namespace
                         const string_t name =
                                 text::to_string(optimizer);
 
-                        benchmark::benchmark_function(func, x0s, op, name, { 1e-2, 1e-3, 1e-4, 1e-5 }, stats, gstats);
+                        benchmark::benchmark_function(func, x0s, op, name, { 1e-5, 1e-4, 1e-3, 1e-2 }, stats, gstats);
                 }
 
                 // show per-problem statistics

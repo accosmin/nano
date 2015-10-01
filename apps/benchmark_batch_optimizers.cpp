@@ -89,7 +89,7 @@ namespace
                                 text::to_string(ls_init) + "][" +
                                 text::to_string(ls_strat) + "]";
 
-                        benchmark::benchmark_function(func, x0s, op, name, { 1e-6, 1e-8, 1e-10, 1e-12 }, stats, gstats);
+                        benchmark::benchmark_function(func, x0s, op, name, { 1e-12, 1e-10, 1e-8, 1e-6 }, stats, gstats);
                 }
 
                 // show per-problem statistics

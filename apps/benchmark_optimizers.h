@@ -13,7 +13,7 @@ namespace benchmark
 
         struct optimizer_stat_t
         {
-                explicit optimizer_stat_t(const scalars_t& gthres = {1e-6, 1e-8, 1e-10, 1e-12})
+                explicit optimizer_stat_t(const scalars_t& gthres = {1e-12, 1e-10, 1e-8, 1e-6})
                         :       m_gthres(gthres)
                 {
                         assert(gthres.size() == 4);
@@ -56,10 +56,10 @@ namespace benchmark
                 table_t table(text::align(name.empty() ? string_t("optimizer") : (name + " optimizer"), 32));
                 table.header() << "cost"
                                << "|grad|/|fval|"
-                               << ("#>1e-" + text::to_string(static_cast<size_t>(-std::log10(gthres[0]))))
-                               << ("#>1e-" + text::to_string(static_cast<size_t>(-std::log10(gthres[1]))))
-                               << ("#>1e-" + text::to_string(static_cast<size_t>(-std::log10(gthres[2]))))
                                << ("#>1e-" + text::to_string(static_cast<size_t>(-std::log10(gthres[3]))))
+                               << ("#>1e-" + text::to_string(static_cast<size_t>(-std::log10(gthres[2]))))
+                               << ("#>1e-" + text::to_string(static_cast<size_t>(-std::log10(gthres[1]))))
+                               << ("#>1e-" + text::to_string(static_cast<size_t>(-std::log10(gthres[0]))))
                                << "#iters"
                                << "#fcalls"
                                << "#gcalls"
@@ -82,7 +82,7 @@ namespace benchmark
                                            << stat.m_speeds.avg();
                 }
 
-                table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({2, 3, 0})));
+                table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({2, 3, 4, 5, 0})));
                 table.print(std::cout);
         }
 
@@ -92,7 +92,7 @@ namespace benchmark
                 const scalars_t& gthres,
                 tostats& stats, tostats& gstats)
         {
-                const size_t trials = x0s.size();
+                const auto trials = x0s.size();
 
                 scalars_t crits(trials);
                 scalars_t iters(trials);
@@ -125,10 +125,10 @@ namespace benchmark
                                 // update stats
                                 crits[t] = g;
                                 iters[t] = state.m_iterations;
-                                fail0s[t] = !state.converged(1e-12) ? 1.0 : 0.0;
-                                fail1s[t] = !state.converged(1e-10) ? 1.0 : 0.0;
-                                fail2s[t] = !state.converged(1e-8) ? 1.0 : 0.0;
-                                fail3s[t] = !state.converged(1e-6) ? 1.0 : 0.0;
+                                fail0s[t] = !state.converged(gthres[0]) ? 1.0 : 0.0;
+                                fail1s[t] = !state.converged(gthres[1]) ? 1.0 : 0.0;
+                                fail2s[t] = !state.converged(gthres[2]) ? 1.0 : 0.0;
+                                fail3s[t] = !state.converged(gthres[3]) ? 1.0 : 0.0;
                                 fcalls[t] = state.m_fcalls;
                                 gcalls[t] = state.m_gcalls;
                                 speeds[t] = speed;
