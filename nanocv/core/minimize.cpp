@@ -300,6 +300,7 @@ namespace ncv
                 switch (optimizer)
                 {
                 case min::stoch_optimizer::AG:
+                case min::stoch_optimizer::AGGR:
                 case min::stoch_optimizer::ADAGRAD:
                 case min::stoch_optimizer::ADADELTA:
                         return { 1.00 };
