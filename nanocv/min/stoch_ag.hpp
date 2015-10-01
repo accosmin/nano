@@ -62,12 +62,10 @@ namespace min
                         // current state
                         tstate cstate(problem, x0);
 
-                        // previous & current iteration
-                        tvector y = x0;
-
-                        // previous / current iteration
-                        tvector px = x0;
+                        // current & previous iterations
                         tvector cx = x0;
+                        tvector x1 = x0;
+                        tvector x2 = x0;
 
                         for (tsize e = 0, k = 1; e < m_param.m_epochs; e ++)
                         {
@@ -76,23 +74,27 @@ namespace min
                                         // learning rate
                                         const tscalar alpha = m_param.m_alpha0;
 
-                                        // descent direction
+                                        // momentum
                                         const tscalar m = tscalar(k - 1) / tscalar(k + 2);
 
-                                        y = cx + m * (cx - px);
-                                        cx = y - alpha * cstate.g;
-
                                         // update solution
+                                        cx = x1 + m * (x1 - x2);
+
                                         cstate.update(problem, cx);
+                                        k = restart(cstate.g, cx, x1, k);
+
+                                        cx -= alpha * cstate.g;
 
                                         // next iteration
-                                        restart(cstate.g, cx, px, k);
-                                        px = cx;
+                                        x2 = x1;
+                                        x1 = cx;
                                 }
 
+                                cstate.update(problem, cx);
                                 m_param.ulog(cstate);
                         }
 
+                        // OK
                         return cstate;
                 }
 

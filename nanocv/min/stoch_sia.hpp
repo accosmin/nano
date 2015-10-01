@@ -71,7 +71,7 @@ namespace min
                         }
 
                         // OK, setup the average parameter as the final result
-                        cstate.x = xavg.value();
+                        cstate.update(problem, xavg.value());
                         return cstate;
                 }
 

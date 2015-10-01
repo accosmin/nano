@@ -320,7 +320,8 @@ namespace ncv
                 const auto op = [&] (const opt_scalar_t alpha, const opt_scalar_t decay)
                 {
                         const auto state = ncv::minimize(problem, nullptr, x0, optimizer, 1, epoch_size, alpha, decay);
-                        return std::isfinite(state.f) ? state.f : std::numeric_limits<opt_scalar_t>::max();
+                        const auto valid = std::isfinite(state.f);
+                        return valid ? state.f : std::numeric_limits<opt_scalar_t>::max();
                 };
 
                 const auto config = math::tune_fixed(op, alphas, decays);

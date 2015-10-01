@@ -12,8 +12,9 @@ namespace min
         >
         struct ag_no_restart_t
         {
-                void operator()(const tvector&, const tvector&, const tvector&, tsize&) const
+                tsize operator()(const tvector&, const tvector&, const tvector&, const tsize iter) const
                 {
+                        return iter;
                 }
         };
 
@@ -27,11 +28,15 @@ namespace min
         >
         struct ag_grad_restart_t
         {
-                void operator()(const tvector& gx, const tvector& crtx, const tvector& prvx, tsize& iter) const
+                tsize operator()(const tvector& gx, const tvector& crtx, const tvector& prvx, const tsize iter) const
                 {
                         if (gx.dot(crtx - prvx) > 0)
                         {
-                                iter = 1;
+                                return tsize(0);
+                        }
+                        else
+                        {
+                                return iter;
                         }
                 }
         };
