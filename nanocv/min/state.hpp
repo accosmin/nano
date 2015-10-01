@@ -1,6 +1,5 @@
 #pragma once
 
-#include "status.h"
 #include <limits>
 #include <eigen3/Eigen/Core>
 
@@ -34,8 +33,7 @@ namespace min
                                 f(std::numeric_limits<tscalar>::max()),
                                 m_iterations(0),
                                 m_fcalls(0),
-                                m_gcalls(0),
-                                m_status(status::max_iterations)
+                                m_gcalls(0)
                 {
                 }
 
@@ -123,7 +121,6 @@ namespace min
                         m_iterations = state.m_iterations;
                         m_fcalls = state.m_fcalls;
                         m_gcalls = state.m_gcalls;
-                        m_status = state.m_status;
 
                         return better;
                 }
@@ -144,26 +141,6 @@ namespace min
                         return (g.template lpNorm<Eigen::Infinity>()) / (1.0 + std::fabs(f));
                 }
 
-                ///
-                /// \brief optimization done, so setup the status code
-                ///
-                state_t& done(const tsize max_iterations, const tscalar epsilon)
-                {
-                        if (converged(epsilon))
-                        {
-                                m_status = status::converged;
-                        }
-                        else if (m_iterations >= max_iterations)
-                        {
-                                m_status = status::max_iterations;
-                        }
-                        else
-                        {
-                                // assuming specific status code was already set!
-                        }
-                        return *this;
-                }
-
                 // attributes
                 tvector         x, g, d;                ///< parameter, gradient, descent direction
                 tscalar         f;                      ///< function value, step size
@@ -171,8 +148,6 @@ namespace min
                 tsize           m_iterations;
                 tsize           m_fcalls;               ///< #function value evaluations
                 tsize           m_gcalls;               ///< #function gradient evaluations
-
-                status          m_status;
         };
 
         ///

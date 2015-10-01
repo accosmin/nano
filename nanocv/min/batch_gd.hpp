@@ -69,7 +69,8 @@ namespace min
                                 }
                         }
 
-                        return cstate.done(m_param.m_max_iterations, m_param.m_epsilon);
+                        // OK
+                        return cstate;
                 }
 
                 // attributes

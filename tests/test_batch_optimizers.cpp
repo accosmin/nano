@@ -93,8 +93,7 @@ namespace test
                                         << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
                                         << ", f = " << f0 << "/" << f
                                         << ", g = " << g
-                                        << ", i = " << state.m_iterations
-                                        << " (" << text::to_string(state.m_status) << ").";
+                                        << ", i = " << state.m_iterations << ".";
 
                                 // check function value decrease
                                 BOOST_CHECK_LE(f, f0);
@@ -102,7 +101,6 @@ namespace test
 
                                 // check convergence
                                 BOOST_CHECK_LE(g, g_thres);
-//                                BOOST_CHECK(state.m_status == min::status::converged)
 
                                 // check local minimas (if any known)
                                 BOOST_CHECK(func.is_minima(x, x_thres));

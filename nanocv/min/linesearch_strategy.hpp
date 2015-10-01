@@ -47,28 +47,21 @@ namespace min
                         const tscalar dg0 = state.d.dot(state.g);
                         if (dg0 >= tscalar(0))
                         {
-                                state.m_status = status::ls_failed_not_descent;
                                 return false;
                         }
 
                         // check valid initial step
                         if (t0 < eps)
                         {
-                                state.m_status = status::ls_failed_invalid_initial_step;
                                 return false;
                         }
 
-                        tstep step0(problem, state);
-
+                        // check valid step
+                        const tstep step0(problem, state);
                         const tstep step = get_step(step0, t0);
-                        if (!step)
+
+                        if (!step || !(step < step0))
                         {
-                                state.m_status = status::ls_failed_invalid_step;
-                                return false;
-                        }
-                        else if (!(step < step0))
-                        {
-                                state.m_status = status::ls_failed_not_decreasing_step;
                                 return false;
                         }
                         else
