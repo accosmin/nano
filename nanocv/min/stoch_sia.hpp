@@ -1,5 +1,6 @@
 #pragma once
 
+#include "best_state.hpp"
 #include "stoch_params.hpp"
 #include "average_vector.hpp"
 
@@ -45,6 +46,9 @@ namespace min
                         // current state
                         tstate cstate(problem, x0);
 
+                        // best state
+                        best_state_t<tstate> bstate(cstate);
+
                         // running-weighted-averaged parameters
                         average_vector_t<tscalar, tvector> xavg(x0.size());
 
@@ -65,14 +69,14 @@ namespace min
                                 }
 
                                 const tvector cx = cstate.x;
-                                cstate.x = xavg.value();        // NB: to correctly log the current parameters!
+                                cstate.update(problem, xavg.value());   // NB: to correctly log the current parameters!
                                 m_param.ulog(cstate);
-                                cstate.x = cx;                  // revert it
+                                bstate.update(cstate);
+                                cstate.update(problem, cx);             // revert it
                         }
 
-                        // OK, setup the average parameter as the final result
-                        cstate.update(problem, xavg.value());
-                        return cstate;
+                        // OK
+                        return bstate.get();
                 }
 
                 // attributes

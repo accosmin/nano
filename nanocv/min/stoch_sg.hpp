@@ -1,5 +1,6 @@
 #pragma once
 
+#include "best_state.hpp"
 #include "stoch_params.hpp"
 
 namespace min
@@ -44,6 +45,9 @@ namespace min
                         // current state
                         tstate cstate(problem, x0);
 
+                        // best state
+                        best_state_t<tstate> bstate(cstate);
+
                         for (tsize e = 0, k = 1; e < m_param.m_epochs; e ++)
                         {
                                 for (tsize i = 0; i < m_param.m_epoch_size; i ++, k ++)
@@ -59,10 +63,11 @@ namespace min
                                 }
 
                                 m_param.ulog(cstate);
+                                bstate.update(cstate);
                         }
 
                         // OK
-                        return cstate;
+                        return bstate.get();
                 }
 
                 // attributes

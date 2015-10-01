@@ -1,5 +1,6 @@
 #pragma once
 
+#include "best_state.hpp"
 #include "stoch_params.hpp"
 #include "stoch_ag_restarts.hpp"
 
@@ -62,6 +63,9 @@ namespace min
                         // current state
                         tstate cstate(problem, x0);
 
+                        // best state
+                        best_state_t<tstate> bstate(cstate);
+
                         // current & previous iterations
                         tvector cx = x0;
                         tvector x1 = x0;
@@ -92,10 +96,11 @@ namespace min
 
                                 cstate.update(problem, cx);
                                 m_param.ulog(cstate);
+                                bstate.update(cstate);
                         }
 
                         // OK
-                        return cstate;
+                        return bstate.get();
                 }
 
                 // attributes

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "best_state.hpp"
 #include "stoch_params.hpp"
 #include "average_vector.hpp"
 
@@ -45,6 +46,9 @@ namespace min
                         // current state
                         tstate cstate(problem, x0);
 
+                        // best state
+                        best_state_t<tstate> bstate(cstate);
+
                         // running-weighted-averaged gradient
                         average_vector_t<tscalar, tvector> gavg(x0.size());
 
@@ -64,10 +68,11 @@ namespace min
                                 }
 
                                 m_param.ulog(cstate);
+                                bstate.update(cstate);
                         }
 
                         // OK
-                        return cstate;
+                        return bstate.get();
                 }
 
                 // attributes
