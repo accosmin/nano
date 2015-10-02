@@ -6,10 +6,10 @@ This small (nano) library is used for training and testing models, such as neura
 #### Core modules
 
 The core modules are header only, independent of each other and use only STL and Eigen3 (if needed):
-* **nanocv/min** - batch and stochastic numerical optimization and line-search methods built on top of Eigen3.
+* **nanocv/min** - batch and stochastic numerical optimization and line-search methods.
 * **nanocv/math** - numerical utilities.
 * **nanocv/text** - string processing utilities.
-* **nanocv/tensor** - vector, matrix and tensor utilities, 2D/3D convolution and correlations built on top of Eigen3.
+* **nanocv/tensor** - vector, matrix and tensor utilities, 2D/3D convolution and correlations.
 * **nanocv/thread** - thread pool, loop processing in parallel.
 
 Most notable the **nanocv/min** module implements the following: 
