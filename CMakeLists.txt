@@ -157,20 +157,20 @@ message("-----------------------------------------------------------------------
 # build the library, programs & tests
 ######################################################################
 
-include_directories(${nanocv_SOURCE_DIR}/nanocv)
+include_directories(${nanocv_SOURCE_DIR}/src)
 
-add_subdirectory(nanocv/min)
-add_subdirectory(nanocv/math)
-add_subdirectory(nanocv/text)
-add_subdirectory(nanocv/tensor)
+add_subdirectory(src/min)
+add_subdirectory(src/math)
+add_subdirectory(src/text)
+add_subdirectory(src/tensor)
+add_subdirectory(src/thread)
 
-add_subdirectory(nanocv/core)
-add_subdirectory(nanocv/func)
-add_subdirectory(nanocv/ml)
-add_subdirectory(nanocv/thread)
+add_subdirectory(src/core)
+add_subdirectory(src/func)
+add_subdirectory(src/cortex)
 
-add_subdirectory(nanocv/nanocv)
+add_subdirectory(src/nanocv)
 
 add_subdirectory(apps)
-add_subdirectory(tests)
+add_subdirectory(test)
 

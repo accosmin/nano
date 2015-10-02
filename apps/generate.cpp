@@ -1,5 +1,5 @@
-#include "ml/class.h"
-#include "ml/generate.h"
+#include "cortex/class.h"
+#include "cortex/generate.h"
 #include "nanocv/nanocv.h"
 #include "core/measure.hpp"
 #include "core/image_grid.h"

@@ -1,5 +1,5 @@
-#include "ml/sampler.h"
-#include "ml/evaluate.h"
+#include "cortex/sampler.h"
+#include "cortex/evaluate.h"
 #include "nanocv/nanocv.h"
 #include "core/measure.hpp"
 #include "text/concatenate.hpp"
