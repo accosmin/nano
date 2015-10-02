@@ -2,6 +2,7 @@
 
 This small (nano) library is used for training and testing models, such as neural networks and convolution networks, on various image classification and object detection problems.
 
+
 #### Core modules
 
 The core modules are header only, independent of each other and use only STL and Eigen3 (if needed):
@@ -16,6 +17,7 @@ Most notable the **nanocv/min** module implements the following:
 * stochastic optimization methods: `accelerated gradient`, `stochastic (averaging) gradient`, `ADADELTA`, `ADAGRAD`.
 * line-search methods: `backtracking`, `More & Thuente`, `CG_DESCENT`.
 
+
 #### High level modules
 
 The following high level modules are provided:
@@ -23,6 +25,7 @@ The following high level modules are provided:
 * **nanocv/ml** - machine learning interface, implementation of various training methods.
 * **nanocv/func** - standard functions used for testing and benchmarking optimization methods.
  
+
 #### NanoCV module
 
 The **nanocv/nanocv** module implements particular models, tasks, loss functions, training criteria and network layers. It uses several key concepts mapped to C++ object interfaces. Each object instantation is registered with an **ID** and thus it can be selected from command line arguments. Also new objects can be easily registered and then they are automatically visibile across the library and its associated programs.
@@ -35,6 +38,7 @@ A **loss** function assigns a scalar score to the prediction of a model by compa
 
 A **trainer** optimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as a numerical optimization criteria. All the available trainers tune all their required hyper parameters on a separate validation dataset. The library provides `batch`, `minibatch` and `stochastic` instances.
 
+
 #### Compilation
 
 Use a C++14 compiler (gcc 4.9+, clang) and install Boost, Eigen3, LibArchive and DevIL. 
@@ -43,18 +47,15 @@ NanoCV is tested on ArchLinux (gcc 4.9+, CMake 3.1+, Ninja or Make) and OSX (cla
 
 The easiest way to compile (and install) is to run the `build_release.sh` bash script. The test programs and utilities will be found in the `build-release` directory. The `build_debug.sh` bash script will build the debugging version with and without address, leak and thread sanitizers (if available).
 
+
 #### Examples
 
 The library provides various command line programs and utilities. Each program displays its possible arguments with short explanations by running it with `--help`.
 
 * **ncv_info** - prints all registered objects with their IDs and short descriptions.
-
 * **ncv_info_task** - loads a task and prints its detailed description.
-
 * **ncv_trainer** - train a model on a given task.
-
 * **ncv_tester** - test a model on a given task.
-
 * **ncv_generator** - creates input image patches that maximally activate an output unit (e.g. associated to a class label).
 
 The `scripts` directory contains examples on how to train various models on different tasks.
