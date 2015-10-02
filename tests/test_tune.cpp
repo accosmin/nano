@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(test_tune)
         const scalar_t minlog = -6.0;
         const scalar_t maxlog = +6.0;
         const scalar_t epslog = math::epsilon2<scalar_t>();
-        const size_t splits = ncv::n_threads();
+        const size_t splits = thread::n_threads();
 
         for (size_t t = 0; t < n_tests; t ++)
         {

@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
                         BOOST_CHECK_LE(math::abs(vgrad1 - value1), cmd_epsilon);
 
                         // check results with multiple threads
-                        for (size_t nthreads = 2; nthreads < 3 * ncv::n_threads(); nthreads ++)
+                        for (size_t nthreads = 2; nthreads < 3 * thread::n_threads(); nthreads ++)
                         {
                                 accumulator_t laccx(*model, nthreads, criterion, criterion_t::type::value, lambda);
                                 accumulator_t gaccx(*model, nthreads, criterion, criterion_t::type::vgrad, lambda);

@@ -1,17 +1,23 @@
 #pragma once
 
+#include <thread>
 #include <cstddef>
-#include "core/arch.h"
 
-namespace ncv
+namespace thread
 {
         ///
         /// \brief the number of threads available on the system
         ///
-        NANOCV_PUBLIC std::size_t n_threads();
+        inline std::size_t n_threads()
+        {
+                return static_cast<std::size_t>(std::thread::hardware_concurrency());
+        }
 
         ///
         /// \brief maximum number of supported threads
         ///
-        NANOCV_PUBLIC std::size_t max_n_threads();
+        inline std::size_t max_n_threads()
+        {
+                return n_threads() * 8;
+        }
 }

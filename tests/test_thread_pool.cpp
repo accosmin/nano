@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
         std::mutex mutex;
 
         // check that there is no job to do
-        BOOST_CHECK_EQUAL(pool.n_workers(), ncv::n_threads());
+        BOOST_CHECK_EQUAL(pool.n_workers(), thread::n_threads());
         BOOST_CHECK_EQUAL(pool.n_tasks(), 0);
 
         const size_t n_tests = 8;
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
                                 << "]: waiting done (enqueued " << pool.n_tasks() << " jobs).";
 
                 // check that all jobs are done
-                BOOST_CHECK_EQUAL(pool.n_workers(), ncv::n_threads());
+                BOOST_CHECK_EQUAL(pool.n_workers(), thread::n_threads());
                 BOOST_CHECK_EQUAL(pool.n_tasks(), 0);
 
                 BOOST_CHECK_EQUAL(tasks_done.size(), n_tasks);

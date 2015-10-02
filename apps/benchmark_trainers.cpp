@@ -68,7 +68,7 @@ namespace
                 const size_t cmd_stochastic_epochs = cmd_iterations;
                 const scalar_t cmd_epsilon = 1e-4;
 
-                const size_t n_threads = ncv::n_threads();
+                const size_t n_threads = thread::n_threads();
                 const bool verbose = true;
 
                 // generate fixed random starting points
@@ -148,7 +148,7 @@ int main(int, char* [])
 
         const size_t cmd_rows = 16;
         const size_t cmd_cols = 16;
-        const size_t cmd_samples = ncv::n_threads() * 16 * 10;
+        const size_t cmd_samples = thread::n_threads() * 16 * 10;
         const color_mode cmd_color = color_mode::rgba;
 
         // create task

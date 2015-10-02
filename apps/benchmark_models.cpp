@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
         const color_mode cmd_color = color_mode::luma;
 
         const size_t cmd_min_nthreads = 1;
-        const size_t cmd_max_nthreads = ncv::n_threads();
+        const size_t cmd_max_nthreads = thread::n_threads();
 
         // generate synthetic task
         charset_task_t task(charset::numeric, cmd_rows, cmd_cols, cmd_color, cmd_samples);

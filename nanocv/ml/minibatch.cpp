@@ -35,7 +35,7 @@ namespace ncv
 
                 sizes_t tunable_batches()
                 {
-                        const size_t batch0 = 16 * ncv::n_threads();
+                        const size_t batch0 = 16 * thread::n_threads();
 
                         return { batch0, batch0 * 2, batch0 * 4, batch0 * 8, batch0 * 16 };
                 }

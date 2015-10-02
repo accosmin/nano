@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
         const size_t cmd_max_samples = cmd_min_samples * 8;
 
         const size_t cmd_min_nthreads = 1;
-        const size_t cmd_max_nthreads = ncv::n_threads();
+        const size_t cmd_max_nthreads = thread::n_threads();
 
         // create synthetic task
         charset_task_t task(charset::numeric, cmd_rows, cmd_cols, cmd_color, cmd_samples);
@@ -80,11 +80,11 @@ int main(int argc, char *argv[])
                 // process the samples
                 for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; nthreads ++)
                 {
-                        ncv::thread::pool_t pool(nthreads);
+                        thread::pool_t pool(nthreads);
 
                         const auto micros = ncv::measure_robustly_usec([&]
                         {
-                                ncv::thread::loopi(samples.size(), pool, [&] (size_t i)
+                                thread::loopi(samples.size(), pool, [&] (size_t i)
                                 {
                                         const sample_t& sample = samples[i];
                                         const image_t& image = task.image(sample.m_index);
