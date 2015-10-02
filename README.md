@@ -12,14 +12,14 @@ The core modules are header only, independent of each other and use only STL and
 * **nanocv/thread** - thread pool, loop processing in parallel.
 
 Most notable the **nanocv/min** module implements the following: 
-* batch optimization methods: gradient descent (GD), various non-linear conjugate gradient descent (CGD), L-BFGS.
-* stochastic optimization methods: accelerated gradient (AG/AGGR), stochastic (averaging) gradient (SG/SGA/SIA), ADADELTA, ADAGRAD.
-* line-search methods: backtracking, More & Thuente, CG_DESCENT.
+* batch optimization methods: `gradient descent` (GD), various `non-linear conjugate gradient descent` (CGD), `L-BFGS`.
+* stochastic optimization methods: `accelerated gradient` (AG/AGGR), `stochastic (averaging) gradient` (SG/SGA/SIA), `ADADELTA`, `ADAGRAD`.
+* line-search methods: `backtracking`, `More & Thuente`, `CG_DESCENT`.
 
 #### High level modules
 
 The following high level modules are provided:
-* **nanocv/core** - image I/O, image processing, optimization interface, file processing etc.
+* **nanocv/core** - image I/O, image processing, numerical optimization interface, file processing etc.
 * **nanocv/ml** - machine learning interface, implementation of various training methods.
 * **nanocv/func** - standard functions used for testing and benchmarking optimization methods.
  
