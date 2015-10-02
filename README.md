@@ -1,36 +1,47 @@
 ### NanoCV
 
-This small (nano) library is used as a sandbox for training and testing models, such as neural networks and convolution networks, on various image classification and object detection problems. 
+This small (nano) library is used for training and testing models, such as neural networks and convolution networks, on various image classification and object detection problems.
 
-The library is built around several key concepts mapped to C++ object interfaces. Each object instantation is registered with an **ID** and thus it can be selected from command line arguments. Also 
-new objects can be easily registered and then they are automatically visibile across the library and its associated programs.
+#### Base modules
 
-##### Task
+The core modules are header only, independent of each other and use only STL and Eigen3 (if needed):
+* **nanocv/min** - batch and stochastic numerical optimization and line-search methods built on top of Eigen3.
+* **nanocv/math** - numerical utilities.
+* **nanocv/text** - string processing utilities.
+* **nanocv/tensor** - vector, matrix and tensor utilities, 2D/3D convolution and correlations built on top of Eigen3.
+* **nanocv/thread** - thread pool, loop processing in parallel.
 
-A task describes a classification or regression problem consisting of separate training and test image patches with associated target outputs if any. The library has built-in support for various standard benchmark datasets like: **MNIST**, **CIFAR-10**, **CIFAR-100**, **STL-10**, **SVHN**, **NORB**. These datasets are loaded directly from the original (compressed) files.
+Most notable the **nanocv/min** module implements the following: 
+* batch optimization methods: gradient descent (GD), various non-linear conjugate gradient descent (CGD), L-BFGS.
+* stochastic optimization methods: accelerated gradient (AG/AGGR), stochastic (averaging) gradient (SG/SGA/SIA), ADADELTA, ADAGRAD.
+* line-search methods: backtracking, More & Thuente, CG_DESCENT.
 
-##### Model
+#### High level modules
 
-A model predicts the correct output for a given image patch, either its label (if a classification task) or a score (if a regression task). The library implements various networks with any user-selectable combination of layers: **convolution**, **activation** (hyperbolic tangent, unit, signed normalization), **linear** and **pooling**.
+The following high level modules are provided:
+* **nanocv/core** - image I/O, image processing, optimization interface, file processing etc.
+* **nanocv/ml** - machine learning interface, implementation of various training methods.
+* **nanocv/func** - standard functions used for testing and benchmarking optimization methods.
+ 
+#### NanoCV module
 
-##### Loss 
+The **nanocv/nanocv** module implements particular models, tasks, loss functions, training criteria and network layers. It uses several key concepts mapped to C++ object interfaces. Each object instantation is registered with an **ID** and thus it can be selected from command line arguments. Also new objects can be easily registered and then they are automatically visibile across the library and its associated programs.
 
-A loss function assigns a scalar score to the prediction of a model by comparing it with the ground truth target (if provided): the lower the score, the better the prediction.
+A **task** describes a classification or regression problem consisting of separate training and test image patches with associated target outputs if any. The library has built-in support for various standard benchmark datasets like: **MNIST**, **CIFAR-10**, **CIFAR-100**, **STL-10**, **SVHN**, **NORB**. These datasets are loaded directly from the original (compressed) files.
 
-##### Trainer
+A **model** predicts the correct output for a given image patch, either its label (if a classification task) or a score (if a regression task). The library implements various networks with any user-selectable combination of layers: **convolution**, **activation** (hyperbolic tangent, unit, signed normalization), **linear** and **pooling**.
 
-A trainer optimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as a numerical optimization criteria. Implemented instances: **batch** (using **L-BFGS**, conjugate gradient descent - **CGD** or gradient descent - **GD**), **minibatch** and **stochastic** (using Nesterov's accelerated gradient - **AG**, adaptive gradient - **ADAGRAD**, adaptive delta gradient - **ADADELTA**, stochastic gradient - **SG**, stochastic iterative averaging - **SIA** or stochastic gradient averaging - **SGA**).
+A **loss** function assigns a scalar score to the prediction of a model by comparing it with the ground truth target (if provided): the lower the score, the better the prediction. The loss functions are combined into training **criteria**, that provide model regularization.
+
+A **trainer** optimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as a numerical optimization criteria. Implemented instances: **batch** and **minibatch** that use batch optimization methods, and **stochastic** that use stochastic optimization methods.
 
 #### Compilation
 
 Use a C++14 compiler (gcc 4.9+, clang) and install Boost, Eigen3, LibArchive and DevIL. 
 
-NanoCV is tested on ArchLinux (gcc 4.9+, CMake 3.1+, Ninja) and OSX (clang, homebrew, CMake 3.1+, Ninja). The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. 
-Windows/MSVC).
+NanoCV is tested on ArchLinux (gcc 4.9+, CMake 3.1+, Ninja or Make) and OSX (clang, homebrew, CMake 3.1+, Ninja or Make). The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. Windows/MSVC).
 
-The easiest way to compile (and install) is to run the `build_release.sh` bash script. The test programs and utilities will be found in the `build-release` directory.
-
-The `build_debug.sh` bash script will build the debugging version with and without address, leak and thread sanitizers (if available).
+The easiest way to compile (and install) is to run the `build_release.sh` bash script. The test programs and utilities will be found in the `build-release` directory. The `build_debug.sh` bash script will build the debugging version with and without address, leak and thread sanitizers (if available).
 
 #### Examples
 
