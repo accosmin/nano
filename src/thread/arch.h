@@ -17,15 +17,3 @@
                 #define THREAD_PRIVATE
         #endif
 #endif
-
-// fix "unused variable" warnings
-#define THREAD_UNUSED1(x) (void)(x)
-#define THREAD_UNUSED2(x, y) THREAD_UNUSED1(x); THREAD_UNUSED1(y)
-#define THREAD_UNUSED3(x, y, z) THREAD_UNUSED1(x); THREAD_UNUSED1(y); THREAD_UNUSED1(z)
-
-// fix "unused variable" warnings (only for release mode)
-#ifdef THREAD_DEBUG
-        #define THREAD_UNUSED1_RELEASE(x)
-#else
-        #define THREAD_UNUSED1_RELEASE(x) THREAD_UNUSED1(x)
-#endif
