@@ -1,18 +1,18 @@
 #include "pool.h"
 #include "thread.h"
 
-thread::pool_t::pool_t(std::size_t nthreads)
+thread::pool_t::pool_t(std::size_t nworkers)
 {
-        if (n_threads == 0)
+        if (nworkers == 0)
         {
-                nthreads = thread::n_threads();
+                nworkers = thread::n_threads();
         }
         else
         {
-                nthreads = std::max(size_t(1), std::min(nthreads, thread::max_n_threads()));
+                nworkers = std::max(size_t(1), std::min(nworkers, thread::max_n_threads()));
         }
 
-        for (size_t i = 0; i < nthreads; i ++)
+        for (size_t i = 0; i < nworkers; i ++)
         {
                 m_workers.emplace_back(thread::pool_worker_t(m_tasks));
         }
