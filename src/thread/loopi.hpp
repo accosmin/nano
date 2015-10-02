@@ -47,7 +47,7 @@ namespace thread
         }
 
         ///
-        /// \brief split a loop computation of the given size using all availabe threads
+        /// \brief split a loop computation of the given size using all available threads
         ///
         template
         <
