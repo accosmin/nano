@@ -2,13 +2,10 @@
 file(GLOB nanocv_apps RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
         *.cpp)
 
-file(GLOB nanocv_app_headers RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-        *.h *.hpp)
-
 foreach(app ${nanocv_apps})
         get_filename_component(app_name ${app} NAME_WE)
 
-        add_executable(${app_name} ${app} ${nanocv_app_headers})
+        add_executable(${app_name} ${app})
         target_link_libraries(${app_name}
                 ${Boost_PROGRAM_OPTIONS_LIBRARY}
                 ${Boost_FILESYSTEM_LIBRARY}
