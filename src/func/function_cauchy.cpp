@@ -1,5 +1,4 @@
 #include "function_cauchy.h"
-#include "text/to_string.hpp"
 
 namespace ncv
 {
@@ -12,7 +11,7 @@ namespace ncv
 
                 virtual string_t name() const override
                 {
-                        return "Cauchy" + text::to_string(m_dims) + "D";
+                        return "Cauchy" + std::to_string(m_dims) + "D";
                 }
 
                 virtual opt_problem_t problem() const override

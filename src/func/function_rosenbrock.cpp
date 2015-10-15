@@ -1,6 +1,5 @@
 #include "function_rosenbrock.h"
 #include "math/numeric.hpp"
-#include "text/to_string.hpp"
 
 namespace ncv
 {
@@ -13,7 +12,7 @@ namespace ncv
 
                 virtual string_t name() const override
                 {
-                        return "Rosenbrock" + text::to_string(m_dims) + "D";
+                        return "Rosenbrock" + std::to_string(m_dims) + "D";
                 }
 
                 virtual opt_problem_t problem() const override

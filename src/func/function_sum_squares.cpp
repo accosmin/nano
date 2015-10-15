@@ -1,5 +1,4 @@
 #include "function_sum_squares.h"
-#include "text/to_string.hpp"
 
 namespace ncv
 {
@@ -12,7 +11,7 @@ namespace ncv
 
                 virtual string_t name() const override
                 {
-                        return "sum squares" + text::to_string(m_dims) + "D";
+                        return "sum squares" + std::to_string(m_dims) + "D";
                 }
 
                 virtual opt_problem_t problem() const override

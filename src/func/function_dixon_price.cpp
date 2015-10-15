@@ -1,6 +1,5 @@
 #include "function_dixon_price.h"
 #include "math/numeric.hpp"
-#include "text/to_string.hpp"
 
 namespace ncv
 {
@@ -13,7 +12,7 @@ namespace ncv
 
                 virtual string_t name() const override
                 {
-                        return "Dixon-Price" + text::to_string(m_dims) + "D";
+                        return "Dixon-Price" + std::to_string(m_dims) + "D";
                 }
 
                 virtual opt_problem_t problem() const override
