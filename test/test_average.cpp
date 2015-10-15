@@ -4,8 +4,8 @@
 #include <boost/test/unit_test.hpp>
 #include "math/abs.hpp"
 #include "math/epsilon.hpp"
-#include "min/average_scalar.hpp"
-#include "min/average_vector.hpp"
+#include "min/stoch/average_scalar.hpp"
+#include "min/stoch/average_vector.hpp"
 #include <eigen3/Eigen/Core>
 
 namespace test

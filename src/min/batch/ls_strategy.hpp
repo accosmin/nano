@@ -1,10 +1,10 @@
 #pragma once
 
 #include <cassert>
-#include "state.hpp"
-#include "linesearch_backtrack.hpp"
-#include "linesearch_cgdescent.hpp"
-#include "linesearch_interpolate.hpp"
+#include "min/state.hpp"
+#include "ls_backtrack.hpp"
+#include "ls_cgdescent.hpp"
+#include "ls_interpolate.hpp"
 
 namespace min
 {

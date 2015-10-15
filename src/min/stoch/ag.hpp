@@ -1,8 +1,8 @@
 #pragma once
 
+#include "params.hpp"
 #include "best_state.hpp"
-#include "stoch_params.hpp"
-#include "stoch_ag_restarts.hpp"
+#include "ag_restarts.hpp"
 
 namespace min
 {

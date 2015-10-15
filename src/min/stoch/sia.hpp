@@ -1,20 +1,21 @@
 #pragma once
 
+#include "params.hpp"
 #include "best_state.hpp"
-#include "stoch_params.hpp"
 #include "average_vector.hpp"
 
 namespace min
 {
         ///
-        /// \brief stochastic AdaDelta,
-        ///     see "ADADELTA: An Adaptive Learning Rate Method", by Matthew D. Zeiler
+        /// \brief stochastic iterative average gradient (descent)
+        ///     see "Minimizing Finite Sums with the Stochastic Average Gradient",
+        ///     by Mark Schmidth, Nicolas Le Roux, Francis Bach
         ///
         template
         <
                 typename tproblem               ///< optimization problem
         >
-        struct stoch_adadelta_t
+        struct stoch_sia_t
         {
                 typedef stoch_params_t<tproblem>        param_t;
                 typedef typename param_t::tscalar       tscalar;
@@ -26,7 +27,7 @@ namespace min
                 ///
                 /// \brief constructor
                 ///
-                stoch_adadelta_t(tsize epochs,
+                stoch_sia_t(    tsize epochs,
                                 tsize epoch_size,
                                 tscalar alpha0,
                                 tscalar decay,
@@ -48,31 +49,30 @@ namespace min
                         // best state
                         best_state_t<tstate> bstate(cstate);
 
-                        // running-weighted-averaged-per-dimension-squared gradient
-                        average_vector_t<tscalar, tvector> gavg(x0.size());
-
-                        // running-weighted-averaged-per-dimension-squared step updates
-                        average_vector_t<tscalar, tvector> davg(x0.size());
+                        // running-weighted-averaged parameters
+                        average_vector_t<tscalar, tvector> xavg(x0.size());
 
                         for (tsize e = 0, k = 1; e < m_param.m_epochs; e ++)
                         {
                                 for (tsize i = 0; i < m_param.m_epoch_size; i ++, k ++)
                                 {
+                                        // learning rate
+                                        const tscalar alpha = m_param.alpha(k);
+
                                         // descent direction
-                                        gavg.update(cstate.g.array().square(), m_param.weight(k));
-
-                                        cstate.d = -cstate.g.array() *
-                                                   (m_param.m_epsilon + davg.value().array()).sqrt() /
-                                                   (m_param.m_epsilon + gavg.value().array()).sqrt();
-
-                                        davg.update(cstate.d.array().square(), m_param.weight(k));
+                                        cstate.d = -cstate.g;
 
                                         // update solution
-                                        cstate.update(problem, tscalar(1));
+                                        cstate.update(problem, alpha);
+
+                                        xavg.update(cstate.x, m_param.weight(k));
                                 }
 
+                                const tvector cx = cstate.x;
+                                cstate.update(problem, xavg.value());   // NB: to correctly log the current parameters!
                                 m_param.ulog(cstate);
                                 bstate.update(cstate);
+                                cstate.update(problem, cx);             // revert it
                         }
 
                         // OK

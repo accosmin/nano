@@ -64,7 +64,7 @@ namespace ncv
                 tensor_t input(model.idims(), model.irows(), model.icols());
                 tensor::set_random(input, math::random_t<scalar_t>(0.0, 1.0));
 
-                const opt_state_t result = ncv::minimize(
+                const opt_state_t result = min::minimize(
                         opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
                         input.vector(), optimizer, iterations, epsilon);
 

@@ -68,7 +68,7 @@ namespace test
                                 const auto f0 = problem(x0);
 
                                 // optimize
-                                const auto state = ncv::minimize(
+                                const auto state = min::minimize(
                                         problem, nullptr, x0, optimizer, iterations, epsilon);
 
                                 const auto x = state.x;

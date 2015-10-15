@@ -1,7 +1,7 @@
 #pragma once
 
+#include "params.hpp"
 #include "best_state.hpp"
-#include "stoch_params.hpp"
 #include "average_vector.hpp"
 
 namespace min

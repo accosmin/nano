@@ -5,7 +5,7 @@
 #include "math/abs.hpp"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
-#include "min/quadratic.hpp"
+#include "min/batch/quadratic.hpp"
 
 BOOST_AUTO_TEST_CASE(test_quadratic)
 {

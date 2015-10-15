@@ -1,8 +1,8 @@
 #pragma once
 
-#include "batch_params.hpp"
-#include "linesearch_init.hpp"
-#include "linesearch_strategy.hpp"
+#include "params.hpp"
+#include "ls_init.hpp"
+#include "ls_strategy.hpp"
 
 namespace min
 {

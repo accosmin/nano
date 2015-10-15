@@ -1,10 +1,10 @@
 #pragma once
 
-#include "linesearch.h"
-#include "linesearch_step.hpp"
-#include "linesearch_cubic.hpp"
-#include "linesearch_bisection.hpp"
-#include "linesearch_quadratic.hpp"
+#include "ls_step.hpp"
+#include "ls_cubic.hpp"
+#include "min/linesearch.h"
+#include "ls_bisection.hpp"
+#include "ls_quadratic.hpp"
 #include <vector>
 
 namespace min

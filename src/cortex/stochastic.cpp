@@ -82,7 +82,7 @@ namespace ncv
                         };
 
                         // OK, optimize the model
-                        ncv::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
+                        min::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
                                       data.m_x0, optimizer, epochs, epoch_size, alpha0, decay);
 
                         return result;

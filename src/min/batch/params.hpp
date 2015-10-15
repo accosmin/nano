@@ -1,7 +1,7 @@
 #pragma once
 
-#include "params.hpp"
-#include "linesearch.h"
+#include "min/params.hpp"
+#include "min/linesearch.h"
 
 namespace min
 {

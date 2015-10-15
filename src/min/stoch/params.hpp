@@ -1,7 +1,7 @@
 #pragma once
 
-#include "params.hpp"
-#include "stoch_decay.hpp"
+#include "decay.hpp"
+#include "min/params.hpp"
 #include <limits>
 
 namespace min

@@ -55,7 +55,7 @@ namespace ncv
                         };
 
                         // assembly optimization problem & optimize the model
-                        return ncv::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
+                        return min::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
                                              data.m_x0, optimizer, iterations, epsilon);
                 }
         }

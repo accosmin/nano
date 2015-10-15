@@ -80,7 +80,7 @@ namespace
                 {
                         const auto op = [&] (const opt_problem_t& problem, const vector_t& x0)
                         {
-                                return  ncv::minimize(
+                                return  min::minimize(
                                         problem, nullptr, x0, optimizer, iterations, epsilon, ls_init, ls_strat);
                         };
 

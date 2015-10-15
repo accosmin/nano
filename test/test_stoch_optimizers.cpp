@@ -60,7 +60,7 @@ namespace test
                                 opt_scalar_t alpha0, decay;
                                 ncv::tune_stochastic(problem, x0, optimizer, epoch_size, alpha0, decay);
 
-                                const auto state = ncv::minimize(
+                                const auto state = min::minimize(
                                         problem, nullptr, x0, optimizer, epochs, epoch_size, alpha0, decay);
 
                                 const auto x = state.x;

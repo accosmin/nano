@@ -1,6 +1,6 @@
 #pragma once
 
-#include "linesearch.h"
+#include "../linesearch.h"
 #include <algorithm>
 
 namespace min

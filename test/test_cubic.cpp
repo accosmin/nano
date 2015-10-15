@@ -4,8 +4,8 @@
 #include <boost/test/unit_test.hpp>
 #include "math/abs.hpp"
 #include "math/random.hpp"
-#include "min/cubic.hpp"
 #include "math/epsilon.hpp"
+#include "min/batch/cubic.hpp"
 
 BOOST_AUTO_TEST_CASE(test_cubic)
 {
