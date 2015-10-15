@@ -1,5 +1,4 @@
 #include "function_bohachevsky.h"
-#include "math/numeric.hpp"
 #include <cmath>
 
 namespace ncv
