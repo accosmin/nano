@@ -1,6 +1,7 @@
 # build library
 file(GLOB libmin_sources ${CMAKE_CURRENT_SOURCE_DIR}
         *.*
+        func/*.*
         batch/*.*
         stoch/*.*)
 

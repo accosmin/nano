@@ -1,7 +1,6 @@
 #pragma once
 
 #include "function.hpp"
-#include "math/numeric.hpp"
 
 namespace func
 {
@@ -42,11 +41,11 @@ namespace func
                                 {
                                         if (i == 0)
                                         {
-                                                fx += math::square(x(0) - 1.0);
+                                                fx += util::square(x(0) - 1.0);
                                         }
                                         else
                                         {
-                                                fx += (i + 1) * math::square(2.0 * math::square(x(i)) - x(i - 1));
+                                                fx += (i + 1) * util::square(2.0 * util::square(x(i)) - x(i - 1));
                                         }
                                 }
 
@@ -64,7 +63,7 @@ namespace func
                                         }
                                         else
                                         {
-                                                const tscalar delta = (i + 1) * 2.0 * (2.0 * math::square(x(i)) - x(i - 1));
+                                                const tscalar delta = (i + 1) * 2.0 * (2.0 * util::square(x(i)) - x(i - 1));
 
                                                 gx(i) += delta * 4.0 * x(i);
                                                 gx(i - 1) += - delta;
@@ -79,7 +78,7 @@ namespace func
 
                 virtual bool is_valid(const tvector& x) const override
                 {
-                        return norm(x) < 10.0;
+                        return util::norm(x) < 10.0;
                 }
 
                 virtual bool is_minima(const tvector&, const tscalar) const override

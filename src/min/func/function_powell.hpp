@@ -1,7 +1,6 @@
 #pragma once
 
 #include "function.hpp"
-#include "math/numeric.hpp"
 
 namespace func
 {
@@ -40,10 +39,10 @@ namespace func
                                 tscalar fx = 0;
                                 for (tsize i = 0, i4 = 0; i < m_dims / 4; i ++, i4 += 4)
                                 {
-                                        fx += math::square(x(i4 + 0) + x(i4 + 1) * 10.0);
-                                        fx += math::square(x(i4 + 2) - x(i4 + 3)) * 5.0;
-                                        fx += math::quartic(x(i4 + 1) - x(i4 + 2) * 2.0);
-                                        fx += math::quartic(x(i4 + 0) - x(i4 + 3)) * 10.0;
+                                        fx += util::square(x(i4 + 0) + x(i4 + 1) * 10.0);
+                                        fx += util::square(x(i4 + 2) - x(i4 + 3)) * 5.0;
+                                        fx += util::quartic(x(i4 + 1) - x(i4 + 2) * 2.0);
+                                        fx += util::quartic(x(i4 + 0) - x(i4 + 3)) * 10.0;
                                 }
 
                                 return fx;
@@ -56,8 +55,8 @@ namespace func
                                 {
                                         const tscalar gfx1 = (x(i4 + 0) + x(i4 + 1) * 10.0) * 2.0;
                                         const tscalar gfx2 = (x(i4 + 2) - x(i4 + 3)) * 5.0 * 2.0;
-                                        const tscalar gfx3 = math::cube(x(i4 + 1) - x(i4 + 2) * 2.0) * 4.0;
-                                        const tscalar gfx4 = math::cube(x(i4 + 0) - x(i4 + 3)) * 10.0 * 4.0;
+                                        const tscalar gfx3 = util::cube(x(i4 + 1) - x(i4 + 2) * 2.0) * 4.0;
+                                        const tscalar gfx4 = util::cube(x(i4 + 0) - x(i4 + 3)) * 10.0 * 4.0;
 
                                         gx(i4 + 0) = gfx1 + gfx4;
                                         gx(i4 + 1) = gfx1 * 10.0 + gfx3;
@@ -78,7 +77,7 @@ namespace func
 
                 virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
                 {
-                        return distance(x, tvector::Zero(m_dims)) < epsilon;
+                        return util::distance(x, tvector::Zero(m_dims)) < epsilon;
                 }
 
                 tsize   m_dims;

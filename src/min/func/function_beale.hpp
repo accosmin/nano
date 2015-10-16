@@ -1,7 +1,6 @@
 #pragma once
 
 #include "function.hpp"
-#include "tensor/vector.hpp"
 
 namespace func
 {
@@ -65,7 +64,7 @@ namespace func
 
                 virtual bool is_valid(const tvector& x) const override
                 {
-                        return norm(x) < 4.5;
+                        return util::norm(x) < 4.5;
                 }
 
                 virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
@@ -77,7 +76,7 @@ namespace func
 
                         for (const auto& xmin : xmins)
                         {
-                                if (distance(x, tensor::map_vector(xmin.data(), 2)) < epsilon)
+                                if (util::distance(x, util::map_vector(xmin.data(), 2)) < epsilon)
                                 {
                                         return true;
                                 }

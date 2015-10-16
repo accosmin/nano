@@ -9,7 +9,7 @@
 #include "text/from_string.hpp"
 #include "text/starts_with.hpp"
 #include "benchmark_optimizers.h"
-#include "minfunc/make_functions.hpp"
+#include "min/make_functions.hpp"
 #include <map>
 #include <tuple>
 

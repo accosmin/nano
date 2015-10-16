@@ -1,31 +1,30 @@
 #pragma once
 
 #include "function.hpp"
-#include "math/numeric.hpp"
 
 namespace func
 {
         ///
-        /// \brief create Trid test functions
+        /// \brief create sum of squares test functions
         ///
-        template
+        template 
         <
                 typename tscalar
         >
-        struct function_trid_t : public function_t<tscalar>
+        struct function_sum_squares_t : public function_t<tscalar>
         {
                 typedef typename function_t<tscalar>::tsize     tsize;
                 typedef typename function_t<tscalar>::tvector   tvector;
-                typedef typename function_t<tscalar>::tproblem  tproblem;
+                typedef typename function_t<tscalar>::tproblem  tproblem;  
                 
-                explicit function_trid_t(const tsize dims)
+                explicit function_sum_squares_t(const tsize dims)
                         :       m_dims(dims)
                 {
                 }
 
                 virtual std::string name() const override
                 {
-                        return "Trid" + std::to_string(m_dims) + "D";
+                        return "sum squares" + std::to_string(m_dims) + "D";
                 }
 
                 virtual tproblem problem() const override
@@ -40,11 +39,7 @@ namespace func
                                 tscalar fx = 0;
                                 for (tsize i = 0; i < m_dims; i ++)
                                 {
-                                        fx += math::square(x(i) - 1.0);
-                                }
-                                for (tsize i = 1; i < m_dims; i ++)
-                                {
-                                        fx -= x(i) * x(i - 1);
+                                        fx += (i + 1) * x(i) * x(i);
                                 }
 
                                 return fx;
@@ -53,15 +48,9 @@ namespace func
                         const auto fn_grad = [=] (const tvector& x, tvector& gx)
                         {
                                 gx.resize(m_dims);
-                                gx.setZero();
                                 for (tsize i = 0; i < m_dims; i ++)
                                 {
-                                        gx(i) += 2.0 * (x(i) - 1.0);
-                                }
-                                for (tsize i = 1; i < m_dims; i ++)
-                                {
-                                        gx(i) -= x(i - 1);
-                                        gx(i - 1) -= x(i);
+                                        gx(i) = 2.0 * (i + 1) * x(i);
                                 }
 
                                 return fn_fval(x);
@@ -72,18 +61,12 @@ namespace func
 
                 virtual bool is_valid(const tvector& x) const override
                 {
-                        return norm(x) < m_dims * m_dims;
+                        return util::norm(x) < 5.12;
                 }
 
                 virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
                 {
-                        tvector xmin(m_dims);
-                        for (tsize d = 0; d < m_dims; d ++)
-                        {
-                                xmin(d) = (d + 1.0) * (m_dims - d);
-                        }
-
-                        return distance(x, xmin) < epsilon;
+                        return util::distance(x, tvector::Zero(m_dims)) < epsilon;
                 }
 
                 tsize   m_dims;

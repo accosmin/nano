@@ -1,7 +1,6 @@
 #pragma once
 
 #include "function.hpp"
-#include "tensor/vector.hpp"
 
 namespace func
 {
@@ -76,7 +75,7 @@ namespace func
 
                         for (const auto& xmin : xmins)
                         {
-                                if (distance(x, tensor::map_vector(xmin.data(), 2)) < epsilon)
+                                if (util::distance(x, util::map_vector(xmin.data(), 2)) < epsilon)
                                 {
                                         return true;
                                 }

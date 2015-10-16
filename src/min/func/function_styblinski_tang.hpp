@@ -5,26 +5,26 @@
 namespace func
 {
         ///
-        /// \brief create sphere test functions
+        /// \brief create Styblinski-Tang test functions
         ///
-        template 
-        <
+        template
+        <       
                 typename tscalar
         >
-        struct function_sphere_t : public function_t<tscalar>
+        struct function_styblinski_tang_t : public function_t<tscalar>
         {
                 typedef typename function_t<tscalar>::tsize     tsize;
                 typedef typename function_t<tscalar>::tvector   tvector;
                 typedef typename function_t<tscalar>::tproblem  tproblem;
                 
-                explicit function_sphere_t(const tsize dims)
+                explicit function_styblinski_tang_t(const tsize dims)
                         :       m_dims(dims)
                 {
                 }
 
                 virtual std::string name() const override
                 {
-                        return "sphere" + std::to_string(m_dims) + "D";
+                        return "Styblinski-Tang" + std::to_string(m_dims) + "D";
                 }
 
                 virtual tproblem problem() const override
@@ -36,12 +36,22 @@ namespace func
 
                         const auto fn_fval = [=] (const tvector& x)
                         {
-                                return 0.5 * x.dot(x);
+                                tscalar u = 0;
+                                for (tsize i = 0; i < m_dims; i ++)
+                                {
+                                        u += util::quartic(x(i)) - 16 * util::square(x(i)) + 5 * x(i);
+                                }
+
+                                return 0.5 * u;
                         };
 
                         const auto fn_grad = [=] (const tvector& x, tvector& gx)
                         {
-                                gx = x;
+                                gx.resize(m_dims);
+                                for (tsize i = 0; i < m_dims; i ++)
+                                {
+                                        gx(i) = 2 * util::cube(x(i)) - 16 * x(i) + 2.5;
+                                }
 
                                 return fn_fval(x);
                         };
@@ -51,12 +61,21 @@ namespace func
 
                 virtual bool is_valid(const tvector& x) const override
                 {
-                        return norm(x) < 5.12;
+                        return -5.0 < x.minCoeff() && x.maxCoeff() < 5.0;
                 }
 
                 virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
                 {
-                        return distance(x, tvector::Zero(m_dims)) < epsilon;
+                        const tscalar u1 = -2.9035340;
+                        const tscalar u2 = +2.7468027;
+
+                        bool ok = true;
+                        for (tsize i = 0; i < m_dims && ok; i ++)
+                        {
+                                ok = std::fabs(x(i) - u1) < epsilon || std::fabs(x(i) - u2) < epsilon;
+                        }
+
+                        return ok;
                 }
 
                 tsize   m_dims;

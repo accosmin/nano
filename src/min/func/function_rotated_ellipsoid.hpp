@@ -1,31 +1,30 @@
 #pragma once
 
 #include "function.hpp"
-#include "math/numeric.hpp"
 
 namespace func
 {
         ///
-        /// \brief create Zakharov test functions
+        /// \brief create rotated hyper-ellipsoid test functions
         ///
         template
         <
                 typename tscalar
         >
-        struct function_zakharov_t : public function_t<tscalar>
+        struct function_rotated_ellipsoid_t : public function_t<tscalar>
         {
                 typedef typename function_t<tscalar>::tsize     tsize;
                 typedef typename function_t<tscalar>::tvector   tvector;
                 typedef typename function_t<tscalar>::tproblem  tproblem;  
                 
-                explicit function_zakharov_t(const tsize dims)
+                explicit function_rotated_ellipsoid_t(const tsize dims)
                         :       m_dims(dims)
                 {
                 }
 
                 virtual std::string name() const override
                 {
-                        return "Zakharov" + std::to_string(m_dims) + "D";
+                        return "rotated ellipsoid" + std::to_string(m_dims) + "D";
                 }
 
                 virtual tproblem problem() const override
@@ -37,32 +36,31 @@ namespace func
 
                         const auto fn_fval = [=] (const tvector& x)
                         {
-                                tscalar u = 0, v = 0;
+                                tscalar fx = 0;
                                 for (tsize i = 0; i < m_dims; i ++)
                                 {
-                                        u += math::square(x(i));
-                                        v += 0.5 * i * x(i);
+                                        for (tsize j = 0; j <= i; j ++)
+                                        {
+                                                fx += x(j) * x(j);
+                                        }
                                 }
 
-                                return u + math::square(v) + math::quartic(v);
+                                return fx;
                         };
 
                         const auto fn_grad = [=] (const tvector& x, tvector& gx)
                         {
-                                tscalar u = 0, v = 0;
-                                for (tsize i = 0; i < m_dims; i ++)
-                                {
-                                        u += math::square(x(i));
-                                        v += 0.5 * i * x(i);
-                                }
-
                                 gx.resize(m_dims);
+                                gx.setZero();
                                 for (tsize i = 0; i < m_dims; i ++)
                                 {
-                                        gx(i) = 2 * x(i) + (2 * v + 4 * math::cube(v)) * 0.5 * i;
+                                        for (tsize j = 0; j <= i; j ++)
+                                        {
+                                                gx(j) += 2.0 * x(j);
+                                        }
                                 }
 
-                                return u + math::square(v) + math::quartic(v);
+                                return fn_fval(x);
                         };
 
                         return tproblem(fn_size, fn_fval, fn_grad);
@@ -70,14 +68,14 @@ namespace func
 
                 virtual bool is_valid(const tvector& x) const override
                 {
-                        return -5.0 < x.minCoeff() && x.maxCoeff() < 10.0;
+                        return util::norm(x) < 65.536;
                 }
 
                 virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
                 {
-                        return distance(x, tvector::Zero(m_dims)) < epsilon;
+                        return util::distance(x, tvector::Zero(m_dims)) < epsilon;
                 }
 
                 tsize   m_dims;
-        };  
+        };
 }

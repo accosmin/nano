@@ -1,7 +1,6 @@
 #pragma once
 
 #include "function.hpp"
-#include "math/numeric.hpp"
 
 namespace func
 {
@@ -42,7 +41,7 @@ namespace func
                                 tscalar fx = 0;
                                 for (tsize i = 0; i + 1 < m_dims; i ++)
                                 {
-                                        fx += 100.0 * math::square(x(i + 1) - x(i) * x(i)) + math::square(x(i) - 1);
+                                        fx += 100.0 * util::square(x(i + 1) - x(i) * x(i)) + util::square(x(i) - 1);
                                 }
 
                                 return fx;
@@ -67,7 +66,7 @@ namespace func
 
                 virtual bool is_valid(const tvector& x) const override
                 {
-                        return norm(x) < 2.4;
+                        return util::norm(x) < 2.4;
                 }
 
                 virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
@@ -76,7 +75,7 @@ namespace func
                         {
                                 const tvector xmin = tvector::Ones(m_dims);
 
-                                if (distance(x, xmin) < epsilon)
+                                if (util::distance(x, xmin) < epsilon)
                                 {
                                         return true;
                                 }
@@ -87,7 +86,7 @@ namespace func
                                 tvector xmin = tvector::Ones(m_dims);
                                 xmin(0) = -1;
 
-                                if (distance(x, xmin) < epsilon)
+                                if (util::distance(x, xmin) < epsilon)
                                 {
                                         return true;
                                 }

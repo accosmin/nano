@@ -5,46 +5,43 @@
 namespace func
 {
         ///
-        /// \brief create Matyas test functions
-        ///
-        /// https://en.wikipedia.org/wiki/Test_functions_for_optimization
+        /// \brief create sphere test functions
         ///
         template 
         <
-                typename tscalar 
+                typename tscalar
         >
-        struct function_matyas_t : public function_t<tscalar>
+        struct function_sphere_t : public function_t<tscalar>
         {
                 typedef typename function_t<tscalar>::tsize     tsize;
                 typedef typename function_t<tscalar>::tvector   tvector;
-                typedef typename function_t<tscalar>::tproblem  tproblem;                
+                typedef typename function_t<tscalar>::tproblem  tproblem;
                 
+                explicit function_sphere_t(const tsize dims)
+                        :       m_dims(dims)
+                {
+                }
+
                 virtual std::string name() const override
                 {
-                        return "Matyas";
+                        return "sphere" + std::to_string(m_dims) + "D";
                 }
 
                 virtual tproblem problem() const override
                 {
                         const auto fn_size = [=] ()
                         {
-                                return 2;
+                                return m_dims;
                         };
 
                         const auto fn_fval = [=] (const tvector& x)
                         {
-                                const tscalar a = x(0), b = x(1);
-
-                                return 0.26 * (a * a + b * b) - 0.48 * a * b;
+                                return 0.5 * x.dot(x);
                         };
 
                         const auto fn_grad = [=] (const tvector& x, tvector& gx)
                         {
-                                const tscalar a = x(0), b = x(1);
-
-                                gx.resize(2);
-                                gx(0) = 0.26 * 2 * a - 0.48 * b;
-                                gx(1) = 0.26 * 2 * b - 0.48 * a;
+                                gx = x;
 
                                 return fn_fval(x);
                         };
@@ -54,12 +51,14 @@ namespace func
 
                 virtual bool is_valid(const tvector& x) const override
                 {
-                        return norm(x) < 10.0;
+                        return util::norm(x) < 5.12;
                 }
 
                 virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
                 {
-                        return distance(x, tvector::Zero(2)) < epsilon;
+                        return util::distance(x, tvector::Zero(m_dims)) < epsilon;
                 }
+
+                tsize   m_dims;
         };
 }

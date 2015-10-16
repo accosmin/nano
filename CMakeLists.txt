@@ -164,7 +164,6 @@ add_subdirectory(src/math)
 add_subdirectory(src/text)
 add_subdirectory(src/tensor)
 add_subdirectory(src/thread)
-add_subdirectory(src/minfunc)
 
 add_subdirectory(src/cortex)
 

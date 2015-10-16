@@ -9,7 +9,7 @@
 #include "math/epsilon.hpp"
 #include "cortex/minimize.h"
 #include "text/to_string.hpp"
-#include "minfunc/make_functions.hpp"
+#include "min/make_functions.hpp"
 
 namespace test
 {

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "function.hpp"
-#include "math/numeric.hpp"
 
 namespace func
 {
@@ -41,12 +40,12 @@ namespace func
                                 const auto x3 = x(2);
                                 const auto x4 = x(3);
 
-                                return  100 * math::square(x1 * x1 - x2) +
-                                        math::square(x1 - 1) +
-                                        math::square(x3 - 1) +
-                                        90 * math::square(x3 * x3 - x4) +
-                                        10.1 * math::square(x2 - 1) +
-                                        10.1 * math::square(x4 - 1) +
+                                return  100 * util::square(x1 * x1 - x2) +
+                                        util::square(x1 - 1) +
+                                        util::square(x3 - 1) +
+                                        90 * util::square(x3 * x3 - x4) +
+                                        10.1 * util::square(x2 - 1) +
+                                        10.1 * util::square(x4 - 1) +
                                         19.8 * (x2 - 1) * (x4 - 1);
                         };
 
@@ -76,7 +75,7 @@ namespace func
 
                 virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
                 {
-                        return distance(x, tvector::Ones(4)) < epsilon;
+                        return util::distance(x, tvector::Ones(4)) < epsilon;
                 }
         };
 }
