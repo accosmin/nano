@@ -82,7 +82,7 @@ namespace tensor
                 /// \brief access the whole tensor as a vector (size() x 1)
                 ///
                 const tvector& vector() const { return m_data; }
-                decltype(auto) vector() { return tensor::map_vector(data(), size()); }
+                auto vector() { return tensor::map_vector(data(), size()); }
 
                 ///
                 /// \brief access the whole tensor as an array
@@ -93,14 +93,14 @@ namespace tensor
                 ///
                 /// \brief access the 2D plane (i) as vector
                 ///
-                decltype(auto) vector(tindex i) const { return tensor::map_vector(planeData(i), planeSize()); }
-                decltype(auto) vector(tindex i) { return tensor::map_vector(planeData(i), planeSize()); }
+                auto vector(tindex i) const { return tensor::map_vector(planeData(i), planeSize()); }
+                auto vector(tindex i) { return tensor::map_vector(planeData(i), planeSize()); }
 
                 ///
                 /// \brief access the 2D plane (i) as matrix
                 ///
-                decltype(auto) matrix(tindex i) const { return tensor::map_matrix(planeData(i), rows(), cols()); }
-                decltype(auto) matrix(tindex i) { return tensor::map_matrix(planeData(i), rows(), cols()); }
+                auto matrix(tindex i) const { return tensor::map_matrix(planeData(i), rows(), cols()); }
+                auto matrix(tindex i) { return tensor::map_matrix(planeData(i), rows(), cols()); }
 
                 ///
                 /// \brief access the 2D plane (i) as an array

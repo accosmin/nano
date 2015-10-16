@@ -18,7 +18,7 @@ namespace test
                 typename top,
                 typename tmatrix
         >
-        decltype(auto) test_cpu(top op, const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
+        auto test_cpu(top op, const tmatrix& idata, const tmatrix& kdata, tmatrix& odata)
         {
                 odata.setZero();
 

@@ -106,7 +106,7 @@ namespace text
         <
                 typename tscalar
         >
-        decltype(auto) make_less_from_string()
+        auto make_less_from_string()
         {
                 return [] (const std::string& v1, const std::string& v2)
                 {
@@ -121,7 +121,7 @@ namespace text
         <
                 typename tscalar
         >
-        decltype(auto) make_greater_from_string()
+        auto make_greater_from_string()
         {
                 return [] (const std::string& v1, const std::string& v2)
                 {

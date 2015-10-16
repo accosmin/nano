@@ -89,8 +89,7 @@ namespace ncv
                 }
 
                 // <result, batch size, decay rate, learning rate>
-                decltype(auto) tune_batch_decay_lrate(trainer_data_t& data,
-                        min::stoch_optimizer optimizer, bool verbose)
+                auto tune_batch_decay_lrate(trainer_data_t& data, min::stoch_optimizer optimizer, bool verbose)
                 {
                         const auto op = [&] (size_t batch, scalar_t decay, scalar_t alpha)
                         {

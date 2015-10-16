@@ -42,7 +42,7 @@ namespace tune_log10_detail
                 typename toperator,
                 typename tscalar
         >
-        decltype(auto) evaluate(const toperator& op, tscalar log)
+        auto evaluate(const toperator& op, tscalar log)
         {
                 return std::make_tuple(op(make_param(log)), log);
         }
@@ -62,7 +62,7 @@ namespace math
                 typename tscalar,
                 typename tsize
         >
-        decltype(auto) tune_log10(const toperator& op,
+        auto tune_log10(const toperator& op,
                 tscalar minlog, tscalar maxlog, tscalar epslog, tsize splits)
         {
                 typedef decltype(op(tscalar(0)))        tresult;

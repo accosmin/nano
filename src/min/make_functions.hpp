@@ -31,7 +31,7 @@ namespace func
         <
                 typename tscalar
         >
-        decltype(auto) make_all_test_functions(const typename function_t<tscalar>::tsize max_dims)
+        auto make_all_test_functions(const typename function_t<tscalar>::tsize max_dims)
         {
                 typedef std::shared_ptr<function_t<tscalar>>    rfunction_t;
                 typedef std::vector<rfunction_t>                functions_t;

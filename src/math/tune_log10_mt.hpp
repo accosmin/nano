@@ -18,7 +18,7 @@ namespace math
                 typename tscalar,
                 typename tsize
         >
-        decltype(auto) tune_log10_mt(const toperator& op, tpool& pool,
+        auto tune_log10_mt(const toperator& op, tpool& pool,
                 tscalar minlog, tscalar maxlog, tscalar epslog, tsize splits)
         {
                 typedef decltype(op(tscalar(0)))        tresult;

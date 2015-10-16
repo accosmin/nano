@@ -13,7 +13,7 @@ namespace ncv
         <
                 typename tscalar
         >
-        decltype(auto) make_table_row_minimum_mark()
+        auto make_table_row_minimum_mark()
         {
                 const auto op = text::make_less_from_string<tscalar>();
 
@@ -30,7 +30,7 @@ namespace ncv
         <
                 typename tscalar
         >
-        decltype(auto) make_table_row_maximum_mark()
+        auto make_table_row_maximum_mark()
         {
                 const auto op = text::make_less_from_string<tscalar>();
 

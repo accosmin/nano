@@ -12,7 +12,7 @@ namespace ncv
 
         namespace
         {
-                decltype(auto) now()
+                auto now()
                 {
                         return std::chrono::high_resolution_clock::now();
                 }

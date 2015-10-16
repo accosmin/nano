@@ -16,7 +16,7 @@ namespace math
                 typename toperator,     ///< toperator(tvalue1) evaluates the parameter
                 typename tvalues1
         >
-        decltype(auto) tune_fixed(const toperator& op,
+        auto tune_fixed(const toperator& op,
                 const tvalues1& values1)
         {
                 typedef typename std::remove_reference<decltype(*values1.begin())>::type        tvalue1;
@@ -43,7 +43,7 @@ namespace math
                 typename tvalues1,
                 typename tvalues2
         >
-        decltype(auto) tune_fixed(const toperator& op,
+        auto tune_fixed(const toperator& op,
                 const tvalues1& values1, const tvalues2& values2)
         {
                 typedef typename std::remove_reference<decltype(*values1.begin())>::type        tvalue1;
@@ -75,7 +75,7 @@ namespace math
                 typename tvalues2,
                 typename tvalues3
         >
-        decltype(auto) tune_fixed(const toperator& op,
+        auto tune_fixed(const toperator& op,
                 const tvalues1& values1, const tvalues2& values2, const tvalues3& values3)
         {
                 typedef typename std::remove_reference<decltype(*values1.begin())>::type        tvalue1;

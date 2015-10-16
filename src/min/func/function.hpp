@@ -53,7 +53,7 @@ namespace func
                 <
                         typename tvector1
                 >
-                decltype(auto) norm(const tvector1& a)
+                auto norm(const tvector1& a)
                 {
                         return a.template lpNorm<Eigen::Infinity>();
                 }
@@ -66,7 +66,7 @@ namespace func
                         typename tvector1,
                         typename tvector2
                 >
-                decltype(auto) distance(const tvector1& a, const tvector2& b)
+                auto distance(const tvector1& a, const tvector2& b)
                 {
                         return norm(a - b);
                 }
@@ -79,11 +79,14 @@ namespace func
                         typename tscalar,
                         typename tsize
                 >
-                decltype(auto) map_vector(const tscalar* data, const tsize size)
+                auto map_vector(const tscalar* data, const tsize size)
                 {
                         return Eigen::Map<const typename min::problem_t<tscalar>::tvector>(data, size);
                 }
                 
+                ///
+                /// \brief numerical operations
+                ///
                 template 
                 <
                         typename tscalar

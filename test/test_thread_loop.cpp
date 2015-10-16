@@ -20,7 +20,7 @@ namespace test
         <
                 typename toperator
         >
-        decltype(auto) test_cpu(int size, int trials, toperator op)
+        auto test_cpu(int size, int trials, toperator op)
         {
                 math::stats_t<scalar_t> timings;
                 for (int t = 0; t < trials; t ++)
@@ -44,7 +44,7 @@ namespace test
         <
                 typename toperator
         >
-        decltype(auto) test_omp(int size, int trials, toperator op)
+        auto test_omp(int size, int trials, toperator op)
         {
                 math::stats_t<scalar_t> timings;
                 for (int t = 0; t < trials; t ++)
@@ -69,7 +69,7 @@ namespace test
         <
                 typename toperator
         >
-        decltype(auto) test_ncv(int size, int trials, toperator op)
+        auto test_ncv(int size, int trials, toperator op)
         {
                 math::stats_t<scalar_t> timings;
                 for (int t = 0; t < trials; t ++)
@@ -89,7 +89,7 @@ namespace test
         <
                 typename toperator
         >
-        decltype(auto) test_ncv_pool(int size, int trials, toperator op)
+        auto test_ncv_pool(int size, int trials, toperator op)
         {
                 static thread::pool_t pool;
 

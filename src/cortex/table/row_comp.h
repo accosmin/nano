@@ -67,7 +67,7 @@ namespace ncv
                 typename tscalar,
                 typename tindices
         >
-        decltype(auto) make_table_row_ascending_comp(const tindices& cols)
+        auto make_table_row_ascending_comp(const tindices& cols)
         {
                 const auto comp = text::make_less_from_string<tscalar>();
 
@@ -82,7 +82,7 @@ namespace ncv
                 typename tscalar,
                 typename tindices
         >
-        decltype(auto) make_table_row_descending_comp(const tindices& cols)
+        auto make_table_row_descending_comp(const tindices& cols)
         {
                 const auto comp = text::make_greater_from_string<tscalar>();
 

@@ -47,8 +47,8 @@ namespace ncv
                 ///
                 /// \brief retrieve the column value range
                 ///
-                decltype(auto) begin() const { return m_values.cbegin(); }
-                decltype(auto) end() const { return m_values.cend(); }
+                auto begin() const { return m_values.cbegin(); }
+                auto end() const { return m_values.cend(); }
 
                 ///
                 /// \brief retrieve the number of columns
