@@ -1,7 +1,7 @@
 #pragma once
 
+#include "arch.h"
 #include "buffer.h"
-#include "core/arch.h"
 
 namespace ncv
 {

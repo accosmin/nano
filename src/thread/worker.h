@@ -7,9 +7,9 @@ namespace thread
         struct tasks_t;
 
         ///
-        /// \brief worker to process tasks enqueued in a thread pool
+        /// \brief worker to process tasks en-queued in a thread pool
         ///
-        class THREAD_PUBLIC pool_worker_t
+        class NANOCV_PUBLIC pool_worker_t
         {
         public:
 

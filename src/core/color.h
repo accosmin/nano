@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/arch.h"
+#include "arch.h"
 #include "core/tensor.h"
 #include "math/cast.hpp"
 #include "math/clamp.hpp"

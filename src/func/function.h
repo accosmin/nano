@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/arch.h"
+#include "arch.h"
 #include "core/string.h"
 #include "core/optimizer.h"
 #include <memory>
@@ -9,7 +9,7 @@ namespace ncv
 {
         struct function_t;
         typedef std::shared_ptr<function_t>             rfunction_t;
-        typedef std::vector<rfunction_t>                functions_t;
+        typedef std::vector<rfunction_t>                functions_t;                
 
         ///
         /// \brief test optimization problem

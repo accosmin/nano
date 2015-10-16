@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/arch.h"
+#include "arch.h"
 #include "core/tensor.h"
 
 namespace ncv
