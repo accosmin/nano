@@ -9,14 +9,15 @@
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
-#include "func/make_functions.h"
+#include "minfunc/make_functions.hpp"
 #include <iomanip>
 
 namespace test
 {
         using namespace ncv;
 
-        static void check_function(const test::function_t& func)
+        template <typename tfunction>
+        static void check_function(const tfunction& func)
         {
                 const auto iterations = opt_size_t(8 * 1024);
                 const auto epsilon = math::epsilon0<opt_scalar_t>();
@@ -115,9 +116,7 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_batch_optimizers)
 {
-        using namespace ncv;
-
-        const auto funcs = ncv::make_all_test_functions(8);
+        const auto funcs = func::make_all_test_functions<ncv::opt_scalar_t>(8);
         for (const auto& func : funcs)
         {
                 test::check_function(*func);

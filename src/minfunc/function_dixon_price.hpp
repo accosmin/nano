@@ -1,31 +1,44 @@
-#include "function_dixon_price.h"
+#pragma once
+
+#include "function.hpp"
 #include "math/numeric.hpp"
 
-namespace ncv
+namespace func
 {
-        struct function_dixon_price_t : public function_t
+        ///
+        /// \brief create Dixon-Price test functions
+        ///
+        template
+        <
+                typename tscalar
+        >
+        struct function_dixon_price_t : public function_t<tscalar>
         {
-                explicit function_dixon_price_t(const opt_size_t dims)
+                typedef typename function_t<tscalar>::tsize     tsize;
+                typedef typename function_t<tscalar>::tvector   tvector;
+                typedef typename function_t<tscalar>::tproblem  tproblem;  
+                
+                explicit function_dixon_price_t(const tsize dims)
                         :       m_dims(dims)
                 {
                 }
 
-                virtual string_t name() const override
+                virtual std::string name() const override
                 {
                         return "Dixon-Price" + std::to_string(m_dims) + "D";
                 }
 
-                virtual opt_problem_t problem() const override
+                virtual tproblem problem() const override
                 {
-                        const opt_opsize_t fn_size = [=] ()
+                        const auto fn_size = [=] ()
                         {
                                 return m_dims;
                         };
 
-                        const opt_opfval_t fn_fval = [=] (const opt_vector_t& x)
+                        const auto fn_fval = [=] (const tvector& x)
                         {
-                                opt_scalar_t fx = 0;
-                                for (opt_size_t i = 0; i < m_dims; i ++)
+                                tscalar fx = 0;
+                                for (tsize i = 0; i < m_dims; i ++)
                                 {
                                         if (i == 0)
                                         {
@@ -40,10 +53,10 @@ namespace ncv
                                 return fx;
                         };
 
-                        const opt_opgrad_t fn_grad = [=] (const opt_vector_t& x, opt_vector_t& gx)
+                        const auto fn_grad = [=] (const tvector& x, tvector& gx)
                         {
-                                gx = opt_vector_t::Zero(m_dims);
-                                for (opt_size_t i = 0; i < m_dims; i ++)
+                                gx = tvector::Zero(m_dims);
+                                for (tsize i = 0; i < m_dims; i ++)
                                 {
                                         if (i == 0)
                                         {
@@ -51,7 +64,7 @@ namespace ncv
                                         }
                                         else
                                         {
-                                                const opt_scalar_t delta = (i + 1) * 2.0 * (2.0 * math::square(x(i)) - x(i - 1));
+                                                const tscalar delta = (i + 1) * 2.0 * (2.0 * math::square(x(i)) - x(i - 1));
 
                                                 gx(i) += delta * 4.0 * x(i);
                                                 gx(i - 1) += - delta;
@@ -61,21 +74,21 @@ namespace ncv
                                 return fn_fval(x);
                         };
 
-                        return opt_problem_t(fn_size, fn_fval, fn_grad);
+                        return tproblem(fn_size, fn_fval, fn_grad);
                 }
 
-                virtual bool is_valid(const opt_vector_t& x) const override
+                virtual bool is_valid(const tvector& x) const override
                 {
                         return norm(x) < 10.0;
                 }
 
-                virtual bool is_minima(const opt_vector_t&, const opt_scalar_t) const override
+                virtual bool is_minima(const tvector&, const tscalar) const override
                 {
                         // NB: there are quite a few local minima that are not easy to compute!
                         return true;
 
-//                        opt_vector_t xmin(m_dims);
-//                        for (opt_size_t i = 0; i < m_dims; i ++)
+//                        tvector xmin(m_dims);
+//                        for (tsize i = 0; i < m_dims; i ++)
 //                        {
 //                                xmin(i) = std::pow(2.0, -1.0 + std::pow(2.0, -i));
 //                        }
@@ -83,19 +96,6 @@ namespace ncv
 //                        return distance(x, xmin) < epsilon;
                 }
 
-                opt_size_t      m_dims;
+                tsize   m_dims;
         };
-
-        functions_t make_dixon_price_funcs(opt_size_t max_dims)
-        {
-                functions_t functions;
-
-                for (opt_size_t dims = 1; dims <= max_dims; dims *= 2)
-                {
-                        functions.push_back(std::make_shared<function_dixon_price_t>(dims));
-                }
-
-                return functions;
-        }
 }
-	

@@ -9,13 +9,14 @@
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
-#include "func/make_functions.h"
+#include "minfunc/make_functions.hpp"
 
 namespace test
 {
         using namespace ncv;
 
-        static void check_function(const test::function_t& func)
+        template <typename tfunction>
+        static void check_function(const tfunction& func)
         {
                 const auto epochs = opt_size_t(128);
                 const auto epoch_size = opt_size_t(64);
@@ -107,7 +108,7 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_stoch_optimizers)
 {
-        const auto funcs = ncv::make_all_test_functions(8);
+        const auto funcs = func::make_all_test_functions<ncv::opt_scalar_t>(8);
         for (const auto& func : funcs)
         {
                 test::check_function(*func);

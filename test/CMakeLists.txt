@@ -8,9 +8,9 @@ foreach(test_app ${test_apps})
         get_filename_component(test_name ${test_app} NAME_WE)
 
         add_executable(${test_name} ${test_app})
-        target_link_libraries(${test_name}
+        target_link_libraries(${test_name} 
                 ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-                nanocv func)
+                nanocv)
 
         add_test(${test_name} ${test_name})
 endforeach()

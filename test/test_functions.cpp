@@ -2,39 +2,53 @@
 #define BOOST_TEST_MODULE "test_functions"
 
 #include <boost/test/unit_test.hpp>
-#include "core/minimize.h"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
-#include "func/make_functions.h"
+#include "minfunc/make_functions.hpp"
+
+namespace test
+{
+        template <typename tscalar>
+        void test_functions()
+        {
+                const tscalar epsilon = 
+                        (sizeof(tscalar) == sizeof(float)) ? 
+                        math::epsilon3<tscalar>() :
+                        math::epsilon2<tscalar>();
+                
+                const auto funcs = func::make_all_test_functions<tscalar>(8);
+                BOOST_CHECK_EQUAL(funcs.empty(), false);
+
+                for (const auto& func : funcs)
+                {
+                        const size_t trials = 1024;
+
+                        const auto dims = func->problem().size();
+                        BOOST_CHECK_GT(dims, 0);
+
+                        for (size_t t = 0; t < trials; t ++)
+                        {
+                                math::random_t<tscalar> rgen(-0.1, +0.1);
+
+                                typename ::func::function_t<tscalar>::tvector x0(dims);
+                                rgen(x0.data(), x0.data() + x0.size());
+
+                                // check gradient
+                                const auto problem = func->problem();
+                                BOOST_CHECK_EQUAL(problem.size(), dims);
+                                BOOST_CHECK_LE(problem.grad_accuracy(x0), epsilon);
+                                BOOST_CHECK_MESSAGE(problem.grad_accuracy(x0) < epsilon,
+                                        "invalid gradient for [" << func->name() << 
+                                        "] & [scalar "  << typeid(tscalar).name() << "]!");
+                        }
+                }
+        }                
+}
 
 BOOST_AUTO_TEST_CASE(test_functions)
 {
-        using namespace ncv;
-
-        const auto funcs = ncv::make_all_test_functions(8);
-        BOOST_CHECK_EQUAL(funcs.empty(), false);
-
-        for (const auto& func : funcs)
-        {
-                const size_t trials = 1024;
-
-                const opt_size_t dims = func->problem().size();
-                BOOST_CHECK_GT(dims, 0);
-
-                for (size_t t = 0; t < trials; t ++)
-                {
-                        math::random_t<opt_scalar_t> rgen(-1.0, +1.0);
-
-                        opt_vector_t x0(dims);
-                        rgen(x0.data(), x0.data() + x0.size());
-
-                        // check gradient
-                        const opt_problem_t problem = func->problem();
-                        BOOST_CHECK_EQUAL(problem.size(), dims);
-                        BOOST_CHECK_LE(problem.grad_accuracy(x0), math::epsilon2<scalar_t>());
-                        BOOST_CHECK_MESSAGE(problem.grad_accuracy(x0) < math::epsilon2<scalar_t>(),
-                                "invalid gradient for the " << func->name() << " function!");
-                }
-        }
+        test::test_functions<float>();
+        test::test_functions<double>();
+        test::test_functions<long double>();
 }
 

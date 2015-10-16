@@ -3,7 +3,6 @@
 #include "text/align.hpp"
 #include "math/clamp.hpp"
 #include "math/stats.hpp"
-#include "func/function.h"
 #include "thread/loopi.hpp"
 #include "core/table_row_comp.h"
 
@@ -86,9 +85,9 @@ namespace benchmark
                 table.print(std::cout);
         }
 
-        template <typename toptimizer, typename tostats>
+        template <typename tfunction, typename toptimizer, typename tostats>
         void benchmark_function(
-                const function_t& func, const vectors_t& x0s, const toptimizer& op, const string_t& name,
+                const tfunction& func, const vectors_t& x0s, const toptimizer& op, const string_t& name,
                 const scalars_t& gthres,
                 tostats& stats, tostats& gstats)
         {

@@ -11,6 +11,7 @@ The core modules are header only, independent of each other and use only STL and
 * **text** - string processing utilities.
 * **tensor** - vector, matrix and tensor utilities, 2D/3D convolution and correlations.
 * **thread** - thread pool, loop processing in parallel.
+* **minfunc** - standard functions to test and to benchmark the optimization methods.
 
 Most notable the **min** module implements the following: 
 * batch optimization methods: `gradient descent`, various `non-linear conjugate gradient descent`, `L-BFGS`.
@@ -22,7 +23,6 @@ Most notable the **min** module implements the following:
 
 The following high level modules are provided:
 * **core** - image I/O, image processing, numerical optimization interface, file processing etc.
-* **func** - standard functions used to testing and to benchmark optimization methods.
 * **cortex** - machine learning interface, implementation of various training methods.
  
 

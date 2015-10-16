@@ -1,8 +1,13 @@
-#include "function_bohachevsky.h"
+#pragma once
+
+#include "function.hpp"
 #include <cmath>
 
-namespace ncv
+namespace func
 {
+        ///
+        /// \brief create Bohachevsky test functions
+        ///
         namespace
         {
                 enum btype
@@ -13,14 +18,22 @@ namespace ncv
                 };
         }
 
-        struct function_bohachevsky_t : public function_t
+        template
+        <
+                typename tscalar
+        >
+        struct function_bohachevsky_t : public function_t<tscalar>
         {
+                typedef typename function_t<tscalar>::tsize     tsize;
+                typedef typename function_t<tscalar>::tvector   tvector;
+                typedef typename function_t<tscalar>::tproblem  tproblem;                
+                
                 explicit function_bohachevsky_t(const btype type)
                         :       m_type(type)
                 {
                 }
 
-                virtual string_t name() const override
+                virtual std::string name() const override
                 {
                         switch (m_type)
                         {
@@ -31,25 +44,25 @@ namespace ncv
                         }
                 }
 
-                virtual opt_problem_t problem() const override
+                virtual tproblem problem() const override
                 {
-                        const opt_opsize_t fn_size = [=] ()
+                        const auto fn_size = [=] ()
                         {
                                 return 2;
                         };
 
-                        const opt_opfval_t fn_fval = [=] (const opt_vector_t& x)
+                        const auto fn_fval = [=] (const tvector& x)
                         {
                                 const auto x1 = x(0);
                                 const auto x2 = x(1);
 
-                                const opt_scalar_t pi = std::atan2(0.0, -0.0);
+                                const tscalar pi = std::atan2(0.0, -0.0);
                                 const auto p1 = 3 * pi * x1;
                                 const auto p2 = 4 * pi * x2;
 
                                 const auto u = x1 * x1 + 2 * x2 * x2;
 
-                                opt_scalar_t fx = 0;
+                                tscalar fx = 0;
                                 switch (m_type)
                                 {
                                 case btype::one:
@@ -71,12 +84,12 @@ namespace ncv
                                 return fx;
                         };
 
-                        const opt_opgrad_t fn_grad = [=] (const opt_vector_t& x, opt_vector_t& gx)
+                        const auto fn_grad = [=] (const tvector& x, tvector& gx)
                         {
                                 const auto x1 = x(0);
                                 const auto x2 = x(1);
 
-                                const opt_scalar_t pi = std::atan2(0.0, -0.0);
+                                const tscalar pi = std::atan2(0.0, -0.0);
                                 const auto p1 = 3 * pi * x1;
                                 const auto p2 = 4 * pi * x2;
 
@@ -105,32 +118,21 @@ namespace ncv
                                 return fn_fval(x);
                         };
 
-                        return opt_problem_t(fn_size, fn_fval, fn_grad);
+                        return tproblem(fn_size, fn_fval, fn_grad);
                 }
 
-                virtual bool is_valid(const opt_vector_t& x) const override
+                virtual bool is_valid(const tvector& x) const override
                 {
                         return -100.0 < x.minCoeff() && x.maxCoeff() < 100.0;
                 }
 
-                virtual bool is_minima(const opt_vector_t&, const opt_scalar_t) const override
+                virtual bool is_minima(const tvector&, const tscalar) const override
                 {
                         // NB: there are quite a few local minima that are not easy to compute!
                         return true;
-//                        return distance(x, opt_vector_t::Zero(2)) < epsilon;
+//                        return distance(x, tvector::Zero(2)) < epsilon;
                 }
 
                 btype   m_type;
         };
-
-        functions_t make_bohachevsky_funcs()
-        {
-                return
-                {
-                        std::make_shared<function_bohachevsky_t>(btype::one),
-                        std::make_shared<function_bohachevsky_t>(btype::two),
-                        std::make_shared<function_bohachevsky_t>(btype::three)
-                };
-        }
 }
-	

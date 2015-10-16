@@ -6,8 +6,8 @@
 #include "core/minimize.h"
 #include "math/numeric.hpp"
 #include "text/from_string.hpp"
-#include "func/make_functions.h"
 #include "benchmark_optimizers.h"
+#include "minfunc/make_functions.hpp"
 #include <map>
 #include <tuple>
 
@@ -15,8 +15,8 @@ namespace
 {        
         using namespace ncv;
 
-        template <typename tostats>
-        void check_function(const function_t& func, tostats& gstats)
+        template <typename tfunction, typename tostats>
+        void check_function(const tfunction& func, tostats& gstats)
         {
                 const auto epochs = opt_size_t(128);
                 const auto epoch_size = opt_size_t(32);
@@ -78,7 +78,7 @@ int main(int, char* [])
 
         std::map<string_t, benchmark::optimizer_stat_t> gstats;
 
-        const auto funcs = ncv::make_all_test_functions(8);
+        const auto funcs = func::make_all_test_functions<opt_scalar_t>(8);
         for (const auto& func : funcs)
         {
                 check_function(*func, gstats);

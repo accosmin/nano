@@ -1,31 +1,46 @@
-#include "function_rosenbrock.h"
+#pragma once
+
+#include "function.hpp"
 #include "math/numeric.hpp"
 
-namespace ncv
+namespace func
 {
-        struct function_rosenbrock_t : public function_t
+        ///
+        /// \brief create Rosenbrock test functions
+        ///
+        /// https://en.wikipedia.org/wiki/Test_functions_for_optimization
+        ///
+        template
+        <
+                typename tscalar
+        >
+        struct function_rosenbrock_t : public function_t<tscalar>
         {
-                explicit function_rosenbrock_t(const opt_size_t dims)
+                typedef typename function_t<tscalar>::tsize     tsize;
+                typedef typename function_t<tscalar>::tvector   tvector;
+                typedef typename function_t<tscalar>::tproblem  tproblem;                
+                
+                explicit function_rosenbrock_t(const tsize dims)
                         :       m_dims(dims)
                 {
                 }
 
-                virtual string_t name() const override
+                virtual std::string name() const override
                 {
                         return "Rosenbrock" + std::to_string(m_dims) + "D";
                 }
 
-                virtual opt_problem_t problem() const override
+                virtual tproblem problem() const override
                 {
-                        const opt_opsize_t fn_size = [=] ()
+                        const auto fn_size = [=] ()
                         {
                                 return m_dims;
                         };
 
-                        const opt_opfval_t fn_fval = [=] (const opt_vector_t& x)
+                        const auto fn_fval = [=] (const tvector& x)
                         {
-                                opt_scalar_t fx = 0;
-                                for (opt_size_t i = 0; i + 1 < m_dims; i ++)
+                                tscalar fx = 0;
+                                for (tsize i = 0; i + 1 < m_dims; i ++)
                                 {
                                         fx += 100.0 * math::square(x(i + 1) - x(i) * x(i)) + math::square(x(i) - 1);
                                 }
@@ -33,11 +48,11 @@ namespace ncv
                                 return fx;
                         };
 
-                        const opt_opgrad_t fn_grad = [=] (const opt_vector_t& x, opt_vector_t& gx)
+                        const auto fn_grad = [=] (const tvector& x, tvector& gx)
                         {
                                 gx.resize(m_dims);
                                 gx.setZero();
-                                for (opt_size_t i = 0; i + 1 < m_dims; i ++)
+                                for (tsize i = 0; i + 1 < m_dims; i ++)
                                 {
                                         gx(i) += 2.0 * (x(i) - 1);
                                         gx(i) += 100.0 * 2.0 * (x(i + 1) - x(i) * x(i)) * (- 2.0 * x(i));
@@ -47,19 +62,19 @@ namespace ncv
                                 return fn_fval(x);
                         };
 
-                        return opt_problem_t(fn_size, fn_fval, fn_grad);
+                        return tproblem(fn_size, fn_fval, fn_grad);
                 }
 
-                virtual bool is_valid(const opt_vector_t& x) const override
+                virtual bool is_valid(const tvector& x) const override
                 {
                         return norm(x) < 2.4;
                 }
 
-                virtual bool is_minima(const opt_vector_t& x, const opt_scalar_t epsilon) const override
+                virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
                 {
 
                         {
-                                const opt_vector_t xmin = opt_vector_t::Ones(m_dims);
+                                const tvector xmin = tvector::Ones(m_dims);
 
                                 if (distance(x, xmin) < epsilon)
                                 {
@@ -69,7 +84,7 @@ namespace ncv
 
                         if (m_dims >= 4 && m_dims <= 7)
                         {
-                                opt_vector_t xmin = opt_vector_t::Ones(m_dims);
+                                tvector xmin = tvector::Ones(m_dims);
                                 xmin(0) = -1;
 
                                 if (distance(x, xmin) < epsilon)
@@ -81,16 +96,6 @@ namespace ncv
                         return false;
                 }
 
-                opt_size_t      m_dims;
+                tsize   m_dims;
         };
-
-        functions_t make_rosenbrock_funcs()
-        {
-                return
-                {
-                        std::make_shared<function_rosenbrock_t>(2),
-                        std::make_shared<function_rosenbrock_t>(3)
-                };
-        }
 }
-	
