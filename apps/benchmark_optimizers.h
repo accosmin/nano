@@ -1,10 +1,10 @@
-#include "core/table.h"
 #include "math/abs.hpp"
+#include "cortex/table.h"
 #include "text/align.hpp"
 #include "math/clamp.hpp"
 #include "math/stats.hpp"
 #include "thread/loopi.hpp"
-#include "core/table_row_comp.h"
+#include "cortex/table/row_comp.h"
 
 namespace benchmark
 {

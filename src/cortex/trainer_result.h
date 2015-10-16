@@ -1,7 +1,7 @@
 #pragma once
 
 #include <map>
-#include "core/tensor.h"
+#include "tensor.h"
 #include "trainer_state.h"
 #include "text/enum_string.hpp"
 

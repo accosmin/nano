@@ -1,12 +1,12 @@
 #include "cortex/class.h"
-#include "cortex/sampler.h"
-#include "core/table.h"
+#include "cortex/table.h"
 #include "nanocv/nanocv.h"
 #include "math/random.hpp"
 #include "thread/thread.h"
-#include "core/measure.hpp"
-#include "cortex/accumulator.h"
+#include "cortex/sampler.h"
 #include "tensor/random.hpp"
+#include "cortex/measure.hpp"
+#include "cortex/accumulator.h"
 #include "nanocv/tasks/task_charset.h"
 #include <boost/program_options.hpp>
 

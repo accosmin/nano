@@ -1,9 +1,9 @@
 #include "generate.h"
 #include "model.h"
-#include "core/timer.h"
-#include "core/string.h"
-#include "core/logger.h"
-#include "core/minimize.h"
+#include "timer.h"
+#include "string.h"
+#include "logger.h"
+#include "minimize.h"
 #include "math/random.hpp"
 #include "tensor/random.hpp"
 

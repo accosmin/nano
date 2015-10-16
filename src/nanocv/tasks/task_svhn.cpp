@@ -1,10 +1,10 @@
-#include "mat5.h"
-#include "cortex/class.h"
 #include "task_svhn.h"
-#include "core/gzip.h"
-#include "core/color.h"
-#include "core/logger.h"
+#include "cortex/class.h"
+#include "cortex/logger.h"
 #include "text/to_string.hpp"
+#include "cortex/file/mat5.h"
+#include "cortex/file/gzip.h"
+#include "cortex/vision/color.h"
 #include <fstream>
 #include <memory>
 

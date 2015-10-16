@@ -2,9 +2,9 @@
 #define BOOST_TEST_MODULE "test_sampler"
 
 #include <boost/test/unit_test.hpp>
+#include "cortex/timer.h"
+#include "cortex/logger.h"
 #include "cortex/sampler.h"
-#include "core/timer.h"
-#include "core/logger.h"
 #include "text/to_string.hpp"
 #include "nanocv/tasks/task_charset.h"
 

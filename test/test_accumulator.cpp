@@ -3,13 +3,13 @@
 
 #include <boost/test/unit_test.hpp>
 #include "math/abs.hpp"
-#include "core/timer.h"
-#include "core/logger.h"
+#include "cortex/timer.h"
+#include "cortex/logger.h"
 #include "nanocv/nanocv.h"
 #include "thread/thread.h"
-#include "cortex/accumulator.h"
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
+#include "cortex/accumulator.h"
 #include "nanocv/tasks/task_charset.h"
 
 namespace test

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "arch.h"
-#include "core/tensor.h"
-#include "core/manager.hpp"
+#include "tensor.h"
+#include "manager.hpp"
 
 namespace ncv
 {

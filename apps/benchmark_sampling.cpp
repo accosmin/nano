@@ -1,9 +1,9 @@
-#include "core/table.h"
-#include "cortex/sampler.h"
+#include "cortex/table.h"
 #include "nanocv/nanocv.h"
 #include "thread/thread.h"
-#include "core/measure.hpp"
 #include "thread/loopi.hpp"
+#include "cortex/sampler.h"
+#include "cortex/measure.hpp"
 #include "nanocv/tasks/task_charset.h"
 #include <boost/program_options.hpp>
 

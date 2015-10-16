@@ -1,9 +1,9 @@
 #pragma once
 
 #include "arch.h"
-#include "core/tensor.h"
 #include "math/cast.hpp"
 #include "math/clamp.hpp"
+#include "cortex/tensor.h"
 #include "text/enum_string.hpp"
 #include <iosfwd>
 #include <cstdint>

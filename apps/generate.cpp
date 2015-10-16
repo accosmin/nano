@@ -1,8 +1,8 @@
 #include "cortex/class.h"
 #include "cortex/generate.h"
 #include "nanocv/nanocv.h"
-#include "core/measure.hpp"
-#include "core/image_grid.h"
+#include "cortex/measure.hpp"
+#include "cortex/vision/image_grid.h"
 #include "text/concatenate.hpp"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>

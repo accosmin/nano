@@ -2,8 +2,8 @@
 #define BOOST_TEST_MODULE "test_color_cielab"
 
 #include <boost/test/unit_test.hpp>
-#include "core/color.h"
-#include "core/logger.h"
+#include "cortex/logger.h"
+#include "cortex/vision/color.h"
 
 BOOST_AUTO_TEST_CASE(test_color_cielab)
 {

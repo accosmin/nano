@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cortex/task.h"
-#include "core/buffer.h"
+#include "cortex/file/buffer.h"
 
 namespace ncv
 {

@@ -1,9 +1,9 @@
 #include "minibatch_trainer.h"
 #include "cortex/model.h"
 #include "cortex/sampler.h"
-#include "core/logger.h"
-#include "cortex/minibatch.h"
+#include "cortex/logger.h"
 #include "math/numeric.hpp"
+#include "cortex/minibatch.h"
 #include "text/from_params.hpp"
 #include "text/concatenate.hpp"
 

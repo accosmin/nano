@@ -2,16 +2,16 @@
 #define BOOST_TEST_MODULE "test_gradient"
 
 #include <boost/test/unit_test.hpp>
-#include "cortex/class.h"
-#include "core/logger.h"
 #include "thread/pool.h"
+#include "cortex/class.h"
 #include "math/close.hpp"
+#include "cortex/logger.h"
 #include "nanocv/nanocv.h"
 #include "math/random.hpp"
-#include "core/optimizer.h"
 #include "math/epsilon.hpp"
-#include "cortex/accumulator.h"
 #include "text/to_string.hpp"
+#include "cortex/optimizer.h"
+#include "cortex/accumulator.h"
 #include <set>
 
 namespace test

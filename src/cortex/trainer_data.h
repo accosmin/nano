@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cortex/sampler.h"
-#include "core/optimizer.h"
+#include "cortex/optimizer.h"
 
 namespace ncv
 {

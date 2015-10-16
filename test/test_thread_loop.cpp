@@ -3,10 +3,10 @@
 
 #include <boost/test/unit_test.hpp>
 #include "math/abs.hpp"
-#include "core/timer.h"
-#include "core/table.h"
-#include "core/scalar.h"
 #include "math/stats.hpp"
+#include "cortex/timer.h"
+#include "cortex/table.h"
+#include "cortex/scalar.h"
 #include "thread/loopi.hpp"
 #include <iostream>
 #include <numeric>

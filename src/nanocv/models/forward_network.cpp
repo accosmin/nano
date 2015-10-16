@@ -1,7 +1,7 @@
 #include "forward_network.h"
-#include "core/logger.h"
 #include "math/cast.hpp"
 #include "text/split.hpp"
+#include "cortex/logger.h"
 #include "math/numeric.hpp"
 #include "text/to_string.hpp"
 #include "tensor/serialize.hpp"

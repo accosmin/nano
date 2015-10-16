@@ -2,8 +2,8 @@
 #define BOOST_TEST_MODULE "test_thread_pool"
 
 #include <boost/test/unit_test.hpp>
-#include "core/logger.h"
 #include "thread/pool.h"
+#include "cortex/logger.h"
 #include "thread/thread.h"
 #include "math/random.hpp"
 

@@ -2,7 +2,7 @@
 #define BOOST_TEST_MODULE "test_manager"
 
 #include <boost/test/unit_test.hpp>
-#include "core/manager.hpp"
+#include "cortex/manager.hpp"
 
 namespace test
 {

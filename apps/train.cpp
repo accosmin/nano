@@ -1,7 +1,7 @@
 #include "cortex/evaluate.h"
 #include "text/align.hpp"
 #include "nanocv/nanocv.h"
-#include "core/measure.hpp"
+#include "cortex/measure.hpp"
 #include "text/concatenate.hpp"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>

@@ -1,4 +1,4 @@
-#include "core/table.h"
+#include "cortex/table.h"
 #include "nanocv/nanocv.h"
 #include <iostream>
 #include <boost/program_options.hpp>

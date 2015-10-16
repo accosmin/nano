@@ -1,8 +1,8 @@
 #include "task.h"
+#include "logger.h"
 #include "sampler.h"
-#include "core/logger.h"
-#include "core/image_grid.h"
 #include "text/to_string.hpp"
+#include "vision/image_grid.h"
 
 namespace ncv
 {

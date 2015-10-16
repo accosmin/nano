@@ -3,11 +3,11 @@
 
 #include <boost/test/unit_test.hpp>
 #include "math/abs.hpp"
-#include "core/logger.h"
-#include "core/minimize.h"
+#include "cortex/logger.h"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
+#include "cortex/minimize.h"
 #include "text/to_string.hpp"
 #include "minfunc/make_functions.hpp"
 #include <iomanip>

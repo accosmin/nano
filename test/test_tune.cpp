@@ -3,9 +3,9 @@
 
 #include <boost/test/unit_test.hpp>
 #include "math/abs.hpp"
-#include "core/scalar.h"
 #include "thread/pool.h"
 #include "thread/thread.h"
+#include "cortex/scalar.h"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
 #include "math/tune_log10_mt.hpp"

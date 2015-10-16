@@ -5,8 +5,8 @@
 #include "cortex/class.h"
 #include "nanocv/nanocv.h"
 #include "math/random.hpp"
-#include "core/optimizer.h"
 #include "math/epsilon.hpp"
+#include "cortex/optimizer.h"
 
 namespace test
 {

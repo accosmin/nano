@@ -1,6 +1,7 @@
 #pragma once
 
-#include "core/buffer.h"
+#include "arch.h"
+#include "buffer.h"
 
 namespace ncv
 {
@@ -37,17 +38,17 @@ namespace ncv
                 ///
                 /// \brief map a data type to string (logging issues)
                 ///
-                std::string to_string(const buffer_type& type);
+                NANOCV_PUBLIC std::string to_string(const buffer_type& type);
 
                 ///
                 /// \brief map a data type to its size in bytes
                 ///
-                size_t to_bytes(const buffer_type& type);
+                NANOCV_PUBLIC size_t to_bytes(const buffer_type& type);
 
                 ///
                 /// \brief section
                 ///
-                struct section_t
+                struct NANOCV_PUBLIC section_t
                 {
                         ///
                         /// \brief constructor
@@ -80,7 +81,7 @@ namespace ncv
                 ///
                 /// \brief read a multi-dimensional array consisting of multiple sections.
                 ///
-                struct array_t
+                struct NANOCV_PUBLIC array_t
                 {
                         ///
                         /// \brief constructor

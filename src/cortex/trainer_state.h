@@ -1,8 +1,8 @@
 #pragma once
 
 #include "arch.h"
-#include "core/scalar.h"
-#include "core/string.h"
+#include "scalar.h"
+#include "string.h"
 
 namespace ncv
 {

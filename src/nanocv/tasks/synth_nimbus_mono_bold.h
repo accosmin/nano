@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/color.h"
+#include "cortex/vision/color.h"
 
 namespace ncv
 {

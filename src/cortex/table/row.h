@@ -1,6 +1,6 @@
 #pragma once
 
-#include "string.h"
+#include "cortex/string.h"
 #include "text/to_string.hpp"
 
 namespace ncv

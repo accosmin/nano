@@ -1,6 +1,6 @@
 #include "model.h"
 #include "task.h"
-#include "core/logger.h"
+#include "logger.h"
 #include <fstream>
 
 namespace ncv

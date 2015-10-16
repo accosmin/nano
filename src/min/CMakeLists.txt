@@ -1,6 +1,8 @@
 # build library
 file(GLOB libmin_sources ${CMAKE_CURRENT_SOURCE_DIR}
-        *.*)
+        *.*
+        batch/*.*
+        stoch/*.*)
 
 add_library(min INTERFACE)
 target_include_directories(min INTERFACE

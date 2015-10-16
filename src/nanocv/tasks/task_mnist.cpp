@@ -1,10 +1,12 @@
 #include "task_mnist.h"
-#include "cortex/class.h"
-#include "core/logger.h"
+#include "archive.h"
 #include "math/cast.hpp"
-#include "core/mstream.h"
-#include "core/archive.h"
+#include "cortex/class.h"
+#include "cortex/logger.h"
 #include "text/to_string.hpp"
+#include "cortex/file/buffer.h"
+#include "cortex/file/archive.h"
+#include "cortex/file/mstream.h"
 
 namespace ncv
 {

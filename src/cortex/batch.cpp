@@ -1,9 +1,9 @@
 #include "batch.h"
+#include "timer.h"
+#include "logger.h"
 #include "sampler.h"
-#include "core/timer.h"
+#include "minimize.h"
 #include "accumulator.h"
-#include "core/logger.h"
-#include "core/minimize.h"
 #include "text/to_string.hpp"
 #include "math/tune_log10.hpp"
 

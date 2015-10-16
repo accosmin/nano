@@ -1,9 +1,9 @@
 #pragma once
 
+#include "string.h"
+#include "tensor.h"
 #include "protocol.h"
-#include "core/rect.h"
-#include "core/string.h"
-#include "core/tensor.h"
+#include "vision/rect.h"
 
 namespace ncv
 {

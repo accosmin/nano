@@ -2,7 +2,7 @@
 #include <limits>
 #include <fstream>
 #include <cstdint>
-#include "core/logger.h"
+#include "cortex/logger.h"
 
 namespace ncv
 {

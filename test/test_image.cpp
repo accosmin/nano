@@ -2,9 +2,9 @@
 #define BOOST_TEST_MODULE "test_image"
 
 #include <boost/test/unit_test.hpp>
-#include "core/image.h"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
+#include "cortex/vision/image.h"
 #include <cstdio>
 
 BOOST_AUTO_TEST_CASE(test_image_construct)

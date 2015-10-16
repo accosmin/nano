@@ -3,7 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include "math/abs.hpp"
-#include "core/tensor.h"
+#include "cortex/tensor.h"
 #include "math/epsilon.hpp"
 #include "tensor/corr2d_cpp.hpp"
 #include "tensor/corr2d_dyn.hpp"

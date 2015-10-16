@@ -5,13 +5,13 @@ This small (nano) library is used for training and testing models, such as neura
 
 #### Core modules
 
-The core modules are header only, independent of each other and use only STL and Eigen3 (if needed):
+The core modules are header only, independent of each other (except minfunc) and use only STL and Eigen3 (if needed):
 * **min** - batch and stochastic numerical optimization and line-search methods.
 * **math** - numerical utilities.
 * **text** - string processing utilities.
 * **tensor** - vector, matrix and tensor utilities, 2D/3D convolution and correlations.
 * **thread** - thread pool, loop processing in parallel.
-* **minfunc** - standard functions to test and to benchmark the optimization methods.
+* **minfunc** - standard functions to test and to benchmark the numerical optimization methods.
 
 Most notable the **min** module implements the following: 
 * batch optimization methods: `gradient descent`, various `non-linear conjugate gradient descent`, `L-BFGS`.
@@ -19,24 +19,30 @@ Most notable the **min** module implements the following:
 * line-search methods: `backtracking`, `More & Thuente`, `CG_DESCENT`.
 
 
-#### High level modules
+#### Cortex module
 
-The following high level modules are provided:
-* **core** - image I/O, image processing, numerical optimization interface, file processing etc.
-* **cortex** - machine learning interface, implementation of various training methods.
- 
+The high level **cortex** module provides basic image I/O and processing, a machine learning interface and implements various training methods.
 
-#### NanoCV module
+There are several key concepts mapped to C++ object interfaces. Each object type is registered with an **ID** and thus it can be selected from command line arguments. Also new objects can be easily registered and then they are automatically visible across the library and its associated programs.
 
-The **nanocv** module implements particular models, tasks, loss functions, training criteria and network layers. It uses several key concepts mapped to C++ object interfaces. Each object type is registered with an **ID** and thus it can be selected from command line arguments. Also new objects can be easily registered and then they are automatically visible across the library and its associated programs.
+A **task** describes a classification or regression problem consisting of separate training and test image patches with associated target outputs if any. 
 
-A **task** describes a classification or regression problem consisting of separate training and test image patches with associated target outputs if any. The library has built-in support for various standard benchmark datasets like: `MNIST`, `CIFAR-10`, `CIFAR-100`, `STL-10`, `SVHN`, `NORB`. These datasets are loaded directly from the original (compressed) files.
-
-A **model** predicts the correct output for a given image patch, either its label (if a classification task) or a score (if a regression task). The feed-forward models that can be constructed by combining various layers like: `convolution`, `activation` (hyperbolic tangent, unit, signed normalization), `linear` and `pooling`.
+A **model** predicts the correct output for a given image patch, either its label (if a classification task) or a score (if a regression task). 
 
 A **loss** function assigns a scalar score to the prediction of a model by comparing it with the ground truth target (if provided): the lower the score, the better the prediction. The loss functions are combined into training **criteria** to account for all training samples and to regularize the model.
 
-A **trainer** optimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as a numerical optimization criteria. All the available trainers tune all their required hyper parameters on a separate validation dataset. The library provides `batch`, `minibatch` and `stochastic` instances.
+A **trainer** optimizes the parameters of a given model to produce the correct outputs for a given task using the cumulated values of a given loss over the training samples as a numerical optimization criteria. All the available trainers tune all their required hyper parameters on a separate validation dataset. 
+
+
+#### NanoCV module
+
+The **nanocv** module implements particular models, tasks, loss functions, training criteria and network layers. 
+
+The library has built-in support for various standard benchmark datasets like: `MNIST`, `CIFAR-10`, `CIFAR-100`, `STL-10`, `SVHN`, `NORB`. These datasets are loaded directly from the original (compressed) files.
+
+The feed-forward models that can be constructed by combining various layers like: `convolution`, `activation` (hyperbolic tangent, unit, signed normalization), `linear` and `pooling`.
+
+The library provides `batch`, `minibatch` and `stochastic` instances.
 
 
 #### Compilation

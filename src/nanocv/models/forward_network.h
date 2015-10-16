@@ -2,7 +2,7 @@
 
 #include "cortex/model.h"
 #include "cortex/layer.h"
-#include "core/string.h"
+#include "cortex/string.h"
 
 namespace ncv
 {

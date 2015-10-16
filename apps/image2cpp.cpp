@@ -1,8 +1,8 @@
-#include "core/image.h"
-#include "core/string.h"
-#include "core/logger.h"
 #include "text/lower.hpp"
+#include "cortex/string.h"
+#include "cortex/logger.h"
 #include "text/replace.hpp"
+#include "cortex/vision/image.h"
 #include <fstream>
 #include <iostream>
 #include <boost/filesystem.hpp>
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 
         os_header << "#pragma once\n";
         os_header << "\n";
-        os_header << "#include \"nanocv/vision/color.h\"\n";
+        os_header << "#include \"cortex/color.h\"\n";
         os_header << "\n";
         os_header << "namespace ncv\n";
         os_header << "{\n";

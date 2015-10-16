@@ -1,6 +1,6 @@
 #pragma once
 
-#include "table_row.h"
+#include "row.h"
 #include "text/from_string.hpp"
 #include <cassert>
 
