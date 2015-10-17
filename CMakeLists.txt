@@ -34,12 +34,6 @@ include_directories(SYSTEM ${IL_INCLUDE_DIR})
 find_package(LibArchive REQUIRED)
 include_directories(SYSTEM ${LibArchive_INCLUDE_DIRS})
 
-# OpenMP
-find_package(OpenMP QUIET)
-if(OPENMP_FOUND)
-	set(NANOCV_OPENMP_FLAG "-fopenmp")
-endif()
-
 # Eigen
 find_package(Eigen3)
 include_directories(${EIGEN3_INCLUDE_DIR})
