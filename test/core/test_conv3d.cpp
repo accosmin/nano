@@ -3,9 +3,9 @@
 
 #include <boost/test/unit_test.hpp>
 #include "math/abs.hpp"
-#include "cortex/tensor.h"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
+#include "tensor/tensor.hpp"
 #include "tensor/random.hpp"
 #include "tensor/conv3d.hpp"
 #include "tensor/conv3d_lin.hpp"
@@ -19,8 +19,6 @@
 
 namespace test
 {
-        using namespace ncv;
-
         template
         <
                 typename ttensor,
@@ -69,8 +67,6 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_conv3d)
 {
-        using namespace ncv;
-
         const int min_isize = 4;
         const int max_isize = 32;
 
@@ -88,8 +84,8 @@ BOOST_AUTO_TEST_CASE(test_conv3d)
                 {
                         for (int t = 0; t < n_tests; t ++)
                         {
-                                test::test_conv3d<ltensor_t>(isize, idims, ksize, odims);
-                                test::test_conv3d<htensor_t>(isize, idims, ksize, odims);
+                                test::test_conv3d<tensor::tensor_t<float>>(isize, idims, ksize, odims);
+                                test::test_conv3d<tensor::tensor_t<double>>(isize, idims, ksize, odims);
                         }
                 }
         }

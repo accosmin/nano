@@ -3,8 +3,8 @@
 
 #include <boost/test/unit_test.hpp>
 #include "math/abs.hpp"
-#include "cortex/tensor.h"
 #include "math/epsilon.hpp"
+#include "tensor/matrix.hpp"
 #include "tensor/corr2d_cpp.hpp"
 #include "tensor/corr2d_dyn.hpp"
 #include "tensor/corr2d_egb.hpp"
@@ -12,7 +12,8 @@
 
 namespace test
 {
-        using namespace ncv;
+        typedef double scalar_t;
+        typedef tensor::matrix_t<scalar_t> matrix_t;
 
         template
         <
@@ -64,8 +65,6 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_corr2d)
 {
-        using namespace ncv;
-
         const int min_isize = 12;
         const int max_isize = 48;
         const int min_ksize = 1;

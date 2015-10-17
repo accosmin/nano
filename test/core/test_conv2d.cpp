@@ -3,15 +3,16 @@
 
 #include <boost/test/unit_test.hpp>
 #include "math/abs.hpp"
-#include "cortex/tensor.h"
 #include "math/epsilon.hpp"
+#include "tensor/matrix.hpp"
 #include "tensor/conv2d_cpp.hpp"
 #include "tensor/conv2d_dyn.hpp"
 #include "tensor/conv2d_eig.hpp"
 
 namespace test
 {
-        using namespace ncv;
+        typedef double scalar_t;
+        typedef tensor::matrix_t<scalar_t> matrix_t;
 
         template
         <
@@ -61,8 +62,6 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_conv2d)
 {
-        using namespace ncv;
-
         const int min_isize = 4;
         const int max_isize = 48;
         const int min_ksize = 1;

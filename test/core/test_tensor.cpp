@@ -2,14 +2,18 @@
 #define BOOST_TEST_MODULE "test_tensor"
 
 #include <boost/test/unit_test.hpp>
-#include "cortex/tensor.h"
+#include "tensor/tensor.hpp"
 
 namespace
 {
-        using namespace ncv;
-
-        void check_tensor(tensor_t& tensor, size_t dims, size_t rows, size_t cols, scalar_t constant)
+        template
+        <
+                typename tscalar
+        >
+        void check_tensor(size_t dims, size_t rows, size_t cols, tscalar constant)
         {
+                tensor::tensor_t<tscalar> tensor;
+
                 tensor.resize(dims, rows, cols);
 
                 BOOST_CHECK_EQUAL(tensor.dims(), dims);
@@ -33,18 +37,14 @@ namespace
 
 BOOST_AUTO_TEST_CASE(test_tensor)
 {
-        using namespace ncv;
-
         const size_t dims = 4;
         const size_t rows = 7;
         const size_t cols = 3;
 
-        tensor_t tensor;
+        check_tensor(dims, rows, cols, 0);
+        check_tensor(dims, rows, cols, 1);
 
-        check_tensor(tensor, dims, rows, cols, 0);
-        check_tensor(tensor, dims, rows, cols, 1);
-
-        check_tensor(tensor, 4 * dims, rows, cols, 3);
-        check_tensor(tensor, dims, 3 * rows, 7 * cols, -2.3);
+        check_tensor(4 * dims, rows, cols, 3.6f);
+        check_tensor(dims, 3 * rows, 7 * cols, -2.3);
 }
 

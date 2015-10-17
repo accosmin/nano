@@ -5,32 +5,33 @@
 #include "math/abs.hpp"
 #include "thread/pool.h"
 #include "thread/thread.h"
-#include "cortex/scalar.h"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
 #include "math/tune_log10_mt.hpp"
 
 namespace test
 {
-        using namespace ncv;
-
-        void check(scalar_t a, scalar_t b, scalar_t minlog, scalar_t maxlog, scalar_t epslog, size_t splits)
+        template
+        <
+                typename tscalar
+        >
+        void check(tscalar a, tscalar b, tscalar minlog, tscalar maxlog, tscalar epslog, size_t splits)
         {
-                auto op = [=] (scalar_t x)
+                auto op = [=] (tscalar x)
                 {
                         return (x - a) * (x - a) + b;
                 };
 
                 // single-threaded version
-                scalar_t stfx, stx;
+                tscalar stfx, stx;
                 std::tie(stfx, stx) = math::tune_log10(op, minlog, maxlog, epslog, splits);
 
                 // multi-threaded version
                 thread::pool_t pool(splits);
-                scalar_t mtfx, mtx;
+                tscalar mtfx, mtx;
                 std::tie(mtfx, mtx) = math::tune_log10_mt(op, pool, minlog, maxlog, epslog, splits);
 
-                const scalar_t epsilon = math::epsilon2<scalar_t>();
+                const tscalar epsilon = math::epsilon2<tscalar>();
 
                 // check optimum result
                 BOOST_CHECK_LE(math::abs(stfx - b), epsilon);
@@ -44,7 +45,7 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_tune)
 {
-        using namespace ncv;
+        typedef double scalar_t;
 
         const size_t n_tests = 16;
         const scalar_t minlog = -6.0;
