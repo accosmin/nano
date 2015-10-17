@@ -3,14 +3,12 @@
 
 #include <boost/test/unit_test.hpp>
 #include "thread/pool.h"
-#include "cortex/logger.h"
 #include "thread/thread.h"
 #include "math/random.hpp"
+#include <iostream>
 
 BOOST_AUTO_TEST_CASE(test_thread_pool)
 {
-        using namespace ncv;
-
         thread::pool_t pool;
 
         std::mutex mutex;
@@ -29,8 +27,8 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
 
                 // ... enqueue jobs
                 const size_t n_tasks = rnd();
-                log_info() << "@pool [" << (t + 1) << "/" << n_tests
-                           << "]: creating " << n_tasks << " jobs ...";
+                std::cout << "@pool [" << (t + 1) << "/" << n_tests
+                          << "]: creating " << n_tasks << " jobs ...\n";
 
                 std::vector<size_t> tasks_done;
 
@@ -44,8 +42,8 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
                                 {
                                         const std::lock_guard<std::mutex> lock(mutex);
 
-                                        log_info() << "#job [" << (j + 1) << "/" << n_tasks << "@"
-                                                   << (t + 1) << "/" << n_tests << "] started ...";
+                                        std::cout << "#job [" << (j + 1) << "/" << n_tasks << "@"
+                                                  << (t + 1) << "/" << n_tests << "] started ...\n";
                                 }
 
                                 const size_t sleep2 = math::random_t<size_t>(5, 50)();
@@ -54,8 +52,8 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
                                 {
                                         const std::lock_guard<std::mutex> lock(mutex);
 
-                                        log_info() << "#job [" << (j + 1) << "/" << n_tasks << "@"
-                                                   << (t + 1) << "/" << n_tests << "] done.";
+                                        std::cout << "#job [" << (j + 1) << "/" << n_tasks << "@"
+                                                   << (t + 1) << "/" << n_tests << "] done.\n";
 
                                         tasks_done.push_back(j + 1);
                                 }
@@ -63,13 +61,13 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
                 }
 
                 // ... wait for all jobs to finish
-                log_info() << "@pool [" << (t + 1) << "/" << n_tests
-                           << "]: waiting for " << pool.n_tasks() << " jobs ...";
+                std::cout << "@pool [" << (t + 1) << "/" << n_tests
+                          << "]: waiting for " << pool.n_tasks() << " jobs ...\n";
 
                 pool.wait();
 
-                log_info() << "@pool [" << (t + 1) << "/" << n_tests
-                                << "]: waiting done (enqueued " << pool.n_tasks() << " jobs).";
+                std::cout << "@pool [" << (t + 1) << "/" << n_tests
+                          << "]: waiting done (enqueued " << pool.n_tasks() << " jobs).\n";
 
                 // check that all jobs are done
                 BOOST_CHECK_EQUAL(pool.n_workers(), thread::n_threads());

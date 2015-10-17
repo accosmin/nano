@@ -1,6 +1,7 @@
 .DS_Store
 .directory
 *.kdev4
+*.geany
 *.txt.user
 build*
 build-release
