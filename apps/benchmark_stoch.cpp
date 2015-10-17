@@ -6,8 +6,8 @@
 #include "math/numeric.hpp"
 #include "cortex/minimize.h"
 #include "text/from_string.hpp"
+#include "min/func/run_all.hpp"
 #include "benchmark_optimizers.h"
-#include "min/make_functions.hpp"
 #include <map>
 #include <tuple>
 
@@ -78,11 +78,10 @@ int main(int, char* [])
 
         std::map<string_t, benchmark::optimizer_stat_t> gstats;
 
-        const auto funcs = func::make_all_test_functions<opt_scalar_t>(8);
-        for (const auto& func : funcs)
+        func::run_all_test_functions<opt_scalar_t>(8, [&] (const auto& function)
         {
-                check_function(*func, gstats);
-        }
+                check_function(function, gstats);
+        });
 
         // show global statistics
         benchmark::show_table(string_t(), gstats);

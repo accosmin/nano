@@ -1,6 +1,6 @@
 #pragma once
 
-#include "function.hpp"
+#include "util.hpp"
 
 namespace func
 {
@@ -11,20 +11,21 @@ namespace func
         ///
         template
         <
-                typename tscalar
+                typename tscalar_
         >
-        struct function_beale_t : public function_t<tscalar>
+        struct function_beale_t
         {
-                typedef typename function_t<tscalar>::tsize     tsize;
-                typedef typename function_t<tscalar>::tvector   tvector;
-                typedef typename function_t<tscalar>::tproblem  tproblem;                
+                typedef min::problem_t<tscalar_>        tproblem;
+                typedef typename tproblem::tsize        tsize;
+                typedef typename tproblem::tscalar      tscalar;
+                typedef typename tproblem::tvector      tvector;
                 
-                virtual std::string name() const override
+                std::string name() const
                 {
                         return "Beale";
                 }
 
-                virtual tproblem problem() const override
+                tproblem problem() const
                 {
                         const auto fn_size = [=] ()
                         {
@@ -62,12 +63,12 @@ namespace func
                         return tproblem(fn_size, fn_fval, fn_grad);
                 }
 
-                virtual bool is_valid(const tvector& x) const override
+                bool is_valid(const tvector& x) const
                 {
                         return util::norm(x) < 4.5;
                 }
 
-                virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
+                bool is_minima(const tvector& x, const tscalar epsilon) const
                 {
                         const auto xmins =
                         {

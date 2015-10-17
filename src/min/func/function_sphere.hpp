@@ -1,6 +1,6 @@
 #pragma once
 
-#include "function.hpp"
+#include "util.hpp"
 
 namespace func
 {
@@ -9,25 +9,26 @@ namespace func
         ///
         template 
         <
-                typename tscalar
+                typename tscalar_
         >
-        struct function_sphere_t : public function_t<tscalar>
+        struct function_sphere_t
         {
-                typedef typename function_t<tscalar>::tsize     tsize;
-                typedef typename function_t<tscalar>::tvector   tvector;
-                typedef typename function_t<tscalar>::tproblem  tproblem;
+                typedef min::problem_t<tscalar_>        tproblem;
+                typedef typename tproblem::tsize        tsize;
+                typedef typename tproblem::tscalar      tscalar;
+                typedef typename tproblem::tvector      tvector;
                 
                 explicit function_sphere_t(const tsize dims)
                         :       m_dims(dims)
                 {
                 }
 
-                virtual std::string name() const override
+                std::string name() const
                 {
                         return "sphere" + std::to_string(m_dims) + "D";
                 }
 
-                virtual tproblem problem() const override
+                tproblem problem() const
                 {
                         const auto fn_size = [=] ()
                         {
@@ -49,12 +50,12 @@ namespace func
                         return tproblem(fn_size, fn_fval, fn_grad);
                 }
 
-                virtual bool is_valid(const tvector& x) const override
+                bool is_valid(const tvector& x) const
                 {
                         return util::norm(x) < 5.12;
                 }
 
-                virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
+                bool is_minima(const tvector& x, const tscalar epsilon) const
                 {
                         return util::distance(x, tvector::Zero(m_dims)) < epsilon;
                 }

@@ -9,26 +9,29 @@
 #include "math/epsilon.hpp"
 #include "cortex/minimize.h"
 #include "text/to_string.hpp"
-#include "min/make_functions.hpp"
+#include "min/func/run_all.hpp"
 #include <iomanip>
 
 namespace test
 {
-        using namespace ncv;
-
-        template <typename tfunction>
-        static void check_function(const tfunction& func)
+        template
+        <
+                typename tfunction,
+                typename tscalar = typename tfunction::tscalar,
+                typename tvector = typename tfunction::tvector
+        >
+        static void check_function(const tfunction& function)
         {
-                const auto iterations = opt_size_t(8 * 1024);
-                const auto epsilon = math::epsilon0<opt_scalar_t>();
+                const auto iterations = size_t(8 * 1024);
+                const auto epsilon = math::epsilon0<tscalar>();
                 const auto trials = size_t(128);
 
-                const auto dims = func.problem().size();
+                const auto dims = function.problem().size();
 
-                math::random_t<opt_scalar_t> rgen(-1.0, +1.0);
+                math::random_t<tscalar> rgen(-1.0, +1.0);
 
                 // generate fixed random trials
-                std::vector<opt_vector_t> x0s(trials);
+                std::vector<tvector> x0s(trials);
                 for (auto& x0 : x0s)
                 {
                         x0.resize(dims);
@@ -36,7 +39,7 @@ namespace test
                 }
 
                 // {optimizers, slack ~ expected convergence rate} to try
-                const std::map<min::batch_optimizer, opt_scalar_t> optimizers =
+                const std::map<min::batch_optimizer, tscalar> optimizers =
                 {
                         { min::batch_optimizer::GD, 1e+3 },             // ok, but potentially very slow!
 
@@ -63,7 +66,7 @@ namespace test
 
                         for (size_t t = 0; t < trials; t ++)
                         {
-                                const auto problem = func.problem();
+                                const auto problem = function.problem();
 
                                 const auto& x0 = x0s[t];
                                 const auto f0 = problem(x0);
@@ -76,19 +79,19 @@ namespace test
                                 const auto f = state.f;
                                 const auto g = state.convergence_criteria();
 
-                                const auto f_thres = math::epsilon0<opt_scalar_t>();
-                                const auto g_thres = math::epsilon3<opt_scalar_t>() * slack;
-                                const auto x_thres = math::epsilon3<opt_scalar_t>() * slack * 1e+1;
+                                const auto f_thres = math::epsilon0<tscalar>();
+                                const auto g_thres = math::epsilon3<tscalar>() * slack;
+                                const auto x_thres = math::epsilon3<tscalar>() * slack * 1e+1;
 
                                 // ignore out-of-domain solutions
-                                if (!func.is_valid(x))
+                                if (!function.is_valid(x))
                                 {
                                         out_of_domain ++;
                                         continue;
                                 }
 
                                 ncv::log_info()
-                                        << func.name() << ", " << text::to_string(optimizer)
+                                        << function.name() << ", " << text::to_string(optimizer)
                                         << " [" << (t + 1) << "/" << trials << "]"
                                         << std::setprecision(12)
                                         << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
@@ -104,11 +107,11 @@ namespace test
                                 BOOST_CHECK_LE(g, g_thres);
 
                                 // check local minimas (if any known)
-                                BOOST_CHECK(func.is_minima(x, x_thres));
+                                BOOST_CHECK(function.is_minima(x, x_thres));
                         }
 
                         ncv::log_info()
-                                << func.name() << ", " << text::to_string(optimizer)
+                                << function.name() << ", " << text::to_string(optimizer)
                                 << ": out of domain " << out_of_domain << "/" << trials << ".";
                 }
         }
@@ -116,10 +119,9 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_batch_optimizers)
 {
-        const auto funcs = func::make_all_test_functions<ncv::opt_scalar_t>(8);
-        for (const auto& func : funcs)
+        func::run_all_test_functions<double>(8, [] (const auto& function)
         {
-                test::check_function(*func);
-        }
+                test::check_function(function);
+        });
 }
 

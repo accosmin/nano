@@ -9,7 +9,7 @@
 #include "math/epsilon.hpp"
 #include "cortex/minimize.h"
 #include "text/to_string.hpp"
-#include "min/make_functions.hpp"
+#include "min/func/run_all.hpp"
 
 namespace test
 {
@@ -108,10 +108,9 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_stoch_optimizers)
 {
-        const auto funcs = func::make_all_test_functions<ncv::opt_scalar_t>(8);
-        for (const auto& func : funcs)
+        func::run_all_test_functions<ncv::opt_scalar_t>(8, [] (const auto& function)
         {
-                test::check_function(*func);
-        }
+                test::check_function(function);
+        });
 }
 
