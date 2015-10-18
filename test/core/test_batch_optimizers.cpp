@@ -3,24 +3,24 @@
 
 #include <boost/test/unit_test.hpp>
 #include "math/abs.hpp"
-#include "cortex/logger.h"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
-#include "cortex/minimize.h"
+#include "min/minimize.hpp"
 #include "text/to_string.hpp"
+#include "cortex/optimizer.h"
 #include "min/func/run_all.hpp"
 #include <iomanip>
+#include <iostream>
 
 namespace test
 {
         template
         <
-                typename tfunction,
-                typename tscalar = typename tfunction::tscalar,
-                typename tvector = typename tfunction::tvector
+                typename tscalar,
+                typename tvector = typename min::function_t<tscalar>::tvector
         >
-        static void check_function(const tfunction& function)
+        static void check_function(const min::function_t<tscalar>& function)
         {
                 const auto iterations = size_t(8 * 1024);
                 const auto epsilon = math::epsilon0<tscalar>();
@@ -90,14 +90,13 @@ namespace test
                                         continue;
                                 }
 
-                                cortex::log_info()
-                                        << function.name() << ", " << text::to_string(optimizer)
-                                        << " [" << (t + 1) << "/" << trials << "]"
-                                        << std::setprecision(12)
-                                        << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
-                                        << ", f = " << f0 << "/" << f
-                                        << ", g = " << g
-                                        << ", i = " << state.m_iterations << ".";
+                                std::cout << function.name() << ", " << text::to_string(optimizer)
+                                          << " [" << (t + 1) << "/" << trials << "]"
+                                          << std::setprecision(12)
+                                          << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
+                                          << ", f = " << f0 << "/" << f
+                                          << ", g = " << g
+                                          << ", i = " << state.m_iterations << "." << std::endl;
 
                                 // check function value decrease
                                 BOOST_CHECK_LE(f, f0);
@@ -110,16 +109,15 @@ namespace test
                                 BOOST_CHECK(function.is_minima(x, x_thres));
                         }
 
-                        cortex::log_info()
-                                << function.name() << ", " << text::to_string(optimizer)
-                                << ": out of domain " << out_of_domain << "/" << trials << ".";
+                        std::cout << function.name() << ", " << text::to_string(optimizer)
+                                  << ": out of domain " << out_of_domain << "/" << trials << "." << std::endl;
                 }
         }
 }
 
 BOOST_AUTO_TEST_CASE(test_batch_optimizers)
 {
-        func::run_all_test_functions<double>(8, [] (const auto& function)
+        min::run_all_test_functions<double>(8, [] (const auto& function)
         {
                 test::check_function(function);
         });

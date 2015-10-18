@@ -5,35 +5,14 @@
 
 namespace cortex
 {
-        // low-precision tensors
-        typedef tensor::vector_t<lscalar_t>     lvector_t;
-        typedef std::vector<lvector_t>          lvectors_t;
+        using vector_t = tensor::vector_t<scalar_t>;
+        using vectors_t = std::vector<vector_t>;
 
-        typedef tensor::matrix_t<lscalar_t>     lmatrix_t;
-        typedef std::vector<lmatrix_t>          lmatrices_t;
+        using matrix_t = tensor::matrix_t<scalar_t>;
+        using matrices_t = std::vector<matrix_t>;
 
-        typedef tensor::tensor_t<lscalar_t>     ltensor_t;
-        typedef std::vector<ltensor_t>          ltensors_t;
-
-        // high-precision tensors
-        typedef tensor::vector_t<hscalar_t>     hvector_t;
-        typedef std::vector<hvector_t>          hvectors_t;
-
-        typedef tensor::matrix_t<hscalar_t>     hmatrix_t;
-        typedef std::vector<hmatrix_t>          hmatrices_t;
-
-        typedef tensor::tensor_t<hscalar_t>     htensor_t;
-        typedef std::vector<htensor_t>          htensors_t;
-
-        // default tensors
-        typedef tensor::vector_t<scalar_t>      vector_t;
-        typedef std::vector<vector_t>           vectors_t;
-
-        typedef tensor::matrix_t<scalar_t>      matrix_t;
-        typedef std::vector<matrix_t>           matrices_t;
-
-        typedef tensor::tensor_t<scalar_t>      tensor_t;
-        typedef std::vector<tensor_t>           tensors_t;
+        using tensor_t = tensor::tensor_t<scalar_t>;
+        using tensors_t = std::vector<tensor_t>;
 }
 
 

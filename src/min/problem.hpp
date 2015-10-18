@@ -20,25 +20,25 @@ namespace min
         {
         public:
 
-                typedef tscalar_                        tscalar;
+                using tscalar = tscalar_;
 
                 /// current or the optimum optimization state
-                typedef state_t<tscalar>                tstate;
+                using tstate = state_t<tscalar>;
 
-                typedef typename tstate::tvector        tvector;
-                typedef typename tstate::tsize          tsize;
+                using tsize = typename tstate::tsize;
+                using tvector = typename tstate::tvector;
 
                 /// dimensionality operator: size = op()
-                typedef std::function<tsize()>                                  top_size;
+                using top_size = std::function<tsize()>;
 
                 /// function value operator: f = op(x)
-                typedef std::function<tscalar(const tvector&)>                  top_fval;
+                using top_fval = std::function<tscalar(const tvector&)>;
 
                 /// function value & gradient operator: f = op(x, g)
-                typedef std::function<tscalar(const tvector&, tvector&)>        top_grad;
+                using top_grad = std::function<tscalar(const tvector&, tvector&)>;
 
                 /// logging operator: op(state), returns false if the optimization should stop
-                typedef std::function<bool(const tstate&)>                      top_ulog;
+                using top_ulog = std::function<bool(const tstate&)>;
 
                 ///
                 /// \brief constructor (analytic gradient)

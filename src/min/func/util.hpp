@@ -3,7 +3,7 @@
 #include "min/problem.hpp"
 #include <string>
 
-namespace func
+namespace min
 {            
         namespace util
         {

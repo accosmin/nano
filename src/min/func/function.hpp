@@ -3,7 +3,7 @@
 #include "min/problem.hpp"
 #include <string>
 
-namespace func
+namespace min
 {            
         ///
         /// \brief test optimization problem
@@ -14,10 +14,10 @@ namespace func
         >                
         struct function_t
         {
-                typedef min::problem_t<tscalar_>        tproblem;
-                typedef typename tproblem::tsize        tsize;
-                typedef typename tproblem::tscalar      tscalar;
-                typedef typename tproblem::tvector      tvector;
+                using tproblem = min::problem_t<tscalar_>;
+                using tsize = typename tproblem::tsize;
+                using tscalar = typename tproblem::tscalar;
+                using tvector = typename tproblem::tvector;
                 
                 ///
                 /// \brief destructor

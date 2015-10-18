@@ -3,8 +3,9 @@
 #include "timer.h"
 #include "string.h"
 #include "logger.h"
-#include "minimize.h"
+#include "optimizer.h"
 #include "math/random.hpp"
+#include "min/minimize.hpp"
 #include "tensor/random.hpp"
 
 namespace cortex

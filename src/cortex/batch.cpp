@@ -2,8 +2,8 @@
 #include "timer.h"
 #include "logger.h"
 #include "sampler.h"
-#include "minimize.h"
 #include "accumulator.h"
+#include "min/minimize.hpp"
 #include "text/to_string.hpp"
 #include "math/tune_log10.hpp"
 

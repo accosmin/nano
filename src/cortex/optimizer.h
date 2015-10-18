@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tensor.h"
+#include "scalar.h"
 #include "min/batch.h"
 #include "min/stoch.h"
 #include "min/problem.hpp"
@@ -11,7 +11,6 @@ namespace cortex
 {
         typedef min::problem_t<scalar_t>                opt_problem_t;
 
-        typedef typename opt_problem_t::tscalar         opt_scalar_t;
         typedef typename opt_problem_t::tvector         opt_vector_t;
         typedef typename opt_problem_t::tstate          opt_state_t;
         typedef typename opt_problem_t::tsize           opt_size_t;

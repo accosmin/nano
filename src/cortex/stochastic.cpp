@@ -1,12 +1,11 @@
 #include "sampler.h"
 #include "timer.h"
 #include "logger.h"
-#include "minimize.h"
 #include "stochastic.h"
 #include "accumulator.h"
 #include "thread/thread.h"
+#include "min/tune_stoch.hpp"
 #include "text/to_string.hpp"
-#include "math/tune_fixed.hpp"
 #include "math/tune_log10.hpp"
 #include <tuple>
 
@@ -113,8 +112,8 @@ namespace cortex
                         };
 
                         const auto batches = tunable_batches();
-                        const auto decays = tunable_decays(optimizer);
-                        const auto alphas = tunable_alphas(optimizer);
+                        const auto decays = min::tunable_decays<scalar_t>(optimizer);
+                        const auto alphas = min::tunable_alphas<scalar_t>(optimizer);
 
                         return math::tune_fixed(op, batches, decays, alphas);
                 }

@@ -3,7 +3,7 @@
 #include "util.hpp"
 #include "function.hpp"
 
-namespace func
+namespace min
 {
         ///
         /// \brief create Trid test functions
@@ -14,9 +14,9 @@ namespace func
         >
         struct function_trid_t : public function_t<tscalar>
         {
-                typedef typename function_t<tscalar>::tsize     tsize;
-                typedef typename function_t<tscalar>::tvector   tvector;
-                typedef typename function_t<tscalar>::tproblem  tproblem;
+                using tsize = typename function_t<tscalar>::tsize;
+                using tvector = typename function_t<tscalar>::tvector;
+                using tproblem = typename function_t<tscalar>::tproblem;
                 
                 explicit function_trid_t(const tsize dims)
                         :       m_dims(dims)

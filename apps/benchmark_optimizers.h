@@ -3,6 +3,7 @@
 #include "text/align.hpp"
 #include "math/clamp.hpp"
 #include "math/stats.hpp"
+#include "cortex/tensor.h"
 #include "thread/loopi.hpp"
 #include "cortex/table/row_comp.h"
 
@@ -109,7 +110,7 @@ namespace benchmark
                         const auto& x0 = x0s[t];
 
                         const auto problem = func.problem();
-                        const auto state0 = opt_state_t(problem, x0);
+                        const auto state0 = typename tfunction::tproblem::tstate(problem, x0);
                         const auto g0 = state0.convergence_criteria();
 
                         // optimize

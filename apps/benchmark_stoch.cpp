@@ -4,7 +4,8 @@
 #include "cortex/logger.h"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
-#include "cortex/minimize.h"
+#include "min/tune_stoch.hpp"
+#include "cortex/optimizer.h"
 #include "text/from_string.hpp"
 #include "min/func/run_all.hpp"
 #include "benchmark_optimizers.h"
@@ -15,19 +16,25 @@ namespace
 {        
         using namespace cortex;
 
-        template <typename tfunction, typename tostats>
-        void check_function(const tfunction& func, tostats& gstats)
+        template
+        <
+                typename tscalar,
+                typename tostats,
+                typename tsize = typename min::function_t<tscalar>::tsize,
+                typename tvector = typename min::function_t<tscalar>::tvector
+        >
+        void check_function(const min::function_t<tscalar>& function, tostats& gstats)
         {
-                const auto epochs = opt_size_t(128);
-                const auto epoch_size = opt_size_t(32);
+                const auto epochs = size_t(128);
+                const auto epoch_size = size_t(32);
                 const auto trials = size_t(1024);
 
-                const auto dims = func.problem().size();
+                const auto dims = function.problem().size();
 
-                math::random_t<opt_scalar_t> rgen(-1.0, +1.0);
+                math::random_t<tscalar> rgen(-1.0, +1.0);
 
                 // generate fixed random trials
-                std::vector<opt_vector_t> x0s(trials);
+                std::vector<tvector> x0s(trials);
                 for (auto& x0 : x0s)
                 {
                         x0.resize(dims);
@@ -52,10 +59,10 @@ namespace
                 // evaluate all optimizers
                 for (const auto optimizer : optimizers)
                 {
-                        const auto op = [&] (const opt_problem_t& problem, const vector_t& x0)
+                        const auto op = [&] (const auto& problem, const auto& x0)
                         {
-                                opt_scalar_t alpha0, decay;
-                                cortex::tune_stochastic(problem, x0, optimizer, epoch_size, alpha0, decay);
+                                tscalar alpha0, decay;
+                                min::tune_stochastic(problem, x0, optimizer, epoch_size, alpha0, decay);
 
                                 return  min::minimize(
                                         problem, nullptr, x0, optimizer, epochs, epoch_size, alpha0, decay);
@@ -64,11 +71,11 @@ namespace
                         const string_t name =
                                 text::to_string(optimizer);
 
-                        benchmark::benchmark_function(func, x0s, op, name, { 1e-5, 1e-4, 1e-3, 1e-2 }, stats, gstats);
+                        benchmark::benchmark_function(function, x0s, op, name, { 1e-5, 1e-4, 1e-3, 1e-2 }, stats, gstats);
                 }
 
                 // show per-problem statistics
-                benchmark::show_table(func.name(), stats);
+                benchmark::show_table(function.name(), stats);
         }
 }
 
@@ -78,7 +85,7 @@ int main(int, char* [])
 
         std::map<string_t, benchmark::optimizer_stat_t> gstats;
 
-        func::run_all_test_functions<opt_scalar_t>(8, [&] (const auto& function)
+        min::run_all_test_functions<double>(8, [&] (const auto& function)
         {
                 check_function(function, gstats);
         });

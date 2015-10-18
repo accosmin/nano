@@ -20,7 +20,7 @@
 #include "function_styblinski_tang.hpp"
 #include "function_rotated_ellipsoid.hpp"
 
-namespace func
+namespace min
 {        
         ///
         /// \brief run an operator (e.g. test, benchmark) over all test functions up to the given dimension
@@ -30,7 +30,7 @@ namespace func
                 typename tscalar,
                 typename toperator
         >
-        void run_all_test_functions(const typename min::problem_t<tscalar>::tsize max_dims, const toperator op)
+        void run_all_test_functions(const typename problem_t<tscalar>::tsize max_dims, const toperator op)
         {
                 op(function_beale_t<tscalar>());
                 op(function_booth_t<tscalar>());

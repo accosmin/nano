@@ -45,7 +45,7 @@ namespace test
         template <typename tscalar>
         void test_functions()
         {
-                func::run_all_test_functions<tscalar>(8, [] (const auto& function)
+                min::run_all_test_functions<tscalar>(8, [] (const auto& function)
                 {
                         test_function(function);
                 });

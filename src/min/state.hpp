@@ -21,9 +21,9 @@ namespace min
         >
         struct state_t
         {
-                typedef tscalar_                tscalar;
-                typedef tvector_                tvector;
-                typedef tsize_                  tsize;
+                using tsize = tsize_;
+                using tscalar = tscalar_;
+                using tvector = tvector_;
 
                 ///
                 /// \brief constructor

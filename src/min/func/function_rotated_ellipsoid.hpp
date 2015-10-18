@@ -2,7 +2,7 @@
 
 #include "function.hpp"
 
-namespace func
+namespace min
 {
         ///
         /// \brief create rotated hyper-ellipsoid test functions
@@ -13,10 +13,10 @@ namespace func
         >
         struct function_rotated_ellipsoid_t : public function_t<tscalar>
         {
-                typedef typename function_t<tscalar>::tsize     tsize;
-                typedef typename function_t<tscalar>::tvector   tvector;
-                typedef typename function_t<tscalar>::tproblem  tproblem;  
-                
+                using tsize = typename function_t<tscalar>::tsize;
+                using tvector = typename function_t<tscalar>::tvector;
+                using tproblem = typename function_t<tscalar>::tproblem;
+
                 explicit function_rotated_ellipsoid_t(const tsize dims)
                         :       m_dims(dims)
                 {
