@@ -7,7 +7,7 @@
 #include "tensor/random.hpp"
 #include "tensor/transform.hpp"
 
-namespace ncv
+namespace cortex
 {
         namespace
         {
@@ -44,7 +44,7 @@ namespace ncv
                 void smooth_field(matrix_t& field, const scalar_t sigma)
                 {
                         const math::gauss_kernel_t<scalar_t> gauss(sigma);
-                        ncv::convolve(gauss, field);
+                        cortex::convolve(gauss, field);
                 }
 
                 std::tuple<matrix_t, matrix_t> make_random_fields(
@@ -146,14 +146,14 @@ namespace ncv
                 tensor_t gradx(patch.dims(), patch.rows(), patch.cols());
                 for (auto d = 0; d < patch.dims(); d ++)
                 {
-                        ncv::gradientx(patch.matrix(d), gradx.matrix(d));
+                        cortex::gradientx(patch.matrix(d), gradx.matrix(d));
                 }
 
                 // y gradient (directional gradient)
                 tensor_t grady(patch.dims(), patch.rows(), patch.cols());
                 for (auto d = 0; d < patch.dims(); d ++)
                 {
-                        ncv::gradienty(patch.matrix(d), grady.matrix(d));
+                        cortex::gradienty(patch.matrix(d), grady.matrix(d));
                 }
 
                 // generate random fields

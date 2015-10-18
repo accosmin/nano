@@ -161,8 +161,6 @@ add_subdirectory(src/thread)
 
 add_subdirectory(src/cortex)
 
-add_subdirectory(src/nanocv)
-
 add_subdirectory(apps)
 add_subdirectory(test)
 

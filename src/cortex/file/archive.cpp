@@ -6,7 +6,7 @@
 #include <archive.h>
 #include <archive_entry.h>
 
-namespace ncv
+namespace cortex
 {
         namespace detail
         {

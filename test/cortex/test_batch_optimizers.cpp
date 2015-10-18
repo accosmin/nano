@@ -90,7 +90,7 @@ namespace test
                                         continue;
                                 }
 
-                                ncv::log_info()
+                                cortex::log_info()
                                         << function.name() << ", " << text::to_string(optimizer)
                                         << " [" << (t + 1) << "/" << trials << "]"
                                         << std::setprecision(12)
@@ -110,7 +110,7 @@ namespace test
                                 BOOST_CHECK(function.is_minima(x, x_thres));
                         }
 
-                        ncv::log_info()
+                        cortex::log_info()
                                 << function.name() << ", " << text::to_string(optimizer)
                                 << ": out of domain " << out_of_domain << "/" << trials << ".";
                 }

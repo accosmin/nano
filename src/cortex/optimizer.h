@@ -7,7 +7,7 @@
 #include "min/linesearch.h"
 #include "text/enum_string.hpp"
 
-namespace ncv
+namespace cortex
 {
         typedef min::problem_t<scalar_t>                opt_problem_t;
 

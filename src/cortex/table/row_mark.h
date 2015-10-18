@@ -4,7 +4,7 @@
 #include "text/from_string.hpp"
 #include <algorithm>
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief select the column with the minimum value

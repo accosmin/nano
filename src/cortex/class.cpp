@@ -1,6 +1,6 @@
 #include "class.h"
 
-namespace ncv
+namespace cortex
 {
         scalar_t pos_target()
         {

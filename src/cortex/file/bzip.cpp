@@ -3,7 +3,7 @@
 #include <bzlib.h>
 #include <fstream>
 
-namespace ncv
+namespace cortex
 {
         template
         <

@@ -1,6 +1,6 @@
 #include "cortex/sampler.h"
 #include "cortex/evaluate.h"
-#include "nanocv/nanocv.h"
+#include "cortex/cortex.h"
 #include "cortex/measure.hpp"
 #include "text/concatenate.hpp"
 #include <boost/program_options.hpp>
@@ -8,14 +8,14 @@
 
 int main(int argc, char *argv[])
 {
-        ncv::init();
+        cortex::init();
 
-        using namespace ncv;
+        using namespace cortex;
 
         // prepare object string-based selection
-        const strings_t task_ids = ncv::get_tasks().ids();
-        const strings_t loss_ids = ncv::get_losses().ids();
-        const strings_t model_ids = ncv::get_models().ids();
+        const strings_t task_ids = cortex::get_tasks().ids();
+        const strings_t loss_ids = cortex::get_losses().ids();
+        const strings_t model_ids = cortex::get_models().ids();
 
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
@@ -78,10 +78,10 @@ int main(int argc, char *argv[])
         const size_t cmd_save_group_cols = math::clamp(po_vm["save-group-cols"].as<size_t>(), 1, 128);
 
         // create task
-        const rtask_t rtask = ncv::get_tasks().get(cmd_task, cmd_task_params);
+        const rtask_t rtask = cortex::get_tasks().get(cmd_task, cmd_task_params);
 
         // load task data
-        ncv::measure_critical_and_log(
+        cortex::measure_critical_and_log(
                 [&] () { return rtask->load(cmd_task_dir); },
                 "loaded task",
                 "failed to load task <" + cmd_task + "> from directory <" + cmd_task_dir + ">");
@@ -90,13 +90,13 @@ int main(int argc, char *argv[])
         rtask->describe();
 
         // create loss
-        const rloss_t rloss = ncv::get_losses().get(cmd_loss);
+        const rloss_t rloss = cortex::get_losses().get(cmd_loss);
 
         // create model
-        const rmodel_t rmodel = ncv::get_models().get(cmd_model);
+        const rmodel_t rmodel = cortex::get_models().get(cmd_model);
 
         // load model
-        ncv::measure_critical_and_log(
+        cortex::measure_critical_and_log(
                 [&] () { return rmodel->load(cmd_input); },
                 "loaded model",
                 "failed to load model from <" + cmd_input + ">");
@@ -108,9 +108,9 @@ int main(int argc, char *argv[])
                 const fold_t test_fold = std::make_pair(f, protocol::test);
 
 		// error rate
-                const ncv::timer_t timer;
+                const cortex::timer_t timer;
                 scalar_t lvalue, lerror;
-                ncv::evaluate(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror);
+                cortex::evaluate(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror);
                 log_info() << "<<< test error: [" << lvalue << "/" << lerror << "] in " << timer.elapsed() << ".";
 
                 lstats(lvalue);

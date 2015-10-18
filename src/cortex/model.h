@@ -5,7 +5,7 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 
-namespace ncv
+namespace cortex
 {
         class task_t;
         class model_t;

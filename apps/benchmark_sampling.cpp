@@ -1,17 +1,17 @@
 #include "cortex/table.h"
-#include "nanocv/nanocv.h"
+#include "cortex/cortex.h"
 #include "thread/thread.h"
 #include "thread/loopi.hpp"
 #include "cortex/sampler.h"
 #include "cortex/measure.hpp"
-#include "nanocv/tasks/task_charset.h"
+#include "cortex/tasks/task_charset.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
 {
-        ncv::init();
+        cortex::init();
 
-        using namespace ncv;
+        using namespace cortex;
 
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
                 {
                         thread::pool_t pool(nthreads);
 
-                        const auto micros = ncv::measure_robustly_usec([&]
+                        const auto micros = cortex::measure_robustly_usec([&]
                         {
                                 thread::loopi(samples.size(), pool, [&] (size_t i)
                                 {

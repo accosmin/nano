@@ -6,14 +6,14 @@
 
 namespace test
 {
-        using namespace ncv;
+        using namespace cortex;
 
-        class test_clonable_t : public ncv::clonable_t<test_clonable_t>
+        class test_clonable_t : public cortex::clonable_t<test_clonable_t>
         {
         public:
 
                 explicit test_clonable_t(const string_t& configuration = string_t())
-                        :       ncv::clonable_t<test_clonable_t>(configuration)
+                        :       cortex::clonable_t<test_clonable_t>(configuration)
                 {
                 }
 
@@ -61,9 +61,9 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_manager)
 {
-        using namespace ncv;
+        using namespace cortex;
 
-        typedef ncv::manager_t<test::test_clonable_t> manager_t;
+        typedef cortex::manager_t<test::test_clonable_t> manager_t;
 
         manager_t manager;
 

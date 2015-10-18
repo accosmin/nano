@@ -2,7 +2,7 @@
 
 #include "text/enum_string.hpp"
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief machine learning protocols
@@ -18,12 +18,12 @@ namespace ncv
 namespace text
 {
         template <>
-        inline std::map<ncv::protocol, std::string> enum_string<ncv::protocol>()
+        inline std::map<cortex::protocol, std::string> enum_string<cortex::protocol>()
         {
                 return
                 {
-                        { ncv::protocol::train,      "train" },
-                        { ncv::protocol::test,       "test" }
+                        { cortex::protocol::train,      "train" },
+                        { cortex::protocol::test,       "test" }
                 };
         }
 }

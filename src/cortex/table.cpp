@@ -4,7 +4,7 @@
 #include <numeric>
 #include <iostream>
 
-namespace ncv
+namespace cortex
 {
         table_t::table_t(const string_t& title)
                 :       m_title(title)

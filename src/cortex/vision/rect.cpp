@@ -2,7 +2,7 @@
 #include <iostream>
 #include <algorithm>
 
-namespace ncv
+namespace cortex
 {
         rect_t operator&(const rect_t& rect1, const rect_t& rect2)
         {

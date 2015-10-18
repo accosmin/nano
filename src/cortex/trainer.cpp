@@ -1,6 +1,6 @@
 #include "trainer.h"
 
-namespace ncv
+namespace cortex
 {
         trainer_manager_t& get_trainers()
         {

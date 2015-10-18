@@ -3,7 +3,7 @@
 #include "loss.h"
 #include <cassert>
 
-namespace ncv
+namespace cortex
 {        
         criterion_manager_t& get_criteria()
         {

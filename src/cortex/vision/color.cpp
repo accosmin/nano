@@ -5,7 +5,7 @@
 #include "text/to_string.hpp"
 #include "tensor/transform.hpp"
 
-namespace ncv
+namespace cortex
 {
         namespace
         {

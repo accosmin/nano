@@ -4,7 +4,7 @@
 #include <string>
 #include <cstddef>
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief map the std::istream's interface over an in-memory buffer

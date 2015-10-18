@@ -3,7 +3,7 @@
 #include "rect.h"
 #include "color.h"
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief stores an image either as grayscale (luma) or RGBA buffer.

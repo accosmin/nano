@@ -3,7 +3,13 @@ file(GLOB libcortex_sources ${CMAKE_CURRENT_SOURCE_DIR}
         *.*
         file/*.*
         table/*.*
-        vision/*.*)
+        vision/*.*
+        criteria/*.*
+        layers/*.*
+        losses/*.*
+        models/*.*
+        tasks/*.*
+        trainers/*.*)
 
 add_library(cortex SHARED ${libcortex_sources})
 target_link_libraries(cortex

@@ -1,7 +1,7 @@
 #include "trainer_result.h"
 #include "text/concatenate.hpp"
 
-namespace ncv
+namespace cortex
 {
         trainer_result_t::trainer_result_t()
                 :       m_opt_epoch(0)

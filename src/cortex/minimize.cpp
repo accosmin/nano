@@ -1,7 +1,7 @@
 #include "minimize.h"
 #include "math/tune_fixed.hpp"
 
-namespace ncv
+namespace cortex
 {
         std::vector<opt_scalar_t> tunable_alphas(min::stoch_optimizer optimizer)
         {

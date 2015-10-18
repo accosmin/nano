@@ -3,7 +3,7 @@
 #include "string.h"
 #include "text/to_string.hpp"
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief a header in the table

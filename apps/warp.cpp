@@ -8,13 +8,13 @@
 
 int main(int argc, char *argv[])
 {
-        using namespace ncv;
+        using namespace cortex;
         
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
         po_desc.add_options()("help,h", "randomly warp the input image");
         po_desc.add_options()("input,i",
-                boost::program_options::value<ncv::string_t>(),
+                boost::program_options::value<cortex::string_t>(),
                 "input image path");
         po_desc.add_options()("count,c",
                 boost::program_options::value<size_t>()->default_value(32),
@@ -26,15 +26,15 @@ int main(int argc, char *argv[])
         po_desc.add_options()("random",
                 "use random fields");
         po_desc.add_options()("alpha",
-                boost::program_options::value<ncv::scalar_t>()->default_value(1.0),
+                boost::program_options::value<cortex::scalar_t>()->default_value(1.0),
                 "field mixing maximum coefficient");
         po_desc.add_options()("beta",
-                boost::program_options::value<ncv::scalar_t>()->default_value(1.0),
+                boost::program_options::value<cortex::scalar_t>()->default_value(1.0),
                 "gradient magnitue mixing maximum coefficient");
         po_desc.add_options()("save-fields",
                 "save fields as image");
         po_desc.add_options()("output,o",
-                boost::program_options::value<ncv::string_t>(),
+                boost::program_options::value<cortex::string_t>(),
                 "output (warped) image path");
 	
         boost::program_options::variables_map po_vm;
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 
         // load input image
         image_t iimage;
-        ncv::measure_critical_and_log(
+        cortex::measure_critical_and_log(
                [&] () { return iimage.load_rgba(cmd_input); },
                "loaded image from <" + cmd_input + ">",
                "failed to load image from <" + cmd_input + ">");
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
         {
                 // warp
                 tensor_t otensor, ftensor;
-                ncv::measure_and_log(
+                cortex::measure_and_log(
                         [&] () { otensor = warp(color::to_rgba_tensor(iimage.rgba()), params, &ftensor); },
                         "warped image");
 
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
                         image_t image;
                         image.load_rgba(color::from_rgba_tensor(otensor));
 
-                        ncv::measure_critical_and_log(
+                        cortex::measure_critical_and_log(
                                 [&] () { return image.save(opath); },
                                 "saved warped image to <" + opath + ">",
                                 "failed to save warped image to <" + opath + ">");
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
                         image_t image;
                         image.load_rgba(color::from_rgba_tensor(ftensor));
 
-                        ncv::measure_critical_and_log(
+                        cortex::measure_critical_and_log(
                                 [&] () { return image.save(fpath); },
                                 "saved field image to <" + fpath + ">",
                                 "failed to save field image to <" + fpath + ">");
@@ -134,6 +134,6 @@ int main(int argc, char *argv[])
         }
 		
         // OK
-        log_info() << ncv::done;
+        log_info() << cortex::done;
         return EXIT_SUCCESS;
 }

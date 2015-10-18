@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief image coordinate

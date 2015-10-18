@@ -1,6 +1,6 @@
 #include "layer.h"
 
-namespace ncv
+namespace cortex
 {
         layer_manager_t& get_layers()
         {

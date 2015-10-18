@@ -6,9 +6,9 @@
 
 namespace test
 {
-        void build_point(ncv::coord_t x, ncv::coord_t y)
+        void build_point(cortex::coord_t x, cortex::coord_t y)
         {
-                const ncv::point_t point(x, y);
+                const cortex::point_t point(x, y);
 
                 BOOST_CHECK_EQUAL(point.x(), x);
                 BOOST_CHECK_EQUAL(point.y(), y);

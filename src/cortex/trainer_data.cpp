@@ -1,7 +1,7 @@
 #include "accumulator.h"
 #include "trainer_data.h"
 
-namespace ncv
+namespace cortex
 {
         trainer_data_t::trainer_data_t(const task_t& task,
                        const sampler_t& tsampler,

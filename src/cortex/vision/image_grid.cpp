@@ -1,6 +1,6 @@
 #include "image_grid.h"
 
-namespace ncv
+namespace cortex
 {
         image_grid_t::image_grid_t(
                 size_t patch_rows, size_t patch_cols,

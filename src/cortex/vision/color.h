@@ -8,7 +8,7 @@
 #include <iosfwd>
 #include <cstdint>
 
-namespace ncv
+namespace cortex
 {
         // RGBA
         typedef uint32_t                                        rgba_t;
@@ -141,29 +141,29 @@ namespace ncv
 namespace text
 {
         template <>
-        inline std::map<ncv::color_mode, std::string> enum_string<ncv::color_mode>()
+        inline std::map<cortex::color_mode, std::string> enum_string<cortex::color_mode>()
         {
                 return
                 {
-                        { ncv::color_mode::luma, "luma" },
-                        { ncv::color_mode::rgba, "rgba" }
+                        { cortex::color_mode::luma, "luma" },
+                        { cortex::color_mode::rgba, "rgba" }
                 };
         }
 
         template <>
-        inline std::map<ncv::color_channel, std::string> enum_string<ncv::color_channel>()
+        inline std::map<cortex::color_channel, std::string> enum_string<cortex::color_channel>()
         {
                 return
                 {
-                        { ncv::color_channel::red,           "red" },
-                        { ncv::color_channel::green,         "green" },
-                        { ncv::color_channel::blue,          "blue" },
-                        { ncv::color_channel::luma,          "luma" },
-                        { ncv::color_channel::rgba,          "rgba" },
-                        { ncv::color_channel::alpha,         "alpha" },
-                        { ncv::color_channel::cielab_l,      "cielab_l" },
-                        { ncv::color_channel::cielab_a,      "cielab_a" },
-                        { ncv::color_channel::cielab_b,      "cielab_b" }
+                        { cortex::color_channel::red,           "red" },
+                        { cortex::color_channel::green,         "green" },
+                        { cortex::color_channel::blue,          "blue" },
+                        { cortex::color_channel::luma,          "luma" },
+                        { cortex::color_channel::rgba,          "rgba" },
+                        { cortex::color_channel::alpha,         "alpha" },
+                        { cortex::color_channel::cielab_l,      "cielab_l" },
+                        { cortex::color_channel::cielab_a,      "cielab_a" },
+                        { cortex::color_channel::cielab_b,      "cielab_b" }
                 };
         }
 }

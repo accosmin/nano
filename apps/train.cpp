@@ -1,12 +1,12 @@
 #include "cortex/evaluate.h"
 #include "text/align.hpp"
-#include "nanocv/nanocv.h"
+#include "cortex/cortex.h"
 #include "cortex/measure.hpp"
 #include "text/concatenate.hpp"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 
-using namespace ncv;
+using namespace cortex;
 
 namespace
 {
@@ -30,20 +30,20 @@ namespace
 
 int main(int argc, char *argv[])
 {
-        ncv::init();
+        cortex::init();
 
         // prepare object string-based selection
-        const strings_t task_ids = ncv::get_tasks().ids();
-        const strings_t loss_ids = ncv::get_losses().ids();
+        const strings_t task_ids = cortex::get_tasks().ids();
+        const strings_t loss_ids = cortex::get_losses().ids();
 
-        const strings_t model_ids = ncv::get_models().ids();
-        const strings_t model_descriptions = ncv::get_models().descriptions();
+        const strings_t model_ids = cortex::get_models().ids();
+        const strings_t model_descriptions = cortex::get_models().descriptions();
 
-        const strings_t trainer_ids = ncv::get_trainers().ids();
-        const strings_t trainer_descriptions = ncv::get_trainers().descriptions();
+        const strings_t trainer_ids = cortex::get_trainers().ids();
+        const strings_t trainer_descriptions = cortex::get_trainers().descriptions();
 
-        const strings_t criterion_ids = ncv::get_criteria().ids();
-        const strings_t criterion_descriptions = ncv::get_criteria().descriptions();
+        const strings_t criterion_ids = cortex::get_criteria().ids();
+        const strings_t criterion_descriptions = cortex::get_criteria().descriptions();
 
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
@@ -120,10 +120,10 @@ int main(int argc, char *argv[])
         const string_t cmd_output = po_vm["output"].as<string_t>();
 
         // create task
-        const rtask_t rtask = ncv::get_tasks().get(cmd_task, cmd_task_params);
+        const rtask_t rtask = cortex::get_tasks().get(cmd_task, cmd_task_params);
 
         // load task data
-        ncv::measure_critical_and_log(
+        cortex::measure_critical_and_log(
                 [&] () { return rtask->load(cmd_task_dir); },
                 "task loaded",
                 "failed to load task <" + cmd_task + "> from directory <" + cmd_task_dir + ">");
@@ -132,13 +132,13 @@ int main(int argc, char *argv[])
         rtask->describe();
 
         // create loss
-        const rloss_t rloss = ncv::get_losses().get(cmd_loss);
+        const rloss_t rloss = cortex::get_losses().get(cmd_loss);
 
         // create model
-        const rmodel_t rmodel = ncv::get_models().get(cmd_model, cmd_model_params);
+        const rmodel_t rmodel = cortex::get_models().get(cmd_model, cmd_model_params);
 
         // create trainer
-        const rtrainer_t rtrainer = ncv::get_trainers().get(cmd_trainer, cmd_trainer_params);
+        const rtrainer_t rtrainer = cortex::get_trainers().get(cmd_trainer, cmd_trainer_params);
 
         // train & test models
         std::map<scalar_t, std::tuple<rmodel_t, trainer_states_t>> models;
@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
 
                         // train
                         trainer_result_t result;
-                        ncv::measure_critical_and_log(
+                        cortex::measure_critical_and_log(
                                 [&] ()
                                 {
                                         result = rtrainer->train(*rtask, train_fold, *rloss, cmd_threads, cmd_criterion, *rmodel);
@@ -164,8 +164,8 @@ int main(int argc, char *argv[])
 
                         // test
                         scalar_t lvalue, lerror;
-                        ncv::measure_and_log(
-                                [&] () { ncv::evaluate(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror); },
+                        cortex::measure_and_log(
+                                [&] () { cortex::evaluate(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror); },
                                 "model tested");
                         log_info() << "<<< test error: [" << lvalue << "/" << lerror << "].";
 
@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
                 const rmodel_t& opt_model = std::get<0>(models.begin()->second);
                 const trainer_states_t& opt_states = std::get<1>(models.begin()->second);
                 
-                ncv::measure_critical_and_log(
+                cortex::measure_critical_and_log(
                         [&] () { return opt_model->save(cmd_output); },
                         "saved model",
                         "failed to save model to <" + cmd_output + ">");
@@ -197,8 +197,8 @@ int main(int argc, char *argv[])
                 const string_t path = (boost::filesystem::path(cmd_output).parent_path() /
                         boost::filesystem::path(cmd_output).stem()).string() + ".state";
                 
-                ncv::measure_critical_and_log(
-                        [&] () { return ncv::save(path, opt_states); },
+                cortex::measure_critical_and_log(
+                        [&] () { return cortex::save(path, opt_states); },
                         "saved state",
                         "failed to save state to <" + path + ">");
         }

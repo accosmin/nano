@@ -3,7 +3,7 @@
 #include "arch.h"
 #include "tensor.h"
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief target value of the positive class

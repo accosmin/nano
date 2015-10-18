@@ -4,7 +4,7 @@
 #include <sstream>
 #include <iomanip>
 
-namespace ncv
+namespace cortex
 {       
         typedef std::chrono::duration<std::size_t, std::milli>  milliseconds_t;
         typedef std::chrono::duration<std::size_t, std::micro>  microseconds_t;

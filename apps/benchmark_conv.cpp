@@ -16,7 +16,7 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 
-using namespace ncv;
+using namespace cortex;
 
 namespace
 {
@@ -67,7 +67,7 @@ namespace
         size_t measure_output(const top& op,
                 const ttensori& idata, const ttensork& kdata, ttensoro&& odata, const size_t trials = 16)
         {
-                return ncv::measure_robustly_usec([&] ()
+                return cortex::measure_robustly_usec([&] ()
                 {
                         tensor::conv3d_output(op, idata, kdata, odata);
                 }, trials);
@@ -83,7 +83,7 @@ namespace
         size_t measure_ginput(const top& op,
                 ttensori&& idata, const ttensork& kdata, const ttensoro& odata, const size_t trials = 16)
         {
-                return ncv::measure_robustly_usec([&] ()
+                return cortex::measure_robustly_usec([&] ()
                 {
                         tensor::conv3d_ginput(op, idata, kdata, odata);
                 }, trials);
@@ -99,7 +99,7 @@ namespace
         size_t measure_gparam(const top& op,
                 const ttensori& idata, ttensork&& kdata, const ttensoro& odata, const size_t trials = 16)
         {
-                return ncv::measure_robustly_usec([&] ()
+                return cortex::measure_robustly_usec([&] ()
                 {
                         tensor::conv3d_gparam(op, idata, kdata, odata);
                 }, trials);
@@ -125,7 +125,7 @@ namespace
                 row << measure_output(tensor::conv2d_dot_t(), idata, kdata, odata_ret, trials);
                 row << measure_output(tensor::conv2d_mad_t(), idata, kdata, odata_ret, trials);
                 row << measure_output(tensor::conv2d_dyn_t(), idata, kdata, odata_ret, trials);
-                row << ncv::measure_robustly_usec([&] () { conv3d.output(idata, odata_ret); }, trials);
+                row << cortex::measure_robustly_usec([&] () { conv3d.output(idata, odata_ret); }, trials);
         }
 
         template
@@ -149,7 +149,7 @@ namespace
                 row << measure_ginput(tensor::corr2d_mdk_t(), idata_ret, kdata, odata, trials);
                 row << measure_ginput(tensor::corr2d_mdo_t(), idata_ret, kdata, odata, trials);
                 row << measure_ginput(tensor::corr2d_dyn_t(), idata_ret, kdata, odata, trials);
-                row << ncv::measure_robustly_usec([&] () { conv3d.ginput(idata_ret, odata); }, trials);
+                row << cortex::measure_robustly_usec([&] () { conv3d.ginput(idata_ret, odata); }, trials);
         }
 
         template
@@ -172,7 +172,7 @@ namespace
                 row << measure_gparam(tensor::conv2d_dot_t(), idata, kdata_ret, odata, trials);
                 row << measure_gparam(tensor::conv2d_mad_t(), idata, kdata_ret, odata, trials);
                 row << measure_gparam(tensor::conv2d_dyn_t(), idata, kdata_ret, odata, trials);
-                row << ncv::measure_robustly_usec([&] () { conv3d.gparam(idata, kdata_ret, odata); }, trials);
+                row << cortex::measure_robustly_usec([&] () { conv3d.gparam(idata, kdata_ret, odata); }, trials);
         }
 }
 
@@ -233,7 +233,7 @@ int main(int argc, char* argv[])
                         }
                 }
 
-                table.mark(ncv::make_table_row_minimum_mark<size_t>());
+                table.mark(cortex::make_table_row_minimum_mark<size_t>());
                 table.print(std::cout);
         }
 
@@ -258,7 +258,7 @@ int main(int argc, char* argv[])
                         }
                 }
 
-                table.mark(ncv::make_table_row_minimum_mark<size_t>());
+                table.mark(cortex::make_table_row_minimum_mark<size_t>());
                 table.print(std::cout);
         }
 
@@ -284,7 +284,7 @@ int main(int argc, char* argv[])
                         }
                 }
 
-                table.mark(ncv::make_table_row_minimum_mark<size_t>());
+                table.mark(cortex::make_table_row_minimum_mark<size_t>());
                 table.print(std::cout);
         }
 

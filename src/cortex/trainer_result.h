@@ -5,7 +5,7 @@
 #include "trainer_state.h"
 #include "text/enum_string.hpp"
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief training configuration (e.g. learning rate, regularization weight)
@@ -114,14 +114,14 @@ namespace ncv
 namespace text
 {
         template <>
-        inline std::map<ncv::trainer_result_return_t, std::string> enum_string<ncv::trainer_result_return_t>()
+        inline std::map<cortex::trainer_result_return_t, std::string> enum_string<cortex::trainer_result_return_t>()
         {
                 return
                 {
-                        { ncv::trainer_result_return_t::better,      "better" },
-                        { ncv::trainer_result_return_t::worse,       "worse" },
-                        { ncv::trainer_result_return_t::overfitting, "overfitting" },
-                        { ncv::trainer_result_return_t::solved,      "solved" }
+                        { cortex::trainer_result_return_t::better,      "better" },
+                        { cortex::trainer_result_return_t::worse,       "worse" },
+                        { cortex::trainer_result_return_t::overfitting, "overfitting" },
+                        { cortex::trainer_result_return_t::solved,      "solved" }
                 };
         }
 }

@@ -4,7 +4,7 @@
 #include "manager.hpp"
 #include "vision/image.h"
 
-namespace ncv
+namespace cortex
 {
         class task_t;
 

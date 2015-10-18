@@ -2,7 +2,7 @@
 
 #include "sample.h"
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief sampling from a potentially large collection of samples.

@@ -15,7 +15,7 @@
 
 namespace
 {
-        using namespace ncv;
+        using namespace cortex;
 
         template <typename tfunction, typename tostats>
         void check_function(const tfunction& func, tostats& gstats)
@@ -99,7 +99,7 @@ namespace
 
 int main(int, char* [])
 {
-        using namespace ncv;
+        using namespace cortex;
 
         std::map<string_t, benchmark::optimizer_stat_t> gstats;
 

@@ -1,6 +1,6 @@
 #include "loss.h"
 
-namespace ncv
+namespace cortex
 {
         loss_manager_t& get_losses()
         {

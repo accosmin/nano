@@ -3,7 +3,7 @@
 #include "arch.h"
 #include <iostream>
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief logging object that can use any std::ostream (standard streaming & text files)

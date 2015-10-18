@@ -3,7 +3,7 @@
 #include "arch.h"
 #include "buffer.h"
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief uncompress a stream of bytes (using bzip2)

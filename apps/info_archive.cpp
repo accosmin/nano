@@ -6,13 +6,13 @@
 
 int main(int argc, char *argv[])
 {
-        using namespace ncv;
+        using namespace cortex;
         
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
         po_desc.add_options()("help,h", "display the structure of the given archive");
         po_desc.add_options()("input,i",
-                boost::program_options::value<ncv::string_t>(),
+                boost::program_options::value<cortex::string_t>(),
                 "input archive path (.tar, .gz, .bz2, .tar.gz, .tar.bz2)");
 	
         boost::program_options::variables_map po_vm;
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
         };
 
         // decode archive
-        ncv::timer_t timer;
+        cortex::timer_t timer;
         if (!unarchive(cmd_input, "decode: ", callback))
         {
                 return EXIT_FAILURE;
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
                 log_info() << "untar: >>> loaded in " << timer.elapsed() << ".";
 
                 // OK
-                log_info() << ncv::done;
+                log_info() << cortex::done;
                 return EXIT_SUCCESS;
         }
 }

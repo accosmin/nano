@@ -3,7 +3,7 @@
 #include "trainer_data.h"
 #include "trainer_result.h"
 
-namespace ncv
+namespace cortex
 {
         class model_t;
 

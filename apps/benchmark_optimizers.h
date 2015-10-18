@@ -8,7 +8,7 @@
 
 namespace benchmark
 {
-        using namespace ncv;
+        using namespace cortex;
 
         struct optimizer_stat_t
         {
@@ -81,7 +81,7 @@ namespace benchmark
                                            << stat.m_speeds.avg();
                 }
 
-                table.sort(ncv::make_table_row_ascending_comp<scalar_t>(indices_t({2, 3, 4, 5, 0})));
+                table.sort(cortex::make_table_row_ascending_comp<scalar_t>(indices_t({2, 3, 4, 5, 0})));
                 table.print(std::cout);
         }
 

@@ -6,7 +6,7 @@
 #include <cassert>
 #include <algorithm>
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief collects & formats for ASCII display tabular data

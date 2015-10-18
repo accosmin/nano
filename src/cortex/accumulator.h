@@ -2,7 +2,7 @@
 
 #include "criterion.h"
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief cumulate sample evaluations (loss value, error and gradient)

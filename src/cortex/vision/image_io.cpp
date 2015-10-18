@@ -3,7 +3,7 @@
 #include <map>
 #include <IL/il.h>
 
-namespace ncv
+namespace cortex
 {
         static bool load_image(color_mode mode, rgba_matrix_t& rgba, luma_matrix_t& luma)
         {

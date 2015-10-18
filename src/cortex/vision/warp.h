@@ -3,7 +3,7 @@
 #include "arch.h"
 #include "cortex/tensor.h"
 
-namespace ncv
+namespace cortex
 {
         enum class field_type
         {

@@ -10,7 +10,7 @@ foreach(app ${nanocv_apps})
                 ${Boost_PROGRAM_OPTIONS_LIBRARY}
                 ${Boost_FILESYSTEM_LIBRARY}
                 ${Boost_SYSTEM_LIBRARY}
-                nanocv)
+                cortex)
 endforeach()
 
 # install (some) programs

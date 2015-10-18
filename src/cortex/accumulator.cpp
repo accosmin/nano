@@ -3,7 +3,7 @@
 #include "thread/loopit.hpp"
 #include <cassert>
 
-namespace ncv
+namespace cortex
 {
         struct accumulator_t::impl_t
         {
@@ -11,7 +11,7 @@ namespace ncv
                 impl_t(const model_t& model, size_t nthreads, const string_t& criterion_name,
                                 criterion_t::type type, scalar_t lambda)
                         :       m_pool(nthreads),
-                                m_cache(ncv::get_criteria().get(criterion_name))
+                                m_cache(cortex::get_criteria().get(criterion_name))
                 {
                         m_cache->reset(model);
                         m_cache->reset(lambda);
@@ -21,7 +21,7 @@ namespace ncv
                         {
                                 for (size_t i = 0; i < m_pool.n_workers(); i ++)
                                 {
-                                        const rcriterion_t cache = ncv::get_criteria().get(criterion_name);
+                                        const rcriterion_t cache = cortex::get_criteria().get(criterion_name);
                                         cache->reset(model);
                                         cache->reset(lambda);
                                         cache->reset(type);
@@ -196,7 +196,7 @@ namespace ncv
 
         bool accumulator_t::can_regularize(const string_t& criterion)
         {
-                return ncv::get_criteria().get(criterion)->can_regularize();
+                return cortex::get_criteria().get(criterion)->can_regularize();
         }
 
         bool accumulator_t::can_regularize() const

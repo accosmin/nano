@@ -4,7 +4,7 @@
 #include "text/to_string.hpp"
 #include "vision/image_grid.h"
 
-namespace ncv
+namespace cortex
 {
         task_manager_t& get_tasks()
         {
@@ -13,7 +13,7 @@ namespace ncv
 
         void print(const string_t& header, const samples_t& samples)
         {
-                const strings_t labels = ncv::labels(samples);
+                const strings_t labels = cortex::labels(samples);
 
                 for (const string_t& label : labels)
                 {
@@ -40,7 +40,7 @@ namespace ncv
 
         strings_t task_t::labels() const
         {
-                return ncv::labels(m_samples);
+                return cortex::labels(m_samples);
         }
 
         void task_t::save_as_images(
@@ -134,7 +134,7 @@ namespace ncv
                                 sampler_t sampler(this->samples());
                                 sampler.setup({f, p});
 
-                                ncv::print("fold [" + text::to_string(f + 1) + "/" + text::to_string(fsize()) + "] " +
+                                cortex::print("fold [" + text::to_string(f + 1) + "/" + text::to_string(fsize()) + "] " +
                                            "protocol [" + text::to_string(p) + "]",
                                            sampler.all());
                         }

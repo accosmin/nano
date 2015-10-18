@@ -1,7 +1,7 @@
 #include "point.h"
 #include <iostream>
 
-namespace ncv
+namespace cortex
 {
         bool operator==(const point_t& point1, const point_t& point2)
         {

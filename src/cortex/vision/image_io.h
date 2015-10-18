@@ -3,7 +3,7 @@
 #include "color.h"
 #include "cortex/string.h"
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief load RGBA image from disk

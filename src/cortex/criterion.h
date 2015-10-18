@@ -4,7 +4,7 @@
 #include "sample.h"
 #include "math/stats.hpp"
 
-namespace ncv
+namespace cortex
 {        
         class criterion_t;
         class loss_t;

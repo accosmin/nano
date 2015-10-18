@@ -6,7 +6,7 @@
 #include "math/cast.hpp"
 #include "math/clamp.hpp"
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief in-place separable 2D filter

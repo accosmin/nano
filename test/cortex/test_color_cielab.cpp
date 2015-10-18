@@ -7,7 +7,7 @@
 
 BOOST_AUTO_TEST_CASE(test_color_cielab)
 {
-        using namespace ncv;
+        using namespace cortex;
 
         // test CIELab transform
         scalar_t min_cie_l = +1e100, min_cie_a = min_cie_l, min_cie_b = min_cie_l;

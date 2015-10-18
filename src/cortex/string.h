@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-namespace ncv
+namespace cortex
 {
         // strings
         typedef std::string                     string_t;

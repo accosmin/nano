@@ -10,7 +10,7 @@
 #include "math/tune_log10.hpp"
 #include <tuple>
 
-namespace ncv
+namespace cortex
 {
         namespace
         {
@@ -68,7 +68,7 @@ namespace ncv
                         size_t epochs, size_t batch, size_t iterations, scalar_t epsilon,
                         bool verbose)
                 {
-                        const ncv::timer_t timer;
+                        const cortex::timer_t timer;
 
                         trainer_result_t result;
 
@@ -76,9 +76,9 @@ namespace ncv
                         const size_t history_size = std::max(iterations / 2, size_t(4));
 
                         // construct the optimization problem
-                        auto fn_size = ncv::make_opsize(data);
-                        auto fn_fval = ncv::make_opfval(data);
-                        auto fn_grad = ncv::make_opgrad(data);
+                        auto fn_size = cortex::make_opsize(data);
+                        auto fn_fval = cortex::make_opfval(data);
+                        auto fn_grad = cortex::make_opgrad(data);
 
                         auto fn_ulog = nullptr;
 
@@ -128,7 +128,7 @@ namespace ncv
                                         << ", lambda = " << data.lambda()
                                         << "] done in " << timer.elapsed() << ".";
 
-                                if (ncv::is_done(ret))
+                                if (cortex::is_done(ret))
                                 {
                                         break;
                                 }
@@ -144,7 +144,7 @@ namespace ncv
                 {
                         const auto op = [&] (size_t batch, size_t iterations)
                         {
-                                const ncv::timer_t timer;
+                                const cortex::timer_t timer;
 
                                 const size_t epochs = 1;
                                 const auto result = train(data, optimizer, epochs, batch, iterations, epsilon, false);

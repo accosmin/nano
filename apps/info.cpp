@@ -1,5 +1,5 @@
 #include "cortex/table.h"
-#include "nanocv/nanocv.h"
+#include "cortex/cortex.h"
 #include <iostream>
 #include <boost/program_options.hpp>
 
@@ -9,9 +9,9 @@ namespace
         <
                 typename tobject
         >
-        void print(const ncv::string_t& name, const ncv::manager_t<tobject>& manager)
+        void print(const cortex::string_t& name, const cortex::manager_t<tobject>& manager)
         {
-                using namespace ncv;
+                using namespace cortex;
 
                 const strings_t ids = manager.ids();
                 const strings_t descriptions = manager.descriptions();
@@ -30,7 +30,7 @@ namespace
 
 int main(int argc, char* argv[])
 {
-        ncv::init();
+        cortex::init();
 
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
@@ -58,27 +58,27 @@ int main(int argc, char* argv[])
 
         if (po_vm.count("loss"))
         {
-                print("loss", ncv::get_losses());
+                print("loss", cortex::get_losses());
         }
         if (po_vm.count("task"))
         {
-                print("task", ncv::get_tasks());
+                print("task", cortex::get_tasks());
         }
         if (po_vm.count("layer"))
         {
-                print("layer", ncv::get_layers());
+                print("layer", cortex::get_layers());
         }
         if (po_vm.count("model"))
         {
-                print("model", ncv::get_models());
+                print("model", cortex::get_models());
         }
         if (po_vm.count("trainer"))
         {
-                print("trainer", ncv::get_trainers());
+                print("trainer", cortex::get_trainers());
         }
         if (po_vm.count("criterion"))
         {
-                print("criterion", ncv::get_criteria());
+                print("criterion", cortex::get_criteria());
         }
 
         // OK

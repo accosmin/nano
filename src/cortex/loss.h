@@ -4,7 +4,7 @@
 #include "tensor.h"
 #include "manager.hpp"
 
-namespace ncv
+namespace cortex
 {
         class loss_t;
 

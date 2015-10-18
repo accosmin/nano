@@ -1,11 +1,11 @@
 #include "sample.h"
 #include <set>
 
-namespace ncv
+namespace cortex
 {
         strings_t labels(const samples_t& samples)
         {
-                return ncv::labels(samples.begin(), samples.end());
+                return cortex::labels(samples.begin(), samples.end());
         }
 
         strings_t labels(samples_const_it_t begin, samples_const_it_t end)

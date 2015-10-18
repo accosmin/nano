@@ -1,17 +1,17 @@
 #include "cortex/batch.h"
 #include "cortex/table.h"
-#include "nanocv/nanocv.h"
+#include "cortex/cortex.h"
 #include "thread/thread.h"
 #include "cortex/measure.hpp"
 #include "cortex/minibatch.h"
 #include "cortex/stochastic.h"
 #include "cortex/accumulator.h"
 #include "text/concatenate.hpp"
-#include "nanocv/tasks/task_charset.h"
+#include "cortex/tasks/task_charset.h"
 
 namespace
 {
-        using namespace ncv;
+        using namespace cortex;
 
         string_t stats_to_string(const math::stats_t<scalar_t>& stats)
         {
@@ -34,7 +34,7 @@ namespace
 
                 log_info() << "<<< running " << name << " ...";
 
-                const ncv::timer_t timer;
+                const cortex::timer_t timer;
 
                 for (const vector_t& x0 : x0s)
                 {
@@ -114,7 +114,7 @@ namespace
                 {
                         test_optimizer(model, basename + "batch-" + text::to_string(optimizer), table, x0s, [&] ()
                         {
-                                return ncv::batch_train(
+                                return cortex::batch_train(
                                         model, task, tsampler, vsampler, n_threads,
                                         loss, criterion, optimizer, cmd_iterations, cmd_epsilon, verbose);
                         });
@@ -124,7 +124,7 @@ namespace
                 {
                         test_optimizer(model, basename + "minibatch-" + text::to_string(optimizer), table, x0s, [&] ()
                         {
-                                return ncv::minibatch_train(
+                                return cortex::minibatch_train(
                                         model, task, tsampler, vsampler, n_threads,
                                         loss, criterion, optimizer, cmd_minibatch_epochs, cmd_epsilon, verbose);
                         });
@@ -134,7 +134,7 @@ namespace
                 {
                         test_optimizer(model, basename + "stochastic-" + text::to_string(optimizer), table, x0s, [&] ()
                         {
-                                return ncv::stochastic_train(
+                                return cortex::stochastic_train(
                                         model, task, tsampler, vsampler, n_threads,
                                         loss, criterion, optimizer, cmd_stochastic_epochs, verbose);
                         });
@@ -144,7 +144,7 @@ namespace
 
 int main(int, char* [])
 {
-        ncv::init();
+        cortex::init();
 
         const size_t cmd_rows = 16;
         const size_t cmd_cols = 16;
@@ -187,15 +187,15 @@ int main(int, char* [])
                 cmodel + outlayer
         };
 
-        const strings_t cmd_losses = { "classnll" };    //ncv::get_losses().ids();
-        const strings_t cmd_criteria = { "avg" }; //ncv::get_criteria().ids();
+        const strings_t cmd_losses = { "classnll" };    //cortex::get_losses().ids();
+        const strings_t cmd_criteria = { "avg" }; //cortex::get_criteria().ids();
 
         // vary the model
         for (const string_t& cmd_network : cmd_networks)
         {
                 log_info() << "<<< running network [" << cmd_network << "] ...";
 
-                const rmodel_t model = ncv::get_models().get("forward-network", cmd_network);
+                const rmodel_t model = cortex::get_models().get("forward-network", cmd_network);
                 assert(model);
                 model->resize(task, true);
 
@@ -204,7 +204,7 @@ int main(int, char* [])
                 {
                         log_info() << "<<< running loss [" << cmd_loss << "] ...";
 
-                        const rloss_t loss = ncv::get_losses().get(cmd_loss);
+                        const rloss_t loss = cortex::get_losses().get(cmd_loss);
                         assert(loss);
 
                         table_t table("optimizer\\");

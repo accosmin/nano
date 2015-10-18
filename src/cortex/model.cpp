@@ -3,7 +3,7 @@
 #include "logger.h"
 #include <fstream>
 
-namespace ncv
+namespace cortex
 {
         model_manager_t& get_models()
         {

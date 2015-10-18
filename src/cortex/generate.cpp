@@ -7,7 +7,7 @@
 #include "math/random.hpp"
 #include "tensor/random.hpp"
 
-namespace ncv
+namespace cortex
 {
         scalar_t loss_value(const vector_t& targets, const vector_t& scores)
         {

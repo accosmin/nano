@@ -5,7 +5,7 @@
 #include <limits>
 #include <cstdlib>
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief measure function call

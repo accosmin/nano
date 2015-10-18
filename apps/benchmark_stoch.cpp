@@ -13,7 +13,7 @@
 
 namespace
 {        
-        using namespace ncv;
+        using namespace cortex;
 
         template <typename tfunction, typename tostats>
         void check_function(const tfunction& func, tostats& gstats)
@@ -55,7 +55,7 @@ namespace
                         const auto op = [&] (const opt_problem_t& problem, const vector_t& x0)
                         {
                                 opt_scalar_t alpha0, decay;
-                                ncv::tune_stochastic(problem, x0, optimizer, epoch_size, alpha0, decay);
+                                cortex::tune_stochastic(problem, x0, optimizer, epoch_size, alpha0, decay);
 
                                 return  min::minimize(
                                         problem, nullptr, x0, optimizer, epochs, epoch_size, alpha0, decay);
@@ -74,7 +74,7 @@ namespace
 
 int main(int, char* [])
 {
-        using namespace ncv;
+        using namespace cortex;
 
         std::map<string_t, benchmark::optimizer_stat_t> gstats;
 

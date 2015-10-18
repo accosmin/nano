@@ -6,9 +6,9 @@
 
 namespace test
 {
-        void build_rect(ncv::coord_t x, ncv::coord_t y, ncv::coord_t w, ncv::coord_t h)
+        void build_rect(cortex::coord_t x, cortex::coord_t y, cortex::coord_t w, cortex::coord_t h)
         {
-                const ncv::rect_t rect(x, y, w, h);
+                const cortex::rect_t rect(x, y, w, h);
 
                 BOOST_CHECK_EQUAL(rect.left(),          x);
                 BOOST_CHECK_EQUAL(rect.top(),           y);
@@ -34,20 +34,20 @@ BOOST_AUTO_TEST_CASE(test_rect_construction)
 
 BOOST_AUTO_TEST_CASE(test_rect_operations)
 {
-        using namespace ncv;
+        using namespace cortex;
 
         // intersecting rectangles
-        BOOST_CHECK_EQUAL(ncv::rect_t(1, 1, 3, 3) | ncv::rect_t(2, 2, 5, 4),
-                          ncv::rect_t(1, 1, 6, 5));
+        BOOST_CHECK_EQUAL(cortex::rect_t(1, 1, 3, 3) | cortex::rect_t(2, 2, 5, 4),
+                          cortex::rect_t(1, 1, 6, 5));
 
-        BOOST_CHECK_EQUAL(ncv::rect_t(1, 1, 3, 3) & ncv::rect_t(2, 2, 5, 4),
-                          ncv::rect_t(2, 2, 2, 2));
+        BOOST_CHECK_EQUAL(cortex::rect_t(1, 1, 3, 3) & cortex::rect_t(2, 2, 5, 4),
+                          cortex::rect_t(2, 2, 2, 2));
 
         // disjoint rectangles
-        BOOST_CHECK_EQUAL(ncv::rect_t(1, 1, 3, 3) & ncv::rect_t(7, 4, 5, 4),
-                          ncv::rect_t(0, 0, 0, 0));
+        BOOST_CHECK_EQUAL(cortex::rect_t(1, 1, 3, 3) & cortex::rect_t(7, 4, 5, 4),
+                          cortex::rect_t(0, 0, 0, 0));
 
         // test center
-        BOOST_CHECK_EQUAL(ncv::rect_t(1, 1, 3, 3).center(),
-                          ncv::point_t(2, 2));
+        BOOST_CHECK_EQUAL(cortex::rect_t(1, 1, 3, 3).center(),
+                          cortex::point_t(2, 2));
 }

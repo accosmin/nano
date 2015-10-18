@@ -1,6 +1,6 @@
 #include "cortex/class.h"
 #include "cortex/generate.h"
-#include "nanocv/nanocv.h"
+#include "cortex/cortex.h"
 #include "cortex/measure.hpp"
 #include "cortex/vision/image_grid.h"
 #include "text/concatenate.hpp"
@@ -9,12 +9,12 @@
 
 int main(int argc, char *argv[])
 {
-        ncv::init();
+        cortex::init();
 
-        using namespace ncv;
+        using namespace cortex;
 
         // prepare object string-based selection
-        const strings_t model_ids = ncv::get_models().ids();
+        const strings_t model_ids = cortex::get_models().ids();
 
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
@@ -58,10 +58,10 @@ int main(int argc, char *argv[])
         const size_t cmd_save_group_cols = math::clamp(po_vm["save-group-cols"].as<size_t>(), 1, 128);
 
         // create model
-        const rmodel_t rmodel = ncv::get_models().get(cmd_model);
+        const rmodel_t rmodel = cortex::get_models().get(cmd_model);
 
         // load model
-        ncv::measure_critical_and_log(
+        cortex::measure_critical_and_log(
                 [&] () { return rmodel->load(cmd_input); },
                 "loaded model",
                 "failed to load model from <" + cmd_input + ">");
@@ -72,12 +72,12 @@ int main(int argc, char *argv[])
         {
                 image_grid_t grid_image(rmodel->irows(), rmodel->icols(), cmd_save_group_rows, cmd_save_group_cols);
 
-                const vector_t target = ncv::class_target(l, labels);
+                const vector_t target = cortex::class_target(l, labels);
                 for (size_t r = 0; r < cmd_save_group_rows; r ++)
                 {
                         for (size_t c = 0; c < cmd_save_group_cols; c ++)
                         {
-                                const auto data = ncv::generate_match_target(*rmodel, target);
+                                const auto data = cortex::generate_match_target(*rmodel, target);
                                 const auto rgba = color::from_rgba_tensor(data);
 
                                 image_t image;

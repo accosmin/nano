@@ -3,7 +3,7 @@
 #include "point.h"
 #include "cortex/scalar.h"
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief 2D rectangle

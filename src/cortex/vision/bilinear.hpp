@@ -4,7 +4,7 @@
 #include <algorithm>
 #include "math/cast.hpp"
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief resize the input matrix to the output matrix (using bilinear interpolation)

@@ -3,7 +3,7 @@
 #include "arch.h"
 #include "buffer.h"
 
-namespace ncv
+namespace cortex
 {
         class logger_t;
 

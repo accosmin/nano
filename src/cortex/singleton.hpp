@@ -3,7 +3,7 @@
 #include <memory>
 #include <mutex>
 
-namespace ncv
+namespace cortex
 {
         template
         <

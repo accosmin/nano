@@ -4,7 +4,7 @@
 #include "scalar.h"
 #include "string.h"
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief training state

@@ -4,7 +4,7 @@
 #include "text/from_string.hpp"
 #include <cassert>
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief operator to compare two rows

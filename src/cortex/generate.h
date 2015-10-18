@@ -3,7 +3,7 @@
 #include "arch.h"
 #include "tensor.h"
 
-namespace ncv
+namespace cortex
 {
         class model_t;
 

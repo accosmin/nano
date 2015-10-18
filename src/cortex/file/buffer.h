@@ -4,7 +4,7 @@
 #include <vector>
 #include <functional>
 
-namespace ncv
+namespace cortex
 {
         typedef std::vector<char> buffer_t;
 

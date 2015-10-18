@@ -5,7 +5,7 @@
 #include "protocol.h"
 #include "vision/rect.h"
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief fold: <fold index, protocol: train|test>

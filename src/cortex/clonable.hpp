@@ -3,7 +3,7 @@
 #include <string>
 #include <memory>
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief the clonable interface to be used with a manager:

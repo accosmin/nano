@@ -4,7 +4,7 @@
 #include "geom.h"
 #include <iosfwd>
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief 2D point

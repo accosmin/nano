@@ -1,15 +1,15 @@
-#include "nanocv/nanocv.h"
+#include "cortex/cortex.h"
 #include "cortex/measure.hpp"
 #include "text/concatenate.hpp"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
 {
-        using namespace ncv;
+        using namespace cortex;
 
-        ncv::init();
+        cortex::init();
 
-        const strings_t task_ids = ncv::get_tasks().ids();
+        const strings_t task_ids = cortex::get_tasks().ids();
 
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
@@ -57,10 +57,10 @@ int main(int argc, char *argv[])
         const size_t cmd_save_group_cols = math::clamp(po_vm["save-group-cols"].as<size_t>(), 1, 128);
 
         // create task
-        const rtask_t rtask = ncv::get_tasks().get(cmd_task, cmd_task_params);
+        const rtask_t rtask = cortex::get_tasks().get(cmd_task, cmd_task_params);
 
         // load task data
-        ncv::measure_critical_and_log(
+        cortex::measure_critical_and_log(
                 [&] () { return rtask->load(cmd_task_dir); },
                 "loaded task",
                 "failed to load task from directory <" + cmd_task_dir + ">");
@@ -85,6 +85,6 @@ int main(int argc, char *argv[])
         }
 		
         // OK
-        ncv::log_info() << ncv::done;
+        cortex::log_info() << cortex::done;
         return EXIT_SUCCESS;
 }

@@ -3,7 +3,7 @@
 #include <cassert>
 #include "math/clamp.hpp"
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief compute the x gradient of the input matrix

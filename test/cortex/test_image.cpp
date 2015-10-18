@@ -9,7 +9,7 @@
 
 BOOST_AUTO_TEST_CASE(test_image_construct)
 {
-        using namespace ncv;
+        using namespace cortex;
 
         for (size_t test = 0; test < 16; test ++)
         {
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(test_image_construct)
 
 BOOST_AUTO_TEST_CASE(test_image_io_matrix)
 {
-        using namespace ncv;
+        using namespace cortex;
 
         for (size_t test = 0; test < 16; test ++)
         {
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(test_image_io_matrix)
 
 BOOST_AUTO_TEST_CASE(test_image_io_file)
 {
-        using namespace ncv;
+        using namespace cortex;
 
         for (size_t test = 0; test < 16; test ++)
         {

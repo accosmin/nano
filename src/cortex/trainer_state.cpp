@@ -5,7 +5,7 @@
 #include <limits>
 #include <cmath>
 
-namespace ncv
+namespace cortex
 {
         trainer_state_t::trainer_state_t()
                 :       trainer_state_t(

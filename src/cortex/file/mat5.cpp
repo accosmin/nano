@@ -4,7 +4,7 @@
 #include <cstdint>
 #include "cortex/logger.h"
 
-namespace ncv
+namespace cortex
 {
         using std::uint32_t;
         using mat5::buffer_type;

@@ -3,7 +3,7 @@
 #include "evaluate.h"
 #include "accumulator.h"
 
-namespace ncv
+namespace cortex
 {
         size_t evaluate(const task_t& task, const fold_t& fold, const loss_t& loss, const model_t& model,
                 scalar_t& lvalue, scalar_t& lerror)

@@ -1,18 +1,18 @@
 #include "cortex/class.h"
 #include "cortex/table.h"
-#include "nanocv/nanocv.h"
+#include "cortex/cortex.h"
 #include "math/random.hpp"
 #include "thread/thread.h"
 #include "cortex/sampler.h"
 #include "tensor/random.hpp"
 #include "cortex/measure.hpp"
 #include "cortex/accumulator.h"
-#include "nanocv/tasks/task_charset.h"
+#include "cortex/tasks/task_charset.h"
 #include <boost/program_options.hpp>
 
 namespace
 {
-        using namespace ncv;
+        using namespace cortex;
 
         void make_random_samples(
                 size_t cmd_samples, size_t cmd_rows, size_t cmd_cols, size_t cmd_outputs, color_mode cmd_color,
@@ -30,16 +30,16 @@ namespace
                 targets.resize(cmd_samples);
                 for (auto& target : targets)
                 {
-                        target = ncv::class_target(trgen() % cmd_outputs, cmd_outputs);
+                        target = cortex::class_target(trgen() % cmd_outputs, cmd_outputs);
                 }
         }
 }
 
 int main(int argc, char *argv[])
 {
-        ncv::init();
+        cortex::init();
 
-        using namespace ncv;
+        using namespace cortex;
 
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
                 "cmodel3"
         };
 
-        const rloss_t loss = ncv::get_losses().get("logistic");
+        const rloss_t loss = cortex::get_losses().get("logistic");
         assert(loss);
 
         // construct tables to compare models
@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
                 log_info() << "<<< running network [" << cmd_network << "] ...";
 
                 // create feed-forward network
-                const rmodel_t model = ncv::get_models().get("forward-network", cmd_network);
+                const rmodel_t model = cortex::get_models().get("forward-network", cmd_network);
                 assert(model);
                 model->resize(cmd_rows, cmd_cols, task.osize(), cmd_color, true);
                 model->random_params();
@@ -195,13 +195,13 @@ int main(int argc, char *argv[])
                         {
                                 accumulator_t ldata(*model, nthreads, "l2n-reg", criterion_t::type::value, 0.1);
 
-                                const auto milis_rand = ncv::measure_robustly_usec([&] ()
+                                const auto milis_rand = cortex::measure_robustly_usec([&] ()
                                 {
                                         ldata.reset();
                                         ldata.update(inputs, targets, *loss);
                                 }, 1) / 1000;
 
-                                const auto milis_task = ncv::measure_robustly_usec([&] ()
+                                const auto milis_task = cortex::measure_robustly_usec([&] ()
                                 {
                                         ldata.reset();
                                         ldata.update(task, samples, *loss);
@@ -218,13 +218,13 @@ int main(int argc, char *argv[])
                         {
                                 accumulator_t gdata(*model, nthreads, "l2n-reg", criterion_t::type::vgrad, 0.1);
 
-                                const auto milis_rand = ncv::measure_robustly_usec([&] ()
+                                const auto milis_rand = cortex::measure_robustly_usec([&] ()
                                 {
                                         gdata.reset();
                                         gdata.update(inputs, targets, *loss);
                                 }, 1) / 1000;
 
-                                const auto milis_task = ncv::measure_robustly_usec([&] ()
+                                const auto milis_task = cortex::measure_robustly_usec([&] ()
                                 {
                                         gdata.reset();
                                         gdata.update(task, samples, *loss);

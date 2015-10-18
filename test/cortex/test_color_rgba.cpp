@@ -8,7 +8,7 @@
 
 BOOST_AUTO_TEST_CASE(test_color_rgba_transform)
 {
-        using namespace ncv;
+        using namespace cortex;
 
         const size_t tests = 256 * 1024;
 
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(test_color_rgba_transform)
 
 BOOST_AUTO_TEST_CASE(test_color_tensor)
 {
-        using namespace ncv;
+        using namespace cortex;
 
         const size_t tests = 17;
 

@@ -4,7 +4,7 @@
 #include "optimizer.h"
 #include "min/minimize.hpp"
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief fixed list of initial learning rates to tune for the given stochastic method

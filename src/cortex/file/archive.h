@@ -3,7 +3,7 @@
 #include "arch.h"
 #include "buffer.h"
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief decode an archive file (.tar, .gz, .tar.gz, .tar.bz2 etc.)

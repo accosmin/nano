@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace ncv
+namespace cortex
 {
         // sizes and indices
         typedef std::size_t                     size_t;

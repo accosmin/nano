@@ -10,20 +10,20 @@
 
 int main(int argc, char *argv[])
 {
-        using namespace ncv;
+        using namespace cortex;
         
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
         po_desc.add_options()("help,h", "test program");
         po_desc.add_options()("input,i",
-                boost::program_options::value<ncv::string_t>(),
+                boost::program_options::value<cortex::string_t>(),
                 "input image path");
         po_desc.add_options()("luma",
                 "load the image as luma (grayscale)");
         po_desc.add_options()("rgba",
                 "load the image as RGBA (color)");
         po_desc.add_options()("output,o",
-                boost::program_options::value<ncv::string_t>(),
+                boost::program_options::value<cortex::string_t>(),
                 "output base file name (to generate .h & .cpp)");
 	
         boost::program_options::variables_map po_vm;
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
         os_header << "\n";
         os_header << "#include \"cortex/color.h\"\n";
         os_header << "\n";
-        os_header << "namespace ncv\n";
+        os_header << "namespace cortex\n";
         os_header << "{\n";
         os_header << tab << retname << " " << funcname << "();\n";
         os_header << "}\n";
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 
         os_source << "#include " << boost::filesystem::path(path_header).filename() << "\n";
         os_source << "\n";
-        os_source << "ncv::" << retname << " ncv::" << funcname << "()\n";
+        os_source << "cortex::" << retname << " cortex::" << funcname << "()\n";
         os_source << "{\n";
         {
                 const auto op = [&] (const auto& buff)
@@ -154,6 +154,6 @@ int main(int argc, char *argv[])
         os_source.close();
 		
         // OK
-        log_info() << ncv::done;
+        log_info() << cortex::done;
         return EXIT_SUCCESS;
 }

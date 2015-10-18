@@ -2,7 +2,7 @@
 #include "math/usampling.hpp"
 #include <algorithm>
 
-namespace ncv
+namespace cortex
 {
         sampler_t::sampler_t(const samples_t& samples)
                 :       m_osamples(samples),

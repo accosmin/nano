@@ -2,7 +2,7 @@
 
 #include "sample.h"
 
-namespace ncv
+namespace cortex
 {
         class task_t;
         class loss_t;

@@ -13,7 +13,7 @@
 
 namespace test
 {
-        using namespace ncv;
+        using namespace cortex;
 
         template <typename tfunction>
         static void check_function(const tfunction& func)
@@ -59,7 +59,7 @@ namespace test
 
                                 // optimize
                                 opt_scalar_t alpha0, decay;
-                                ncv::tune_stochastic(problem, x0, optimizer, epoch_size, alpha0, decay);
+                                cortex::tune_stochastic(problem, x0, optimizer, epoch_size, alpha0, decay);
 
                                 const auto state = min::minimize(
                                         problem, nullptr, x0, optimizer, epochs, epoch_size, alpha0, decay);
@@ -79,7 +79,7 @@ namespace test
                                         continue;
                                 }
 
-                                ncv::log_info()
+                                cortex::log_info()
                                         << func.name() << ", " << text::to_string(optimizer)
                                         << " [" << (t + 1) << "/" << trials << "]"
                                         << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
@@ -99,7 +99,7 @@ namespace test
                                 BOOST_CHECK(func.is_minima(x, x_thres));
                         }
 
-                        ncv::log_info()
+                        cortex::log_info()
                                 << func.name() << ", " << text::to_string(optimizer)
                                 << ": out of domain " << out_of_domain << "/" << trials << ".";
                 }
@@ -108,7 +108,7 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_stoch_optimizers)
 {
-        func::run_all_test_functions<ncv::opt_scalar_t>(8, [] (const auto& function)
+        func::run_all_test_functions<cortex::opt_scalar_t>(8, [] (const auto& function)
         {
                 test::check_function(function);
         });

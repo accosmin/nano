@@ -5,7 +5,7 @@
 #include "tensor/random.hpp"
 #include "tensor/transform.hpp"
 
-namespace ncv
+namespace cortex
 {
         image_t::image_t(coord_t rows, coord_t cols, color_mode mode)
                 :       m_rows(rows),

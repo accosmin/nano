@@ -4,7 +4,7 @@
 #include <chrono>
 #include <string>
 
-namespace ncv
+namespace cortex
 {
         class NANOCV_PUBLIC timer_t
         {

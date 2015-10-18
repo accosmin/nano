@@ -26,6 +26,5 @@ endfunction()
 add_subdirectory(core)
 add_subdirectory(thread)
 add_subdirectory(cortex)
-add_subdirectory(nanocv)
 
 

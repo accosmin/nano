@@ -6,7 +6,7 @@
 #include <map>
 #include <stdexcept>
 
-namespace ncv
+namespace cortex
 {
         ///
         /// \brief manager: used to manage different object types associated with ID strings.

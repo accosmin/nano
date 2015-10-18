@@ -3,7 +3,7 @@
 #include "scalar.h"
 #include "tensor/tensor.hpp"
 
-namespace ncv
+namespace cortex
 {
         // low-precision tensors
         typedef tensor::vector_t<lscalar_t>     lvector_t;
