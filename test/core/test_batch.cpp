@@ -3,10 +3,10 @@
 
 #include <boost/test/unit_test.hpp>
 #include "math/abs.hpp"
+#include "min/batch.hpp"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
-#include "min/minimize.hpp"
 #include "text/to_string.hpp"
 #include "cortex/optimizer.h"
 #include "min/func/run_all.hpp"

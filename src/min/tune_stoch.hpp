@@ -1,9 +1,7 @@
 #pragma once
 
-#include "stoch.h"
-#include "min/tune_stoch.hpp"
-#include "math/tune_fixed.hpp"
-#include "minimize.hpp"
+#include "stoch.hpp"
+#include "tune_fixed.hpp"
 #include <vector>
 #include <limits>
 
@@ -70,8 +68,6 @@ namespace min
                 const auto alphas = tunable_alphas<tscalar>(optimizer);
                 const auto decays = tunable_decays<tscalar>(optimizer);
 
-                /// \todo move this to another file as it depends on the high level API min::minimize and on math::
-
                 const auto op = [&] (const tscalar alpha, const tscalar decay)
                 {
                         const auto state = min::minimize(problem, nullptr, x0, optimizer, 1, epoch_size, alpha, decay);
@@ -79,7 +75,7 @@ namespace min
                         return valid ? state.f : std::numeric_limits<tscalar>::max();
                 };
 
-                const auto config = math::tune_fixed(op, alphas, decays);
+                const auto config = min::tune_fixed(op, alphas, decays);
                 best_alpha0 = std::get<1>(config);
                 best_decay = std::get<2>(config);
         }

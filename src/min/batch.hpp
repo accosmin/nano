@@ -1,20 +1,12 @@
 #pragma once
 
-#include "min/problem.hpp"
-#include "min/linesearch.h"
+#include "problem.hpp"
+#include "lsearch_types.h"
 
-#include "min/batch.h"
-#include "min/batch/gd.hpp"
-#include "min/batch/cgd.hpp"
-#include "min/batch/lbfgs.hpp"
-
-#include "min/stoch.h"
-#include "min/stoch/ag.hpp"
-#include "min/stoch/sg.hpp"
-#include "min/stoch/sga.hpp"
-#include "min/stoch/sia.hpp"
-#include "min/stoch/adagrad.hpp"
-#include "min/stoch/adadelta.hpp"
+#include "batch_types.h"
+#include "batch/gd.hpp"
+#include "batch/cgd.hpp"
+#include "batch/lbfgs.hpp"
 
 namespace min
 {
@@ -34,62 +26,8 @@ namespace min
                 const tproblem& problem,
                 const topulog& fn_ulog,
                 const tvector& x0,
-                batch_optimizer, std::size_t iterations, tscalar epsilon,
-                std::size_t history_size = 6);
-
-        ///
-        /// \brief batch optimization (can detail the line-search parameters)
-        ///
-        template
-        <
-                typename tscalar,
-                typename tproblem = problem_t<tscalar>,
-                typename tsize = typename tproblem::tsize,
-                typename tstate = typename tproblem::tstate,
-                typename tvector = typename tproblem::tvector,
-                typename topulog = typename tproblem::top_ulog
-        >
-        tstate minimize(
-                const tproblem& problem,
-                const topulog& fn_ulog,
-                const tvector& x0,
-                batch_optimizer, std::size_t iterations, tscalar epsilon,
-                ls_initializer,
-                ls_strategy,
-                std::size_t history_size = 6);
-
-        ///
-        /// \brief stochastic optimization
-        ///
-        template
-        <
-                typename tscalar,
-                typename tproblem = problem_t<tscalar>,
-                typename tsize = typename tproblem::tsize,
-                typename tstate = typename tproblem::tstate,
-                typename tvector = typename tproblem::tvector,
-                typename topulog = typename tproblem::top_ulog
-        >
-        tstate minimize(
-                const tproblem& problem,
-                const topulog& fn_ulog,
-                const tvector& x0,
-                stoch_optimizer, std::size_t epochs, std::size_t epoch_size, tscalar alpha0, tscalar decay = 0.50);
-
-        template
-        <
-                typename tscalar,
-                typename tproblem,
-                typename tsize,
-                typename tstate,
-                typename tvector,
-                typename topulog
-        >
-        tstate minimize(
-                const tproblem& problem,
-                const topulog& fn_ulog,
-                const tvector& x0,
-                batch_optimizer optimizer, std::size_t iterations, tscalar epsilon, std::size_t history_size)
+                batch_optimizer optimizer, std::size_t iterations, tscalar epsilon,
+                std::size_t history_size = 6)
         {
                 switch (optimizer)
                 {
@@ -155,22 +93,26 @@ namespace min
                 }
         }
 
+        ///
+        /// \brief batch optimization (can detail the line-search parameters)
+        ///
         template
         <
                 typename tscalar,
-                typename tproblem,
-                typename tsize,
-                typename tstate,
-                typename tvector,
-                typename topulog
+                typename tproblem = problem_t<tscalar>,
+                typename tsize = typename tproblem::tsize,
+                typename tstate = typename tproblem::tstate,
+                typename tvector = typename tproblem::tvector,
+                typename topulog = typename tproblem::top_ulog
         >
         tstate minimize(
                 const tproblem& problem,
                 const topulog& fn_ulog,
                 const tvector& x0,
                 batch_optimizer optimizer, std::size_t iterations, tscalar epsilon,
-                ls_initializer lsinit, ls_strategy lsstrat,
-                std::size_t history_size)
+                ls_initializer lsinit,
+                ls_strategy lsstrat,
+                std::size_t history_size = 6)
         {
                 switch (optimizer)
                 {
@@ -236,61 +178,6 @@ namespace min
                 default:
                         return  batch_gd_t<tproblem>
                                 (iterations, epsilon, lsinit, lsstrat, fn_ulog)
-                                (problem, x0);
-                }
-        }
-
-        template
-        <
-                typename tscalar,
-                typename tproblem,
-                typename tsize,
-                typename tstate,
-                typename tvector,
-                typename topulog
-        >
-        tstate minimize(
-                const tproblem& problem,
-                const topulog& fn_ulog,
-                const tvector& x0,
-                stoch_optimizer optimizer, std::size_t epochs, std::size_t epoch_size, tscalar alpha0, tscalar decay)
-        {
-                switch (optimizer)
-                {
-                case stoch_optimizer::SGA:
-                        return  stoch_sga_t<tproblem>
-                                (epochs, epoch_size, alpha0, decay, fn_ulog)
-                                (problem, x0);
-
-                case stoch_optimizer::SIA:
-                        return  stoch_sia_t<tproblem>
-                                (epochs, epoch_size, alpha0, decay, fn_ulog)
-                                (problem, x0);
-
-                case stoch_optimizer::AG:
-                        return  stoch_ag_t<tproblem>
-                                (epochs, epoch_size, alpha0, decay, fn_ulog)
-                                (problem, x0);
-
-                case stoch_optimizer::AGGR:
-                        return  stoch_aggr_t<tproblem>
-                                (epochs, epoch_size, alpha0, decay, fn_ulog)
-                                (problem, x0);
-
-                case stoch_optimizer::ADAGRAD:
-                        return  stoch_adagrad_t<tproblem>
-                                (epochs, epoch_size, alpha0, decay, fn_ulog)
-                                (problem, x0);
-
-                case stoch_optimizer::ADADELTA:
-                        return  stoch_adadelta_t<tproblem>
-                                (epochs, epoch_size, alpha0, decay, fn_ulog)
-                                (problem, x0);
-
-                case stoch_optimizer::SG:
-                default:
-                        return  stoch_sg_t<tproblem>
-                                (epochs, epoch_size, alpha0, decay, fn_ulog)
                                 (problem, x0);
                 }
         }

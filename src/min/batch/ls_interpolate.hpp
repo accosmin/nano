@@ -2,9 +2,9 @@
 
 #include "ls_step.hpp"
 #include "ls_cubic.hpp"
-#include "min/linesearch.h"
 #include "ls_bisection.hpp"
 #include "ls_quadratic.hpp"
+#include "min/lsearch_types.h"
 #include <vector>
 
 namespace min

@@ -3,7 +3,7 @@
 #include <mutex>
 #include "tune_log10.hpp"
 
-namespace math
+namespace min
 {
         ///
         /// \brief multi-threaded search for a 1D parameter that minimizes a given operator,

@@ -2,10 +2,10 @@
 #include "timer.h"
 #include "logger.h"
 #include "sampler.h"
+#include "min/batch.hpp"
 #include "accumulator.h"
-#include "min/minimize.hpp"
 #include "text/to_string.hpp"
-#include "math/tune_log10.hpp"
+#include "min/tune_log10.hpp"
 
 namespace cortex
 {
@@ -90,7 +90,7 @@ namespace cortex
 
                 if (data.m_lacc.can_regularize())
                 {
-                        return std::get<0>(math::tune_log10(op, -6.0, +0.0, 0.5, 4));
+                        return std::get<0>(min::tune_log10(op, -6.0, +0.0, 0.5, 4));
                 }
                 else
                 {

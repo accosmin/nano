@@ -4,8 +4,8 @@
 #include "string.h"
 #include "logger.h"
 #include "optimizer.h"
+#include "min/batch.hpp"
 #include "math/random.hpp"
-#include "min/minimize.hpp"
 #include "tensor/random.hpp"
 
 namespace cortex

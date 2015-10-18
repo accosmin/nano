@@ -2,12 +2,12 @@
 #include "timer.h"
 #include "logger.h"
 #include "minibatch.h"
+#include "min/batch.hpp"
 #include "accumulator.h"
 #include "thread/thread.h"
-#include "min/minimize.hpp"
 #include "text/to_string.hpp"
-#include "math/tune_fixed.hpp"
-#include "math/tune_log10.hpp"
+#include "min/tune_fixed.hpp"
+#include "min/tune_log10.hpp"
 #include <tuple>
 
 namespace cortex
@@ -165,7 +165,7 @@ namespace cortex
                         const auto batches = tunable_batches();
                         const auto iterations = tunable_iterations();
 
-                        return math::tune_fixed(op, batches, iterations);
+                        return min::tune_fixed(op, batches, iterations);
                 }
         }
 
@@ -198,7 +198,7 @@ namespace cortex
 
                 if (data.m_lacc.can_regularize())
                 {
-                        return std::get<0>(math::tune_log10(op, -6.0, +0.0, 0.5, 4));
+                        return std::get<0>(min::tune_log10(op, -6.0, +0.0, 0.5, 4));
                 }
                 else
                 {

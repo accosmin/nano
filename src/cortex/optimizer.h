@@ -1,24 +1,23 @@
 #pragma once
 
 #include "scalar.h"
-#include "min/batch.h"
-#include "min/stoch.h"
 #include "min/problem.hpp"
-#include "min/linesearch.h"
+#include "min/batch_types.h"
+#include "min/stoch_types.h"
+#include "min/lsearch_types.h"
 #include "text/enum_string.hpp"
 
 namespace cortex
 {
-        typedef min::problem_t<scalar_t>                opt_problem_t;
+        using opt_problem_t = min::problem_t<scalar_t>;
 
-        typedef typename opt_problem_t::tvector         opt_vector_t;
-        typedef typename opt_problem_t::tstate          opt_state_t;
-        typedef typename opt_problem_t::tsize           opt_size_t;
+        using opt_size_t = opt_problem_t::tsize;
+        using opt_state_t = opt_problem_t::tstate;
 
-        typedef typename opt_problem_t::top_size        opt_opsize_t;
-        typedef typename opt_problem_t::top_fval        opt_opfval_t;
-        typedef typename opt_problem_t::top_grad        opt_opgrad_t;
-        typedef typename opt_problem_t::top_ulog        opt_opulog_t;
+        using opt_opsize_t = opt_problem_t::top_size;
+        using opt_opfval_t = opt_problem_t::top_fval;
+        using opt_opgrad_t = opt_problem_t::top_grad;
+        using opt_opulog_t = opt_problem_t::top_ulog;
 }
 
 namespace text

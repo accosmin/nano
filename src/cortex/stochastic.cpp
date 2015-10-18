@@ -6,7 +6,7 @@
 #include "thread/thread.h"
 #include "min/tune_stoch.hpp"
 #include "text/to_string.hpp"
-#include "math/tune_log10.hpp"
+#include "min/tune_log10.hpp"
 #include <tuple>
 
 namespace cortex
@@ -115,7 +115,7 @@ namespace cortex
                         const auto decays = min::tunable_decays<scalar_t>(optimizer);
                         const auto alphas = min::tunable_alphas<scalar_t>(optimizer);
 
-                        return math::tune_fixed(op, batches, decays, alphas);
+                        return min::tune_fixed(op, batches, decays, alphas);
                 }
         }
 
@@ -149,7 +149,7 @@ namespace cortex
 
                 if (data.m_lacc.can_regularize())
                 {
-                        return std::get<0>(math::tune_log10(op, -6.0, +0.0, 0.5, 4));
+                        return std::get<0>(min::tune_log10(op, -6.0, +0.0, 0.5, 4));
                 }
                 else
                 {

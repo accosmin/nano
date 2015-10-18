@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../linesearch.h"
+#include "min/lsearch_types.h"
 #include <algorithm>
 
 namespace min

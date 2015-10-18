@@ -4,7 +4,7 @@
 #include <tuple>
 #include <type_traits>
 
-namespace math
+namespace min
 {
         ///
         /// \brief search for a 1D parameter that minimizes a given operator, using a fixed set of values to try.

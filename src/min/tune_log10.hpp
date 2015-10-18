@@ -48,7 +48,7 @@ namespace tune_log10_detail
         }
 }
 
-namespace math
+namespace min
 {
         ///
         /// \brief search for a 1D parameter that minimizes a given operator,
