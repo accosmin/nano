@@ -1,6 +1,6 @@
 #pragma once
 
-#include "util.hpp"
+#include "function.hpp"
 
 namespace func
 {
@@ -9,26 +9,25 @@ namespace func
         ///
         template
         <
-                typename tscalar_
+                typename tscalar
         >
-        struct function_zakharov_t
+        struct function_zakharov_t : public function_t<tscalar>
         {
-                typedef min::problem_t<tscalar_>        tproblem;
-                typedef typename tproblem::tsize        tsize;
-                typedef typename tproblem::tscalar      tscalar;
-                typedef typename tproblem::tvector      tvector;
+                typedef typename function_t<tscalar>::tsize     tsize;
+                typedef typename function_t<tscalar>::tvector   tvector;
+                typedef typename function_t<tscalar>::tproblem  tproblem;  
                 
                 explicit function_zakharov_t(const tsize dims)
                         :       m_dims(dims)
                 {
                 }
 
-                std::string name() const
+                virtual std::string name() const override
                 {
                         return "Zakharov" + std::to_string(m_dims) + "D";
                 }
 
-                tproblem problem() const
+                virtual tproblem problem() const override
                 {
                         const auto fn_size = [=] ()
                         {
@@ -68,12 +67,12 @@ namespace func
                         return tproblem(fn_size, fn_fval, fn_grad);
                 }
 
-                bool is_valid(const tvector& x) const
+                virtual bool is_valid(const tvector& x) const override
                 {
                         return -5.0 < x.minCoeff() && x.maxCoeff() < 10.0;
                 }
 
-                bool is_minima(const tvector& x, const tscalar epsilon) const
+                virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
                 {
                         return util::distance(x, tvector::Zero(m_dims)) < epsilon;
                 }

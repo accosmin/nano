@@ -1,6 +1,6 @@
 #pragma once
 
-#include "util.hpp"
+#include "function.hpp"
 #include <cmath>
 
 namespace func
@@ -20,21 +20,20 @@ namespace func
 
         template
         <
-                typename tscalar_
+                typename tscalar
         >
-        struct function_bohachevsky_t
+        struct function_bohachevsky_t : public function_t<tscalar>
         {
-                typedef min::problem_t<tscalar_>        tproblem;
-                typedef typename tproblem::tsize        tsize;
-                typedef typename tproblem::tscalar      tscalar;
-                typedef typename tproblem::tvector      tvector;
+                typedef typename function_t<tscalar>::tsize     tsize;
+                typedef typename function_t<tscalar>::tvector   tvector;
+                typedef typename function_t<tscalar>::tproblem  tproblem;                
                 
                 explicit function_bohachevsky_t(const btype type)
                         :       m_type(type)
                 {
                 }
 
-                std::string name() const
+                virtual std::string name() const override
                 {
                         switch (m_type)
                         {
@@ -45,7 +44,7 @@ namespace func
                         }
                 }
 
-                tproblem problem() const
+                virtual tproblem problem() const override
                 {
                         const auto fn_size = [=] ()
                         {
@@ -122,12 +121,12 @@ namespace func
                         return tproblem(fn_size, fn_fval, fn_grad);
                 }
 
-                bool is_valid(const tvector& x) const
+                virtual bool is_valid(const tvector& x) const override
                 {
                         return -100.0 < x.minCoeff() && x.maxCoeff() < 100.0;
                 }
 
-                bool is_minima(const tvector&, const tscalar) const
+                virtual bool is_minima(const tvector&, const tscalar) const override
                 {
                         // NB: there are quite a few local minima that are not easy to compute!
                         return true;

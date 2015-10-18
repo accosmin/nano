@@ -1,6 +1,7 @@
 #pragma once
 
 #include "util.hpp"
+#include "function.hpp"
 
 namespace func
 {
@@ -9,26 +10,25 @@ namespace func
         ///
         template
         <
-                typename tscalar_
+                typename tscalar
         >
-        struct function_trid_t
+        struct function_trid_t : public function_t<tscalar>
         {
-                typedef min::problem_t<tscalar_>        tproblem;
-                typedef typename tproblem::tsize        tsize;
-                typedef typename tproblem::tscalar      tscalar;
-                typedef typename tproblem::tvector      tvector;
+                typedef typename function_t<tscalar>::tsize     tsize;
+                typedef typename function_t<tscalar>::tvector   tvector;
+                typedef typename function_t<tscalar>::tproblem  tproblem;
                 
                 explicit function_trid_t(const tsize dims)
                         :       m_dims(dims)
                 {
                 }
 
-                std::string name() const
+                virtual std::string name() const override
                 {
                         return "Trid" + std::to_string(m_dims) + "D";
                 }
 
-                tproblem problem() const
+                virtual tproblem problem() const override
                 {
                         const auto fn_size = [=] ()
                         {
@@ -70,12 +70,12 @@ namespace func
                         return tproblem(fn_size, fn_fval, fn_grad);
                 }
 
-                bool is_valid(const tvector& x) const
+                virtual bool is_valid(const tvector& x) const override
                 {
                         return util::norm(x) < m_dims * m_dims;
                 }
 
-                bool is_minima(const tvector& x, const tscalar epsilon) const
+                virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
                 {
                         tvector xmin(m_dims);
                         for (tsize d = 0; d < m_dims; d ++)
