@@ -4,7 +4,7 @@
 #include <string>
 
 namespace min
-{            
+{
         namespace util
         {
                 ///
@@ -18,7 +18,7 @@ namespace min
                 {
                         return a.template lpNorm<Eigen::Infinity>();
                 }
-                
+
                 ///
                 /// \brief compute the infinity-distance between two vectors
                 ///
@@ -31,7 +31,7 @@ namespace min
                 {
                         return norm(a - b);
                 }
-                
+
                 ///
                 /// \brief map an array to an Eigen vector
                 ///
@@ -44,7 +44,26 @@ namespace min
                 {
                         return Eigen::Map<const typename min::problem_t<tscalar>::tvector>(data, size);
                 }
-                
+
+                template
+                <
+                        typename txmin,
+                        typename txmins,
+                        typename tscalar
+                >
+                bool check_close(const txmin& x, const txmins& xmins, const tscalar epsilon)
+                {
+                        for (const auto& xmin : xmins)
+                        {
+                                if (util::distance(x, util::map_vector(xmin.data(), x.size())) < epsilon)
+                                {
+                                        return true;
+                                }
+                        }
+
+                        return false;
+                }
+
                 ///
                 /// \brief numerical operations
                 ///
@@ -56,7 +75,7 @@ namespace min
                 {
                         return x * x;
                 }
-                
+
                 template 
                 <
                         typename tscalar
@@ -65,7 +84,7 @@ namespace min
                 {
                         return x * x * x;
                 }
-                
+
                 template 
                 <
                         typename tscalar
@@ -74,5 +93,5 @@ namespace min
                 {
                         return x * x * x * x;
                 }
-        }        
+        }
 }

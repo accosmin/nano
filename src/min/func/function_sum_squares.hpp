@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util.hpp"
 #include "function.hpp"
 
 namespace min
@@ -16,7 +17,7 @@ namespace min
                 using tsize = typename function_t<tscalar>::tsize;
                 using tvector = typename function_t<tscalar>::tvector;
                 using tproblem = typename function_t<tscalar>::tproblem;
-                
+
                 explicit function_sum_squares_t(const tsize dims)
                         :       m_dims(dims)
                 {
@@ -39,7 +40,7 @@ namespace min
                                 tscalar fx = 0;
                                 for (tsize i = 0; i < m_dims; i ++)
                                 {
-                                        fx += (i + 1) * x(i) * x(i);
+                                        fx += tscalar(i + 1) * x(i) * x(i);
                                 }
 
                                 return fx;
@@ -50,7 +51,7 @@ namespace min
                                 gx.resize(m_dims);
                                 for (tsize i = 0; i < m_dims; i ++)
                                 {
-                                        gx(i) = 2.0 * (i + 1) * x(i);
+                                        gx(i) = 2 * tscalar(i + 1) * x(i);
                                 }
 
                                 return fn_fval(x);
@@ -61,7 +62,7 @@ namespace min
 
                 virtual bool is_valid(const tvector& x) const override
                 {
-                        return util::norm(x) < 5.12;
+                        return util::norm(x) < tscalar(5.12);
                 }
 
                 virtual bool is_minima(const tvector& x, const tscalar epsilon) const override

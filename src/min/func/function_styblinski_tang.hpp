@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util.hpp"
 #include "function.hpp"
 
 namespace min
@@ -8,7 +9,7 @@ namespace min
         /// \brief create Styblinski-Tang test functions
         ///
         template
-        <       
+        <
                 typename tscalar
         >
         struct function_styblinski_tang_t : public function_t<tscalar>
@@ -16,7 +17,7 @@ namespace min
                 using tsize = typename function_t<tscalar>::tsize;
                 using tvector = typename function_t<tscalar>::tvector;
                 using tproblem = typename function_t<tscalar>::tproblem;
-                
+
                 explicit function_styblinski_tang_t(const tsize dims)
                         :       m_dims(dims)
                 {

@@ -54,7 +54,7 @@ namespace math
                         m_min = std::min(m_min, other.m_min);
                         m_max = std::max(m_max, other.m_max);
                 }
-                
+
                 ///
                 /// \brief update statistics with the given [begin, end) range
                 ///
@@ -83,22 +83,23 @@ namespace math
                 }
 		
                 // access functions
-                bool valid() const { return count() != 0; }
+                operator bool() const { return count() > 1; }
+
                 tsize count() const { return m_count; }
                 tscalar min() const { return m_min; }
                 tscalar max() const { return m_max; }
-                tscalar avg() const { return sum() / count(); }
-                tscalar var() const { return _var() / m_count; }
-                tscalar stdev() const { return std::sqrt(m_count > 1 ? _var() / (m_count - 1) : tscalar(0)); }
+                tscalar avg() const { return sum() / static_cast<tscalar>(count()); }
+                tscalar var() const { return _var() / static_cast<tscalar>(count()); }
+                tscalar stdev() const { return std::sqrt(_var() / static_cast<tscalar>(count() - 1)); }
                 tscalar sum() const { return m_sum; }
 
         private:
 
                 tscalar _var() const
                 {
-                        return (m_count == 0) ? tscalar(0) : (m_sumsq - m_sum * m_sum / m_count);
+                        return m_sumsq - m_sum * m_sum / static_cast<tscalar>(count());
                 }
-                
+
         private:
 
                 // attributes

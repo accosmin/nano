@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util.hpp"
 #include "function.hpp"
 #include <cmath>
 
@@ -19,7 +20,7 @@ namespace min
                 using tsize = typename function_t<tscalar>::tsize;
                 using tvector = typename function_t<tscalar>::tvector;
                 using tproblem = typename function_t<tscalar>::tproblem;
-                
+
                 virtual std::string name() const override
                 {
                         return "3hump camel";
@@ -34,26 +35,26 @@ namespace min
 
                         const auto fn_fval = [=] (const tvector& x)
                         {
-                                const tscalar a = x(0), b = x(1);
+                                const auto a = x(0), b = x(1);
 
-                                const tscalar a2 = a * a;
-                                const tscalar a4 = a2 * a2;
-                                const tscalar a6 = a4 * a2;
+                                const auto a2 = a * a;
+                                const auto a4 = a2 * a2;
+                                const auto a6 = a4 * a2;
 
-                                return 2 * a2 - 1.05 * a4 + a6 / 6.0 + a * b + b * b;
+                                return tscalar(2) * a2 - tscalar(1.05) * a4 + a6 / tscalar(6.0) + a * b + b * b;
                         };
 
                         const auto fn_grad = [=] (const tvector& x, tvector& gx)
                         {
-                                const tscalar a = x(0), b = x(1);
+                                const auto a = x(0), b = x(1);
 
-                                const tscalar a2 = a * a;
-                                const tscalar a3 = a * a2;
-                                const tscalar a5 = a3 * a2;
+                                const auto a2 = a * a;
+                                const auto a3 = a * a2;
+                                const auto a5 = a3 * a2;
 
                                 gx.resize(2);
-                                gx(0) = 4 * a - 1.05 * 4 * a3 + a5 + b;
-                                gx(1) = a + 2 * b;
+                                gx(0) = tscalar(4) * a - tscalar(1.05) * tscalar(4) * a3 + a5 + b;
+                                gx(1) = a + tscalar(2) * b;
 
                                 return fn_fval(x);
                         };
@@ -63,7 +64,7 @@ namespace min
 
                 virtual bool is_valid(const tvector& x) const override
                 {
-                        return util::norm(x) < 5.0;
+                        return util::norm(x) < tscalar(5.0);
                 }
 
                 virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
@@ -83,15 +84,7 @@ namespace min
                                 std::vector<tscalar>{ -xmn, tscalar(0.5) * xmn }
                         };
 
-                        for (const auto& xmin : xmins)
-                        {
-                                if (util::distance(x, util::map_vector(xmin.data(), 2)) < epsilon)
-                                {
-                                        return true;
-                                }
-                        }
-
-                        return false;
+                        return util::check_close(x, xmins, epsilon);
                 }
         };
 }

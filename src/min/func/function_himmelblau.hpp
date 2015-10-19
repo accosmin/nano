@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util.hpp"
 #include "function.hpp"
 
 namespace min
@@ -18,7 +19,7 @@ namespace min
                 using tsize = typename function_t<tscalar>::tsize;
                 using tvector = typename function_t<tscalar>::tvector;
                 using tproblem = typename function_t<tscalar>::tproblem;
-                
+
                 virtual std::string name() const override
                 {
                         return "Himmelblau";
@@ -33,20 +34,20 @@ namespace min
 
                         const auto fn_fval = [=] (const tvector& x)
                         {
-                                const tscalar a = x(0), b = x(1);
+                                const auto a = x(0), b = x(1);
 
-                                const tscalar u = a * a + b - 11;
-                                const tscalar v = a + b * b - 7;
+                                const auto u = a * a + b - 11;
+                                const auto v = a + b * b - 7;
 
                                 return u * u + v * v;
                         };
 
                         const auto fn_grad = [=] (const tvector& x, tvector& gx)
                         {
-                                const tscalar a = x(0), b = x(1);
+                                const auto a = x(0), b = x(1);
 
-                                const tscalar u = a * a + b - 11;
-                                const tscalar v = a + b * b - 7;
+                                const auto u = a * a + b - 11;
+                                const auto v = a + b * b - 7;
 
                                 gx.resize(2);
                                 gx(0) = 2 * u * 2 * a + 2 * v;
@@ -73,15 +74,7 @@ namespace min
                                 std::vector<tscalar>{ 3.584428, -1.848126 }
                         };
 
-                        for (const auto& xmin : xmins)
-                        {
-                                if (util::distance(x, util::map_vector(xmin.data(), 2)) < epsilon)
-                                {
-                                        return true;
-                                }
-                        }
-
-                        return false;
+                        return util::check_close(x, xmins, epsilon);
                 }
         };
 }

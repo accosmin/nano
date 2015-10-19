@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util.hpp"
 #include "function.hpp"
 
 namespace min
@@ -18,7 +19,7 @@ namespace min
                 using tsize = typename function_t<tscalar>::tsize;
                 using tvector = typename function_t<tscalar>::tvector;
                 using tproblem = typename function_t<tscalar>::tproblem;
-                
+
                 virtual std::string name() const override
                 {
                         return "Matyas";
@@ -33,18 +34,18 @@ namespace min
 
                         const auto fn_fval = [=] (const tvector& x)
                         {
-                                const tscalar a = x(0), b = x(1);
+                                const auto a = x(0), b = x(1);
 
-                                return 0.26 * (a * a + b * b) - 0.48 * a * b;
+                                return tscalar(0.26) * (a * a + b * b) - tscalar(0.48) * a * b;
                         };
 
                         const auto fn_grad = [=] (const tvector& x, tvector& gx)
                         {
-                                const tscalar a = x(0), b = x(1);
+                                const auto a = x(0), b = x(1);
 
                                 gx.resize(2);
-                                gx(0) = 0.26 * 2 * a - 0.48 * b;
-                                gx(1) = 0.26 * 2 * b - 0.48 * a;
+                                gx(0) = tscalar(0.26) * 2 * a - tscalar(0.48) * b;
+                                gx(1) = tscalar(0.26) * 2 * b - tscalar(0.48) * a;
 
                                 return fn_fval(x);
                         };
@@ -54,7 +55,7 @@ namespace min
 
                 virtual bool is_valid(const tvector& x) const override
                 {
-                        return util::norm(x) < 10.0;
+                        return util::norm(x) < tscalar(10);
                 }
 
                 virtual bool is_minima(const tvector& x, const tscalar epsilon) const override

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util.hpp"
 #include "function.hpp"
 
 namespace min
@@ -16,7 +17,7 @@ namespace min
                 using tsize = typename function_t<tscalar>::tsize;
                 using tvector = typename function_t<tscalar>::tvector;
                 using tproblem = typename function_t<tscalar>::tproblem;
-                
+
                 explicit function_zakharov_t(const tsize dims)
                         :       m_dims(dims)
                 {
@@ -40,7 +41,7 @@ namespace min
                                 for (tsize i = 0; i < m_dims; i ++)
                                 {
                                         u += util::square(x(i));
-                                        v += 0.5 * i * x(i);
+                                        v += tscalar(0.5) * tscalar(i) * x(i);
                                 }
 
                                 return u + util::square(v) + util::quartic(v);
@@ -52,13 +53,13 @@ namespace min
                                 for (tsize i = 0; i < m_dims; i ++)
                                 {
                                         u += util::square(x(i));
-                                        v += 0.5 * i * x(i);
+                                        v += tscalar(0.5) * tscalar(i) * x(i);
                                 }
 
                                 gx.resize(m_dims);
                                 for (tsize i = 0; i < m_dims; i ++)
                                 {
-                                        gx(i) = 2 * x(i) + (2 * v + 4 * util::cube(v)) * 0.5 * i;
+                                        gx(i) = 2 * x(i) + (2 * v + 4 * util::cube(v)) * tscalar(0.5) * tscalar(i);
                                 }
 
                                 return u + util::square(v) + util::quartic(v);
@@ -69,7 +70,7 @@ namespace min
 
                 virtual bool is_valid(const tvector& x) const override
                 {
-                        return -5.0 < x.minCoeff() && x.maxCoeff() < 10.0;
+                        return tscalar(-5.0) < x.minCoeff() && x.maxCoeff() < tscalar(10.0);
                 }
 
                 virtual bool is_minima(const tvector& x, const tscalar epsilon) const override

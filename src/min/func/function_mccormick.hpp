@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util.hpp"
 #include "function.hpp"
 #include <cmath>
 
@@ -19,7 +20,7 @@ namespace min
                 using tsize = typename function_t<tscalar>::tsize;
                 using tvector = typename function_t<tscalar>::tvector;
                 using tproblem = typename function_t<tscalar>::tproblem;
-                
+
                 virtual std::string name() const override
                 {
                         return "McCormick";
@@ -34,18 +35,18 @@ namespace min
 
                         const auto fn_fval = [=] (const tvector& x)
                         {
-                                const tscalar a = x(0), b = x(1);
+                                const auto a = x(0), b = x(1);
 
-                                return sin(a + b) + (a - b) * (a - b) - 1.5 * a + 2.5 * b + 1;
+                                return std::sin(a + b) + (a - b) * (a - b) - tscalar(1.5) * a + tscalar(2.5) * b + 1;
                         };
 
                         const auto fn_grad = [=] (const tvector& x, tvector& gx)
                         {
-                                const tscalar a = x(0), b = x(1);
+                                const auto a = x(0), b = x(1);
 
                                 gx.resize(2);
-                                gx(0) = cos(a + b) + 2 * (a - b) - 1.5;
-                                gx(1) = cos(a + b) - 2 * (a - b) + 2.5;
+                                gx(0) = std::cos(a + b) + 2 * (a - b) - tscalar(1.5);
+                                gx(1) = std::cos(a + b) - 2 * (a - b) + tscalar(2.5);
 
                                 return fn_fval(x);
                         };
@@ -55,26 +56,18 @@ namespace min
 
                 virtual bool is_valid(const tvector& x) const override
                 {
-                        return  -1.5 < x(0) && x(0) < 4.0 &&
-                                -3.0 < x(1) && x(1) < 4.0;
+                        return  tscalar(-1.5) < x(0) && x(0) < tscalar(4.0) &&
+                                tscalar(-3.0) < x(1) && x(1) < tscalar(4.0);
                 }
 
                 virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
                 {
                         const auto xmins =
                         {
-                                std::vector<tscalar>{ -0.54719, -1.54719 }
+                                std::vector<tscalar>{ tscalar(-0.54719), tscalar(-1.54719) }
                         };
 
-                        for (const auto& xmin : xmins)
-                        {
-                                if (util::distance(x, util::map_vector(xmin.data(), 2)) < epsilon)
-                                {
-                                        return true;
-                                }
-                        }
-
-                        return false;
+                        return util::check_close(x, xmins, epsilon);
                 }
         };
 }

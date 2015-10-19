@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util.hpp"
 #include "function.hpp"
 
 namespace min
@@ -16,7 +17,7 @@ namespace min
                 using tsize = typename function_t<tscalar>::tsize;
                 using tvector = typename function_t<tscalar>::tvector;
                 using tproblem = typename function_t<tscalar>::tproblem;
-                
+
                 explicit function_dixon_price_t(const tsize dims)
                         :       m_dims(dims)
                 {
@@ -41,11 +42,11 @@ namespace min
                                 {
                                         if (i == 0)
                                         {
-                                                fx += util::square(x(0) - 1.0);
+                                                fx += util::square(x(0) - 1);
                                         }
                                         else
                                         {
-                                                fx += (i + 1) * util::square(2.0 * util::square(x(i)) - x(i - 1));
+                                                fx += tscalar(i + 1) * util::square(2 * util::square(x(i)) - x(i - 1));
                                         }
                                 }
 
@@ -59,13 +60,13 @@ namespace min
                                 {
                                         if (i == 0)
                                         {
-                                                gx(0) += 2.0 * (x(0) - 1.0);
+                                                gx(0) += 2 * (x(0) - 1);
                                         }
                                         else
                                         {
-                                                const tscalar delta = (i + 1) * 2.0 * (2.0 * util::square(x(i)) - x(i - 1));
+                                                const auto delta = tscalar(i + 1) * 2 * (2 * util::square(x(i)) - x(i - 1));
 
-                                                gx(i) += delta * 4.0 * x(i);
+                                                gx(i) += delta * 4 * x(i);
                                                 gx(i - 1) += - delta;
                                         }
                                 }
@@ -78,7 +79,7 @@ namespace min
 
                 virtual bool is_valid(const tvector& x) const override
                 {
-                        return util::norm(x) < 10.0;
+                        return util::norm(x) < tscalar(10);
                 }
 
                 virtual bool is_minima(const tvector&, const tscalar) const override

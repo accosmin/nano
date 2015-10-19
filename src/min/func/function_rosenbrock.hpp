@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util.hpp"
 #include "function.hpp"
 
 namespace min
@@ -18,7 +19,7 @@ namespace min
                 using tsize = typename function_t<tscalar>::tsize;
                 using tvector = typename function_t<tscalar>::tvector;
                 using tproblem = typename function_t<tscalar>::tproblem;
-                
+
                 explicit function_rosenbrock_t(const tsize dims)
                         :       m_dims(dims)
                 {
@@ -41,7 +42,7 @@ namespace min
                                 tscalar fx = 0;
                                 for (tsize i = 0; i + 1 < m_dims; i ++)
                                 {
-                                        fx += 100.0 * util::square(x(i + 1) - x(i) * x(i)) + util::square(x(i) - 1);
+                                        fx += 100 * util::square(x(i + 1) - x(i) * x(i)) + util::square(x(i) - 1);
                                 }
 
                                 return fx;
@@ -53,9 +54,9 @@ namespace min
                                 gx.setZero();
                                 for (tsize i = 0; i + 1 < m_dims; i ++)
                                 {
-                                        gx(i) += 2.0 * (x(i) - 1);
-                                        gx(i) += 100.0 * 2.0 * (x(i + 1) - x(i) * x(i)) * (- 2.0 * x(i));
-                                        gx(i + 1) += 100.0 * 2.0 * (x(i + 1) - x(i) * x(i));
+                                        gx(i) += 2 * (x(i) - 1);
+                                        gx(i) += 100 * 2 * (x(i + 1) - x(i) * x(i)) * (- 2 * x(i));
+                                        gx(i + 1) += 100 * 2 * (x(i + 1) - x(i) * x(i));
                                 }
 
                                 return fn_fval(x);
@@ -66,12 +67,11 @@ namespace min
 
                 virtual bool is_valid(const tvector& x) const override
                 {
-                        return util::norm(x) < 2.4;
+                        return util::norm(x) < tscalar(2.4);
                 }
 
                 virtual bool is_minima(const tvector& x, const tscalar epsilon) const override
                 {
-
                         {
                                 const tvector xmin = tvector::Ones(m_dims);
 

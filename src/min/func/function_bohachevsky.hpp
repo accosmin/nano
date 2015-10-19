@@ -123,7 +123,7 @@ namespace min
 
                 virtual bool is_valid(const tvector& x) const override
                 {
-                        return -100.0 < x.minCoeff() && x.maxCoeff() < 100.0;
+                        return tscalar(-100) < x.minCoeff() && x.maxCoeff() < tscalar(100);
                 }
 
                 virtual bool is_minima(const tvector&, const tscalar) const override
