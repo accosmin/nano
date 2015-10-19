@@ -179,7 +179,7 @@ namespace cortex
                 return m_impl->m_cache->vgrad();
         }
 
-        size_t accumulator_t::psize() const
+        tensor_size_t accumulator_t::psize() const
         {
                 return m_impl->m_cache->psize();
         }

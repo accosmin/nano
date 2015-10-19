@@ -57,7 +57,7 @@ namespace cortex
 
         const tensor_t& model_t::output(const vector_t& input) const
         {
-                assert(static_cast<size_t>(input.size()) == isize());
+                assert(input.size() == isize());
 
                 tensor_t xinput(idims(), irows(), icols());
                 xinput.vector() = input;
@@ -76,7 +76,7 @@ namespace cortex
                 return make_input(image, region.left(), region.top());
         }
 
-        size_t model_t::idims() const
+        tensor_size_t model_t::idims() const
         {
                 switch (m_color)
                 {
@@ -94,7 +94,8 @@ namespace cortex
                 return resize(task.irows(), task.icols(), task.osize(), task.color(), verbose);
         }
 
-        bool model_t::resize(size_t rows, size_t cols, size_t outputs, color_mode color, bool verbose)
+        bool model_t::resize(const tensor_size_t rows, const tensor_size_t cols, const tensor_size_t outputs,
+                const color_mode color, const bool verbose)
         {
                 m_rows = rows;
                 m_cols = cols;

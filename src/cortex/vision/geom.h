@@ -7,12 +7,12 @@ namespace cortex
         ///
         /// \brief image coordinate (in pixels)
         ///
-        using coord_t = int32_t;
+        using coord_t = int64_t;
 
         ///
         /// \brief image area (in pixels)
         /// 
-        using area_t = int32_t;
+        using area_t = int64_t;
 }
 
 

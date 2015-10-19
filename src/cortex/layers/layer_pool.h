@@ -25,7 +25,7 @@ namespace cortex
                 explicit pool_layer_t(const string_t& parameters = string_t());
 
                 // resize to process new tensors of the given type
-                virtual size_t resize(const tensor_t& tensor) override;
+                virtual tensor_size_t resize(const tensor_t& tensor) override;
 
                 // reset parameters
                 virtual void zero_params() override {}
@@ -41,18 +41,18 @@ namespace cortex
                 virtual void gparam(const tensor_t& output, scalar_t* gradient) override;
 
                 // access functions
-                virtual size_t idims() const override { return m_idata.dims(); }
-                virtual size_t irows() const override { return m_idata.rows(); }
-                virtual size_t icols() const override { return m_idata.cols(); }
-                virtual size_t odims() const override { return m_odata.dims(); }
-                virtual size_t orows() const override { return m_odata.rows(); }
-                virtual size_t ocols() const override { return m_odata.cols(); }
-                virtual size_t psize() const override { return 0; }
+                virtual tensor_size_t idims() const override { return m_idata.dims(); }
+                virtual tensor_size_t irows() const override { return m_idata.rows(); }
+                virtual tensor_size_t icols() const override { return m_idata.cols(); }
+                virtual tensor_size_t odims() const override { return m_odata.dims(); }
+                virtual tensor_size_t orows() const override { return m_odata.rows(); }
+                virtual tensor_size_t ocols() const override { return m_odata.cols(); }
+                virtual tensor_size_t psize() const override { return 0; }
 
                 // flops
-                virtual size_t output_flops() const override { return idims() * irows() * icols() * 16; }
-                virtual size_t ginput_flops() const override { return idims() * irows() * icols(); }
-                virtual size_t gparam_flops() const override { return 0; }
+                virtual tensor_size_t output_flops() const override { return idims() * irows() * icols() * 16; }
+                virtual tensor_size_t ginput_flops() const override { return idims() * irows() * icols(); }
+                virtual tensor_size_t gparam_flops() const override { return 0; }
 
         private:
 

@@ -58,7 +58,7 @@ namespace cortex
                 ///
                 /// \brief number of parameters
                 ///
-                virtual size_t psize() const override;
+                virtual tensor_size_t psize() const override;
 
                 ///
                 /// \brief manage layers
@@ -72,7 +72,7 @@ namespace cortex
                 virtual bool load(boost::archive::binary_iarchive& ia) override;
 
                 // resize to new inputs/outputs, returns the number of parameters
-                virtual size_t resize(bool verbose) override;
+                virtual tensor_size_t resize(bool verbose) override;
 
         private:
 

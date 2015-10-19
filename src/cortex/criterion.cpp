@@ -33,7 +33,7 @@ namespace cortex
 
         criterion_t& criterion_t::reset(const vector_t& params)
         {
-                assert(m_model->psize() == static_cast<size_t>(params.size()));
+                assert(m_model->psize() == params.size());
 
                 m_model->load_params(params);
                 m_params = params;
@@ -72,8 +72,8 @@ namespace cortex
                 const vector_t& target = sample.m_target;                
                 const vector_t& output = m_model->output(image, sample.m_region).vector();
 
-                assert(static_cast<size_t>(output.size()) == m_model->osize());
-                assert(static_cast<size_t>(target.size()) == m_model->osize());
+                assert(output.size() == m_model->osize());
+                assert(target.size() == m_model->osize());
 
                 accumulate(output, target, loss);
         }
@@ -82,8 +82,8 @@ namespace cortex
         {
                 const vector_t& output = m_model->output(input).vector();
 
-                assert(static_cast<size_t>(output.size()) == m_model->osize());
-                assert(static_cast<size_t>(target.size()) == m_model->osize());
+                assert(output.size() == m_model->osize());
+                assert(target.size() == m_model->osize());
                 
                 accumulate(output, target, loss);
         }
@@ -92,8 +92,8 @@ namespace cortex
         {
                 const vector_t& output = m_model->output(input).vector();
 
-                assert(static_cast<size_t>(output.size()) == m_model->osize());
-                assert(static_cast<size_t>(target.size()) == m_model->osize());
+                assert(output.size() == m_model->osize());
+                assert(target.size() == m_model->osize());
                 
                 accumulate(output, target, loss);
         }
@@ -150,9 +150,9 @@ namespace cortex
                 return m_params;
         }
 
-        size_t criterion_t::psize() const
+        tensor_size_t criterion_t::psize() const
         {
-                return static_cast<size_t>(m_params.size());
+                return m_params.size();
         }
 
         scalar_t criterion_t::lambda() const

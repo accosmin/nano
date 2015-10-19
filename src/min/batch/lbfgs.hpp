@@ -17,7 +17,6 @@ namespace min
         struct batch_lbfgs_t
         {
                 using param_t = batch_params_t<tproblem>;
-                using tsize = typename param_t::tsize;
                 using tstate = typename param_t::tstate;
                 using tscalar = typename param_t::tscalar;
                 using tvector = typename param_t::tvector;
@@ -26,11 +25,11 @@ namespace min
                 ///
                 /// \brief constructor
                 ///
-                batch_lbfgs_t(  tsize max_iterations,
+                batch_lbfgs_t(  std::size_t max_iterations,
                                 tscalar epsilon,
                                 ls_initializer lsinit,
                                 ls_strategy lsstrat,
-                                tsize history_size,
+                                std::size_t history_size,
                                 const topulog& ulog = topulog())
                         :       m_param(max_iterations, epsilon, lsinit, lsstrat, ulog),
                                 m_hsize(history_size)
@@ -42,7 +41,7 @@ namespace min
                 ///
                 tstate operator()(const tproblem& problem, const tvector& x0) const
                 {
-                        assert(problem.size() == static_cast<tsize>(x0.size()));
+                        assert(problem.size() == x0.size());
 
                         std::deque<tvector> ss, ys;
                         tstate cstate(problem, x0);             // current state
@@ -57,7 +56,7 @@ namespace min
                         linesearch_strategy_t<tproblem> ls_step(m_param.m_ls_strategy, 1e-4, 0.9);
 
                         // iterate until convergence
-                        for (tsize i = 0; i < m_param.m_max_iterations && m_param.ulog(cstate); i ++)
+                        for (std::size_t i = 0; i < m_param.m_max_iterations && m_param.ulog(cstate); i ++)
                         {
                                 // check convergence
                                 if (cstate.converged(m_param.m_epsilon))
@@ -72,7 +71,7 @@ namespace min
                                 typename std::deque<tvector>::const_reverse_iterator itr_s = ss.rbegin();
                                 typename std::deque<tvector>::const_reverse_iterator itr_y = ys.rbegin();
                                 std::vector<tscalar> alphas;
-                                for (tsize j = 1; j <= m_hsize && i >= j; j ++)
+                                for (std::size_t j = 1; j <= m_hsize && i >= j; j ++)
                                 {
                                         const tvector& s = (*itr_s ++);
                                         const tvector& y = (*itr_y ++);
@@ -96,7 +95,7 @@ namespace min
                                 typename std::deque<tvector>::const_iterator it_s = ss.begin();
                                 typename std::deque<tvector>::const_iterator it_y = ys.begin();
                                 typename std::vector<tscalar>::const_reverse_iterator itr_alpha = alphas.rbegin();
-                                for (tsize j = 1; j <= m_hsize && i >= j; j ++)
+                                for (std::size_t j = 1; j <= m_hsize && i >= j; j ++)
                                 {
                                         const tvector& s = (*it_s ++);
                                         const tvector& y = (*it_y ++);
@@ -119,7 +118,7 @@ namespace min
 
                                 ss.push_back(cstate.x - pstate.x);
                                 ys.push_back(cstate.g - pstate.g);
-                                if (static_cast<tsize>(ss.size()) > m_hsize)
+                                if (ss.size() > m_hsize)
                                 {
                                         ss.pop_front();
                                         ys.pop_front();
@@ -132,7 +131,7 @@ namespace min
 
                 // attributes
                 param_t         m_param;
-                tsize           m_hsize;        ///< number of previous iterations to approximate Hessian's inverse
+                std::size_t     m_hsize;        ///< number of previous iterations to approximate Hessian's inverse
         };
 }
 

@@ -50,11 +50,11 @@ namespace cortex
 
         tensor_t forward_network_t::ginput(const vector_t& _output) const
         {
-                assert(static_cast<size_t>(_output.size()) == osize());
+                assert(_output.size() == osize());
                 assert(!m_layers.empty());
 
                 // output (gradient)
-                const tensor_t output = tensor::map_tensor(_output.data(), osize(), size_t(1), size_t(1));
+                const tensor_t output = tensor::map_tensor(_output.data(), osize(), tensor_size_t(1), tensor_size_t(1));
 
                 // backward step
                 const tensor_t* poutput = &output;
@@ -70,11 +70,11 @@ namespace cortex
 
         vector_t forward_network_t::gparam(const vector_t& _output) const
         {
-                assert(static_cast<size_t>(_output.size()) == osize());
+                assert(_output.size() == osize());
                 assert(!m_layers.empty());
 
                 // output (gradient)
-                const tensor_t output = tensor::map_tensor(_output.data(), osize(), size_t(1), size_t(1));
+                const tensor_t output = tensor::map_tensor(_output.data(), osize(), tensor_size_t(1), tensor_size_t(1));
 
                 // parameter gradient
                 vector_t gradient(psize());
@@ -103,8 +103,8 @@ namespace cortex
 
         bool forward_network_t::save_params(vector_t& x) const
         {
-                const size_t psize = this->psize();
-                if (psize != static_cast<size_t>(x.size()))
+                const auto psize = this->psize();
+                if (psize != x.size())
                 {
                         x.resize(psize);
                 }
@@ -123,7 +123,7 @@ namespace cortex
 
         bool forward_network_t::load_params(const vector_t& x)
         {
-                if (math::cast<size_t>(x.size()) == psize())
+                if (x.size() == psize())
                 {
                         const scalar_t* px = x.data() + x.size();
                         for (rlayers_t::const_reverse_iterator it = m_layers.rbegin(); it != m_layers.rend(); ++ it)
@@ -155,10 +155,10 @@ namespace cortex
         {
                 for (const rlayer_t& layer : m_layers)
                 {
-                        const size_t fanin = layer->idims() * layer->irows() * layer->icols();
-                        const size_t fanout = layer->odims() * layer->orows() * layer->ocols();
-                        const scalar_t min = -std::sqrt(6.0 / (1.0 + fanin + fanout));
-                        const scalar_t max = +std::sqrt(6.0 / (1.0 + fanin + fanout));
+                        const auto fanin = layer->idims() * layer->irows() * layer->icols();
+                        const auto fanout = layer->odims() * layer->orows() * layer->ocols();
+                        const auto min = -std::sqrt(6.0 / (1.0 + fanin + fanout));
+                        const auto max = +std::sqrt(6.0 / (1.0 + fanin + fanout));
 
                         layer->random_params(min, max);
                 }
@@ -189,10 +189,10 @@ namespace cortex
                 return true;
         }
 
-        size_t forward_network_t::resize(bool verbose)
+        tensor_size_t forward_network_t::resize(bool verbose)
         {
                 tensor_t input(idims(), irows(), icols());
-                size_t n_params = 0;
+                tensor_size_t n_params = 0;
 
                 m_layers.clear();
 
@@ -239,7 +239,7 @@ namespace cortex
                 }
 
                 // check output size to match the target
-                if (    static_cast<size_t>(input.dims()) != osize() ||
+                if (    input.dims() != osize() ||
                         input.rows() != 1 ||
                         input.cols() != 1)
                 {
@@ -286,7 +286,7 @@ namespace cortex
                         model_gparam_mflops += gparam_mflops;
                 }
 
-                const std::streamsize old_precision = std::cout.precision();
+                const auto old_precision = std::cout.precision();
 
                 log_info() << "forward network [MFLOPs]"
                            << ": output = " << std::setprecision(3) << model_output_mflops
@@ -295,9 +295,9 @@ namespace cortex
                            << std::setprecision(old_precision);
         }
 
-        size_t forward_network_t::psize() const
+        tensor_size_t forward_network_t::psize() const
         {
-                size_t nparams = 0;
+                tensor_size_t nparams = 0;
                 for (const rlayer_t& layer : m_layers)
                 {
                         nparams += layer->psize();

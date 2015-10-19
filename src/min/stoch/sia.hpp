@@ -18,7 +18,6 @@ namespace min
         struct stoch_sia_t
         {
                 using param_t = stoch_params_t<tproblem>;
-                using tsize = typename param_t::tsize;
                 using tstate = typename param_t::tstate;
                 using tscalar = typename param_t::tscalar;
                 using tvector = typename param_t::tvector;
@@ -27,8 +26,8 @@ namespace min
                 ///
                 /// \brief constructor
                 ///
-                stoch_sia_t(    tsize epochs,
-                                tsize epoch_size,
+                stoch_sia_t(    std::size_t epochs,
+                                std::size_t epoch_size,
                                 tscalar alpha0,
                                 tscalar decay,
                                 const topulog& ulog = topulog())
@@ -41,7 +40,7 @@ namespace min
                 ///
                 tstate operator()(const tproblem& problem, const tvector& x0) const
                 {
-                        assert(problem.size() == static_cast<tsize>(x0.size()));
+                        assert(problem.size() == static_cast<std::size_t>(x0.size()));
 
                         // current state
                         tstate cstate(problem, x0);
@@ -52,9 +51,9 @@ namespace min
                         // running-weighted-averaged parameters
                         average_vector_t<tscalar, tvector> xavg(x0.size());
 
-                        for (tsize e = 0, k = 1; e < m_param.m_epochs; e ++)
+                        for (std::size_t e = 0, k = 1; e < m_param.m_epochs; e ++)
                         {
-                                for (tsize i = 0; i < m_param.m_epoch_size; i ++, k ++)
+                                for (std::size_t i = 0; i < m_param.m_epoch_size; i ++, k ++)
                                 {
                                         // learning rate
                                         const tscalar alpha = m_param.alpha(k);

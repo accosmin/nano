@@ -81,9 +81,9 @@ namespace cortex
                 strings_t labels() const;
 
                 // access functions
-                virtual size_t irows() const = 0;
-                virtual size_t icols() const = 0;
-                virtual size_t osize() const = 0;
+                virtual tensor_size_t irows() const = 0;
+                virtual tensor_size_t icols() const = 0;
+                virtual tensor_size_t osize() const = 0;
                 virtual size_t fsize() const = 0;
                 virtual color_mode color() const = 0;
 

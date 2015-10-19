@@ -15,7 +15,8 @@ namespace
         using namespace cortex;
 
         void make_random_samples(
-                size_t cmd_samples, size_t cmd_rows, size_t cmd_cols, size_t cmd_outputs, color_mode cmd_color,
+                size_t cmd_samples,
+                tensor_size_t cmd_rows, tensor_size_t cmd_cols, tensor_size_t cmd_outputs, color_mode cmd_color,
                 tensors_t& inputs, vectors_t& targets)
         {
                 inputs.resize(cmd_samples);
@@ -25,7 +26,7 @@ namespace
                         tensor::set_random(input, math::random_t<scalar_t>(0.0, 1.0));
                 }
 
-                math::random_t<size_t> trgen(0, cmd_outputs);
+                math::random_t<tensor_index_t> trgen(0, cmd_outputs);
 
                 targets.resize(cmd_samples);
                 for (auto& target : targets)
@@ -76,8 +77,8 @@ int main(int argc, char *argv[])
                 return EXIT_FAILURE;
         }
 
-        const size_t cmd_rows = 28;
-        const size_t cmd_cols = 28;
+        const tensor_size_t cmd_rows = 28;
+        const tensor_size_t cmd_cols = 28;
         const color_mode cmd_color = color_mode::luma;
 
         const size_t cmd_min_nthreads = 1;

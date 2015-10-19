@@ -13,6 +13,9 @@ namespace cortex
 
         using tensor_t = tensor::tensor_t<scalar_t>;
         using tensors_t = std::vector<tensor_t>;
+
+        using tensor_size_t = tensor_t::Index;
+        using tensor_index_t = tensor_t::Index;
 }
 
 

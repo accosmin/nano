@@ -13,11 +13,10 @@ namespace cortex
         {
         }
 
-        size_t linear_layer_t::resize(const tensor_t& tensor)
+        tensor_size_t linear_layer_t::resize(const tensor_t& tensor)
         {
-                const size_t idims = tensor.size();
-                const size_t odims = math::clamp(text::from_params<size_t>(configuration(), "dims", 10),
-                                                 size_t(1), size_t(4096));
+                const auto idims = tensor.size();
+                const auto odims = math::clamp(text::from_params<tensor_size_t>(configuration(), "dims", 10), 1, 4096);
 
                 // resize buffers
                 m_idata.resize(tensor.dims(), tensor.rows(), tensor.cols());
@@ -57,9 +56,9 @@ namespace cortex
 
         const tensor_t& linear_layer_t::output(const tensor_t& input)
         {
-                assert(idims() == static_cast<size_t>(input.dims()));
-                assert(irows() == static_cast<size_t>(input.rows()));
-                assert(icols() == static_cast<size_t>(input.cols()));
+                assert(idims() == input.dims());
+                assert(irows() == input.rows());
+                assert(icols() == input.cols());
 
                 m_idata = input;
 
@@ -70,9 +69,9 @@ namespace cortex
 
         const tensor_t& linear_layer_t::ginput(const tensor_t& output)
         {
-                assert(static_cast<size_t>(output.dims()) == odims());
-                assert(static_cast<size_t>(output.rows()) == orows());
-                assert(static_cast<size_t>(output.cols()) == ocols());
+                assert(output.dims() == odims());
+                assert(output.rows() == orows());
+                assert(output.cols() == ocols());
 
                 m_odata = output;
 
@@ -83,9 +82,9 @@ namespace cortex
 
         void linear_layer_t::gparam(const tensor_t& output, scalar_t* gradient)
         {
-                assert(static_cast<size_t>(output.dims()) == odims());
-                assert(static_cast<size_t>(output.rows()) == orows());
-                assert(static_cast<size_t>(output.cols()) == ocols());
+                assert(output.dims() == odims());
+                assert(output.rows() == orows());
+                assert(output.cols() == ocols());
 
                 m_odata = output;
 

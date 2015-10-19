@@ -43,7 +43,9 @@ namespace cortex
                 ///
                 /// \brief resize to process new inputs
                 ///
-                bool resize(size_t rows, size_t cols, size_t outputs, color_mode color, bool verbose);
+                bool resize(const tensor_size_t rows, const tensor_size_t cols, const tensor_size_t outputs,
+                            const color_mode color,
+                            const bool verbose);
 
                 ///
                 /// \brief resize to process new inputs compatible with the given task
@@ -99,12 +101,12 @@ namespace cortex
                 virtual tensor_t ginput(const vector_t& output) const = 0;
 
                 // access functions
-                size_t irows() const { return m_rows; }
-                size_t icols() const { return m_cols; }
-                size_t idims() const;
-                size_t isize() const { return idims() * irows() * icols(); }
-                size_t osize() const { return m_outputs; }
-                virtual size_t psize() const = 0;
+                tensor_size_t irows() const { return m_rows; }
+                tensor_size_t icols() const { return m_cols; }
+                tensor_size_t idims() const;
+                tensor_size_t isize() const { return idims() * irows() * icols(); }
+                tensor_size_t osize() const { return m_outputs; }
+                virtual tensor_size_t psize() const = 0;
                 color_mode color() const { return m_color; }
 
         protected:
@@ -120,13 +122,13 @@ namespace cortex
                 virtual bool load(boost::archive::binary_iarchive& ia) = 0;
 
                 // resize to new inputs/outputs, returns the number of parameters
-                virtual size_t resize(bool verbose) = 0;
+                virtual tensor_size_t resize(bool verbose) = 0;
 
         private:
 
                 // attributes
-                size_t          m_rows, m_cols;         ///< input patch size
-                size_t          m_outputs;              ///< output size
+                tensor_size_t   m_rows, m_cols;         ///< input patch size
+                tensor_size_t   m_outputs;              ///< output size
                 color_mode      m_color;                ///< input color mode
         };
 }

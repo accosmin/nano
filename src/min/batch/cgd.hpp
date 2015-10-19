@@ -18,7 +18,6 @@ namespace min
         struct batch_cgd_t
         {
                 using param_t = batch_params_t<tproblem>;
-                using tsize = typename param_t::tsize;
                 using tstate = typename param_t::tstate;
                 using tscalar = typename param_t::tscalar;
                 using tvector = typename param_t::tvector;
@@ -27,7 +26,7 @@ namespace min
                 ///
                 /// \brief constructor
                 ///
-                batch_cgd_t(    tsize max_iterations,
+                batch_cgd_t(    std::size_t max_iterations,
                                 tscalar epsilon,
                                 ls_initializer lsinit,
                                 ls_strategy lsstrat,
@@ -41,7 +40,7 @@ namespace min
                 ///
                 tstate operator()(const tproblem& problem, const tvector& x0) const
                 {
-                        assert(problem.size() == static_cast<tsize>(x0.size()));
+                        assert(problem.size() == x0.size());
 
                         tstate cstate(problem, x0);     // current state
                         tstate pstate = cstate;         // previous state
@@ -55,7 +54,7 @@ namespace min
                         const tcgd_update op_update;
 
                         // iterate until convergence
-                        for (tsize i = 0; i < m_param.m_max_iterations && m_param.ulog(cstate); i ++)
+                        for (std::size_t i = 0; i < m_param.m_max_iterations && m_param.ulog(cstate); i ++)
                         {
                                 // check convergence
                                 if (cstate.converged(m_param.m_epsilon))

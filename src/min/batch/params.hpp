@@ -2,6 +2,7 @@
 
 #include "min/params.hpp"
 #include "min/lsearch_types.h"
+#include <cstddef>
 
 namespace min
 {
@@ -14,7 +15,6 @@ namespace min
         >
         struct batch_params_t : public params_t<tproblem>
         {
-                using tsize = typename tproblem::tsize;
                 using tstate = typename tproblem::tstate;
                 using tscalar = typename tproblem::tscalar;
                 using tvector = typename tproblem::tvector;
@@ -23,7 +23,7 @@ namespace min
                 ///
                 /// \brief constructor
                 ///
-                batch_params_t( tsize max_iterations,
+                batch_params_t( std::size_t max_iterations,
                                 tscalar epsilon,
                                 ls_initializer lsinit,
                                 ls_strategy lsstrat,
@@ -44,7 +44,7 @@ namespace min
                 }
 
                 // attributes
-                tsize           m_max_iterations;       ///< maximum number of iterations
+                std::size_t     m_max_iterations;       ///< maximum number of iterations
                 tscalar         m_epsilon;              ///< convergence precision
 
                 ls_initializer  m_ls_initializer;       ///< line-search step length initialization strategy

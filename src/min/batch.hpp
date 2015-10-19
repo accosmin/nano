@@ -17,7 +17,6 @@ namespace min
         <
                 typename tscalar,
                 typename tproblem = problem_t<tscalar>,
-                typename tsize = typename tproblem::tsize,
                 typename tstate = typename tproblem::tstate,
                 typename tvector = typename tproblem::tvector,
                 typename topulog = typename tproblem::topulog
@@ -26,10 +25,10 @@ namespace min
                 const tproblem& problem,
                 const topulog& fn_ulog,
                 const tvector& x0,
-                batch_optimizer optimizer, std::size_t iterations, tscalar epsilon,
-                ls_initializer lsinit,
-                ls_strategy lsstrat,
-                std::size_t history_size = 6)
+                const batch_optimizer optimizer, const std::size_t iterations, const tscalar epsilon,
+                const ls_initializer lsinit,
+                const ls_strategy lsstrat,
+                const std::size_t history_size = 6)
         {
                 switch (optimizer)
                 {
@@ -103,7 +102,6 @@ namespace min
         <
                 typename tscalar,
                 typename tproblem = problem_t<tscalar>,
-                typename tsize = typename tproblem::tsize,
                 typename tstate = typename tproblem::tstate,
                 typename tvector = typename tproblem::tvector,
                 typename topulog = typename tproblem::topulog
@@ -112,8 +110,8 @@ namespace min
                 const tproblem& problem,
                 const topulog& fn_ulog,
                 const tvector& x0,
-                batch_optimizer optimizer, std::size_t iterations, tscalar epsilon,
-                std::size_t history_size = 6)
+                const batch_optimizer optimizer, const std::size_t iterations, const tscalar epsilon,
+                const std::size_t history_size = 6)
         {
                 switch (optimizer)
                 {

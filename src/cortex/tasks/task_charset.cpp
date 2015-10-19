@@ -44,8 +44,8 @@ namespace cortex
         charset_task_t::charset_task_t(const string_t& configuration)
                 :       task_t(configuration),
                         m_charset(text::from_params<charset>(configuration, "type", charset::numeric)),
-                        m_rows(math::clamp(text::from_params<size_t>(configuration, "rows", 32), 16, 128)),
-                        m_cols(math::clamp(text::from_params<size_t>(configuration, "cols", 32), 16, 128)),
+                        m_rows(math::clamp(text::from_params<tensor_size_t>(configuration, "rows", 32), 16, 128)),
+                        m_cols(math::clamp(text::from_params<tensor_size_t>(configuration, "cols", 32), 16, 128)),
                         m_folds(1),
                         m_color(text::from_params<color_mode>(configuration, "color", color_mode::rgba)),
                         m_size(math::clamp(text::from_params<size_t>(configuration, "size", 1024), 16, 1024 * 1024))
@@ -53,7 +53,7 @@ namespace cortex
         }
 
         charset_task_t::charset_task_t(
-                charset cs, size_t rows, size_t cols, color_mode color, size_t size)
+                charset cs, tensor_size_t rows, tensor_size_t cols, color_mode color, size_t size)
                 :       charset_task_t(
                         "type=" + text::to_string(cs) + "," +
                         "rows=" + text::to_string(rows) + "," +
@@ -88,7 +88,8 @@ namespace cortex
                         return image.block(ppy, ppx, pph, ppw);
                 }
 
-                tensor_t make_random_rgba_image(const size_t rows, const size_t cols, const rgba_t back_color,
+                tensor_t make_random_rgba_image(const tensor_size_t rows, const tensor_size_t cols,
+                        const rgba_t back_color,
                         const scalar_t max_noise, const scalar_t sigma)
                 {
                         const scalar_t ir = cortex::color::get_red(back_color) / 255.0;
@@ -156,7 +157,7 @@ namespace cortex
                 const size_t n_fonts = sizeof(char_patches) / sizeof(rgba_matrix_t);
 
                 math::random_t<size_t> rng_protocol(1, 10);
-                math::random_t<size_t> rng_output(obegin(), oend() - 1);
+                math::random_t<tensor_size_t> rng_output(obegin(), oend() - 1);
                 math::random_t<size_t> rng_font(1, n_fonts);
                 math::random_t<scalar_t> rng_gauss(0.0, 2.0);
 
@@ -170,7 +171,7 @@ namespace cortex
                                 const protocol p = (rng_protocol() < 9) ? protocol::train : protocol::test;
 
                                 // random output class: character
-                                const size_t o = rng_output();
+                                const tensor_index_t o = rng_output();
 
                                 // image: original object patch
                                 const tensor_t opatch = cortex::color::to_rgba_tensor(
@@ -224,12 +225,12 @@ namespace cortex
                 return true;
         }
 
-        size_t charset_task_t::osize() const
+        tensor_size_t charset_task_t::osize() const
         {
                 return oend() - obegin();
         }
 
-        size_t charset_task_t::obegin() const
+        tensor_size_t charset_task_t::obegin() const
         {
                 switch (m_charset)
                 {
@@ -242,7 +243,7 @@ namespace cortex
                 }
         }
 
-        size_t charset_task_t::oend() const
+        tensor_size_t charset_task_t::oend() const
         {
                 switch (m_charset)
                 {

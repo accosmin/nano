@@ -49,12 +49,14 @@ namespace boost
                 >
                 void serialize(tarchive& ar, Eigen::Matrix<tvalue, Rows, Cols, Options>& mat, const unsigned int)
                 {
+                        using tsize = typename Eigen::Matrix<tvalue, Rows, Cols, Options>::Index;
+
                         if (tarchive::is_saving::value)
                         {
-                                int rows = mat.rows(), cols = mat.cols();
+                                tsize rows = mat.rows(), cols = mat.cols();
                                 ar & rows; ar & cols;
 
-                                for (int i = 0; i < mat.size(); i ++)
+                                for (tsize i = 0; i < mat.size(); i ++)
                                 {
                                         ar & mat(i);
                                 }
@@ -62,11 +64,11 @@ namespace boost
 
                         else
                         {
-                                int rows = 0, cols = 0;
+                                tsize rows = 0, cols = 0;
                                 ar & rows; ar & cols;
 
                                 mat.resize(rows, cols);
-                                for (int i = 0; i < mat.size(); i ++)
+                                for (tsize i = 0; i < mat.size(); i ++)
                                 {
                                         ar & mat(i);
                                 }

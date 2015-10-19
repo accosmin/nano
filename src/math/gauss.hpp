@@ -84,10 +84,11 @@ namespace math
                         const int radius = std::max(1, math::cast<int>(xradius));
 
                         // setup kernel
-                        m_kernel.resize(2 * radius + 1);
+                        m_kernel.resize(static_cast<std::size_t>(2 * radius + 1));
                         for (int x = -radius; x <= radius; x ++)
                         {
-                                m_kernel[x + radius] = math::cast<tscalar>(gnorm * std::exp(-x * x * xnorm));
+                                m_kernel[static_cast<size_t>(x + radius)] =
+                                math::cast<tscalar>(gnorm * std::exp(-x * x * xnorm));
                         }
 
                         // normalize kernel

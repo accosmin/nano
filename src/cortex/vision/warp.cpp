@@ -48,7 +48,7 @@ namespace cortex
                 }
 
                 std::tuple<matrix_t, matrix_t> make_random_fields(
-                        const size_t rows, const size_t cols,
+                        const tensor_size_t rows, const tensor_size_t cols,
                         const scalar_t noise, const scalar_t sigma)
                 {
                         matrix_t fieldx(rows, cols), fieldy(rows, cols);
@@ -63,7 +63,7 @@ namespace cortex
                 }
 
                 std::tuple<matrix_t, matrix_t> make_translation_fields(
-                        const size_t rows, const size_t cols,
+                        const tensor_size_t rows, const tensor_size_t cols,
                         const scalar_t delta, const scalar_t noise, const scalar_t sigma)
                 {
                         matrix_t fieldx(rows, cols), fieldy(rows, cols);
@@ -78,7 +78,7 @@ namespace cortex
                 }
 
                 std::tuple<matrix_t, matrix_t> make_rotation_fields(
-                        const size_t rows, const size_t cols,
+                        const tensor_size_t rows, const tensor_size_t cols,
                         const scalar_t theta, const scalar_t noise, const scalar_t sigma)
                 {
                         matrix_t fieldx(rows, cols), fieldy(rows, cols);
@@ -89,9 +89,9 @@ namespace cortex
 
                         math::random_t<scalar_t> rng(-noise, +noise);
 
-                        for (size_t r = 0; r < rows; r ++)
+                        for (tensor_size_t r = 0; r < rows; r ++)
                         {
-                                for (size_t c = 0; c < cols; c ++)
+                                for (tensor_size_t c = 0; c < cols; c ++)
                                 {
                                         const auto dist = math::square(scalar_t(r) - cy) + math::square(scalar_t(c) - cx);
 

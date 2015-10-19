@@ -19,7 +19,7 @@ namespace text
         template <>
         inline short from_string<short>(const std::string& str)
         {
-                return std::stoi(str);
+                return static_cast<short>(std::stoi(str));
         }
 
         template <>

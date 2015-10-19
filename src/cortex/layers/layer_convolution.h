@@ -28,7 +28,7 @@ namespace cortex
                 virtual ~conv_layer_t();
 
                 // resize to process new tensors of the given type
-                virtual size_t resize(const tensor_t& tensor) override;
+                virtual tensor_size_t resize(const tensor_t& tensor) override;
 
                 // reset parameters
                 virtual void zero_params() override;
@@ -44,29 +44,29 @@ namespace cortex
                 virtual void gparam(const tensor_t& output, scalar_t* gradient) override;
 
                 // access functions
-                virtual size_t idims() const override { return m_idata.dims(); }
-                virtual size_t irows() const override { return m_idata.rows(); }
-                virtual size_t icols() const override { return m_idata.cols(); }
-                virtual size_t odims() const override { return m_odata.dims(); }
-                virtual size_t orows() const override { return m_odata.rows(); }
-                virtual size_t ocols() const override { return m_odata.cols(); }
-                virtual size_t psize() const override;
+                virtual tensor_size_t idims() const override { return m_idata.dims(); }
+                virtual tensor_size_t irows() const override { return m_idata.rows(); }
+                virtual tensor_size_t icols() const override { return m_idata.cols(); }
+                virtual tensor_size_t odims() const override { return m_odata.dims(); }
+                virtual tensor_size_t orows() const override { return m_odata.rows(); }
+                virtual tensor_size_t ocols() const override { return m_odata.cols(); }
+                virtual tensor_size_t psize() const override;
 
                 // flops
-                virtual size_t output_flops() const override { return odims() * idims() * oppsize() * kppsize(); }
-                virtual size_t ginput_flops() const override { return odims() * orows() * oppsize() * kppsize(); }
-                virtual size_t gparam_flops() const override { return odims() * orows() * ippsize() * oppsize(); }
+                virtual tensor_size_t output_flops() const override { return odims() * idims() * oppsize() * kppsize(); }
+                virtual tensor_size_t ginput_flops() const override { return odims() * orows() * oppsize() * kppsize(); }
+                virtual tensor_size_t gparam_flops() const override { return odims() * orows() * ippsize() * oppsize(); }
 
         private:
 
-                size_t kdims() const { return m_kdata.dims(); }
-                size_t krows() const { return m_kdata.rows(); }
-                size_t kcols() const { return m_kdata.cols(); }
-                size_t ksize() const { return m_kdata.size(); }
+                tensor_size_t kdims() const { return m_kdata.dims(); }
+                tensor_size_t krows() const { return m_kdata.rows(); }
+                tensor_size_t kcols() const { return m_kdata.cols(); }
+                tensor_size_t ksize() const { return m_kdata.size(); }
 
-                size_t oppsize() const { return m_odata.planeSize(); }
-                size_t ippsize() const { return m_idata.planeSize(); }
-                size_t kppsize() const { return m_kdata.planeSize(); }
+                tensor_size_t oppsize() const { return m_odata.planeSize(); }
+                tensor_size_t ippsize() const { return m_idata.planeSize(); }
+                tensor_size_t kppsize() const { return m_kdata.planeSize(); }
 
                 void params_changed();
 

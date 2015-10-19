@@ -17,7 +17,7 @@ namespace test
         {
                 const size_t trials = 1024;
 
-                const tscalar epsilon = (sizeof(tscalar) == sizeof(float)) ?
+                const auto epsilon = (sizeof(tscalar) == sizeof(float)) ?
                         math::epsilon3<tscalar>() :
                         math::epsilon2<tscalar>();
 
@@ -26,7 +26,7 @@ namespace test
 
                 for (size_t t = 0; t < trials; t ++)
                 {
-                        math::random_t<tscalar> rgen(-0.1, +0.1);
+                        math::random_t<tscalar> rgen(tscalar(-0.1), tscalar(+0.1));
 
                         tvector x0(dims);
                         rgen(x0.data(), x0.data() + x0.size());

@@ -68,10 +68,10 @@ namespace min
                 {
                         const auto xmins =
                         {
-                                std::vector<tscalar>{ 3.0, 2.0 },
-                                std::vector<tscalar>{ -2.805118, 3.131312 },
-                                std::vector<tscalar>{ -3.779310, -3.283186 },
-                                std::vector<tscalar>{ 3.584428, -1.848126 }
+                                std::vector<tscalar>{ tscalar(3.0), tscalar(2.0) },
+                                std::vector<tscalar>{ tscalar(-2.805118), tscalar(3.131312) },
+                                std::vector<tscalar>{ tscalar(-3.779310), tscalar(-3.283186) },
+                                std::vector<tscalar>{ tscalar(3.584428), tscalar(-1.848126) }
                         };
 
                         return util::check_close(x, xmins, epsilon);

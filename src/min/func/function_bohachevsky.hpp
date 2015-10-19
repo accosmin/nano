@@ -56,7 +56,7 @@ namespace min
                                 const auto x1 = x(0);
                                 const auto x2 = x(1);
 
-                                const tscalar pi = std::atan2(0.0, -0.0);
+                                const auto pi = std::atan2(tscalar(0.0), tscalar(-0.0));
                                 const auto p1 = 3 * pi * x1;
                                 const auto p2 = 4 * pi * x2;
 
@@ -66,15 +66,15 @@ namespace min
                                 switch (m_type)
                                 {
                                 case btype::one:
-                                        fx = u - 0.3 * std::cos(p1) - 0.4 * std::cos(p2) + 0.7;
+                                        fx = u - tscalar(0.3) * std::cos(p1) - tscalar(0.4) * std::cos(p2) + tscalar(0.7);
                                         break;
 
                                 case btype::two:
-                                        fx = u - 0.3 * std::cos(p1) * std::cos(p2) + 0.3;
+                                        fx = u - tscalar(0.3) * std::cos(p1) * std::cos(p2) + tscalar(0.3);
                                         break;
 
                                 case btype::three:
-                                        fx = u - 0.3 * std::cos(p1 + p2) + 0.3;
+                                        fx = u - tscalar(0.3) * std::cos(p1 + p2) + tscalar(0.3);
                                         break;
 
                                 default:
@@ -89,7 +89,7 @@ namespace min
                                 const auto x1 = x(0);
                                 const auto x2 = x(1);
 
-                                const tscalar pi = std::atan2(0.0, -0.0);
+                                const auto pi = std::atan2(tscalar(0.0), tscalar(-0.0));
                                 const auto p1 = 3 * pi * x1;
                                 const auto p2 = 4 * pi * x2;
 
@@ -97,18 +97,18 @@ namespace min
                                 switch (m_type)
                                 {
                                 case btype::one:
-                                        gx(0) = 2 * x1 + 0.9 * std::sin(p1) * pi;
-                                        gx(1) = 4 * x2 + 1.6 * std::sin(p2) * pi;
+                                        gx(0) = 2 * x1 + tscalar(0.9) * std::sin(p1) * pi;
+                                        gx(1) = 4 * x2 + tscalar(1.6) * std::sin(p2) * pi;
                                         break;
 
                                 case btype::two:
-                                        gx(0) = 2 * x1 + 0.9 * std::sin(p1) * pi * cos(p2);
-                                        gx(1) = 4 * x2 + 1.2 * std::sin(p2) * pi * cos(p1);
+                                        gx(0) = 2 * x1 + tscalar(0.9) * std::sin(p1) * pi * std::cos(p2);
+                                        gx(1) = 4 * x2 + tscalar(1.2) * std::sin(p2) * pi * std::cos(p1);
                                         break;
 
                                 case btype::three:
-                                        gx(0) = 2 * x1 + 0.9 * std::sin(p1 + p2) * pi;
-                                        gx(1) = 4 * x2 + 1.2 * std::sin(p1 + p2) * pi;
+                                        gx(0) = 2 * x1 + tscalar(0.9) * std::sin(p1 + p2) * pi;
+                                        gx(1) = 4 * x2 + tscalar(1.2) * std::sin(p1 + p2) * pi;
                                         break;
 
                                 default:

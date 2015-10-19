@@ -12,21 +12,23 @@ namespace test
 {
         template
         <
-                typename tscalar
+                typename tscalar,
+                typename tsize
         >
-        tscalar average(const size_t range)
+        tscalar average(const tsize range)
         {
                 return static_cast<tscalar>(range) / static_cast<tscalar>(2);
         }
 
         template
         <
-                typename tscalar
+                typename tscalar,
+                typename tsize
         >
-        void check_average(const size_t range)
+        void check_average(const tsize range)
         {
                 min::average_scalar_t<tscalar> runavg;
-                for (size_t i = 0; i <= range; i ++)
+                for (tsize i = 0; i <= range; i ++)
                 {
                         runavg.update(static_cast<tscalar>(i), tscalar(1));
                 }
@@ -40,14 +42,15 @@ namespace test
         template
         <
                 typename tvector,
-                typename tscalar = typename tvector::Scalar
+                typename tscalar = typename tvector::Scalar,
+                typename tsize = typename tvector::Index
         >
-        void check_average(const size_t dims, const size_t range)
+        void check_average(const tsize dims, const tsize range)
         {
                 min::average_vector_t<tscalar, tvector> runavg(dims);
-                for (size_t i = 0; i <= range; i ++)
+                for (tsize i = 0; i <= range; i ++)
                 {
-                        runavg.update(tvector::Constant(dims, static_cast<tscalar>(i)), tscalar(1));
+                        runavg.update(tvector::Constant(dims, tscalar(i)), tscalar(1));
                 }
 
                 const auto avg = average<tscalar>(range);

@@ -32,7 +32,7 @@ namespace
                 const auto epsilon = math::epsilon0<tscalar>();
                 const auto trials = size_t(1024);
 
-                const size_t dims = function.problem().size();
+                const auto dims = function.problem().size();
 
                 math::random_t<tscalar> rgen(-1.0, +1.0);
 

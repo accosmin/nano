@@ -37,29 +37,29 @@ namespace cortex
                 explicit charset_task_t(const string_t& configuration = string_t());
 
                 // constructor
-                charset_task_t(charset, size_t rows, size_t cols, color_mode, size_t size);
+                charset_task_t(charset, tensor_size_t rows, tensor_size_t cols, color_mode, size_t size);
 
                 // load images from the given directory
                 virtual bool load(const string_t&) override;
 
                 // access functions
-                virtual size_t irows() const override { return m_rows; }
-                virtual size_t icols() const override { return m_cols; }
-                virtual size_t osize() const override;
+                virtual tensor_size_t irows() const override { return m_rows; }
+                virtual tensor_size_t icols() const override { return m_cols; }
+                virtual tensor_size_t osize() const override;
                 virtual size_t fsize() const override { return m_folds; }
                 virtual color_mode color() const override { return m_color; }
 
         private:
 
-                size_t obegin() const;
-                size_t oend() const;
+                tensor_size_t obegin() const;
+                tensor_size_t oend() const;
 
         private:
 
                 // attributes
                 charset         m_charset;
-                size_t          m_rows;
-                size_t          m_cols;
+                tensor_size_t   m_rows;
+                tensor_size_t   m_cols;
                 size_t          m_folds;
                 color_mode      m_color;
                 size_t          m_size;

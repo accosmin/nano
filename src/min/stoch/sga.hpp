@@ -18,7 +18,6 @@ namespace min
         struct stoch_sga_t
         {
                 using param_t = stoch_params_t<tproblem>;
-                using tsize = typename param_t::tsize;
                 using tstate = typename param_t::tstate;
                 using tscalar = typename param_t::tscalar;
                 using tvector = typename param_t::tvector;
@@ -27,8 +26,8 @@ namespace min
                 ///
                 /// \brief constructor
                 ///
-                stoch_sga_t(    tsize epochs,
-                                tsize epoch_size,
+                stoch_sga_t(    std::size_t epochs,
+                                std::size_t epoch_size,
                                 tscalar alpha0,
                                 tscalar decay,
                                 const topulog& ulog = topulog())
@@ -52,9 +51,9 @@ namespace min
                         // running-weighted-averaged gradient
                         average_vector_t<tscalar, tvector> gavg(x0.size());
 
-                        for (tsize e = 0, k = 1; e < m_param.m_epochs; e ++)
+                        for (std::size_t e = 0, k = 1; e < m_param.m_epochs; e ++)
                         {
-                                for (tsize i = 0; i < m_param.m_epoch_size; i ++, k ++)
+                                for (std::size_t i = 0; i < m_param.m_epoch_size; i ++, k ++)
                                 {
                                         // learning rate
                                         const tscalar alpha = m_param.alpha(k);

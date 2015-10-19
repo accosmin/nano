@@ -18,15 +18,15 @@ namespace cortex
         {
         }
 
-        size_t conv_layer_t::resize(const tensor_t& tensor)
+        tensor_size_t conv_layer_t::resize(const tensor_t& tensor)
         {
-                const size_t idims = tensor.dims();
-                const size_t irows = tensor.rows();
-                const size_t icols = tensor.cols();
+                const auto idims = tensor.dims();
+                const auto irows = tensor.rows();
+                const auto icols = tensor.cols();
 
-                const size_t odims = math::clamp(text::from_params<size_t>(configuration(), "dims", 16), 1, 256);
-                const size_t krows = math::clamp(text::from_params<size_t>(configuration(), "rows", 8), 1, 32);
-                const size_t kcols = math::clamp(text::from_params<size_t>(configuration(), "cols", 8), 1, 32);
+                const auto odims = math::clamp(text::from_params<tensor_size_t>(configuration(), "dims", 16), 1, 256);
+                const auto krows = math::clamp(text::from_params<tensor_size_t>(configuration(), "rows", 8), 1, 32);
+                const auto kcols = math::clamp(text::from_params<tensor_size_t>(configuration(), "cols", 8), 1, 32);
 
                 // check convolution size
                 if (irows < krows || icols < kcols)
@@ -40,8 +40,8 @@ namespace cortex
                         throw std::runtime_error("convolution layer: " + message);
                 }
 
-                const size_t orows = irows - krows + 1;
-                const size_t ocols = icols - kcols + 1;
+                const tensor_size_t orows = irows - krows + 1;
+                const tensor_size_t ocols = icols - kcols + 1;
 
                 // resize buffers
                 m_idata.resize(idims, irows, icols);
@@ -86,7 +86,7 @@ namespace cortex
                 return params;
         }
 
-        size_t conv_layer_t::psize() const
+        tensor_size_t conv_layer_t::psize() const
         {
                 return m_kdata.size() + m_bdata.size();
         }
@@ -98,9 +98,9 @@ namespace cortex
 
         const tensor_t& conv_layer_t::output(const tensor_t& input)
         {
-                assert(idims() == static_cast<size_t>(input.dims()));
-                assert(irows() == static_cast<size_t>(input.rows()));
-                assert(icols() == static_cast<size_t>(input.cols()));
+                assert(idims() == input.dims());
+                assert(irows() == input.rows());
+                assert(icols() == input.cols());
 
                 m_idata = input;
 
@@ -108,7 +108,7 @@ namespace cortex
                 m_kconv.output(m_idata, m_odata);
 
                 // +bias
-                for (size_t o = 0; o < odims(); o ++)
+                for (tensor_size_t o = 0; o < odims(); o ++)
                 {
                         m_odata.vector(o).array() += m_bdata(o);
                 }
@@ -118,9 +118,9 @@ namespace cortex
 
         const tensor_t& conv_layer_t::ginput(const tensor_t& output)
         {
-                assert(odims() == static_cast<size_t>(output.dims()));
-                assert(orows() == static_cast<size_t>(output.rows()));
-                assert(ocols() == static_cast<size_t>(output.cols()));
+                assert(odims() == output.dims());
+                assert(orows() == output.rows());
+                assert(ocols() == output.cols());
 
                 m_odata = output;
 
@@ -131,9 +131,9 @@ namespace cortex
 
         void conv_layer_t::gparam(const tensor_t& output, scalar_t* gradient)
         {
-                assert(odims() == static_cast<size_t>(output.dims()));
-                assert(orows() == static_cast<size_t>(output.rows()));
-                assert(ocols() == static_cast<size_t>(output.cols()));
+                assert(odims() == output.dims());
+                assert(orows() == output.rows());
+                assert(ocols() == output.cols());
 
                 m_odata = output;
                 
@@ -142,7 +142,7 @@ namespace cortex
                 m_kconv.gparam(m_idata, kdata, m_odata);
 
                 // wrt bias
-                for (size_t o = 0; o < odims(); o ++)
+                for (tensor_size_t o = 0; o < odims(); o ++)
                 {
                         gradient[m_kdata.size() + o] = m_odata.vector(o).sum();
                 }

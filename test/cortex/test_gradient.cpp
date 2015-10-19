@@ -83,7 +83,7 @@ namespace test
         }
 
         std::vector<std::pair<cortex::string_t, cortex::string_t> > make_grad_configs(
-                size_t& irows, size_t& icols, size_t& outputs, cortex::color_mode& color)
+                tensor_size_t& irows, tensor_size_t& icols, tensor_size_t& outputs, cortex::color_mode& color)
         {
                 // evaluate the analytical gradient vs. the finite difference approximation for various:
                 //      * convolution layers
@@ -148,9 +148,9 @@ namespace test
                 const rloss_t rloss = cortex::get_losses().get(loss_id);
                 const loss_t& loss = *rloss;
 
-                const size_t psize = model.psize();
-                const size_t isize = model.isize();
-                const size_t osize = model.osize();
+                const tensor_size_t psize = model.psize();
+                const tensor_size_t isize = model.isize();
+                const tensor_size_t osize = model.osize();
 
                 vector_t params(psize);
                 vectors_t targets(n_samples, vector_t(osize));
@@ -188,7 +188,7 @@ namespace test
                 {
                         math::random_t<scalar_t> prgen(-0.1, +0.1);
                         math::random_t<scalar_t> irgen(-0.1, +0.1);
-                        math::random_t<size_t> trgen(0, osize - 1);
+                        math::random_t<tensor_size_t> trgen(0, osize - 1);
 
                         prgen(params.data(), params.data() + psize);
                         for (vector_t& target : targets)
@@ -247,9 +247,9 @@ namespace test
                 const rloss_t rloss = cortex::get_losses().get(loss_id);
                 const loss_t& loss = *rloss;
 
-                const size_t psize = model.psize();
-                const size_t isize = model.isize();
-                const size_t osize = model.osize();
+                const tensor_size_t psize = model.psize();
+                const tensor_size_t isize = model.isize();
+                const tensor_size_t osize = model.osize();
 
                 vector_t params(psize);
                 vector_t target(osize);
@@ -290,7 +290,7 @@ namespace test
                 {
                         math::random_t<scalar_t> prgen(-1.0, +1.0);
                         math::random_t<scalar_t> irgen(-0.1, +0.1);
-                        math::random_t<size_t> trgen(0, osize - 1);
+                        math::random_t<tensor_size_t> trgen(0, osize - 1);
 
                         prgen(params.data(), params.data() + psize);
                         target = cortex::class_target(trgen(), osize);
@@ -333,9 +333,9 @@ BOOST_AUTO_TEST_CASE(test_gradient)
 
         cortex::init();
 
-        size_t cmd_irows;
-        size_t cmd_icols;
-        size_t cmd_outputs;
+        tensor_size_t cmd_irows;
+        tensor_size_t cmd_icols;
+        tensor_size_t cmd_outputs;
         color_mode cmd_color;
 
         auto configs = test::make_grad_configs(cmd_irows, cmd_icols, cmd_outputs, cmd_color);

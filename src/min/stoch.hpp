@@ -28,7 +28,8 @@ namespace min
                 const tproblem& problem,
                 const topulog& fn_ulog,
                 const tvector& x0,
-                stoch_optimizer optimizer, std::size_t epochs, std::size_t epoch_size, tscalar alpha0, tscalar decay = 0.50)
+                const stoch_optimizer optimizer, const std::size_t epochs, const std::size_t epoch_size,
+                const tscalar alpha0, const tscalar decay = tscalar(0.50))
         {
                 switch (optimizer)
                 {

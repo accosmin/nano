@@ -17,7 +17,7 @@ namespace cortex
                 return target > 0.5;
         }
 
-        vector_t class_target(const size_t ilabel, const size_t n_labels)
+        vector_t class_target(const tensor_index_t ilabel, const tensor_size_t n_labels)
         {
                 vector_t target(n_labels);
                 target.setConstant(neg_target());

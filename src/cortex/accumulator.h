@@ -85,7 +85,7 @@ namespace cortex
                 ///
                 /// \brief number of dimensions/parameters
                 ///
-                size_t psize() const;
+                tensor_size_t psize() const;
 
                 ///
                 /// \brief regularization weight (if any)

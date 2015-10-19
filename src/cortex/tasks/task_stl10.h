@@ -25,9 +25,9 @@ namespace cortex
                 virtual bool load(const string_t& dir) override;
 
                 // access functions
-                virtual size_t irows() const override { return 96; }
-                virtual size_t icols() const override { return 96; }
-                virtual size_t osize() const override { return 10; }
+                virtual tensor_size_t irows() const override { return 96; }
+                virtual tensor_size_t icols() const override { return 96; }
+                virtual tensor_size_t osize() const override { return 10; }
                 virtual size_t fsize() const override { return 10; }
                 virtual color_mode color() const override { return color_mode::rgba; }
                                                    

@@ -31,7 +31,7 @@ namespace cortex
                 virtual ~activation_layer_t() {}
 
                 // resize to process new tensors of the given type
-                virtual size_t resize(const tensor_t& tensor) override
+                virtual tensor_size_t resize(const tensor_t& tensor) override
                 {
                         return _resize(tensor);
                 }
@@ -50,23 +50,23 @@ namespace cortex
                 virtual void gparam(const tensor_t& output, scalar_t*) override { return _gparam(output); }
 
                 // access functions
-                virtual size_t idims() const override { return m_data.dims(); }
-                virtual size_t irows() const override { return m_data.rows(); }
-                virtual size_t icols() const override { return m_data.cols(); }
-                virtual size_t odims() const override { return m_data.dims(); }
-                virtual size_t orows() const override { return m_data.rows(); }
-                virtual size_t ocols() const override { return m_data.cols(); }
-                virtual size_t psize() const override { return 0; }
+                virtual tensor_size_t idims() const override { return m_data.dims(); }
+                virtual tensor_size_t irows() const override { return m_data.rows(); }
+                virtual tensor_size_t icols() const override { return m_data.cols(); }
+                virtual tensor_size_t odims() const override { return m_data.dims(); }
+                virtual tensor_size_t orows() const override { return m_data.rows(); }
+                virtual tensor_size_t ocols() const override { return m_data.cols(); }
+                virtual tensor_size_t psize() const override { return 0; }
 
                 // flops
-                virtual size_t output_flops() const override { return m_data.size(); }
-                virtual size_t ginput_flops() const override { return m_data.size(); }
-                virtual size_t gparam_flops() const override { return 0; }
+                virtual tensor_size_t output_flops() const override { return m_data.size(); }
+                virtual tensor_size_t ginput_flops() const override { return m_data.size(); }
+                virtual tensor_size_t gparam_flops() const override { return 0; }
 
         private:
 
                 // resize to process new inputs, returns the number of parameters
-                size_t _resize(const tensor_t& tensor)
+                tensor_size_t _resize(const tensor_t& tensor)
                 {
                         m_data.resize(tensor.dims(), tensor.rows(), tensor.cols());
 

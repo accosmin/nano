@@ -16,7 +16,6 @@ namespace min
         struct stoch_params_t : public params_t<tproblem>
         {
                 using param_t = stoch_params_t<tproblem>;
-                using tsize = typename param_t::tsize;
                 using tstate = typename param_t::tstate;
                 using tscalar = typename param_t::tscalar;
                 using tvector = typename param_t::tvector;
@@ -25,8 +24,8 @@ namespace min
                 ///
                 /// \brief constructor
                 ///
-                stoch_params_t( tsize epochs,
-                                tsize epoch_size,
+                stoch_params_t( std::size_t epochs,
+                                std::size_t epoch_size,
                                 tscalar alpha0,
                                 tscalar decay,
                                 const topulog& u = topulog())
@@ -49,7 +48,7 @@ namespace min
                 ///
                 /// \brief current learning rate (following the decay rate)
                 ///
-                tscalar alpha(tsize iter) const
+                tscalar alpha(std::size_t iter) const
                 {
                         return min::decay(m_alpha0, iter, m_decay);
                 }
@@ -57,14 +56,14 @@ namespace min
                 ///
                 /// \brief running-average weight
                 ///
-                tscalar weight(tsize k) const
+                tscalar weight(std::size_t k) const
                 {
-                        return tscalar(k) / tscalar(m_epochs * m_epoch_size);
+                        return static_cast<tscalar>(k) / static_cast<tscalar>(m_epochs * m_epoch_size);
                 }
 
                 // attributes
-                tsize           m_epochs;               ///< number of epochs
-                tsize           m_epoch_size;           ///< epoch size in number of iterations
+                std::size_t     m_epochs;               ///< number of epochs
+                std::size_t     m_epoch_size;           ///< epoch size in number of iterations
                 tscalar         m_alpha0;               ///< initial learning rate
                 tscalar         m_decay;                ///< learning rate's decay rate
                 tscalar         m_epsilon;              ///< constant

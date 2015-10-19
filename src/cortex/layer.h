@@ -41,7 +41,7 @@ namespace cortex
                 ///
                 /// \brief resize to process new tensors of the given type
                 ///
-                virtual size_t resize(const tensor_t& tensor) = 0;
+                virtual tensor_size_t resize(const tensor_t& tensor) = 0;
 
                 ///
                 /// \brief reset parameters to zero
@@ -77,33 +77,33 @@ namespace cortex
                 ///
                 /// \brief returns the input/output dimensions
                 ///
-                virtual size_t idims() const = 0;
-                virtual size_t irows() const = 0;
-                virtual size_t icols() const = 0;
+                virtual tensor_size_t idims() const = 0;
+                virtual tensor_size_t irows() const = 0;
+                virtual tensor_size_t icols() const = 0;
 
-                virtual size_t odims() const = 0;
-                virtual size_t orows() const = 0;
-                virtual size_t ocols() const = 0;
+                virtual tensor_size_t odims() const = 0;
+                virtual tensor_size_t orows() const = 0;
+                virtual tensor_size_t ocols() const = 0;
 
                 ///
                 /// \brief returns the number of (optimization) parameters
                 ///
-                virtual size_t psize() const = 0;
+                virtual tensor_size_t psize() const = 0;
 
                 ///
                 /// \brief returns the approximate number of FLOPs to compute the output
                 ///
-                virtual size_t output_flops() const = 0;
+                virtual tensor_size_t output_flops() const = 0;
 
                 ///
                 /// \brief returns the approximate number of FLOPs to compute the gradient wrt the inputs
                 ///
-                virtual size_t ginput_flops() const = 0;
+                virtual tensor_size_t ginput_flops() const = 0;
 
                 ///
                 /// \brief returns the approximate number of FLOPs to compute the gradient wrt the outputs
                 ///
-                virtual size_t gparam_flops() const = 0;
+                virtual tensor_size_t gparam_flops() const = 0;
         };
 }
 

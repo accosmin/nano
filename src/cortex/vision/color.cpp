@@ -213,9 +213,9 @@ namespace cortex
 
         rgba_t color::make_opposite_random_rgba(const rgba_t source)
         {
-                const auto cr = 0xFF - get_red(source);
-                const auto cg = 0xFF - get_green(source);
-                const auto cb = 0xFF - get_blue(source);
+                const auto cr = static_cast<int>(0xFF - get_red(source));
+                const auto cg = static_cast<int>(0xFF - get_green(source));
+                const auto cb = static_cast<int>(0xFF - get_blue(source));
 
                 math::random_t<int> rng(-55, +55);
 

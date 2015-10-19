@@ -23,5 +23,5 @@ namespace cortex
         ///
         /// \brief target value for multi-class single-label classification problems with [n_labels] classes
         ///
-        NANOCV_PUBLIC vector_t class_target(const size_t ilabel, const size_t n_labels);
+        NANOCV_PUBLIC vector_t class_target(const tensor_index_t ilabel, const tensor_size_t n_labels);
 }

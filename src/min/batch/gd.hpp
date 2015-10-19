@@ -25,7 +25,7 @@ namespace min
                 ///
                 /// \brief constructor
                 ///
-                batch_gd_t(     tsize max_iterations,
+                batch_gd_t(     std::size_t max_iterations,
                                 tscalar epsilon,
                                 ls_initializer lsinit,
                                 ls_strategy lsstrat,
@@ -39,7 +39,7 @@ namespace min
                 ///
                 tstate operator()(const tproblem& problem, const tvector& x0) const
                 {
-                        assert(problem.size() == static_cast<tsize>(x0.size()));
+                        assert(problem.size() == x0.size());
 
                         tstate cstate(problem, x0);             // current state
 
@@ -50,7 +50,7 @@ namespace min
                         linesearch_strategy_t<tproblem> ls_step(m_param.m_ls_strategy, 1e-4, 0.1);
 
                         // iterate until convergence
-                        for (tsize i = 0; i < m_param.m_max_iterations && m_param.ulog(cstate); i ++)
+                        for (std::size_t i = 0; i < m_param.m_max_iterations && m_param.ulog(cstate); i ++)
                         {
                                 // check convergence
                                 if (cstate.converged(m_param.m_epsilon))
