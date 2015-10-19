@@ -13,7 +13,7 @@
 #include <tuple>
 
 namespace
-{        
+{
         using namespace cortex;
 
         template
