@@ -16,9 +16,9 @@ namespace tensor
         {
         public:
 
-                typedef typename ttensor::Index                 tsize;
-                typedef typename ttensor::Scalar                tscalar;
-                typedef typename tensor::matrix_t<tscalar>      tmatrix;
+                using tsize = typename ttensor::Index;
+                using tscalar = typename ttensor::Scalar;
+                using tmatrix = typename tensor::matrix_t<tscalar>;
 
                 ///
                 /// \brief constructor

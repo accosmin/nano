@@ -31,7 +31,7 @@ namespace cortex
                 scalar_t                m_verror_var;   ///< validation error (variance)
         };
 
-        typedef std::vector<trainer_state_t> trainer_states_t;
+        using trainer_states_t = std::vector<trainer_state_t>;
 
         ///
         /// \brief compare two training states

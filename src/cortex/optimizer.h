@@ -14,10 +14,10 @@ namespace cortex
         using opt_size_t = opt_problem_t::tsize;
         using opt_state_t = opt_problem_t::tstate;
 
-        using opt_opsize_t = opt_problem_t::top_size;
-        using opt_opfval_t = opt_problem_t::top_fval;
-        using opt_opgrad_t = opt_problem_t::top_grad;
-        using opt_opulog_t = opt_problem_t::top_ulog;
+        using opt_opsize_t = opt_problem_t::topsize;
+        using opt_opfval_t = opt_problem_t::topfval;
+        using opt_opgrad_t = opt_problem_t::topgrad;
+        using opt_opulog_t = opt_problem_t::topulog;
 }
 
 namespace text

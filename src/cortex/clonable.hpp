@@ -14,16 +14,14 @@ namespace cortex
         ///
         template
         <
-                typename tobject,
-                typename tstring = std::string
+                typename tobject
         >
         class clonable_t
-        {        
+        {
         public:
 
-                typedef tobject                         object_t;
-                typedef tstring                         string_t;
-                typedef std::shared_ptr<tobject>        robject_t;
+                using trobject = std::shared_ptr<tobject>;
+                using tstring = std::string;
 
                 ///
                 /// \brief constructor
@@ -36,8 +34,8 @@ namespace cortex
                 ///
                 /// \brief create an object clone
                 ///
-                virtual robject_t make(const tstring& configuration) const = 0;
-                virtual robject_t clone() const = 0;
+                virtual trobject make(const tstring& configuration) const = 0;
+                virtual trobject clone() const = 0;
                 
                 ///
                 /// \brief describe the object
@@ -52,15 +50,15 @@ namespace cortex
         };
 
         #define NANOCV_MAKE_CLONABLE(base_class, description_text) \
-                virtual robject_t make(const string_t& configuration) const override \
+                virtual trobject make(const tstring& configuration) const override \
                 { \
                         return std::make_shared<base_class>(configuration); \
                 } \
-                virtual robject_t clone() const override \
+                virtual trobject clone() const override \
                 { \
                         return std::make_shared<base_class>(*this); \
                 } \
-                virtual string_t description() const override \
+                virtual tstring description() const override \
                 { \
                         return description_text; \
                 }

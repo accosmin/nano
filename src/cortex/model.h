@@ -1,5 +1,6 @@
 #pragma once
 
+#include "string.h"
 #include "manager.hpp"
 #include "vision/image.h"
 #include <boost/archive/binary_iarchive.hpp>
@@ -13,8 +14,8 @@ namespace cortex
         ///
         /// \brief stores registered prototypes
         ///
-        typedef manager_t<model_t>              model_manager_t;
-        typedef model_manager_t::robject_t      rmodel_t;
+        using model_manager_t = manager_t<model_t>;
+        using rmodel_t = model_manager_t::trobject;
 
         NANOCV_PUBLIC model_manager_t& get_models();
 

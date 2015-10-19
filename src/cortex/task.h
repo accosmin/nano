@@ -11,8 +11,8 @@ namespace cortex
         ///
         /// \brief manage tasks (register new ones, query and clone them)
         ///
-        typedef manager_t<task_t>               task_manager_t;
-        typedef task_manager_t::robject_t       rtask_t;
+        using task_manager_t = manager_t<task_t>;
+        using rtask_t = task_manager_t::trobject;
 
         NANOCV_PUBLIC task_manager_t& get_tasks();
 

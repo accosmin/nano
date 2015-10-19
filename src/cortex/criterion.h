@@ -13,8 +13,8 @@ namespace cortex
         ///
         /// \brief stores registered prototypes
         ///
-        typedef manager_t<criterion_t>                  criterion_manager_t;
-        typedef criterion_manager_t::robject_t          rcriterion_t;
+        using criterion_manager_t = manager_t<criterion_t>;
+        using rcriterion_t = criterion_manager_t::trobject;
 
         NANOCV_PUBLIC criterion_manager_t& get_criteria();
 

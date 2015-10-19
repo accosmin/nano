@@ -15,13 +15,13 @@ namespace tensor
         {
         public:
 
-                typedef tensor_base_t<tmap>     tbase;
-                typedef typename tbase::tscalar tscalar;
-                typedef typename tbase::tsize   tsize;
+                using tbase = tensor_base_t<tmap>;
+                using tsize = typename tbase::tsize;
+                using tscalar = typename tbase::tscalar;
 
                 // Eigen compatible
-                typedef typename tbase::Scalar  Scalar;
-                typedef typename tbase::Index   Index;
+                using Index = typename tbase::Index;
+                using Scalar = typename tbase::Scalar;
 
                 ///
                 /// \brief constructor

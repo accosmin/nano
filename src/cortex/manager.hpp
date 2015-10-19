@@ -13,14 +13,14 @@ namespace cortex
         ///
         template
         <
-                class tobject,
-                typename tstring = std::string
+                class tobject
         >
-        class manager_t : public singleton_t<manager_t<tobject, tstring> >
+        class manager_t : public singleton_t<manager_t<tobject>>
 	{
         public:
 
-                typedef typename clonable_t<tobject, tstring>::robject_t        robject_t;
+                using tstring = typename clonable_t<tobject>::tstring;
+                using trobject = typename clonable_t<tobject>::trobject;
 
                 ///
                 /// \brief add a new object with the given ID
@@ -41,7 +41,7 @@ namespace cortex
                 ///
                 /// \brief retrieve the object associated with the given ID
                 ///
-                robject_t get(const tstring& id) const
+                trobject get(const tstring& id) const
                 {
                         const auto it = m_protos.find(id);
                         assert_it(id, it);
@@ -51,7 +51,7 @@ namespace cortex
                 ///
                 /// \brief retrieve the object associated with the given ID, constructed from the given parameters
                 ///
-                robject_t get(const tstring& id, const tstring& params) const
+                trobject get(const tstring& id, const tstring& params) const
                 {
                         const auto it = m_protos.find(id);
                         assert_it(id, it);
@@ -100,6 +100,6 @@ namespace cortex
 	private:
 
                 // attributes
-                std::map<tstring, robject_t>    m_protos;       ///< registered objects
+                std::map<tstring, trobject>     m_protos;       ///< registered object instances
         };
 }

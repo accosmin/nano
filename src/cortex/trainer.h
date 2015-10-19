@@ -14,8 +14,8 @@ namespace cortex
         ///
         /// \brief stores registered prototypes
         ///
-        typedef manager_t<trainer_t>            trainer_manager_t;
-        typedef trainer_manager_t::robject_t    rtrainer_t;
+        using trainer_manager_t = manager_t<trainer_t>;
+        using rtrainer_t = trainer_manager_t::trobject;
 
         NANOCV_PUBLIC trainer_manager_t& get_trainers();
                 

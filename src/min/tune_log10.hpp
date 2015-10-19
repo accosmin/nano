@@ -65,8 +65,8 @@ namespace min
         auto tune_log10(const toperator& op,
                 tscalar minlog, tscalar maxlog, tscalar epslog, tsize splits)
         {
-                typedef decltype(op(tscalar(0)))        tresult;
-                typedef std::tuple<tresult, tscalar>    trecord;
+                using tresult = decltype(op(tscalar(0)));
+                using trecord = std::tuple<tresult, tscalar>;
 
                 std::set<trecord> history;
 

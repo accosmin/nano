@@ -64,15 +64,15 @@ namespace math
                 
         private:
 
-                typedef std::mt19937_64                                 gen_t;
+                using gen_t = std::mt19937_64;
 
-                typedef typename std::conditional
+                using die_t = typename std::conditional
                 <
                         std::is_arithmetic<tscalar>::value &&
                         std::is_integral<tscalar>::value,
                         std::uniform_int_distribution<tscalar>,
                         std::uniform_real_distribution<tscalar>
-                >::type                                                 die_t;
+                >::type;
 
                 // attributes
                 gen_t           m_gen;

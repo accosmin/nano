@@ -76,7 +76,7 @@ namespace cortex
                         buffer_type               m_dtype;
                 };
 
-                typedef std::vector<section_t>  sections_t;
+                using sections_t = std::vector<section_t>;
 
                 ///
                 /// \brief read a multi-dimensional array consisting of multiple sections.

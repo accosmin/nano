@@ -10,8 +10,8 @@ namespace cortex
         ///
         /// \brief fold: <fold index, protocol: train|test>
         ///
-        typedef std::pair<size_t, protocol>     fold_t;
-        typedef std::vector<fold_t>             folds_t;
+        using fold_t = std::pair<size_t, protocol>;
+        using folds_t = std::vector<fold_t>;
 
         ///
         /// \brief image-indexed sample
@@ -41,9 +41,9 @@ namespace cortex
                 fold_t          m_fold;
         };
 
-        typedef std::vector<sample_t>           samples_t;
-        typedef samples_t::iterator             samples_it_t;
-        typedef samples_t::const_iterator       samples_const_it_t;
+        using samples_t = std::vector<sample_t>;
+        using samples_it_t = samples_t::iterator;
+        using samples_const_it_t = samples_t::const_iterator;
 
         ///
         /// \brief collect the distinct labels of the given samples

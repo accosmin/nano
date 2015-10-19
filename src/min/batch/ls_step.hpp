@@ -20,8 +20,8 @@ namespace min
         {
         public:
 
-                typedef tscalar_        tscalar;
-                typedef tsize_          tsize;
+                using tsize = tsize_;
+                using tscalar = tscalar_;
 
                 ///
                 /// \brief constructor

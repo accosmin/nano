@@ -5,10 +5,10 @@
 #include <iomanip>
 
 namespace cortex
-{       
-        typedef std::chrono::duration<std::size_t, std::milli>  milliseconds_t;
-        typedef std::chrono::duration<std::size_t, std::micro>  microseconds_t;
-        typedef std::chrono::duration<std::size_t>              seconds_t;
+{
+        using seconds_t = std::chrono::duration<std::size_t>;
+        using milliseconds_t = std::chrono::duration<std::size_t, std::milli>;
+        using microseconds_t = std::chrono::duration<std::size_t, std::micro>;
 
         namespace
         {

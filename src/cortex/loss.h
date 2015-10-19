@@ -1,6 +1,7 @@
 #pragma once
 
 #include "arch.h"
+#include "string.h"
 #include "tensor.h"
 #include "manager.hpp"
 
@@ -11,8 +12,8 @@ namespace cortex
         ///
         /// \brief stores registered prototypes
         ///
-        typedef manager_t<loss_t>               loss_manager_t;
-        typedef loss_manager_t::robject_t       rloss_t;
+        using loss_manager_t = manager_t<loss_t>;
+        using rloss_t = loss_manager_t::trobject;
 
         NANOCV_PUBLIC loss_manager_t& get_losses();
 

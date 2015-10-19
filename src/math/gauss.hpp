@@ -31,7 +31,7 @@ namespace math
         {
         public:
 
-                typedef tscalar_        tscalar;
+                using tscalar = tscalar_;
 
                 ///
                 /// \brief constructor

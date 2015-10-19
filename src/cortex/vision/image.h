@@ -139,5 +139,5 @@ namespace cortex
                 luma_matrix_t           m_luma;
         };
 
-        typedef std::vector<image_t>    images_t;
+        using images_t = std::vector<image_t>;
 }

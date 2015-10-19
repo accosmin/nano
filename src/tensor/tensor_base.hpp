@@ -16,13 +16,13 @@ namespace tensor
         {
         public:
 
-                typedef typename tvector::Scalar        tscalar;
-                typedef typename tvector::Index         tindex;
-                typedef tindex                          tsize;
+                using tsize = typename tvector::Index;
+                using tindex = typename tvector::Index;
+                using tscalar = typename tvector::Scalar;
 
                 // Eigen compatible
-                typedef tscalar         Scalar;
-                typedef tindex          Index;
+                using Index = tindex;
+                using Scalar = tscalar;                
 
                 ///
                 /// \brief constructor

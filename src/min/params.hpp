@@ -13,16 +13,16 @@ namespace min
         {
         public:
 
-                typedef typename tproblem::tscalar      tscalar;
-                typedef typename tproblem::tsize        tsize;
-                typedef typename tproblem::tvector      tvector;
-                typedef typename tproblem::tstate       tstate;
-                typedef typename tproblem::top_ulog     top_ulog;
+                using tsize = typename tproblem::tsize;
+                using tstate = typename tproblem::tstate;
+                using tscalar = typename tproblem::tscalar;
+                using tvector = typename tproblem::tvector;
+                using topulog = typename tproblem::topulog;
 
                 ///
                 /// \brief constructor
                 ///
-                params_t(const top_ulog& u = top_ulog())
+                params_t(const topulog& u = topulog())
                         :       m_ulog(u)
                 {
                 }
@@ -42,7 +42,7 @@ namespace min
                         return m_ulog ? m_ulog(state) : true;
                 }
 
-                top_ulog        m_ulog;                 ///< update log: (tstate current_state_after_each_epoch)
+                topulog         m_ulog;         ///< update log: (the current_state_after_each_epoch)
         };
 }
 

@@ -42,7 +42,7 @@ namespace cortex
 
         private:
 
-                typedef std::chrono::high_resolution_clock::time_point  time_t;
+                using time_t = std::chrono::high_resolution_clock::time_point;
 
         private:
 

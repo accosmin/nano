@@ -19,9 +19,9 @@ namespace min
         auto tune_fixed(const toperator& op,
                 const tvalues1& values1)
         {
-                typedef typename std::remove_reference<decltype(*values1.begin())>::type        tvalue1;
-                typedef decltype(op(tvalue1(0)))                                                tresult;
-                typedef std::tuple<tresult, tvalue1>                                            trecord;
+                using tvalue1 = typename std::remove_reference<decltype(*values1.begin())>::type;
+                using tresult = decltype(op(tvalue1(0)));
+                using trecord = std::tuple<tresult, tvalue1>;
 
                 std::set<trecord> history;
                 for (auto param1 : values1)
@@ -46,10 +46,10 @@ namespace min
         auto tune_fixed(const toperator& op,
                 const tvalues1& values1, const tvalues2& values2)
         {
-                typedef typename std::remove_reference<decltype(*values1.begin())>::type        tvalue1;
-                typedef typename std::remove_reference<decltype(*values2.begin())>::type        tvalue2;
-                typedef decltype(op(tvalue1(0), tvalue2(0)))                                    tresult;
-                typedef std::tuple<tresult, tvalue1, tvalue2>                                   trecord;
+                using tvalue1 = typename std::remove_reference<decltype(*values1.begin())>::type;
+                using tvalue2 = typename std::remove_reference<decltype(*values2.begin())>::type;
+                using tresult = decltype(op(tvalue1(0), tvalue2(0)));
+                using trecord = std::tuple<tresult, tvalue1, tvalue2>;
 
                 std::set<trecord> history;
                 for (auto param1 : values1)
@@ -78,11 +78,11 @@ namespace min
         auto tune_fixed(const toperator& op,
                 const tvalues1& values1, const tvalues2& values2, const tvalues3& values3)
         {
-                typedef typename std::remove_reference<decltype(*values1.begin())>::type        tvalue1;
-                typedef typename std::remove_reference<decltype(*values2.begin())>::type        tvalue2;
-                typedef typename std::remove_reference<decltype(*values3.begin())>::type        tvalue3;
-                typedef decltype(op(tvalue1(0), tvalue2(0), tvalue3(0)))                        tresult;
-                typedef std::tuple<tresult, tvalue1, tvalue2, tvalue3>                          trecord;
+                using tvalue1 = typename std::remove_reference<decltype(*values1.begin())>::type;
+                using tvalue2 = typename std::remove_reference<decltype(*values2.begin())>::type;
+                using tvalue3 = typename std::remove_reference<decltype(*values3.begin())>::type;
+                using tresult = decltype(op(tvalue1(0), tvalue2(0), tvalue3(3)));
+                using trecord = std::tuple<tresult, tvalue1, tvalue2, tvalue3>;
 
                 std::set<trecord> history;
                 for (auto param1 : values1)

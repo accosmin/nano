@@ -6,7 +6,7 @@
 namespace cortex
 {
         // strings
-        typedef std::string                     string_t;
-        typedef std::vector<string_t>           strings_t;
+        using string_t = std::string;
+        using strings_t = std::vector<string_t>;
 }
 

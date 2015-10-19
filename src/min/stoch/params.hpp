@@ -15,11 +15,12 @@ namespace min
         >
         struct stoch_params_t : public params_t<tproblem>
         {
-                typedef typename tproblem::tscalar      tscalar;
-                typedef typename tproblem::tsize        tsize;
-                typedef typename tproblem::tvector      tvector;
-                typedef typename tproblem::tstate       tstate;
-                typedef typename tproblem::top_ulog     top_ulog;
+                using param_t = stoch_params_t<tproblem>;
+                using tsize = typename param_t::tsize;
+                using tstate = typename param_t::tstate;
+                using tscalar = typename param_t::tscalar;
+                using tvector = typename param_t::tvector;
+                using topulog = typename param_t::topulog;
 
                 ///
                 /// \brief constructor
@@ -28,7 +29,7 @@ namespace min
                                 tsize epoch_size,
                                 tscalar alpha0,
                                 tscalar decay,
-                                const top_ulog& u = top_ulog())
+                                const topulog& u = topulog())
                         :       params_t<tproblem>(u),
                                 m_epochs(epochs),
                                 m_epoch_size(epoch_size),

@@ -16,12 +16,12 @@ namespace min
         >
         struct stoch_adadelta_t
         {
-                typedef stoch_params_t<tproblem>        param_t;
-                typedef typename param_t::tscalar       tscalar;
-                typedef typename param_t::tsize         tsize;
-                typedef typename param_t::tvector       tvector;
-                typedef typename param_t::tstate        tstate;
-                typedef typename param_t::top_ulog      top_ulog;
+                using param_t = stoch_params_t<tproblem>;
+                using tsize = typename param_t::tsize;
+                using tstate = typename param_t::tstate;
+                using tscalar = typename param_t::tscalar;
+                using tvector = typename param_t::tvector;
+                using topulog = typename param_t::topulog;
 
                 ///
                 /// \brief constructor
@@ -30,7 +30,7 @@ namespace min
                                 tsize epoch_size,
                                 tscalar alpha0,
                                 tscalar decay,
-                                const top_ulog& ulog = top_ulog())
+                                const topulog& ulog = topulog())
                         :       m_param(epochs, epoch_size, alpha0, decay, ulog)
                 {
                 }

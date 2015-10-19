@@ -5,10 +5,14 @@
 namespace cortex
 {
         ///
-        /// \brief image coordinate
+        /// \brief image coordinate (in pixels)
         ///
-        typedef int32_t         coord_t;
-        typedef int32_t         area_t;
+        using coord_t = int32_t;
+
+        ///
+        /// \brief image area (in pixels)
+        /// 
+        using area_t = int32_t;
 }
 
 

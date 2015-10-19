@@ -1,6 +1,7 @@
 #pragma once
 
 #include "arch.h"
+#include "string.h"
 #include "tensor.h"
 #include "manager.hpp"
 
@@ -11,9 +12,9 @@ namespace cortex
         ///
         /// \brief stores registered prototypes
         ///
-        typedef manager_t<layer_t>                      layer_manager_t;
-        typedef layer_manager_t::robject_t              rlayer_t;
-        typedef std::vector<rlayer_t>                   rlayers_t;
+        using layer_manager_t = manager_t<layer_t>;
+        using rlayer_t = layer_manager_t::trobject;
+        using rlayers_t = std::vector<rlayer_t>;
 
         NANOCV_PUBLIC layer_manager_t& get_layers();
 

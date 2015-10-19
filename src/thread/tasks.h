@@ -8,7 +8,7 @@
 
 namespace thread
 {
-        typedef std::function<void()>   task_t;
+        using task_t = std::function<void()>;
 
         ///
         /// \brief queue tasks to be run in a thread pool

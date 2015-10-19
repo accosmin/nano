@@ -10,17 +10,17 @@
 
 namespace cortex
 {
-        // RGBA
-        typedef uint32_t                                        rgba_t;
-        typedef tensor::matrix_t<rgba_t>                        rgba_matrix_t;
+        /// RGBA
+        using rgba_t = uint32_t;
+        using rgba_matrix_t = tensor::matrix_t<rgba_t>;
 
-        // CIELab
-        typedef tensor::fixed_size_vector_t<scalar_t, 4>        cielab_t;
-        typedef tensor::matrix_t<cielab_t>                      cielab_matrix_t;
+        /// CIELab
+        using cielab_t = tensor::fixed_size_vector_t<scalar_t, 4>;
+        using cielab_matrix_t = tensor::matrix_t<cielab_t>;
 
-        // grayscale
-        typedef uint8_t                                         luma_t;
-        typedef tensor::matrix_t<luma_t>                        luma_matrix_t;
+        /// grayscale
+        using luma_t = uint8_t;
+        using luma_matrix_t = tensor::matrix_t<luma_t>;
 
         ///
         /// \brief color channels

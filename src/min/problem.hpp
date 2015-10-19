@@ -28,17 +28,17 @@ namespace min
                 using tsize = typename tstate::tsize;
                 using tvector = typename tstate::tvector;
 
-                /// dimensionality operator: size = op()
-                using top_size = std::function<tsize()>;
+                /// number of dimensions operator: size = op()
+                using topsize = std::function<tsize()>;
 
                 /// function value operator: f = op(x)
-                using top_fval = std::function<tscalar(const tvector&)>;
+                using topfval = std::function<tscalar(const tvector&)>;
 
                 /// function value & gradient operator: f = op(x, g)
-                using top_grad = std::function<tscalar(const tvector&, tvector&)>;
+                using topgrad = std::function<tscalar(const tvector&, tvector&)>;
 
                 /// logging operator: op(state), returns false if the optimization should stop
-                using top_ulog = std::function<bool(const tstate&)>;
+                using topulog = std::function<bool(const tstate&)>;
 
                 ///
                 /// \brief constructor (analytic gradient)
@@ -50,12 +50,12 @@ namespace min
                         typename topgrad
                 >
                 explicit problem_t(
-                        const topsize& op_size,
-                        const topfval& op_fval,
-                        const topgrad& op_grad)
-                        :       m_op_size(op_size),
-                                m_op_fval(op_fval),
-                                m_op_grad(op_grad)
+                        const topsize& opsize,
+                        const topfval& opfval,
+                        const topgrad& opgrad)
+                        :       m_opsize(opsize),
+                                m_opfval(opfval),
+                                m_opgrad(opgrad)
                 {
                         clear();
                 }
@@ -69,9 +69,9 @@ namespace min
                         typename topfval
                 >
                 explicit problem_t(
-                        const topsize& op_size,
-                        const topfval& op_fval)
-                        :       problem_t(op_size, op_fval, top_grad())
+                        const topsize& opsize,
+                        const topfval& opfval)
+                        :       problem_t(opsize, opfval, topgrad())
                 {
                 }
 
@@ -117,9 +117,9 @@ namespace min
         private:
 
                 // attributes
-                top_size                m_op_size;
-                top_fval                m_op_fval;
-                top_grad                m_op_grad;
+                topsize                 m_opsize;
+                topfval                 m_opfval;
+                topgrad                 m_opgrad;
                 mutable tsize           m_fcalls;               ///< #function value evaluations
                 mutable tsize           m_gcalls;               ///< #function gradient evaluations
         };
@@ -134,24 +134,24 @@ namespace min
         template <typename ts, typename tv>
         typename problem_t<ts, tv>::tsize problem_t<ts, tv>::size() const
         {
-                return m_op_size();
+                return m_opsize();
         }
 
         template <typename ts, typename tv>
         typename problem_t<ts, tv>::tscalar problem_t<ts, tv>::operator()(const tvector& x) const
         {
                 m_fcalls ++;
-                return m_op_fval(x);
+                return m_opfval(x);
         }
 
         template <typename ts, typename tv>
         typename problem_t<ts, tv>::tscalar problem_t<ts, tv>::operator()(const tvector& x, tvector& g) const
         {
-                if (m_op_grad)
+                if (m_opgrad)
                 {
                         m_fcalls ++;
                         m_gcalls ++;
-                        return m_op_grad(x, g);
+                        return m_opgrad(x, g);
                 }
                 else
                 {
@@ -163,10 +163,10 @@ namespace min
         template <typename ts, typename tv>
         typename problem_t<ts, tv>::tscalar problem_t<ts, tv>::grad_accuracy(const tvector& x) const
         {
-                if (m_op_grad)
+                if (m_opgrad)
                 {
                         tvector gx;
-                        const tscalar fx = m_op_grad(x, gx);
+                        const tscalar fx = m_opgrad(x, gx);
 
                         tvector gx_approx;
                         eval_grad(x, gx_approx);
@@ -202,7 +202,7 @@ namespace min
                         xp(i) += dx;
                         xn(i) -= dx;
 
-                        g(i) = (m_op_fval(xp) - m_op_fval(xn)) / (xp(i) - xn(i));
+                        g(i) = (m_opfval(xp) - m_opfval(xn)) / (xp(i) - xn(i));
                 }
         }
 }

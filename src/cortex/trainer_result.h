@@ -10,16 +10,16 @@ namespace cortex
         ///
         /// \brief training configuration (e.g. learning rate, regularization weight)
         ///
-        typedef scalars_t               trainer_config_t;
+        using trainer_config_t = scalars_t;
         
         ///
         /// \brief training history (configuration, optimization states)
         ///
-        typedef std::map
+        using trainer_history_t = std::map
         <
                 trainer_config_t,
                 trainer_states_t
-        >                               trainer_history_t;
+        >;
 
         ///
         /// \brief return code for updating the state

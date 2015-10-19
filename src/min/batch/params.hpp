@@ -14,11 +14,11 @@ namespace min
         >
         struct batch_params_t : public params_t<tproblem>
         {
-                typedef typename tproblem::tscalar      tscalar;
-                typedef typename tproblem::tsize        tsize;
-                typedef typename tproblem::tvector      tvector;
-                typedef typename tproblem::tstate       tstate;
-                typedef typename tproblem::top_ulog     top_ulog;
+                using tsize = typename tproblem::tsize;
+                using tstate = typename tproblem::tstate;
+                using tscalar = typename tproblem::tscalar;
+                using tvector = typename tproblem::tvector;
+                using topulog = typename tproblem::topulog;
 
                 ///
                 /// \brief constructor
@@ -27,7 +27,7 @@ namespace min
                                 tscalar epsilon,
                                 ls_initializer lsinit,
                                 ls_strategy lsstrat,
-                                const top_ulog& u = top_ulog())
+                                const topulog& u = topulog())
                         :       params_t<tproblem>(u),
                                 m_max_iterations(max_iterations),
                                 m_epsilon(epsilon),

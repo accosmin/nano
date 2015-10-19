@@ -13,9 +13,9 @@ namespace cortex
 	{
         public:
 
-                typedef tobject                                 this_object;
-                typedef std::unique_ptr<this_object>            this_instance_t;
-                typedef std::once_flag                          this_mutex_t;
+                using this_object = tobject;
+                using this_mutex_t = std::once_flag;
+                using this_instance_t = std::unique_ptr<this_object>;
 
                 ///
                 /// \brief acccess the only instance
