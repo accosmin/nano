@@ -61,11 +61,12 @@ namespace
                 {
                         const auto op = [&] (const auto& problem, const auto& x0)
                         {
-                                tscalar alpha0, decay;
-                                min::tune_stochastic(problem, x0, optimizer, epoch_size, alpha0, decay);
+                                tscalar alpha, decay;
+                                min::tune_stochastic(
+                                        problem, x0, optimizer, epoch_size, alpha, decay);
 
                                 return  min::minimize(
-                                        problem, nullptr, x0, optimizer, epochs, epoch_size, alpha0, decay);
+                                        problem, nullptr, x0, optimizer, epochs, epoch_size, alpha, decay);
                         };
 
                         const string_t name =

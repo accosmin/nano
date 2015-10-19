@@ -63,7 +63,7 @@ namespace min
         void tune_stochastic(
                 const tproblem& problem, const tvector& x0,
                 min::stoch_optimizer optimizer, tsize epoch_size,
-                tscalar& best_alpha0, tscalar& best_decay)
+                tscalar& best_alpha, tscalar& best_decay)
         {
                 const auto alphas = tunable_alphas<tscalar>(optimizer);
                 const auto decays = tunable_decays<tscalar>(optimizer);
@@ -76,7 +76,7 @@ namespace min
                 };
 
                 const auto config = min::tune_fixed(op, alphas, decays);
-                best_alpha0 = std::get<1>(config);
+                best_alpha = std::get<1>(config);
                 best_decay = std::get<2>(config);
         }
 }

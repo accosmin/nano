@@ -86,9 +86,15 @@ namespace benchmark
                 table.print(std::cout);
         }
 
-        template <typename tfunction, typename toptimizer, typename tostats>
+        template 
+        <
+                typename tscalar,
+                typename tvector = typename min::function_t<tscalar>::tvector,
+                typename toptimizer, 
+                typename tostats
+        >
         void benchmark_function(
-                const tfunction& func, const vectors_t& x0s, const toptimizer& op, const string_t& name,
+                const min::function_t<tscalar>& func, const std::vector<tvector>& x0s, const toptimizer& op, const string_t& name,
                 const scalars_t& gthres,
                 tostats& stats, tostats& gstats)
         {
@@ -110,7 +116,7 @@ namespace benchmark
                         const auto& x0 = x0s[t];
 
                         const auto problem = func.problem();
-                        const auto state0 = typename tfunction::tproblem::tstate(problem, x0);
+                        const auto state0 = typename min::function_t<tscalar>::tproblem::tstate(problem, x0);
                         const auto g0 = state0.convergence_criteria();
 
                         // optimize

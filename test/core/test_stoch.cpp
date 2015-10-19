@@ -61,11 +61,11 @@ namespace test
                                 const auto f0 = problem(x0);
 
                                 // optimize
-                                tscalar alpha0, decay;
-                                min::tune_stochastic(problem, x0, optimizer, epoch_size, alpha0, decay);
+                                tscalar alpha, decay;
+                                min::tune_stochastic(problem, x0, optimizer, epoch_size, alpha, decay);
 
                                 const auto state = min::minimize(
-                                        problem, nullptr, x0, optimizer, epochs, epoch_size, alpha0, decay);
+                                        problem, nullptr, x0, optimizer, epochs, epoch_size, alpha, decay);
 
                                 const auto x = state.x;
                                 const auto f = state.f;
@@ -87,7 +87,7 @@ namespace test
                                           << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
                                           << ", f = " << f0 << "/" << f
                                           << ", g = " << g
-                                          << ", alpha0 = " << alpha0
+                                          << ", alpha = " << alpha
                                           << ", decay = " << decay << "." << std::endl;
 
                                 // check function value decrease
