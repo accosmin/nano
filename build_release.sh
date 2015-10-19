@@ -1,6 +1,6 @@
 #!/bin/bash
 
-compiler="g++" 	# "", "g++", "clang++"
+compiler="clang++" 	# "", "g++", "clang++"
 
 build_type=Release
 build_sys=ninja
