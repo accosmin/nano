@@ -10,5 +10,4 @@ install
 docs/html
 *~
 *.bak
-*.txt
 *.log
