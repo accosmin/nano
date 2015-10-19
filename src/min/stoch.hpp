@@ -22,9 +22,9 @@ namespace min
                 typename tsize = typename tproblem::tsize,
                 typename tstate = typename tproblem::tstate,
                 typename tvector = typename tproblem::tvector,
-                typename topulog = typename tproblem::top_ulog
+                typename topulog = typename tproblem::topulog
         >
-        tstate minimize(
+        auto minimize(
                 const tproblem& problem,
                 const topulog& fn_ulog,
                 const tvector& x0,

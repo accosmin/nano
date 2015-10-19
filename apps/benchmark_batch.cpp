@@ -23,7 +23,8 @@ namespace
                 typename tscalar,
                 typename tostats,
                 typename tsize = typename min::function_t<tscalar>::tsize,
-                typename tvector = typename min::function_t<tscalar>::tvector
+                typename tvector = typename min::function_t<tscalar>::tvector,
+                typename tproblem = typename min::function_t<tscalar>::tproblem
         >
         void check_function(const min::function_t<tscalar>& function, tostats& gstats)
         {
@@ -85,7 +86,7 @@ namespace
                         for (min::ls_initializer ls_init : ls_initializers)
                                 for (min::ls_strategy ls_strat : ls_strategies)
                 {
-                        const auto op = [&] (const auto& problem, const auto& x0)
+                        const auto op = [&] (const tproblem& problem, const tvector& x0)
                         {
                                 return  min::minimize(
                                         problem, nullptr, x0, optimizer, iterations, epsilon, ls_init, ls_strat);
