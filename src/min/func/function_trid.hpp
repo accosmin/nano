@@ -72,7 +72,7 @@ namespace min
 
                 virtual bool is_valid(const tvector& x) const override
                 {
-                        return util::norm(x) < m_dims * m_dims;
+                        return util::norm(x) < tscalar(1) + m_dims * m_dims;
                 }
 
                 virtual bool is_minima(const tvector& x, const tscalar epsilon) const override

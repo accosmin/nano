@@ -10,11 +10,10 @@ namespace test
 {
         template
         <
-                typename tfunction,
-                typename tscalar = typename tfunction::tscalar,
-                typename tvector = typename tfunction::tvector
+                typename tscalar,
+                typename tvector = typename min::function_t<tscalar>::tvector
         >
-        void test_function(const tfunction& function)
+        void test_function(const min::function_t<tscalar>& function)
         {
                 const size_t trials = 1024;
 
