@@ -1,12 +1,20 @@
 language: cpp
 
+sudo: false
+
 compiler:
-        - clang
-        - gcc
-
-before_script:
-        - "sudo apt-get update"
-        - "sudo apt-get install libboost-all-dev libarchive-dev ninja-build libdevil-dev"
-
+ - clang
+ - gcc
+        
+addons:
+ apt:
+  packages:
+    - time
+    - cmake
+    - ninja-build
+    - libboost-dev 
+    - libdevil-dev
+    - libarchive-dev    
+    
 script:
-        - "time bash build_release.sh"
+ - "time bash build_release.sh"
