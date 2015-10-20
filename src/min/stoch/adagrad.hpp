@@ -42,7 +42,7 @@ namespace min
                 ///
                 tstate operator()(const tproblem& problem, const tvector& x0) const
                 {
-                        assert(problem.size() == static_cast<std::size_t>(x0.size()));
+                        assert(problem.size() == x0.size());
 
                         // current state
                         tstate cstate(problem, x0);
