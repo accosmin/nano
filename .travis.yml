@@ -24,6 +24,7 @@ addons:
     - g++-4.9
     - g++-5
     - ninja-build
+    - boost-latest
     - libeigen3-dev
     - libboost-test-dev
     - libboost-system-dev
