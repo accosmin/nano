@@ -5,19 +5,10 @@ sudo: false
 compiler:
  - clang
  - gcc
-        
-addons:
- apt:
-  packages:
-    - time    
-    - clang-3.7
-    - gcc-4.9
-    - gcc-5
-    - cmake
-    - ninja-build
-    - libboost-dev 
-    - libdevil-dev
-    - libarchive-dev    
+ 
+before_install:
+ - sudo apt-get update -qq
+ - sudo apt-get install clang-3.7 gcc-4.9 gcc-5 cmake ninja-build libboost-dev libdevil-dev libarchive-dev    
     
 script:
  - "bash build_release.sh --build-sys make"
