@@ -7,9 +7,11 @@ compiler:
  - gcc
  
 addons:
-  apt_sources:
-    - ubuntu-toolchain-r-test
-    - george-edison55-precise-backports
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - george-edison55-precise-backports
+    
   apt_packages:
     - time
     - cmake
