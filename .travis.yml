@@ -9,8 +9,12 @@ compiler:
 addons:
   apt:
     sources:
+      - boost-latest
+      # for Eigen3.2+
       - kubuntu-backports
+      # for gcc4.9+
       - ubuntu-toolchain-r-test
+      # for cmake3.1+
       - george-edison55-precise-backports
     
   apt_packages:
