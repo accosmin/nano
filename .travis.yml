@@ -8,10 +8,7 @@ compiler:
  
 addons:
   apt_packages:
-    - time    
-    - clang-3.7
-    - gcc-4.9
-    - gcc-5
+    - time
     - cmake
     - ninja-build
     - libboost-dev 
