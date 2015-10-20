@@ -31,7 +31,7 @@ namespace tensor
         }
 
         ///
-        /// \brief gradient wrt the input: odata(o) = sum(i, idata(i) @ kdata(i, o))
+        /// \brief gradient wrt the input: idata(i) = sum(o, odata(o) @ kdata(i, o))
         ///
         template
         <
@@ -59,7 +59,7 @@ namespace tensor
         }
 
         ///
-        /// \brief gradient wrt the parameters: odata(o) = sum(i, idata(i) @ kdata(i, o))
+        /// \brief gradient wrt the parameters: kdata(i, o) = idata(i) @ odata(o)
         ///
         template
         <

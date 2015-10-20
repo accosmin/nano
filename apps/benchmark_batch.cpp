@@ -28,7 +28,7 @@ namespace
         >
         void check_function(const min::function_t<tscalar>& function, tostats& gstats)
         {
-                const auto iterations = size_t(1024);
+                const auto iterations = size_t(8 * 1024);
                 const auto epsilon = math::epsilon0<tscalar>();
                 const auto trials = size_t(1024);
 

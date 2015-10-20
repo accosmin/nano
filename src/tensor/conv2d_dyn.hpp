@@ -1,7 +1,5 @@
 #pragma once
 
-#include "conv2d_3x3.hpp"
-#include "conv2d_5x5.hpp"
 #include "conv2d_dot.hpp"
 #include "conv2d_doti.hpp"
 #include "conv2d_mad.hpp"
@@ -31,8 +29,8 @@ namespace tensor
                         // decode at run-time the kernel size
                         switch (kcols)
                         {
-                        case 3:         conv2d_3x3_t()(idata, kdata, odata); break;
-                        case 5:         conv2d_5x5_t()(idata, kdata, odata); break;
+                        case 3:         conv2d_doti_t<3>()(idata, kdata, odata); break;
+                        case 5:         conv2d_doti_t<5>()(idata, kdata, odata); break;
                         case 7:         conv2d_doti_t<7>()(idata, kdata, odata); break;
                         case 9:         conv2d_doti_t<9>()(idata, kdata, odata); break;
                         case 11:        conv2d_doti_t<11>()(idata, kdata, odata); break;
