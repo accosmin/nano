@@ -10,7 +10,8 @@ addons:
   apt_packages:
     - time
     - cmake
-    - ninja-build    
+    - ninja-build
+    - libeigen3-dev
     - libboost-test-dev
     - libboost-system-dev
     - libboost-filesystem-dev
