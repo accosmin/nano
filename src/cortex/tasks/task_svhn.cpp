@@ -116,13 +116,13 @@ namespace cortex
                 const mat5::section_t& isection = iarray.m_sections[3];
                 const mat5::section_t& lsection = larray.m_sections[3];
 
-                const indices_t& idims = iarray.m_dims;
-                const indices_t& ldims = larray.m_dims;
+                const auto& idims = iarray.m_dims;
+                const auto& ldims = larray.m_dims;
 
                 // check array size
                 if (    idims.size() != 4 ||
-                        idims[0] != irows() ||
-                        idims[1] != icols() ||
+                        static_cast<tensor_size_t>(idims[0]) != irows() ||
+                        static_cast<tensor_size_t>(idims[1]) != icols() ||
                         idims[2] != 3 ||
 
                         ldims.size() != 2 ||
@@ -168,9 +168,9 @@ namespace cortex
                         const size_t ix = irows() * icols() * 3;
                         const size_t ibeg = isection.dbegin() + i * ix;
 
-                        for (size_t r = 0, q = 0; r < irows(); r ++)
+                        for (size_t r = 0, q = 0; r < static_cast<size_t>(irows()); r ++)
                         {
-                                for (size_t c = 0; c < icols(); c ++, q ++)
+                                for (size_t c = 0; c < static_cast<size_t>(icols()); c ++, q ++)
                                 {
                                         const size_t ir = ibeg + (px * 0 + q);
                                         const size_t ig = ibeg + (px * 1 + q);

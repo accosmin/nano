@@ -73,7 +73,7 @@ namespace cortex
                         stream.read(buffer.data(), 8);
                         while (stream.read(label, 1) && stream.gcount() == 1)
                         {
-                                const size_t ilabel = math::cast<size_t>(label[0]);
+                                const tensor_index_t ilabel = math::cast<tensor_index_t>(label[0]);
                                 if (ilabel >= osize())
                                 {
                                         continue;

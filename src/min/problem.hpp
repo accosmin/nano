@@ -98,12 +98,12 @@ namespace min
                 ///
                 /// \brief number of function evalution calls
                 ///
-                tsize fcalls() const { return m_fcalls; }
+                std::size_t fcalls() const { return m_fcalls; }
 
                 ///
                 /// \brief number of function gradient calls
                 ///
-                tsize gcalls() const { return m_gcalls; }
+                std::size_t gcalls() const { return m_gcalls; }
 
                 ///
                 /// \brief compute the gradient accuracy (given vs. finite difference approximation)
@@ -120,8 +120,8 @@ namespace min
                 topsize                 m_opsize;
                 topfval                 m_opfval;
                 topgrad                 m_opgrad;
-                mutable tsize           m_fcalls;               ///< #function value evaluations
-                mutable tsize           m_gcalls;               ///< #function gradient evaluations
+                mutable std::size_t     m_fcalls;               ///< #function value evaluations
+                mutable std::size_t     m_gcalls;               ///< #function gradient evaluations
         };
 
         template <typename ts, typename tv>

@@ -157,8 +157,10 @@ namespace cortex
                 {
                         const auto fanin = layer->idims() * layer->irows() * layer->icols();
                         const auto fanout = layer->odims() * layer->orows() * layer->ocols();
-                        const auto min = -std::sqrt(6.0 / (1.0 + fanin + fanout));
-                        const auto max = +std::sqrt(6.0 / (1.0 + fanin + fanout));
+
+                        const auto div = static_cast<scalar_t>(fanin + fanout);
+                        const auto min = -std::sqrt(6.0 / (1.0 + div));
+                        const auto max = +std::sqrt(6.0 / (1.0 + div));
 
                         layer->random_params(min, max);
                 }
@@ -292,7 +294,7 @@ namespace cortex
                            << ": output = " << std::setprecision(3) << model_output_mflops
                            << ", ginput = " << std::setprecision(3) << model_ginput_mflops
                            << ", gparam = " << std::setprecision(3) << model_gparam_mflops
-                           << std::setprecision(old_precision);
+                           << std::setprecision(static_cast<int>(old_precision));
         }
 
         tensor_size_t forward_network_t::psize() const

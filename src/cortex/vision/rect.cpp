@@ -35,8 +35,8 @@ namespace cortex
 
         scalar_t overlap(const rect_t& rect1, const rect_t& rect2)
         {
-                return static_cast<scalar_t>((rect1 & rect2).area() + 1.0) /
-                       static_cast<scalar_t>((rect1 | rect2).area() + 1.0);
+                return static_cast<scalar_t>((rect1 & rect2).area() + 1) /
+                       static_cast<scalar_t>((rect1 | rect2).area() + 1);
         }
 
         bool operator==(const rect_t& rect1, const rect_t& rect2)

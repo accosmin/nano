@@ -17,9 +17,7 @@ namespace test
         {
                 const size_t trials = 1024;
 
-                const auto epsilon = (sizeof(tscalar) == sizeof(float)) ?
-                        math::epsilon3<tscalar>() :
-                        math::epsilon2<tscalar>();
+                const auto epsilon = math::epsilon2<tscalar>();
 
                 const auto dims = function.problem().size();
                 BOOST_CHECK_GT(dims, 0);
@@ -53,7 +51,6 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_functions)
 {
-        test::test_functions<float>();
         test::test_functions<double>();
         test::test_functions<long double>();
 }

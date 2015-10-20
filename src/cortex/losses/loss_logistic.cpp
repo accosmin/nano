@@ -18,7 +18,7 @@ namespace cortex
 
                 const auto edges = targets.array() * scores.array();
 
-                return (edges < std::numeric_limits<scalar_t>::epsilon()).count();
+                return static_cast<scalar_t>((edges < std::numeric_limits<scalar_t>::epsilon()).count());
         }
 
         scalar_t logistic_loss_t::value(const vector_t& targets, const vector_t& scores) const

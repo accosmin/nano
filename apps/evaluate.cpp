@@ -146,8 +146,8 @@ int main(int argc, char *argv[])
                         (ok ? ok_samples : nk_samples).push_back(sample);
                 }
 
-                log_info() << "miss-classified " << nk_samples.size() << "/" << (samples.size()) 
-                           << " = " << ((0.0 + nk_samples.size()) / (0.0 + samples.size())) << ".";
+                log_info() << "miss-classified " << nk_samples.size() << "/" << (samples.size()) << " = "
+                           << (static_cast<scalar_t>(nk_samples.size()) / static_cast<scalar_t>(samples.size())) << ".";
 
                 // save classification results
                 if (!cmd_save_dir.empty())
@@ -175,8 +175,9 @@ int main(int argc, char *argv[])
                                 const samples_t label_ll_samples = ll_sampler.get();
 
                                 log_info() << "miss-classified " << label_nk_samples.size()
-                                           << "/" << label_ll_samples.size()
-                                           << " = " << ((0.0 + label_nk_samples.size()) / (0.0 + label_ll_samples.size()))
+                                           << "/" << label_ll_samples.size() << " = "
+                                           << (static_cast<scalar_t>(label_nk_samples.size()) /
+                                               static_cast<scalar_t>(label_ll_samples.size()))
                                            << " [" << label << "] samples.";
 
                                 rtask->save_as_images(label_ok_samples, lbasepath + "_ok", grows, gcols, 8, ok_bkcolor);

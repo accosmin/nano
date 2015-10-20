@@ -83,8 +83,8 @@ namespace cortex
                 {
                         matrix_t fieldx(rows, cols), fieldy(rows, cols);
 
-                        const scalar_t cx = 0.5 * cols;
-                        const scalar_t cy = 0.5 * rows;
+                        const scalar_t cx = 0.5 * static_cast<scalar_t>(cols);
+                        const scalar_t cy = 0.5 * static_cast<scalar_t>(rows);
                         const scalar_t id = 1.0 / (math::square(cx) + math::square(cy));
 
                         math::random_t<scalar_t> rng(-noise, +noise);

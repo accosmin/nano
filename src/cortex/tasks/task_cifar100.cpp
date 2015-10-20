@@ -164,7 +164,7 @@ namespace cortex
                 while ( stream.read(label, 2) &&       // coarse & fine labels!
                         stream.read(buffer.data(), buffer.size()))
                 {
-                        const size_t ilabel = math::cast<size_t>(label[1]);
+                        const tensor_index_t ilabel = math::cast<tensor_index_t>(label[1]);
                         if (ilabel >= osize())
                         {
                                 continue;

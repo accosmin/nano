@@ -28,7 +28,7 @@ namespace min
                 ///
                 /// \brief constructor
                 ///
-                explicit state_t(tsize size = 0)
+                explicit state_t(const tsize size = 0)
                         :       x(size), g(size), d(size),
                                 f(std::numeric_limits<tscalar>::max()),
                                 m_iterations(0),
@@ -145,9 +145,9 @@ namespace min
                 tvector         x, g, d;                ///< parameter, gradient, descent direction
                 tscalar         f;                      ///< function value, step size
 
-                tsize           m_iterations;
-                tsize           m_fcalls;               ///< #function value evaluations
-                tsize           m_gcalls;               ///< #function gradient evaluations
+                std::size_t     m_iterations;
+                std::size_t     m_fcalls;               ///< #function value evaluations
+                std::size_t     m_gcalls;               ///< #function gradient evaluations
         };
 
         ///

@@ -11,21 +11,21 @@ BOOST_AUTO_TEST_CASE(test_random)
 
         for (size_t t = 0; t < tests; t ++)
         {
-                const int32_t min = 17 + t;
-                const int32_t max = min + t * 25 + 4;
+                const size_t min = 17 + t;
+                const size_t max = min + t * 25 + 4;
 
                 // initialize (uniform) random number generator for the index
-                math::random_t<int32_t> rgen(min, max);
-                math::random_index_t<int32_t> rindex(rgen);
+                math::random_t<size_t> rgen(min, max);
+                math::random_index_t<size_t> rindex(rgen);
 
                 // initialize (uniform) random number generator for the size
-                math::random_t<int32_t> rsize(0, std::numeric_limits<int32_t>::max());
+                math::random_t<size_t> rsize(0, std::numeric_limits<size_t>::max());
 
                 // check index generator
                 for (size_t tt = 0; tt < test_size; tt ++)
                 {
-                        const int32_t size = rsize();
-                        const int32_t index = rindex(size);
+                        const size_t size = rsize();
+                        const size_t index = rindex(size);
 
                         BOOST_CHECK_GE(index, 0);
                         BOOST_CHECK_LT(index, size);

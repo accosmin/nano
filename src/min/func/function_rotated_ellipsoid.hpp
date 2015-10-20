@@ -57,7 +57,7 @@ namespace min
                                 {
                                         for (tsize j = 0; j <= i; j ++)
                                         {
-                                                gx(j) += 2.0 * x(j);
+                                                gx(j) += 2 * x(j);
                                         }
                                 }
 

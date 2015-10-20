@@ -40,14 +40,14 @@ namespace cortex
         {
                 assert(count() > 0);
 
-                return m_value / count();
+                return m_value / static_cast<scalar_t>(count());
         }
 
         vector_t avg_criterion_t::vgrad() const
         {
                 assert(count() > 0);
 
-                return m_vgrad / count();
+                return m_vgrad / static_cast<scalar_t>(count());
         }
 
         bool avg_criterion_t::can_regularize() const

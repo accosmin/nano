@@ -75,11 +75,12 @@ namespace min
                 // greedy sort-of-branch-and-bound search
                 while ((maxlog - minlog) > epslog && epslog > tscalar(0))
                 {
-                        const tscalar varlog = (maxlog - minlog) / tscalar(splits - 1);
+                        const auto varlog = (maxlog - minlog) / tscalar(splits - 1);
 
                         for (tsize i = 0; i < splits; i ++)
                         {
-                                const trecord value = tune_log10_detail::evaluate(op, minlog + i * varlog);
+                                const auto crtlog = minlog + static_cast<tscalar>(i) * varlog;
+                                const trecord value = tune_log10_detail::evaluate(op, crtlog);
 
                                 history.insert(value);
                         }

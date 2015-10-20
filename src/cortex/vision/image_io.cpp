@@ -95,7 +95,7 @@ namespace cortex
                 }
 
                 const bool ret = 
-                        ilLoadL(type, buffer, buffer_size) &&
+                        ilLoadL(type, buffer, static_cast<unsigned int>(buffer_size)) &&
                         load_image(mode, rgba, luma);
 
                 ilDeleteImage(id);

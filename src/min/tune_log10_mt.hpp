@@ -40,7 +40,8 @@ namespace min
                         {
                                 pool.enqueue([=,&history,&mutex]()
                                 {
-                                        const trecord value = tune_log10_detail::evaluate(op, minlog + i * varlog);
+                                        const auto crtlog = minlog + static_cast<tscalar>(i) * varlog;
+                                        const trecord value = tune_log10_detail::evaluate(op, crtlog);
 
                                         // synchronize per thread
                                         const std::lock_guard<std::mutex> lock(mutex);

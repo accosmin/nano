@@ -79,7 +79,9 @@ namespace cortex
 
                         const auto dx = static_cast<scalar_t>(icols) / static_cast<scalar_t>(objects);
 
-                        const auto ppx = math::clamp(math::cast<int>(dx * object_index + rng()), 0, icols - 1);
+                        const auto x = dx * static_cast<scalar_t>(object_index) + rng();
+
+                        const auto ppx = math::clamp(math::cast<int>(x), 0, icols - 1);
                         const auto ppw = math::clamp(math::cast<int>(dx + rng()), 0, icols - ppx);
 
                         const auto ppy = math::clamp(math::cast<int>(rng()), 0, irows - 1);

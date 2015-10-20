@@ -178,7 +178,7 @@ namespace cortex
                         int32_t label;
                         for (size_t i = 0; i < cnt && stream.read(reinterpret_cast<char*>(&label), sizeof(label)); i ++)
                         {
-                                const size_t ilabel = label;                                
+                                const tensor_index_t ilabel = label;
                                 for (size_t cam = 0; cam < n_cameras; cam ++)
                                 {
                                         sample_t sample(iindex, sample_region(0, 0));

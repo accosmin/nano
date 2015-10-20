@@ -132,7 +132,7 @@ namespace cortex
                 // load annotations
                 while (stream.read(&label, 1))
                 {
-                        const size_t ilabel = math::cast<size_t>(label) - 1;
+                        const tensor_index_t ilabel = math::cast<tensor_index_t>(label) - 1;
 
                         sample_t sample(iindex, sample_region(0, 0));
                         if (ilabel < osize())

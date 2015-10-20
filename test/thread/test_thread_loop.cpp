@@ -73,15 +73,16 @@ BOOST_AUTO_TEST_CASE(test_thread_loop)
         // operator to test
         const auto op = [](size_t i)
         {
-                const scalar_t vi = std::cos(i + 0.0) + std::sin(i + 0.0);
+                const auto ii = static_cast<scalar_t>(i);
+                const auto vi = std::cos(ii) + std::sin(ii);
 
-                scalar_t temp = 0.0;
+                auto temp = scalar_t(0);
                 for (int j = 0; j < 16; j ++)
                 {
-                        temp += j * std::tan(-i + j);
+                        temp += j * std::tan(-ii + j);
                 }
 
-                return vi * temp / 32.0;
+                return vi * temp / 32;
         };
 
         // test for different problems size

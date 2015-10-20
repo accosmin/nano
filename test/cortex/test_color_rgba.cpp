@@ -49,9 +49,9 @@ BOOST_AUTO_TEST_CASE(test_color_tensor)
 {
         using namespace cortex;
 
-        const size_t tests = 17;
+        const int tests = 17;
 
-        for (size_t test = 0; test < tests; test ++)
+        for (int test = 0; test < tests; test ++)
         {
                 math::random_t<int> rng(16, 64);
 
