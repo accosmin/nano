@@ -4,7 +4,6 @@
 #include "cortex/measure.hpp"
 #include "tensor/conv3d.hpp"
 #include "tensor/random.hpp"
-#include "tensor/conv3d_lin.hpp"
 #include "tensor/conv2d_cpp.hpp"
 #include "tensor/conv2d_dyn.hpp"
 #include "tensor/conv2d_eig.hpp"
@@ -16,10 +15,10 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 
-using namespace cortex;
-
 namespace
 {
+        using namespace cortex;
+
         string_t make_header(const int idims, const int isize, const int ksize, const int odims)
         {
                 const int osize = isize - ksize + 1;
@@ -115,9 +114,6 @@ namespace
                 ttensor idata, kdata, odata;
                 make_tensors(isize, idims, ksize, odims, idata, kdata, odata);
 
-                tensor::conv3d_lin_t<ttensor> conv3d;
-                conv3d.reset(kdata, idims, odims);
-
                 ttensor odata_ret = odata;
 
                 row << measure_output(tensor::conv2d_eig_t(), idata, kdata, odata_ret, trials);
@@ -125,7 +121,6 @@ namespace
                 row << measure_output(tensor::conv2d_dot_t(), idata, kdata, odata_ret, trials);
                 row << measure_output(tensor::conv2d_mad_t(), idata, kdata, odata_ret, trials);
                 row << measure_output(tensor::conv2d_dyn_t(), idata, kdata, odata_ret, trials);
-                row << cortex::measure_robustly_usec([&] () { conv3d.output(idata, odata_ret); }, trials);
         }
 
         template
@@ -138,9 +133,6 @@ namespace
                 ttensor idata, kdata, odata;
                 make_tensors(isize, idims, ksize, odims, idata, kdata, odata);
 
-                tensor::conv3d_lin_t<ttensor> conv3d;
-                conv3d.reset(kdata, idims, odims);
-
                 ttensor idata_ret = idata;
 
                 row << measure_ginput(tensor::corr2d_egb_t(), idata_ret, kdata, odata, trials);
@@ -149,7 +141,6 @@ namespace
                 row << measure_ginput(tensor::corr2d_mdk_t(), idata_ret, kdata, odata, trials);
                 row << measure_ginput(tensor::corr2d_mdo_t(), idata_ret, kdata, odata, trials);
                 row << measure_ginput(tensor::corr2d_dyn_t(), idata_ret, kdata, odata, trials);
-                row << cortex::measure_robustly_usec([&] () { conv3d.ginput(idata_ret, odata); }, trials);
         }
 
         template
@@ -162,9 +153,6 @@ namespace
                 ttensor idata, kdata, odata;
                 make_tensors(isize, idims, ksize, odims, idata, kdata, odata);
 
-                tensor::conv3d_lin_t<ttensor> conv3d;
-                conv3d.reset(kdata, idims, odims);
-
                 ttensor kdata_ret = kdata;
 
                 row << measure_gparam(tensor::conv2d_eig_t(), idata, kdata_ret, odata, trials);
@@ -172,12 +160,13 @@ namespace
                 row << measure_gparam(tensor::conv2d_dot_t(), idata, kdata_ret, odata, trials);
                 row << measure_gparam(tensor::conv2d_mad_t(), idata, kdata_ret, odata, trials);
                 row << measure_gparam(tensor::conv2d_dyn_t(), idata, kdata_ret, odata, trials);
-                row << cortex::measure_robustly_usec([&] () { conv3d.gparam(idata, kdata_ret, odata); }, trials);
         }
 }
 
 int main(int argc, char* argv[])
 {
+        using namespace cortex;
+
         const int min_isize = 4;
         const int max_isize = 48;
 
@@ -221,8 +210,7 @@ int main(int argc, char* argv[])
                         << "2D (cpp)"
                         << "2D (dot)"
                         << "2D (mad)"
-                        << "2D (dyn)"
-                        << "3D (lin)";
+                        << "2D (dyn)";
 
                 for (int isize = min_isize; isize <= max_isize; isize += 4)
                 {
@@ -246,8 +234,7 @@ int main(int argc, char* argv[])
                         << "2D (cpp)"
                         << "2D (dot)"
                         << "2D (mad)"
-                        << "2D (dyn)"
-                        << "3D (lin)";
+                        << "2D (dyn)";
 
                 for (int isize = min_isize; isize <= max_isize; isize += 4)
                 {
@@ -272,8 +259,7 @@ int main(int argc, char* argv[])
                         << "2D (cpp)"
                         << "2D (mkd)"
                         << "2D (mko)"
-                        << "2D (dyn)"
-                        << "3D (lin)";
+                        << "2D (dyn)";
 
                 for (int isize = min_isize; isize <= max_isize; isize += 4)
                 {

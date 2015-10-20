@@ -3,9 +3,12 @@
 #include "math/random.hpp"
 #include "cortex/logger.h"
 #include "tensor/random.hpp"
+#include "tensor/conv3d.hpp"
 #include "text/to_string.hpp"
 #include "text/from_params.hpp"
 #include "tensor/serialize.hpp"
+#include "tensor/conv2d_dyn.hpp"
+#include "tensor/corr2d_dyn.hpp"
 
 namespace cortex
 {
@@ -56,16 +59,12 @@ namespace cortex
         {
                 m_kdata.setZero();
                 m_bdata.setZero();
-
-                params_changed();
         }
 
         void conv_layer_t::random_params(scalar_t min, scalar_t max)
         {
                 tensor::set_random(m_kdata, math::random_t<scalar_t>(min, max));
                 tensor::set_random(m_bdata, math::random_t<scalar_t>(min, max));
-
-                params_changed();
         }
 
         scalar_t* conv_layer_t::save_params(scalar_t* params) const
@@ -81,19 +80,12 @@ namespace cortex
                 params = tensor::load(m_kdata, params);
                 params = tensor::load(m_bdata, params);
 
-                params_changed();
-
                 return params;
         }
 
         tensor_size_t conv_layer_t::psize() const
         {
                 return m_kdata.size() + m_bdata.size();
-        }
-
-        void conv_layer_t::params_changed()
-        {
-                m_kconv.reset(m_kdata, idims(), odims());
         }
 
         const tensor_t& conv_layer_t::output(const tensor_t& input)
@@ -105,7 +97,7 @@ namespace cortex
                 m_idata = input;
 
                 // convolution
-                m_kconv.output(m_idata, m_odata);
+                tensor::conv3d_output(tensor::conv2d_dyn_t(), m_idata, m_kdata, m_odata);
 
                 // +bias
                 for (tensor_size_t o = 0; o < odims(); o ++)
@@ -124,7 +116,7 @@ namespace cortex
 
                 m_odata = output;
 
-                m_kconv.ginput(m_idata, m_odata);
+                tensor::conv3d_ginput(tensor::corr2d_dyn_t(), m_idata, m_kdata, m_odata);
 
                 return m_idata;
         }
@@ -138,8 +130,7 @@ namespace cortex
                 m_odata = output;
                 
                 // wrt convolution
-                auto kdata = tensor::map_tensor(gradient, m_kdata.dims(), m_kdata.rows(), m_kdata.cols());
-                m_kconv.gparam(m_idata, kdata, m_odata);
+                tensor::conv3d_gparam(tensor::conv2d_dyn_t(), m_idata, m_kdata, m_odata);
 
                 // wrt bias
                 for (tensor_size_t o = 0; o < odims(); o ++)

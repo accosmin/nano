@@ -1,7 +1,6 @@
 #pragma once
 
 #include "cortex/layer.h"
-#include "tensor/conv3d_lin.hpp"
 
 namespace cortex
 {
@@ -68,8 +67,6 @@ namespace cortex
                 tensor_size_t ippsize() const { return m_idata.planeSize(); }
                 tensor_size_t kppsize() const { return m_kdata.planeSize(); }
 
-                void params_changed();
-
         private:
 
                 // attributes
@@ -77,8 +74,5 @@ namespace cortex
                 tensor_t                m_odata;        ///< output buffer:             odims x orows x ocols
                 tensor_t                m_kdata;        ///< convolution kernels:       idims x odims x krows x kcols
                 tensor_t                m_bdata;        ///< convolution bias:          odims x 1 x 1
-
-                tensor::conv3d_lin_t
-                <tensor_t>              m_kconv;        ///< convolution kernel
         };
 }
