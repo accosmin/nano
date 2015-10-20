@@ -10,7 +10,7 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
-      - kalakris-cmake
+      - george-edison55-precise-backports
     
   apt_packages:
     - time
@@ -28,4 +28,4 @@ addons:
     - libarchive-dev     
     
 script:
- - "bash build_release.sh --build-sys make"
+ - "bash build_release.sh --build-sys ninja"
