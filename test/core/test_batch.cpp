@@ -23,12 +23,11 @@ namespace test
         static void check_function(const min::function_t<tscalar>& function)
         {
                 const auto iterations = size_t(8 * 1024);
-                const auto epsilon = math::epsilon0<tscalar>();
-                const auto trials = size_t(128);
+                const auto trials = size_t(32);
 
                 const auto dims = function.problem().size();
 
-                math::random_t<tscalar> rgen(-1.0, +1.0);
+                math::random_t<tscalar> rgen(tscalar(-1), tscalar(+1));
 
                 // generate fixed random trials
                 std::vector<tvector> x0s(trials);
@@ -43,18 +42,18 @@ namespace test
                 {
                         { min::batch_optimizer::GD, 1e+3 },             // ok, but potentially very slow!
 
-                        { min::batch_optimizer::CGD, 1e+1 },
-                        { min::batch_optimizer::CGD_CD, 1e+1 },
+                        { min::batch_optimizer::CGD, 1e+0 },
+                        { min::batch_optimizer::CGD_CD, 1e+0 },
                         { min::batch_optimizer::CGD_DY, 1e+10 },        // bad!
                         { min::batch_optimizer::CGD_FR, 1e+10 },        // bad!
                         { min::batch_optimizer::CGD_HS, 1e+10 },        // bad!
-                        { min::batch_optimizer::CGD_LS, 1e+1 },
-                        { min::batch_optimizer::CGD_N, 1e+1 },
-                        { min::batch_optimizer::CGD_PRP, 1e+1 },
-                        { min::batch_optimizer::CGD_DYCD, 1e+1 },
-                        { min::batch_optimizer::CGD_DYHS, 1e+1 },
+                        { min::batch_optimizer::CGD_LS, 1e+0 },
+                        { min::batch_optimizer::CGD_N, 1e+0 },
+                        { min::batch_optimizer::CGD_PRP, 1e+0 },
+                        { min::batch_optimizer::CGD_DYCD, 1e+0 },
+                        { min::batch_optimizer::CGD_DYHS, 1e+0 },
 
-                        { min::batch_optimizer::LBFGS, 1e+1 }
+                        { min::batch_optimizer::LBFGS, 1e+0 }
                 };
 
                 for (const auto& optslack : optimizers)
@@ -73,7 +72,7 @@ namespace test
 
                                 // optimize
                                 const auto state = min::minimize(
-                                        problem, nullptr, x0, optimizer, iterations, epsilon);
+                                        problem, nullptr, x0, optimizer, iterations, math::epsilon0<tscalar>());
 
                                 const auto x = state.x;
                                 const auto f = state.f;
@@ -81,7 +80,7 @@ namespace test
 
                                 const auto f_thres = math::epsilon0<tscalar>();
                                 const auto g_thres = math::epsilon3<tscalar>() * slack;
-                                const auto x_thres = math::epsilon3<tscalar>() * slack * 1e+1;
+                                const auto x_thres = math::epsilon3<tscalar>() * slack * 1e+3;
 
                                 // ignore out-of-domain solutions
                                 if (!function.is_valid(x))
@@ -96,7 +95,7 @@ namespace test
                                           << ": x = [" << x0.transpose() << "]/[" << x.transpose() << "]"
                                           << ", f = " << f0 << "/" << f
                                           << ", g = " << g
-                                          << ", i = " << state.m_iterations << "." << std::endl;
+                                          << ", i = " << state.m_iterations << ".\n";
 
                                 // check function value decrease
                                 BOOST_CHECK_LE(f, f0);

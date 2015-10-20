@@ -23,11 +23,11 @@ namespace test
         {
                 const auto epochs = size_t(128);
                 const auto epoch_size = size_t(64);
-                const auto trials = size_t(128);
+                const auto trials = size_t(32);
 
                 const auto dims = function.problem().size();
 
-                math::random_t<tscalar> rgen(-1.0, +1.0);
+                math::random_t<tscalar> rgen(tscalar(-1), tscalar(+1));
 
                 // generate fixed random trials
                 std::vector<tvector> x0s(trials);
@@ -73,7 +73,7 @@ namespace test
 
                                 const auto f_thres = math::epsilon0<tscalar>();
                                 const auto g_thres = math::epsilon3<tscalar>() * 1e+3;
-                                const auto x_thres = math::epsilon3<tscalar>() * 1e+3;
+                                const auto x_thres = math::epsilon3<tscalar>() * 1e+4;
 
                                 // ignore out-of-domain solutions
                                 if (!function.is_valid(x))
@@ -88,7 +88,7 @@ namespace test
                                           << ", f = " << f0 << "/" << f
                                           << ", g = " << g
                                           << ", alpha = " << alpha
-                                          << ", decay = " << decay << "." << std::endl;
+                                          << ", decay = " << decay << ".\n";
 
                                 // check function value decrease
                                 BOOST_CHECK_LE(f, f0);

@@ -32,7 +32,7 @@ namespace
 
                 const auto dims = function.problem().size();
 
-                math::random_t<tscalar> rgen(-1.0, +1.0);
+                math::random_t<tscalar> rgen(tscalar(-1), tscalar(+1));
 
                 // generate fixed random trials
                 std::vector<tvector> x0s(trials);
