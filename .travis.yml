@@ -29,4 +29,4 @@ addons:
     - libarchive-dev     
     
 script:
- - "bash build_release.sh --build-sys ninja"
+ - "bash build_release.sh --build-sys ninja --compiler g++-4.9"
