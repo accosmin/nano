@@ -24,13 +24,8 @@ addons:
     - g++-4.9
     - g++-5
     - ninja-build
-    - boost-latest
+    - boost1.55
     - libeigen3-dev
-    - libboost-test-dev
-    - libboost-system-dev
-    - libboost-filesystem-dev
-    - libboost-serialization-dev
-    - libboost-program-options-dev
     - libdevil-dev
     - libarchive-dev     
     
