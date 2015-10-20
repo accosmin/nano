@@ -1,10 +1,12 @@
 language: cpp
 
 compiler:
-	- clang++
-	- gcc++
+        - clang
+        - gcc
 
-install:
-	- sudo apt-get update -qq
-	- sudo apt-get install -qq libarchive libboost libdevil
+before_script:
+        - "sudo apt-get update"
+        - "sudo apt-get install libboost-all-dev libarchive-dev ninja-build libdevil-dev"
 
+script:
+        - "time bash build_release.sh"
