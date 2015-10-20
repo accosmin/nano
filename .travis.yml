@@ -4,13 +4,11 @@ sudo: false
 
 compiler:
  - clang
- - gcc
  
 addons:
   apt_packages:
     - time
     - cmake
-    - gcc-4.9
     - ninja-build
     - libeigen3-dev
     - libboost-test-dev
