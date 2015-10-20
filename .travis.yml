@@ -15,6 +15,7 @@ addons:
   apt_packages:
     - time
     - cmake
+    - cmake-data
     - g++-4.9
     - g++-5
     - ninja-build
