@@ -3,13 +3,17 @@ language: cpp
 sudo: false
 
 compiler:
- - clang
- - gcc
+ - clang-3.7
+ - gcc-4.9
+ - gcc-5
         
 addons:
  apt:
   packages:
-    - time
+    - time    
+    - clang-3.7
+    - gcc-4.9
+    - gcc-5
     - cmake
     - ninja-build
     - libboost-dev 
