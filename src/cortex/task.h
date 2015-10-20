@@ -60,15 +60,15 @@ namespace cortex
                 /// \brief save the task images to file (by grouping sample patchs into (grows, gcols) grids)
                 ///
                 void save_as_images(
-                        const fold_t&, const string_t& basepath, size_t grows, size_t gcols,
-                        size_t border = 8, rgba_t bkcolor = color::make_rgba(225, 225, 0)) const;
+                        const fold_t&, const string_t& basepath, coord_t grows, coord_t gcols,
+                        coord_t border = 8, rgba_t bkcolor = color::make_rgba(225, 225, 0)) const;
 
                 ///
                 /// \brief save the task images to file (by grouping sample patchs into (grows, gcols) grids)
                 ///
                 void save_as_images(
-                        const samples_t&, const string_t& basepath, size_t grows, size_t gcols,
-                        size_t border = 8, rgba_t bkcolor = color::make_rgba(225, 225, 0)) const;
+                        const samples_t&, const string_t& basepath, coord_t grows, coord_t gcols,
+                        coord_t border = 8, rgba_t bkcolor = color::make_rgba(225, 225, 0)) const;
 
                 ///
                 /// \brief describe the task

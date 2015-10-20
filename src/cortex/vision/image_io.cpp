@@ -106,8 +106,8 @@ namespace cortex
         static bool save_image(const string_t& path,
                 color_mode mode, const rgba_matrix_t& rgba, const luma_matrix_t& luma)
         {
-                const int rows = static_cast<int>(mode == color_mode::rgba ? rgba.rows() : luma.rows());
-                const int cols = static_cast<int>(mode == color_mode::rgba ? rgba.cols() : luma.cols());
+                const auto rows = mode == color_mode::rgba ? rgba.rows() : luma.rows();
+                const auto cols = mode == color_mode::rgba ? rgba.cols() : luma.cols();
 
                 ilInit();
 
@@ -121,25 +121,26 @@ namespace cortex
                 case color_mode::luma:
                         {
                                 luma_matrix_t temp(rows, cols);
-                                for (int r = 0; r < rows; r ++)
+                                for (auto r = 0; r < rows; r ++)
                                 {
-                                        for (int c = 0; c < cols; c ++)
+                                        for (auto c = 0; c < cols; c ++)
                                         {
                                                 const luma_t val = luma(rows - 1 - r, c);
 
                                                 temp(r, c) = val;
                                         }
                                 }
-                                ret = ilTexImage(cols, rows, 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, (void*)temp.data());
+                                ret = ilTexImage(static_cast<ILuint>(cols), static_cast<ILuint>(rows),
+                                                 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, (void*)temp.data());
                         }
                         break;
 
                 case color_mode::rgba:
                         {
                                 rgba_matrix_t temp(rows, cols);
-                                for (int r = 0; r < rows; r ++)
+                                for (auto r = 0; r < rows; r ++)
                                 {
-                                        for (int c = 0; c < cols; c ++)
+                                        for (auto c = 0; c < cols; c ++)
                                         {
                                                 const rgba_t val = rgba(rows - 1 - r, c);
                                                 const rgba_t cr = color::get_red(val);
@@ -150,7 +151,8 @@ namespace cortex
                                                 temp(r, c) = color::make_rgba(ca, cb, cg, cr);
                                         }
                                 }
-                                ret = ilTexImage(cols, rows, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, (void*)temp.data());
+                                ret = ilTexImage(static_cast<ILuint>(cols), static_cast<ILuint>(rows),
+                                                 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, (void*)temp.data());
                         }
                         break;
                 }

@@ -54,8 +54,8 @@ int main(int argc, char *argv[])
         const string_t cmd_model = po_vm["model"].as<string_t>();
         const string_t cmd_input = po_vm["model-file"].as<string_t>();
         const string_t cmd_save_dir = po_vm.count("save-dir") ? po_vm["save-dir"].as<string_t>() : "";
-        const size_t cmd_save_group_rows = math::clamp(po_vm["save-group-rows"].as<size_t>(), 1, 128);
-        const size_t cmd_save_group_cols = math::clamp(po_vm["save-group-cols"].as<size_t>(), 1, 128);
+        const coord_t cmd_save_group_rows = math::clamp(po_vm["save-group-rows"].as<coord_t>(), 1, 128);
+        const coord_t cmd_save_group_cols = math::clamp(po_vm["save-group-cols"].as<coord_t>(), 1, 128);
 
         // create model
         const rmodel_t rmodel = cortex::get_models().get(cmd_model);
@@ -67,15 +67,15 @@ int main(int argc, char *argv[])
                 "failed to load model from <" + cmd_input + ">");
 
         // generate samples for each output class label
-        const size_t labels = rmodel->osize();
-        for (size_t l = 0; l < labels; l ++)
+        const tensor_size_t labels = rmodel->osize();
+        for (tensor_size_t l = 0; l < labels; l ++)
         {
                 image_grid_t grid_image(rmodel->irows(), rmodel->icols(), cmd_save_group_rows, cmd_save_group_cols);
 
                 const vector_t target = cortex::class_target(l, labels);
-                for (size_t r = 0; r < cmd_save_group_rows; r ++)
+                for (coord_t r = 0; r < cmd_save_group_rows; r ++)
                 {
-                        for (size_t c = 0; c < cmd_save_group_cols; c ++)
+                        for (coord_t c = 0; c < cmd_save_group_cols; c ++)
                         {
                                 const auto data = cortex::generate_match_target(*rmodel, target);
                                 const auto rgba = color::from_rgba_tensor(data);

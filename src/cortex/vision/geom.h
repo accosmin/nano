@@ -5,7 +5,7 @@
 namespace cortex
 {
         ///
-        /// \brief image coordinate (in pixels)
+        /// \brief image coordinate (in pixels) - 64bit to be compatible with Eigen::Index
         ///
         using coord_t = int64_t;
 

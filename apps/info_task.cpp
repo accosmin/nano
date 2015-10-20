@@ -53,8 +53,8 @@ int main(int argc, char *argv[])
         const string_t cmd_task_dir = po_vm["task-dir"].as<string_t>();
         const string_t cmd_task_params = po_vm["task-params"].as<string_t>();
         const string_t cmd_save_dir = po_vm.count("save-dir") ? po_vm["save-dir"].as<string_t>() : "";
-        const size_t cmd_save_group_rows = math::clamp(po_vm["save-group-rows"].as<size_t>(), 1, 128);
-        const size_t cmd_save_group_cols = math::clamp(po_vm["save-group-cols"].as<size_t>(), 1, 128);
+        const coord_t cmd_save_group_rows = math::clamp(po_vm["save-group-rows"].as<coord_t>(), 1, 128);
+        const coord_t cmd_save_group_cols = math::clamp(po_vm["save-group-cols"].as<coord_t>(), 1, 128);
 
         // create task
         const rtask_t rtask = cortex::get_tasks().get(cmd_task, cmd_task_params);

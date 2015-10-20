@@ -10,7 +10,7 @@ namespace
         <
                 typename tscalar
         >
-        void check_tensor(size_t dims, size_t rows, size_t cols, tscalar constant)
+        void check_tensor(int dims, int rows, int cols, tscalar constant)
         {
                 tensor::tensor_t<tscalar> tensor;
 
@@ -37,9 +37,9 @@ namespace
 
 BOOST_AUTO_TEST_CASE(test_tensor)
 {
-        const size_t dims = 4;
-        const size_t rows = 7;
-        const size_t cols = 3;
+        const int dims = 4;
+        const int rows = 7;
+        const int cols = 3;
 
         check_tensor(dims, rows, cols, 0);
         check_tensor(dims, rows, cols, 1);

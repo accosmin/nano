@@ -44,8 +44,8 @@ namespace cortex
         }
 
         void task_t::save_as_images(
-                const fold_t& fold, const string_t& basepath, size_t grows, size_t gcols,
-                size_t border, rgba_t bkcolor) const
+                const fold_t& fold, const string_t& basepath, coord_t grows, coord_t gcols,
+                coord_t border, rgba_t bkcolor) const
         {
                 // process each label ...
                 const strings_t labels = this->labels();
@@ -63,26 +63,19 @@ namespace cortex
         }
 
         void task_t::save_as_images(
-                const samples_t& samples, const string_t& basepath, size_t grows, size_t gcols,
-                size_t border, rgba_t bkcolor) const
+                const samples_t& samples, const string_t& basepath, coord_t grows, coord_t gcols,
+                coord_t border, rgba_t bkcolor) const
         {
                 for (size_t i = 0, g = 1; i < samples.size(); g ++)
                 {
                         image_grid_t grid_image(irows(), icols(), grows, gcols, border, bkcolor);
 
-                        // select samples
-                        samples_t gsamples;
-                        for ( ; i < samples.size() && gsamples.size() < grows * gcols; i ++)
+                        // compose the image block
+                        for (coord_t r = 0; r < grows; r ++)
                         {
-                                gsamples.push_back(samples[i]);
-                        }
-
-                        // ... compose the image block
-                        for (size_t k = 0, r = 0; r < grows; r ++)
-                        {
-                                for (size_t c = 0; c < gcols && k < gsamples.size(); c ++, k ++)
+                                for (coord_t c = 0; c < gcols && i < samples.size(); c ++, i ++)
                                 {
-                                        const sample_t& sample = gsamples[k];
+                                        const sample_t& sample = samples[i];
 
                                         grid_image.set(r, c, image(sample.m_index), sample.m_region);
                                 }

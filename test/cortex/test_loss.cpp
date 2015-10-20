@@ -12,7 +12,7 @@ namespace test
 {
         using namespace cortex;
 
-        void check_grad(const string_t& loss_id, size_t n_dims, size_t n_tests)
+        void check_grad(const string_t& loss_id, tensor_size_t n_dims, size_t n_tests)
         {
                 const rloss_t loss = cortex::get_losses().get(loss_id);
 
@@ -67,14 +67,14 @@ BOOST_AUTO_TEST_CASE(test_loss)
 
         const strings_t loss_ids = cortex::get_losses().ids();
 
-        const size_t cmd_min_dims = 2;
-        const size_t cmd_max_dims = 10;
+        const tensor_size_t cmd_min_dims = 2;
+        const tensor_size_t cmd_max_dims = 10;
         const size_t cmd_tests = 128;
 
         // evaluate the analytical gradient vs. the finite difference approximation
         for (const string_t& loss_id : loss_ids)
         {                
-                for (size_t cmd_dims = cmd_min_dims; cmd_dims <= cmd_max_dims; cmd_dims ++)
+                for (tensor_size_t cmd_dims = cmd_min_dims; cmd_dims <= cmd_max_dims; cmd_dims ++)
                 {
                         test::check_grad(loss_id, cmd_dims, cmd_tests);
                 }

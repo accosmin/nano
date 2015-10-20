@@ -74,8 +74,8 @@ int main(int argc, char *argv[])
         const string_t cmd_model = po_vm["model"].as<string_t>();
         const string_t cmd_input = po_vm["model-file"].as<string_t>();
         const string_t cmd_save_dir = po_vm.count("save-dir") ? po_vm["save-dir"].as<string_t>() : "";
-        const size_t cmd_save_group_rows = math::clamp(po_vm["save-group-rows"].as<size_t>(), 1, 128);
-        const size_t cmd_save_group_cols = math::clamp(po_vm["save-group-cols"].as<size_t>(), 1, 128);
+        const coord_t cmd_save_group_rows = math::clamp(po_vm["save-group-rows"].as<coord_t>(), 1, 128);
+        const coord_t cmd_save_group_cols = math::clamp(po_vm["save-group-cols"].as<coord_t>(), 1, 128);
 
         // create task
         const rtask_t rtask = cortex::get_tasks().get(cmd_task, cmd_task_params);
@@ -154,8 +154,8 @@ int main(int argc, char *argv[])
                 {
                         const string_t basepath = cmd_save_dir + "/" + cmd_task + "_test_fold" + text::to_string(f + 1);
 
-                        const size_t grows = cmd_save_group_rows;
-                        const size_t gcols = cmd_save_group_cols;
+                        const coord_t grows = cmd_save_group_rows;
+                        const coord_t gcols = cmd_save_group_cols;
 
                         const rgba_t ok_bkcolor = color::make_rgba(0, 225, 0);
                         const rgba_t nk_bkcolor = color::make_rgba(225, 0, 0);

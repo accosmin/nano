@@ -46,7 +46,7 @@ namespace cortex
                 {
                         if (scores(i) > 0.0)
                         {
-                                ret.push_back(i);
+                                ret.push_back(static_cast<size_t>(i));
                         }
                 }
 

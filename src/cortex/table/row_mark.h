@@ -19,7 +19,7 @@ namespace cortex
 
                 return [=] (const table_row_t& row) -> size_t
                 {
-                        return std::min_element(row.begin(), row.end(), op) - row.begin();
+                        return static_cast<size_t>(std::min_element(row.begin(), row.end(), op) - row.begin());
                 };
         }
 
@@ -36,7 +36,7 @@ namespace cortex
 
                 return [=] (const table_row_t& row) -> size_t
                 {
-                        return std::max_element(row.begin(), row.end(), op) - row.begin();
+                        return static_cast<size_t>(std::max_element(row.begin(), row.end(), op) - row.begin());
                 };
         }
 }
