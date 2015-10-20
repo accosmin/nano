@@ -9,6 +9,7 @@ compiler:
 addons:
   apt:
     sources:
+      - kubuntu-backports
       - ubuntu-toolchain-r-test
       - george-edison55-precise-backports
     
