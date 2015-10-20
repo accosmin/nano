@@ -4,9 +4,3 @@ compiler:
 	- clang++
 	- gcc++
 
-before_install:
-	- sudo apt-get update -qq
-	- sudo apt-get install -qq libarchive libboost libdevil
-
-script:
-	- time bash build_release.sh
