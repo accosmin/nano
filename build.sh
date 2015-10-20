@@ -10,10 +10,9 @@ install="OFF"
 asan_flag="OFF"
 tsan_flag="OFF"
 
-if [ -z "${compiler}" ]
-then
-        compiler=g++
-fi
+yell() { echo "$0: $*" >&2; }
+die() { yell "$*"; exit 111; }
+try() { "$@" || die "cannot $*"; }
 
 # usage
 function usage
@@ -105,7 +104,7 @@ else
 fi
 
 # setup cmake
-cmake \
+try cmake \
 	-DCMAKE_BUILD_TYPE=${build_type} \
     	-DNANOCV_WITH_ASAN=${asan_flag} \
     	-DNANOCV_WITH_TSAN=${tsan_flag} \
@@ -114,7 +113,7 @@ cmake \
     	${current_dir}/
 
 # build
-${maker}
+try ${maker}
 echo
 
 # install
