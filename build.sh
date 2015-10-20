@@ -10,6 +10,11 @@ install="OFF"
 asan_flag="OFF"
 tsan_flag="OFF"
 
+if [ -z "${compiler}" ]
+then
+        compiler=g++
+fi
+
 # usage
 function usage
 {

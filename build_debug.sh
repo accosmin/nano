@@ -1,12 +1,63 @@
 #!/bin/bash
 
-compiler="g++"      # "", "g++", "clang++"
-
-build_type=Debug
+compiler=$CXX
 build_sys=ninja
 
-bash build.sh --compiler ${compiler} --build-dir ./build-debug --build-type ${build_type} --build-sys ${build_sys} --asan OFF --tsan OFF
+build_dir="`pwd`/build-debug"
+build_type=Debug
 
-bash build.sh --compiler ${compiler} --build-dir ./build-debug-asan --build-type ${build_type} --build-sys ${build_sys} --asan ON --tsan OFF
-bash build.sh --compiler ${compiler} --build-dir ./build-debug-tsan --build-type ${build_type} --build-sys ${build_sys} --asan OFF --tsan ON
+if [ -z "${compiler}" ]
+then
+        compiler=g++
+fi
 
+# usage
+function usage
+{
+	echo "Usage: "
+	echo -e "\t--build-sys          <build system [ninja/make]>	default=${build_sys}"
+	echo -e "\t--compiler           <c++ compiler (g++, clang++)>	optional"
+	echo
+}
+
+# read arguments
+while [ "$1" != "" ]
+do
+	case $1 in
+                --build-sys)	shift
+                                build_sys=$1
+                                ;;
+        	--compiler)	shift
+			        compiler=$1
+                                ;;
+		-h | --help)	usage
+				exit
+				;;
+		* )		echo "unrecognized option $1"
+				echo
+				usage
+                                exit 1
+	esac
+	shift
+done
+
+bash build.sh \
+	--compiler ${compiler} \
+	--build-dir ${build_dir} \
+	--build-type ${build_type} \
+	--build-sys ${build_sys} \
+	--asan OFF --tsan OFF
+
+bash build.sh \
+	--compiler ${compiler} \
+	--build-dir ${build_dir}-asan \
+	--build-type ${build_type} \
+	--build-sys ${build_sys} \
+	--asan ON --tsan OFF
+	
+bash build.sh \
+	--compiler ${compiler} \
+	--build-dir ${build_dir}-tsan \
+	--build-type ${build_type} \
+	--build-sys ${build_sys} \
+	--asan OFF --tsan ON

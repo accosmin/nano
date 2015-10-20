@@ -20,4 +20,4 @@ addons:
     - libarchive-dev    
     
 script:
- - "time bash build_release.sh"
+ - "time bash build_release.sh --build-sys make"
