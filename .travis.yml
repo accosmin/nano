@@ -10,7 +10,6 @@ addons:
   apt_packages:
     - time
     - cmake
-    - g++-4.9
     - ninja-build
     - libeigen3-dev
     - libboost-test-dev
