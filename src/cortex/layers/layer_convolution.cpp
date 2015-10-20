@@ -130,7 +130,8 @@ namespace cortex
                 m_odata = output;
                 
                 // wrt convolution
-                tensor::conv3d_gparam(tensor::conv2d_dyn_t(), m_idata, m_kdata, m_odata);
+                auto kdata = tensor::map_tensor(gradient, m_kdata.dims(), m_kdata.rows(), m_kdata.cols());
+                tensor::conv3d_gparam(tensor::conv2d_dyn_t(), m_idata, kdata, m_odata);
 
                 // wrt bias
                 for (tensor_size_t o = 0; o < odims(); o ++)
