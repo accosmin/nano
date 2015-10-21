@@ -1,5 +1,6 @@
 #include "pool.h"
 #include "thread.h"
+#include <algorithm>
 
 thread::pool_t::pool_t(std::size_t nworkers)
 {
@@ -9,7 +10,7 @@ thread::pool_t::pool_t(std::size_t nworkers)
         }
         else
         {
-                nworkers = std::max(size_t(1), std::min(nworkers, thread::max_n_threads()));
+                nworkers = std::max(size_t(1), std::min(nworkers, static_cast<std::size_t>(thread::max_n_threads())));
         }
 
         for (size_t i = 0; i < nworkers; i ++)
