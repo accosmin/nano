@@ -1,6 +1,4 @@
 #include "archive.h"
-#include "bzip.h"
-#include "gzip.h"
 #include "cortex/logger.h"
 #include "text/ends_with.hpp"
 #include <archive.h>
