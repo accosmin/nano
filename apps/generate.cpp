@@ -29,10 +29,10 @@ int main(int argc, char *argv[])
                 boost::program_options::value<string_t>()->default_value("./"),
                 "directory to save generated samples to");
         po_desc.add_options()("save-group-rows",
-                boost::program_options::value<size_t>()->default_value(8),
+                boost::program_options::value<coord_t>()->default_value(8),
                 "number of generated samples to construct for each label [1, 128]");
         po_desc.add_options()("save-group-cols",
-                boost::program_options::value<size_t>()->default_value(8),
+                boost::program_options::value<coord_t>()->default_value(8),
                 "number of generated samples to construct for each label [1, 128]");
 
         boost::program_options::variables_map po_vm;

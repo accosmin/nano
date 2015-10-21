@@ -145,7 +145,8 @@ namespace cortex
                 }
         }
 
-        bool unarchive(const std::string& path, const std::string& log_header, const buffer_callback_t& callback)
+        bool unarchive(const std::string& path, const std::string& log_header,
+                const buffer_callback_t& callback)
         {
                 archive* ar = archive_read_new();
 
@@ -156,6 +157,40 @@ namespace cortex
                 if (archive_read_open_filename(ar, path.c_str(), 10240))
                 {
                         log_error() << log_header << "failed to open archive <" << path << ">!";
+                        log_error() << log_header << "error <" << archive_error_string(ar) << ">!";
+                        return false;
+                }
+
+                return detail::decode(ar, log_header, callback);
+        }
+
+        bool unarchive(std::istream& stream, std::streamsize num_bytes, const std::string& log_header,
+                const buffer_callback_t& callback)
+        {
+                archive* ar = archive_read_new();
+
+                archive_read_support_filter_all(ar);
+                archive_read_support_format_all(ar);
+                archive_read_support_format_raw(ar);
+
+                /// \todo make this more efficient (as we will store the data TWICE in memory)!
+                buffer_t buffer = cortex::make_buffer(num_bytes);
+                const std::streamsize stream_size = 64 * 1024;
+
+                char* pbuffer = buffer.data();
+                while (stream && num_bytes > 0)
+                {
+                        const std::streamsize to_read = num_bytes >= stream_size ? stream_size : num_bytes;
+
+                        stream.read(pbuffer, to_read);
+
+                        pbuffer += to_read;
+                        num_bytes -= to_read;
+                }
+
+                if (archive_read_open_memory(ar, buffer.data(), buffer.size()))
+                {
+                        log_error() << log_header << "failed to open memory archive!";
                         log_error() << log_header << "error <" << archive_error_string(ar) << ">!";
                         return false;
                 }

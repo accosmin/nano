@@ -27,10 +27,10 @@ int main(int argc, char *argv[])
                 boost::program_options::value<string_t>(),
                 "directory to save task samples to");
         po_desc.add_options()("save-group-rows",
-                boost::program_options::value<size_t>()->default_value(32),
+                boost::program_options::value<coord_t>()->default_value(32),
                 "number of task samples to group in a row");
         po_desc.add_options()("save-group-cols",
-                boost::program_options::value<size_t>()->default_value(32),
+                boost::program_options::value<coord_t>()->default_value(32),
                 "number of task samples to group in a column");
 	
         boost::program_options::variables_map po_vm;
