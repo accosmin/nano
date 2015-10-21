@@ -6,7 +6,9 @@
 namespace cortex
 {
         logger_t::logger_t(std::ostream& stream, const char* header, bool flush)
-                :       m_stream(stream), m_flush(flush)
+                :       m_stream(stream),
+                        m_precision(stream.precision()),
+                        m_flush(flush)
         {
                 log_time();
                 m_stream << "[" << header << "] ";
@@ -15,6 +17,7 @@ namespace cortex
         logger_t::~logger_t()
         {
                 m_flush ? endl() : newl();
+                m_stream.precision(m_precision);
         }
 
         logger_t& logger_t::operator<<(const char* str)
@@ -32,7 +35,7 @@ namespace cortex
         logger_t& logger_t::operator<<(logger_t& (*pf)(logger_t&))
         {
                 return (*pf)(*this);
-        }
+        }        
 
         logger_t& logger_t::newl()
         {

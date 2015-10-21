@@ -65,17 +65,17 @@ namespace cortex
                 for (int isection = 0; isection < 2; isection ++)
                 {
                         // section header
-                        mat5::section_t section;
+                        mat5_section_t section;
                         if (!section.load(istream))
                         {
                                 log_error() << "SVHN: failed to read section!";
                                 return 0;
                         }
 
-                        if (section.m_dtype != mat5::buffer_type::miCOMPRESSED)
+                        if (section.m_dtype != mat5_buffer_type::miCOMPRESSED)
                         {
                                 log_error() << "SVHN: invalid data type <" << to_string(section.m_dtype)
-                                            << ">! expecting " << to_string(mat5::buffer_type::miCOMPRESSED) << "!";
+                                            << ">! expecting " << to_string(mat5_buffer_type::miCOMPRESSED) << "!";
                                 return 0;
                         }
 
@@ -97,14 +97,17 @@ namespace cortex
 
         size_t svhn_task_t::decode(const buffer_t& idata, const buffer_t& ldata, const protocol p)
         {
+                mstream_t istream(idata.data(), idata.size());
+                mstream_t lstream(ldata.data(), ldata.size());
+
                 // decode image & label arrays
-                mat5::array_t iarray, larray;
-                if (!iarray.load(idata))
+                mat5_array_t iarray, larray;
+                if (!iarray.load(istream))
                 {
                         log_error() << "SVHN: invalid image array!";
                         return 0;
                 }
-                if (!larray.load(ldata))
+                if (!larray.load(lstream))
                 {
                         log_error() << "SVHN: invalid label array!";
                         return 0;
@@ -113,8 +116,8 @@ namespace cortex
                 iarray.log(log_info() << "SVHN: image array: ");
                 larray.log(log_info() << "SVHN: label array: ");
 
-                const mat5::section_t& isection = iarray.m_sections[3];
-                const mat5::section_t& lsection = larray.m_sections[3];
+                const mat5_section_t& isection = iarray.m_sections[3];
+                const mat5_section_t& lsection = larray.m_sections[3];
 
                 const auto& idims = iarray.m_dims;
                 const auto& ldims = larray.m_dims;
@@ -135,8 +138,8 @@ namespace cortex
                 }
 
                 // check data type
-                if (    isection.m_dtype != mat5::buffer_type::miUINT8 ||
-                        lsection.m_dtype != mat5::buffer_type::miUINT8)
+                if (    isection.m_dtype != mat5_buffer_type::miUINT8 ||
+                        lsection.m_dtype != mat5_buffer_type::miUINT8)
                 {
                         log_error() << "SVHN: expecting UINT8 image & label arrays!";
                         return 0;

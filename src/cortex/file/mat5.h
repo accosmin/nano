@@ -1,107 +1,99 @@
 #pragma once
 
-#include "arch.h"
-#include "buffer.h"
+#include "mstream.h"
+#include <vector>
 
 namespace cortex
 {
         class logger_t;
 
-        namespace mat5
+        ///
+        /// \brief data type
+        ///
+        enum class mat5_buffer_type : int
         {
-                using std::size_t;
+                miINT8 = 1,
+                miUINT8 = 2,
+                miINT16 = 3,
+                miUINT16 = 4,
+                miINT32 = 5,
+                miUINT32 = 6,
+                miSINGLE = 7,
+                miDOUBLE = 9,
+                miINT64 = 12,
+                miUINT64 = 13,
+                miMATRIX = 14,
+                miCOMPRESSED = 15,
+                miUTF8 = 16,
+                miUTF16 = 17,
+                miUTF32 = 18,
+
+                miUNKNOWN
+        };
+
+        ///
+        /// \brief map a data type to string (logging issues)
+        ///
+        NANOCV_PUBLIC std::string to_string(const mat5_buffer_type& type);
+
+        ///
+        /// \brief map a data type to its size in bytes
+        ///
+        NANOCV_PUBLIC std::size_t to_bytes(const mat5_buffer_type& type);
+
+        ///
+        /// \brief section
+        ///
+        struct NANOCV_PUBLIC mat5_section_t
+        {
+                ///
+                /// \brief constructor
+                ///
+                explicit mat5_section_t(std::streamsize begin = 0);
+
+                bool load(std::streamsize offset, std::streamsize end, uint32_t dtype, uint32_t bytes);
+                bool load(std::istream& stream);
+                bool load(mstream_t& stream);
+
+                // full section range
+                std::streamsize begin() const { return m_begin; }
+                std::streamsize end() const { return m_end; }
+                std::streamsize size() const { return end() - begin(); }
+
+                // section data range
+                std::streamsize dbegin() const { return m_dbegin; }
+                std::streamsize dend() const { return m_dend; }
+                std::streamsize dsize() const { return dend() - dbegin(); }
+
+                // attributes
+                std::streamsize         m_begin, m_end;         ///< byte range of the whole section
+                std::streamsize         m_dbegin, m_dend;       ///< byte range of the data section
+                mat5_buffer_type        m_dtype;
+        };
+
+        ///
+        /// \brief read a multi-dimensional array consisting of multiple sections.
+        ///
+        struct NANOCV_PUBLIC mat5_array_t
+        {
+                ///
+                /// \brief constructor
+                ///
+                mat5_array_t();
 
                 ///
-                /// \brief data type
+                /// \brief parse the array
                 ///
-                enum class buffer_type : int
-                {
-                        miINT8 = 1,
-                        miUINT8 = 2,
-                        miINT16 = 3,
-                        miUINT16 = 4,
-                        miINT32 = 5,
-                        miUINT32 = 6,
-                        miSINGLE = 7,
-                        miDOUBLE = 9,
-                        miINT64 = 12,
-                        miUINT64 = 13,
-                        miMATRIX = 14,
-                        miCOMPRESSED = 15,
-                        miUTF8 = 16,
-                        miUTF16 = 17,
-                        miUTF32 = 18,
-
-                        miUNKNOWN
-                };
+                bool load(mstream_t& stream);
 
                 ///
-                /// \brief map a data type to string (logging issues)
+                /// \brief describe the array
                 ///
-                NANOCV_PUBLIC std::string to_string(const buffer_type& type);
+                void log(logger_t& logger) const;
 
-                ///
-                /// \brief map a data type to its size in bytes
-                ///
-                NANOCV_PUBLIC size_t to_bytes(const buffer_type& type);
-
-                ///
-                /// \brief section
-                ///
-                struct NANOCV_PUBLIC section_t
-                {
-                        ///
-                        /// \brief constructor
-                        ///
-                        explicit section_t(size_t begin = 0);
-
-                        bool load(size_t offset, size_t end, uint32_t dtype, uint32_t bytes);
-                        bool load(std::ifstream& istream);
-                        bool load(const buffer_t& data, size_t offset = 0);
-                        bool load(const buffer_t& data, const section_t& prv);
-
-                        // full section range
-                        size_t begin() const { return m_begin; }
-                        size_t end() const { return m_end; }
-                        size_t size() const { return end() - begin(); }
-
-                        // section data range
-                        size_t dbegin() const { return m_dbegin; }
-                        size_t dend() const { return m_dend; }
-                        size_t dsize() const { return dend() - dbegin(); }
-
-                        // attributes
-                        size_t                  m_begin, m_end;         ///< byte range of the whole section
-                        size_t                  m_dbegin, m_dend;       ///< byte range of the data section
-                        buffer_type               m_dtype;
-                };
-
-                using sections_t = std::vector<section_t>;
-
-                ///
-                /// \brief read a multi-dimensional array consisting of multiple sections.
-                ///
-                struct NANOCV_PUBLIC array_t
-                {
-                        ///
-                        /// \brief constructor
-                        ///
-                        array_t();
-
-                        ///
-                        /// \brief parse the array
-                        ///
-                        bool load(const buffer_t& data);
-
-                        ///
-                        /// \brief describe the array
-                        ///
-                        void log(logger_t& logger) const;
-
-                        // attributes
-                        std::vector<size_t>     m_dims;                 ///< dimensions of the array
-                        std::string             m_name;                 ///< generic (Matlab) name
-                        sections_t              m_sections;             ///< sections (dimensions, name, type, data)
-                };
-        }
+                // attributes
+                std::vector<std::size_t>        m_dims;         ///< dimensions of the array
+                std::string                     m_name;         ///< generic (Matlab) name
+                std::vector<mat5_section_t>     m_sections;     ///< sections (dimensions, name, type, data)
+        };
 }

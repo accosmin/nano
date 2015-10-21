@@ -1,13 +1,14 @@
 #pragma once
 
 #include "arch.h"
+#include <ios>
 #include <string>
 #include <cstddef>
 
 namespace cortex
 {
         ///
-        /// \brief map the std::istream's interface over an in-memory buffer
+        /// \brief map the std::istream's interface over a fixed-size in-memory buffer
         ///
         class NANOCV_PUBLIC mstream_t
         {
@@ -16,7 +17,17 @@ namespace cortex
                 ///
                 /// \brief constructor
                 ///
-                mstream_t(const char* data, std::size_t size);
+                template
+                <
+                        typename tsize
+                >
+                mstream_t(const char* data, const tsize size)
+                        :       m_data(data),
+                                m_size(static_cast<std::streamsize>(size)),
+                                m_tellg(0),
+                                m_gcount(0)
+                {
+                }
 
                 ///
                 /// \brief disable copying
@@ -27,7 +38,7 @@ namespace cortex
                 ///
                 /// \brief read given number of bytes
                 ///
-                bool read(char* bytes, std::size_t max_num_bytes);
+                bool read(char* bytes, std::streamsize max_num_bytes);
 
                 ///
                 /// \brief read POD structure
@@ -49,33 +60,38 @@ namespace cortex
                 ///
                 /// \brief skip the given number of bytes
                 ///
-                bool skip(std::size_t num_bytes);
+                bool skip(std::streamsize num_bytes);
 
                 ///
                 /// \brief number of bytes read at the last operation
                 ///
-                std::size_t gcount() const;
+                std::streamsize gcount() const;
 
                 ///
                 /// \brief current position in the buffer
                 ///
-                std::size_t tellg() const;
+                std::streamsize tellg() const;
 
                 ///
                 /// \brief buffer size
                 ///
-                std::size_t size() const;
+                std::streamsize size() const;
 
                 ///
                 /// \brief check if EOF
                 ///
                 operator bool() const;
 
+                ///
+                /// \brief buffer data
+                ///
+                const char* data() const;
+
         private:
 
                 const char* const       m_data;
-                std::size_t             m_size;
-                std::size_t             m_tellg;
-                std::size_t             m_gcount;
+                std::streamsize         m_size;
+                std::streamsize         m_tellg;
+                std::streamsize         m_gcount;
         };
 }

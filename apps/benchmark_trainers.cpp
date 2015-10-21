@@ -156,7 +156,7 @@ int main(int, char* [])
         task.load("");
 	task.describe();
 
-        const size_t cmd_outputs = task.osize();
+        const auto cmd_outputs = task.osize();
 
         // create training & validation samples
         sampler_t tsampler(task.samples());

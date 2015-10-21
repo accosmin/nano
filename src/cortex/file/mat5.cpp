@@ -7,7 +7,6 @@
 namespace cortex
 {
         using std::uint32_t;
-        using mat5::buffer_type;
 
         namespace
         {
@@ -20,75 +19,75 @@ namespace cortex
                 <
                         typename tint
                 >
-                buffer_type make_buffer_type(tint code)
+                mat5_buffer_type make_buffer_type(tint code)
                 {
-                        if (code == 1) return buffer_type::miINT8;
-                        else if (code == 2) return buffer_type::miUINT8;
-                        else if (code == 3) return buffer_type::miINT16;
-                        else if (code == 4) return buffer_type::miUINT16;
-                        else if (code == 5) return buffer_type::miINT32;
-                        else if (code == 6) return buffer_type::miUINT32;
-                        else if (code == 7) return buffer_type::miSINGLE;
-                        else if (code == 9) return buffer_type::miDOUBLE;
-                        else if (code == 12) return buffer_type::miINT64;
-                        else if (code == 13) return buffer_type::miUINT64;
-                        else if (code == 14) return buffer_type::miMATRIX;
-                        else if (code == 15) return buffer_type::miCOMPRESSED;
-                        else if (code == 16) return buffer_type::miUTF8;
-                        else if (code == 17) return buffer_type::miUTF16;
-                        else if (code == 18) return buffer_type::miUTF32;
-                        else return buffer_type::miUNKNOWN;
+                        if (code == 1) return mat5_buffer_type::miINT8;
+                        else if (code == 2) return mat5_buffer_type::miUINT8;
+                        else if (code == 3) return mat5_buffer_type::miINT16;
+                        else if (code == 4) return mat5_buffer_type::miUINT16;
+                        else if (code == 5) return mat5_buffer_type::miINT32;
+                        else if (code == 6) return mat5_buffer_type::miUINT32;
+                        else if (code == 7) return mat5_buffer_type::miSINGLE;
+                        else if (code == 9) return mat5_buffer_type::miDOUBLE;
+                        else if (code == 12) return mat5_buffer_type::miINT64;
+                        else if (code == 13) return mat5_buffer_type::miUINT64;
+                        else if (code == 14) return mat5_buffer_type::miMATRIX;
+                        else if (code == 15) return mat5_buffer_type::miCOMPRESSED;
+                        else if (code == 16) return mat5_buffer_type::miUTF8;
+                        else if (code == 17) return mat5_buffer_type::miUTF16;
+                        else if (code == 18) return mat5_buffer_type::miUTF32;
+                        else return mat5_buffer_type::miUNKNOWN;
                 }
         }
 
-        std::string mat5::to_string(const buffer_type& type)
+        std::string to_string(const mat5_buffer_type& type)
         {
-                if (type == buffer_type::miINT8) return "miINT8";
-                else if (type == buffer_type::miUINT8) return "miUINT8";
-                else if (type == buffer_type::miINT16) return "miINT16";
-                else if (type == buffer_type::miUINT16) return "miUINT16";
-                else if (type == buffer_type::miINT32) return "miINT32";
-                else if (type == buffer_type::miUINT32) return "miUINT32";
-                else if (type == buffer_type::miSINGLE) return "miSINGLE";
-                else if (type == buffer_type::miDOUBLE) return "miDOUBLE";
-                else if (type == buffer_type::miINT64) return "miINT64";
-                else if (type == buffer_type::miUINT64) return "miUINT64";
-                else if (type == buffer_type::miMATRIX) return "miMATRIX";
-                else if (type == buffer_type::miCOMPRESSED) return "miCOMPRESSED";
-                else if (type == buffer_type::miUTF8) return "miUTF8";
-                else if (type == buffer_type::miUTF16) return "miUTF16";
-                else if (type == buffer_type::miUTF32) return "miUTF32";
+                if (type == mat5_buffer_type::miINT8) return "miINT8";
+                else if (type == mat5_buffer_type::miUINT8) return "miUINT8";
+                else if (type == mat5_buffer_type::miINT16) return "miINT16";
+                else if (type == mat5_buffer_type::miUINT16) return "miUINT16";
+                else if (type == mat5_buffer_type::miINT32) return "miINT32";
+                else if (type == mat5_buffer_type::miUINT32) return "miUINT32";
+                else if (type == mat5_buffer_type::miSINGLE) return "miSINGLE";
+                else if (type == mat5_buffer_type::miDOUBLE) return "miDOUBLE";
+                else if (type == mat5_buffer_type::miINT64) return "miINT64";
+                else if (type == mat5_buffer_type::miUINT64) return "miUINT64";
+                else if (type == mat5_buffer_type::miMATRIX) return "miMATRIX";
+                else if (type == mat5_buffer_type::miCOMPRESSED) return "miCOMPRESSED";
+                else if (type == mat5_buffer_type::miUTF8) return "miUTF8";
+                else if (type == mat5_buffer_type::miUTF16) return "miUTF16";
+                else if (type == mat5_buffer_type::miUTF32) return "miUTF32";
                 else return "miUNKNOWN";
         }
 
-        size_t mat5::to_bytes(const buffer_type& type)
+        std::size_t to_bytes(const mat5_buffer_type& type)
         {
-                if (type == buffer_type::miINT8) return 1;
-                else if (type == buffer_type::miUINT8) return 1;
-                else if (type == buffer_type::miINT16) return 2;
-                else if (type == buffer_type::miUINT16) return 2;
-                else if (type == buffer_type::miINT32) return 4;
-                else if (type == buffer_type::miUINT32) return 4;
-                else if (type == buffer_type::miSINGLE) return 4;
-                else if (type == buffer_type::miDOUBLE) return 8;
-                else if (type == buffer_type::miINT64) return 8;
-                else if (type == buffer_type::miUINT64) return 8;
-                else if (type == buffer_type::miMATRIX) return 0;
-                else if (type == buffer_type::miCOMPRESSED) return 0;
-                else if (type == buffer_type::miUTF8) return 0;
-                else if (type == buffer_type::miUTF16) return 0;
-                else if (type == buffer_type::miUTF32) return 0;
+                if (type == mat5_buffer_type::miINT8) return 1;
+                else if (type == mat5_buffer_type::miUINT8) return 1;
+                else if (type == mat5_buffer_type::miINT16) return 2;
+                else if (type == mat5_buffer_type::miUINT16) return 2;
+                else if (type == mat5_buffer_type::miINT32) return 4;
+                else if (type == mat5_buffer_type::miUINT32) return 4;
+                else if (type == mat5_buffer_type::miSINGLE) return 4;
+                else if (type == mat5_buffer_type::miDOUBLE) return 8;
+                else if (type == mat5_buffer_type::miINT64) return 8;
+                else if (type == mat5_buffer_type::miUINT64) return 8;
+                else if (type == mat5_buffer_type::miMATRIX) return 0;
+                else if (type == mat5_buffer_type::miCOMPRESSED) return 0;
+                else if (type == mat5_buffer_type::miUTF8) return 0;
+                else if (type == mat5_buffer_type::miUTF16) return 0;
+                else if (type == mat5_buffer_type::miUTF32) return 0;
                 else return 0;
         }
 
-        mat5::section_t::section_t(size_t begin)
+        mat5_section_t::mat5_section_t(std::streamsize begin)
                 :       m_begin(begin), m_end(begin),
                         m_dbegin(begin), m_dend(begin),
-                        m_dtype(buffer_type::miUNKNOWN)
+                        m_dtype(mat5_buffer_type::miUNKNOWN)
         {
         }
 
-        bool mat5::section_t::load(size_t offset, size_t end, uint32_t dtype, uint32_t bytes)
+        bool mat5_section_t::load(std::streamsize offset, std::streamsize end, uint32_t dtype, uint32_t bytes)
         {
                 // small data format
                 if ((dtype >> 16) != 0)
@@ -106,7 +105,7 @@ namespace cortex
                 else
                 {
                         m_begin = offset;
-                        m_end = offset + ((make_buffer_type(dtype) == buffer_type::miCOMPRESSED) ?
+                        m_end = offset + ((make_buffer_type(dtype) == mat5_buffer_type::miCOMPRESSED) ?
                                 (8 + bytes) :
                                 (8 + bytes + ((8 - bytes) % 8)));
 
@@ -119,62 +118,63 @@ namespace cortex
                 return m_end <= end;
         }
 
-        bool mat5::section_t::load(std::ifstream& istream)
+        bool mat5_section_t::load(std::istream& stream)
         {
+                const auto offset = stream.tellg();
+
                 uint32_t dtype, bytes;
-                return  istream.read(reinterpret_cast<char*>(&dtype), sizeof(uint32_t)) &&
-                        istream.read(reinterpret_cast<char*>(&bytes), sizeof(uint32_t)) &&
-                        load(0, std::numeric_limits<size_t>::max(), dtype, bytes);
+                return  stream.read(reinterpret_cast<char*>(&dtype), sizeof(uint32_t)) &&
+                        stream.read(reinterpret_cast<char*>(&bytes), sizeof(uint32_t)) &&
+                        load(offset, std::numeric_limits<std::streamsize>::max(), dtype, bytes);
         }
 
-        bool mat5::section_t::load(const buffer_t& data, size_t offset)
+        bool mat5_section_t::load(mstream_t& stream)
         {
-                return  offset + 8 <= data.size() &&
-                        load(offset, data.size(), make_uint32(&data[offset + 0]), make_uint32(&data[offset + 4]));
+                const auto offset = stream.tellg();
+
+                uint32_t dtype, bytes;
+                return  stream.read(reinterpret_cast<char*>(&dtype), sizeof(uint32_t)) &&
+                        stream.read(reinterpret_cast<char*>(&bytes), sizeof(uint32_t)) &&
+                        load(offset, stream.size(), dtype, bytes);
         }
 
-        bool mat5::section_t::load(const buffer_t& data, const section_t& prv)
+        mat5_array_t::mat5_array_t()
         {
-                return  load(data, prv.m_end);
         }
 
-        mat5::array_t::array_t()
-        {
-        }
-
-        bool mat5::array_t::load(const buffer_t& data)
+        bool mat5_array_t::load(mstream_t& stream)
         {
                 // read & check header
-                section_t header;
-                if (!header.load(data))
+                mat5_section_t header;
+                if (!header.load(stream))
                 {
                         log_error() << "failed to load array!";
                         return false;
                 }
 
-                if (header.m_dtype != buffer_type::miMATRIX)
+                if (header.m_dtype != mat5_buffer_type::miMATRIX)
                 {
                         log_error() << "invalid array type: expecting "
-                                    << to_string(buffer_type::miMATRIX) << "!";
+                                    << to_string(mat5_buffer_type::miMATRIX) << "!";
                         return false;
                 }
 
-                if (header.end() != data.size())
+                if (header.end() != stream.size())
                 {
                         log_error() << "invalid array size in bytes!";
                         return false;
                 }
 
                 log_info() << "array header: dtype = " << to_string(header.m_dtype)
-                           << ", bytes = " << header.size() << "/" << data.size() << ".";
+                           << ", bytes = " << header.size() << "/" << stream.size() << ".";
 
                 // read & check sections
                 m_sections.clear();
 
-                for (size_t i = 8; i < data.size(); )
+                while (stream)
                 {
-                        section_t section;
-                        if (!section.load(data, i))
+                        mat5_section_t section;
+                        if (!section.load(stream))
                         {
                                 break;
                         }
@@ -185,7 +185,9 @@ namespace cortex
                                    << "], bytes = " << section.dsize() << "/" << section.size() << ".";
 
                         m_sections.push_back(section);
-                        i = section.end();
+
+                        // move past the data section to read the next section
+                        stream.skip(section.dsize());
                 }
 
                 if (m_sections.size() != 4)
@@ -198,19 +200,20 @@ namespace cortex
                 //      first:  flags + class
                 //      second: dimensions
                 //      third:  name
-//                                const mat::section_t& sect1 = m_sections[0];
-                const section_t& sect2 = m_sections[1];
-                const section_t& sect3 = m_sections[2];
-                const section_t& sect4 = m_sections[3];
+//                const mat5_section_t& sect1 = m_sections[0];
+                const mat5_section_t& sect2 = m_sections[1];
+                const mat5_section_t& sect3 = m_sections[2];
+                const mat5_section_t& sect4 = m_sections[3];
 
-                m_name = std::string(data.begin() + sect3.dbegin(), data.begin() + sect3.dend());
+                m_name = std::string(stream.data() + sect3.dbegin(),
+                                     stream.data() + sect3.dend());
 
                 m_dims.clear();
-                size_t values = 1;
+                std::streamsize values = 1;
 
-                for (size_t i = sect2.dbegin(); i < sect2.dend(); i += 4)
+                for (std::streamsize i = sect2.dbegin(); i < sect2.dend(); i += 4)
                 {
-                        const size_t dim = make_uint32(&data[i]);
+                        const auto dim = make_uint32(&stream.data()[i]);
                         m_dims.push_back(dim);
                         values *= dim;
                 }
@@ -226,12 +229,12 @@ namespace cortex
                 return true;
         }
 
-        void mat5::array_t::log(logger_t& logger) const
+        void mat5_array_t::log(logger_t& logger) const
         {
                 logger << "sections = " << m_sections.size()
                        << ", name = " << m_name
                        << ", dims = ";
-                for (size_t i = 0; i < m_dims.size(); i ++)
+                for (std::size_t i = 0; i < m_dims.size(); i ++)
                 {
                         logger << m_dims[i] << ((i + 1 == m_dims.size()) ? "" : "x");
                 }

@@ -8,15 +8,7 @@ namespace cortex
                 return (c == '\n') || (c == '\r');
         }
 
-        mstream_t::mstream_t(const char* data, std::size_t size)
-                :       m_data(data),
-                        m_size(size),
-                        m_tellg(0),
-                        m_gcount(0)
-        {
-        }
-
-        bool mstream_t::read(char* bytes, std::size_t num_bytes)
+        bool mstream_t::read(char* bytes, std::streamsize num_bytes)
         {
                 if (tellg() + num_bytes <= size())
                 {
@@ -49,7 +41,7 @@ namespace cortex
                 return !line.empty();
         }
 
-        bool mstream_t::skip(std::size_t num_bytes)
+        bool mstream_t::skip(std::streamsize num_bytes)
         {
                 if (tellg() + num_bytes <= size())
                 {
@@ -63,17 +55,17 @@ namespace cortex
                 }
         }
 
-        std::size_t mstream_t::gcount() const
+        std::streamsize mstream_t::gcount() const
         {
                 return m_gcount;
         }
 
-        std::size_t mstream_t::tellg() const
+        std::streamsize mstream_t::tellg() const
         {
                 return m_tellg;        
         }
 
-        std::size_t mstream_t::size() const
+        std::streamsize mstream_t::size() const
         {
                 return m_size;
         }
@@ -81,5 +73,10 @@ namespace cortex
         mstream_t::operator bool() const
         {
                 return tellg() < size();
+        }
+
+        const char* mstream_t::data() const
+        {
+                return m_data;
         }
 }

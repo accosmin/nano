@@ -1,5 +1,4 @@
 #include "gzip.h"
-#include "mstream.h"
 #include <zlib.h>
 #include <fstream>
 
@@ -9,7 +8,7 @@ namespace cortex
         <
                 typename tstream
         >
-        bool io_uncompress_gzip(tstream& istream, std::size_t num_bytes, buffer_t& data)
+        bool io_uncompress_gzip(tstream& istream, const std::streamsize orig_num_bytes, buffer_t& data)
         {
                 // zlib decompression buffers
                 static const std::streamsize chunk_size = 64 * 1024;
@@ -29,6 +28,7 @@ namespace cortex
                 }
 
                 // decompress the data chunk
+                std::streamsize num_bytes = orig_num_bytes;
                 while (num_bytes > 0 && istream)
                 {
                         const std::streamsize to_read = (num_bytes >= chunk_size) ? chunk_size : num_bytes;
@@ -64,22 +64,21 @@ namespace cortex
                 inflateEnd(&strm);
 
                 // OK
-                return (num_bytes == std::string::npos) ? true : (num_bytes == 0);
+                return (num_bytes == max_streamsize()) ? true : (num_bytes == 0);
         }
 
-        bool uncompress_gzip(std::istream& istream, std::size_t num_bytes, buffer_t& data)
+        bool uncompress_gzip(std::istream& istream, std::streamsize num_bytes, buffer_t& data)
         {
                 return io_uncompress_gzip(istream, num_bytes, data);
         }
 
         bool uncompress_gzip(std::istream& istream, buffer_t& data)
         {
-                return uncompress_gzip(istream, std::string::npos, data);
+                return uncompress_gzip(istream, max_streamsize(), data);
         }
 
-        bool uncompress_gzip(const buffer_t& istream, buffer_t& data)
+        bool uncompress_gzip(mstream_t& istream, buffer_t& data)
         {
-                mstream_t stream(istream.data(), istream.size());
-                return io_uncompress_gzip(stream, stream.size(), data);
+                return io_uncompress_gzip(istream, istream.size(), data);
         }
 }

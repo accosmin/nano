@@ -53,17 +53,18 @@ namespace cortex
         private:
 
                 // attributes
-                std::ostream&   m_stream;
+                std::ostream&   m_stream;       ///< stream to write into
+                std::streamsize m_precision;    ///< original precision to restore
                 bool            m_flush;
         };
 
         ///
         /// \brief stream particular tags
         ///
-        inline logger_t& newl(logger_t& logger_t)         { return logger_t.newl(); }
-        inline logger_t& endl(logger_t& logger_t)         { return logger_t.endl(); }
-        inline logger_t& done(logger_t& logger_t)         { return logger_t.done(); }
-        inline logger_t& flush(logger_t& logger_t)        { return logger_t.flush(); }
+        inline logger_t& newl(logger_t& logger_t)               { return logger_t.newl(); }
+        inline logger_t& endl(logger_t& logger_t)               { return logger_t.endl(); }
+        inline logger_t& done(logger_t& logger_t)               { return logger_t.done(); }
+        inline logger_t& flush(logger_t& logger_t)              { return logger_t.flush(); }
 
         ///
         /// \brief specific [information, warning, error] line loggers
