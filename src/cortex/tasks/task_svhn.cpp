@@ -151,10 +151,10 @@ namespace cortex
                 size_t cnt = 0;
                 for (size_t i = 0; i < n_samples; i ++)
                 {
-                        const size_t lbeg = lsection.dbegin() + i;
+                        const auto lbeg = static_cast<size_t>(lsection.dbegin()) + i;
 
                         // label ...
-                        size_t ilabel = ldata[lbeg + 0];
+                        tensor_size_t ilabel = ldata[lbeg + 0];
                         if (ilabel == 10)
                         {
                                 ilabel = 0;
@@ -167,19 +167,22 @@ namespace cortex
                         // image ...
                         image_t image(irows(), icols(), color());
 
-                        const size_t px = irows() * icols();
-                        const size_t ix = irows() * icols() * 3;
-                        const size_t ibeg = isection.dbegin() + i * ix;
+                        const auto px = irows() * icols();
+                        const auto ix = irows() * icols() * 3;
+                        const auto ibeg = static_cast<size_t>(isection.dbegin()) + i * static_cast<size_t>(ix);
 
-                        for (size_t r = 0, q = 0; r < static_cast<size_t>(irows()); r ++)
+                        for (tensor_size_t r = 0, q = 0; r < irows(); r ++)
                         {
-                                for (size_t c = 0; c < static_cast<size_t>(icols()); c ++, q ++)
+                                for (tensor_size_t c = 0; c < icols(); c ++, q ++)
                                 {
-                                        const size_t ir = ibeg + (px * 0 + q);
-                                        const size_t ig = ibeg + (px * 1 + q);
-                                        const size_t ib = ibeg + (px * 2 + q);
+                                        const size_t ir = ibeg + static_cast<size_t>(px * 0 + q);
+                                        const size_t ig = ibeg + static_cast<size_t>(px * 1 + q);
+                                        const size_t ib = ibeg + static_cast<size_t>(px * 2 + q);
 
-                                        image.set(c, r, color::make_rgba(idata[ir], idata[ig], idata[ib]));
+                                        image.set(c, r, color::make_rgba(
+                                                static_cast<unsigned char>(idata[ir]),
+                                                static_cast<unsigned char>(idata[ig]),
+                                                static_cast<unsigned char>(idata[ib])));
                                 }
                         }
 

@@ -120,16 +120,16 @@ namespace cortex
                         
                         // load images
                         const size_t n_cameras = 2;
-                        const size_t n_pixels = irows() * icols();
-                        const size_t cnt = dims[0];
+                        const auto buffer_size = irows() * icols();
+                        const auto cnt = dims[0];
                         
-                        std::vector<char> dimage(n_pixels);                        
-                        for (size_t i = 0; i < cnt; i ++)
+                        buffer_t buffer = cortex::make_buffer(buffer_size);
+                        for (auto i = 0; i < cnt; i ++)
                         {
-                                for (size_t cam = 0; cam < n_cameras && stream.read(dimage.data(), dimage.size()); cam ++)
+                                for (size_t cam = 0; cam < n_cameras && stream.read(buffer.data(), buffer_size); cam ++)
                                 {
                                         image_t image;
-                                        image.load_luma(dimage.data(), irows(), icols());
+                                        image.load_luma(buffer.data(), irows(), icols());
                                         add_image(image);
                                 }
                                 
@@ -173,10 +173,10 @@ namespace cortex
 
                         // load annotations
                         const size_t n_cameras = 2;
-                        const size_t cnt = dims[0];
+                        const auto cnt = dims[0];
 
                         int32_t label;
-                        for (size_t i = 0; i < cnt && stream.read(reinterpret_cast<char*>(&label), sizeof(label)); i ++)
+                        for (auto i = 0; i < cnt && stream.read(reinterpret_cast<char*>(&label), sizeof(label)); i ++)
                         {
                                 const tensor_index_t ilabel = label;
                                 for (size_t cam = 0; cam < n_cameras; cam ++)
@@ -184,7 +184,7 @@ namespace cortex
                                         sample_t sample(iindex, sample_region(0, 0));
                                         if (ilabel < osize())
                                         {
-                                                sample.m_label = tlabels[ilabel];
+                                                sample.m_label = tlabels[static_cast<size_t>(ilabel)];
                                                 sample.m_target = cortex::class_target(ilabel, osize());
                                         }
                                         sample.m_fold = { 0, p };

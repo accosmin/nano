@@ -67,10 +67,12 @@ namespace cortex
         {
                 template
                 <
-                        typename tmatrix
+                        typename tmatrix,
+                        typename tindex,
+                        typename tsize
                 >
                 tmatrix get_object_patch(const tmatrix& image,
-                        const size_t object_index, const size_t objects, const scalar_t max_offset)
+                        const tindex object_index, const tsize objects, const scalar_t max_offset)
                 {
                         math::random_t<scalar_t> rng(-max_offset, max_offset);
 
@@ -217,7 +219,7 @@ namespace cortex
 
                                 // generate sample
                                 sample_t sample(n_images() - 1, sample_region(0, 0));
-                                sample.m_label = string_t("char") + characters[o];
+                                sample.m_label = string_t("char") + characters[static_cast<size_t>(o)];
                                 sample.m_target = cortex::class_target(o - obegin(), osize());
                                 sample.m_fold = {f, p};
                                 add_sample(sample);

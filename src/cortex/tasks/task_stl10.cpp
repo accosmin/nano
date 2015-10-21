@@ -91,12 +91,13 @@ namespace cortex
 
                 mstream_t stream(bdata, bdata_size);
 
-                std::vector<char> buffer(irows() * icols() * 3);
+                const auto buffer_size = irows() * icols() * 3;
+                std::vector<char> buffer = cortex::make_buffer(buffer_size);
 
                 size_t icount = 0;
                 
                 // load images
-                while (stream.read(buffer.data(), buffer.size()))
+                while (stream.read(buffer.data(), buffer_size))
                 {
                         image_t image;
                         image.load_rgba(buffer.data(), irows(), icols(), irows() * icols());

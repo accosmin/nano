@@ -37,7 +37,8 @@ namespace cortex
                 size_t icount = 0;
                 size_t gcount = 0;
 
-                std::vector<char> buffer(irows() * icols());
+                const auto buffer_size = irows() * icols();
+                std::vector<char> buffer = cortex::make_buffer(buffer_size);
                 char label[2];
 
                 // load images
@@ -46,7 +47,7 @@ namespace cortex
                         mstream_t stream(data.data(), data.size());
 
                         stream.read(buffer.data(), 16);
-                        while (stream.read(buffer.data(), buffer.size()))
+                        while (stream.read(buffer.data(), buffer_size))
                         {
                                 image_t image;
                                 image.load_luma(buffer.data(), irows(), icols());

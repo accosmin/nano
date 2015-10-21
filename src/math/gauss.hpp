@@ -59,7 +59,11 @@ namespace math
                 ///
                 /// \brief operator []
                 ///
-                tscalar operator[](std::size_t index) const { return m_kernel[index]; }
+                template
+                <
+                        typename tindex
+                >
+                tscalar operator[](const tindex index) const { return m_kernel[static_cast<std::size_t>(index)]; }
 
                 ///
                 /// \brief sum the kernel's elements

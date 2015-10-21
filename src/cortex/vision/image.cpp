@@ -96,7 +96,12 @@ namespace cortex
                 tensor::transform(tensor::map_vector(buffer + 0 * stride, size),
                                   tensor::map_vector(buffer + 1 * stride, size),
                                   tensor::map_vector(buffer + 2 * stride, size),
-                                  m_rgba, [] (char r, char g, char b) { return color::make_rgba(r, g, b); });
+                                  m_rgba, [] (char r, char g, char b)
+                {
+                        return color::make_rgba(static_cast<unsigned char>(r),
+                                                static_cast<unsigned char>(g),
+                                                static_cast<unsigned char>(b));
+                });
 
                 return setup_rgba();
         }

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <vector>
 #include <cassert>
 #include <algorithm>
 #include "math/cast.hpp"
 #include "math/clamp.hpp"
+#include "tensor/vector.hpp"
 
 namespace cortex
 {
@@ -29,14 +29,14 @@ namespace cortex
 
                 assert(ksize == 2 * krad + 1);
 
-                std::vector<tscalar> buff(std::max(rows, cols));
+                tensor::vector_t<tscalar> buff(std::max(rows, cols));
 
                 // horizontal filter
                 for (int r = 0; r < rows; r ++)
                 {
                         for (int c = 0; c < cols; c ++)
                         {
-                                buff[c] = math::cast<tscalar>(src(r, c));
+                                buff(c) = math::cast<tscalar>(src(r, c));
                         }
 
                         for (int c = 0; c < cols; c ++)
@@ -45,7 +45,7 @@ namespace cortex
                                 for (int k = -krad; k <= krad; k ++)
                                 {
                                         const int cc = math::clamp(k + c, 0, cols - 1);
-                                        v += kernel[k + krad] * buff[cc];
+                                        v += kernel[k + krad] * buff(cc);
                                 }
 
                                 src(r, c) = math::cast<tvalue>(v);
@@ -57,7 +57,7 @@ namespace cortex
                 {
                         for (int r = 0; r < rows; r ++)
                         {
-                                buff[r] = math::cast<tscalar>(src(r, c));
+                                buff(r) = math::cast<tscalar>(src(r, c));
                         }
 
                         for (int r = 0; r < rows; r ++)
@@ -66,7 +66,7 @@ namespace cortex
                                 for (int k = -krad; k <= krad; k ++)
                                 {
                                         const int rr = math::clamp(k + r, 0, rows - 1);
-                                        v += kernel[k + krad] * buff[rr];
+                                        v += kernel[k + krad] * buff(rr);
                                 }
 
                                 src(r, c) = math::cast<tvalue>(v);

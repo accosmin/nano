@@ -73,16 +73,17 @@ namespace cortex
         {
                 log_info() << "CIFAR-10: loading file <" << filename << "> ...";
                 
-                std::vector<char> buffer(irows() * icols() * 3);
+                const auto buffer_size = irows() * icols() * 3;
+                std::vector<char> buffer = cortex::make_buffer(buffer_size);
                 char label[1];
 
                 mstream_t stream(bdata, bdata_size);
 
                 size_t icount = 0;
                 while ( stream.read(label, 1) &&
-                        stream.read(buffer.data(), buffer.size()))
+                        stream.read(buffer.data(), buffer_size))
                 {
-                        const tensor_index_t ilabel = math::cast<tensor_index_t>(label[0]);
+                        const tensor_index_t ilabel = label[0];
                         if (ilabel >= osize())
                         {
                                 continue;

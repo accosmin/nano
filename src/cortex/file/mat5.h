@@ -37,11 +37,6 @@ namespace cortex
         NANOCV_PUBLIC std::string to_string(const mat5_buffer_type& type);
 
         ///
-        /// \brief map a data type to its size in bytes
-        ///
-        NANOCV_PUBLIC std::size_t to_bytes(const mat5_buffer_type& type);
-
-        ///
         /// \brief section
         ///
         struct NANOCV_PUBLIC mat5_section_t
