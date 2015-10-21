@@ -77,7 +77,7 @@ namespace cortex
         {
                 return logger_t(os, "warning", flush_at_destruction);
         }
-        inline logger_t log_error(std::ostream& os = std::cout, bool flush_at_destruction = true)
+        inline logger_t log_error(std::ostream& os = std::cerr, bool flush_at_destruction = true)
         {
                 return logger_t(os, "error", flush_at_destruction);
         }

@@ -1,8 +1,8 @@
 #include "cortex/string.h"
-#include "cortex/measure.hpp"
 #include "text/to_string.hpp"
 #include "cortex/vision/warp.h"
 #include "cortex/vision/image.h"
+#include "cortex/measure_and_log.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 

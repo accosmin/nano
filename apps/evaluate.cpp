@@ -1,8 +1,8 @@
+#include "cortex/cortex.h"
 #include "cortex/sampler.h"
 #include "cortex/evaluate.h"
-#include "cortex/cortex.h"
-#include "cortex/measure.hpp"
 #include "text/concatenate.hpp"
+#include "cortex/measure_and_log.hpp"
 #include <boost/program_options.hpp>
 #include <algorithm>
 

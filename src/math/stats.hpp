@@ -2,7 +2,6 @@
 
 #include <cmath>
 #include <limits>
-#include <type_traits>
 #include <algorithm>
 
 namespace math
@@ -13,11 +12,7 @@ namespace math
         template
         <
                 typename tscalar = double,
-                typename tsize = std::size_t,
-
-                // disable for not valid types!
-                typename tvalid_tscalar = typename std::enable_if<std::is_floating_point<tscalar>::value>::type,
-                typename tvalid_tsize = typename std::enable_if<std::is_integral<tsize>::value>::type
+                typename tsize = std::size_t
         >
         class stats_t
 	{
@@ -88,16 +83,30 @@ namespace math
                 tsize count() const { return m_count; }
                 tscalar min() const { return m_min; }
                 tscalar max() const { return m_max; }
-                tscalar avg() const { return sum() / static_cast<tscalar>(count()); }
-                tscalar var() const { return _var() / static_cast<tscalar>(count()); }
-                tscalar stdev() const { return std::sqrt(_var() / static_cast<tscalar>(count() - 1)); }
                 tscalar sum() const { return m_sum; }
 
-        private:
-
-                tscalar _var() const
+                double avg() const
                 {
-                        return m_sumsq - m_sum * m_sum / static_cast<tscalar>(count());
+                        return  static_cast<double>(sum()) /
+                                static_cast<double>(count());
+                }
+
+                double var() const
+                {
+                        return  var2() /
+                                static_cast<double>(count());
+                }
+
+                double var2() const
+                {
+                        return  static_cast<double>(m_sumsq) -
+                                static_cast<double>(m_sum * m_sum) / static_cast<double>(count());
+                }
+
+                double stdev() const
+                {
+                        return  std::sqrt(var2() /
+                                static_cast<double>(count() - 1));
                 }
 
         private:

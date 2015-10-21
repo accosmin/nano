@@ -1,8 +1,8 @@
-#include "cortex/evaluate.h"
 #include "text/align.hpp"
 #include "cortex/cortex.h"
-#include "cortex/measure.hpp"
+#include "cortex/evaluate.h"
 #include "text/concatenate.hpp"
+#include "cortex/measure_and_log.hpp"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 

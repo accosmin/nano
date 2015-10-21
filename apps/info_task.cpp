@@ -1,6 +1,6 @@
 #include "cortex/cortex.h"
-#include "cortex/measure.hpp"
 #include "text/concatenate.hpp"
+#include "cortex/measure_and_log.hpp"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])

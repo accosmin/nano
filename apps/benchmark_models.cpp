@@ -7,6 +7,7 @@
 #include "tensor/random.hpp"
 #include "cortex/measure.hpp"
 #include "cortex/accumulator.h"
+#include "cortex/measure_and_log.hpp"
 #include "cortex/tasks/task_charset.h"
 #include <boost/program_options.hpp>
 

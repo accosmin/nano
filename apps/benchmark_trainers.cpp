@@ -1,6 +1,7 @@
 #include "cortex/batch.h"
 #include "cortex/table.h"
 #include "cortex/cortex.h"
+#include "cortex/logger.h"
 #include "thread/thread.h"
 #include "cortex/measure.hpp"
 #include "cortex/minibatch.h"

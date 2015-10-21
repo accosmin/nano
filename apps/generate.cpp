@@ -1,9 +1,9 @@
 #include "cortex/class.h"
-#include "cortex/generate.h"
 #include "cortex/cortex.h"
-#include "cortex/measure.hpp"
-#include "cortex/vision/image_grid.h"
+#include "cortex/generate.h"
 #include "text/concatenate.hpp"
+#include "cortex/measure_and_log.hpp"
+#include "cortex/vision/image_grid.h"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 
