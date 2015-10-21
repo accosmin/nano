@@ -174,18 +174,11 @@ namespace cortex
                 archive_read_support_format_raw(ar);
 
                 /// \todo make this more efficient (as we will store the data TWICE in memory)!
-                buffer_t buffer = cortex::make_buffer(num_bytes);
-                const std::streamsize stream_size = 64 * 1024;
-
-                char* pbuffer = buffer.data();
-                while (stream && num_bytes > 0)
+                buffer_t buffer;
+                if (!cortex::load_buffer(stream, num_bytes, buffer))
                 {
-                        const std::streamsize to_read = num_bytes >= stream_size ? stream_size : num_bytes;
-
-                        stream.read(pbuffer, to_read);
-
-                        pbuffer += to_read;
-                        num_bytes -= to_read;
+                        log_error() << log_header << "failed to read the memory archive!";
+                        return false;
                 }
 
                 if (archive_read_open_memory(ar, buffer.data(), buffer.size()))

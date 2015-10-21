@@ -1,5 +1,8 @@
 #pragma once
 
+#include "arch.h"
+#include <ios>
+#include <iosfwd>
 #include <limits>
 #include <string>
 #include <vector>
@@ -18,13 +21,10 @@ namespace cortex
                 return buffer_t(static_cast<std::size_t>(size));
         }
 
-        ////
-        /// \brief maximum stream size in bytes (useful to indicate that reading should be done until EOF)
         ///
-        inline std::streamsize max_streamsize()
-        {
-                return std::numeric_limits<std::streamsize>::max();
-        }
+        /// \brief load the given number of bytes from a stream
+        ///
+        NANOCV_PUBLIC bool load_buffer(std::istream& stream, std::streamsize num_bytes, buffer_t&);
 
         ///
         /// \brief callback to execute when a file was decompressed from an archive
