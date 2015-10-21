@@ -92,6 +92,11 @@ namespace cortex
                 size_t iindex = n_images();
                 size_t icount = 0;
                 size_t gcount = 0;
+
+                const auto error_op = [&] (const string_t& message)
+                {
+                        log_error() << "NORB: " << message;
+                };
                 
                 // load images
                 const auto iop = [&] (const string_t&, const buffer_t& data)
@@ -140,7 +145,7 @@ namespace cortex
                 };
                                 
                 log_info() << "NORB: loading file <" << ifile << "> ...";
-                if (!unarchive(ifile, "NORB: ", iop))
+                if (!unarchive(ifile, iop, error_op))
                 {
                         log_error() << "NORB: failed to load file <" << ifile << ">!";
                         return false;
@@ -200,7 +205,7 @@ namespace cortex
                 };
                 
                 log_info() << "NORB: loading file <" << gfile << "> ...";
-                if (!unarchive(gfile, "NORB: ", gop))
+                if (!unarchive(gfile, gop, error_op))
                 {
                         log_error() << "NORB: failed to load file <" << gfile << ">!";
                         return false;

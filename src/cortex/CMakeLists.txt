@@ -14,6 +14,8 @@ file(GLOB libcortex_sources ${CMAKE_CURRENT_SOURCE_DIR}
 add_library(cortex SHARED ${libcortex_sources})
 target_link_libraries(cortex
         ${IL_LIBRARIES}
+        ${ZLIB_LIBRARIES}
+        ${BZIP2_LIBRARIES}
         ${LibArchive_LIBRARIES}
         ${Boost_SERIALIZATION_LIBRARY}
         thread)

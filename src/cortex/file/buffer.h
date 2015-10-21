@@ -29,6 +29,13 @@ namespace cortex
         ///
         /// \brief callback to execute when a file was decompressed from an archive
         ///     - (filename, uncompressed file content loaded in memory)
+        ///     - returns true if it should continue
         ///
-        using buffer_callback_t = std::function<bool(const std::string&, const buffer_t&)>;
+        using archive_callback_t = std::function<bool(const std::string&, const buffer_t&)>;
+
+        ///
+        /// \brief callback to execute when an error was detected at decompressin
+        ///     - (error message)
+        ///
+        using archive_error_callback_t = std::function<void(const std::string&)>;
 }

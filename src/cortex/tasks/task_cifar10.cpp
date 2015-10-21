@@ -63,10 +63,14 @@ namespace cortex
                                 return true;
                         }
                 };
+                const auto error_op = [&] (const string_t& message)
+                {
+                        log_error() << "CIFAR-10: " << message;
+                };
 
                 log_info() << "CIFAR-10: loading file <" << bfile << "> ...";
 
-                return unarchive(bfile, "CIFAR-10: ", op);
+                return unarchive(bfile, op, error_op);
         }
 
         bool cifar10_task_t::load(const string_t& filename, const char* bdata, size_t bdata_size, protocol p, size_t count)

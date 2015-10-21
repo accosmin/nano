@@ -1,152 +1,153 @@
 #include "archive.h"
-#include "cortex/logger.h"
 #include "text/ends_with.hpp"
 #include <archive.h>
 #include <archive_entry.h>
 
 namespace cortex
 {
-        namespace detail
+        enum class archive_type : int
         {
-                enum class archive_type : int
+                tar,
+                tar_gz,
+                tar_bz2,
+                gz,
+                bz2,
+                unknown
+        };
+
+        archive_type decode_archive_type(const std::string& path)
+        {
+                if (    text::iends_with(path, ".tar.gz") ||
+                        text::iends_with(path, ".tgz"))
                 {
-                        tar,
-                        tar_gz,
-                        tar_bz2,
-                        gz,
-                        bz2,
-                        unknown
-                };
-
-                archive_type decode_archive_type(const std::string& path)
-                {
-                        if (    text::iends_with(path, ".tar.gz") ||
-                                text::iends_with(path, ".tgz"))
-                        {
-                                return archive_type::tar_gz;
-                        }
-
-                        else if (text::iends_with(path, ".tar.bz2") ||
-                                 text::iends_with(path, ".tbz") ||
-                                 text::iends_with(path, ".tbz2") ||
-                                 text::iends_with(path, ".tb2"))
-                        {
-                                return archive_type::tar_bz2;
-                        }
-
-                        else if (text::iends_with(path, ".tar"))
-                        {
-                                return archive_type::tar;
-                        }
-
-                        else if (text::iends_with(path, ".gz"))
-                        {
-                                return archive_type::gz;
-                        }
-
-                        else
-                        {
-                                return archive_type::unknown;
-                        }
+                        return archive_type::tar_gz;
                 }
 
-                bool copy(archive* ar, buffer_t& data)
+                else if (text::iends_with(path, ".tar.bz2") ||
+                         text::iends_with(path, ".tbz") ||
+                         text::iends_with(path, ".tbz2") ||
+                         text::iends_with(path, ".tb2"))
                 {
-                        while (true)
-                        {
-                                const void* buff;
-                                size_t size;
-                                off_t offset;
-
-                                const int r = archive_read_data_block(ar, &buff, &size, &offset);
-                                if (r == ARCHIVE_EOF)
-                                        return true;
-                                if (r != ARCHIVE_OK)
-                                        return false;
-
-                                data.insert(data.end(), (const char*)buff, (const char*)buff + size);
-                        }
-
-                        return true;
+                        return archive_type::tar_bz2;
                 }
 
-                bool decode(const buffer_t& mem_data, const std::string& log_header, const buffer_callback_t& callback);
-
-                bool decode(archive* ar, const std::string& log_header, const buffer_callback_t& callback)
+                else if (text::iends_with(path, ".tar"))
                 {
-                        bool ok = true;
-                        while (ok)
-                        {
-                                archive_entry* entry;
-                                const int r = archive_read_next_header(ar, &entry);
-
-                                if (r == ARCHIVE_EOF)
-                                        break;
-                                if (r != ARCHIVE_OK)
-                                {
-                                        log_error() << log_header << "failed to read archive!";
-                                        log_error() << log_header << "error <" << archive_error_string(ar) << ">!";
-                                        ok = false;
-                                        break;
-                                }
-
-                                const std::string filename = archive_entry_pathname(entry);
-                                const detail::archive_type filetype = detail::decode_archive_type(filename);
-//                                const int64_t filesize = archive_entry_size(entry);
-
-                                buffer_t data;
-                                if (!detail::copy(ar, data))
-                                {
-                                        log_error() << log_header << "failed to read archive!";
-                                        log_error() << log_header << "error <" << archive_error_string(ar) << ">!";
-                                        ok = false;
-                                        break;
-                                }
-
-                                switch (filetype)
-                                {
-                                case detail::archive_type::tar:
-                                case detail::archive_type::tar_gz:
-                                case detail::archive_type::tar_bz2:
-                                case detail::archive_type::gz:
-                                case detail::archive_type::bz2:
-                                        ok = detail::decode(data, log_header, callback);
-                                        break;
-
-                                default:
-                                        ok = callback(filename, data);
-                                        break;
-                                }
-                        }
-
-                        archive_read_close(ar);
-                        archive_read_free(ar);
-
-                        // OK
-                        return ok;
+                        return archive_type::tar;
                 }
 
-                bool decode(const buffer_t& mem_data, const std::string& log_header, const buffer_callback_t& callback)
+                else if (text::iends_with(path, ".gz"))
                 {
-                        archive* ar = archive_read_new();
+                        return archive_type::gz;
+                }
 
-                        archive_read_support_filter_all(ar);
-                        archive_read_support_format_all(ar);
-                        archive_read_support_format_raw(ar);
-
-                        if (archive_read_open_memory(ar, (void*)mem_data.data(), mem_data.size()))
-                        {
-                                log_error() << log_header << "failed to open archive!";
-                                log_error() << log_header << "error <" << archive_error_string(ar) << ">!";
-                                return false;
-                        }
-
-                        return decode(ar, log_header, callback);
+                else
+                {
+                        return archive_type::unknown;
                 }
         }
 
-        bool unarchive(const std::string& path, const std::string& log_header,
-                const buffer_callback_t& callback)
+        bool copy(archive* ar, buffer_t& data)
+        {
+                while (true)
+                {
+                        const void* buff;
+                        size_t size;
+                        off_t offset;
+
+                        const int r = archive_read_data_block(ar, &buff, &size, &offset);
+                        if (r == ARCHIVE_EOF)
+                                return true;
+                        if (r != ARCHIVE_OK)
+                                return false;
+
+                        data.insert(data.end(), (const char*)buff, (const char*)buff + size);
+                }
+
+                return true;
+        }
+
+        bool decode(const buffer_t& mem_data, const archive_callback_t&, const archive_error_callback_t&);
+
+        bool decode(archive* ar,
+                const archive_callback_t& callback,
+                const archive_error_callback_t& error_callback)
+        {
+                bool ok = true;
+                while (ok)
+                {
+                        archive_entry* entry;
+                        const int r = archive_read_next_header(ar, &entry);
+
+                        if (r == ARCHIVE_EOF)
+                                break;
+                        if (r != ARCHIVE_OK)
+                        {
+                                error_callback("failed to read archive!");
+                                error_callback(std::string("error <") + archive_error_string(ar) + ">!");
+                                ok = false;
+                                break;
+                        }
+
+                        const std::string filename = archive_entry_pathname(entry);
+                        const archive_type filetype = decode_archive_type(filename);
+//                        const int64_t filesize = archive_entry_size(entry);
+
+                        buffer_t data;
+                        if (!copy(ar, data))
+                        {
+                                error_callback("failed to read archive!");
+                                error_callback(std::string("error <") + archive_error_string(ar) + ">!");
+                                ok = false;
+                                break;
+                        }
+
+                        switch (filetype)
+                        {
+                        case archive_type::tar:
+                        case archive_type::tar_gz:
+                        case archive_type::tar_bz2:
+                        case archive_type::gz:
+                        case archive_type::bz2:
+                                ok = decode(data, callback, error_callback);
+                                break;
+
+                        default:
+                                ok = callback(filename, data);
+                                break;
+                        }
+                }
+
+                archive_read_close(ar);
+                archive_read_free(ar);
+
+                // OK
+                return ok;
+        }
+
+        bool decode(const buffer_t& mem_data,
+                const archive_callback_t& callback,
+                const archive_error_callback_t& error_callback)
+        {
+                archive* ar = archive_read_new();
+
+                archive_read_support_filter_all(ar);
+                archive_read_support_format_all(ar);
+                archive_read_support_format_raw(ar);
+
+                if (archive_read_open_memory(ar, (void*)mem_data.data(), mem_data.size()))
+                {
+                        error_callback("failed to open archive!");
+                        error_callback(std::string("error <") + archive_error_string(ar) + ">!");
+                        return false;
+                }
+
+                return decode(ar, callback, error_callback);
+        }
+
+        bool unarchive(const std::string& path,
+                const archive_callback_t& callback,
+                const archive_error_callback_t& error_callback)
         {
                 archive* ar = archive_read_new();
 
@@ -156,16 +157,17 @@ namespace cortex
 
                 if (archive_read_open_filename(ar, path.c_str(), 10240))
                 {
-                        log_error() << log_header << "failed to open archive <" << path << ">!";
-                        log_error() << log_header << "error <" << archive_error_string(ar) << ">!";
+                        error_callback("failed to open archive <" + path + ">!");
+                        error_callback(std::string("error <") + archive_error_string(ar) + ">!");
                         return false;
                 }
 
-                return detail::decode(ar, log_header, callback);
+                return decode(ar, callback, error_callback);
         }
 
-        bool unarchive(std::istream& stream, std::streamsize num_bytes, const std::string& log_header,
-                const buffer_callback_t& callback)
+        bool uncompress_gzip(std::istream& stream, std::streamsize num_bytes,
+                const archive_callback_t& callback,
+                const archive_error_callback_t& error_callback)
         {
                 archive* ar = archive_read_new();
 
@@ -177,17 +179,9 @@ namespace cortex
                 buffer_t buffer;
                 if (!cortex::load_buffer(stream, num_bytes, buffer))
                 {
-                        log_error() << log_header << "failed to read the memory archive!";
                         return false;
                 }
 
-                if (archive_read_open_memory(ar, buffer.data(), buffer.size()))
-                {
-                        log_error() << log_header << "failed to open memory archive!";
-                        log_error() << log_header << "error <" << archive_error_string(ar) << ">!";
-                        return false;
-                }
-
-                return detail::decode(ar, log_header, callback);
+                return decode(buffer, callback, error_callback);
         }
 }

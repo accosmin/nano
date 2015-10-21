@@ -83,12 +83,17 @@ namespace cortex
                         log_info() << "SVHN: uncompressing " << section.dsize() << " bytes ...";
 
                         buffer_t& data = (isection == 0) ? image_data : label_data;
-                        const auto callback = [&] (const string_t&, const buffer_t& buff)
+                        const auto op = [&] (const string_t&, const buffer_t& buffer)
                         {
-                                data = buff;
+                                data = buffer;
                                 return true;
                         };
-                        if (!unarchive(istream, section.dsize(), "SVHN: ", callback))
+                        const auto error_op = [&] (const string_t& message)
+                        {
+                                log_error() << "SVHN: " << message;
+                        };
+
+                        if (!uncompress_gzip(istream, section.dsize(), op, error_op))
                         {
                                 log_error() << "SVHN: failed to read compressed data!";
                                 return 0;

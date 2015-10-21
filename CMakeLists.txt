@@ -11,6 +11,13 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 option(NANOCV_WITH_ASAN         "build with address sanitizer suppport (debug, gcc)"    OFF)
 option(NANOCV_WITH_TSAN         "build with thread sanitizer suppport (debug, gcc)"     OFF)
 
+# Zlib & BZip2
+find_package(ZLIB REQUIRED)
+find_package(BZip2 REQUIRED)
+
+include_directories(SYSTEM ${ZLIB_INCLUDE_DIR})
+include_directories(SYSTEM ${BZIP2_INCLUDE_DIR})
+
 # Boost
 set(Boost_USE_STATIC_LIBS        OFF)
 set(Boost_USE_MULTITHREADED      ON)

@@ -41,6 +41,11 @@ namespace cortex
                 std::vector<char> buffer = cortex::make_buffer(buffer_size);
                 char label[2];
 
+                const auto error_op = [&] (const string_t& message)
+                {
+                        log_error() << "MNIST: " << message;
+                };
+
                 // load images
                 const auto iop = [&] (const string_t&, const buffer_t& data)
                 {
@@ -60,7 +65,7 @@ namespace cortex
                 };
 
                 log_info() << "MNIST: loading file <" << ifile << "> ...";
-                if (!unarchive(ifile, "MNIST: ", iop))
+                if (!unarchive(ifile, iop, error_op))
                 {
                         log_error() << "MNIST: failed to load file <" << ifile << ">!";
                         return false;
@@ -94,7 +99,7 @@ namespace cortex
                 };
 
                 log_info() << "MNIST: loading file <" << gfile << "> ...";
-                if (!unarchive(gfile, "MNIST: ", gop))
+                if (!unarchive(gfile, gop, error_op))
                 {
                         log_error() << "MNIST: failed to load file <" << gfile << ">!";
                         return false;

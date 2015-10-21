@@ -79,10 +79,14 @@ namespace cortex
                                 return true;
                         }
                 };
+                const auto error_op = [&] (const string_t& message)
+                {
+                        log_error() << "STL-10: " << message;
+                };
                 
                 log_info() << "STL-10: loading file <" << bfile << "> ...";
 
-                return unarchive(bfile, "STL-10: ", op);
+                return unarchive(bfile, op, error_op);
         }
         
         bool stl10_task_t::load_ifile(const string_t& ifile, const char* bdata, size_t bdata_size, bool unlabeled, size_t count)

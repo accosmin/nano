@@ -8,12 +8,12 @@ namespace cortex
         ///
         /// \brief decode an archive file (.tar, .gz, .tar.gz, .tar.bz2 etc.)
         ///
-        NANOCV_PUBLIC bool unarchive(const std::string& path, const std::string& log_header,
-                const buffer_callback_t& callback);
+        NANOCV_PUBLIC bool unarchive(const std::string& path,
+                const archive_callback_t&, const archive_error_callback_t&);
 
         ///
-        /// \brief decode an already opened file file (.tar, .gz, .tar.gz, .tar.bz2 etc.)
+        /// \brief uncompress a gzip chunk
         ///
-        NANOCV_PUBLIC bool unarchive(std::istream& stream, std::streamsize num_bytes, const std::string& log_header,
-                const buffer_callback_t& callback);
+        NANOCV_PUBLIC bool uncompress_gzip(std::istream& stream, std::streamsize num_bytes,
+                const archive_callback_t&, const archive_error_callback_t&);
 }
