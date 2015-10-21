@@ -53,7 +53,7 @@ namespace benchmark
                 const auto gthres = ostats.begin()->second.m_gthres;
 
                 // show global statistics
-                table_t table(text::align(name.empty() ? string_t("optimizer") : (name + " optimizer"), 32));
+                table_t table(text::align(name.empty() ? "optimizer" : name, 16));
                 table.header() << "cost"
                                << "|grad|/|fval|"
                                << ("#>1e-" + text::to_string(static_cast<size_t>(-std::log10(gthres[3]))))

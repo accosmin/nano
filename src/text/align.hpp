@@ -20,7 +20,7 @@ namespace text
         inline std::string align(const std::string& str, const std::size_t str_size,
                 const alignment mode = alignment::left, const char fill_char = ' ')
         {
-                const std::size_t fill_size = str.size() > str_size ? 0 : str_size - str.size();
+                const auto fill_size = (str.size() > str_size) ? (0) : (str_size - str.size());
 
                 switch (mode)
                 {

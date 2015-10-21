@@ -28,19 +28,23 @@ namespace cortex
                 return *m_rows.rbegin();
         }
 
-        std::size_t table_t::border() const
+        std::size_t table_t::cols() const
         {
-                return 4;
+                return m_header.size();
+        }
+
+        std::size_t table_t::rows() const
+        {
+                return m_rows.size();
         }
 
         size_t table_t::name_colsize() const
         {
-                size_t colsize = 0;
+                size_t colsize = m_title.size();
                 for (const auto& row : m_rows)
                 {
                         colsize = std::max(colsize, row.name().size());
                 }
-                colsize = std::max(colsize, m_title.size()) + border();
 
                 return colsize;
         }
@@ -48,48 +52,51 @@ namespace cortex
         std::vector<std::size_t> table_t::value_colsizes() const
         {
                 std::vector<std::size_t> colsizes(cols(), 0);
+
                 for (size_t c = 0; c < cols(); c ++)
                 {
                         colsizes[c] = std::max(colsizes[c], m_header[c].size());
                 }
+
                 for (const auto& row : m_rows)
                 {
-                        for (size_t c = 0; c < std::min(cols(), row.size()); c ++)
+                        assert(cols() == row.size());
+                        for (size_t c = 0; c < cols(); c ++)
                         {
                                 colsizes[c] = std::max(colsizes[c], row[c].size());
                         }
-                }
-                for (size_t& colsize : colsizes)
-                {
-                        colsize += border();
                 }
 
                 return colsizes;
         }
 
-        bool table_t::print(std::ostream& os,
-                const char table_delim,
-                const char row_delim, bool use_row_delim) const
+        bool table_t::print(std::ostream& os, const bool use_row_delim) const
         {
-                const char col_delim = ' ';
-
                 // size of name & value columns (in characters)
-                const auto ncolsize = this->name_colsize();
-                const auto vcolsizes = this->value_colsizes();
+                const auto namesize = name_colsize();
+                const auto colsizes = value_colsizes();
 
-                const auto rowsize = ncolsize + std::accumulate(vcolsizes.begin(), vcolsizes.end(), size_t(0));
+                const auto rowsize =
+                        namesize + 2 +
+                        cols() * 3 +
+                        std::accumulate(colsizes.begin(), colsizes.end(), size_t(0));
 
                 // display header
-                os << string_t(rowsize, table_delim) << std::endl;
+                os << "|" << string_t(rowsize, '-') << "|" << std::endl;
 
-                os << text::align(m_title, ncolsize);
+                os << text::align("| " + m_title, namesize + 3);
                 for (size_t c = 0; c < cols(); c ++)
                 {
-                        os << text::align(col_delim + m_header[c], vcolsizes[c]);
+                        os << text::align("| " + m_header[c], colsizes[c] + 3);
                 }
-                os << std::endl;
+                os << "|" << std::endl;
 
-                os << string_t(rowsize, row_delim) << std::endl;
+                os << "|" << string_t(namesize + 2, '-');
+                for (size_t c = 0; c < cols(); c ++)
+                {
+                        os << "+" << string_t(colsizes[c] + 2, '-');
+                }
+                os << "|" << std::endl;
 
                 // display rows
                 for (size_t r = 0; r < m_rows.size(); r ++)
@@ -98,18 +105,18 @@ namespace cortex
 
                         if (r > 0 && r < m_rows.size() && use_row_delim)
                         {
-                                os << string_t(rowsize, row_delim) << std::endl;
+                                os << string_t(rowsize, '-') << std::endl;
                         }
 
-                        os << text::align(row.name(), ncolsize);
-                        for (size_t c = 0; c < std::min(cols(), row.size()); c ++)
+                        os << text::align("| " + row.name(), namesize + 3);
+                        for (size_t c = 0; c < cols(); c ++)
                         {
-                                os << text::align(col_delim + row[c], vcolsizes[c]);
+                                os << text::align("| " + row[c], colsizes[c] + 3);
                         }
-                        os << std::endl;
+                        os << "|" << std::endl;
                 }
 
-                os << string_t(rowsize, table_delim) << std::endl;
+                os << "|" + string_t(rowsize, '-') << "|" << std::endl;
 
                 return true;
         }

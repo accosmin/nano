@@ -67,26 +67,19 @@ namespace cortex
                 ///
                 /// \brief pretty-print its content
                 ///
-                bool print(std::ostream& os,
-                           const char table_delim = '=',
-                           const char row_delim = '.', bool use_row_delim = false) const;
+                bool print(std::ostream& os, const bool use_row_delim = false) const;
 
         private:
 
                 ///
                 /// \brief retrieve the number of columns
                 ///
-                std::size_t cols() const { return m_header.size(); }
+                std::size_t cols() const;
 
                 ///
                 /// \brief retrieve the (current) number of rows
                 ///
-                std::size_t rows() const { return m_rows.size(); }
-
-                ///
-                /// \brief border size
-                ///
-                std::size_t border() const;
+                std::size_t rows() const;
 
                 ///
                 /// \brief compute the size of each value column
