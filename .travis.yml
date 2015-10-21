@@ -8,6 +8,8 @@ compiler:
 addons:
   apt:
     sources:
+      # for boost1.55++
+      - boost-latest
       # for Eigen3.2+
       - kubuntu-backports
       # for gcc4.9+
@@ -22,12 +24,11 @@ addons:
     - g++-4.9
     - g++-5
     - ninja-build
-    - libboost1.55-all-dev
-    #- libboost-test-dev
-    #- libboost-system-dev
-    #- libboost-filesystem-dev
-    #- libboost-serialization-dev
-    #- libboost-program-options-dev
+    - libboost-test1.55-dev
+    - libboost-system1.55-dev
+    - libboost-filesystem1.55-dev
+    - libboost-serialization1.55-dev
+    - libboost-program-options1.55-dev
     - libeigen3-dev
     - libdevil-dev
     - libarchive-dev     
