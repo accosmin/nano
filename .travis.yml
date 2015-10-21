@@ -16,6 +16,8 @@ addons:
       - ubuntu-toolchain-r-test
       # for cmake3.1+
       - george-edison55-precise-backports
+      # for clang3.6+
+      - llvm-toolchain-precise-3.6      
     
   apt_packages:
     - time
@@ -23,6 +25,7 @@ addons:
     - cmake-data
     - g++-4.9
     - g++-5
+    - clang-3.6
     - ninja-build
     - libboost-test1.55-dev
     - libboost-system1.55-dev
@@ -34,4 +37,4 @@ addons:
     - libarchive-dev     
     
 script:
- - "bash build_release.sh --build-sys make --compiler g++-4.9"
+ - "bash build_release.sh --build-sys make --compiler clang++-3.6"
