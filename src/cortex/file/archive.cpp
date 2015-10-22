@@ -1,5 +1,6 @@
 #include "archive.h"
 #include "text/ends_with.hpp"
+#include <istream>
 #include <archive.h>
 #include <archive_entry.h>
 
