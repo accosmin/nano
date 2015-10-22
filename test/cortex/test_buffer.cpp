@@ -52,16 +52,11 @@ BOOST_AUTO_TEST_CASE(test_buffer)
                 {
                         mstream_t stream(ref_buffer.data(), size);
 
+                        BOOST_CHECK_EQUAL(stream.tellg(), std::streamsize(0));
+                        BOOST_CHECK_EQUAL(stream.size(), static_cast<std::streamsize>(size));
+
                         buffer_t buffer;
                         BOOST_CHECK(cortex::load_buffer_from_stream(stream, buffer));
-
-                        op_check_buffers(ref_buffer, buffer);
-                }
-                {
-                        mstream_t stream(ref_buffer.data(), size);
-
-                        buffer_t buffer;
-                        BOOST_CHECK(cortex::load_buffer_from_stream(stream, size, buffer));
 
                         op_check_buffers(ref_buffer, buffer);
                 }

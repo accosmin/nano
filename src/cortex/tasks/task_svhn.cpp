@@ -3,7 +3,7 @@
 #include "cortex/logger.h"
 #include "text/to_string.hpp"
 #include "cortex/file/mat5.h"
-#include "cortex/file/archive.h"
+#include "cortex/file/gzip.h"
 #include "cortex/vision/color.h"
 #include <fstream>
 
@@ -82,18 +82,11 @@ namespace cortex
                         log_info() << "SVHN: uncompressing " << section.dsize() << " bytes ...";
 
                         buffer_t& data = (isection == 0) ? image_data : label_data;
-
-                        const auto op = [&] (const string_t&, const buffer_t& buffer)
+                        if (!cortex::uncompress_gzip(istream, section.dsize(), data))
                         {
-                                data = buffer;
-                                return true;
-                        };
-                        const auto error_op = [&] (const string_t& message)
-                        {
-                                log_error() << "SVHN: " << message;
-                        };
-
-                        cortex::uncompress_gzip(istream, section.dsize(), op, error_op);
+                                log_error() << "SVHN: invalid gzip archive!";
+                                return 0;
+                        }
 
                         log_info() << "SVHN: uncompressed " << data.size() << " bytes.";
                 }
@@ -120,8 +113,8 @@ namespace cortex
                         return 0;
                 }
 
-                iarray.log(log_info() << "SVHN: image array: ");
-                larray.log(log_info() << "SVHN: label array: ");
+                log_info() << "SVHN: image array: " << iarray;
+                log_info() << "SVHN: label array: " << larray;
 
                 const mat5_section_t& isection = iarray.m_sections[3];
                 const mat5_section_t& lsection = larray.m_sections[3];

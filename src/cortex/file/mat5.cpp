@@ -165,34 +165,48 @@ namespace cortex
                         return false;
                 }
 
-                log_info() << "array header: dtype = " << to_string(header.m_dtype)
-                           << ", bytes = " << header.size() << "/" << stream.size() << ".";
+                log_info() << "array header: tellg = " << stream.tellg() << ", " << header << ".";
 
                 // read & check sections
                 m_sections.clear();
 
-                while (stream)
+                mat5_section_t section;
+                while (stream && m_sections.size() < 5 && section.load(stream))
                 {
-                        mat5_section_t section;
-                        if (!section.load(stream))
-                        {
-                                break;
-                        }
-
-                        log_info() << "array section: dtype = " << to_string(section.m_dtype)
-                                   << ", range = [" << section.begin() << ", " << section.end()
-                                   << "], drange = [" << section.dbegin() << ", " << section.dend()
-                                   << "], bytes = " << section.dsize() << "/" << section.size() << ".";
+                        log_info() << "array section: tellg = " << stream.tellg() << ", " << section << ".";
 
                         m_sections.push_back(section);
+                        stream.skip(section.dsize());   // move past the data section to read the next section
+                }
 
-                        // move past the data section to read the next section
-                        stream.skip(section.dsize());
+                if (m_sections.size() >= 4)
+                {
+                        const mat5_section_t& sect2 = m_sections[1];
+                        const mat5_section_t& sect3 = m_sections[2];
+
+                        m_name = std::string(stream.data() + sect3.dbegin(),
+                                             stream.data() + sect3.dend());
+
+                        m_dims.clear();
+                        std::streamsize values = 1;
+
+                        for (std::streamsize i = sect2.dbegin(); i < sect2.dend(); i += 4)
+                        {
+                                const auto dim = make_uint32(&stream.data()[i]);
+                                m_dims.push_back(dim);
+                                values *= dim;
+                        }
+
+                        log_info() << "name = " << m_name;
+                        for (const auto& dim : m_dims)
+                        {
+                                log_info() << "dim = " << dim;
+                        }
                 }
 
                 if (m_sections.size() != 4)
                 {
-                        log_error() << "invalid array sections! expecting 4 sections!";
+                        log_error() << "invalid array sections, expecting 4 sections but got " << m_sections.size() << "!";
                         return false;
                 }
 
@@ -200,6 +214,7 @@ namespace cortex
                 //      first:  flags + class
                 //      second: dimensions
                 //      third:  name
+                //      fourth: data matrix/tensor
 //                const mat5_section_t& sect1 = m_sections[0];
                 const mat5_section_t& sect2 = m_sections[1];
                 const mat5_section_t& sect3 = m_sections[2];
@@ -227,16 +242,5 @@ namespace cortex
 
                 // OK
                 return true;
-        }
-
-        void mat5_array_t::log(logger_t& logger) const
-        {
-                logger << "sections = " << m_sections.size()
-                       << ", name = " << m_name
-                       << ", dims = ";
-                for (std::size_t i = 0; i < m_dims.size(); i ++)
-                {
-                        logger << m_dims[i] << ((i + 1 == m_dims.size()) ? "" : "x");
-                }
         }
 }

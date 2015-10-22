@@ -5,8 +5,6 @@
 
 namespace cortex
 {
-        class logger_t;
-
         ///
         /// \brief data type
         ///
@@ -66,6 +64,18 @@ namespace cortex
                 mat5_buffer_type        m_dtype;
         };
 
+        template
+        <
+                typename tstream
+        >
+        tstream& operator<<(tstream& stream, const mat5_section_t& sect)
+        {
+                stream << "type = " << to_string(sect.m_dtype)
+                       << ", range = [" << sect.begin() << ", " << sect.end() << "] = " << sect.size() << "B"
+                       << ", data range = [" << sect.dbegin() << ", " << sect.dend() << "] = " << sect.dsize() << "B";
+                return stream;
+        }
+
         ///
         /// \brief read a multi-dimensional array consisting of multiple sections.
         ///
@@ -81,14 +91,23 @@ namespace cortex
                 ///
                 bool load(mstream_t& stream);
 
-                ///
-                /// \brief describe the array
-                ///
-                void log(logger_t& logger) const;
-
                 // attributes
                 std::vector<std::size_t>        m_dims;         ///< dimensions of the array
                 std::string                     m_name;         ///< generic (Matlab) name
                 std::vector<mat5_section_t>     m_sections;     ///< sections (dimensions, name, type, data)
         };
+
+        template
+        <
+                typename tstream
+        >
+        tstream& operator<<(tstream& stream, const mat5_array_t& array)
+        {
+                stream << "sections = " << array.m_sections.size() << ", name = " << array.m_name << ", dims = ";
+                for (std::size_t i = 0; i < array.m_dims.size(); i ++)
+                {
+                        stream << array.m_dims[i] << ((i + 1 == array.m_dims.size()) ? "" : "x");
+                }
+                return stream;
+        }
 }

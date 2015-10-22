@@ -8,7 +8,7 @@ namespace cortex
         <
                 typename tstream
         >
-        bool io_uncompress_bzip2(tstream& istream, const std::streamsize orig_num_bytes, buffer_t& data)
+        bool io_uncompress_bzip2(tstream& istream, const std::streamsize orig_num_bytes, buffer_t& buffer)
         {
                 // zlib decompression buffers
                 static const std::streamsize chunk_size = 64 * 1024;
@@ -27,7 +27,7 @@ namespace cortex
                         return false;
                 }
 
-                // decompress the data chunk
+                // decompress the buffer chunk
                 std::streamsize num_bytes = orig_num_bytes;
                 while (num_bytes > 0 && istream)
                 {
@@ -56,7 +56,7 @@ namespace cortex
                                 }
 
                                 const std::streamsize have = chunk_size - strm.avail_out;
-                                data.insert(data.end(), out, out + have);
+                                buffer.insert(buffer.end(), out, out + have);
                         }
                         while (strm.avail_out == 0);
                 }
@@ -67,18 +67,18 @@ namespace cortex
                 return (orig_num_bytes == max_streamsize()) ? true : (num_bytes == 0);
         }
 
-        bool uncompress_bzip2(std::istream& istream, std::streamsize num_bytes, buffer_t& data)
+        bool uncompress_bzip2(std::istream& istream, std::streamsize num_bytes, buffer_t& buffer)
         {
-                return io_uncompress_bzip2(istream, num_bytes, data);
+                return io_uncompress_bzip2(istream, num_bytes, buffer);
         }
 
-        bool uncompress_bzip2(std::istream& istream, buffer_t& data)
+        bool uncompress_bzip2(std::istream& istream, buffer_t& buffer)
         {
-                return uncompress_bzip2(istream, max_streamsize(), data);
+                return uncompress_bzip2(istream, max_streamsize(), buffer);
         }
 
-        bool uncompress_bzip2(mstream_t& istream, buffer_t& data)
+        bool uncompress_bzip2(mstream_t& istream, buffer_t& buffer)
         {
-                return io_uncompress_bzip2(istream, istream.size(), data);
+                return io_uncompress_bzip2(istream, istream.size(), buffer);
         }
 }

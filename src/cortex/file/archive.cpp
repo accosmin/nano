@@ -4,8 +4,6 @@
 #include <archive.h>
 #include <archive_entry.h>
 
-#include "cortex/logger.h"
-
 namespace cortex
 {
         enum class archive_type : int
@@ -106,8 +104,6 @@ namespace cortex
                                 ok = false;
                                 break;
                         }
-
-                        log_info() << "decode: filename = " << filename << ", data.size() = " << data.size();
 
                         switch (filetype)
                         {
