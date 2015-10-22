@@ -24,6 +24,7 @@ endfunction()
 
 # build unit tests
 add_subdirectory(core)
+add_subdirectory(file)
 add_subdirectory(thread)
 add_subdirectory(cortex)
 

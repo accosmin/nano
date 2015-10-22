@@ -1,12 +1,11 @@
 #include "task_mnist.h"
 #include "archive.h"
 #include "math/cast.hpp"
+#include "file/archive.h"
+#include "file/mstream.h"
 #include "cortex/class.h"
 #include "cortex/logger.h"
 #include "text/to_string.hpp"
-#include "cortex/file/buffer.h"
-#include "cortex/file/archive.h"
-#include "cortex/file/mstream.h"
 
 namespace cortex
 {

@@ -2,9 +2,9 @@
 #define BOOST_TEST_MODULE "test_buffer"
 
 #include <boost/test/unit_test.hpp>
+#include "file/buffer.h"
+#include "file/mstream.h"
 #include "math/random.hpp"
-#include "cortex/file/buffer.h"
-#include "cortex/file/mstream.h"
 #include <cstdio>
 
 BOOST_AUTO_TEST_CASE(test_buffer)
