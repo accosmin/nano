@@ -6,7 +6,6 @@
 #include "cortex/file/archive.h"
 #include "cortex/vision/color.h"
 #include <fstream>
-#include <memory>
 
 namespace cortex
 {
@@ -83,6 +82,7 @@ namespace cortex
                         log_info() << "SVHN: uncompressing " << section.dsize() << " bytes ...";
 
                         buffer_t& data = (isection == 0) ? image_data : label_data;
+
                         const auto op = [&] (const string_t&, const buffer_t& buffer)
                         {
                                 data = buffer;
@@ -93,11 +93,7 @@ namespace cortex
                                 log_error() << "SVHN: " << message;
                         };
 
-                        if (!uncompress_gzip(istream, section.dsize(), op, error_op))
-                        {
-                                log_error() << "SVHN: failed to read compressed data!";
-                                return 0;
-                        }
+                        cortex::uncompress_gzip(istream, section.dsize(), op, error_op);
 
                         log_info() << "SVHN: uncompressed " << data.size() << " bytes.";
                 }

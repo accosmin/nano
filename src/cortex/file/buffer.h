@@ -2,6 +2,7 @@
 
 #include "arch.h"
 #include <ios>
+#include <limits>
 #include <string>
 #include <vector>
 #include <functional>
@@ -10,6 +11,9 @@ namespace cortex
 {
         using buffer_t = std::vector<char>;
 
+        ///
+        /// \brief allocates a buffer of the given size
+        ///
         template
         <
                 typename tsize
@@ -24,28 +28,56 @@ namespace cortex
         ///
         template
         <
-                typename tstream
+                typename tstream,
+                typename tsize
         >
-        bool load_buffer(tstream& stream, std::streamsize num_bytes, buffer_t& buffer)
+        bool load_buffer_from_stream(tstream& istream, tsize orig_num_bytes, buffer_t& buffer)
         {
-                buffer.resize(static_cast<std::size_t>(num_bytes));
+                buffer.clear();
 
-                const std::streamsize stream_size = 64 * 1024;
+                static const std::streamsize chunk_size = 64 * 1024;
+                char chunk[chunk_size];
 
-                char* pbuffer = buffer.data();
-                while (stream && num_bytes > 0)
+                // read in  chunks
+                std::streamsize num_bytes = static_cast<std::streamsize>(orig_num_bytes);
+                while (num_bytes > 0 && istream)
                 {
-                        const auto to_read = num_bytes >= stream_size ? stream_size : num_bytes;
+                        const std::streamsize to_read = (num_bytes >= chunk_size) ? chunk_size : num_bytes;
+                        num_bytes -= to_read;
 
-                        if (stream.read(pbuffer, to_read))
+                        istream.read(chunk, to_read);
+                        if (istream.good() || istream.eof())
                         {
-                                pbuffer += to_read;
-                                num_bytes -= to_read;
+                                buffer.insert(buffer.end(), chunk, chunk + istream.gcount());
                         }
                 }
 
-                return num_bytes == 0;
+                // OK
+                return  (orig_num_bytes == std::numeric_limits<std::streamsize>::max()) ?
+                        istream.eof() : (num_bytes == 0);
         }
+
+        ///
+        /// \brief load from a stream until EOF
+        ///
+        template
+        <
+                typename tstream
+        >
+        bool load_buffer_from_stream(tstream& istream, buffer_t& buffer)
+        {
+                return load_buffer_from_stream(istream, std::numeric_limits<std::streamsize>::max(), buffer);
+        }
+
+        ///
+        /// \brief save buffer to file
+        ///
+        NANOCV_PUBLIC bool save_buffer(const std::string& path, const buffer_t& buffer);
+
+        ///
+        /// \brief save buffer to file
+        ///
+        NANOCV_PUBLIC bool load_buffer(const std::string& path, buffer_t& buffer);
 
         ///
         /// \brief callback to execute when a file was decompressed from an archive

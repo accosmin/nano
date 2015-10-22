@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-                log_info() << "untar: >>> loaded in " << timer.elapsed() << ".";
+                log_info() << "<" << cmd_input << "> loaded in " << timer.elapsed() << ".";
 
                 // OK
                 log_info() << cortex::done;

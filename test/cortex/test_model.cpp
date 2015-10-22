@@ -1,5 +1,5 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE "test_model_io"
+#define BOOST_TEST_MODULE "test_model"
 
 #include <boost/test/unit_test.hpp>
 #include "math/abs.hpp"
@@ -11,7 +11,7 @@
 #include "cortex/tasks/task_charset.h"
 #include <cstdio>
 
-BOOST_AUTO_TEST_CASE(test_model_io)
+BOOST_AUTO_TEST_CASE(test_model)
 {
         cortex::init();
 
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(test_model_io)
                         const fold_t fold = {0, protocol::test};
 
                         const string_t header = "test [" + text::to_string(t + 1) + "/" + text::to_string(n_tests) + "] ";
-                        const string_t path = "./test_model_io.test";
+                        const string_t path = "./test_model.test";
 
                         // test error & parameters before saving
                         scalar_t lvalue_before, lerror_before;

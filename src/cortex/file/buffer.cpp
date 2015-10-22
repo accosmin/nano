@@ -1,0 +1,42 @@
+#include "buffer.h"
+#include <fstream>
+
+namespace cortex
+{
+        bool save_buffer(const std::string& path, const buffer_t& buffer)
+        {
+                std::ofstream stream(path.c_str(), std::ios::binary | std::ios::out);
+                if (!stream.is_open())
+                {
+                        return false;
+                }
+
+                const std::streamsize stream_size = 64 * 1024;
+                std::streamsize num_bytes = static_cast<std::streamsize>(buffer.size());
+
+                const char* pbuffer = buffer.data();
+                while (stream && num_bytes > 0)
+                {
+                        const auto to_write = num_bytes >= stream_size ? stream_size : num_bytes;
+
+                        if (stream.write(pbuffer, to_write))
+                        {
+                                pbuffer += to_write;
+                                num_bytes -= to_write;
+                        }
+                }
+
+                return true;
+        }
+
+        bool load_buffer(const std::string& path, buffer_t& buffer)
+        {
+                std::ifstream stream(path.c_str(), std::ios::binary | std::ios::in);
+                if (!stream.is_open())
+                {
+                        return false;
+                }
+
+                return load_buffer_from_stream(stream, buffer);
+        }
+}

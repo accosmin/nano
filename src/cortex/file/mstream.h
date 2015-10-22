@@ -80,6 +80,16 @@ namespace cortex
                 ///
                 /// \brief check if EOF
                 ///
+                bool eof() const;
+
+                ///
+                /// \brief check state
+                ///
+                bool good() const;
+
+                ///
+                /// \brief check if EOF
+                ///
                 operator bool() const;
 
                 ///

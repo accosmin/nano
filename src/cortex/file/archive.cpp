@@ -4,6 +4,8 @@
 #include <archive.h>
 #include <archive_entry.h>
 
+#include "cortex/logger.h"
+
 namespace cortex
 {
         enum class archive_type : int
@@ -16,7 +18,7 @@ namespace cortex
                 unknown
         };
 
-        archive_type decode_archive_type(const std::string& path)
+        static archive_type decode_archive_type(const std::string& path)
         {
                 if (    text::iends_with(path, ".tar.gz") ||
                         text::iends_with(path, ".tgz"))
@@ -48,7 +50,7 @@ namespace cortex
                 }
         }
 
-        bool copy(archive* ar, buffer_t& data)
+        static bool copy(archive* ar, buffer_t& data)
         {
                 while (true)
                 {
@@ -68,7 +70,9 @@ namespace cortex
                 return true;
         }
 
-        bool decode(const buffer_t& mem_data, const archive_callback_t&, const archive_error_callback_t&);
+        bool decode(const buffer_t& buffer,
+                const archive_callback_t&,
+                const archive_error_callback_t&);
 
         bool decode(archive* ar,
                 const archive_callback_t& callback,
@@ -103,6 +107,8 @@ namespace cortex
                                 break;
                         }
 
+                        log_info() << "decode: filename = " << filename << ", data.size() = " << data.size();
+
                         switch (filetype)
                         {
                         case archive_type::tar:
@@ -126,7 +132,7 @@ namespace cortex
                 return ok;
         }
 
-        bool decode(const buffer_t& mem_data,
+        bool decode(const buffer_t& buffer,
                 const archive_callback_t& callback,
                 const archive_error_callback_t& error_callback)
         {
@@ -136,7 +142,7 @@ namespace cortex
                 archive_read_support_format_all(ar);
                 archive_read_support_format_raw(ar);
 
-                if (archive_read_open_memory(ar, (void*)mem_data.data(), mem_data.size()))
+                if (archive_read_open_memory(ar, (void*)buffer.data(), buffer.size()))
                 {
                         error_callback("failed to open archive!");
                         error_callback(std::string("error <") + archive_error_string(ar) + ">!");
@@ -170,19 +176,27 @@ namespace cortex
                 const archive_callback_t& callback,
                 const archive_error_callback_t& error_callback)
         {
+                /// \todo make this more efficient (as we will store the data TWICE in memory)!
+                buffer_t buffer;
+                if (!cortex::load_buffer_from_stream(stream, num_bytes, buffer))
+                {
+                        error_callback("failed to read chunk data!");
+                        return false;
+                }
+
                 archive* ar = archive_read_new();
 
                 archive_read_support_filter_all(ar);
                 archive_read_support_format_all(ar);
                 archive_read_support_format_raw(ar);
 
-                /// \todo make this more efficient (as we will store the data TWICE in memory)!
-                buffer_t buffer;
-                if (!cortex::load_buffer(stream, num_bytes, buffer))
+                if (archive_read_open_memory(ar, (void*)buffer.data(), buffer.size()))
                 {
+                        error_callback("failed to open archive!");
+                        error_callback(std::string("error <") + archive_error_string(ar) + ">!");
                         return false;
                 }
 
-                return decode(buffer, callback, error_callback);
+                return decode(ar, callback, error_callback);
         }
 }
