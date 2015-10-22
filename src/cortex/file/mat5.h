@@ -84,17 +84,7 @@ namespace cortex
                 mat5_buffer_type        m_dtype;
         };
 
-        template
-        <
-                typename tstream
-        >
-        tstream& operator<<(tstream& stream, const mat5_section_t& sect)
-        {
-                stream << "type = " << to_string(sect.m_dtype)
-                       << ", range = [" << sect.begin() << ", " << sect.end() << "] = " << sect.size() << "B"
-                       << ", data range = [" << sect.dbegin() << ", " << sect.dend() << "] = " << sect.dsize() << "B";
-                return stream;
-        }
+        NANOCV_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_section_t&);
 
         ///
         /// \brief multi-dimensional array consisting of multiple sections
@@ -117,17 +107,5 @@ namespace cortex
                 std::vector<mat5_section_t>     m_sections;     ///< sections (dimensions, name, type, data)
         };
 
-        template
-        <
-                typename tstream
-        >
-        tstream& operator<<(tstream& stream, const mat5_array_t& array)
-        {
-                stream << "sections = " << array.m_sections.size() << ", name = " << array.m_name << ", dims = ";
-                for (std::size_t i = 0; i < array.m_dims.size(); i ++)
-                {
-                        stream << array.m_dims[i] << ((i + 1 == array.m_dims.size()) ? "" : "x");
-                }
-                return stream;
-        }
+        NANOCV_PUBLIC std::ostream& operator<<(std::ostream&, const mat5_array_t&);
 }

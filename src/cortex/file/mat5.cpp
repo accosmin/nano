@@ -115,6 +115,14 @@ namespace cortex
                 return true;
         }
 
+        std::ostream& operator<<(std::ostream& ostream, const mat5_section_t& sect)
+        {
+                ostream << "type = " << to_string(sect.m_dtype)
+                        << ", range = [" << sect.begin() << ", " << sect.end() << "] = " << sect.size() << "B"
+                        << ", data range = [" << sect.dbegin() << ", " << sect.dend() << "] = " << sect.dsize() << "B";
+                return ostream;
+        }
+
         bool mat5_array_t::load_header(mstream_t& istream)
         {
                 mat5_section_t header;
@@ -164,5 +172,15 @@ namespace cortex
 
                 // check bytes
                 return values * to_bytes(sect4.m_dtype) == sect4.dsize();
+        }
+
+        std::ostream& operator<<(std::ostream& ostream, const mat5_array_t& array)
+        {
+                ostream << "sections = " << array.m_sections.size() << ", name = " << array.m_name << ", dims = ";
+                for (std::size_t i = 0; i < array.m_dims.size(); i ++)
+                {
+                        ostream << array.m_dims[i] << ((i + 1 == array.m_dims.size()) ? "" : "x");
+                }
+                return ostream;
         }
 }
