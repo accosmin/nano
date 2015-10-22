@@ -1,19 +1,26 @@
 #pragma once
 
-#include "arch.h"
 #include "buffer.h"
+#include <functional>
 
 namespace cortex
 {
         ///
+        /// \brief callback to execute when a file was decompressed from an archive
+        ///     - (filename, uncompressed file content loaded in memory)
+        ///     - returns true if it should continue
+        ///
+        using archive_callback_t = std::function<bool(const std::string&, const buffer_t&)>;
+
+        ///
+        /// \brief callback to execute when an error was detected at decompressin
+        ///     - (error message)
+        ///
+        using archive_error_callback_t = std::function<void(const std::string&)>;
+
+        ///
         /// \brief decode an archive file (.tar, .gz, .tar.gz, .tar.bz2 etc.)
         ///
         NANOCV_PUBLIC bool unarchive(const std::string& path,
-                const archive_callback_t&, const archive_error_callback_t&);
-
-        ///
-        /// \brief uncompress a gzip chunk
-        ///
-        NANOCV_PUBLIC bool uncompress_gzip(std::istream& stream, std::streamsize num_bytes,
                 const archive_callback_t&, const archive_error_callback_t&);
 }

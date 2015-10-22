@@ -171,32 +171,4 @@ namespace cortex
 
                 return decode(ar, callback, error_callback);
         }
-
-        bool uncompress_gzip(std::istream& stream, std::streamsize num_bytes,
-                const archive_callback_t& callback,
-                const archive_error_callback_t& error_callback)
-        {
-                /// \todo make this more efficient (as we will store the data TWICE in memory)!
-                buffer_t buffer;
-                if (!cortex::load_buffer_from_stream(stream, num_bytes, buffer))
-                {
-                        error_callback("failed to read chunk data!");
-                        return false;
-                }
-
-                archive* ar = archive_read_new();
-
-                archive_read_support_filter_all(ar);
-                archive_read_support_format_all(ar);
-                archive_read_support_format_raw(ar);
-
-                if (archive_read_open_memory(ar, (void*)buffer.data(), buffer.size()))
-                {
-                        error_callback("failed to open archive!");
-                        error_callback(std::string("error <") + archive_error_string(ar) + ">!");
-                        return false;
-                }
-
-                return decode(ar, callback, error_callback);
-        }
 }

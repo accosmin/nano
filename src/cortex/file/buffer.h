@@ -2,7 +2,6 @@
 
 #include "arch.h"
 #include <ios>
-#include <limits>
 #include <string>
 #include <vector>
 #include <functional>
@@ -22,6 +21,11 @@ namespace cortex
         {
                 return buffer_t(static_cast<std::size_t>(size));
         }
+
+        ///
+        /// \brief maximum file/stream size in bytes (useful for indicating a read-until-EOF condition)
+        ///
+        NANOCV_PUBLIC std::streamsize max_streamsize();
 
         ///
         /// \brief load the given number of bytes from a stream
@@ -53,8 +57,7 @@ namespace cortex
                 }
 
                 // OK
-                return  (orig_num_bytes == std::numeric_limits<std::streamsize>::max()) ?
-                        istream.eof() : (num_bytes == 0);
+                return (orig_num_bytes == max_streamsize()) ? istream.eof() : (num_bytes == 0);
         }
 
         ///
@@ -66,7 +69,7 @@ namespace cortex
         >
         bool load_buffer_from_stream(tstream& istream, buffer_t& buffer)
         {
-                return load_buffer_from_stream(istream, std::numeric_limits<std::streamsize>::max(), buffer);
+                return load_buffer_from_stream(istream, max_streamsize(), buffer);
         }
 
         ///
