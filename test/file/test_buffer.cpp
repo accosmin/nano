@@ -9,7 +9,7 @@
 
 BOOST_AUTO_TEST_CASE(test_buffer)
 {
-        using namespace cortex;
+        using namespace file;
 
         const size_t min_size = 3;
         const size_t max_size = 679 * 1024;
@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE(test_buffer)
         for (size_t size = min_size; size <= max_size; size *= 2)
         {
                 // generate reference buffer
-                buffer_t ref_buffer = cortex::make_buffer(size);
+                buffer_t ref_buffer = file::make_buffer(size);
                 BOOST_CHECK_EQUAL(ref_buffer.size(), size);
 
                 math::random_t<char> rng;
@@ -38,12 +38,12 @@ BOOST_AUTO_TEST_CASE(test_buffer)
                 // check buffer saving to file
                 const std::string path = "buffer.test";
 
-                BOOST_CHECK(cortex::save_buffer(path, ref_buffer));
+                BOOST_CHECK(file::save_buffer(path, ref_buffer));
 
                 // check buffer loading from file
                 {
                         buffer_t buffer;
-                        BOOST_CHECK(cortex::load_buffer(path, buffer));
+                        BOOST_CHECK(file::load_buffer(path, buffer));
 
                         op_check_buffers(ref_buffer, buffer);
                 }
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(test_buffer)
                         BOOST_CHECK_EQUAL(stream.size(), static_cast<std::streamsize>(size));
 
                         buffer_t buffer;
-                        BOOST_CHECK(cortex::load_buffer_from_stream(stream, buffer));
+                        BOOST_CHECK(file::load_buffer_from_stream(stream, buffer));
 
                         op_check_buffers(ref_buffer, buffer);
                 }

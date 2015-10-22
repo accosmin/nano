@@ -1,7 +1,7 @@
 #include "mat5.h"
 #include <fstream>
 
-namespace cortex
+namespace file
 {
         using std::uint32_t;
 

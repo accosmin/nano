@@ -4,7 +4,7 @@
 #include <archive.h>
 #include <archive_entry.h>
 
-namespace cortex
+namespace file
 {
         enum class archive_type : int
         {

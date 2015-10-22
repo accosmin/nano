@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace cortex
+namespace file
 {
         using buffer_t = std::vector<char>;
 

@@ -59,30 +59,30 @@ namespace cortex
                 }
 
                 // data sections (image rgb + labels)
-                buffer_t image_data;
-                buffer_t label_data;
+                file::buffer_t image_data;
+                file::buffer_t label_data;
                 for (int isection = 0; isection < 2; isection ++)
                 {
                         // section header
-                        mat5_section_t section;
+                        file::mat5_section_t section;
                         if (!section.load(istream))
                         {
                                 log_error() << "SVHN: failed to read section!";
                                 return 0;
                         }
 
-                        if (section.m_dtype != mat5_buffer_type::miCOMPRESSED)
+                        if (section.m_dtype != file::mat5_buffer_type::miCOMPRESSED)
                         {
                                 log_error() << "SVHN: invalid data type <" << to_string(section.m_dtype)
-                                            << ">! expecting " << to_string(mat5_buffer_type::miCOMPRESSED) << "!";
+                                            << ">! expecting " << to_string(file::mat5_buffer_type::miCOMPRESSED) << "!";
                                 return 0;
                         }
 
                         // section data
                         log_info() << "SVHN: uncompressing " << section.dsize() << " bytes ...";
 
-                        buffer_t& data = (isection == 0) ? image_data : label_data;
-                        if (!cortex::uncompress_gzip(istream, section.dsize(), data))
+                        auto& data = (isection == 0) ? image_data : label_data;
+                        if (!file::uncompress_gzip(istream, section.dsize(), data))
                         {
                                 log_error() << "SVHN: invalid gzip archive!";
                                 return 0;
@@ -95,13 +95,13 @@ namespace cortex
                 return decode(image_data, label_data, p);
         }
 
-        size_t svhn_task_t::decode(const buffer_t& idata, const buffer_t& ldata, const protocol p)
+        size_t svhn_task_t::decode(const file::buffer_t& idata, const file::buffer_t& ldata, const protocol p)
         {
-                mstream_t istream(idata.data(), idata.size());
-                mstream_t lstream(ldata.data(), ldata.size());
+                file::mstream_t istream(idata.data(), idata.size());
+                file::mstream_t lstream(ldata.data(), ldata.size());
 
                 // decode image & label arrays
-                mat5_array_t iarray, larray;
+                file::mat5_array_t iarray, larray;
                 if (    !iarray.load_header(istream) ||
                         !iarray.load_body(istream))
                 {
@@ -118,8 +118,8 @@ namespace cortex
                 log_info() << "SVHN: image array: " << iarray;
                 log_info() << "SVHN: label array: " << larray;
 
-                const mat5_section_t& isection = iarray.m_sections[3];
-                const mat5_section_t& lsection = larray.m_sections[3];
+                const auto& isection = iarray.m_sections[3];
+                const auto& lsection = larray.m_sections[3];
 
                 const auto& idims = iarray.m_dims;
                 const auto& ldims = larray.m_dims;
@@ -140,8 +140,8 @@ namespace cortex
                 }
 
                 // check data type
-                if (    isection.m_dtype != mat5_buffer_type::miUINT8 ||
-                        lsection.m_dtype != mat5_buffer_type::miUINT8)
+                if (    isection.m_dtype != file::mat5_buffer_type::miUINT8 ||
+                        lsection.m_dtype != file::mat5_buffer_type::miUINT8)
                 {
                         log_error() << "SVHN: expecting UINT8 image & label arrays!";
                         return 0;

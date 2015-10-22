@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 
         // decode archive
         cortex::timer_t timer;
-        if (!unarchive(cmd_input, callback, error_callback))
+        if (!file::unarchive(cmd_input, callback, error_callback))
         {
                 return EXIT_FAILURE;
         }

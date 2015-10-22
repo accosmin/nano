@@ -44,7 +44,7 @@ namespace cortex
                         load(dir + "/norb-5x01235x9x18x6x2x108x108-testing-02", protocol::test, n_test_samples);
         }
 
-        static bool read_header(mstream_t& stream, int32_t& magic, std::vector<int32_t>& dims)
+        static bool read_header(file::mstream_t& stream, int32_t& magic, std::vector<int32_t>& dims)
         {
                 // read data type & #dimensions
                 int32_t ndims;
@@ -99,9 +99,9 @@ namespace cortex
                 };
                 
                 // load images
-                const auto iop = [&] (const string_t&, const buffer_t& data)
+                const auto iop = [&] (const string_t&, const file::buffer_t& data)
                 {
-                        mstream_t stream(data.data(), data.size());
+                        file::mstream_t stream(data.data(), data.size());
                         
                         // read header
                         int32_t magic;
@@ -128,7 +128,7 @@ namespace cortex
                         const auto buffer_size = irows() * icols();
                         const auto cnt = dims[0];
                         
-                        buffer_t buffer = cortex::make_buffer(buffer_size);
+                        file::buffer_t buffer = file::make_buffer(buffer_size);
                         for (auto i = 0; i < cnt; i ++)
                         {
                                 for (size_t cam = 0; cam < n_cameras && stream.read(buffer.data(), buffer_size); cam ++)
@@ -145,18 +145,18 @@ namespace cortex
                 };
                                 
                 log_info() << "NORB: loading file <" << ifile << "> ...";
-                if (!unarchive(ifile, iop, error_op))
+                if (!file::unarchive(ifile, iop, error_op))
                 {
                         log_error() << "NORB: failed to load file <" << ifile << ">!";
                         return false;
                 }
 
                 // load ground truth
-                const auto gop = [&] (const string_t& filename, const buffer_t& data)
+                const auto gop = [&] (const string_t& filename, const file::buffer_t& data)
                 {
                         NANOCV_UNUSED1(filename);
 
-                        mstream_t stream(data.data(), data.size());
+                        file::mstream_t stream(data.data(), data.size());
                         
                         // read header
                         int32_t magic;
@@ -205,7 +205,7 @@ namespace cortex
                 };
                 
                 log_info() << "NORB: loading file <" << gfile << "> ...";
-                if (!unarchive(gfile, gop, error_op))
+                if (!file::unarchive(gfile, gop, error_op))
                 {
                         log_error() << "NORB: failed to load file <" << gfile << ">!";
                         return false;

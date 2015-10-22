@@ -38,7 +38,7 @@ namespace cortex
                 size_t load(const string_t& bfile, protocol p);
 
                 // decode the uncompressed bytes (images + labels)
-                size_t decode(const buffer_t& image_data, const buffer_t& label_data, const protocol p);
+                size_t decode(const file::buffer_t& image_data, const file::buffer_t& label_data, const protocol p);
         };
 }
 

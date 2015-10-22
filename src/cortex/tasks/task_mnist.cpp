@@ -37,7 +37,7 @@ namespace cortex
                 size_t gcount = 0;
 
                 const auto buffer_size = irows() * icols();
-                std::vector<char> buffer = cortex::make_buffer(buffer_size);
+                std::vector<char> buffer = file::make_buffer(buffer_size);
                 char label[2];
 
                 const auto error_op = [&] (const string_t& message)
@@ -46,9 +46,9 @@ namespace cortex
                 };
 
                 // load images
-                const auto iop = [&] (const string_t&, const buffer_t& data)
+                const auto iop = [&] (const string_t&, const file::buffer_t& data)
                 {
-                        mstream_t stream(data.data(), data.size());
+                        file::mstream_t stream(data.data(), data.size());
 
                         stream.read(buffer.data(), 16);
                         while (stream.read(buffer.data(), buffer_size))
@@ -64,16 +64,16 @@ namespace cortex
                 };
 
                 log_info() << "MNIST: loading file <" << ifile << "> ...";
-                if (!unarchive(ifile, iop, error_op))
+                if (!file::unarchive(ifile, iop, error_op))
                 {
                         log_error() << "MNIST: failed to load file <" << ifile << ">!";
                         return false;
                 }
 
                 // load ground truth
-                const auto gop = [&] (const string_t&, const buffer_t& data)
+                const auto gop = [&] (const string_t&, const file::buffer_t& data)
                 {
-                        mstream_t stream(data.data(), data.size());
+                        file::mstream_t stream(data.data(), data.size());
 
                         stream.read(buffer.data(), 8);
                         while (stream.read(label, 1) && stream.gcount() == 1)
@@ -98,7 +98,7 @@ namespace cortex
                 };
 
                 log_info() << "MNIST: loading file <" << gfile << "> ...";
-                if (!unarchive(gfile, gop, error_op))
+                if (!file::unarchive(gfile, gop, error_op))
                 {
                         log_error() << "MNIST: failed to load file <" << gfile << ">!";
                         return false;

@@ -44,7 +44,7 @@ namespace cortex
 
                 clear_memory(n_train_samples + n_test_samples);
 
-                const auto op = [&] (const string_t& filename, const buffer_t& data)
+                const auto op = [&] (const string_t& filename, const file::buffer_t& data)
                 {
                         if (    text::iends_with(filename, train_bfile1) ||
                                 text::iends_with(filename, train_bfile2) ||
@@ -70,7 +70,7 @@ namespace cortex
 
                 log_info() << "CIFAR-10: loading file <" << bfile << "> ...";
 
-                return unarchive(bfile, op, error_op);
+                return file::unarchive(bfile, op, error_op);
         }
 
         bool cifar10_task_t::load(const string_t& filename, const char* bdata, size_t bdata_size, protocol p, size_t count)
@@ -78,10 +78,10 @@ namespace cortex
                 log_info() << "CIFAR-10: loading file <" << filename << "> ...";
                 
                 const auto buffer_size = irows() * icols() * 3;
-                std::vector<char> buffer = cortex::make_buffer(buffer_size);
+                std::vector<char> buffer = file::make_buffer(buffer_size);
                 char label[1];
 
-                mstream_t stream(bdata, bdata_size);
+                file::mstream_t stream(bdata, bdata_size);
 
                 size_t icount = 0;
                 while ( stream.read(label, 1) &&

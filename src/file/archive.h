@@ -3,7 +3,7 @@
 #include "buffer.h"
 #include <functional>
 
-namespace cortex
+namespace file
 {
         ///
         /// \brief callback to execute when a file was decompressed from an archive

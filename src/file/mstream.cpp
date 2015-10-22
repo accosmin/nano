@@ -1,7 +1,7 @@
 #include "mstream.h"
 #include <algorithm>
 
-namespace cortex
+namespace file
 {
         static bool isendl(char c)
         {

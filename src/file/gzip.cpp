@@ -1,8 +1,9 @@
 #include "gzip.h"
 #include <zlib.h>
 #include <fstream>
+#include "mstream.h"
 
-namespace cortex
+namespace file
 {
         template
         <

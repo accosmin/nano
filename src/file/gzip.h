@@ -1,10 +1,11 @@
 #pragma once
 
 #include "buffer.h"
-#include "mstream.h"
 
-namespace cortex
+namespace file
 {
+        class mstream_t;
+
         ///
         /// \brief uncompress a stream of bytes (using zlib)
         ///
