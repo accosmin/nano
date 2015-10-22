@@ -38,7 +38,7 @@ namespace cortex
                 ///
                 /// \brief read given number of bytes
                 ///
-                bool read(char* bytes, std::streamsize max_num_bytes);
+                mstream_t& read(char* bytes, std::streamsize max_num_bytes);
 
                 ///
                 /// \brief read POD structure
@@ -47,7 +47,7 @@ namespace cortex
                 <
                         typename tstruct
                 >
-                bool read(tstruct& pod)
+                mstream_t& read(tstruct& pod)
                 {
                         return read(reinterpret_cast<char*>(&pod), sizeof(pod));
                 }
@@ -55,12 +55,12 @@ namespace cortex
                 ///
                 /// \brief read next line
                 ///
-                bool getline(std::string& line);
+                mstream_t& getline(std::string& line);
 
                 ///
-                /// \brief skip the given number of bytes
+                /// \brief move to the given position in the buffer
                 ///
-                bool skip(std::streamsize num_bytes);
+                mstream_t& seekg(std::streampos pos);
 
                 ///
                 /// \brief number of bytes read at the last operation

@@ -102,12 +102,14 @@ namespace cortex
 
                 // decode image & label arrays
                 mat5_array_t iarray, larray;
-                if (!iarray.load(istream))
+                if (    !iarray.load_header(istream) ||
+                        !iarray.load_body(istream))
                 {
                         log_error() << "SVHN: invalid image array!";
                         return 0;
                 }
-                if (!larray.load(lstream))
+                if (    !larray.load_header(lstream) ||
+                        !larray.load_body(lstream))
                 {
                         log_error() << "SVHN: invalid label array!";
                         return 0;

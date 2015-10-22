@@ -1,8 +1,5 @@
 #include "mat5.h"
-#include <limits>
 #include <fstream>
-#include <cstdint>
-#include "cortex/logger.h"
 
 namespace cortex
 {
@@ -87,7 +84,7 @@ namespace cortex
         {
         }
 
-        bool mat5_section_t::load(std::streamsize offset, std::streamsize end, uint32_t dtype, uint32_t bytes)
+        bool mat5_section_t::load(std::streamsize offset, uint32_t dtype, uint32_t bytes)
         {
                 // small data format
                 if ((dtype >> 16) != 0)
@@ -115,98 +112,31 @@ namespace cortex
                         m_dtype = make_buffer_type(dtype);
                 }
 
-                return m_end <= end;
+                return true;
         }
 
-        bool mat5_section_t::load(std::istream& stream)
+        bool mat5_array_t::load_header(mstream_t& istream)
         {
-                const auto offset = stream.tellg();
-
-                uint32_t dtype, bytes;
-                return  stream.read(reinterpret_cast<char*>(&dtype), sizeof(uint32_t)) &&
-                        stream.read(reinterpret_cast<char*>(&bytes), sizeof(uint32_t)) &&
-                        load(offset, std::numeric_limits<std::streamsize>::max(), dtype, bytes);
-        }
-
-        bool mat5_section_t::load(mstream_t& stream)
-        {
-                const auto offset = stream.tellg();
-
-                uint32_t dtype, bytes;
-                return  stream.read(reinterpret_cast<char*>(&dtype), sizeof(uint32_t)) &&
-                        stream.read(reinterpret_cast<char*>(&bytes), sizeof(uint32_t)) &&
-                        load(offset, stream.size(), dtype, bytes);
-        }
-
-        mat5_array_t::mat5_array_t()
-        {
-        }
-
-        bool mat5_array_t::load(mstream_t& stream)
-        {
-                // read & check header
                 mat5_section_t header;
-                if (!header.load(stream))
-                {
-                        log_error() << "failed to load array!";
-                        return false;
-                }
+                return  header.load(istream) &&
+                        header.m_dtype == mat5_buffer_type::miMATRIX &&
+                        header.end() == istream.size();
+        }
 
-                if (header.m_dtype != mat5_buffer_type::miMATRIX)
-                {
-                        log_error() << "invalid array type: expecting "
-                                    << to_string(mat5_buffer_type::miMATRIX) << "!";
-                        return false;
-                }
-
-                if (header.end() != stream.size())
-                {
-                        log_error() << "invalid array size in bytes!";
-                        return false;
-                }
-
-                log_info() << "array header: tellg = " << stream.tellg() << ", " << header << ".";
-
+        bool mat5_array_t::load_body(mstream_t& istream)
+        {
                 // read & check sections
                 m_sections.clear();
 
                 mat5_section_t section;
-                while (stream && m_sections.size() < 5 && section.load(stream))
+                while (istream && m_sections.size() < 5 && section.load(istream))
                 {
-                        log_info() << "array section: tellg = " << stream.tellg() << ", " << section << ".";
-
                         m_sections.push_back(section);
-                        stream.skip(section.dsize());   // move past the data section to read the next section
-                }
-
-                if (m_sections.size() >= 4)
-                {
-                        const mat5_section_t& sect2 = m_sections[1];
-                        const mat5_section_t& sect3 = m_sections[2];
-
-                        m_name = std::string(stream.data() + sect3.dbegin(),
-                                             stream.data() + sect3.dend());
-
-                        m_dims.clear();
-                        std::streamsize values = 1;
-
-                        for (std::streamsize i = sect2.dbegin(); i < sect2.dend(); i += 4)
-                        {
-                                const auto dim = make_uint32(&stream.data()[i]);
-                                m_dims.push_back(dim);
-                                values *= dim;
-                        }
-
-                        log_info() << "name = " << m_name;
-                        for (const auto& dim : m_dims)
-                        {
-                                log_info() << "dim = " << dim;
-                        }
+                        istream.seekg(section.end());   // move past the data section to read the next section
                 }
 
                 if (m_sections.size() != 4)
                 {
-                        log_error() << "invalid array sections, expecting 4 sections but got " << m_sections.size() << "!";
                         return false;
                 }
 
@@ -220,27 +150,19 @@ namespace cortex
                 const mat5_section_t& sect3 = m_sections[2];
                 const mat5_section_t& sect4 = m_sections[3];
 
-                m_name = std::string(stream.data() + sect3.dbegin(),
-                                     stream.data() + sect3.dend());
+                m_name = std::string(istream.data() + sect3.dbegin(),
+                                     istream.data() + sect3.dend());
 
                 m_dims.clear();
                 std::streamsize values = 1;
-
                 for (std::streamsize i = sect2.dbegin(); i < sect2.dend(); i += 4)
                 {
-                        const auto dim = make_uint32(&stream.data()[i]);
+                        const auto dim = make_uint32(&istream.data()[i]);
                         m_dims.push_back(dim);
                         values *= dim;
                 }
 
                 // check bytes
-                if (values * to_bytes(sect4.m_dtype) != sect4.dsize())
-                {
-                        log_error() << "invalid array sections! mismatching number of bytes!";
-                        return false;
-                }
-
-                // OK
-                return true;
+                return values * to_bytes(sect4.m_dtype) == sect4.dsize();
         }
 }

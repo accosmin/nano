@@ -8,7 +8,7 @@ namespace cortex
                 return (c == '\n') || (c == '\r');
         }
 
-        bool mstream_t::read(char* bytes, std::streamsize num_bytes)
+        mstream_t& mstream_t::read(char* bytes, std::streamsize num_bytes)
         {
                 if (tellg() + num_bytes > size())
                 {
@@ -21,15 +21,12 @@ namespace cortex
 
                         m_tellg += num_bytes;
                         m_gcount = num_bytes;
-                        return true;
                 }
-                else
-                {
-                        return false;
-                }
+
+                return *this;
         }
 
-        bool mstream_t::getline(std::string& line)
+        mstream_t& mstream_t::getline(std::string& line)
         {
                 char c;
 
@@ -43,21 +40,15 @@ namespace cortex
                         line.push_back(c);
                 }
 
-                return !line.empty();
+                return *this;
         }
 
-        bool mstream_t::skip(std::streamsize num_bytes)
+        mstream_t& mstream_t::seekg(std::streampos pos)
         {
-                if (tellg() + num_bytes <= size())
-                {
-                        m_tellg += num_bytes;
-                        m_gcount = 0;
-                        return true;
-                }
-                else
-                {
-                        return false;
-                }
+                m_tellg = pos;
+                m_gcount = 0;
+
+                return *this;
         }
 
         std::streamsize mstream_t::gcount() const
@@ -77,7 +68,7 @@ namespace cortex
 
         bool mstream_t::eof() const
         {
-                return tellg() == size();
+                return tellg() >= size();
         }
 
         bool mstream_t::good() const

@@ -2,6 +2,8 @@
 
 #include "mstream.h"
 #include <vector>
+#include <cstdint>
+#include <functional>
 
 namespace cortex
 {
@@ -30,7 +32,7 @@ namespace cortex
         };
 
         ///
-        /// \brief map a data type to string (logging issues)
+        /// \brief map a data type to string (logging purposes)
         ///
         NANOCV_PUBLIC std::string to_string(const mat5_buffer_type& type);
 
@@ -44,16 +46,34 @@ namespace cortex
                 ///
                 explicit mat5_section_t(std::streamsize begin = 0);
 
-                bool load(std::streamsize offset, std::streamsize end, uint32_t dtype, uint32_t bytes);
-                bool load(std::istream& stream);
-                bool load(mstream_t& stream);
+                ///
+                /// \brief load from the constants
+                ///
+                bool load(std::streamsize offset, uint32_t dtype, uint32_t bytes);
 
-                // full section range
+                ///
+                /// \brief load from the input stream
+                ///
+                template
+                <
+                        typename tstream
+                >
+                bool load(tstream& istream)
+                {
+                        const auto offset = istream.tellg();
+
+                        std::uint32_t dtype, bytes;
+                        return  istream.read(reinterpret_cast<char*>(&dtype), sizeof(uint32_t)) &&
+                                istream.read(reinterpret_cast<char*>(&bytes), sizeof(uint32_t)) &&
+                                load(offset, dtype, bytes);
+                }
+
+                /// full section range
                 std::streamsize begin() const { return m_begin; }
                 std::streamsize end() const { return m_end; }
                 std::streamsize size() const { return end() - begin(); }
 
-                // section data range
+                /// section data range
                 std::streamsize dbegin() const { return m_dbegin; }
                 std::streamsize dend() const { return m_dend; }
                 std::streamsize dsize() const { return dend() - dbegin(); }
@@ -77,19 +97,19 @@ namespace cortex
         }
 
         ///
-        /// \brief read a multi-dimensional array consisting of multiple sections.
+        /// \brief multi-dimensional array consisting of multiple sections
         ///
         struct NANOCV_PUBLIC mat5_array_t
         {
                 ///
-                /// \brief constructor
+                /// \brief load header section from the input stream
                 ///
-                mat5_array_t();
+                bool load_header(mstream_t& istream);
 
                 ///
-                /// \brief parse the array
+                /// \brief load body sections from the input stream
                 ///
-                bool load(mstream_t& stream);
+                bool load_body(mstream_t& istream);
 
                 // attributes
                 std::vector<std::size_t>        m_dims;         ///< dimensions of the array
