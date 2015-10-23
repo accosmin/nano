@@ -188,8 +188,8 @@ int main(int, char* [])
                 cmodel + outlayer
         };
 
-        const strings_t cmd_losses = { "classnll" };    //cortex::get_losses().ids();
-        const strings_t cmd_criteria = { "avg" }; //cortex::get_criteria().ids();
+        const strings_t cmd_losses = cortex::get_losses().ids();
+        const strings_t cmd_criteria = { "classnll" };// cortex::get_criteria().ids();
 
         // vary the model
         for (const string_t& cmd_network : cmd_networks)

@@ -37,9 +37,9 @@ A **trainer** optimizes the parameters of a given model to produce the correct o
 
 [![Build Status](https://semaphoreci.com/api/v1/projects/ce418932-a427-4bb5-95b8-d0c17f29f415/578643/badge.svg)](https://semaphoreci.com/accosmin/nanocv)
 
-Use a C++14 compiler (gcc 4.9+, clang) and install Boost, Eigen3, LibArchive and DevIL. 
+Use a C++14 compiler and install Boost, Eigen3, LibArchive and DevIL. 
 
-NanoCV is tested on ArchLinux (gcc 4.9+, CMake 3.1+, Ninja or Make) and OSX (clang, homebrew, CMake 3.1+, Ninja or Make). The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. Windows/MSVC).
+NanoCV is tested on ArchLinux (gcc4.9+/clang3.5+, CMake 3.1+, Ninja or Make) and OSX (clang, homebrew, CMake 3.1+, Ninja or Make). The code is written to be cross-platform, so it may work (with minor fixes) on other platforms as well (e.g. Windows/MSVC).
 
 The easiest way to compile (and install) is to run the `build_release.sh` bash script. The test programs and utilities will be found in the `build-release` directory. The `build_debug.sh` bash script will build the debugging version with and without address, leak and thread sanitizers (if available).
 
