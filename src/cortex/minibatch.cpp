@@ -72,15 +72,15 @@ namespace cortex
 
                         trainer_result_t result;
 
-                        const size_t epoch_size = make_epoch_size(data, batch);
-                        const size_t history_size = std::max(iterations / 2, size_t(4));
+                        const auto epoch_size = make_epoch_size(data, batch);
+                        const auto history_size = std::max(iterations / 2, size_t(4));
 
                         // construct the optimization problem
-                        auto fn_size = cortex::make_opsize(data);
-                        auto fn_fval = cortex::make_opfval(data);
-                        auto fn_grad = cortex::make_opgrad(data);
+                        const auto fn_size = cortex::make_opsize(data);
+                        const auto fn_fval = cortex::make_opfval(data);
+                        const auto fn_grad = cortex::make_opgrad(data);
 
-                        auto fn_ulog = nullptr;
+                        const auto fn_ulog = nullptr;
 
                         // optimize the model
                         vector_t x = data.m_x0;
@@ -146,7 +146,7 @@ namespace cortex
                         {
                                 const cortex::timer_t timer;
 
-                                const size_t epochs = 1;
+                                const auto epochs = size_t(1);
                                 const auto result = train(data, optimizer, epochs, batch, iterations, epsilon, false);
                                 const auto state = result.optimum_state();
 

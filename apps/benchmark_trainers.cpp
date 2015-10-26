@@ -28,17 +28,18 @@ namespace
                 typename ttrainer
         >
         void test_optimizer(model_t& model, const string_t& name, table_t& table, const vectors_t& x0s,
-                ttrainer trainer)
+                const ttrainer& trainer)
         {
                 math::stats_t<scalar_t> terrors;
                 math::stats_t<scalar_t> verrors;
+                math::stats_t<size_t> timings;
 
                 log_info() << "<<< running " << name << " ...";
 
-                const cortex::timer_t timer;
-
                 for (const vector_t& x0 : x0s)
                 {
+                        const cortex::timer_t timer;
+
                         model.load_params(x0);
 
                         const trainer_result_t result = trainer();
@@ -46,16 +47,20 @@ namespace
 
                         terrors(state.m_terror_avg);
                         verrors(state.m_verror_avg);
+                        timings(timer.seconds());
 
-                        log_info() << "<<< " << name << ", optimum config = {" << text::concatenate(result.optimum_config())
-                                   << "}, optimum epoch = " << result.optimum_epoch()
-                                   << ", error " << state.m_terror_avg << "/" << state.m_verror_avg << ".";
+                        log_info() << "<<< " << name
+                                   << ", optimum = {" << text::concatenate(result.optimum_config())
+                                   << "}/" << result.optimum_epoch()
+                                   << ", train = " << state.m_terror_avg
+                                   << ", valid = " << state.m_verror_avg
+                                   << " done in " << timer.elapsed() << ".";
                 }
 
                 table.append(name)
                         << stats_to_string(terrors)
                         << stats_to_string(verrors)
-                        << (timer.seconds());
+                        << static_cast<size_t>(timings.avg());
         }
 
         void test_optimizers(
@@ -211,7 +216,7 @@ int main(int, char* [])
                         table_t table("optimizer\\");
                         table.header() << "train error"
                                        << "valid error"
-                                       << "time [msec]";
+                                       << "time [sec]";
 
                         // vary the criteria
                         for (const string_t& cmd_criterion : cmd_criteria)
