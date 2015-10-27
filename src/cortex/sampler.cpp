@@ -30,13 +30,13 @@ namespace cortex
         sampler_t::state_t& sampler_t::current()
         {
                 assert(!m_states.empty());
-                return *m_states.begin();
+                return *m_states.rbegin();
         }
 
         const sampler_t::state_t& sampler_t::current() const
         {
                 assert(!m_states.empty());
-                return *m_states.begin();
+                return *m_states.rbegin();
         }
 
         sampler_t& sampler_t::push(const fold_t fold)
