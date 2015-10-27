@@ -4,28 +4,14 @@
 #include "minibatch.h"
 #include "min/batch.hpp"
 #include "accumulator.h"
-#include "thread/thread.h"
 #include "text/to_string.hpp"
 #include "min/tune_fixed.hpp"
-#include "min/tune_log10.hpp"
 #include <tuple>
 
 namespace cortex
 {
         namespace
         {
-                size_t make_epoch_size(const trainer_data_t& data, size_t batch)
-                {
-                        return (data.m_tsampler.size() + batch - 1) / batch;
-                }
-
-                sizes_t tunable_batches()
-                {
-                        const size_t batch0 = 16 * thread::n_threads();
-
-                        return { batch0, batch0 * 2, batch0 * 4, batch0 * 8, batch0 * 16 };
-                }
-
                 sizes_t tunable_iterations()
                 {
                         return { 4, 8 };
@@ -61,7 +47,7 @@ namespace cortex
 
                         trainer_result_t result;
 
-                        const auto epoch_size = make_epoch_size(data, batch);
+                        const auto epoch_size = data.epoch_size(batch);
                         const auto history_size = std::max(iterations / 2, size_t(4));
 
                         // construct the optimization problem
@@ -151,7 +137,7 @@ namespace cortex
                                 return result;
                         };
 
-                        const auto batches = tunable_batches();
+                        const auto batches = cortex::tunable_batches();
                         const auto iterations = tunable_iterations();
 
                         return min::tune_fixed(op, batches, iterations);
@@ -187,7 +173,7 @@ namespace cortex
 
                 if (data.m_lacc.can_regularize())
                 {
-                        return std::get<0>(min::tune_log10(op, -6.0, +0.0, 0.5, 4));
+                        return std::get<0>(min::tune_fixed(op, cortex::tunable_lambdas()));
                 }
                 else
                 {

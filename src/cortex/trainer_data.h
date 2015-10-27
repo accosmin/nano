@@ -34,6 +34,11 @@ namespace cortex
                 /// \brief get the regularization weight
                 ///
                 scalar_t lambda() const;
+
+                ///
+                /// \brief compute the epoch size (# iterations per epoch) given the batch size in samples
+                ///
+                size_t epoch_size(const size_t batchsize) const;
                 
                 // attributes
                 const task_t&           m_task;                 ///< 
@@ -46,6 +51,16 @@ namespace cortex
                 accumulator_t&          m_lacc;                 ///< cumulated loss value
                 accumulator_t&          m_gacc;                 ///< cumulated loss gradient
         };
+
+        ///
+        /// \brief batch sizes to tune
+        ///
+        sizes_t tunable_batches();
+
+        ///
+        /// \brief regularization factors to tune
+        ///
+        scalars_t tunable_lambdas();
 
         ///
         /// \brief dimension operator

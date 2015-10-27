@@ -3,23 +3,14 @@
 #include "logger.h"
 #include "stochastic.h"
 #include "accumulator.h"
-#include "thread/thread.h"
 #include "min/tune_stoch.hpp"
 #include "text/to_string.hpp"
-#include "min/tune_log10.hpp"
 #include <tuple>
 
 namespace cortex
 {
         namespace
         {
-                sizes_t tunable_batches()
-                {
-                        const size_t batch0 = thread::n_threads();
-
-                        return { batch0, batch0 * 2, batch0 * 4, batch0 * 8, batch0 * 16 };
-                }
-
                 trainer_result_t train(
                         trainer_data_t& data,
                         min::stoch_optimizer optimizer, size_t epochs, size_t batch, scalar_t alpha0, scalar_t decay,
@@ -29,12 +20,12 @@ namespace cortex
 
                         const cortex::timer_t timer;
 
-                        // setup sampling size
+                        // set the sampling size
                         data.m_tsampler.push(batch);
 
                         // construct the optimization problem
                         size_t epoch = 0;
-                        const size_t epoch_size = (data.m_tsampler.size() + batch - 1) / batch;
+                        const size_t epoch_size = data.epoch_size(batch);
 
                         auto fn_size = cortex::make_opsize(data);
                         auto fn_fval = cortex::make_opfval(data);
@@ -44,9 +35,9 @@ namespace cortex
                         {
                                 // evaluate training samples
                                 data.m_lacc.set_params(state.x);
-                                data.m_tsampler.pop();
+                                data.m_tsampler.pop();                  //
                                 data.m_lacc.update(data.m_task, data.m_tsampler.get(), data.m_loss);
-                                data.m_tsampler.push(batch);
+                                data.m_tsampler.push(batch);            //
                                 const scalar_t tvalue = data.m_lacc.value();
                                 const scalar_t terror_avg = data.m_lacc.avg_error();
                                 const scalar_t terror_var = data.m_lacc.var_error();
@@ -83,9 +74,12 @@ namespace cortex
                                 return !cortex::is_done(ret);
                         };
 
-                        // OK, optimize the model
+                        // Optimize the model
                         min::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
                                       data.m_x0, optimizer, epochs, epoch_size, alpha0, decay);
+
+                        // revert to the original sampler
+                        data.m_tsampler.pop();
 
                         return result;
                 }
@@ -114,7 +108,7 @@ namespace cortex
                                 return result;
                         };
 
-                        const auto batches = tunable_batches();
+                        const auto batches = cortex::tunable_batches();
                         const auto decays = min::tunable_decays<scalar_t>(optimizer);
                         const auto alphas = min::tunable_alphas<scalar_t>(optimizer);
 
@@ -152,7 +146,7 @@ namespace cortex
 
                 if (data.m_lacc.can_regularize())
                 {
-                        return std::get<0>(min::tune_log10(op, -6.0, +0.0, 0.5, 4));
+                        return std::get<0>(min::tune_fixed(op, cortex::tunable_lambdas()));
                 }
                 else
                 {

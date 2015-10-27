@@ -1,5 +1,6 @@
 #include "accumulator.h"
 #include "trainer_data.h"
+#include "thread/thread.h"
 
 namespace cortex
 {
@@ -29,6 +30,29 @@ namespace cortex
         scalar_t trainer_data_t::lambda() const
         {
                 return m_lacc.lambda();
+        }
+
+        size_t trainer_data_t::epoch_size(const size_t batchsize) const
+        {
+                return (m_tsampler.size() + batchsize - 1) / batchsize;
+        }
+
+        sizes_t tunable_batches()
+        {
+                const size_t batch0 = thread::n_threads();
+                return
+                {
+                        batch0 * 1, batch0 * 2, batch0 * 4, batch0 * 8,
+                        batch0 * 16, batch0 * 32, batch0 * 64, batch0 * 128
+                };
+        }
+
+        scalars_t tunable_lambdas()
+        {
+                return
+                {
+                        1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e+0
+                };
         }
 
         opt_opsize_t make_opsize(const trainer_data_t& data)

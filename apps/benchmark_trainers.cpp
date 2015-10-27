@@ -172,10 +172,10 @@ int main(int, char* [])
         tsampler.split(80, vsampler);
 
         // construct models
-//        const string_t lmodel0;
-//        const string_t lmodel1 = lmodel0 + "linear:dims=64;act-snorm;";
-//        const string_t lmodel2 = lmodel1 + "linear:dims=32;act-snorm;";
-//        const string_t lmodel3 = lmodel2 + "linear:dims=16;act-snorm;";
+        const string_t lmodel0;
+        const string_t lmodel1 = lmodel0 + "linear:dims=64;act-snorm;";
+        const string_t lmodel2 = lmodel1 + "linear:dims=32;act-snorm;";
+        const string_t lmodel3 = lmodel2 + "linear:dims=16;act-snorm;";
 
         string_t cmodel;
         cmodel = cmodel + "conv:dims=16,rows=5,cols=5;pool-max;act-snorm;";
@@ -185,10 +185,10 @@ int main(int, char* [])
 
         strings_t cmd_networks =
         {
-//                lmodel0 + outlayer,
-//                lmodel1 + outlayer,
-//                lmodel2 + outlayer,
-//                lmodel3 + outlayer,
+                lmodel0 + outlayer,
+                lmodel1 + outlayer,
+                lmodel2 + outlayer,
+                lmodel3 + outlayer,
 
                 cmodel + outlayer
         };

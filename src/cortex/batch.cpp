@@ -4,8 +4,8 @@
 #include "sampler.h"
 #include "min/batch.hpp"
 #include "accumulator.h"
+#include "min/tune_fixed.hpp"
 #include "text/to_string.hpp"
-#include "min/tune_log10.hpp"
 
 namespace cortex
 {
@@ -90,7 +90,7 @@ namespace cortex
 
                 if (data.m_lacc.can_regularize())
                 {
-                        return std::get<0>(min::tune_log10(op, -6.0, +0.0, 0.5, 4));
+                        return std::get<0>(min::tune_fixed(op, cortex::tunable_lambdas()));
                 }
                 else
                 {
