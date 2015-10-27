@@ -9,8 +9,7 @@ namespace cortex
                        const loss_t& loss,
                        const vector_t& x0,
                        accumulator_t& lacc,
-                       accumulator_t& gacc,
-                       size_t batch)
+                       accumulator_t& gacc)
                 :       m_task(task),
                         m_tsampler(tsampler),
                         m_vsampler(vsampler),
@@ -19,23 +18,6 @@ namespace cortex
                         m_lacc(lacc),
                         m_gacc(gacc)
         {
-                set_batch(batch);
-        }
-
-        void trainer_data_t::set_batch(size_t batch)
-        {
-                // Training: may use all (batch) or a subset (minibatch) of samples
-                if (batch == 0)
-                {
-                        m_tsampler.setup(sampler_t::stype::batch);
-                }
-                else
-                {
-                        m_tsampler.setup(sampler_t::stype::uniform, batch);
-                }
-
-                // Validation: always use all samples
-                m_vsampler.setup(sampler_t::stype::batch);
         }
 
         void trainer_data_t::set_lambda(scalar_t lambda)

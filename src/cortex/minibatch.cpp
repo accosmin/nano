@@ -14,20 +14,6 @@ namespace cortex
 {
         namespace
         {
-                void setup_minibatch(sampler_t& orig_tsampler, size_t tsize, trainer_data_t& data)
-                {
-                        // FIXED random subset of training samples
-                        orig_tsampler.setup(sampler_t::stype::uniform, tsize);
-                        data.m_tsampler = sampler_t(orig_tsampler.get());
-                }
-
-                void reset_minibatch(sampler_t& orig_tsampler, trainer_data_t& data)
-                {
-                        // all available training samples
-                        orig_tsampler.setup(sampler_t::stype::batch);
-                        data.m_tsampler = orig_tsampler;
-                }
-
                 size_t make_epoch_size(const trainer_data_t& data, size_t batch)
                 {
                         return (data.m_tsampler.size() + batch - 1) / batch;
@@ -49,17 +35,20 @@ namespace cortex
                 <
                         typename toperator
                 >
-                void train(trainer_data_t& data, size_t epoch_size, size_t batch, const toperator& op)
+                void train_epoch(trainer_data_t& data, size_t epoch_size, size_t batch, const toperator& op)
                 {
-                        sampler_t orig_tsampler = data.m_tsampler;
+                        auto& tsampler = data.m_tsampler;
 
                         for (size_t i = 0; i < epoch_size; i ++)
                         {
-                                setup_minibatch(orig_tsampler, batch, data);
-                                op();
-                        }
+                                tsampler.push(batch);
+                                tsampler.push(tsampler.get());
 
-                        reset_minibatch(orig_tsampler, data);
+                                op();
+
+                                tsampler.pop();
+                                tsampler.pop();
+                        }
                 }
 
                 trainer_result_t train(
@@ -87,7 +76,7 @@ namespace cortex
 
                         for (size_t epoch = 1; epoch <= epochs; epoch ++)
                         {
-                                train(data, epoch_size, batch, [&] ()
+                                train_epoch(data, epoch_size, batch, [&] ()
                                 {
                                         const opt_state_t state = min::minimize(
                                                 opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
@@ -98,7 +87,7 @@ namespace cortex
 
                                 // training samples: loss value
                                 data.m_lacc.set_params(x);
-                                data.m_lacc.update(data.m_task, data.m_tsampler.all(), data.m_loss);
+                                data.m_lacc.update(data.m_task, data.m_tsampler.get(), data.m_loss);
                                 const scalar_t tvalue = data.m_lacc.value();
                                 const scalar_t terror_avg = data.m_lacc.avg_error();
                                 const scalar_t terror_var = data.m_lacc.var_error();

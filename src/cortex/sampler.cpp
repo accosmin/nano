@@ -4,101 +4,139 @@
 
 namespace cortex
 {
+        template
+        <
+                typename toperator
+        >
+        samples_t filter(samples_t samples, const toperator& op)
+        {
+                samples.erase(std::remove_if(samples.begin(), samples.end(), op), samples.end());
+                return samples;
+        }
+
+        sampler_t::state_t::state_t(const samples_t& samples, const size_t batchsize)
+                :       m_samples(samples),
+                        m_batchsize(batchsize)
+        {
+                // may improve caching!
+                std::sort(m_samples.begin(), m_samples.end());
+        }
+
         sampler_t::sampler_t(const samples_t& samples)
-                :       m_osamples(samples),
-                        m_samples(samples),
-                        m_stype(stype::batch),
-                        m_ssize(0)
         {
+                m_states.emplace_back(samples);
         }
 
-        void sampler_t::reset()
+        sampler_t::state_t& sampler_t::current()
         {
-                // collect all available samples (no restriction)
-                m_samples = m_osamples;
+                assert(!m_states.empty());
+                return *m_states.begin();
         }
 
-        sampler_t& sampler_t::setup(fold_t fold)
+        const sampler_t::state_t& sampler_t::current() const
         {
-                m_samples.erase(std::remove_if(m_samples.begin(), m_samples.end(),
-                                [&] (const sample_t& sample) { return sample.m_fold != fold; }),
-                                m_samples.end());
-
-                return order();
+                assert(!m_states.empty());
+                return *m_states.begin();
         }
 
-        sampler_t& sampler_t::setup(protocol p)
+        sampler_t& sampler_t::push(const fold_t fold)
         {
-                m_samples.erase(std::remove_if(m_samples.begin(), m_samples.end(),
-                                [&] (const sample_t& sample) { return sample.m_fold.second != p; }),
-                                m_samples.end());
+                const auto op = [=] (const sample_t& sample) { return sample.m_fold != fold; };
 
-                return order();
-        }
-
-        sampler_t& sampler_t::setup(stype s, size_t size)
-        {
-                m_stype = s;
-                m_ssize = size;
-
+                m_states.emplace_back(filter(current().m_samples, op));
                 return *this;
         }
 
-        sampler_t& sampler_t::setup(atype a)
+        sampler_t& sampler_t::push(const protocol p)
         {
-                const bool annotated = a == atype::annotated;
+                const auto op = [=] (const sample_t& sample) { return sample.m_fold.second != p; };
 
-                m_samples.erase(std::remove_if(m_samples.begin(), m_samples.end(),
-                                [&] (const sample_t& sample) { return sample.annotated() != annotated; }),
-                                m_samples.end());
-
-                return order();
+                m_states.emplace_back(filter(current().m_samples, op));
+                return *this;
         }
 
-        sampler_t& sampler_t::setup(const string_t& label)
+        sampler_t& sampler_t::push(const annotation a)
         {
-                m_samples.erase(std::remove_if(m_samples.begin(), m_samples.end(),
-                                [&] (const sample_t& sample) { return sample.m_label != label; }),
-                                m_samples.end());
+                const auto annotated = a == annotation::annotated;
+                const auto op = [=] (const sample_t& sample) { return sample.annotated() != annotated; };
 
-                return order();
+                m_states.emplace_back(filter(current().m_samples, op));
+                return *this;
+        }
+
+        sampler_t& sampler_t::push(const string_t& label)
+        {
+                const auto op = [=] (const sample_t& sample) { return sample.m_label != label; };
+
+                m_states.emplace_back(filter(current().m_samples, op));
+                return *this;
+        }
+
+        sampler_t& sampler_t::push(const size_t batchsize)
+        {
+                m_states.emplace_back(current().m_samples, batchsize);
+                return *this;
+        }
+
+        sampler_t& sampler_t::push(const samples_t& samples)
+        {
+                m_states.emplace_back(samples);
+                return *this;
+        }
+
+        bool sampler_t::pop()
+        {
+                if (m_states.empty())
+                {
+                        return false;
+                }
+                else
+                {
+                        m_states.pop_back();
+                        return true;
+                }
         }
 
         sampler_t& sampler_t::split(size_t percentage, sampler_t& other)
         {
                 samples_t tsamples, vsamples;
-                math::usplit(m_samples, percentage, tsamples, vsamples);
+                math::usplit(current().m_samples, percentage, tsamples, vsamples);
 
-                m_samples = tsamples;
-                other.m_samples = vsamples;
-                other.order();
+                this->push(tsamples);
+                other.push(vsamples);
 
-                return order();
+                return *this;
         }
 
         samples_t sampler_t::get() const
         {
+                const auto& crt = current();
+
                 samples_t samples;
 
-                switch (m_stype)
+                // use all samples
+                if (crt.m_batchsize == 0)
                 {
-                case stype::batch:
-                        samples = m_samples;
-                        break;
+                        samples = crt.m_samples;
+                }
 
-                case stype::uniform:
-                        samples = math::usample(m_samples, m_ssize);
+                // use a random subset of samples
+                else
+                {
+                        samples = math::usample(crt.m_samples, crt.m_batchsize);
                         std::sort(samples.begin(), samples.end());
-                        break;
                 }
 
                 return samples;
         }
 
-        sampler_t& sampler_t::order()
+        size_t sampler_t::size() const
         {
-                std::sort(m_samples.begin(), m_samples.end());
+                return current().m_samples.size();
+        }
 
-                return *this;
+        bool sampler_t::empty() const
+        {
+                return current().m_samples.empty();
         }
 }

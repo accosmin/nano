@@ -118,9 +118,8 @@ int main(int argc, char *argv[])
 
 		// per-label error rates
                 sampler_t sampler(rtask->samples());
-                sampler.setup(test_fold);
-                sampler.setup(sampler_t::atype::annotated);
-                sampler.setup(sampler_t::stype::batch);
+                sampler.push(test_fold);
+                sampler.push(annotation::annotated);
 
                 const samples_t samples = sampler.get();
 
@@ -166,13 +165,9 @@ int main(int argc, char *argv[])
                         {
                                 const string_t lbasepath = basepath + "_" + label;
 
-                                sampler_t ok_sampler(ok_samples); ok_sampler.setup(label);
-                                sampler_t nk_sampler(nk_samples); nk_sampler.setup(label);
-                                sampler_t ll_sampler(samples); ll_sampler.setup(label);
-
-                                const samples_t label_ok_samples = ok_sampler.get();
-                                const samples_t label_nk_samples = nk_sampler.get();
-                                const samples_t label_ll_samples = ll_sampler.get();
+                                const samples_t label_ok_samples = sampler_t(ok_samples).push(label).get();
+                                const samples_t label_nk_samples = sampler_t(nk_samples).push(label).get();
+                                const samples_t label_ll_samples = sampler_t(samples).push(label).get();
 
                                 log_info() << "miss-classified " << label_nk_samples.size()
                                            << "/" << label_ll_samples.size() << " = "

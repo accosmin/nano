@@ -13,6 +13,12 @@ namespace cortex
         using fold_t = std::pair<size_t, protocol>;
         using folds_t = std::vector<fold_t>;
 
+        enum class annotation : int
+        {
+                unlabeled,      ///< un-labeled samples
+                annotated       ///< annotated samples
+        };
+
         ///
         /// \brief image-indexed sample
         ///

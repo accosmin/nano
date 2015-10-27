@@ -11,18 +11,6 @@ namespace cortex
 	{
         public:
 
-                enum class stype : int
-                {
-                        batch,          ///< use all samples
-                        uniform         ///< use a fixed number of uniformly-sampled samples
-                };
-
-                enum class atype : int
-                {
-                        unlabeled,      ///< un-labeled samples
-                        annotated       ///< annotated samples
-                };
-
                 ///
                 /// \brief constructor
                 ///
@@ -31,78 +19,83 @@ namespace cortex
                 ///
                 /// \brief restrict by fold
                 ///
-                sampler_t& setup(fold_t fold);
+                sampler_t& push(const fold_t);
 
                 ///
                 /// \brief restrict by protocol
                 ///
-                sampler_t& setup(protocol p);
-
-                ///
-                /// \brief restrict by sampling type
-                ///
-                sampler_t& setup(stype s, size_t size = 0);
+                sampler_t& push(const protocol);
 
                 ///
                 /// \brief restrict by annotation type
                 ///
-                sampler_t& setup(atype a);
+                sampler_t& push(const annotation);
 
                 ///
                 /// \brief restrict to the given label
                 ///
-                sampler_t& setup(const string_t& label);
+                sampler_t& push(const string_t& label);
 
                 ///
-                /// \brief use the given percentage of samples (other's are the rest of the samples)
+                /// \brief setup the number of samples to select at a given time
                 ///
-                sampler_t& split(size_t percentage, sampler_t& other);
+                sampler_t& push(const size_t batchsize);
 
                 ///
-                /// \brief reset restrictions (use all samples of the source task)
+                /// \brief change the sampling pool
                 ///
-                void reset();
+                sampler_t& push(const samples_t& samples);
 
                 ///
-                /// \brief return a set of samples
+                /// \brief reset the previous filter
+                ///
+                bool pop();
+
+                ///
+                /// \brief split the current selection using the given percentage of samples
+                ///
+                sampler_t& split(const size_t percentage, sampler_t& other);
+
+                ///
+                /// \brief select a set of samples
                 ///
                 samples_t get() const;
 
                 ///
-                /// \brief return the pool of samples
-                ///
-                const samples_t& all() const { return m_samples; }
-
-                ///
-                /// \brief check if any samples available
-                ///
-                bool empty() const { return all().empty(); }
-
-                ///
                 /// \brief return the number of available samples
                 ///
-                size_t size() const { return all().size(); }
+                size_t size() const;
 
                 ///
-                /// \brief return if the samples are selected randomly
+                /// \brief check if any available samples
                 ///
-                bool is_random() const { return m_stype != stype::batch; }
+                bool empty() const;
 
         private:
 
+                struct state_t
+                {
+                        explicit state_t(const samples_t& samples = samples_t(),
+                                         const size_t batchsize = 0);
+
+                        samples_t       m_samples;              ///< pool of samples to choose from
+                        size_t          m_batchsize;            ///< number of samples to choose at a time
+                };
+
                 ///
-                /// \brief order samples for fast caching
+                /// \brief current sampling pool
                 ///
-                sampler_t& order();
+                state_t& current();
+
+                ///
+                /// \brief current sampling pool
+                ///
+                const state_t& current() const;
 
         private:
 
                 // attributes
-                samples_t               m_osamples;             ///< original sample pool
-                samples_t               m_samples;              ///< current pool of samples
-
-                stype                   m_stype;
-                size_t                  m_ssize;
+                std::vector<state_t>    m_states;               ///< filtering/selection history
         };
 }
 

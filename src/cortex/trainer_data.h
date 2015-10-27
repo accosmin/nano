@@ -23,13 +23,7 @@ namespace cortex
                                const loss_t& loss,
                                const vector_t& x0,
                                accumulator_t& lacc,
-                               accumulator_t& gacc,
-                               size_t batch = 0);
-
-                ///
-                /// \brief set the training using the given batch size (=0 implies using all samples)
-                ///
-                void set_batch(size_t batch);
+                               accumulator_t& gacc);
 
                 ///
                 /// \brief change the regularization weight

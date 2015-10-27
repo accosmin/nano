@@ -29,7 +29,8 @@ namespace cortex
 
                         const cortex::timer_t timer;
 
-                        data.set_batch(batch);
+                        // setup sampling size
+                        data.m_tsampler.push(batch);
 
                         // construct the optimization problem
                         size_t epoch = 0;
@@ -43,14 +44,16 @@ namespace cortex
                         {
                                 // evaluate training samples
                                 data.m_lacc.set_params(state.x);
-                                data.m_lacc.update(data.m_task, data.m_tsampler.all(), data.m_loss);
+                                data.m_tsampler.pop();
+                                data.m_lacc.update(data.m_task, data.m_tsampler.get(), data.m_loss);
+                                data.m_tsampler.push(batch);
                                 const scalar_t tvalue = data.m_lacc.value();
                                 const scalar_t terror_avg = data.m_lacc.avg_error();
                                 const scalar_t terror_var = data.m_lacc.var_error();
 
                                 // evaluate validation samples
                                 data.m_lacc.set_params(state.x);
-                                data.m_lacc.update(data.m_task, data.m_vsampler.all(), data.m_loss);
+                                data.m_lacc.update(data.m_task, data.m_vsampler.get(), data.m_loss);
                                 const scalar_t vvalue = data.m_lacc.value();
                                 const scalar_t verror_avg = data.m_lacc.avg_error();
                                 const scalar_t verror_var = data.m_lacc.var_error();

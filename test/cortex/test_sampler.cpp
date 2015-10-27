@@ -12,10 +12,10 @@ namespace test
 {
         using namespace cortex;
 
-        bool check_fold(const samples_t& samples, cortex::fold_t fold)
+        bool check_fold(const samples_t& samples, fold_t fold)
         {
-                return std::find_if(samples.begin(), samples.end(),
-                       [&] (const sample_t& sample) { return sample.m_fold != fold; }) == samples.end();
+                const auto op = [=] (const sample_t& sample) { return sample.m_fold != fold; };
+                return std::find_if(samples.begin(), samples.end(), op) == samples.end();
         }
 }
 
@@ -41,33 +41,20 @@ BOOST_AUTO_TEST_CASE(test_sampler)
                 const cortex::timer_t timer;
 
                 // batch training samples
-                sampler_t sampler(task.samples());
-                sampler.reset();
-                sampler.setup(train_fold);
-                sampler.setup(sampler_t::stype::batch);
-
-                const samples_t train_batch_samples = sampler.get();
+                const auto train_batch_samples =
+                        sampler_t(task.samples()).push(train_fold).get();
 
                 // random uniform training samples
-                sampler.reset();
-                sampler.setup(train_fold);
-                sampler.setup(sampler_t::stype::uniform, n_rand_samples);
-
-                const samples_t train_urand_samples = sampler.get();
+                const auto train_urand_samples =
+                        sampler_t(task.samples()).push(train_fold).push(n_rand_samples).get();
 
                 // batch testing samples
-                sampler.reset();
-                sampler.setup(test_fold);
-                sampler.setup(sampler_t::stype::batch);
-
-                const samples_t test_batch_samples = sampler.get();
+                const auto test_batch_samples =
+                        sampler_t(task.samples()).push(test_fold).get();
 
                 // random uniform testing samples
-                sampler.reset();
-                sampler.setup(test_fold);
-                sampler.setup(sampler_t::stype::uniform, n_rand_samples);
-
-                const samples_t test_urand_samples = sampler.get();
+                const auto test_urand_samples =
+                        sampler_t(task.samples()).push(test_fold).push(n_rand_samples).get();
 
                 log_info() << "fold [" << (f + 1) << "/" << task.fsize() << "]: sampled in " << timer.elapsed() << ".";
 
@@ -75,15 +62,15 @@ BOOST_AUTO_TEST_CASE(test_sampler)
                 BOOST_CHECK_EQUAL(train_batch_samples.size() + test_batch_samples.size(), n_samples);
 
                 // check training samples
-                BOOST_CHECK(test::check_fold(train_batch_samples, {f, protocol::train}));
-                BOOST_CHECK(test::check_fold(train_urand_samples, {f, protocol::train}));
+                BOOST_CHECK(test::check_fold(train_batch_samples, train_fold));
+                BOOST_CHECK(test::check_fold(train_urand_samples, train_fold));
 
                 cortex::print(train_header + " batch", train_batch_samples);
                 cortex::print(train_header + " urand", train_urand_samples);
 
                 // check test samples
-                BOOST_CHECK(test::check_fold(test_batch_samples, {f, protocol::test}));
-                BOOST_CHECK(test::check_fold(test_urand_samples, {f, protocol::test}));
+                BOOST_CHECK(test::check_fold(test_batch_samples, test_fold));
+                BOOST_CHECK(test::check_fold(test_urand_samples, test_fold));
 
                 cortex::print(test_header + " batch", test_batch_samples);
                 cortex::print(test_header + " urand", test_urand_samples);

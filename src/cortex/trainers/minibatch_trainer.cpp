@@ -30,7 +30,7 @@ namespace cortex
 
                 // prune training & validation data
                 sampler_t tsampler(task.samples());
-                tsampler.setup(fold).setup(sampler_t::atype::annotated);
+                tsampler.push(fold).push(annotation::annotated);
 
                 sampler_t vsampler(task.samples());
                 tsampler.split(80, vsampler);

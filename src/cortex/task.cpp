@@ -18,8 +18,7 @@ namespace cortex
                 for (const string_t& label : labels)
                 {
                         sampler_t sampler(samples);
-                        sampler.setup(sampler_t::stype::batch);
-                        sampler.setup(label);
+                        sampler.push(label);
 
                         const samples_t lsamples = sampler.get();
                         log_info() << header << " [" << label
@@ -54,7 +53,7 @@ namespace cortex
                         const string_t label = l < labels.size() ? labels[l] : string_t();
 
                         sampler_t sampler(this->samples());
-                        sampler.setup(fold).setup(label);
+                        sampler.push(fold).push(label);
                         const samples_t samples = sampler.get();
 
                         save_as_images(samples, basepath + (label.empty() ? "" : ("_" + label)),
@@ -125,11 +124,11 @@ namespace cortex
                         for (protocol p : {protocol::train, protocol::test})
                         {
                                 sampler_t sampler(this->samples());
-                                sampler.setup({f, p});
+                                sampler.push({f, p});
 
                                 cortex::print("fold [" + text::to_string(f + 1) + "/" + text::to_string(fsize()) + "] " +
                                            "protocol [" + text::to_string(p) + "]",
-                                           sampler.all());
+                                           sampler.get());
                         }
                 }
         }

@@ -166,7 +166,7 @@ int main(int, char* [])
 
         // create training & validation samples
         sampler_t tsampler(task.samples());
-        tsampler.setup(sampler_t::atype::annotated);
+        tsampler.push(cortex::annotation::annotated);
 
         sampler_t vsampler(task.samples());
         tsampler.split(80, vsampler);

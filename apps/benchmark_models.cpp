@@ -185,8 +185,8 @@ int main(int argc, char *argv[])
 
                 // select random samples
                 sampler_t sampler(task.samples());
-                sampler.setup(sampler_t::stype::uniform, cmd_samples);
-                sampler.setup(sampler_t::atype::annotated);
+                sampler.push(annotation::annotated);
+                sampler.push(cmd_samples);
 
                 const samples_t samples = sampler.get();
 

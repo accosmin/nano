@@ -9,7 +9,7 @@ namespace cortex
                 scalar_t& lvalue, scalar_t& lerror)
         {
                 sampler_t sampler(task.samples());
-                sampler.setup(fold).setup(sampler_t::atype::annotated);
+                sampler.push(fold).push(annotation::annotated);
 
                 accumulator_t accumulator(model, 0, "avg", criterion_t::type::value, 0.0);
                 accumulator.update(task, sampler.get(), loss);
