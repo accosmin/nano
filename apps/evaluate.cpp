@@ -2,7 +2,7 @@
 #include "cortex/sampler.h"
 #include "cortex/evaluate.h"
 #include "text/concatenate.hpp"
-#include "cortex/measure_and_log.hpp"
+#include "cortex/util/measure_and_log.hpp"
 #include <boost/program_options.hpp>
 #include <algorithm>
 
@@ -83,8 +83,7 @@ int main(int argc, char *argv[])
         // load task data
         cortex::measure_critical_and_log(
                 [&] () { return rtask->load(cmd_task_dir); },
-                "loaded task",
-                "failed to load task <" + cmd_task + "> from directory <" + cmd_task_dir + ">");
+                "load task <" + cmd_task + "> from <" + cmd_task_dir + ">");
 
         // describe task
         rtask->describe();
@@ -98,8 +97,7 @@ int main(int argc, char *argv[])
         // load model
         cortex::measure_critical_and_log(
                 [&] () { return rmodel->load(cmd_input); },
-                "loaded model",
-                "failed to load model from <" + cmd_input + ">");
+                "load model from <" + cmd_input + ">");
 
         // test model
         math::stats_t<scalar_t> lstats, estats;

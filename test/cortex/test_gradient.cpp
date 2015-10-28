@@ -5,12 +5,12 @@
 #include "thread/pool.h"
 #include "cortex/class.h"
 #include "math/close.hpp"
-#include "cortex/logger.h"
 #include "cortex/cortex.h"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
 #include "cortex/optimizer.h"
+#include "cortex/util/logger.h"
 #include "cortex/accumulator.h"
 #include <set>
 

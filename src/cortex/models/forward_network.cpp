@@ -1,9 +1,9 @@
 #include "forward_network.h"
 #include "math/cast.hpp"
 #include "text/split.hpp"
-#include "cortex/logger.h"
 #include "math/numeric.hpp"
 #include "text/to_string.hpp"
+#include "cortex/util/logger.h"
 #include "tensor/serialize.hpp"
 #include <iomanip>
 

@@ -1,6 +1,6 @@
 #include "model.h"
 #include "task.h"
-#include "logger.h"
+#include "util/logger.h"
 #include <fstream>
 
 namespace cortex

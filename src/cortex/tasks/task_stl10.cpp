@@ -5,8 +5,8 @@
 #include "file/mstream.h"
 #include "cortex/class.h"
 #include "text/split.hpp"
-#include "cortex/logger.h"
 #include "text/ends_with.hpp"
+#include "cortex/util/logger.h"
 #include "text/from_string.hpp"
 
 namespace cortex

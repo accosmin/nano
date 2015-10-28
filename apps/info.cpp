@@ -1,5 +1,5 @@
-#include "cortex/table.h"
 #include "cortex/cortex.h"
+#include "cortex/util/table.h"
 #include <iostream>
 #include <boost/program_options.hpp>
 

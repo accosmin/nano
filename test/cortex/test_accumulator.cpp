@@ -3,12 +3,12 @@
 
 #include <boost/test/unit_test.hpp>
 #include "math/abs.hpp"
-#include "cortex/timer.h"
-#include "cortex/logger.h"
 #include "cortex/cortex.h"
 #include "thread/thread.h"
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
+#include "cortex/util/timer.h"
+#include "cortex/util/logger.h"
 #include "cortex/accumulator.h"
 #include "cortex/tasks/task_charset.h"
 

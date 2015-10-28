@@ -1,11 +1,11 @@
-#include "cortex/table.h"
 #include "cortex/cortex.h"
 #include "thread/thread.h"
 #include "thread/loopi.hpp"
 #include "cortex/sampler.h"
-#include "cortex/measure.hpp"
-#include "cortex/measure_and_log.hpp"
+#include "cortex/util/table.h"
+#include "cortex/util/measure.hpp"
 #include "cortex/tasks/task_charset.h"
+#include "cortex/util/measure_and_log.hpp"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])

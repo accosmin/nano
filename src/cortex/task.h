@@ -1,8 +1,8 @@
 #pragma once
 
 #include "sample.h"
-#include "manager.hpp"
 #include "vision/image.h"
+#include "util/manager.hpp"
 
 namespace cortex
 {

@@ -1,9 +1,9 @@
 #include "batch_trainer.h"
 #include "cortex/batch.h"
 #include "cortex/model.h"
-#include "cortex/logger.h"
 #include "cortex/sampler.h"
 #include "math/numeric.hpp"
+#include "cortex/util/logger.h"
 #include "text/from_params.hpp"
 #include "text/concatenate.hpp"
 

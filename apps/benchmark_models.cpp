@@ -1,14 +1,14 @@
 #include "cortex/class.h"
-#include "cortex/table.h"
 #include "cortex/cortex.h"
 #include "math/random.hpp"
 #include "thread/thread.h"
 #include "cortex/sampler.h"
 #include "tensor/random.hpp"
-#include "cortex/measure.hpp"
+#include "cortex/util/table.h"
 #include "cortex/accumulator.h"
-#include "cortex/measure_and_log.hpp"
+#include "cortex/util/measure.hpp"
 #include "cortex/tasks/task_charset.h"
+#include "cortex/util/measure_and_log.hpp"
 #include <boost/program_options.hpp>
 
 namespace

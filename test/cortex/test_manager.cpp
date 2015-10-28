@@ -3,7 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include "cortex/string.h"
-#include "cortex/manager.hpp"
+#include "cortex/util/manager.hpp"
 
 namespace test
 {

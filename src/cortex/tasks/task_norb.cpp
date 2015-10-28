@@ -3,7 +3,7 @@
 #include "file/archive.h"
 #include "file/mstream.h"
 #include "cortex/class.h"
-#include "cortex/logger.h"
+#include "cortex/util/logger.h"
 
 namespace cortex
 {

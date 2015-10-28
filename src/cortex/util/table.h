@@ -1,8 +1,8 @@
 #pragma once
 
+#include "row.h"
 #include "arch.h"
-#include "table/row.h"
-#include "table/header.h"
+#include "header.h"
 #include <cassert>
 #include <algorithm>
 

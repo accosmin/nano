@@ -2,7 +2,7 @@
 #include "text/to_string.hpp"
 #include "cortex/vision/warp.h"
 #include "cortex/vision/image.h"
-#include "cortex/measure_and_log.hpp"
+#include "cortex/util/measure_and_log.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
@@ -84,8 +84,7 @@ int main(int argc, char *argv[])
         image_t iimage;
         cortex::measure_critical_and_log(
                [&] () { return iimage.load_rgba(cmd_input); },
-               "loaded image from <" + cmd_input + ">",
-               "failed to load image from <" + cmd_input + ">");
+               "load image from <" + cmd_input + ">");
 
         log_info () << "image: " << iimage.cols() << "x" << iimage.rows() << " pixels, "
                     << (iimage.is_luma() ? "[luma]" : "[rgba]") << ".";
@@ -116,8 +115,7 @@ int main(int argc, char *argv[])
 
                         cortex::measure_critical_and_log(
                                 [&] () { return image.save(opath); },
-                                "saved warped image to <" + opath + ">",
-                                "failed to save warped image to <" + opath + ">");
+                                "save warped image to <" + opath + ">");
                 }
 
                 // save field image
@@ -128,8 +126,7 @@ int main(int argc, char *argv[])
 
                         cortex::measure_critical_and_log(
                                 [&] () { return image.save(fpath); },
-                                "saved field image to <" + fpath + ">",
-                                "failed to save field image to <" + fpath + ">");
+                                "save field image to <" + fpath + ">");
                 }
         }
 		

@@ -4,8 +4,8 @@
 #include "cortex/class.h"
 #include "file/archive.h"
 #include "file/mstream.h"
-#include "cortex/logger.h"
 #include "text/ends_with.hpp"
+#include "cortex/util/logger.h"
 
 namespace cortex
 {

@@ -2,8 +2,8 @@
 #include "cortex/cortex.h"
 #include "cortex/generate.h"
 #include "text/concatenate.hpp"
-#include "cortex/measure_and_log.hpp"
 #include "cortex/vision/image_grid.h"
+#include "cortex/util/measure_and_log.hpp"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 
@@ -63,8 +63,7 @@ int main(int argc, char *argv[])
         // load model
         cortex::measure_critical_and_log(
                 [&] () { return rmodel->load(cmd_input); },
-                "loaded model",
-                "failed to load model from <" + cmd_input + ">");
+                "load model from <" + cmd_input + ">");
 
         // generate samples for each output class label
         const tensor_size_t labels = rmodel->osize();

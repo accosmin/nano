@@ -14,11 +14,11 @@ namespace cortex
                 typename toperator,
                 typename tstring
         >
-        void measure_and_log(const toperator& op, const tstring& msg)
+        void measure_and_log(const toperator& op, const tstring& message)
         {
                 const timer_t timer;
                 op();
-                log_info() << msg << " [" << timer.elapsed() << "].";
+                log_info() << message << " [" << timer.elapsed() << "].";
         }
 
         ///
@@ -27,20 +27,18 @@ namespace cortex
         template
         <
                 typename toperator,
-                typename tstring_success,
-                typename tstring_failure
+                typename tstring
         >
-        void measure_critical_and_log(const toperator& op,
-                const tstring_success& msg_success, const tstring_failure& msg_failure)
+        void measure_critical_and_log(const toperator& op, const tstring& message)
         {
                 const timer_t timer;
                 if (op())
                 {
-                        log_info() << msg_success << " [" << timer.elapsed() << "].";
+                        log_info() << message << " [" << timer.elapsed() << "].";
                 }
                 else
                 {
-                        log_error() << msg_failure << " [" << timer.elapsed() << "]!";
+                        log_error() << message << " [" << timer.elapsed() << "] failed!";
                         exit(EXIT_FAILURE);
                 }
         }

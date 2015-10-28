@@ -1,6 +1,6 @@
 #include "cortex/cortex.h"
 #include "text/concatenate.hpp"
-#include "cortex/measure_and_log.hpp"
+#include "cortex/util/measure_and_log.hpp"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
@@ -62,8 +62,7 @@ int main(int argc, char *argv[])
         // load task data
         cortex::measure_critical_and_log(
                 [&] () { return rtask->load(cmd_task_dir); },
-                "loaded task",
-                "failed to load task from directory <" + cmd_task_dir + ">");
+                "load task <" + cmd_task + "> from <" + cmd_task_dir + ">");
 
         // describe task
         rtask->describe();

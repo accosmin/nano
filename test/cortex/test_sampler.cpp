@@ -2,10 +2,10 @@
 #define BOOST_TEST_MODULE "test_sampler"
 
 #include <boost/test/unit_test.hpp>
-#include "cortex/timer.h"
-#include "cortex/logger.h"
 #include "cortex/sampler.h"
 #include "text/to_string.hpp"
+#include "cortex/util/timer.h"
+#include "cortex/util/logger.h"
 #include "cortex/tasks/task_charset.h"
 
 namespace test

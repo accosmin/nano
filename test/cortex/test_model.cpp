@@ -3,11 +3,11 @@
 
 #include <boost/test/unit_test.hpp>
 #include "math/abs.hpp"
-#include "cortex/logger.h"
 #include "cortex/cortex.h"
 #include "math/epsilon.hpp"
 #include "cortex/evaluate.h"
 #include "text/to_string.hpp"
+#include "cortex/util/logger.h"
 #include "cortex/tasks/task_charset.h"
 #include <cstdio>
 

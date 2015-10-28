@@ -1,13 +1,13 @@
 #include "cortex/batch.h"
-#include "cortex/table.h"
 #include "cortex/cortex.h"
-#include "cortex/logger.h"
 #include "thread/thread.h"
-#include "cortex/measure.hpp"
 #include "cortex/minibatch.h"
+#include "cortex/util/table.h"
 #include "cortex/stochastic.h"
+#include "cortex/util/logger.h"
 #include "cortex/accumulator.h"
 #include "text/concatenate.hpp"
+#include "cortex/util/measure.hpp"
 #include "cortex/tasks/task_charset.h"
 
 namespace

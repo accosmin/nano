@@ -3,7 +3,7 @@
 #include "arch.h"
 #include "string.h"
 #include "tensor.h"
-#include "manager.hpp"
+#include "util/manager.hpp"
 
 namespace cortex
 {

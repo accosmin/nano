@@ -2,7 +2,7 @@
 #include "cortex/cortex.h"
 #include "cortex/evaluate.h"
 #include "text/concatenate.hpp"
-#include "cortex/measure_and_log.hpp"
+#include "cortex/util/measure_and_log.hpp"
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 
@@ -125,8 +125,7 @@ int main(int argc, char *argv[])
         // load task data
         cortex::measure_critical_and_log(
                 [&] () { return rtask->load(cmd_task_dir); },
-                "task loaded",
-                "failed to load task <" + cmd_task + "> from directory <" + cmd_task_dir + ">");
+                "load task <" + cmd_task + "> from <" + cmd_task_dir + ">");
 
         // describe task
         rtask->describe();
@@ -153,20 +152,18 @@ int main(int argc, char *argv[])
 
                         // train
                         trainer_result_t result;
-                        cortex::measure_critical_and_log(
-                                [&] ()
-                                {
-                                        result = rtrainer->train(*rtask, train_fold, *rloss, cmd_threads, cmd_criterion, *rmodel);
-                                        return result.valid();
-                                },
-                                "model trained",
-                                "failed to train model");
+                        cortex::measure_critical_and_log([&] ()
+                        {
+                                result = rtrainer->train(*rtask, train_fold, *rloss, cmd_threads, cmd_criterion, *rmodel);
+                                return result.valid();
+                        },
+                        "train model");
 
                         // test
                         scalar_t lvalue, lerror;
                         cortex::measure_and_log(
                                 [&] () { cortex::evaluate(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror); },
-                                "model tested");
+                                "test model");
                         log_info() << "<<< test error: [" << lvalue << "/" << lerror << "].";
 
                         lstats(lvalue);
@@ -191,16 +188,14 @@ int main(int argc, char *argv[])
                 
                 cortex::measure_critical_and_log(
                         [&] () { return opt_model->save(cmd_output); },
-                        "saved model",
-                        "failed to save model to <" + cmd_output + ">");
+                        "save model to <" + cmd_output + ">");
                 
                 const string_t path = (boost::filesystem::path(cmd_output).parent_path() /
                         boost::filesystem::path(cmd_output).stem()).string() + ".state";
                 
                 cortex::measure_critical_and_log(
                         [&] () { return cortex::save(path, opt_states); },
-                        "saved state",
-                        "failed to save state to <" + path + ">");
+                        "save state to <" + path + ">");
         }
 
         // OK

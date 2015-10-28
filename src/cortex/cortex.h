@@ -1,10 +1,10 @@
 #pragma once
 
-#include "cortex/loss.h"
-#include "cortex/layer.h"
-#include "cortex/model.h"
-#include "cortex/trainer.h"
-#include "cortex/criterion.h"
+#include "loss.h"
+#include "layer.h"
+#include "model.h"
+#include "trainer.h"
+#include "criterion.h"
 
 namespace cortex
 {

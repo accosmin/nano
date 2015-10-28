@@ -1,10 +1,9 @@
 #include "text/lower.hpp"
 #include "cortex/string.h"
-#include "cortex/logger.h"
 #include "text/replace.hpp"
+#include "cortex/util/logger.h"
 #include "cortex/vision/image.h"
 #include <fstream>
-#include <iostream>
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 

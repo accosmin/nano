@@ -1,7 +1,5 @@
-#include "cortex/table.h"
 #include "cortex/tensor.h"
 #include "math/random.hpp"
-#include "cortex/measure.hpp"
 #include "tensor/conv3d.hpp"
 #include "tensor/random.hpp"
 #include "tensor/conv2d_cpp.hpp"
@@ -11,7 +9,9 @@
 #include "tensor/corr2d_dyn.hpp"
 #include "tensor/corr2d_egb.hpp"
 #include "tensor/corr2d_egr.hpp"
-#include "cortex/table/row_mark.h"
+#include "cortex/util/table.h"
+#include "cortex/util/measure.hpp"
+#include "cortex/util/row_mark.h"
 #include <iostream>
 #include <boost/program_options.hpp>
 

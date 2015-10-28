@@ -1,7 +1,7 @@
-#include "cortex/timer.h"
 #include "file/archive.h"
-#include "cortex/logger.h"
 #include "cortex/string.h"
+#include "cortex/util/timer.h"
+#include "cortex/util/logger.h"
 #include <boost/program_options.hpp>
 
 int main(int argc, char *argv[])
