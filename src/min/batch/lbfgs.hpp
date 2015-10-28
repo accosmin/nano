@@ -50,10 +50,10 @@ namespace min
                         tvector q, r;
 
                         // line-search initial step length
-                        linesearch_init_t<tstate> ls_init(m_param.m_ls_initializer);
+                        ls_init_t<tstate> ls_init(m_param.m_ls_initializer);
 
                         // line-search step
-                        linesearch_strategy_t<tproblem> ls_step(m_param.m_ls_strategy, 1e-4, 0.9);
+                        ls_strategy_t<tproblem> ls_step(m_param.m_ls_strategy, 1e-4, 0.9);
 
                         // iterate until convergence
                         for (std::size_t i = 0; i < m_param.m_max_iterations && m_param.ulog(cstate); i ++)
@@ -111,7 +111,7 @@ namespace min
                                 pstate = cstate;
 
                                 const tscalar t0 = ls_init(cstate);
-                                if (!ls_step.update(problem, t0, cstate))
+                                if (!ls_step(problem, t0, cstate))
                                 {
                                         break;
                                 }

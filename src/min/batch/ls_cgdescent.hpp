@@ -21,14 +21,14 @@ namespace min
                 typename tscalar = typename tstep::tscalar,
                 typename tsize = typename tstep::tsize
         >
-        class linesearch_cgdescent_t
+        class ls_cgdescent_t
         {
         public:
 
                 ///
                 /// \brief constructor
                 ///
-                linesearch_cgdescent_t()
+                ls_cgdescent_t()
                         :       m_sumQ(0),
                                 m_sumC(0),
                                 m_approx(false)

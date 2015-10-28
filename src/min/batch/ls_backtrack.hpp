@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ls_step.hpp"
 #include "min/lsearch_types.h"
 
 namespace min
@@ -16,14 +15,14 @@ namespace min
                 typename tscalar = typename tstep::tscalar,
                 typename tsize = typename tstep::tsize
         >
-        class linesearch_backtracking_t
+        class ls_backtrack_t
         {
         public:
 
                 ///
                 /// \brief constructor
                 ///
-                linesearch_backtracking_t()
+                ls_backtrack_t()
                 {
                 }
 

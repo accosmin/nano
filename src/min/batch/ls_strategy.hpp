@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include "ls_step.hpp"
 #include "min/state.hpp"
 #include "ls_backtrack.hpp"
 #include "ls_cgdescent.hpp"
@@ -17,14 +18,14 @@ namespace min
                 typename tstate = typename tproblem::tstate,
                 typename tstep = ls_step_t<tproblem>
         >
-        class linesearch_strategy_t
+        class ls_strategy_t
         {
         public:
 
                 ///
                 /// \brief constructor
                 ///
-                linesearch_strategy_t(const ls_strategy strategy,
+                ls_strategy_t(  const ls_strategy strategy,
                                 const tscalar c1 = 1e-4, const tscalar c2 = 0.1)
                         :       m_strategy(strategy),
                                 m_c1(c1),
@@ -35,7 +36,7 @@ namespace min
                 ///
                 /// \brief update the current state
                 ///
-                bool update(const tproblem& problem, tscalar t0, tstate& state) const
+                bool operator()(const tproblem& problem, tscalar t0, tstate& state) const
                 {
                         assert(m_c1 < m_c2);
                         assert(m_c1 > tscalar(0) && m_c1 < tscalar(1));
@@ -81,14 +82,14 @@ namespace min
                         case ls_strategy::backtrack_armijo:
                         case ls_strategy::backtrack_wolfe:
                         case ls_strategy::backtrack_strong_wolfe:
-                                return m_ls_backtracking(m_strategy, m_c1, m_c2, step0, t0);
+                                return m_ls_backtrack(m_strategy, m_c1, m_c2, step0, t0);
 
                         case ls_strategy::cg_descent:
                                 return m_ls_cgdescent(m_strategy, m_c1, m_c2, step0, t0);
 
                         case ls_strategy::interpolation:
                         default:
-                                return m_ls_interpolation(m_strategy, m_c1, m_c2, step0, t0);
+                                return m_ls_interpolate(m_strategy, m_c1, m_c2, step0, t0);
                         }
                 }
 
@@ -99,9 +100,9 @@ namespace min
                 tscalar                 m_c1;           ///< sufficient decrease rate
                 tscalar                 m_c2;           ///< sufficient curvature
 
-                linesearch_cgdescent_t<tstep>           m_ls_cgdescent;
-                linesearch_backtracking_t<tstep>        m_ls_backtracking;
-                linesearch_interpolation_t<tstep>       m_ls_interpolation;
+                ls_cgdescent_t<tstep>   m_ls_cgdescent;
+                ls_backtrack_t<tstep>   m_ls_backtrack;
+                ls_interpolate_t<tstep> m_ls_interpolate;
         };
 }
 

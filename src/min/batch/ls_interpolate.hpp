@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ls_step.hpp"
 #include "ls_cubic.hpp"
 #include "ls_bisection.hpp"
 #include "ls_quadratic.hpp"
@@ -19,14 +18,14 @@ namespace min
                 typename tscalar = typename tstep::tscalar,
                 typename tsize = typename tstep::tsize
         >
-        class linesearch_interpolation_t
+        class ls_interpolate_t
         {
         public:
 
                 ///
                 /// \brief constructor
                 ///
-                linesearch_interpolation_t()
+                ls_interpolate_t()
                 {
                 }
 

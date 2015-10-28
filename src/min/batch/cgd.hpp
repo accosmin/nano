@@ -46,10 +46,10 @@ namespace min
                         tstate pstate = cstate;         // previous state
 
                         // line-search initial step length
-                        linesearch_init_t<tstate> ls_init(m_param.m_ls_initializer);
+                        ls_init_t<tstate> ls_init(m_param.m_ls_initializer);
 
                         // line-search step
-                        linesearch_strategy_t<tproblem> ls_step(m_param.m_ls_strategy, 1e-4, 0.1);
+                        ls_strategy_t<tproblem> ls_step(m_param.m_ls_strategy, 1e-4, 0.1);
 
                         const tcgd_update op_update;
 
@@ -83,7 +83,7 @@ namespace min
                                 pstate = cstate;
 
                                 const tscalar t0 = ls_init(cstate);
-                                if (!ls_step.update(problem, t0, cstate))
+                                if (!ls_step(problem, t0, cstate))
                                 {
                                         break;
                                 }

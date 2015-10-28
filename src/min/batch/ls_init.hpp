@@ -14,14 +14,14 @@ namespace min
                 typename tstate,
                 typename tscalar = typename tstate::tscalar
         >
-        class linesearch_init_t
+        class ls_init_t
         {
         public:
 
                 ///
                 /// \brief constructor
                 ///
-                explicit linesearch_init_t(ls_initializer type)
+                explicit ls_init_t(ls_initializer type)
                         :       m_type(type),
                                 m_first(true),
                                 m_prevf(0),
