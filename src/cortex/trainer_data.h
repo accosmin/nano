@@ -13,7 +13,7 @@ namespace cortex
         /// \brief stores all required buffers to train a model
         ///
         struct trainer_data_t
-        {        
+        {
                 ///
                 /// \brief constructor
                 ///
@@ -39,7 +39,7 @@ namespace cortex
                 /// \brief compute the epoch size (# iterations per epoch) given the batch size in samples
                 ///
                 size_t epoch_size(const size_t batchsize) const;
-                
+
                 // attributes
                 const task_t&           m_task;                 ///< 
                 sampler_t               m_tsampler;             ///< training samples

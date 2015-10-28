@@ -21,7 +21,7 @@ namespace cortex
                 ///
                 trainer_state_t(scalar_t tvalue, scalar_t terror_avg, scalar_t terror_var,
                                 scalar_t vvalue, scalar_t verror_avg, scalar_t verror_var);
-                
+
                 // attributes
                 scalar_t                m_tvalue;       ///< train loss value
                 scalar_t                m_terror_avg;   ///< train error (average)

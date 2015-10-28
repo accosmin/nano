@@ -18,7 +18,7 @@ namespace cortex
         using rtrainer_t = trainer_manager_t::trobject;
 
         NANOCV_PUBLIC trainer_manager_t& get_trainers();
-                
+
         ///
         /// \brief generic trainer: optimizes a model on a given task
         ///

@@ -11,7 +11,7 @@ namespace cortex
         /// \brief training configuration (e.g. learning rate, regularization weight)
         ///
         using trainer_config_t = scalars_t;
-        
+
         ///
         /// \brief training history (configuration, optimization states)
         ///
@@ -36,7 +36,7 @@ namespace cortex
         /// \brief check if the training should be stopped based on the return code
         ///
         NANOCV_PUBLIC bool is_done(const trainer_result_return_t);
-        
+
         ///
         /// \brief track the current/optimum model state
         ///
@@ -74,7 +74,7 @@ namespace cortex
                 /// \brief optimum training state
                 ///
                 trainer_state_t optimum_state() const;
-                
+
                 ///
                 /// \brief training history for the optimum configuration
                 ///
