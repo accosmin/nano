@@ -9,7 +9,7 @@
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
 #include "cortex/optimizer.h"
-#include "min/func/run_all.hpp"
+#include "min/test/run_all.hpp"
 #include <iomanip>
 #include <iostream>
 

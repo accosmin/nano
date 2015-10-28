@@ -9,7 +9,7 @@
 #include "cortex/optimizer.h"
 #include "text/from_string.hpp"
 #include "text/starts_with.hpp"
-#include "min/func/run_all.hpp"
+#include "min/test/run_all.hpp"
 #include "benchmark_optimizers.h"
 #include <map>
 #include <tuple>

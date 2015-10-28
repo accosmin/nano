@@ -4,7 +4,7 @@
 #include <boost/test/unit_test.hpp>
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
-#include "min/func/run_all.hpp"
+#include "min/test/run_all.hpp"
 
 namespace test
 {

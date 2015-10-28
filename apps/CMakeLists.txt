@@ -1,6 +1,20 @@
 # build command line programs
-file(GLOB nanocv_apps RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-        *.cpp)
+set(nanocv_apps
+        benchmark_batch.cpp
+        benchmark_conv.cpp
+        benchmark_models.cpp
+        benchmark_sampling.cpp
+        benchmark_stoch.cpp
+        benchmark_trainers.cpp
+        evaluate.cpp
+        generate.cpp
+        image2cpp.cpp
+        info_archive.cpp
+        info.cpp
+        info_task.cpp
+        max_threads.cpp
+        train.cpp
+        warp.cpp)
 
 foreach(app ${nanocv_apps})
         get_filename_component(app_name ${app} NAME_WE)

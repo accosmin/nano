@@ -1,6 +1,15 @@
 # build library
-file(GLOB libmath_sources ${CMAKE_CURRENT_SOURCE_DIR}
-        *.*)
+set(libmath_sources
+        ${CMAKE_CURRENT_SOURCE_DIR}/abs.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cast.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/clamp.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/close.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/epsilon.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/gauss.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/numeric.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/random.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/stats.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/usampling.hpp)
 
 add_library(math INTERFACE)
 target_include_directories(math INTERFACE
