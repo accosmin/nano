@@ -135,7 +135,7 @@ namespace cortex
                 /// \brief transform 4 planes scaled [0, 1] patch to rgba matrix
                 ///
                 NANOCV_PUBLIC rgba_matrix_t from_rgba_tensor(const tensor_t& patch);
-        }        
+        }
 }
 
 namespace text

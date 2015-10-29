@@ -61,7 +61,7 @@ namespace math
                 /// \brief maximum
                 ///
                 tscalar max() const { return m_die.max(); }
-                
+
         private:
 
                 using gen_t = std::mt19937_64;

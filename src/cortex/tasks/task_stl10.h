@@ -30,9 +30,9 @@ namespace cortex
                 virtual tensor_size_t osize() const override { return 10; }
                 virtual size_t fsize() const override { return 10; }
                 virtual color_mode color() const override { return color_mode::rgba; }
-                                                   
+
         private:
-                                                   
+
                 // load binary files
                 bool load_ifile(const string_t& filename, const char* bdata, size_t bdata_size, bool unlabed, size_t count);
                 bool load_gfile(const string_t& filename, const char* bdata, size_t bdata_size, size_t count);

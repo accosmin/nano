@@ -5,7 +5,7 @@
 #include "math/stats.hpp"
 
 namespace cortex
-{        
+{
         class criterion_t;
         class loss_t;
         class task_t;
@@ -39,12 +39,12 @@ namespace cortex
                 /// \brief constructor
                 ///
                 explicit criterion_t(const string_t& configuration);
-                
+
                 ///
                 /// \brief destructor
                 ///
                 virtual ~criterion_t() {}
-                
+
                 ///
                 /// \brief reset statistics and settings
                 ///
@@ -152,8 +152,8 @@ namespace cortex
                 // attributes
                 rmodel_t                m_model;        ///< current model
                 vector_t                m_params;       ///< current model parameters
-                
-                scalar_t                m_lambda;       ///< regularization weight (if any)                
+
+                scalar_t                m_lambda;       ///< regularization weight (if any)
                 type                    m_type;         ///<
 
                 math::stats_t<scalar_t> m_estats;       ///< loss error statistics

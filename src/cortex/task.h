@@ -37,7 +37,7 @@ namespace cortex
                         : clonable_t<task_t>(configuration)
                 {
                 }
-                
+
                 // destructor
                 virtual ~task_t() {}
 

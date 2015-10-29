@@ -36,7 +36,7 @@ namespace cortex
                 ///
                 virtual trobject make(const tstring& configuration) const = 0;
                 virtual trobject clone() const = 0;
-                
+
                 ///
                 /// \brief describe the object
                 ///

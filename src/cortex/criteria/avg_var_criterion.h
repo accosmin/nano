@@ -53,9 +53,9 @@ namespace cortex
                 /// \brief update statistics with cumulated samples
                 ///
                 virtual void accumulate(const criterion_t& other) override;
-                
+
         private:
-                
+
                 // attributes
                 scalar_t        m_value2;        ///< cumulated squared loss value
                 vector_t        m_vgrad2;        ///< cumulated loss value multiplied with the gradient

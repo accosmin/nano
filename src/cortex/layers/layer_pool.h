@@ -65,43 +65,43 @@ namespace cortex
                 tensor_t                m_sdata;    	///< sum buffer: cumulated exponents / output pixel    		
 		tensor_t		m_cdata;	///< counts buffer: #hits / output pixel
         };
-        
+
         class pool_max_layer_t : public pool_layer_t
         {
         public:
-                
+
                 NANOCV_MAKE_CLONABLE(pool_max_layer_t, "soft-max pooling layer")
-                
+
                 // constructor
                 pool_max_layer_t(const string_t& = string_t())
                         :       pool_layer_t("alpha=10.0")
                 {
-                }                
+                }
         };
-        
+
         class pool_min_layer_t : public pool_layer_t
         {
         public:
-                
+
                 NANOCV_MAKE_CLONABLE(pool_min_layer_t, "soft-min pooling layer")
-                
+
                 // constructor
                 pool_min_layer_t(const string_t& = string_t())
                         :       pool_layer_t("alpha=-10.0")
                 {
-                }                
+                }
         };
-        
+
         class pool_avg_layer_t : public pool_layer_t
         {
         public:
-                
+
                 NANOCV_MAKE_CLONABLE(pool_avg_layer_t, "average pooling layer")
-                
+
                 // constructor
                 pool_avg_layer_t(const string_t& = string_t())
                         :       pool_layer_t("alpha=0.1")
                 {
-                }                
+                }
         };
 }

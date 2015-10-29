@@ -53,10 +53,10 @@ namespace cortex
                 static this_instance_t  m_instance;
                 static this_mutex_t     m_once_flag;
 	};
-        
+
         template <class tobject>
         typename singleton_t<tobject>::this_instance_t    singleton_t<tobject>::m_instance = nullptr;
-        
+
         template <class tobject>
         typename singleton_t<tobject>::this_mutex_t       singleton_t<tobject>::m_once_flag;
 }
