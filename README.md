@@ -5,14 +5,19 @@ This small (nano) library is used for training and testing models, such as neura
 
 #### Core modules
 
-The core modules are header only, independent of each other and use only STL and Eigen3 (if needed):
-* **min** - batch and stochastic numerical optimization and line-search methods.
-* **math** - numerical utilities.
-* **text** - string processing utilities.
-* **tensor** - vector, matrix and tensor utilities, 2D/3D convolution and correlations.
-* **thread** - thread pool, loop processing in parallel.
+The core modules are independent of each other and are designed to be as generic as possible.
 
-Most notable the **min** module implements the following: 
+Header only modules:
+* **min** - batch and stochastic numerical optimization and line-search methods. `Dependencies: Eigen3.`
+* **math** - numerical utilities. `No dependencies.`
+* **text** - string processing utilities. `No dependencies.`
+* **tensor** - vector, matrix and tensor utilities, 2D/3D convolution and correlations. `Dependencies: Eigen3.`
+
+Shared library-compiled modules:
+* **file** - I/O utilities, wrapper over LibArchive. `Dependencies: LibArchive, Zlib and BZip2.`
+* **thread** - thread pool, loop processing in parallel. `No dependencies.`
+
+Most notably the **min** module implements the following: 
 * batch optimization methods: `gradient descent`, various `non-linear conjugate gradient descent`, `L-BFGS`.
 * stochastic optimization methods: `accelerated gradient`, `stochastic (averaging) gradient`, `ADADELTA`, `ADAGRAD`.
 * line-search methods: `backtracking`, `More & Thuente`, `CG_DESCENT`.
@@ -20,9 +25,9 @@ Most notable the **min** module implements the following:
 
 #### Cortex module
 
-The **cortex** module provides basic image I/O and processing and a machine learning interface.
+The **cortex** module provides basic image I/O and processing and a machine learning interface. `Dependencies: Boost, DevIL.`
 
-There are several key concepts mapped to C++ object interfaces. Each object type is registered with an **ID** and thus it can be selected from command line arguments. Also new objects can be easily registered and then they are automatically visible across the library and its associated programs.
+This module is built around several key concepts mapped to C++ object interfaces. Each object type is registered with an **ID** and thus it can be selected from command line arguments. Also new objects can be easily registered and then they are automatically visible across the library and its associated programs.
 
 A **task** describes a classification or regression problem consisting of separate training and test image patches with associated target outputs if any. The library has built-in support for various standard benchmark datasets like: `MNIST`, `CIFAR-10`, `CIFAR-100`, `STL-10`, `SVHN`, `NORB`. These datasets are loaded directly from the original (compressed) files.
 
