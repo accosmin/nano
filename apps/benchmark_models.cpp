@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
         const string_t lmodel3 = lmodel2 + "linear:dims=100;act-snorm;";
         const string_t lmodel4 = lmodel3 + "linear:dims=100;act-snorm;";
         const string_t lmodel5 = lmodel4 + "linear:dims=100;act-snorm;";
-        
+
         string_t cmodel1;
         cmodel1 = cmodel1 + "conv:dims=16,rows=9,cols=9;act-snorm;";
 
@@ -148,11 +148,11 @@ int main(int argc, char *argv[])
         assert(loss);
 
         // construct tables to compare models
-        table_t ftable_rand("model-forward (rand)\\threads");
-        table_t ftable_task("model-forward (task)\\threads");
+        table_t ftable_rand("model-forward");
+        table_t ftable_task("model-forward");
 
-        table_t btable_rand("model-backward (rand)\\threads");
-        table_t btable_task("model-backward (task)\\threads");
+        table_t btable_rand("model-backward");
+        table_t btable_task("model-backward");
 
         for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; nthreads ++)
         {
@@ -169,11 +169,11 @@ int main(int argc, char *argv[])
                 const string_t cmd_network = cmd_networks[im];
                 const string_t cmd_name = cmd_names[im];
 
-                table_row_t& frow_rand = ftable_rand.append(cmd_name + "(rand)");
-                table_row_t& frow_task = ftable_task.append(cmd_name + "(task)");
+                table_row_t& frow_rand = ftable_rand.append(cmd_name + " (rand)");
+                table_row_t& frow_task = ftable_task.append(cmd_name + " (task)");
 
-                table_row_t& brow_rand = btable_rand.append(cmd_name + "(rand)");
-                table_row_t& brow_task = btable_task.append(cmd_name + "(task)");
+                table_row_t& brow_rand = btable_rand.append(cmd_name + " (rand)");
+                table_row_t& brow_task = btable_task.append(cmd_name + " (task)");
 
                 log_info() << "<<< running network [" << cmd_network << "] ...";
 

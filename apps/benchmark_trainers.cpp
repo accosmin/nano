@@ -213,7 +213,7 @@ int main(int, char* [])
                         const rloss_t loss = cortex::get_losses().get(cmd_loss);
                         assert(loss);
 
-                        table_t table("optimizer\\");
+                        table_t table("optimizer");
                         table.header() << "train error"
                                        << "valid error"
                                        << "time [sec]";
