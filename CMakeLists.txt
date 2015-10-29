@@ -94,10 +94,10 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHE
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -fno-common")
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
         set(CMAKE_CXX_FLAGS_DEBUG		"-g -fno-omit-frame-pointer")
-        set(CMAKE_CXX_FLAGS_RELEASE             "-O3 -DNDEBUG")         # -DEIGEN_NO_DEBUG")
+        set(CMAKE_CXX_FLAGS_RELEASE             "-O3 -DNDEBUG -fdata-sections -ffunction-sections")         # -DEIGEN_NO_DEBUG")
         set(CMAKE_CXX_FLAGS_RELWITHDEBINFO      "-O2 -g")               # -DEIGEN_NO_DEBUG")
         set(CMAKE_CXX_FLAGS_MINSIZEREL          "-Os -DNDEBUG")         # -DEIGEN_NO_DEBUG")
-        set(CMAKE_EXE_LINKER_FLAGS              "-flto")
+        set(CMAKE_EXE_LINKER_FLAGS              "-flto -Wl,--gc-sections")
 
         # set address sanitizer
 	if(NANOCV_WITH_ASAN)

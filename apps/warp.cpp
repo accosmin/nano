@@ -9,7 +9,7 @@
 int main(int argc, char *argv[])
 {
         using namespace cortex;
-        
+
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
         po_desc.add_options()("help,h", "randomly warp the input image");
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
                 boost::program_options::command_line_parser(argc, argv).options(po_desc).run(),
                 po_vm);
         boost::program_options::notify(po_vm);
-        		
+	
         // check arguments and options
         if (	po_vm.empty() ||
                 !po_vm.count("input") ||
