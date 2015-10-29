@@ -13,7 +13,7 @@ namespace file
         using archive_callback_t = std::function<bool(const std::string&, const buffer_t&)>;
 
         ///
-        /// \brief callback to execute when an error was detected at decompressin
+        /// \brief callback to execute when an error was detected at decompression
         ///     - (error message)
         ///
         using archive_error_callback_t = std::function<void(const std::string&)>;
