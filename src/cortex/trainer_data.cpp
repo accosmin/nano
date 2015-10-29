@@ -42,8 +42,7 @@ namespace cortex
                 const size_t batch0 = thread::n_threads();
                 return
                 {
-                        batch0 * 1, batch0 * 2, batch0 * 4, batch0 * 8,
-                        batch0 * 16, batch0 * 32, batch0 * 64, batch0 * 128
+                        batch0 * 16, batch0 * 32, batch0 * 64, batch0 * 128, batch0 * 256
                 };
         }
 

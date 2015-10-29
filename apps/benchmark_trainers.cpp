@@ -154,7 +154,7 @@ int main(int, char* [])
 
         const size_t cmd_rows = 16;
         const size_t cmd_cols = 16;
-        const size_t cmd_samples = thread::n_threads() * 16 * 10;
+        const size_t cmd_samples = thread::n_threads() * 256 * 10;
         const color_mode cmd_color = color_mode::rgba;
 
         // create task
