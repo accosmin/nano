@@ -32,6 +32,11 @@ namespace cortex
                 }
 
                 ///
+                /// \brief destructor
+                ///
+                virtual ~clonable_t() {}
+
+                ///
                 /// \brief create an object clone
                 ///
                 virtual trobject make(const tstring& configuration) const = 0;
