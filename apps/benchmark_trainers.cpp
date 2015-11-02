@@ -67,7 +67,7 @@ namespace
                 const task_t& task, model_t& model, const sampler_t& tsampler, const sampler_t& vsampler,
                 const loss_t& loss, const string_t& criterion, table_t& table)
         {
-                const size_t cmd_trials = 16;
+                const size_t cmd_trials = 10;
 
                 const size_t cmd_iterations = 64;
                 const size_t cmd_minibatch_epochs = cmd_iterations;
@@ -172,23 +172,23 @@ int main(int, char* [])
         tsampler.split(80, vsampler);
 
         // construct models
-        const string_t lmodel0;
-        const string_t lmodel1 = lmodel0 + "linear:dims=64;act-snorm;";
-        const string_t lmodel2 = lmodel1 + "linear:dims=32;act-snorm;";
-        const string_t lmodel3 = lmodel2 + "linear:dims=16;act-snorm;";
+//        const string_t lmodel0;
+//        const string_t lmodel1 = lmodel0 + "linear:dims=16;act-snorm;";
+//        const string_t lmodel2 = lmodel1 + "linear:dims=16;act-snorm;";
+//        const string_t lmodel3 = lmodel2 + "linear:dims=16;act-snorm;";
 
         string_t cmodel;
         cmodel = cmodel + "conv:dims=16,rows=5,cols=5;pool-max;act-snorm;";
-        cmodel = cmodel + "conv:dims=32,rows=3,cols=3;act-snorm;";
+        cmodel = cmodel + "conv:dims=16,rows=3,cols=3;act-snorm;";
 
         const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
 
         strings_t cmd_networks =
         {
-                lmodel0 + outlayer,
-                lmodel1 + outlayer,
-                lmodel2 + outlayer,
-                lmodel3 + outlayer,
+//                lmodel0 + outlayer,
+//                lmodel1 + outlayer,
+//                lmodel2 + outlayer,
+//                lmodel3 + outlayer,
 
                 cmodel + outlayer
         };
