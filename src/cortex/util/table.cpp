@@ -70,7 +70,22 @@ namespace cortex
                 return colsizes;
         }
 
-        bool table_t::print(std::ostream& os, const bool use_row_delim) const
+        void table_t::print_row_delim(std::ostream& os) const
+        {
+                const auto namesize = name_colsize();
+                const auto colsizes = value_colsizes();
+
+                os << "|" << string_t(namesize + 2, '-');
+                for (size_t c = 0; c < cols(); c ++)
+                {
+                        os << "+" << string_t(colsizes[c] + 2, '-');
+                }
+                os << "|" << std::endl;
+
+//                os << "|" + string_t(rowsize, '-') << "|" << std::endl;
+        }
+
+        void table_t::print(std::ostream& os, const bool use_row_delim) const
         {
                 // size of name & value columns (in characters)
                 const auto namesize = name_colsize();
@@ -82,7 +97,7 @@ namespace cortex
                         std::accumulate(colsizes.begin(), colsizes.end(), size_t(0));
 
                 // display header
-                os << "|" << string_t(rowsize, '-') << "|" << std::endl;
+                print_row_delim(os);
 
                 os << text::align("| " + m_title, namesize + 3);
                 for (size_t c = 0; c < cols(); c ++)
@@ -91,12 +106,7 @@ namespace cortex
                 }
                 os << "|" << std::endl;
 
-                os << "|" << string_t(namesize + 2, '-');
-                for (size_t c = 0; c < cols(); c ++)
-                {
-                        os << "+" << string_t(colsizes[c] + 2, '-');
-                }
-                os << "|" << std::endl;
+                print_row_delim(os);
 
                 // display rows
                 for (size_t r = 0; r < m_rows.size(); r ++)
@@ -116,8 +126,6 @@ namespace cortex
                         os << "|" << std::endl;
                 }
 
-                os << "|" + string_t(rowsize, '-') << "|" << std::endl;
-
-                return true;
+                print_row_delim(os);
         }
 }

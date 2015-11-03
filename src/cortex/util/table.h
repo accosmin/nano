@@ -67,7 +67,7 @@ namespace cortex
                 ///
                 /// \brief pretty-print its content
                 ///
-                bool print(std::ostream& os, const bool use_row_delim = false) const;
+                void print(std::ostream& os, const bool use_row_delim = false) const;
 
         private:
 
@@ -90,6 +90,11 @@ namespace cortex
                 /// \brief compute the size of the name column
                 ///
                 size_t name_colsize() const;
+
+                ///
+                /// \brief print a row delimiter
+                ///
+                void print_row_delim(std::ostream& os) const;
 
         private:
 
