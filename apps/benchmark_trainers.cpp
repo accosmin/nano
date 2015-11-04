@@ -9,6 +9,7 @@
 #include "text/concatenate.hpp"
 #include "cortex/util/measure.hpp"
 #include "cortex/tasks/task_charset.h"
+#include <boost/program_options.hpp>
 
 namespace
 {
@@ -148,16 +149,57 @@ namespace
         }
 }
 
-int main(int, char* [])
+int main(int argc, char* argv[])
 {
         cortex::init();
 
+        using namespace cortex;
+
+        // parse the command line
+        boost::program_options::options_description po_desc("", 160);
+        po_desc.add_options()("help,h", "benchmark trainers");
+        po_desc.add_options()("mlp0", "MLP with 0 hidden layers");
+        po_desc.add_options()("mlp1", "MLP with 1 hidden layers");
+        po_desc.add_options()("mlp2", "MLP with 2 hidden layers");
+        po_desc.add_options()("mlp3", "MLP with 3 hidden layers");
+        po_desc.add_options()("conv", "convolution network");
+
+        boost::program_options::variables_map po_vm;
+        boost::program_options::store(
+                boost::program_options::command_line_parser(argc, argv).options(po_desc).run(),
+                po_vm);
+        boost::program_options::notify(po_vm);
+
+        // check arguments and options
+        if (	po_vm.empty() ||
+                po_vm.count("help"))
+        {
+                std::cout << po_desc;
+                return EXIT_FAILURE;
+        }
+
+        const bool use_mlp0 = po_vm.count("mlp0");
+        const bool use_mlp1 = po_vm.count("mlp1");
+        const bool use_mlp2 = po_vm.count("mlp2");
+        const bool use_mlp3 = po_vm.count("mlp3");
+        const bool use_conv = po_vm.count("conv");
+
+        if (    !use_mlp0 &&
+                !use_mlp1 &&
+                !use_mlp2 &&
+                !use_mlp3 &&
+                !use_conv)
+        {
+                std::cout << po_desc;
+                return EXIT_FAILURE;
+        }
+
+        // create task
         const size_t cmd_rows = 16;
         const size_t cmd_cols = 16;
         const size_t cmd_samples = thread::n_threads() * 256 * 10;
         const color_mode cmd_color = color_mode::rgba;
 
-        // create task
         charset_task_t task(charset::numeric, cmd_rows, cmd_cols, cmd_color, cmd_samples);
         task.load("");
 	task.describe();
@@ -172,10 +214,10 @@ int main(int, char* [])
         tsampler.split(80, vsampler);
 
         // construct models
-//        const string_t lmodel0;
-//        const string_t lmodel1 = lmodel0 + "linear:dims=16;act-snorm;";
-//        const string_t lmodel2 = lmodel1 + "linear:dims=16;act-snorm;";
-//        const string_t lmodel3 = lmodel2 + "linear:dims=16;act-snorm;";
+        const string_t lmodel0;
+        const string_t lmodel1 = lmodel0 + "linear:dims=16;act-snorm;";
+        const string_t lmodel2 = lmodel1 + "linear:dims=16;act-snorm;";
+        const string_t lmodel3 = lmodel2 + "linear:dims=16;act-snorm;";
 
         string_t cmodel;
         cmodel = cmodel + "conv:dims=16,rows=5,cols=5;pool-max;act-snorm;";
@@ -183,15 +225,12 @@ int main(int, char* [])
 
         const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
 
-        strings_t cmd_networks =
-        {
-//                lmodel0 + outlayer,
-//                lmodel1 + outlayer,
-//                lmodel2 + outlayer,
-//                lmodel3 + outlayer,
-
-                cmodel + outlayer
-        };
+        strings_t cmd_networks;
+        if (use_mlp0) { cmd_networks.push_back(lmodel0 + outlayer); }
+        if (use_mlp1) { cmd_networks.push_back(lmodel1 + outlayer); }
+        if (use_mlp2) { cmd_networks.push_back(lmodel2 + outlayer); }
+        if (use_mlp3) { cmd_networks.push_back(lmodel3 + outlayer); }
+        if (use_conv) { cmd_networks.push_back(cmodel  + outlayer); }
 
         const strings_t cmd_losses = { "classnll" }; //cortex::get_losses().ids();
         const strings_t cmd_criteria = cortex::get_criteria().ids();
