@@ -162,7 +162,8 @@ int main(int argc, char* argv[])
         po_desc.add_options()("mlp1", "MLP with 1 hidden layers");
         po_desc.add_options()("mlp2", "MLP with 2 hidden layers");
         po_desc.add_options()("mlp3", "MLP with 3 hidden layers");
-        po_desc.add_options()("conv", "convolution network");
+        po_desc.add_options()("conv1", "convolution network with 1 convolution layers");
+        po_desc.add_options()("conv2", "convolution network with 2 convolution layers");
 
         boost::program_options::variables_map po_vm;
         boost::program_options::store(
@@ -182,13 +183,15 @@ int main(int argc, char* argv[])
         const bool use_mlp1 = po_vm.count("mlp1");
         const bool use_mlp2 = po_vm.count("mlp2");
         const bool use_mlp3 = po_vm.count("mlp3");
-        const bool use_conv = po_vm.count("conv");
+        const bool use_conv1 = po_vm.count("conv1");
+        const bool use_conv2 = po_vm.count("conv2");
 
         if (    !use_mlp0 &&
                 !use_mlp1 &&
                 !use_mlp2 &&
                 !use_mlp3 &&
-                !use_conv)
+                !use_conv1 &&
+                !use_conv2)
         {
                 std::cout << po_desc;
                 return EXIT_FAILURE;
@@ -219,9 +222,9 @@ int main(int argc, char* argv[])
         const string_t lmodel2 = lmodel1 + "linear:dims=16;act-snorm;";
         const string_t lmodel3 = lmodel2 + "linear:dims=16;act-snorm;";
 
-        string_t cmodel;
-        cmodel = cmodel + "conv:dims=16,rows=5,cols=5;pool-max;act-snorm;";
-        cmodel = cmodel + "conv:dims=16,rows=3,cols=3;act-snorm;";
+        const string_t cmodel0;
+        const string_t cmodel1 = cmodel0 + "conv:dims=16,rows=7,cols=7;pool-max;act-snorm;";
+        const string_t cmodel2 = cmodel1 + "conv:dims=16,rows=5,cols=5;act-snorm;";
 
         const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
 
@@ -230,7 +233,8 @@ int main(int argc, char* argv[])
         if (use_mlp1) { cmd_networks.push_back(lmodel1 + outlayer); }
         if (use_mlp2) { cmd_networks.push_back(lmodel2 + outlayer); }
         if (use_mlp3) { cmd_networks.push_back(lmodel3 + outlayer); }
-        if (use_conv) { cmd_networks.push_back(cmodel  + outlayer); }
+        if (use_conv1) { cmd_networks.push_back(cmodel1 + outlayer); }
+        if (use_conv2) { cmd_networks.push_back(cmodel2 + outlayer); }
 
         const strings_t cmd_losses = { "classnll" }; //cortex::get_losses().ids();
         const strings_t cmd_criteria = cortex::get_criteria().ids();
