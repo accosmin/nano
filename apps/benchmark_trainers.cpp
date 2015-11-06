@@ -66,20 +66,19 @@ namespace
 
         void test_optimizers(
                 const task_t& task, model_t& model, const sampler_t& tsampler, const sampler_t& vsampler,
-                const loss_t& loss, const string_t& criterion, table_t& table)
+                const loss_t& loss, const string_t& criterion,
+                const size_t trials, const size_t iterations, table_t& table)
         {
-                const size_t cmd_trials = 10;
-
-                const size_t cmd_iterations = 64;
-                const size_t cmd_minibatch_epochs = cmd_iterations;
-                const size_t cmd_stochastic_epochs = cmd_iterations;
-                const scalar_t cmd_epsilon = 1e-4;
+                const size_t batch_iterations = iterations;
+                const size_t minibatch_epochs = iterations;
+                const size_t stochastic_epochs = iterations;
+                const scalar_t epsilon = 1e-4;
 
                 const size_t n_threads = thread::n_threads();
                 const bool verbose = true;
 
                 // generate fixed random starting points
-                vectors_t x0s(cmd_trials);
+                vectors_t x0s(trials);
                 for (vector_t& x0 : x0s)
                 {
                         model.random_params();
@@ -123,7 +122,7 @@ namespace
                         {
                                 return cortex::batch_train(
                                         model, task, tsampler, vsampler, n_threads,
-                                        loss, criterion, optimizer, cmd_iterations, cmd_epsilon, verbose);
+                                        loss, criterion, optimizer, batch_iterations, epsilon, verbose);
                         });
                 }
 
@@ -133,7 +132,7 @@ namespace
                         {
                                 return cortex::minibatch_train(
                                         model, task, tsampler, vsampler, n_threads,
-                                        loss, criterion, optimizer, cmd_minibatch_epochs, cmd_epsilon, verbose);
+                                        loss, criterion, optimizer, minibatch_epochs, epsilon, verbose);
                         });
                 }
 
@@ -143,7 +142,7 @@ namespace
                         {
                                 return cortex::stochastic_train(
                                         model, task, tsampler, vsampler, n_threads,
-                                        loss, criterion, optimizer, cmd_stochastic_epochs, verbose);
+                                        loss, criterion, optimizer, stochastic_epochs, verbose);
                         });
                 }
         }
@@ -164,6 +163,12 @@ int main(int argc, char* argv[])
         po_desc.add_options()("mlp3", "MLP with 3 hidden layers");
         po_desc.add_options()("conv1", "convolution network with 1 convolution layers");
         po_desc.add_options()("conv2", "convolution network with 2 convolution layers");
+        po_desc.add_options()("trials",
+                boost::program_options::value<size_t>()->default_value(10),
+                "number of models to train & evaluate");
+        po_desc.add_options()("iterations",
+                boost::program_options::value<size_t>()->default_value(64),
+                "number of iterations/epochs");
 
         boost::program_options::variables_map po_vm;
         boost::program_options::store(
@@ -185,6 +190,8 @@ int main(int argc, char* argv[])
         const bool use_mlp3 = po_vm.count("mlp3");
         const bool use_conv1 = po_vm.count("conv1");
         const bool use_conv2 = po_vm.count("conv2");
+        const auto trials = po_vm["trials"].as<size_t>();
+        const auto iterations = po_vm["iterations"].as<size_t>();
 
         if (    !use_mlp0 &&
                 !use_mlp1 &&
@@ -198,16 +205,16 @@ int main(int argc, char* argv[])
         }
 
         // create task
-        const size_t cmd_rows = 16;
-        const size_t cmd_cols = 16;
-        const size_t cmd_samples = thread::n_threads() * 256 * 10;
-        const color_mode cmd_color = color_mode::rgba;
+        const size_t rows = 16;
+        const size_t cols = 16;
+        const size_t samples = thread::n_threads() * 256 * 10;
+        const color_mode color = color_mode::rgba;
 
-        charset_task_t task(charset::numeric, cmd_rows, cmd_cols, cmd_color, cmd_samples);
+        charset_task_t task(charset::numeric, rows, cols, color, samples);
         task.load("");
 	task.describe();
 
-        const auto cmd_outputs = task.osize();
+        const auto outputs = task.osize();
 
         // create training & validation samples
         sampler_t tsampler(task.samples());
@@ -226,34 +233,34 @@ int main(int argc, char* argv[])
         const string_t cmodel1 = cmodel0 + "conv:dims=16,rows=7,cols=7;pool-max;act-snorm;";
         const string_t cmodel2 = cmodel1 + "conv:dims=16,rows=5,cols=5;act-snorm;";
 
-        const string_t outlayer = "linear:dims=" + text::to_string(cmd_outputs) + ";";
+        const string_t outlayer = "linear:dims=" + text::to_string(outputs) + ";";
 
-        strings_t cmd_networks;
-        if (use_mlp0) { cmd_networks.push_back(lmodel0 + outlayer); }
-        if (use_mlp1) { cmd_networks.push_back(lmodel1 + outlayer); }
-        if (use_mlp2) { cmd_networks.push_back(lmodel2 + outlayer); }
-        if (use_mlp3) { cmd_networks.push_back(lmodel3 + outlayer); }
-        if (use_conv1) { cmd_networks.push_back(cmodel1 + outlayer); }
-        if (use_conv2) { cmd_networks.push_back(cmodel2 + outlayer); }
+        strings_t networks;
+        if (use_mlp0) { networks.push_back(lmodel0 + outlayer); }
+        if (use_mlp1) { networks.push_back(lmodel1 + outlayer); }
+        if (use_mlp2) { networks.push_back(lmodel2 + outlayer); }
+        if (use_mlp3) { networks.push_back(lmodel3 + outlayer); }
+        if (use_conv1) { networks.push_back(cmodel1 + outlayer); }
+        if (use_conv2) { networks.push_back(cmodel2 + outlayer); }
 
-        const strings_t cmd_losses = { "classnll" }; //cortex::get_losses().ids();
-        const strings_t cmd_criteria = cortex::get_criteria().ids();
+        const strings_t losses = { "classnll" }; //cortex::get_losses().ids();
+        const strings_t criteria = cortex::get_criteria().ids();
 
         // vary the model
-        for (const string_t& cmd_network : cmd_networks)
+        for (const string_t& network : networks)
         {
-                log_info() << "<<< running network [" << cmd_network << "] ...";
+                log_info() << "<<< running network [" << network << "] ...";
 
-                const rmodel_t model = cortex::get_models().get("forward-network", cmd_network);
+                const rmodel_t model = cortex::get_models().get("forward-network", network);
                 assert(model);
                 model->resize(task, true);
 
                 // vary the loss
-                for (const string_t& cmd_loss : cmd_losses)
+                for (const string_t& iloss : losses)
                 {
-                        log_info() << "<<< running loss [" << cmd_loss << "] ...";
+                        log_info() << "<<< running loss [" << iloss << "] ...";
 
-                        const rloss_t loss = cortex::get_losses().get(cmd_loss);
+                        const rloss_t loss = cortex::get_losses().get(iloss);
                         assert(loss);
 
                         table_t table("optimizer");
@@ -262,9 +269,10 @@ int main(int argc, char* argv[])
                                        << "time [sec]";
 
                         // vary the criteria
-                        for (const string_t& cmd_criterion : cmd_criteria)
+                        for (const string_t& criterion : criteria)
                         {
-                                test_optimizers(task, *model, tsampler, vsampler, *loss, cmd_criterion, table);
+                                test_optimizers(task, *model, tsampler, vsampler, *loss, criterion,
+                                                trials, iterations, table);
                         }
 
                         // show results
