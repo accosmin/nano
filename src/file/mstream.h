@@ -25,7 +25,8 @@ namespace file
                         :       m_data(data),
                                 m_size(static_cast<std::streamsize>(size)),
                                 m_tellg(0),
-                                m_gcount(0)
+                                m_gcount(0),
+                                m_status(status::ok)
                 {
                 }
 
@@ -99,9 +100,17 @@ namespace file
 
         private:
 
+                enum class status
+                {
+                        ok,
+                        eof,
+                        fail
+                };
+
                 const char* const       m_data;
                 std::streamsize         m_size;
                 std::streamsize         m_tellg;
                 std::streamsize         m_gcount;
+                status                  m_status;
         };
 }
