@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 
         os_header << "#pragma once\n";
         os_header << "\n";
-        os_header << "#include \"cortex/color.h\"\n";
+        os_header << "#include \"cortex/vision/color.h\"\n";
         os_header << "\n";
         os_header << "namespace cortex\n";
         os_header << "{\n";
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
         {
                 const auto op = [&] (const auto& buff)
                 {
-                        os_source << tab << "static const " << pixname << " data[] = \n";
+                        os_source << tab << "constexpr " << pixname << " data[] = \n";
                         os_source << tab << "{\n";
                         for (coord_t r = 0; r < buff.rows(); r ++)
                         {
@@ -127,7 +127,6 @@ int main(int argc, char *argv[])
                                         }
                                 }
                                 os_source << "\n";
-                                std::cout << "\n";
                         }
                         os_source << tab << "};\n\n";
                         os_source << tab << "return tensor::map_matrix(data, " << buff.rows() << ", " << buff.cols() << ");\n";
