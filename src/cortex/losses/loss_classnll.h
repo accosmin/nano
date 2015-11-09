@@ -14,7 +14,7 @@ namespace cortex
                 NANOCV_MAKE_CLONABLE(classnll_loss_t, "multi-class negative log-likelihood loss")
 
                 // constructor
-                classnll_loss_t(const string_t& = string_t());
+                explicit classnll_loss_t(const string_t& = string_t());
 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const override;

@@ -16,7 +16,7 @@ namespace cortex
                 NANOCV_MAKE_CLONABLE(square_loss_t, "square loss")
 
                 // constructor
-                square_loss_t(const string_t& = string_t());
+                explicit square_loss_t(const string_t& = string_t());
 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const override;

@@ -16,7 +16,7 @@ namespace cortex
                 NANOCV_MAKE_CLONABLE(cauchy_loss_t, "Cauchy loss")
 
                 // constructor
-                cauchy_loss_t(const string_t& = string_t());
+                explicit cauchy_loss_t(const string_t& = string_t());
 
                 // compute the error value
                 virtual scalar_t error(const vector_t& targets, const vector_t& scores) const override;

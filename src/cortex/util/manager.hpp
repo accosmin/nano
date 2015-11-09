@@ -55,7 +55,7 @@ namespace cortex
                 {
                         const auto it = m_protos.find(id);
                         assert_it(id, it);
-                        return it->second->make(params);
+                        return it->second->clone(params);
                 }
 
                 ///

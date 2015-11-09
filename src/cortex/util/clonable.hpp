@@ -7,8 +7,8 @@ namespace cortex
 {
         ///
         /// \brief the clonable interface to be used with a manager:
-        ///      ::make(const tstring&)         - create a new object (with the given configuration)
-        ///      ::clone()                      - create a copy of the current object
+        ///      ::clone()                      - clone the current object
+        ///      ::clone(const tstring&)        - create a new object (with the given configuration)
         ///      ::configuration()              - parametrization
         ///      ::description()                - short description (configuration included)
         ///
@@ -39,14 +39,18 @@ namespace cortex
                 ///
                 /// \brief create an object clone
                 ///
-                virtual trobject make(const tstring& configuration) const = 0;
+                virtual trobject clone(const tstring& configuration) const = 0;
                 virtual trobject clone() const = 0;
 
                 ///
-                /// \brief describe the object
+                /// \brief short description (e.g. purpose, parameters)
+                ///
+                virtual tstring description() const = 0;
+
+                ///
+                /// \brief current configuration (aka parameters)
                 ///
                 tstring configuration() const { return m_configuration; }
-                virtual tstring description() const = 0;
 
         protected:
 
@@ -55,7 +59,7 @@ namespace cortex
         };
 
         #define NANOCV_MAKE_CLONABLE(base_class, description_text) \
-                virtual trobject make(const tstring& configuration) const override \
+                virtual trobject clone(const tstring& configuration) const override \
                 { \
                         return std::make_shared<base_class>(configuration); \
                 } \
