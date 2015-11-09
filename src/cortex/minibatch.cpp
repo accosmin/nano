@@ -25,7 +25,7 @@ namespace cortex
                 {
                         auto& tsampler = data.m_tsampler;
 
-                        for (size_t i = 0; i < epoch_size; i ++)
+                        for (size_t i = 0; i < epoch_size; ++ i)
                         {
                                 tsampler.push(batch);
                                 tsampler.push(tsampler.get());
@@ -60,7 +60,7 @@ namespace cortex
                         // optimize the model
                         vector_t x = data.m_x0;
 
-                        for (size_t epoch = 1; epoch <= epochs; epoch ++)
+                        for (size_t epoch = 1; epoch <= epochs; ++ epoch)
                         {
                                 train_epoch(data, epoch_size, batch, [&] ()
                                 {

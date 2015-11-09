@@ -19,9 +19,9 @@ namespace cortex
                         {
                         case color_mode::luma:
                                 luma.resize(rows, cols);
-                                for (int r = 0; r < rows; r ++)
+                                for (int r = 0; r < rows; ++ r)
                                 {
-                                        for (int c = 0; c < cols; c ++)
+                                        for (int c = 0; c < cols; ++ c)
                                         {
                                                 const ILubyte* pix = data + 4 * (r * cols + c);
                                                 luma(r, c) = color::make_luma(pix[0], pix[1], pix[2]);
@@ -31,9 +31,9 @@ namespace cortex
 
                         case color_mode::rgba:
                                 rgba.resize(rows, cols);
-                                for (int r = 0; r < rows; r ++)
+                                for (int r = 0; r < rows; ++ r)
                                 {
-                                        for (int c = 0; c < cols; c ++)
+                                        for (int c = 0; c < cols; ++ c)
                                         {
                                                 const ILubyte* pix = data + 4 * (r * cols + c);
                                                 rgba(r, c) = color::make_rgba(pix[0], pix[1], pix[2], pix[3]);
@@ -121,9 +121,9 @@ namespace cortex
                 case color_mode::luma:
                         {
                                 luma_matrix_t temp(rows, cols);
-                                for (auto r = 0; r < rows; r ++)
+                                for (auto r = 0; r < rows; ++ r)
                                 {
-                                        for (auto c = 0; c < cols; c ++)
+                                        for (auto c = 0; c < cols; ++ c)
                                         {
                                                 const luma_t val = luma(rows - 1 - r, c);
 
@@ -138,9 +138,9 @@ namespace cortex
                 case color_mode::rgba:
                         {
                                 rgba_matrix_t temp(rows, cols);
-                                for (auto r = 0; r < rows; r ++)
+                                for (auto r = 0; r < rows; ++ r)
                                 {
-                                        for (auto c = 0; c < cols; c ++)
+                                        for (auto c = 0; c < cols; ++ c)
                                         {
                                                 const rgba_t val = rgba(rows - 1 - r, c);
                                                 const rgba_t cr = color::get_red(val);

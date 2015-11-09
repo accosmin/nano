@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_CASE(test_quadratic)
 {
         const size_t tests = 1327;
 
-        for (size_t t = 0; t < tests; t ++)
+        for (size_t t = 0; t < tests; ++ t)
         {
                 math::random_t<double> rnd(-1.0, +1.0);
 
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(test_quadratic)
                 BOOST_CHECK_LE(math::abs(iq.gradient(extremum)), math::epsilon0<double>());
 
                 const size_t etests = 1843;
-                for (size_t e = 0; e < etests; e ++)
+                for (size_t e = 0; e < etests; ++ e)
                 {
                         BOOST_CHECK_GE(math::abs(iq.gradient(rnd())),
                                        math::abs(iq.gradient(extremum)));

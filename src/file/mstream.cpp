@@ -35,12 +35,12 @@ namespace file
         {
                 char c;
 
-                for ( ; m_tellg < m_size && isendl(c = m_data[tellg()]); m_tellg ++)
+                for ( ; m_tellg < m_size && isendl(c = m_data[tellg()]); ++ m_tellg)
                 {
                 }
 
                 line.clear();
-                for ( ; m_tellg < m_size && !isendl(c = m_data[tellg()]); m_tellg ++)
+                for ( ; m_tellg < m_size && !isendl(c = m_data[tellg()]); ++ m_tellg)
                 {
                         line.push_back(c);
                 }

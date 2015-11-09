@@ -15,7 +15,7 @@ namespace test
 
                 // generate random values
                 std::vector<double> values;
-                for (size_t i = 0; i < count; i ++)
+                for (size_t i = 0; i < count; ++ i)
                 {
                         values.push_back(avg + rgen());
 

@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(test_sampler)
         charset_task_t task(charset::numeric, 28, 28, color_mode::luma, n_samples);
         BOOST_CHECK_EQUAL(task.load(""), true);
 
-        for (size_t f = 0; f < task.fsize(); f ++)
+        for (size_t f = 0; f < task.fsize(); ++ f)
         {
                 const fold_t train_fold = {f, protocol::train};
                 const fold_t test_fold = {f, protocol::test};

@@ -67,14 +67,14 @@ int main(int argc, char *argv[])
 
         // generate samples for each output class label
         const tensor_size_t labels = rmodel->osize();
-        for (tensor_size_t l = 0; l < labels; l ++)
+        for (tensor_size_t l = 0; l < labels; ++ l)
         {
                 image_grid_t grid_image(rmodel->irows(), rmodel->icols(), cmd_save_group_rows, cmd_save_group_cols);
 
                 const vector_t target = cortex::class_target(l, labels);
-                for (coord_t r = 0; r < cmd_save_group_rows; r ++)
+                for (coord_t r = 0; r < cmd_save_group_rows; ++ r)
                 {
-                        for (coord_t c = 0; c < cmd_save_group_cols; c ++)
+                        for (coord_t c = 0; c < cmd_save_group_cols; ++ c)
                         {
                                 const auto data = cortex::generate_match_target(*rmodel, target);
                                 const auto rgba = color::from_rgba_tensor(data);

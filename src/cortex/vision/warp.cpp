@@ -89,9 +89,9 @@ namespace cortex
 
                         math::random_t<scalar_t> rng(-noise, +noise);
 
-                        for (tensor_size_t r = 0; r < rows; r ++)
+                        for (tensor_size_t r = 0; r < rows; ++ r)
                         {
-                                for (tensor_size_t c = 0; c < cols; c ++)
+                                for (tensor_size_t c = 0; c < cols; ++ c)
                                 {
                                         const auto dist = math::square(scalar_t(r) - cy) + math::square(scalar_t(c) - cx);
 
@@ -144,14 +144,14 @@ namespace cortex
 
                 // x gradient (directional gradient)
                 tensor_t gradx(patch.dims(), patch.rows(), patch.cols());
-                for (auto d = 0; d < patch.dims(); d ++)
+                for (auto d = 0; d < patch.dims(); ++ d)
                 {
                         cortex::gradientx(patch.matrix(d), gradx.matrix(d));
                 }
 
                 // y gradient (directional gradient)
                 tensor_t grady(patch.dims(), patch.rows(), patch.cols());
-                for (auto d = 0; d < patch.dims(); d ++)
+                for (auto d = 0; d < patch.dims(); ++ d)
                 {
                         cortex::gradienty(patch.matrix(d), grady.matrix(d));
                 }
@@ -197,7 +197,7 @@ namespace cortex
                 const scalar_t alphay = rng_alphay();
                 const scalar_t beta = rng_beta();
 
-                for (auto d = 0; d < patch.dims(); d ++)
+                for (auto d = 0; d < patch.dims(); ++ d)
                 {
                         warp_by_field(patch.matrix(d),
                                       alphax, fieldx, gradx.matrix(d),

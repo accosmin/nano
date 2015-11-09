@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(test_gauss)
 
                         std::cout << "sigma = " << sigma << ", cutoff = " << cutoff << std::endl;
                         std::cout << "kernel = {";
-                        for (size_t k = 0; k < kernel.size(); k ++)
+                        for (size_t k = 0; k < kernel.size(); ++ k)
                         {
                                 std::cout << kernel[k] << (k + 1 == kernel.size() ? "" : ", ");
                         }

@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
 
         // test model
         math::stats_t<scalar_t> lstats, estats;
-        for (size_t f = 0; f < rtask->fsize(); f ++)
+        for (size_t f = 0; f < rtask->fsize(); ++ f)
         {
                 const fold_t test_fold = std::make_pair(f, protocol::test);
 
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
                 samples_t ok_samples;
                 samples_t nk_samples;
 
-                for (size_t s = 0; s < samples.size(); s ++)
+                for (size_t s = 0; s < samples.size(); ++ s)
                 {
                         const sample_t& sample = samples[s];
                         const image_t& image = rtask->image(sample.m_index);

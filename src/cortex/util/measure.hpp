@@ -16,7 +16,7 @@ namespace cortex
         {
                 const timer_t timer;
 
-                for (std::size_t i = 0; i < count; i ++)
+                for (std::size_t i = 0; i < count; ++ i)
                 {
                         op();
                 }
@@ -46,7 +46,7 @@ namespace cortex
 
                 // stable measurements, so run the trials
                 math::stats_t<std::size_t> measurements;
-                for (std::size_t t = 0; t < trials; t ++)
+                for (std::size_t t = 0; t < trials; ++ t)
                 {
                         measurements(measure_usec(op, count));
                 }

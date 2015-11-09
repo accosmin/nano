@@ -172,7 +172,7 @@ namespace cortex
                 const size_t fold_size = 1000;
 
                 // training samples [0, n_train) ...
-                for (size_t f = 0; f < n_folds; f ++)
+                for (size_t f = 0; f < n_folds; ++ f)
                 {
                         string_t line;
                         if (!stream.getline(line))
@@ -183,7 +183,7 @@ namespace cortex
                         const strings_t tokens = text::split(line, " \t\n\r");
 
                         size_t fcount = 0;
-                        for (size_t t = 0; t < tokens.size(); t ++)
+                        for (size_t t = 0; t < tokens.size(); ++ t)
                         {
                                 if (tokens[t].empty())
                                 {
@@ -220,9 +220,9 @@ namespace cortex
                 }
 
                 // unlabeled samples [n_train, n_train + n_unlabeled)
-                for (size_t f = 0; f < n_folds; f ++)
+                for (size_t f = 0; f < n_folds; ++ f)
                 {
-                        for (size_t i = 0; i < n_unlabeled; i ++)
+                        for (size_t i = 0; i < n_unlabeled; ++ i)
                         {
                                 sample_t sample = orig_samples[n_test + n_train + i];
                                 sample.m_fold = { f, protocol::train };
@@ -231,9 +231,9 @@ namespace cortex
                 }
 
                 // testing samples [n_train + n_unlabeled, n_train + n_unlabeled + n_test)
-                for (size_t f = 0; f < n_folds; f ++)
+                for (size_t f = 0; f < n_folds; ++ f)
                 {
-                        for (size_t i = 0; i < n_test; i ++)
+                        for (size_t i = 0; i < n_test; ++ i)
                         {
                                 sample_t sample = orig_samples[i];
                                 sample.m_fold = { f, protocol::test };

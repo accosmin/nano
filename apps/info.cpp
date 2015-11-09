@@ -19,7 +19,7 @@ namespace
                 table_t table(name);
                 table.header() << "description";
 
-                for (size_t i = 0; i < ids.size(); i ++)
+                for (size_t i = 0; i < ids.size(); ++ i)
                 {
                         table.append(ids[i]) << descriptions[i];
                 }

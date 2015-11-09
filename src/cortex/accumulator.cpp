@@ -19,7 +19,7 @@ namespace cortex
 
                         if (m_pool.n_workers() > 1)
                         {
-                                for (size_t i = 0; i < m_pool.n_workers(); i ++)
+                                for (size_t i = 0; i < m_pool.n_workers(); ++ i)
                                 {
                                         const rcriterion_t cache = cortex::get_criteria().get(criterion_name);
                                         cache->reset(model);
@@ -92,7 +92,7 @@ namespace cortex
         {
                 if (m_impl->m_pool.n_workers() == 1)
                 {
-                        for (size_t i = 0; i < samples.size(); i ++)
+                        for (size_t i = 0; i < samples.size(); ++ i)
                         {
                                 update(task, samples[i], loss);
                         }
@@ -113,7 +113,7 @@ namespace cortex
         {
                 if (m_impl->m_pool.n_workers() == 1)
                 {
-                        for (size_t i = 0; i < inputs.size(); i ++)
+                        for (size_t i = 0; i < inputs.size(); ++ i)
                         {
                                 update(inputs[i], targets[i], loss);
                         }
@@ -134,7 +134,7 @@ namespace cortex
         {
                 if (m_impl->m_pool.n_workers() == 1)
                 {
-                        for (size_t i = 0; i < inputs.size(); i ++)
+                        for (size_t i = 0; i < inputs.size(); ++ i)
                         {
                                 update(inputs[i], targets[i], loss);
                         }

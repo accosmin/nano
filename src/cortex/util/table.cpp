@@ -53,7 +53,7 @@ namespace cortex
         {
                 std::vector<std::size_t> colsizes(cols(), 0);
 
-                for (size_t c = 0; c < cols(); c ++)
+                for (size_t c = 0; c < cols(); ++ c)
                 {
                         colsizes[c] = std::max(colsizes[c], m_header[c].size());
                 }
@@ -61,7 +61,7 @@ namespace cortex
                 for (const auto& row : m_rows)
                 {
                         assert(cols() == row.size());
-                        for (size_t c = 0; c < cols(); c ++)
+                        for (size_t c = 0; c < cols(); ++ c)
                         {
                                 colsizes[c] = std::max(colsizes[c], row[c].size());
                         }
@@ -76,7 +76,7 @@ namespace cortex
                 const auto colsizes = value_colsizes();
 
                 os << "|" << string_t(namesize + 2, '-');
-                for (size_t c = 0; c < cols(); c ++)
+                for (size_t c = 0; c < cols(); ++ c)
                 {
                         os << "+" << string_t(colsizes[c] + 2, '-');
                 }
@@ -100,7 +100,7 @@ namespace cortex
                 print_row_delim(os);
 
                 os << text::align("| " + m_title, namesize + 3);
-                for (size_t c = 0; c < cols(); c ++)
+                for (size_t c = 0; c < cols(); ++ c)
                 {
                         os << text::align("| " + m_header[c], colsizes[c] + 3);
                 }
@@ -109,7 +109,7 @@ namespace cortex
                 print_row_delim(os);
 
                 // display rows
-                for (size_t r = 0; r < m_rows.size(); r ++)
+                for (size_t r = 0; r < m_rows.size(); ++ r)
                 {
                         const auto& row = m_rows[r];
 
@@ -119,7 +119,7 @@ namespace cortex
                         }
 
                         os << text::align("| " + row.name(), namesize + 3);
-                        for (size_t c = 0; c < cols(); c ++)
+                        for (size_t c = 0; c < cols(); ++ c)
                         {
                                 os << text::align("| " + row[c], colsizes[c] + 3);
                         }

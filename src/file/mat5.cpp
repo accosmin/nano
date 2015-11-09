@@ -177,7 +177,7 @@ namespace file
         std::ostream& operator<<(std::ostream& ostream, const mat5_array_t& array)
         {
                 ostream << "sections = " << array.m_sections.size() << ", name = " << array.m_name << ", dims = ";
-                for (std::size_t i = 0; i < array.m_dims.size(); i ++)
+                for (std::size_t i = 0; i < array.m_dims.size(); ++ i)
                 {
                         ostream << array.m_dims[i] << ((i + 1 == array.m_dims.size()) ? "" : "x");
                 }

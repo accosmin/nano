@@ -13,11 +13,11 @@ BOOST_AUTO_TEST_CASE(test_color_cielab)
         scalar_t min_cie_l = +1e100, min_cie_a = min_cie_l, min_cie_b = min_cie_l;
         scalar_t max_cie_l = -min_cie_l, max_cie_a = max_cie_l, max_cie_b = max_cie_l;
 
-        for (rgba_t r = 0; r < 256; r ++)
+        for (rgba_t r = 0; r < 256; ++ r)
         {
                 for (rgba_t g = 0; g < 256; g++)
                 {
-                        for (rgba_t b = 0; b < 256; b ++)
+                        for (rgba_t b = 0; b < 256; ++ b)
                         {
                                 const rgba_t rgba = color::make_rgba(r, g, b);
                                 const cielab_t cielab = color::make_cielab(rgba);

@@ -46,7 +46,7 @@ namespace test
                 const opt_problem_t problem(opt_fn_size, opt_fn_fval, opt_fn_grad);
 
                 // check the gradient using random parameters
-                for (size_t t = 0; t < n_tests; t ++)
+                for (size_t t = 0; t < n_tests; ++ t)
                 {
                         math::random_t<scalar_t> rgen(-1.0, +1.0);
 
@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(test_loss)
         // evaluate the analytical gradient vs. the finite difference approximation
         for (const string_t& loss_id : loss_ids)
         {                
-                for (tensor_size_t cmd_dims = cmd_min_dims; cmd_dims <= cmd_max_dims; cmd_dims ++)
+                for (tensor_size_t cmd_dims = cmd_min_dims; cmd_dims <= cmd_max_dims; ++ cmd_dims)
                 {
                         test::check_grad(loss_id, cmd_dims, cmd_tests);
                 }

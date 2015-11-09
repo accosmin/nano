@@ -31,9 +31,9 @@ namespace cortex
                         sdata.setZero();
                         cdata.setZero();
 
-                        for (auto r = 0, rr = 0; r < irows; r ++, rr = r / 2)
+                        for (auto r = 0, rr = 0; r < irows; ++ r, rr = r / 2)
                         {
-                                for (auto c = 0, cc = 0; c < icols; c ++, cc = c / 2)
+                                for (auto c = 0, cc = 0; c < icols; ++ c, cc = c / 2)
                                 {
                                         sdata(rr, cc) += wdata(r, c);
                                         cdata(rr, cc) += 1;
@@ -61,9 +61,9 @@ namespace cortex
                         const auto irows = gidata.rows();
                         const auto icols = gidata.cols();
 
-                        for (auto r = 0, rr = 0; r < irows; r ++, rr = r / 2)
+                        for (auto r = 0, rr = 0; r < irows; ++ r, rr = r / 2)
                         {
-                                for (auto c = 0, cc = 0; c < icols; c ++, cc = c / 2)
+                                for (auto c = 0, cc = 0; c < icols; ++ c, cc = c / 2)
                                 {
                                         gidata(r, c) = odata(rr, cc) * wdata(r, c) / sdata(rr, cc);
                                 }

@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(test_model)
                 BOOST_CHECK_EQUAL(model->color(), task.color());
 
                 // test random networks
-                for (size_t t = 0; t < n_tests; t ++)
+                for (size_t t = 0; t < n_tests; ++ t)
                 {
                         model->random_params();
 

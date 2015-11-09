@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_CASE(test_image_construct)
 {
         using namespace cortex;
 
-        for (size_t test = 0; test < 16; test ++)
+        for (size_t test = 0; test < 16; ++ test)
         {
                 math::random_t<coord_t> rng(16, 64);
 
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(test_image_io_matrix)
 {
         using namespace cortex;
 
-        for (size_t test = 0; test < 16; test ++)
+        for (size_t test = 0; test < 16; ++ test)
         {
                 math::random_t<coord_t> rng(16, 64);
 
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(test_image_io_matrix)
                         const auto& rgba = image.rgba();
                         BOOST_REQUIRE_EQUAL(rgba.size(), data.size());
 
-                        for (int i = 0; i < rgba.size(); i ++)
+                        for (int i = 0; i < rgba.size(); ++ i)
                         {
                                 BOOST_CHECK_EQUAL(rgba(i), data(i));
                         }
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(test_image_io_matrix)
                         const auto& luma = image.luma();
                         BOOST_REQUIRE_EQUAL(luma.size(), data.size());
 
-                        for (int i = 0; i < luma.size(); i ++)
+                        for (int i = 0; i < luma.size(); ++ i)
                         {
                                 BOOST_CHECK_EQUAL(luma(i), color::make_luma(data(i)));
                         }
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE(test_image_io_matrix)
                         const auto& luma = image.luma();
                         BOOST_REQUIRE_EQUAL(luma.size(), data.size());
 
-                        for (int i = 0; i < luma.size(); i ++)
+                        for (int i = 0; i < luma.size(); ++ i)
                         {
                                 BOOST_CHECK_EQUAL(luma(i), data(i));
                         }
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE(test_image_io_file)
 {
         using namespace cortex;
 
-        for (size_t test = 0; test < 16; test ++)
+        for (size_t test = 0; test < 16; ++ test)
         {
                 math::random_t<coord_t> rng(16, 64);
 
@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(test_image_io_file)
                         const auto& luma = image.luma();
                         BOOST_REQUIRE_EQUAL(luma.size(), data.size());
 
-                        for (int i = 0; i < luma.size(); i ++)
+                        for (int i = 0; i < luma.size(); ++ i)
                         {
                                 BOOST_CHECK_EQUAL(luma(i), color::make_luma(data(i)));
                         }
@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE(test_image_io_file)
                         const auto& rgba = image.rgba();
                         BOOST_REQUIRE_EQUAL(rgba.size(), data.size());
 
-                        for (int i = 0; i < rgba.size(); i ++)
+                        for (int i = 0; i < rgba.size(); ++ i)
                         {
                                 BOOST_CHECK_EQUAL(rgba(i), data(i));
                         }

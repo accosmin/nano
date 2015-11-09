@@ -115,10 +115,10 @@ int main(int argc, char *argv[])
                 {
                         os_source << tab << "constexpr " << pixname << " data[] = \n";
                         os_source << tab << "{\n";
-                        for (coord_t r = 0; r < buff.rows(); r ++)
+                        for (coord_t r = 0; r < buff.rows(); ++ r)
                         {
                                 os_source << tab << tab;
-                                for (coord_t c = 0; c < buff.cols(); c ++)
+                                for (coord_t c = 0; c < buff.cols(); ++ c)
                                 {
                                         os_source << std::to_string(static_cast<unsigned int>(buff(r, c)));
                                         if ((c + 1 < buff.cols()) || (r + 1 < buff.rows()))

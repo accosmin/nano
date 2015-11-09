@@ -42,7 +42,7 @@ namespace cortex
         indices_t logistic_loss_t::labels(const vector_t& scores) const
         {
                 indices_t ret;
-                for (auto i = 0; i < scores.size(); i ++)
+                for (auto i = 0; i < scores.size(); ++ i)
                 {
                         if (scores(i) > 0.0)
                         {

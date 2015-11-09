@@ -18,7 +18,7 @@ namespace
         string_t describe(const strings_t& ids, const strings_t& descriptions)
         {
                 string_t po_desc;
-                for (size_t i = 0; i < ids.size(); i ++)
+                for (size_t i = 0; i < ids.size(); ++ i)
                 {
                         po_desc += "  " + text::align(ids[i], 16) +
                                    text::align(descriptions[i], 32) + (i + 1 == ids.size() ? "" : "\n");
@@ -143,9 +143,9 @@ int main(int argc, char *argv[])
         std::map<scalar_t, std::tuple<rmodel_t, trainer_states_t>> models;
 
         math::stats_t<scalar_t> lstats, estats;
-        for (size_t t = 0; t < cmd_trials; t ++)
+        for (size_t t = 0; t < cmd_trials; ++ t)
         {
-                for (size_t f = 0; f < rtask->fsize(); f ++)
+                for (size_t f = 0; f < rtask->fsize(); ++ f)
                 {
                         const fold_t train_fold = std::make_pair(f, protocol::train);
                         const fold_t test_fold = std::make_pair(f, protocol::test);

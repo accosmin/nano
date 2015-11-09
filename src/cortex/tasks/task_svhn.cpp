@@ -61,7 +61,7 @@ namespace cortex
                 // data sections (image rgb + labels)
                 file::buffer_t image_data;
                 file::buffer_t label_data;
-                for (int isection = 0; isection < 2; isection ++)
+                for (int isection = 0; isection < 2; ++ isection)
                 {
                         // section header
                         file::mat5_section_t section;
@@ -151,7 +151,7 @@ namespace cortex
                 const size_t n_samples = idims[3];
 
                 size_t cnt = 0;
-                for (size_t i = 0; i < n_samples; i ++)
+                for (size_t i = 0; i < n_samples; ++ i)
                 {
                         const auto lbeg = static_cast<size_t>(lsection.dbegin()) + i;
 
@@ -173,9 +173,9 @@ namespace cortex
                         const auto ix = irows() * icols() * 3;
                         const auto ibeg = static_cast<size_t>(isection.dbegin()) + i * static_cast<size_t>(ix);
 
-                        for (tensor_size_t r = 0, q = 0; r < irows(); r ++)
+                        for (tensor_size_t r = 0, q = 0; r < irows(); ++ r)
                         {
-                                for (tensor_size_t c = 0; c < icols(); c ++, q ++)
+                                for (tensor_size_t c = 0; c < icols(); ++ c, ++ q)
                                 {
                                         const size_t ir = ibeg + static_cast<size_t>(px * 0 + q);
                                         const size_t ig = ibeg + static_cast<size_t>(px * 1 + q);

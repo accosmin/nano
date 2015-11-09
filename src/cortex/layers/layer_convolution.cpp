@@ -100,7 +100,7 @@ namespace cortex
                 tensor::conv3d_output(tensor::conv2d_dyn_t(), m_idata, m_kdata, m_odata);
 
                 // +bias
-                for (tensor_size_t o = 0; o < odims(); o ++)
+                for (tensor_size_t o = 0; o < odims(); ++ o)
                 {
                         m_odata.vector(o).array() += m_bdata(o);
                 }
@@ -134,7 +134,7 @@ namespace cortex
                 tensor::conv3d_gparam(tensor::conv2d_dyn_t(), m_idata, kdata, m_odata);
 
                 // wrt bias
-                for (tensor_size_t o = 0; o < odims(); o ++)
+                for (tensor_size_t o = 0; o < odims(); ++ o)
                 {
                         gradient[m_kdata.size() + o] = m_odata.vector(o).sum();
                 }

@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
         const size_t n_max_jobs = pool.n_workers() * 16;
 
         // run multiple tests ...
-        for (size_t t = 0; t < n_tests; t ++)
+        for (size_t t = 0; t < n_tests; ++ t)
         {
                 math::random_t<size_t> rnd(1, n_max_jobs);
 
@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
 
                 std::vector<size_t> tasks_done;
 
-                for (size_t j = 0; j < n_tasks; j ++)
+                for (size_t j = 0; j < n_tasks; ++ j)
                 {
                         pool.enqueue([=, &mutex, &tasks_done]()
                         {
@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
                 BOOST_CHECK_EQUAL(pool.n_tasks(), 0);
 
                 BOOST_CHECK_EQUAL(tasks_done.size(), n_tasks);
-                for (size_t j = 0; j < n_tasks; j ++)
+                for (size_t j = 0; j < n_tasks; ++ j)
                 {
                         BOOST_CHECK(std::find(tasks_done.begin(), tasks_done.end(), j + 1) != tasks_done.end());
                 }

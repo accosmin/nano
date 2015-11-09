@@ -39,7 +39,7 @@ namespace cortex
 
                 m_idata = input;
 
-                for (tensor_size_t o = 0; o < odims(); o ++)
+                for (tensor_size_t o = 0; o < odims(); ++ o)
                 {
                         pooling::output(
                                 m_idata.matrix(o), m_alpha,
@@ -60,7 +60,7 @@ namespace cortex
 
                 m_odata = output;
 
-                for (tensor_size_t o = 0; o < odims(); o ++)
+                for (tensor_size_t o = 0; o < odims(); ++ o)
                 {
                         pooling::ginput(
                                 m_idata.matrix(o),

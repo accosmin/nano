@@ -129,9 +129,9 @@ namespace cortex
                         const auto cnt = dims[0];
                         
                         file::buffer_t buffer = file::make_buffer(buffer_size);
-                        for (auto i = 0; i < cnt; i ++)
+                        for (auto i = 0; i < cnt; ++ i)
                         {
-                                for (size_t cam = 0; cam < n_cameras && stream.read(buffer.data(), buffer_size); cam ++)
+                                for (size_t cam = 0; cam < n_cameras && stream.read(buffer.data(), buffer_size); ++ cam)
                                 {
                                         image_t image;
                                         image.load_luma(buffer.data(), irows(), icols());
@@ -181,10 +181,10 @@ namespace cortex
                         const auto cnt = dims[0];
 
                         int32_t label;
-                        for (auto i = 0; i < cnt && stream.read(reinterpret_cast<char*>(&label), sizeof(label)); i ++)
+                        for (auto i = 0; i < cnt && stream.read(reinterpret_cast<char*>(&label), sizeof(label)); ++ i)
                         {
                                 const tensor_index_t ilabel = label;
-                                for (size_t cam = 0; cam < n_cameras; cam ++)
+                                for (size_t cam = 0; cam < n_cameras; ++ cam)
                                 {
                                         sample_t sample(iindex, sample_region(0, 0));
                                         if (ilabel < osize())

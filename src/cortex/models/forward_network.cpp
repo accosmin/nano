@@ -18,7 +18,7 @@ namespace cortex
                 :       model_t(other),
                         m_layers(other.m_layers)
         {
-                for (size_t l = 0; l < n_layers(); l ++)
+                for (size_t l = 0; l < n_layers(); ++ l)
                 {
                         m_layers[l] = other.m_layers[l]->clone();
                 }
@@ -204,7 +204,7 @@ namespace cortex
                 const string_t config = this->configuration();
 
                 const strings_t net_params = text::split(config, ";");
-                for (size_t l = 0; l < net_params.size(); l ++)
+                for (size_t l = 0; l < net_params.size(); ++ l)
                 {
                         if (net_params[l].empty())
                         {
@@ -270,7 +270,7 @@ namespace cortex
                 scalar_t model_ginput_mflops = 0.0;
                 scalar_t model_gparam_mflops = 0.0;
 
-                for (size_t l = 0; l < n_layers(); l ++)
+                for (size_t l = 0; l < n_layers(); ++ l)
                 {
                         const rlayer_t& layer = m_layers[l];
 

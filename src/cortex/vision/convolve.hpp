@@ -32,17 +32,17 @@ namespace cortex
                 tensor::vector_t<tscalar> buff(std::max(rows, cols));
 
                 // horizontal filter
-                for (int r = 0; r < rows; r ++)
+                for (int r = 0; r < rows; ++ r)
                 {
-                        for (int c = 0; c < cols; c ++)
+                        for (int c = 0; c < cols; ++ c)
                         {
                                 buff(c) = math::cast<tscalar>(src(r, c));
                         }
 
-                        for (int c = 0; c < cols; c ++)
+                        for (int c = 0; c < cols; ++ c)
                         {
                                 tscalar v = 0;
-                                for (int k = -krad; k <= krad; k ++)
+                                for (int k = -krad; k <= krad; ++ k)
                                 {
                                         const int cc = math::clamp(k + c, 0, cols - 1);
                                         v += kernel[k + krad] * buff(cc);
@@ -53,17 +53,17 @@ namespace cortex
                 }
 
                 // vertical filter
-                for (int c = 0; c < cols; c ++)
+                for (int c = 0; c < cols; ++ c)
                 {
-                        for (int r = 0; r < rows; r ++)
+                        for (int r = 0; r < rows; ++ r)
                         {
                                 buff(r) = math::cast<tscalar>(src(r, c));
                         }
 
-                        for (int r = 0; r < rows; r ++)
+                        for (int r = 0; r < rows; ++ r)
                         {
                                 tscalar v = 0;
-                                for (int k = -krad; k <= krad; k ++)
+                                for (int k = -krad; k <= krad; ++ k)
                                 {
                                         const int rr = math::clamp(k + r, 0, rows - 1);
                                         v += kernel[k + krad] * buff(rr);

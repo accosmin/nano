@@ -13,7 +13,7 @@ thread::pool_t::pool_t(std::size_t nworkers)
                 nworkers = std::max(size_t(1), std::min(nworkers, static_cast<std::size_t>(thread::max_n_threads())));
         }
 
-        for (size_t i = 0; i < nworkers; i ++)
+        for (size_t i = 0; i < nworkers; ++ i)
         {
                 m_workers.emplace_back(thread::pool_worker_t(m_tasks));
         }
@@ -29,7 +29,7 @@ thread::pool_t::~pool_t()
         }
         m_tasks.m_condition.notify_all();
 
-        for (size_t i = 0; i < m_workers.size(); i ++)
+        for (size_t i = 0; i < m_workers.size(); ++ i)
         {
                 m_workers[i].join();
         }

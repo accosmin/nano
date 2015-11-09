@@ -21,9 +21,9 @@ namespace cortex
                 const int rows = static_cast<int>(srcplane.rows());
                 const int cols = static_cast<int>(srcplane.cols());
 
-                for (int r = 0; r < rows; r ++)
+                for (int r = 0; r < rows; ++ r)
                 {
-                        for (int c = 0; c < cols; c ++)
+                        for (int c = 0; c < cols; ++ c)
                         {
                                 const int cn = math::clamp(c - 1, 0, cols - 1);
                                 const int cp = math::clamp(c + 1, 0, cols - 1);
@@ -49,12 +49,12 @@ namespace cortex
                 const int rows = static_cast<int>(srcplane.rows());
                 const int cols = static_cast<int>(srcplane.cols());
 
-                for (int r = 0; r < rows; r ++)
+                for (int r = 0; r < rows; ++ r)
                 {
                         const int rn = math::clamp(r - 1, 0, rows - 1);
                         const int rp = math::clamp(r + 1, 0, rows - 1);
 
-                        for (int c = 0; c < cols; c ++)
+                        for (int c = 0; c < cols; ++ c)
                         {
                                 yplane(r, c) = srcplane(rp, c) - srcplane(rn, c);
                         }

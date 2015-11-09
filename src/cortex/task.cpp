@@ -48,7 +48,7 @@ namespace cortex
         {
                 // process each label ...
                 const strings_t labels = this->labels();
-                for (size_t l = 0; l < labels.size(); l ++)
+                for (size_t l = 0; l < labels.size(); ++ l)
                 {
                         const string_t label = l < labels.size() ? labels[l] : string_t();
 
@@ -65,14 +65,14 @@ namespace cortex
                 const samples_t& samples, const string_t& basepath, coord_t grows, coord_t gcols,
                 coord_t border, rgba_t bkcolor) const
         {
-                for (size_t i = 0, g = 1; i < samples.size(); g ++)
+                for (size_t i = 0, g = 1; i < samples.size(); ++ g)
                 {
                         image_grid_t grid_image(irows(), icols(), grows, gcols, border, bkcolor);
 
                         // compose the image block
-                        for (coord_t r = 0; r < grows; r ++)
+                        for (coord_t r = 0; r < grows; ++ r)
                         {
-                                for (coord_t c = 0; c < gcols && i < samples.size(); c ++, i ++)
+                                for (coord_t c = 0; c < gcols && i < samples.size(); ++ c, ++ i)
                                 {
                                         const sample_t& sample = samples[i];
 
@@ -119,7 +119,7 @@ namespace cortex
                            << ", #outputs = " << osize()
                            << ", #folds = " << fsize() << ".";
 
-                for (size_t f = 0; f < fsize(); f ++)
+                for (size_t f = 0; f < fsize(); ++ f)
                 {
                         for (protocol p : {protocol::train, protocol::test})
                         {

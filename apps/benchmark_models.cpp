@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
         table_t btable_rand("model-backward");
         table_t btable_task("model-backward");
 
-        for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; nthreads ++)
+        for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
         {
                 ftable_rand.header() << (text::to_string(nthreads) + "xCPU [ms]");
                 ftable_task.header() << (text::to_string(nthreads) + "xCPU [ms]");
@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
         }
 
         // evaluate models
-        for (size_t im = 0; im < cmd_networks.size(); im ++)
+        for (size_t im = 0; im < cmd_networks.size(); ++ im)
         {
                 const string_t cmd_network = cmd_networks[im];
                 const string_t cmd_name = cmd_names[im];
@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
                 const samples_t samples = sampler.get();
 
                 // process the samples
-                for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; nthreads ++)
+                for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
                 {
                         if (cmd_forward)
                         {

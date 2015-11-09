@@ -53,7 +53,7 @@ namespace test
                 {
                         size_t out_of_domain = 0;
 
-                        for (size_t t = 0; t < trials; t ++)
+                        for (size_t t = 0; t < trials; ++ t)
                         {
                                 const auto problem = function.problem();
 

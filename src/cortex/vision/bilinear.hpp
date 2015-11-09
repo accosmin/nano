@@ -29,13 +29,13 @@ namespace cortex
                 const double scale_rows = double(irows) / double(orows);
                 const double scale_cols = double(icols) / double(ocols);
 
-                for (int _or = 0; _or < orows; _or ++)
+                for (int _or = 0; _or < orows; ++ _or)
                 {
                         const double isr = scale_rows * _or;
                         const int ir0 = static_cast<int>(isr), ir1 = std::min(ir0 + 1, irows - 1);
                         const double wr1 = isr - ir0, wr0 = 1.0 - wr1;
 
-                        for (int _oc = 0; _oc < ocols; _oc ++)
+                        for (int _oc = 0; _oc < ocols; ++ _oc)
                         {
                                 const double isc = scale_cols * _oc;
                                 const int ic0 = static_cast<int>(isc), ic1 = std::min(ic0 + 1, icols - 1);

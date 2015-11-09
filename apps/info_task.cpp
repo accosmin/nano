@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
         // save samples as images
         if (!cmd_save_dir.empty())
         {
-                for (size_t f = 0; f < rtask->fsize(); f ++)
+                for (size_t f = 0; f < rtask->fsize(); ++ f)
                 {
                         const fold_t train_fold = std::make_pair(f, protocol::train);
                         const fold_t test_fold = std::make_pair(f, protocol::test);

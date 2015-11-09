@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(test_charset_task)
                 BOOST_CHECK_EQUAL(task.sample_size(), rect_t(0, 0, icols, irows));
                 BOOST_CHECK_EQUAL(task.labels().size(), osize);
 
-                for (size_t i = 0; i < task.n_images(); i ++)
+                for (size_t i = 0; i < task.n_images(); ++ i)
                 {
                         BOOST_CHECK_EQUAL(task.image(i).mode(), mode);
                         BOOST_CHECK_EQUAL(task.image(i).rows(), irows);

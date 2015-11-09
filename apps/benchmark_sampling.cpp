@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
         // construct tables to compare sampling
         table_t table("sampling\\threads");
 
-        for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; nthreads ++)
+        for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
         {
                 table.header() << (text::to_string(nthreads) + "xCPU [mu]");
         }
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
                 const samples_t samples = sampler.get();
 
                 // process the samples
-                for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; nthreads ++)
+                for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
                 {
                         thread::pool_t pool(nthreads);
 

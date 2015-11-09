@@ -48,7 +48,7 @@ namespace test
                         string_t desc;
 
                         // convolution part
-                        for (size_t l = 0; l < n_layers && !conv_layer_id.empty(); l ++)
+                        for (size_t l = 0; l < n_layers && !conv_layer_id.empty(); ++ l)
                         {
                                 math::random_t<size_t> rgen(2, 3);
 
@@ -65,7 +65,7 @@ namespace test
                         }
 
                         // fully-connected part
-                        for (size_t l = 0; l < n_layers && !full_layer_id.empty(); l ++)
+                        for (size_t l = 0; l < n_layers && !full_layer_id.empty(); ++ l)
                         {
                                 math::random_t<size_t> rgen(1, 5);
 
@@ -92,7 +92,7 @@ namespace test
                 //      * fully connected layers
                 //      * activation layers
                 std::set<string_t> descs;
-                for (size_t n_layers = 0; n_layers <= cmd_max_layers; n_layers ++)
+                for (size_t n_layers = 0; n_layers <= cmd_max_layers; ++ n_layers)
                 {
                         for (const string_t& actv_layer_id : actv_layer_ids)
                         {
@@ -184,7 +184,7 @@ namespace test
                 // construct optimization problem: analytic gradient and finite difference approximation
                 const opt_problem_t problem(fn_params_size, fn_params_fval, fn_params_grad);
 
-                for (size_t t = 0; t < n_tests; t ++)
+                for (size_t t = 0; t < n_tests; ++ t)
                 {
                         math::random_t<scalar_t> prgen(-0.1, +0.1);
                         math::random_t<scalar_t> irgen(-0.1, +0.1);
@@ -286,7 +286,7 @@ namespace test
                 const opt_problem_t problem_analytic_inputs(fn_inputs_size, fn_inputs_fval, fn_inputs_grad);
                 const opt_problem_t problem_aproxdif_inputs(fn_inputs_size, fn_inputs_fval);
 
-                for (size_t t = 0; t < n_tests; t ++)
+                for (size_t t = 0; t < n_tests; ++ t)
                 {
                         math::random_t<scalar_t> prgen(-1.0, +1.0);
                         math::random_t<scalar_t> irgen(-0.1, +0.1);

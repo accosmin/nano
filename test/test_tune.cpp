@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(test_tune)
         const scalar_t epslog = math::epsilon2<scalar_t>();
         const size_t splits = thread::n_threads();
 
-        for (size_t t = 0; t < n_tests; t ++)
+        for (size_t t = 0; t < n_tests; ++ t)
         {
                 math::random_t<scalar_t> agen(+0.1, +1.0);
                 math::random_t<scalar_t> bgen(-2.0, +2.0);

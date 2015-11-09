@@ -167,9 +167,9 @@ namespace cortex
 
                 clear_memory(0);
 
-                for (size_t f = 0; f < fsize(); f ++)
+                for (size_t f = 0; f < fsize(); ++ f)
                 {
-                        for (size_t i = 0; i < m_size; i ++)
+                        for (size_t i = 0; i < m_size; ++ i)
                         {
                                 // random protocol: train vs. test (90% training, 10% testing)
                                 const protocol p = (rng_protocol() < 9) ? protocol::train : protocol::test;

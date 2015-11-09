@@ -20,7 +20,7 @@ namespace
         tscalar test_st(const size_t size, toperator op)
         {
                 std::vector<tscalar> results(size);
-                for (size_t i = 0; i < results.size(); i ++)
+                for (size_t i = 0; i < results.size(); ++ i)
                 {
                         results[i] = op(i);
                 }
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(test_thread_loop)
                 const auto vi = std::cos(ii) + std::sin(ii);
 
                 auto temp = scalar_t(0);
-                for (int j = 0; j < 16; j ++)
+                for (int j = 0; j < 16; ++ j)
                 {
                         temp += j * std::tan(-ii + j);
                 }
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(test_thread_loop)
                 const scalar_t mt = test_mt<scalar_t>(size, op);
                 BOOST_CHECK_LE(math::abs(st - mt), math::epsilon1<scalar_t>());
 
-                for (size_t nthreads = thread::n_threads(); nthreads <= thread::max_n_threads(); nthreads ++)
+                for (size_t nthreads = thread::n_threads(); nthreads <= thread::max_n_threads(); ++ nthreads)
                 {
                         const scalar_t mtx = test_mt<scalar_t>(size, nthreads, op);
                         BOOST_CHECK_LE(math::abs(st - mtx), math::epsilon1<scalar_t>());

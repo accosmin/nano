@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
                     << (iimage.is_luma() ? "[luma]" : "[rgba]") << ".";
 
         // randomly warp the input image
-        for (size_t c = 0; c < cmd_count; c ++)
+        for (size_t c = 0; c < cmd_count; ++ c)
         {
                 // warp
                 tensor_t otensor, ftensor;

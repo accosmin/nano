@@ -22,7 +22,7 @@ namespace test
                 const auto dims = function.problem().size();
                 BOOST_CHECK_GT(dims, 0);
 
-                for (size_t t = 0; t < trials; t ++)
+                for (size_t t = 0; t < trials; ++ t)
                 {
                         math::random_t<tscalar> rgen(tscalar(-0.1), tscalar(+0.1));
 

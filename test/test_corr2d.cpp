@@ -72,9 +72,9 @@ BOOST_AUTO_TEST_CASE(test_corr2d)
 
         for (int isize = min_isize; isize <= max_isize; isize += 4)
         {
-                for (int ksize = min_ksize; ksize <= isize - min_ksize; ksize ++)
+                for (int ksize = min_ksize; ksize <= isize - min_ksize; ++ ksize)
                 {
-                        for (int t = 0; t < n_tests; t ++)
+                        for (int t = 0; t < n_tests; ++ t)
                         {
                                 test::test_corr2d(isize, ksize);
                         }

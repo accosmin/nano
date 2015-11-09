@@ -81,7 +81,7 @@ namespace cortex
                         // constructor
                         rgb2xyz_map()
                         {
-                                for (rgba_t rgb = 0; rgb < 256; rgb ++)
+                                for (rgba_t rgb = 0; rgb < 256; ++ rgb)
                                 {
                                         const scalar_t var = fn_rgb2xyz(rgb / 255.0) * 100.0;
 
