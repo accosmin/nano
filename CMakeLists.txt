@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 
+enable_language(CXX)
+
 project(nanocv)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
@@ -74,7 +76,7 @@ CHECK_CXX_SOURCE_COMPILES("${NANOCV_TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_TH
 # compilation & linking flags
 ######################################################################
 
-if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
         message("Compiling with ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION} ...")
 
         # check C++14
@@ -138,17 +140,19 @@ if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]")
 endif()
 
 message("------------------------------------------------------------------------------" "")
-message("CXX FLAGS:                    " "${CMAKE_CXX_FLAGS}")
-message("CXX DEBUG FLAGS:              " "${CMAKE_CXX_FLAGS_DEBUG}")
-message("CXX RELEASE FLAGS:            " "${CMAKE_CXX_FLAGS_RELEASE}")
-message("CXX RELWITHDEBINFO FLAGS:     " "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
-message("CXX MINSIZEREL FLAGS:         " "${CMAKE_CXX_FLAGS_MINSIZEREL}")
-message("CMAKE_EXE_LINKER_FLAGS:       " "${CMAKE_EXE_LINKER_FLAGS}")
+message("SYSTEM:                        " "${CMAKE_SYSTEM_NAME}")
+message("PROCESSOR:                     " "${CMAKE_HOST_SYSTEM_PROCESSOR}")
+message("CXX FLAGS:                     " "${CMAKE_CXX_FLAGS}")
+message("CXX DEBUG FLAGS:               " "${CMAKE_CXX_FLAGS_DEBUG}")
+message("CXX RELEASE FLAGS:             " "${CMAKE_CXX_FLAGS_RELEASE}")
+message("CXX RELWITHDEBINFO FLAGS:      " "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+message("CXX MINSIZEREL FLAGS:          " "${CMAKE_CXX_FLAGS_MINSIZEREL}")
+message("CMAKE_EXE_LINKER_FLAGS:        " "${CMAKE_EXE_LINKER_FLAGS}")
 message("------------------------------------------------------------------------------" "")
-message("BUILD TYPE:                   " "${CMAKE_BUILD_TYPE}")
+message("BUILD TYPE:                    " "${CMAKE_BUILD_TYPE}")
 message("------------------------------------------------------------------------------" "")
-message("ASAN                          " "${NANOCV_WITH_ASAN}")
-message("TSAN                          " "${NANOCV_WITH_TSAN}")
+message("ASAN                           " "${NANOCV_WITH_ASAN}")
+message("TSAN                           " "${NANOCV_WITH_TSAN}")
 message("------------------------------------------------------------------------------" "")
 
 ######################################################################
