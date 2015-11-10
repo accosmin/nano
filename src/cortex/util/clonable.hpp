@@ -37,9 +37,13 @@ namespace cortex
                 virtual ~clonable_t() {}
 
                 ///
-                /// \brief create an object clone
+                /// \brief create an object of the same type with the given configuration
                 ///
                 virtual trobject clone(const tstring& configuration) const = 0;
+
+                ///
+                /// \brief create an object clone
+                ///
                 virtual trobject clone() const = 0;
 
                 ///
