@@ -9,12 +9,11 @@ The core modules are independent of each other and are designed to be as generic
 
 ##### Header only modules
 
-* **min** - batch and stochastic numerical optimization and line-search methods. `Dependencies: Eigen3.`
-* **math** - numerical utilities. `No dependencies.`
+* **math** - numerical utilities, batch and stochastic numerical optimization and line-search methods. `Dependencies: Eigen3.`
 * **text** - string processing utilities. `No dependencies.`
 * **tensor** - vector, matrix and tensor utilities, 2D/3D convolution and correlations. `Dependencies: Eigen3.`
 
-Most notably the **min** module implements the following: 
+Most notably the **math** module implements the following: 
 * batch optimization methods: `gradient descent`, various `non-linear conjugate gradient descent`, `L-BFGS`.
 * stochastic optimization methods: `accelerated gradient`, `stochastic (averaging) gradient`, `ADADELTA`, `ADAGRAD`.
 * line-search methods: `backtracking`, `More & Thuente`, `CG_DESCENT`.
