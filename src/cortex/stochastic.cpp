@@ -3,8 +3,8 @@
 #include "util/timer.h"
 #include "util/logger.h"
 #include "accumulator.h"
-#include "min/tune_stoch.hpp"
 #include "text/to_string.hpp"
+#include "math/tune_stoch.hpp"
 #include <tuple>
 
 namespace cortex
@@ -13,7 +13,7 @@ namespace cortex
         {
                 trainer_result_t train(
                         trainer_data_t& data,
-                        min::stoch_optimizer optimizer, size_t epochs, size_t batch, scalar_t alpha0, scalar_t decay,
+                        math::stoch_optimizer optimizer, size_t epochs, size_t batch, scalar_t alpha0, scalar_t decay,
                         bool verbose)
                 {
                         trainer_result_t result;
@@ -75,7 +75,7 @@ namespace cortex
                         };
 
                         // Optimize the model
-                        min::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
+                        math::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
                                       data.m_x0, optimizer, epochs, epoch_size, alpha0, decay);
 
                         // revert to the original sampler
@@ -85,7 +85,7 @@ namespace cortex
                 }
 
                 // <result, batch size, decay rate, learning rate>
-                auto tune_batch_decay_lrate(trainer_data_t& data, min::stoch_optimizer optimizer, bool verbose)
+                auto tune_batch_decay_lrate(trainer_data_t& data, math::stoch_optimizer optimizer, bool verbose)
                 {
                         const auto op = [&] (size_t batch, scalar_t decay, scalar_t alpha)
                         {
@@ -109,10 +109,10 @@ namespace cortex
                         };
 
                         const auto batches = cortex::tunable_batches();
-                        const auto decays = min::tunable_decays<scalar_t>(optimizer);
-                        const auto alphas = min::tunable_alphas<scalar_t>(optimizer);
+                        const auto decays = math::tunable_decays<scalar_t>(optimizer);
+                        const auto alphas = math::tunable_alphas<scalar_t>(optimizer);
 
-                        return min::tune_fixed(op, batches, decays, alphas);
+                        return math::tune_fixed(op, batches, decays, alphas);
                 }
         }
 
@@ -120,7 +120,7 @@ namespace cortex
                 const model_t& model,
                 const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, const string_t& criterion,
-                min::stoch_optimizer optimizer, size_t epochs, bool verbose)
+                math::stoch_optimizer optimizer, size_t epochs, bool verbose)
         {
                 vector_t x0;
                 model.save_params(x0);
@@ -146,7 +146,7 @@ namespace cortex
 
                 if (data.m_lacc.can_regularize())
                 {
-                        return std::get<0>(min::tune_fixed(op, cortex::tunable_lambdas()));
+                        return std::get<0>(math::tune_fixed(op, cortex::tunable_lambdas()));
                 }
                 else
                 {

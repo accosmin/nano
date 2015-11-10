@@ -161,7 +161,6 @@ message("-----------------------------------------------------------------------
 
 include_directories(${nanocv_SOURCE_DIR}/src)
 
-add_subdirectory(src/min)
 add_subdirectory(src/file)
 add_subdirectory(src/math)
 add_subdirectory(src/text)

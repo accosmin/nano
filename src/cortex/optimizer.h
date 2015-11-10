@@ -1,15 +1,15 @@
 #pragma once
 
 #include "scalar.h"
-#include "min/problem.hpp"
-#include "min/batch_types.h"
-#include "min/stoch_types.h"
-#include "min/lsearch_types.h"
+#include "math/problem.hpp"
+#include "math/batch_types.h"
+#include "math/stoch_types.h"
+#include "math/lsearch_types.h"
 #include "text/enum_string.hpp"
 
 namespace cortex
 {
-        using opt_problem_t = min::problem_t<scalar_t>;
+        using opt_problem_t = math::problem_t<scalar_t>;
 
         using opt_size_t = opt_problem_t::tsize;
         using opt_state_t = opt_problem_t::tstate;
@@ -23,61 +23,61 @@ namespace cortex
 namespace text
 {
         template <>
-        inline std::map<min::stoch_optimizer, std::string> enum_string<min::stoch_optimizer>()
+        inline std::map<math::stoch_optimizer, std::string> enum_string<math::stoch_optimizer>()
         {
                 return
                 {
-                        { min::stoch_optimizer::SG,           "sg" },
-                        { min::stoch_optimizer::SGA,          "sga" },
-                        { min::stoch_optimizer::SIA,          "sia" },
-                        { min::stoch_optimizer::AG,           "ag" },
-                        { min::stoch_optimizer::AGGR,         "aggr" },
-                        { min::stoch_optimizer::ADAGRAD,      "adagrad" },
-                        { min::stoch_optimizer::ADADELTA,     "adadelta" }
+                        { math::stoch_optimizer::SG,           "sg" },
+                        { math::stoch_optimizer::SGA,          "sga" },
+                        { math::stoch_optimizer::SIA,          "sia" },
+                        { math::stoch_optimizer::AG,           "ag" },
+                        { math::stoch_optimizer::AGGR,         "aggr" },
+                        { math::stoch_optimizer::ADAGRAD,      "adagrad" },
+                        { math::stoch_optimizer::ADADELTA,     "adadelta" }
                 };
         }
 
         template <>
-        inline std::map<min::batch_optimizer, std::string> enum_string<min::batch_optimizer>()
+        inline std::map<math::batch_optimizer, std::string> enum_string<math::batch_optimizer>()
         {
                 return
                 {
-                        { min::batch_optimizer::GD,           "gd" },
-                        { min::batch_optimizer::CGD,          "cgd" },
-                        { min::batch_optimizer::LBFGS,        "lbfgs" },
-                        { min::batch_optimizer::CGD_HS,       "cgd-hs" },
-                        { min::batch_optimizer::CGD_FR,       "cgd-fr" },
-                        { min::batch_optimizer::CGD_PRP,      "cgd-prp" },
-                        { min::batch_optimizer::CGD_CD,       "cgd-cd" },
-                        { min::batch_optimizer::CGD_LS,       "cgd-ls" },
-                        { min::batch_optimizer::CGD_DY,       "cgd-dy" },
-                        { min::batch_optimizer::CGD_N,        "cgd-n" },
-                        { min::batch_optimizer::CGD_DYCD,     "cgd-dycd" },
-                        { min::batch_optimizer::CGD_DYHS,     "cgd-dyhs" }
+                        { math::batch_optimizer::GD,           "gd" },
+                        { math::batch_optimizer::CGD,          "cgd" },
+                        { math::batch_optimizer::LBFGS,        "lbfgs" },
+                        { math::batch_optimizer::CGD_HS,       "cgd-hs" },
+                        { math::batch_optimizer::CGD_FR,       "cgd-fr" },
+                        { math::batch_optimizer::CGD_PRP,      "cgd-prp" },
+                        { math::batch_optimizer::CGD_CD,       "cgd-cd" },
+                        { math::batch_optimizer::CGD_LS,       "cgd-ls" },
+                        { math::batch_optimizer::CGD_DY,       "cgd-dy" },
+                        { math::batch_optimizer::CGD_N,        "cgd-n" },
+                        { math::batch_optimizer::CGD_DYCD,     "cgd-dycd" },
+                        { math::batch_optimizer::CGD_DYHS,     "cgd-dyhs" }
                 };
         }
 
         template <>
-        inline std::map<min::ls_initializer, std::string> enum_string<min::ls_initializer>()
+        inline std::map<math::ls_initializer, std::string> enum_string<math::ls_initializer>()
         {
                 return
                 {
-                        { min::ls_initializer::unit,          "init-unit" },
-                        { min::ls_initializer::quadratic,     "init-quadratic" },
-                        { min::ls_initializer::consistent,    "init-consistent" }
+                        { math::ls_initializer::unit,          "init-unit" },
+                        { math::ls_initializer::quadratic,     "init-quadratic" },
+                        { math::ls_initializer::consistent,    "init-consistent" }
                 };
         }
 
         template <>
-        inline std::map<min::ls_strategy, std::string> enum_string<min::ls_strategy>()
+        inline std::map<math::ls_strategy, std::string> enum_string<math::ls_strategy>()
         {
                 return
                 {
-                        { min::ls_strategy::backtrack_armijo,         "backtrack-Armijo" },
-                        { min::ls_strategy::backtrack_wolfe,          "backtrack-Wolfe" },
-                        { min::ls_strategy::backtrack_strong_wolfe,   "backtrack-strong-Wolfe" },
-                        { min::ls_strategy::interpolation,            "interp" },
-                        { min::ls_strategy::cg_descent,               "cgdescent" }
+                        { math::ls_strategy::backtrack_armijo,         "backtrack-Armijo" },
+                        { math::ls_strategy::backtrack_wolfe,          "backtrack-Wolfe" },
+                        { math::ls_strategy::backtrack_strong_wolfe,   "backtrack-strong-Wolfe" },
+                        { math::ls_strategy::interpolation,            "interp" },
+                        { math::ls_strategy::cg_descent,               "cgdescent" }
                 };
         }
 }

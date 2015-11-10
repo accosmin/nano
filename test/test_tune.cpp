@@ -7,7 +7,7 @@
 #include "thread/thread.h"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
-#include "min/tune_log10_mt.hpp"
+#include "math/tune_log10_mt.hpp"
 
 namespace test
 {
@@ -24,12 +24,12 @@ namespace test
 
                 // single-threaded version
                 tscalar stfx, stx;
-                std::tie(stfx, stx) = min::tune_log10(op, minlog, maxlog, epslog, splits);
+                std::tie(stfx, stx) = math::tune_log10(op, minlog, maxlog, epslog, splits);
 
                 // multi-threaded version
                 thread::pool_t pool(splits);
                 tscalar mtfx, mtx;
-                std::tie(mtfx, mtx) = min::tune_log10_mt(op, pool, minlog, maxlog, epslog, splits);
+                std::tie(mtfx, mtx) = math::tune_log10_mt(op, pool, minlog, maxlog, epslog, splits);
 
                 const tscalar epsilon = math::epsilon2<tscalar>();
 

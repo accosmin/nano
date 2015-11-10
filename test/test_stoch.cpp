@@ -6,10 +6,10 @@
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
-#include "min/tune_stoch.hpp"
+#include "math/tune_stoch.hpp"
 #include "text/to_string.hpp"
 #include "cortex/optimizer.h"
-#include "min/test/run_all.hpp"
+#include "math/funcs/run_all.hpp"
 #include <iostream>
 
 namespace test
@@ -17,9 +17,9 @@ namespace test
         template
         <
                 typename tscalar,
-                typename tvector = typename min::function_t<tscalar>::tvector
+                typename tvector = typename math::function_t<tscalar>::tvector
         >
-        static void check_function(const min::function_t<tscalar>& function)
+        static void check_function(const math::function_t<tscalar>& function)
         {
                 const auto epochs = size_t(128);
                 const auto epoch_size = size_t(64);
@@ -40,13 +40,13 @@ namespace test
                 // optimizers to try
                 const auto optimizers =
                 {
-                        min::stoch_optimizer::SG,
-                        min::stoch_optimizer::SGA,
-                        min::stoch_optimizer::SIA,
-                        min::stoch_optimizer::AG,
-                        min::stoch_optimizer::AGGR,
-                        min::stoch_optimizer::ADAGRAD,
-                        min::stoch_optimizer::ADADELTA
+                        math::stoch_optimizer::SG,
+                        math::stoch_optimizer::SGA,
+                        math::stoch_optimizer::SIA,
+                        math::stoch_optimizer::AG,
+                        math::stoch_optimizer::AGGR,
+                        math::stoch_optimizer::ADAGRAD,
+                        math::stoch_optimizer::ADADELTA
                 };
 
                 for (const auto optimizer : optimizers)
@@ -62,9 +62,9 @@ namespace test
 
                                 // optimize
                                 tscalar alpha, decay;
-                                min::tune_stochastic(problem, x0, optimizer, epoch_size, alpha, decay);
+                                math::tune_stochastic(problem, x0, optimizer, epoch_size, alpha, decay);
 
-                                const auto state = min::minimize(
+                                const auto state = math::minimize(
                                         problem, nullptr, x0, optimizer, epochs, epoch_size, alpha, decay);
 
                                 const auto x = state.x;
@@ -109,7 +109,7 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_stoch_optimizers)
 {
-        min::run_all_test_functions<double>(8, [] (const auto& function)
+        math::run_all_test_functions<double>(8, [] (const auto& function)
         {
                 test::check_function(function);
         });

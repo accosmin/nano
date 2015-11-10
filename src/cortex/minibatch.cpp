@@ -2,10 +2,10 @@
 #include "minibatch.h"
 #include "util/timer.h"
 #include "util/logger.h"
-#include "min/batch.hpp"
 #include "accumulator.h"
+#include "math/batch.hpp"
 #include "text/to_string.hpp"
-#include "min/tune_fixed.hpp"
+#include "math/tune_fixed.hpp"
 #include <tuple>
 
 namespace cortex
@@ -39,7 +39,7 @@ namespace cortex
 
                 trainer_result_t train(
                         trainer_data_t& data,
-                        min::batch_optimizer optimizer,
+                        math::batch_optimizer optimizer,
                         size_t epochs, size_t batch, size_t iterations, scalar_t epsilon,
                         bool verbose)
                 {
@@ -64,7 +64,7 @@ namespace cortex
                         {
                                 train_epoch(data, epoch_size, batch, [&] ()
                                 {
-                                        const opt_state_t state = min::minimize(
+                                        const opt_state_t state = math::minimize(
                                                 opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
                                                 x, optimizer, iterations, epsilon, history_size);
 
@@ -114,7 +114,7 @@ namespace cortex
 
                 // <result, batch size, iterations per batch>
                 std::tuple<trainer_result_t, size_t, size_t> tune_minibatch(
-                        trainer_data_t& data, min::batch_optimizer optimizer, scalar_t epsilon,
+                        trainer_data_t& data, math::batch_optimizer optimizer, scalar_t epsilon,
                         bool verbose)
                 {
                         const auto op = [&] (size_t batch, size_t iterations)
@@ -140,7 +140,7 @@ namespace cortex
                         const auto batches = cortex::tunable_batches();
                         const auto iterations = tunable_iterations();
 
-                        return min::tune_fixed(op, batches, iterations);
+                        return math::tune_fixed(op, batches, iterations);
                 }
         }
 
@@ -148,7 +148,7 @@ namespace cortex
                 const model_t& model,
                 const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, const string_t& criterion,
-                min::batch_optimizer optimizer, size_t epochs, scalar_t epsilon, bool verbose)
+                math::batch_optimizer optimizer, size_t epochs, scalar_t epsilon, bool verbose)
         {
                 vector_t x0;
                 model.save_params(x0);
@@ -173,7 +173,7 @@ namespace cortex
 
                 if (data.m_lacc.can_regularize())
                 {
-                        return std::get<0>(min::tune_fixed(op, cortex::tunable_lambdas()));
+                        return std::get<0>(math::tune_fixed(op, cortex::tunable_lambdas()));
                 }
                 else
                 {

@@ -3,9 +3,9 @@
 
 #include <boost/test/unit_test.hpp>
 #include "math/abs.hpp"
+#include "math/cubic.hpp"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
-#include "min/batch/cubic.hpp"
 
 BOOST_AUTO_TEST_CASE(test_cubic)
 {
@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(test_cubic)
                 const double b = rnd();
                 const double c = rnd();
                 const double d = rnd();
-                const min::cubic_t<double> q(a, b, c, d);
+                const math::cubic_t<double> q(a, b, c, d);
                 BOOST_CHECK(q);
 
                 const double x0 = rnd();
@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(test_cubic)
                 const double g1 = q.gradient(x1);
 
                 // check interpolation
-                const min::cubic_t<double> iq(x0, f0, g0, x1, f1, g1);
+                const math::cubic_t<double> iq(x0, f0, g0, x1, f1, g1);
                 if (!iq)
                 {
                         continue;

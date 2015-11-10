@@ -3,13 +3,13 @@
 
 #include <boost/test/unit_test.hpp>
 #include "math/abs.hpp"
-#include "min/batch.hpp"
+#include "math/batch.hpp"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
 #include "cortex/optimizer.h"
-#include "min/test/run_all.hpp"
+#include "math/funcs/run_all.hpp"
 #include <iomanip>
 #include <iostream>
 
@@ -18,9 +18,9 @@ namespace test
         template
         <
                 typename tscalar,
-                typename tvector = typename min::function_t<tscalar>::tvector
+                typename tvector = typename math::function_t<tscalar>::tvector
         >
-        static void check_function(const min::function_t<tscalar>& function)
+        static void check_function(const math::function_t<tscalar>& function)
         {
                 const auto iterations = size_t(8 * 1024);
                 const auto trials = size_t(32);
@@ -38,22 +38,22 @@ namespace test
                 }
 
                 // {optimizers, slack ~ expected convergence rate} to try
-                const std::map<min::batch_optimizer, tscalar> optimizers =
+                const std::map<math::batch_optimizer, tscalar> optimizers =
                 {
-                        { min::batch_optimizer::GD, 1e+3 },             // ok, but potentially very slow!
+                        { math::batch_optimizer::GD, 1e+3 },             // ok, but potentially very slow!
 
-                        { min::batch_optimizer::CGD, 1e+0 },
-                        { min::batch_optimizer::CGD_CD, 1e+0 },
-                        { min::batch_optimizer::CGD_DY, 1e+10 },        // bad!
-                        { min::batch_optimizer::CGD_FR, 1e+10 },        // bad!
-                        { min::batch_optimizer::CGD_HS, 1e+10 },        // bad!
-                        { min::batch_optimizer::CGD_LS, 1e+0 },
-                        { min::batch_optimizer::CGD_N, 1e+0 },
-                        { min::batch_optimizer::CGD_PRP, 1e+0 },
-                        { min::batch_optimizer::CGD_DYCD, 1e+0 },
-                        { min::batch_optimizer::CGD_DYHS, 1e+0 },
+                        { math::batch_optimizer::CGD, 1e+0 },
+                        { math::batch_optimizer::CGD_CD, 1e+0 },
+                        { math::batch_optimizer::CGD_DY, 1e+10 },        // bad!
+                        { math::batch_optimizer::CGD_FR, 1e+10 },        // bad!
+                        { math::batch_optimizer::CGD_HS, 1e+10 },        // bad!
+                        { math::batch_optimizer::CGD_LS, 1e+0 },
+                        { math::batch_optimizer::CGD_N, 1e+0 },
+                        { math::batch_optimizer::CGD_PRP, 1e+0 },
+                        { math::batch_optimizer::CGD_DYCD, 1e+0 },
+                        { math::batch_optimizer::CGD_DYHS, 1e+0 },
 
-                        { min::batch_optimizer::LBFGS, 1e+0 }
+                        { math::batch_optimizer::LBFGS, 1e+0 }
                 };
 
                 for (const auto& optslack : optimizers)
@@ -71,7 +71,7 @@ namespace test
                                 const auto f0 = problem(x0);
 
                                 // optimize
-                                const auto state = min::minimize(
+                                const auto state = math::minimize(
                                         problem, nullptr, x0, optimizer, iterations, math::epsilon0<tscalar>());
 
                                 const auto x = state.x;
@@ -116,7 +116,7 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_batch_optimizers)
 {
-        min::run_all_test_functions<double>(8, [] (const auto& function)
+        math::run_all_test_functions<double>(8, [] (const auto& function)
         {
                 test::check_function(function);
         });

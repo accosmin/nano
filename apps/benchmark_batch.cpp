@@ -1,5 +1,5 @@
 #include "math/abs.hpp"
-#include "min/batch.hpp"
+#include "math/batch.hpp"
 #include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
@@ -9,7 +9,7 @@
 #include "cortex/util/logger.h"
 #include "text/from_string.hpp"
 #include "text/starts_with.hpp"
-#include "min/test/run_all.hpp"
+#include "math/funcs/run_all.hpp"
 #include "benchmark_optimizers.h"
 #include <map>
 #include <tuple>
@@ -22,11 +22,11 @@ namespace
         <
                 typename tscalar,
                 typename tostats,
-                typename tsize = typename min::function_t<tscalar>::tsize,
-                typename tvector = typename min::function_t<tscalar>::tvector,
-                typename tproblem = typename min::function_t<tscalar>::tproblem
+                typename tsize = typename math::function_t<tscalar>::tsize,
+                typename tvector = typename math::function_t<tscalar>::tvector,
+                typename tproblem = typename math::function_t<tscalar>::tproblem
         >
-        void check_function(const min::function_t<tscalar>& function, tostats& gstats)
+        void check_function(const math::function_t<tscalar>& function, tostats& gstats)
         {
                 const auto iterations = size_t(8 * 1024);
                 const auto epsilon = math::epsilon0<tscalar>();
@@ -47,48 +47,48 @@ namespace
                 // optimizers to try
                 const auto optimizers =
                 {
-                        min::batch_optimizer::GD,
-                        min::batch_optimizer::CGD_CD,
-                        min::batch_optimizer::CGD_DY,
-                        min::batch_optimizer::CGD_FR,
-                        min::batch_optimizer::CGD_HS,
-                        min::batch_optimizer::CGD_LS,
-                        min::batch_optimizer::CGD_DYCD,
-                        min::batch_optimizer::CGD_DYHS,
-                        min::batch_optimizer::CGD_PRP,
-                        min::batch_optimizer::CGD_N,
-                        min::batch_optimizer::LBFGS
+                        math::batch_optimizer::GD,
+                        math::batch_optimizer::CGD_CD,
+                        math::batch_optimizer::CGD_DY,
+                        math::batch_optimizer::CGD_FR,
+                        math::batch_optimizer::CGD_HS,
+                        math::batch_optimizer::CGD_LS,
+                        math::batch_optimizer::CGD_DYCD,
+                        math::batch_optimizer::CGD_DYHS,
+                        math::batch_optimizer::CGD_PRP,
+                        math::batch_optimizer::CGD_N,
+                        math::batch_optimizer::LBFGS
                 };
 
                 // line search initialization methods to try
                 const auto ls_initializers =
                 {
-                        min::ls_initializer::unit,
-                        min::ls_initializer::quadratic,
-                        min::ls_initializer::consistent
+                        math::ls_initializer::unit,
+                        math::ls_initializer::quadratic,
+                        math::ls_initializer::consistent
                 };
 
                 // line search strategies to try
                 const auto ls_strategies =
                 {
-                        min::ls_strategy::backtrack_armijo,
-                        min::ls_strategy::backtrack_wolfe,
-                        min::ls_strategy::backtrack_strong_wolfe,
-                        min::ls_strategy::interpolation,
-                        min::ls_strategy::cg_descent
+                        math::ls_strategy::backtrack_armijo,
+                        math::ls_strategy::backtrack_wolfe,
+                        math::ls_strategy::backtrack_strong_wolfe,
+                        math::ls_strategy::interpolation,
+                        math::ls_strategy::cg_descent
                 };
 
                 // per-problem statistics
                 tostats stats;
 
                 // evaluate all possible combinations
-                for (min::batch_optimizer optimizer : optimizers)
-                        for (min::ls_initializer ls_init : ls_initializers)
-                                for (min::ls_strategy ls_strat : ls_strategies)
+                for (math::batch_optimizer optimizer : optimizers)
+                        for (math::ls_initializer ls_init : ls_initializers)
+                                for (math::ls_strategy ls_strat : ls_strategies)
                 {
                         const auto op = [&] (const tproblem& problem, const tvector& x0)
                         {
-                                return  min::minimize(
+                                return  math::minimize(
                                         problem, nullptr, x0, optimizer, iterations, epsilon, ls_init, ls_strat);
                         };
 
@@ -111,7 +111,7 @@ int main(int, char* [])
 
         std::map<string_t, benchmark::optimizer_stat_t> gstats;
 
-        min::run_all_test_functions<double>(8, [&] (const auto& function)
+        math::run_all_test_functions<double>(8, [&] (const auto& function)
         {
                 check_function(function, gstats);
         });
@@ -122,20 +122,20 @@ int main(int, char* [])
         // show per-optimizer statistics
         const auto optimizers =
         {
-                min::batch_optimizer::GD,
-                min::batch_optimizer::CGD_CD,
-                min::batch_optimizer::CGD_DY,
-                min::batch_optimizer::CGD_FR,
-                min::batch_optimizer::CGD_HS,
-                min::batch_optimizer::CGD_LS,
-                min::batch_optimizer::CGD_DYCD,
-                min::batch_optimizer::CGD_DYHS,
-                min::batch_optimizer::CGD_PRP,
-                min::batch_optimizer::CGD_N,
-                min::batch_optimizer::LBFGS
+                math::batch_optimizer::GD,
+                math::batch_optimizer::CGD_CD,
+                math::batch_optimizer::CGD_DY,
+                math::batch_optimizer::CGD_FR,
+                math::batch_optimizer::CGD_HS,
+                math::batch_optimizer::CGD_LS,
+                math::batch_optimizer::CGD_DYCD,
+                math::batch_optimizer::CGD_DYHS,
+                math::batch_optimizer::CGD_PRP,
+                math::batch_optimizer::CGD_N,
+                math::batch_optimizer::LBFGS
         };
 
-        for (min::batch_optimizer optimizer : optimizers)
+        for (math::batch_optimizer optimizer : optimizers)
         {
                 const string_t name = text::to_string(optimizer) + "[";
 

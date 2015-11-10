@@ -2,9 +2,9 @@
 #include "sampler.h"
 #include "util/timer.h"
 #include "util/logger.h"
-#include "min/batch.hpp"
 #include "accumulator.h"
-#include "min/tune_fixed.hpp"
+#include "math/batch.hpp"
+#include "math/tune_fixed.hpp"
 #include "text/to_string.hpp"
 
 namespace cortex
@@ -13,7 +13,7 @@ namespace cortex
         {        
                 opt_state_t train_batch(
                         trainer_data_t& data,
-                        min::batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
+                        math::batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
                         timer_t& timer, trainer_result_t& result, bool verbose)
                 {
                         size_t iteration = 0;
@@ -55,7 +55,7 @@ namespace cortex
                         };
 
                         // assembly optimization problem & optimize the model
-                        return min::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
+                        return math::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
                                              data.m_x0, optimizer, iterations, epsilon);
                 }
         }
@@ -63,7 +63,7 @@ namespace cortex
         trainer_result_t batch_train(
                 const model_t& model, const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
                 const loss_t& loss, const string_t& criterion, 
-                min::batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
+                math::batch_optimizer optimizer, size_t iterations, scalar_t epsilon,
                 bool verbose)
         {
                 vector_t x0;
@@ -90,7 +90,7 @@ namespace cortex
 
                 if (data.m_lacc.can_regularize())
                 {
-                        return std::get<0>(min::tune_fixed(op, cortex::tunable_lambdas()));
+                        return std::get<0>(math::tune_fixed(op, cortex::tunable_lambdas()));
                 }
                 else
                 {

@@ -45,7 +45,7 @@ namespace cortex
                 const size_t iterations = math::clamp(text::from_params<size_t>(configuration(), "iters", 1024), 4, 4096);
                 const scalar_t epsilon = math::clamp(text::from_params<scalar_t>(configuration(), "eps", 1e-4), 1e-8, 1e-3);
 
-                const min::batch_optimizer optimizer = text::from_string<min::batch_optimizer>
+                const math::batch_optimizer optimizer = text::from_string<math::batch_optimizer>
                         (text::from_params<string_t>(configuration(), "opt", "lbfgs"));
 
                 // train the model

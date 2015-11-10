@@ -2,12 +2,12 @@
 #include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
-#include "min/tune_stoch.hpp"
+#include "math/tune_stoch.hpp"
 #include "cortex/optimizer.h"
 #include "cortex/util/table.h"
 #include "cortex/util/logger.h"
 #include "text/from_string.hpp"
-#include "min/test/run_all.hpp"
+#include "math/funcs/run_all.hpp"
 #include "benchmark_optimizers.h"
 #include <map>
 #include <tuple>
@@ -20,11 +20,11 @@ namespace
         <
                 typename tscalar,
                 typename tostats,
-                typename tsize = typename min::function_t<tscalar>::tsize,
-                typename tvector = typename min::function_t<tscalar>::tvector,
-                typename tproblem = typename min::function_t<tscalar>::tproblem
+                typename tsize = typename math::function_t<tscalar>::tsize,
+                typename tvector = typename math::function_t<tscalar>::tvector,
+                typename tproblem = typename math::function_t<tscalar>::tproblem
         >
-        void check_function(const min::function_t<tscalar>& function, tostats& gstats)
+        void check_function(const math::function_t<tscalar>& function, tostats& gstats)
         {
                 const auto epochs = size_t(128);
                 const auto epoch_size = size_t(32);
@@ -45,13 +45,13 @@ namespace
                 // optimizers to try
                 const auto optimizers =
                 {
-                        min::stoch_optimizer::SG,
-                        min::stoch_optimizer::SGA,
-                        min::stoch_optimizer::SIA,
-                        min::stoch_optimizer::AG,
-                        min::stoch_optimizer::AGGR,
-                        min::stoch_optimizer::ADAGRAD,
-                        min::stoch_optimizer::ADADELTA
+                        math::stoch_optimizer::SG,
+                        math::stoch_optimizer::SGA,
+                        math::stoch_optimizer::SIA,
+                        math::stoch_optimizer::AG,
+                        math::stoch_optimizer::AGGR,
+                        math::stoch_optimizer::ADAGRAD,
+                        math::stoch_optimizer::ADADELTA
                 };
 
                 // per-problem statistics
@@ -63,10 +63,10 @@ namespace
                         const auto op = [&] (const tproblem& problem, const tvector& x0)
                         {
                                 tscalar alpha, decay;
-                                min::tune_stochastic(
+                                math::tune_stochastic(
                                         problem, x0, optimizer, epoch_size, alpha, decay);
 
-                                return  min::minimize(
+                                return  math::minimize(
                                         problem, nullptr, x0, optimizer, epochs, epoch_size, alpha, decay);
                         };
 
@@ -87,7 +87,7 @@ int main(int, char* [])
 
         std::map<string_t, benchmark::optimizer_stat_t> gstats;
 
-        min::run_all_test_functions<double>(8, [&] (const auto& function)
+        math::run_all_test_functions<double>(8, [&] (const auto& function)
         {
                 check_function(function, gstats);
         });

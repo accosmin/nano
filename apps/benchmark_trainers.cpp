@@ -88,35 +88,35 @@ namespace
                 // batch optimizers
                 const auto batch_optimizers =
                 {
-                        min::batch_optimizer::GD,
-                        min::batch_optimizer::CGD,
-                        min::batch_optimizer::LBFGS
+                        math::batch_optimizer::GD,
+                        math::batch_optimizer::CGD,
+                        math::batch_optimizer::LBFGS
                 };
 
                 // minibatch optimizers
                 const auto minibatch_optimizers =
                 {
-                        min::batch_optimizer::GD,
-                        min::batch_optimizer::CGD,
-                        min::batch_optimizer::LBFGS
+                        math::batch_optimizer::GD,
+                        math::batch_optimizer::CGD,
+                        math::batch_optimizer::LBFGS
                 };
 
                 // stochastic optimizers
                 const auto stoch_optimizers =
                 {
-                        min::stoch_optimizer::SG,
-                        min::stoch_optimizer::SGA,
-                        min::stoch_optimizer::SIA,
-                        min::stoch_optimizer::AG,
-                        min::stoch_optimizer::AGGR,
-                        min::stoch_optimizer::ADAGRAD,
-                        min::stoch_optimizer::ADADELTA
+                        math::stoch_optimizer::SG,
+                        math::stoch_optimizer::SGA,
+                        math::stoch_optimizer::SIA,
+                        math::stoch_optimizer::AG,
+                        math::stoch_optimizer::AGGR,
+                        math::stoch_optimizer::ADAGRAD,
+                        math::stoch_optimizer::ADADELTA
                 };
 
                 const string_t basename = "[" + text::to_string(criterion) + "] ";
 
                 // run optimizers and collect results
-                for (min::batch_optimizer optimizer : batch_optimizers)
+                for (math::batch_optimizer optimizer : batch_optimizers)
                 {
                         test_optimizer(model, basename + "batch-" + text::to_string(optimizer), table, x0s, [&] ()
                         {
@@ -126,7 +126,7 @@ namespace
                         });
                 }
 
-                for (min::batch_optimizer optimizer : minibatch_optimizers)
+                for (math::batch_optimizer optimizer : minibatch_optimizers)
                 {
                         test_optimizer(model, basename + "minibatch-" + text::to_string(optimizer), table, x0s, [&] ()
                         {
@@ -136,7 +136,7 @@ namespace
                         });
                 }
 
-                for (min::stoch_optimizer optimizer : stoch_optimizers)
+                for (math::stoch_optimizer optimizer : stoch_optimizers)
                 {
                         test_optimizer(model, basename + "stochastic-" + text::to_string(optimizer), table, x0s, [&] ()
                         {

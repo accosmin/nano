@@ -4,7 +4,7 @@
 #include "optimizer.h"
 #include "util/timer.h"
 #include "util/logger.h"
-#include "min/batch.hpp"
+#include "math/batch.hpp"
 #include "math/random.hpp"
 #include "tensor/random.hpp"
 
@@ -58,14 +58,14 @@ namespace cortex
                 };
 
                 // assembly optimization problem & optimize the input
-                const min::batch_optimizer optimizer = min::batch_optimizer::LBFGS;
+                const math::batch_optimizer optimizer = math::batch_optimizer::LBFGS;
                 const size_t iterations = 256;
                 const scalar_t epsilon = 1e-6;
 
                 tensor_t input(model.idims(), model.irows(), model.icols());
                 tensor::set_random(input, math::random_t<scalar_t>(0.0, 1.0));
 
-                const opt_state_t result = min::minimize(
+                const opt_state_t result = math::minimize(
                         opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
                         input.vector(), optimizer, iterations, epsilon);
 

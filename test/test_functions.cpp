@@ -4,16 +4,16 @@
 #include <boost/test/unit_test.hpp>
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
-#include "min/test/run_all.hpp"
+#include "math/funcs/run_all.hpp"
 
 namespace test
 {
         template
         <
                 typename tscalar,
-                typename tvector = typename min::function_t<tscalar>::tvector
+                typename tvector = typename math::function_t<tscalar>::tvector
         >
-        void test_function(const min::function_t<tscalar>& function)
+        void test_function(const math::function_t<tscalar>& function)
         {
                 const size_t trials = 1024;
 
@@ -42,7 +42,7 @@ namespace test
         template <typename tscalar>
         void test_functions()
         {
-                min::run_all_test_functions<tscalar>(8, [] (const auto& function)
+                math::run_all_test_functions<tscalar>(8, [] (const auto& function)
                 {
                         test_function(function);
                 });
