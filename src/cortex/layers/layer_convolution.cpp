@@ -69,16 +69,16 @@ namespace cortex
 
         scalar_t* conv_layer_t::save_params(scalar_t* params) const
         {
-                params = tensor::save(m_kdata, params);
-                params = tensor::save(m_bdata, params);
+                params = tensor::to_array(m_kdata, params);
+                params = tensor::to_array(m_bdata, params);
 
                 return params;
         }
 
         const scalar_t* conv_layer_t::load_params(const scalar_t* params)
         {
-                params = tensor::load(m_kdata, params);
-                params = tensor::load(m_bdata, params);
+                params = tensor::from_array(m_kdata, params);
+                params = tensor::from_array(m_bdata, params);
 
                 return params;
         }

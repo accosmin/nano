@@ -3,8 +3,6 @@
 #include "string.h"
 #include "vision/image.h"
 #include "util/manager.hpp"
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/archive/binary_oarchive.hpp>
 
 namespace cortex
 {
@@ -116,10 +114,6 @@ namespace cortex
                 ///
                 tensor_t make_input(const image_t& image, coord_t x, coord_t y) const;
                 tensor_t make_input(const image_t& image, const rect_t& region) const;
-
-                // save/load from file
-                virtual bool save(boost::archive::binary_oarchive& oa) const = 0;
-                virtual bool load(boost::archive::binary_iarchive& ia) = 0;
 
                 // resize to new inputs/outputs, returns the number of parameters
                 virtual tensor_size_t resize(bool verbose) = 0;

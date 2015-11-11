@@ -166,31 +166,6 @@ namespace cortex
                 }
         }
 
-        bool forward_network_t::save(boost::archive::binary_oarchive& oa) const
-        {
-                oa << m_configuration;
-
-                vector_t params;
-                save_params(params);
-
-                oa << params;
-
-                return true;
-        }
-
-        bool forward_network_t::load(boost::archive::binary_iarchive& ia)
-        {
-                ia >> m_configuration;
-                resize(true);
-
-                vector_t params;
-                ia >> params;
-
-                load_params(params);
-
-                return true;
-        }
-
         tensor_size_t forward_network_t::resize(bool verbose)
         {
                 tensor_t input(idims(), irows(), icols());

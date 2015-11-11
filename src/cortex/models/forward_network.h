@@ -67,10 +67,6 @@ namespace cortex
 
         protected:
 
-                // save/load from file
-                virtual bool save(boost::archive::binary_oarchive& oa) const override;
-                virtual bool load(boost::archive::binary_iarchive& ia) override;
-
                 // resize to new inputs/outputs, returns the number of parameters
                 virtual tensor_size_t resize(bool verbose) override;
 

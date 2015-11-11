@@ -1,6 +1,8 @@
 #include "model.h"
 #include "task.h"
 #include "util/logger.h"
+#include "text/to_string.hpp"
+#include "text/from_string.hpp"
 #include <fstream>
 
 namespace cortex
@@ -21,28 +23,41 @@ namespace cortex
 
         bool model_t::save(const string_t& path) const
         {
-                std::ofstream os(path, std::ios::binary);
+                std::ofstream os(path, std::ios::binary | std::ios::trunc);
 
-                boost::archive::binary_oarchive oa(os);
-                oa << m_rows;
-                oa << m_cols;
-                oa << m_outputs;
-                oa << m_color;
+                os << m_rows;
+                os << m_cols;
+                os << m_outputs;
+                os << text::to_string(m_color);
+                os << m_configuration;
 
-                return save(oa) && os.good();
+                vector_t params(psize());
+                save_params(params);
+                os << params;
+
+                return os.good();
         }
 
         bool model_t::load(const string_t& path)
         {
                 std::ifstream is(path, std::ios::binary);
 
-                boost::archive::binary_iarchive ia(is);
-                ia >> m_rows;
-                ia >> m_cols;
-                ia >> m_outputs;
-                ia >> m_color;
+                is >> m_rows;
+                is >> m_cols;
+                is >> m_outputs;
+                { string_t str; is >> str; m_color = text::from_string<color_mode>(str); }
+                is >> m_configuration;
+                resize(true);
 
-                return load(ia) && is.good();
+                vector_t params(psize());
+                for (tensor_index_t i = 0; i < params.size(); i ++)
+                {
+                        is >> params(i);
+                }
+
+                load_params(params);
+
+                return is.eof();
         }
 
         const tensor_t& model_t::output(const image_t& image, const rect_t& region) const
