@@ -1,11 +1,11 @@
 #include "version.h"
 #include "text/to_string.hpp"
 
-cortex::string_t cortex::version()
+std::string cortex::version()
 {
-        return  text::to_string(NANOCV_MAJOR_VERSION) + "." +
-                text::to_string(NANOCV_MINOR_VERSION) + "." +
-                text::to_string(NANOCV_REVISION_VERSION);
+        return  text::to_string(CORTEX_MAJOR_VERSION) + "." +
+                text::to_string(CORTEX_MINOR_VERSION) + "." +
+                text::to_string(CORTEX_REVISION_VERSION);
 }
 
 

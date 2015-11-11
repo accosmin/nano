@@ -1,7 +1,6 @@
 #pragma once
 
 #include "decay.hpp"
-#include "math/params.hpp"
 #include <limits>
 
 namespace math
@@ -13,13 +12,12 @@ namespace math
         <
                 typename tproblem                       ///< optimization problem
         >
-        struct stoch_params_t : public params_t<tproblem>
+        struct stoch_params_t
         {
-                using param_t = stoch_params_t<tproblem>;
-                using tstate = typename param_t::tstate;
-                using tscalar = typename param_t::tscalar;
-                using tvector = typename param_t::tvector;
-                using topulog = typename param_t::topulog;
+                using tstate = typename tproblem::tstate;
+                using tscalar = typename tproblem::tscalar;
+                using tvector = typename tproblem::tvector;
+                using topulog = typename tproblem::topulog;
 
                 ///
                 /// \brief constructor
@@ -28,8 +26,8 @@ namespace math
                                 std::size_t epoch_size,
                                 tscalar alpha0,
                                 tscalar decay,
-                                const topulog& u = topulog())
-                        :       params_t<tproblem>(u),
+                                const topulog& ulog = topulog())
+                        :       m_ulog(ulog),
                                 m_epochs(epochs),
                                 m_epoch_size(epoch_size),
                                 m_alpha0(alpha0),
@@ -39,10 +37,11 @@ namespace math
                 }
 
                 ///
-                /// \brief destructor
+                /// \brief log the current optimization state
                 ///
-                virtual ~stoch_params_t()
+                bool ulog(const tstate& state) const
                 {
+                        return m_ulog ? m_ulog(state) : true;
                 }
 
                 ///
@@ -62,6 +61,7 @@ namespace math
                 }
 
                 // attributes
+                topulog         m_ulog;         ///< update log: (the current_state_after_each_epoch)
                 std::size_t     m_epochs;               ///< number of epochs
                 std::size_t     m_epoch_size;           ///< epoch size in number of iterations
                 tscalar         m_alpha0;               ///< initial learning rate

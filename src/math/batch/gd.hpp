@@ -16,7 +16,6 @@ namespace math
         struct batch_gd_t
         {
                 using param_t = batch_params_t<tproblem>;
-                using tsize = typename param_t::tsize;
                 using tstate = typename param_t::tstate;
                 using tscalar = typename param_t::tscalar;
                 using tvector = typename param_t::tvector;

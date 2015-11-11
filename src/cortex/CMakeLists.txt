@@ -59,6 +59,9 @@ add_library(cortex SHARED ${libcortex_sources})
 target_link_libraries(cortex
         ${IL_LIBRARIES}
         ${Boost_SERIALIZATION_LIBRARY}
+        math
+        tensor
+        text
         file
         thread)
 

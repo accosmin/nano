@@ -1,6 +1,5 @@
 #pragma once
 
-#include "math/params.hpp"
 #include "math/lsearch_types.h"
 #include <cstddef>
 
@@ -13,7 +12,7 @@ namespace math
         <
                 typename tproblem                       ///< optimization problem
         >
-        struct batch_params_t : public params_t<tproblem>
+        struct batch_params_t
         {
                 using tstate = typename tproblem::tstate;
                 using tscalar = typename tproblem::tscalar;
@@ -27,8 +26,8 @@ namespace math
                                 tscalar epsilon,
                                 ls_initializer lsinit,
                                 ls_strategy lsstrat,
-                                const topulog& u = topulog())
-                        :       params_t<tproblem>(u),
+                                const topulog& ulog = topulog())
+                        :       m_ulog(ulog),
                                 m_max_iterations(max_iterations),
                                 m_epsilon(epsilon),
                                 m_ls_initializer(lsinit),
@@ -37,16 +36,17 @@ namespace math
                 }
 
                 ///
-                /// \brief destructor
+                /// \brief log the current optimization state
                 ///
-                virtual ~batch_params_t()
+                bool ulog(const tstate& state) const
                 {
+                        return m_ulog ? m_ulog(state) : true;
                 }
 
                 // attributes
+                topulog         m_ulog;                 ///< update log: (the current_state_after_each_epoch)
                 std::size_t     m_max_iterations;       ///< maximum number of iterations
                 tscalar         m_epsilon;              ///< convergence precision
-
                 ls_initializer  m_ls_initializer;       ///< line-search step length initialization strategy
                 ls_strategy     m_ls_strategy;          ///< line-search step length selection strategy
         };

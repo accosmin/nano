@@ -18,7 +18,6 @@ set(libmath_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/batch.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/batch_types.h
         ${CMAKE_CURRENT_SOURCE_DIR}/lsearch_types.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/params.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/problem.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/state.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/stoch.hpp

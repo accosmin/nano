@@ -1,16 +1,16 @@
 #pragma once
 
 #include "arch.h"
-#include "string.h"
+#include <string>
 
-#define NANOCV_MAJOR_VERSION            0
-#define NANOCV_MINOR_VERSION            2
-#define NANOCV_REVISION_VERSION         0
+#define CORTEX_MAJOR_VERSION            0
+#define CORTEX_MINOR_VERSION            3
+#define CORTEX_REVISION_VERSION         0
 
 namespace cortex
 {
         ///
         /// \brief current version
         ///
-        NANOCV_PUBLIC string_t version();
+        NANOCV_PUBLIC std::string version();
 }
