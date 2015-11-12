@@ -1,4 +1,4 @@
-list(APPEND libmin_sources
+list(APPEND libmath_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/function_3hump_camel.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/function_beale.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/function_bohachevsky.hpp
@@ -22,6 +22,6 @@ list(APPEND libmin_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/run_all.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/util.hpp)
 
-set(libmin_sources "${libmin_sources}" PARENT_SCOPE)
+set(libmath_sources "${libmath_sources}" PARENT_SCOPE)
 
                 

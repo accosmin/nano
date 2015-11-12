@@ -1,4 +1,4 @@
-list(APPEND libmin_sources
+list(APPEND libmath_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/cgd.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cgd_steps.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gd.hpp
@@ -14,4 +14,4 @@ list(APPEND libmin_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/ls_strategy.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/params.hpp)
 
-set(libmin_sources "${libmin_sources}" PARENT_SCOPE)
+set(libmath_sources "${libmath_sources}" PARENT_SCOPE)

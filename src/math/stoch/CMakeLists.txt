@@ -1,4 +1,4 @@
-list(APPEND libmin_sources
+list(APPEND libmath_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/adadelta.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/adagrad.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ag.hpp
@@ -10,7 +10,7 @@ list(APPEND libmin_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/sg.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/sia.hpp)
 
-set(libmin_sources "${libmin_sources}" PARENT_SCOPE)
+set(libmath_sources "${libmath_sources}" PARENT_SCOPE)
 
 
                 
