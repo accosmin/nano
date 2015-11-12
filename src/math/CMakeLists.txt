@@ -32,8 +32,6 @@ add_subdirectory(stoch)
 add_subdirectory(funcs)
 
 add_library(math INTERFACE)
-target_include_directories(math INTERFACE
-        $<BUILD_INTERFACE:${libmath_sources}>)
 
 # install library
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
