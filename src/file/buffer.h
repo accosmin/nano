@@ -45,4 +45,14 @@ namespace file
         /// \brief load buffer from file
         ///
         NANOCV_PUBLIC bool load_buffer(const std::string& path, buffer_t& buffer);
+
+        ///
+        /// \brief save string to binary file
+        ///
+        NANOCV_PUBLIC bool save_string(std::ostream&, const std::string& str);
+
+        ///
+        /// \brief load string from binary file
+        ///
+        NANOCV_PUBLIC std::string load_string(std::istream&);
 }

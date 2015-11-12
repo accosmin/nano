@@ -1,6 +1,7 @@
 #include "model.h"
 #include "task.h"
 #include "util/logger.h"
+#include "file/buffer.h"
 #include "text/to_string.hpp"
 #include "text/from_string.hpp"
 #include <fstream>
@@ -25,14 +26,18 @@ namespace cortex
         {
                 std::ofstream os(path, std::ios::binary | std::ios::trunc);
 
+                // save configuration
                 os << m_rows;
                 os << m_cols;
                 os << m_outputs;
-                os << text::to_string(m_color);
-                os << m_configuration;
+                file::save_string(os, text::to_string(m_color));
+                file::save_string(os, m_configuration);
 
+                // save parameters
                 vector_t params(psize());
                 save_params(params);
+
+                os << params.size();
                 os << params;
 
                 return os.good();
@@ -42,22 +47,32 @@ namespace cortex
         {
                 std::ifstream is(path, std::ios::binary);
 
+                // read configuration
                 is >> m_rows;
                 is >> m_cols;
                 is >> m_outputs;
-                { string_t str; is >> str; m_color = text::from_string<color_mode>(str); }
-                is >> m_configuration;
+                m_color = text::from_string<color_mode>(file::load_string(is));
+                m_configuration = file::load_string(is);
+
+                // apply configuration
                 resize(true);
 
-                vector_t params(psize());
+                // read parameters
+                size_t psize = 0;
+                is >> psize;
+                if (psize != this->psize())
+                {
+                        return false;
+                }
+
+                vector_t params(psize);
                 for (tensor_index_t i = 0; i < params.size(); i ++)
                 {
                         is >> params(i);
                 }
 
-                load_params(params);
-
-                return is.eof();
+                // apply parameters
+                return load_params(params) && is.eof();
         }
 
         const tensor_t& model_t::output(const image_t& image, const rect_t& region) const
