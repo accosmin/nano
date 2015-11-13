@@ -2,8 +2,8 @@
 #include "archive.h"
 #include "math/cast.hpp"
 #include "file/archive.h"
-#include "file/mstream.h"
 #include "cortex/class.h"
+#include "file/imstream.h"
 #include "text/to_string.hpp"
 #include "cortex/util/logger.h"
 
@@ -48,7 +48,7 @@ namespace cortex
                 // load images
                 const auto iop = [&] (const string_t&, const file::buffer_t& data)
                 {
-                        file::mstream_t stream(data.data(), data.size());
+                        file::imstream_t stream(data.data(), data.size());
 
                         stream.read(buffer.data(), 16);
                         while (stream.read(buffer.data(), buffer_size))
@@ -73,7 +73,7 @@ namespace cortex
                 // load ground truth
                 const auto gop = [&] (const string_t&, const file::buffer_t& data)
                 {
-                        file::mstream_t stream(data.data(), data.size());
+                        file::imstream_t stream(data.data(), data.size());
 
                         stream.read(buffer.data(), 8);
                         while (stream.read(label, 1) && stream.gcount() == 1)

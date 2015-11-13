@@ -1,5 +1,5 @@
 #include "buffer.h"
-#include "mstream.h"
+#include "imstream.h"
 #include <limits>
 #include <fstream>
 
@@ -45,7 +45,7 @@ namespace file
                 return impl_load_buffer_from_stream(istream, max_streamsize(), buffer);
         }
 
-        bool load_buffer_from_stream(mstream_t& istream, buffer_t& buffer)
+        bool load_buffer_from_stream(imstream_t& istream, buffer_t& buffer)
         {
                 return impl_load_buffer_from_stream(istream, istream.size(), buffer);
         }

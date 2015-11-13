@@ -10,7 +10,7 @@ namespace file
 {
         using buffer_t = std::vector<char>;
 
-        class mstream_t;
+        class imstream_t;
 
         ///
         /// \brief allocates a buffer of the given size
@@ -34,7 +34,7 @@ namespace file
         ///
         NANOCV_PUBLIC bool load_buffer_from_stream(std::istream& istream, std::streamsize num_bytes, buffer_t&);
         NANOCV_PUBLIC bool load_buffer_from_stream(std::istream& istream, buffer_t&);
-        NANOCV_PUBLIC bool load_buffer_from_stream(mstream_t& istream, buffer_t&);
+        NANOCV_PUBLIC bool load_buffer_from_stream(imstream_t& istream, buffer_t&);
 
         ///
         /// \brief save buffer to file

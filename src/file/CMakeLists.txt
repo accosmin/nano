@@ -10,8 +10,8 @@ set(libfile_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/gzip.h
         ${CMAKE_CURRENT_SOURCE_DIR}/mat5.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/mat5.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/mstream.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/mstream.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/imstream.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/imstream.h
         ${CMAKE_CURRENT_SOURCE_DIR}/ibstream.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/ibstream.h
         ${CMAKE_CURRENT_SOURCE_DIR}/obstream.cpp

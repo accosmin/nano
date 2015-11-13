@@ -1,4 +1,5 @@
 #include "mat5.h"
+#include "imstream.h"
 #include <fstream>
 
 namespace file
@@ -123,7 +124,7 @@ namespace file
                 return ostream;
         }
 
-        bool mat5_array_t::load_header(mstream_t& istream)
+        bool mat5_array_t::load_header(imstream_t& istream)
         {
                 mat5_section_t header;
                 return  header.load(istream) &&
@@ -131,7 +132,7 @@ namespace file
                         header.end() == istream.size();
         }
 
-        bool mat5_array_t::load_body(mstream_t& istream)
+        bool mat5_array_t::load_body(imstream_t& istream)
         {
                 // read & check sections
                 m_sections.clear();

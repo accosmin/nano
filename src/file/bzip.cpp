@@ -1,7 +1,7 @@
 #include "bzip.h"
 #include <bzlib.h>
 #include <fstream>
-#include "mstream.h"
+#include "imstream.h"
 
 namespace file
 {
@@ -78,7 +78,7 @@ namespace file
                 return uncompress_bzip2(istream, max_streamsize(), buffer);
         }
 
-        bool uncompress_bzip2(mstream_t& istream, buffer_t& buffer)
+        bool uncompress_bzip2(imstream_t& istream, buffer_t& buffer)
         {
                 return io_uncompress_bzip2(istream, istream.size(), buffer);
         }

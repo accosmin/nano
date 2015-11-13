@@ -2,6 +2,7 @@
 #include "file/mat5.h"
 #include "file/gzip.h"
 #include "cortex/class.h"
+#include "file/imstream.h"
 #include "text/to_string.hpp"
 #include "cortex/util/logger.h"
 #include "cortex/vision/color.h"
@@ -97,8 +98,8 @@ namespace cortex
 
         size_t svhn_task_t::decode(const file::buffer_t& idata, const file::buffer_t& ldata, const protocol p)
         {
-                file::mstream_t istream(idata.data(), idata.size());
-                file::mstream_t lstream(ldata.data(), ldata.size());
+                file::imstream_t istream(idata.data(), idata.size());
+                file::imstream_t lstream(ldata.data(), ldata.size());
 
                 // decode image & label arrays
                 file::mat5_array_t iarray, larray;

@@ -3,7 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include "file/buffer.h"
-#include "file/mstream.h"
+#include "file/imstream.h"
 #include "math/random.hpp"
 #include <cstdio>
 
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(test_buffer)
 
                 // check buffer loading from mstream
                 {
-                        mstream_t stream(ref_buffer.data(), size);
+                        imstream_t stream(ref_buffer.data(), size);
 
                         BOOST_CHECK_EQUAL(stream.tellg(), std::streamsize(0));
                         BOOST_CHECK_EQUAL(stream.size(), static_cast<std::streamsize>(size));

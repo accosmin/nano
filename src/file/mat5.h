@@ -1,12 +1,16 @@
 #pragma once
 
-#include "mstream.h"
+#include <ios>
+#include "arch.h"
 #include <vector>
+#include <string>
 #include <cstdint>
 #include <functional>
 
 namespace file
 {
+        class imstream_t;
+
         ///
         /// \brief data type
         ///
@@ -94,12 +98,12 @@ namespace file
                 ///
                 /// \brief load header section from the input stream
                 ///
-                bool load_header(mstream_t& istream);
+                bool load_header(imstream_t& istream);
 
                 ///
                 /// \brief load body sections from the input stream
                 ///
-                bool load_body(mstream_t& istream);
+                bool load_body(imstream_t& istream);
 
                 // attributes
                 std::vector<std::size_t>        m_dims;         ///< dimensions of the array

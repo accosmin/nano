@@ -1,8 +1,8 @@
 #include "archive.h"
 #include "task_norb.h"
-#include "file/archive.h"
-#include "file/mstream.h"
 #include "cortex/class.h"
+#include "file/archive.h"
+#include "file/imstream.h"
 #include "cortex/util/logger.h"
 
 namespace cortex
@@ -44,7 +44,7 @@ namespace cortex
                         load(dir + "/norb-5x01235x9x18x6x2x108x108-testing-02", protocol::test, n_test_samples);
         }
 
-        static bool read_header(file::mstream_t& stream, int32_t& magic, std::vector<int32_t>& dims)
+        static bool read_header(file::imstream_t& stream, int32_t& magic, std::vector<int32_t>& dims)
         {
                 // read data type & #dimensions
                 int32_t ndims;
@@ -101,7 +101,7 @@ namespace cortex
                 // load images
                 const auto iop = [&] (const string_t&, const file::buffer_t& data)
                 {
-                        file::mstream_t stream(data.data(), data.size());
+                        file::imstream_t stream(data.data(), data.size());
                         
                         // read header
                         int32_t magic;
@@ -156,7 +156,7 @@ namespace cortex
                 {
                         NANOCV_UNUSED1(filename);
 
-                        file::mstream_t stream(data.data(), data.size());
+                        file::imstream_t stream(data.data(), data.size());
                         
                         // read header
                         int32_t magic;

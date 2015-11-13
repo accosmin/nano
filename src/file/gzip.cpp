@@ -1,7 +1,7 @@
 #include "gzip.h"
 #include <zlib.h>
 #include <fstream>
-#include "mstream.h"
+#include "imstream.h"
 
 namespace file
 {
@@ -78,7 +78,7 @@ namespace file
                 return uncompress_gzip(istream, max_streamsize(), buffer);
         }
 
-        bool uncompress_gzip(mstream_t& istream, buffer_t& buffer)
+        bool uncompress_gzip(imstream_t& istream, buffer_t& buffer)
         {
                 return io_uncompress_gzip(istream, istream.size(), buffer);
         }

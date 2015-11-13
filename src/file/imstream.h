@@ -10,7 +10,7 @@ namespace file
         ///
         /// \brief map the std::istream's interface over a fixed-size in-memory buffer
         ///
-        class NANOCV_PUBLIC mstream_t
+        class NANOCV_PUBLIC imstream_t
         {
         public:
 
@@ -21,7 +21,7 @@ namespace file
                 <
                         typename tsize
                 >
-                mstream_t(const char* data, const tsize size)
+                imstream_t(const char* data, const tsize size)
                         :       m_data(data),
                                 m_size(static_cast<std::streamsize>(size)),
                                 m_tellg(0),
@@ -32,13 +32,13 @@ namespace file
                 ///
                 /// \brief disable copying
                 ///
-                mstream_t(const mstream_t&) = delete;
-                mstream_t& operator=(const mstream_t&) = delete;
+                imstream_t(const imstream_t&) = delete;
+                imstream_t& operator=(const imstream_t&) = delete;
 
                 ///
                 /// \brief read given number of bytes
                 ///
-                mstream_t& read(char* bytes, std::streamsize max_num_bytes);
+                imstream_t& read(char* bytes, std::streamsize max_num_bytes);
 
                 ///
                 /// \brief read POD structure
@@ -47,7 +47,7 @@ namespace file
                 <
                         typename tstruct
                 >
-                mstream_t& read(tstruct& pod)
+                imstream_t& read(tstruct& pod)
                 {
                         return read(reinterpret_cast<char*>(&pod), sizeof(pod));
                 }
@@ -55,12 +55,12 @@ namespace file
                 ///
                 /// \brief read next line
                 ///
-                mstream_t& getline(std::string& line);
+                imstream_t& getline(std::string& line);
 
                 ///
                 /// \brief move to the given position in the buffer
                 ///
-                mstream_t& seekg(std::streampos pos);
+                imstream_t& seekg(std::streampos pos);
 
                 ///
                 /// \brief number of bytes read at the last operation

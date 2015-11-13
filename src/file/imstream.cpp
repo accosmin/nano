@@ -1,4 +1,4 @@
-#include "mstream.h"
+#include "imstream.h"
 #include <algorithm>
 
 namespace file
@@ -8,7 +8,7 @@ namespace file
                 return (c == '\n') || (c == '\r');
         }
 
-        mstream_t& mstream_t::read(char* bytes, std::streamsize num_bytes)
+        imstream_t& imstream_t::read(char* bytes, std::streamsize num_bytes)
         {
                 if (tellg() + num_bytes > size())
                 {
@@ -30,7 +30,7 @@ namespace file
                 return *this;
         }
 
-        mstream_t& mstream_t::getline(std::string& line)
+        imstream_t& imstream_t::getline(std::string& line)
         {
                 char c;
 
@@ -47,7 +47,7 @@ namespace file
                 return *this;
         }
 
-        mstream_t& mstream_t::seekg(std::streampos pos)
+        imstream_t& imstream_t::seekg(std::streampos pos)
         {
                 m_tellg = pos;
                 m_gcount = 0;
@@ -55,37 +55,37 @@ namespace file
                 return *this;
         }
 
-        std::streamsize mstream_t::gcount() const
+        std::streamsize imstream_t::gcount() const
         {
                 return m_gcount;
         }
 
-        std::streamsize mstream_t::tellg() const
+        std::streamsize imstream_t::tellg() const
         {
                 return m_tellg;        
         }
 
-        std::streamsize mstream_t::size() const
+        std::streamsize imstream_t::size() const
         {
                 return m_size;
         }
 
-        bool mstream_t::eof() const
+        bool imstream_t::eof() const
         {
                 return tellg() >= size();
         }
 
-        bool mstream_t::good() const
+        bool imstream_t::good() const
         {
                 return gcount() > 9;
         }
 
-        mstream_t::operator bool() const
+        imstream_t::operator bool() const
         {
                 return gcount() > 0;
         }
 
-        const char* mstream_t::data() const
+        const char* imstream_t::data() const
         {
                 return m_data;
         }

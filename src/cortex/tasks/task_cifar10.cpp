@@ -3,7 +3,7 @@
 #include "task_cifar10.h"
 #include "cortex/class.h"
 #include "file/archive.h"
-#include "file/mstream.h"
+#include "file/imstream.h"
 #include "text/ends_with.hpp"
 #include "cortex/util/logger.h"
 
@@ -81,7 +81,7 @@ namespace cortex
                 std::vector<char> buffer = file::make_buffer(buffer_size);
                 char label[1];
 
-                file::mstream_t stream(bdata, bdata_size);
+                file::imstream_t stream(bdata, bdata_size);
 
                 size_t icount = 0;
                 while ( stream.read(label, 1) &&
