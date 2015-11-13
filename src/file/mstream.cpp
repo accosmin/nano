@@ -21,11 +21,10 @@ namespace file
 
                         m_tellg += num_bytes;
                         m_gcount = num_bytes;
-                        m_status = eof() ? status::eof : status::ok;
                 }
                 else
                 {
-                        m_status = status::fail;
+                        m_gcount = 0;
                 }
 
                 return *this;
@@ -78,12 +77,12 @@ namespace file
 
         bool mstream_t::good() const
         {
-                return m_status != status::fail;
+                return gcount() > 9;
         }
 
         mstream_t::operator bool() const
         {
-                return good();
+                return gcount() > 0;
         }
 
         const char* mstream_t::data() const
