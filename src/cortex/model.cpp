@@ -1,7 +1,8 @@
 #include "model.h"
 #include "task.h"
 #include "util/logger.h"
-#include "file/buffer.h"
+#include "file/ibstream.h"
+#include "file/obstream.h"
 #include "text/to_string.hpp"
 #include "text/from_string.hpp"
 #include <fstream>
@@ -24,55 +25,56 @@ namespace cortex
 
         bool model_t::save(const string_t& path) const
         {
-                std::ofstream os(path, std::ios::binary | std::ios::trunc);
+                std::ofstream os(path, std::ios::binary | std::ios::out | std::ios::trunc);
+
+                file::obstream_t ob(os);
 
                 // save configuration
-                os << m_rows;
-                os << m_cols;
-                os << m_outputs;
-                file::save_string(os, text::to_string(m_color));
-                file::save_string(os, m_configuration);
+                ob.write(m_rows);
+                ob.write(m_cols);
+                ob.write(m_outputs);
+                ob.write(text::to_string(m_color));
+                ob.write(m_configuration);
 
                 // save parameters
                 vector_t params(psize());
                 save_params(params);
 
-                os << params.size();
-                os << params;
+                ob.write(psize());
+                ob.write(params.data(), psize());
 
                 return os.good();
         }
 
         bool model_t::load(const string_t& path)
         {
-                std::ifstream is(path, std::ios::binary);
+                std::ifstream is(path, std::ios::binary | std::ios::in);
+
+                file::ibstream_t ib(is);
 
                 // read configuration
-                is >> m_rows;
-                is >> m_cols;
-                is >> m_outputs;
-                m_color = text::from_string<color_mode>(file::load_string(is));
-                m_configuration = file::load_string(is);
+                ib.read(m_rows);
+                ib.read(m_cols);
+                ib.read(m_outputs);
+                { string_t str; ib.read(str); m_color = text::from_string<color_mode>(str); }
+                ib.read(m_configuration);
 
                 // apply configuration
                 resize(true);
 
                 // read parameters
-                size_t psize = 0;
-                is >> psize;
+                tensor_size_t psize = 0;
+                ib.read(psize);
                 if (psize != this->psize())
                 {
                         return false;
                 }
 
                 vector_t params(psize);
-                for (tensor_index_t i = 0; i < params.size(); i ++)
-                {
-                        is >> params(i);
-                }
+                ib.read(params.data(), psize);
 
                 // apply parameters
-                return load_params(params) && is.eof();
+                return load_params(params) && is;
         }
 
         const tensor_t& model_t::output(const image_t& image, const rect_t& region) const

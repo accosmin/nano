@@ -3,9 +3,6 @@
 #include <limits>
 #include <fstream>
 
-
-#include <iostream>
-
 namespace file
 {
         template
@@ -93,39 +90,5 @@ namespace file
                 }
 
                 return load_buffer_from_stream(stream, buffer);
-        }
-
-        bool save_string(std::ostream& ostream, const std::string& str)
-        {
-                std::cout << "save_string: size = " << str.size() << std::endl;
-
-                ostream << str.size();
-
-                for (std::size_t i = 0; i < str.size(); ++ i)
-                {
-                        ostream << str[i];
-                }
-
-                std::cout << "save_string: str = [" << str << "]" << std::endl;
-
-                return ostream.good();
-        }
-
-        std::string load_string(std::istream& istream)
-        {
-                std::string::size_type size;
-                istream >> size;
-
-                std::cout << "load_string: size = " << size << std::endl;
-
-                std::string str(size, ' ');
-                for (std::size_t i = 0; i < str.size(); ++ i)
-                {
-                        istream >> str[i];
-                }
-
-                std::cout << "load_string: str = [" << str << "]" << std::endl;
-
-                return str;
         }
 }
