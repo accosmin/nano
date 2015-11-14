@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <limits>
+#include <cassert>
 #include <algorithm>
 
 namespace math
@@ -87,26 +88,27 @@ namespace math
 
                 double avg() const
                 {
+                        assert(count() > 0);
                         return  static_cast<double>(sum()) /
-                                static_cast<double>(count());
-                }
-
-                double var() const
-                {
-                        return  var2() /
                                 static_cast<double>(count());
                 }
 
                 double var2() const
                 {
+                        assert(count() > 0);
                         return  static_cast<double>(m_sumsq) -
                                 static_cast<double>(m_sum * m_sum) / static_cast<double>(count());
                 }
 
+                double var() const
+                {
+                        assert(count() > 1);
+                        return var2() / static_cast<double>(count() - 1);
+                }
+
                 double stdev() const
                 {
-                        return  std::sqrt(var2() /
-                                static_cast<double>(count() - 1));
+                        return std::sqrt(var());
                 }
 
         private:
