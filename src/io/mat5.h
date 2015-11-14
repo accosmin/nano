@@ -7,7 +7,7 @@
 #include <cstdint>
 #include <functional>
 
-namespace file
+namespace io
 {
         class imstream_t;
 

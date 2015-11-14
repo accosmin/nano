@@ -2,7 +2,7 @@
 #include "imstream.h"
 #include <fstream>
 
-namespace file
+namespace io
 {
         using std::uint32_t;
 

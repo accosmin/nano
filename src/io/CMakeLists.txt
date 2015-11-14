@@ -1,5 +1,5 @@
 # build library
-set(libfile_sources
+set(libio_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/archive.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/archive.h
         ${CMAKE_CURRENT_SOURCE_DIR}/buffer.cpp
@@ -17,14 +17,14 @@ set(libfile_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/obstream.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/obstream.h)
 
-add_library(file SHARED ${libfile_sources})
-target_link_libraries(file
+add_library(io SHARED ${libio_sources})
+target_link_libraries(io
         ${ZLIB_LIBRARIES}
         ${BZIP2_LIBRARIES}
         ${LibArchive_LIBRARIES})
 
 # install library
-install(TARGETS file
+install(TARGETS io
         DESTINATION lib)
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}

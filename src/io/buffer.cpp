@@ -3,7 +3,7 @@
 #include <limits>
 #include <fstream>
 
-namespace file
+namespace io
 {
         template
         <
@@ -25,10 +25,7 @@ namespace file
                         num_bytes -= to_read;
 
                         istream.read(chunk, to_read);
-                        if (istream.good() || istream.eof())
-                        {
-                                buffer.insert(buffer.end(), chunk, chunk + istream.gcount());
-                        }
+                        buffer.insert(buffer.end(), chunk, chunk + istream.gcount());
                 }
 
                 // OK

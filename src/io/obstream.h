@@ -6,7 +6,7 @@
 #include <cstddef>
 #include <type_traits>
 
-namespace file
+namespace io
 {
         ///
         /// \brief wrapper over binary std::ostream

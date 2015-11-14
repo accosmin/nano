@@ -1,8 +1,8 @@
 #include "model.h"
 #include "task.h"
 #include "util/logger.h"
-#include "file/ibstream.h"
-#include "file/obstream.h"
+#include "io/ibstream.h"
+#include "io/obstream.h"
 #include "text/to_string.hpp"
 #include "text/from_string.hpp"
 #include <fstream>
@@ -27,7 +27,7 @@ namespace cortex
         {
                 std::ofstream os(path, std::ios::binary | std::ios::out | std::ios::trunc);
 
-                file::obstream_t ob(os);
+                io::obstream_t ob(os);
 
                 // save configuration
                 ob.write(m_rows);
@@ -50,7 +50,7 @@ namespace cortex
         {
                 std::ifstream is(path, std::ios::binary | std::ios::in);
 
-                file::ibstream_t ib(is);
+                io::ibstream_t ib(is);
 
                 // read configuration
                 ib.read(m_rows);

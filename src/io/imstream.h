@@ -5,7 +5,7 @@
 #include <string>
 #include <cstddef>
 
-namespace file
+namespace io
 {
         ///
         /// \brief map the std::istream's interface over a fixed-size in-memory buffer
@@ -25,7 +25,7 @@ namespace file
                         :       m_data(data),
                                 m_size(static_cast<std::streamsize>(size)),
                                 m_tellg(0),
-                                m_gcount(0)
+                                m_gcount(1)
                 {
                 }
 

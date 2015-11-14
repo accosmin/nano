@@ -20,7 +20,7 @@ Most notably the **math** module implements the following:
 
 ##### Libraries
 
-* **file** - I/O utilities, wrapper over LibArchive. `Dependencies: LibArchive, Zlib and BZip2.`
+* **io** - I/O utilities, wrappers over LibArchive and std::streams. `Dependencies: LibArchive, Zlib and BZip2.`
 * **thread** - thread pool, loop processing in parallel. `No dependencies.`
 
 

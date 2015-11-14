@@ -1,10 +1,10 @@
 #include "archive.h"
 #include "task_stl10.h"
+#include "io/archive.h"
 #include "math/cast.hpp"
-#include "file/archive.h"
+#include "io/imstream.h"
 #include "cortex/class.h"
 #include "text/split.hpp"
-#include "file/imstream.h"
 #include "text/ends_with.hpp"
 #include "cortex/util/logger.h"
 #include "text/from_string.hpp"
@@ -48,7 +48,7 @@ namespace cortex
 
                 clear_memory(n_test + n_train + n_unlabeled);
                 
-                const auto op = [&] (const string_t& filename, const file::buffer_t& data)
+                const auto op = [&] (const string_t& filename, const io::buffer_t& data)
                 {
                         if (text::iends_with(filename, train_ifile))
                         {
@@ -86,17 +86,17 @@ namespace cortex
                 
                 log_info() << "STL-10: loading file <" << bfile << "> ...";
 
-                return file::unarchive(bfile, op, error_op);
+                return io::unarchive(bfile, op, error_op);
         }
         
         bool stl10_task_t::load_ifile(const string_t& ifile, const char* bdata, size_t bdata_size, bool unlabeled, size_t count)
         {
                 log_info() << "STL-10: loading file <" << ifile << "> ...";
 
-                file::imstream_t stream(bdata, bdata_size);
+                io::imstream_t stream(bdata, bdata_size);
 
                 const auto buffer_size = irows() * icols() * 3;
-                std::vector<char> buffer = file::make_buffer(buffer_size);
+                std::vector<char> buffer = io::make_buffer(buffer_size);
 
                 size_t icount = 0;
                 
@@ -127,7 +127,7 @@ namespace cortex
         {
                 log_info() << "STL-10: loading file <" << gfile << "> ...";
 
-                file::imstream_t stream(bdata, bdata_size);
+                io::imstream_t stream(bdata, bdata_size);
 
                 char label;
 
@@ -163,7 +163,7 @@ namespace cortex
 
                 // NB: samples arranged line [n_test][n_train][n_unlabeled]
 
-                file::imstream_t stream(bdata, bdata_size);
+                io::imstream_t stream(bdata, bdata_size);
                 
                 const samples_t orig_samples = this->samples();
                 clear_samples(0);

@@ -1,5 +1,5 @@
 #include "rect.h"
-#include <iostream>
+#include <ostream>
 #include <algorithm>
 
 namespace cortex

@@ -2,7 +2,7 @@
 #include <vector>
 #include <istream>
 
-namespace file
+namespace io
 {
         ibstream_t::ibstream_t(std::istream& stream)
                 :       m_stream(stream)

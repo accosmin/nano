@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace file
+namespace io
 {
         using buffer_t = std::vector<char>;
 

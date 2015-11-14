@@ -4,7 +4,7 @@
 #include <archive.h>
 #include <archive_entry.h>
 
-namespace file
+namespace io
 {
         enum class archive_type : int
         {

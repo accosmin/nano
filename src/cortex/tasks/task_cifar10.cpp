@@ -1,9 +1,9 @@
 #include "archive.h"
+#include "io/archive.h"
+#include "io/imstream.h"
 #include "math/cast.hpp"
 #include "task_cifar10.h"
 #include "cortex/class.h"
-#include "file/archive.h"
-#include "file/imstream.h"
 #include "text/ends_with.hpp"
 #include "cortex/util/logger.h"
 
@@ -44,7 +44,7 @@ namespace cortex
 
                 clear_memory(n_train_samples + n_test_samples);
 
-                const auto op = [&] (const string_t& filename, const file::buffer_t& data)
+                const auto op = [&] (const string_t& filename, const io::buffer_t& data)
                 {
                         if (    text::iends_with(filename, train_bfile1) ||
                                 text::iends_with(filename, train_bfile2) ||
@@ -70,7 +70,7 @@ namespace cortex
 
                 log_info() << "CIFAR-10: loading file <" << bfile << "> ...";
 
-                return file::unarchive(bfile, op, error_op);
+                return io::unarchive(bfile, op, error_op);
         }
 
         bool cifar10_task_t::load(const string_t& filename, const char* bdata, size_t bdata_size, protocol p, size_t count)
@@ -78,10 +78,10 @@ namespace cortex
                 log_info() << "CIFAR-10: loading file <" << filename << "> ...";
                 
                 const auto buffer_size = irows() * icols() * 3;
-                std::vector<char> buffer = file::make_buffer(buffer_size);
+                std::vector<char> buffer = io::make_buffer(buffer_size);
                 char label[1];
 
-                file::imstream_t stream(bdata, bdata_size);
+                io::imstream_t stream(bdata, bdata_size);
 
                 size_t icount = 0;
                 while ( stream.read(label, 1) &&

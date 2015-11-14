@@ -2,7 +2,7 @@
 #include "text/align.hpp"
 #include <cassert>
 #include <numeric>
-#include <iostream>
+#include <ostream>
 
 namespace cortex
 {

@@ -1,7 +1,7 @@
 #include "imstream.h"
 #include <algorithm>
 
-namespace file
+namespace io
 {
         static bool isendl(char c)
         {
@@ -10,22 +10,15 @@ namespace file
 
         imstream_t& imstream_t::read(char* bytes, std::streamsize num_bytes)
         {
-                if (tellg() + num_bytes > size())
+                if (tellg() + num_bytes >= size())
                 {
                         num_bytes = size() - tellg();
                 }
 
-                if (num_bytes > 0)
-                {
-                        std::copy(m_data + m_tellg, m_data + (m_tellg + num_bytes), bytes);
+                std::copy(m_data + m_tellg, m_data + (m_tellg + num_bytes), bytes);
 
-                        m_tellg += num_bytes;
-                        m_gcount = num_bytes;
-                }
-                else
-                {
-                        m_gcount = 0;
-                }
+                m_tellg += num_bytes;
+                m_gcount = num_bytes;
 
                 return *this;
         }
@@ -77,7 +70,7 @@ namespace file
 
         bool imstream_t::good() const
         {
-                return gcount() > 9;
+                return !eof();
         }
 
         imstream_t::operator bool() const

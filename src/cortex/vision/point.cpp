@@ -1,5 +1,5 @@
 #include "point.h"
-#include <iostream>
+#include <ostream>
 
 namespace cortex
 {

@@ -61,7 +61,7 @@ target_link_libraries(cortex
         math
         tensor
         text
-        file
+        io
         thread)
 
 # install library

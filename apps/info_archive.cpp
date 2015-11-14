@@ -1,4 +1,4 @@
-#include "file/archive.h"
+#include "io/archive.h"
 #include "cortex/string.h"
 #include "cortex/util/timer.h"
 #include "cortex/util/logger.h"
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 
         // decode archive
         cortex::timer_t timer;
-        if (!file::unarchive(cmd_input, callback, error_callback))
+        if (!io::unarchive(cmd_input, callback, error_callback))
         {
                 return EXIT_FAILURE;
         }

@@ -2,7 +2,7 @@
 
 #include "buffer.h"
 
-namespace file
+namespace io
 {
         class imstream_t;
 

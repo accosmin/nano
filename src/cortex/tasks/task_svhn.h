@@ -1,7 +1,7 @@
 #pragma once
 
+#include "io/buffer.h"
 #include "cortex/task.h"
-#include "file/buffer.h"
 
 namespace cortex
 {
@@ -38,7 +38,7 @@ namespace cortex
                 size_t load(const string_t& bfile, protocol p);
 
                 // decode the uncompressed bytes (images + labels)
-                size_t decode(const file::buffer_t& image_data, const file::buffer_t& label_data, const protocol p);
+                size_t decode(const io::buffer_t& image_data, const io::buffer_t& label_data, const protocol p);
         };
 }
 
