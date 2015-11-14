@@ -29,7 +29,7 @@ build_test_app(test_stoch.cpp "")
 build_test_app(test_tensor.cpp "")
 build_test_app(test_text.cpp "")
 
-build_test_app(test_buffer.cpp io)
+build_test_app(test_io.cpp io)
 
 build_test_app(test_thread_loop.cpp thread)
 build_test_app(test_thread_pool.cpp thread)
