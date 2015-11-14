@@ -25,7 +25,7 @@ namespace io
                         :       m_data(data),
                                 m_size(static_cast<std::streamsize>(size)),
                                 m_tellg(0),
-                                m_gcount(1)
+                                m_gcount(0)
                 {
                 }
 

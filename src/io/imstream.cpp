@@ -75,7 +75,7 @@ namespace io
 
         imstream_t::operator bool() const
         {
-                return gcount() > 0;
+                return gcount() > 0 || !eof();
         }
 
         const char* imstream_t::data() const
