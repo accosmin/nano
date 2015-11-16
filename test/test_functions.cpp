@@ -42,7 +42,7 @@ namespace test
         template <typename tscalar>
         void test_functions()
         {
-                math::run_all_test_functions<tscalar>(8, [] (const auto& function)
+                math::run_all_test_functions<tscalar>(1, 8, [] (const auto& function)
                 {
                         test_function(function);
                 });

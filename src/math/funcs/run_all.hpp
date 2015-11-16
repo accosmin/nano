@@ -30,23 +30,29 @@ namespace math
                 typename tscalar,
                 typename toperator
         >
-        void run_all_test_functions(const typename problem_t<tscalar>::tsize max_dims, const toperator op)
+        void run_all_test_functions(
+                const typename problem_t<tscalar>::tsize min_dims,
+                const typename problem_t<tscalar>::tsize max_dims,
+                const toperator op)
         {
-                op(function_beale_t<tscalar>());
-                op(function_booth_t<tscalar>());
-                op(function_matyas_t<tscalar>());
-                op(function_colville_t<tscalar>());
-                op(function_mccormick_t<tscalar>());
-                op(function_himmelblau_t<tscalar>());
-                op(function_rosenbrock_t<tscalar>(2));
-                op(function_rosenbrock_t<tscalar>(3));
-                op(function_3hump_camel_t<tscalar>());
-                op(function_goldstein_price_t<tscalar>());
-                op(function_bohachevsky_t<tscalar>(btype::one));
-                op(function_bohachevsky_t<tscalar>(btype::two));
-                op(function_bohachevsky_t<tscalar>(btype::three));
+                if (min_dims <= 1)
+                {
+                        op(function_beale_t<tscalar>());
+                        op(function_booth_t<tscalar>());
+                        op(function_matyas_t<tscalar>());
+                        op(function_colville_t<tscalar>());
+                        op(function_mccormick_t<tscalar>());
+                        op(function_himmelblau_t<tscalar>());
+                        op(function_rosenbrock_t<tscalar>(2));
+                        op(function_rosenbrock_t<tscalar>(3));
+                        op(function_3hump_camel_t<tscalar>());
+                        op(function_goldstein_price_t<tscalar>());
+                        op(function_bohachevsky_t<tscalar>(btype::one));
+                        op(function_bohachevsky_t<tscalar>(btype::two));
+                        op(function_bohachevsky_t<tscalar>(btype::three));
+                }
                 
-                for (typename math::problem_t<tscalar>::tsize dims = 1; dims <= max_dims; dims *= 2)
+                for (typename math::problem_t<tscalar>::tsize dims = min_dims; dims <= max_dims; dims *= 2)
                 {
                         op(function_trid_t<tscalar>(dims));
                         op(function_cauchy_t<tscalar>(dims));

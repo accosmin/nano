@@ -13,6 +13,7 @@
 #include "benchmark_optimizers.h"
 #include <map>
 #include <tuple>
+#include <boost/program_options.hpp>
 
 namespace
 {
@@ -26,12 +27,11 @@ namespace
                 typename tvector = typename math::function_t<tscalar>::tvector,
                 typename tproblem = typename math::function_t<tscalar>::tproblem
         >
-        void check_function(const math::function_t<tscalar>& function, tostats& gstats)
+        void check_function(const math::function_t<tscalar>& function,
+                const size_t trials, const size_t iterations,
+                tostats& gstats)
         {
-                const auto iterations = size_t(8 * 1024);
                 const auto epsilon = math::epsilon0<tscalar>();
-                const auto trials = size_t(1024);
-
                 const auto dims = function.problem().size();
 
                 math::random_t<tscalar> rgen(tscalar(-1), tscalar(+1));
@@ -105,15 +105,50 @@ namespace
         }
 }
 
-int main(int, char* [])
+int main(int argc, char* argv[])
 {
         using namespace cortex;
 
+        // parse the command line
+        boost::program_options::options_description po_desc("", 160);
+        po_desc.add_options()("help,h", "benchmark batch optimizers");
+        po_desc.add_options()("min-dims",
+                boost::program_options::value<tensor_size_t>()->default_value(1),
+                "minimum number of dimensions for each test function (if feasible)");
+        po_desc.add_options()("max-dims",
+                boost::program_options::value<tensor_size_t>()->default_value(8),
+                "maximum number of dimensions for each test function (if feasible)");
+        po_desc.add_options()("trials",
+                boost::program_options::value<size_t>()->default_value(1024),
+                "number of random trials for each test function");
+        po_desc.add_options()("iterations",
+                boost::program_options::value<size_t>()->default_value(8000),
+                "maximum number of iterations");
+
+        boost::program_options::variables_map po_vm;
+        boost::program_options::store(
+                boost::program_options::command_line_parser(argc, argv).options(po_desc).run(),
+                po_vm);
+        boost::program_options::notify(po_vm);
+
+        // check arguments and options
+        if (	po_vm.empty() ||
+                po_vm.count("help"))
+        {
+                std::cout << po_desc;
+                return EXIT_FAILURE;
+        }
+
+        const auto min_dims = po_vm["min-dims"].as<tensor_size_t>();
+        const auto max_dims = po_vm["max-dims"].as<tensor_size_t>();
+        const auto trials = po_vm["trials"].as<size_t>();
+        const auto iterations = po_vm["iterations"].as<size_t>();
+
         std::map<string_t, benchmark::optimizer_stat_t> gstats;
 
-        math::run_all_test_functions<double>(8, [&] (const auto& function)
+        math::run_all_test_functions<double>(min_dims, max_dims, [&] (const auto& function)
         {
-                check_function(function, gstats);
+                check_function(function, trials, iterations, gstats);
         });
 
         // show global statistics

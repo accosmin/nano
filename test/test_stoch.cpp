@@ -109,7 +109,7 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_stoch_optimizers)
 {
-        math::run_all_test_functions<double>(8, [] (const auto& function)
+        math::run_all_test_functions<double>(1, 8, [] (const auto& function)
         {
                 test::check_function(function);
         });
