@@ -9,7 +9,7 @@
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
 #include "cortex/optimizer.h"
-#include "math/funcs/run_all.hpp"
+#include "math/funcs/make_all.hpp"
 #include <iomanip>
 #include <iostream>
 
@@ -116,9 +116,10 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_batch_optimizers)
 {
-        math::run_all_test_functions<double>(1, 8, [] (const auto& function)
+        const auto functions = math::make_all_test_functions<double>(1, 8);
+        for (const auto& function : functions)
         {
-                test::check_function(function);
-        });
+                test::check_function(*function);
+        }
 }
 

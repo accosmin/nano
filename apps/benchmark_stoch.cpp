@@ -7,7 +7,7 @@
 #include "cortex/util/table.h"
 #include "cortex/util/logger.h"
 #include "text/from_string.hpp"
-#include "math/funcs/run_all.hpp"
+#include "math/funcs/make_all.hpp"
 #include "benchmark_optimizers.h"
 #include <map>
 #include <tuple>
@@ -125,10 +125,11 @@ int main(int argc, char* argv[])
 
         std::map<string_t, benchmark::optimizer_stat_t> gstats;
 
-        math::run_all_test_functions<double>(min_dims, max_dims, [&] (const auto& function)
+        const auto functions = math::make_all_test_functions<scalar_t>(min_dims, max_dims);
+        for (const auto& function : functions)
         {
-                check_function(function, trials, epochs, epoch_size, gstats);
-        });
+                check_function(*function, trials, epochs, epoch_size, gstats);
+        }
 
         // show global statistics
         benchmark::show_table(string_t(), gstats);
