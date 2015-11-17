@@ -39,9 +39,7 @@ namespace cortex
                 // save parameters
                 vector_t params(psize());
                 save_params(params);
-
-                ob.write(psize());
-                ob.write(params.data(), psize());
+                ob.write(params);
 
                 return os.good();
         }
@@ -63,15 +61,8 @@ namespace cortex
                 resize(true);
 
                 // read parameters
-                tensor_size_t psize = 0;
-                ib.read(psize);
-                if (psize != this->psize())
-                {
-                        return false;
-                }
-
-                vector_t params(psize);
-                ib.read(params.data(), psize);
+                vector_t params;
+                ib.read(params);
 
                 // apply parameters
                 return load_params(params) && is;

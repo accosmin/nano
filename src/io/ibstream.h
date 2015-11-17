@@ -2,8 +2,9 @@
 
 #include "arch.h"
 #include <iosfwd>
-#include <cstddef>
+#include <vector>
 #include <type_traits>
+#include <eigen3/Eigen/Core>
 
 namespace io
 {
@@ -38,17 +39,39 @@ namespace io
                 ibstream_t& read(std::string& str);
 
                 ///
-                /// \brief read an array of the given size
+                /// \brief read a std::vector
                 ///
                 template
                 <
-                        typename tvalue,
-                        typename tsize
+                        typename tscalar
                 >
-                ibstream_t& read(tvalue* data, const tsize count)
+                ibstream_t& read(std::vector<tscalar>& vector)
                 {
-                        return read_blob(reinterpret_cast<char*>(data),
-                                          static_cast<std::size_t>(count) * sizeof(tvalue));
+                        std::size_t size;
+                        read(size);
+                        vector.resize(size);
+                        return read_blob(reinterpret_cast<char*>(vector.data()),
+                                          static_cast<std::size_t>(vector.size()) * sizeof(tscalar));
+                }
+
+                ///
+                /// \brief read an Eigen vector or matrix
+                ///
+                template
+                <
+                        typename tscalar,
+                        int trows,
+                        int tcols,
+                        int toptions
+                >
+                ibstream_t& read(Eigen::Matrix<tscalar, trows, tcols, toptions>& matrix)
+                {
+                        typename Eigen::Matrix<tscalar, trows, tcols, toptions>::Index rows, cols;
+                        read(rows);
+                        read(cols);
+                        matrix.resize(rows, cols);
+                        return read_blob(reinterpret_cast<char*>(matrix.data()),
+                                         static_cast<std::size_t>(matrix.size()) * sizeof(tscalar));
                 }
 
         private:

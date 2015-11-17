@@ -117,8 +117,7 @@ BOOST_AUTO_TEST_CASE(test_bstream)
                 ob.write(var_int);
                 ob.write(var_size_t);
                 ob.write(var_pod);
-                ob.write(var_shorts.size());
-                ob.write(var_shorts.data(), var_shorts.size());
+                ob.write(var_shorts);
 
                 BOOST_REQUIRE(os.good());
         }
@@ -135,7 +134,7 @@ BOOST_AUTO_TEST_CASE(test_bstream)
                 int var_int_ex;
                 std::size_t var_size_t_ex;
                 pod_t var_pod_ex;
-                std::vector<short> var_shorts_ex; size_t var_shorts_size_ex;
+                std::vector<short> var_shorts_ex;
 
                 ib.read(var_double_ex);
                 ib.read(var_string_ex);
@@ -143,9 +142,7 @@ BOOST_AUTO_TEST_CASE(test_bstream)
                 ib.read(var_int_ex);
                 ib.read(var_size_t_ex);
                 ib.read(var_pod_ex);
-                ib.read(var_shorts_size_ex);
-                var_shorts_ex.resize(var_shorts_size_ex);
-                ib.read(var_shorts_ex.data(), var_shorts_ex.size());
+                ib.read(var_shorts_ex);
 
                 BOOST_CHECK_EQUAL(var_double, var_double_ex);
                 BOOST_CHECK_EQUAL(var_string, var_string_ex);

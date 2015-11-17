@@ -12,14 +12,11 @@ namespace io
 
         ibstream_t& ibstream_t::read(std::string& str)
         {
-                std::size_t size;
-                read(size);
+                std::vector<char> buffer;
+                read(buffer);
 
-                std::vector<char> buffer(size);
-                read(buffer.data(), size);
-
-                str.resize(size);
-                str.assign(buffer.data(), size);
+                str.resize(buffer.size());
+                str.assign(buffer.data(), buffer.size());
 
                 return *this;
         }

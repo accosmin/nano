@@ -12,7 +12,7 @@ namespace io
         obstream_t& obstream_t::write(const std::string& str)
         {
                 write(str.size());
-                return write(str.data(), str.size());
+                return write_blob(str.data(), str.size());
         }
 
         obstream_t& obstream_t::write_blob(const char* data, const std::size_t count)

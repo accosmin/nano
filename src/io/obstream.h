@@ -3,8 +3,9 @@
 #include "arch.h"
 #include <iosfwd>
 #include <string>
-#include <cstddef>
+#include <vector>
 #include <type_traits>
+#include <eigen3/Eigen/Core>
 
 namespace io
 {
@@ -40,17 +41,35 @@ namespace io
                 obstream_t& write(const std::string& str);
 
                 ///
-                /// \brief write an array of the given size
+                /// \brief write a std::vector
+                ///
+                template
+                <
+                        typename tvalue
+                >
+                obstream_t& write(const std::vector<tvalue>& vector)
+                {
+                        write(vector.size());
+                        return write_blob(reinterpret_cast<const char*>(vector.data()),
+                                          static_cast<std::size_t>(vector.size()) * sizeof(tvalue));
+                }
+
+                ///
+                /// \brief write an Eigen::Vector
                 ///
                 template
                 <
                         typename tvalue,
-                        typename tsize
+                        int trows,
+                        int tcols,
+                        int toptions
                 >
-                obstream_t& write(const tvalue* data, const tsize count)
+                obstream_t& write(const Eigen::Matrix<tvalue, trows, tcols, toptions>& matrix)
                 {
-                        return write_blob(reinterpret_cast<const char*>(data),
-                                          static_cast<std::size_t>(count) * sizeof(tvalue));
+                        write(matrix.rows());
+                        write(matrix.cols());
+                       return write_blob(reinterpret_cast<const char*>(matrix.data()),
+                                         static_cast<std::size_t>(matrix.size()) * sizeof(tvalue));
                 }
 
         private:
