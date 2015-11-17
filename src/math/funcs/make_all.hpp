@@ -19,6 +19,8 @@
 #include "function_goldstein_price.hpp"
 #include "function_styblinski_tang.hpp"
 #include "function_rotated_ellipsoid.hpp"
+#include <vector>
+#include <memory>
 
 namespace math
 {        
