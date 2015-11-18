@@ -16,11 +16,7 @@ void thread::pool_worker_t::operator()()
                 {
                         std::unique_lock<std::mutex> lock(m_queue.m_mutex);
 
-                        while ( !m_queue.m_stop &&
-                                m_queue.m_tasks.empty())
-                        {
-                                m_queue.m_condition.wait(lock);
-                        }
+                        m_queue.m_condition.wait(lock, [&] { return m_queue.m_stop || !m_queue.m_tasks.empty(); });
 
                         if (m_queue.m_stop)
                         {
