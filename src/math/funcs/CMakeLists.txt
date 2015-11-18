@@ -19,7 +19,7 @@ list(APPEND libmath_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/function_sum_squares.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/function_trid.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/function_zakharov.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/make_all.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/run_all.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/util.hpp)
 
 set(libmath_sources "${libmath_sources}" PARENT_SCOPE)

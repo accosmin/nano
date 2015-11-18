@@ -9,7 +9,7 @@
 #include "cortex/util/logger.h"
 #include "text/from_string.hpp"
 #include "text/starts_with.hpp"
-#include "math/funcs/make_all.hpp"
+#include "math/funcs/run_all.hpp"
 #include "benchmark_optimizers.h"
 #include <map>
 #include <tuple>
@@ -146,11 +146,10 @@ int main(int argc, char* argv[])
 
         std::map<string_t, benchmark::optimizer_stat_t> gstats;
 
-        const auto functions = math::make_all_test_functions<scalar_t>(min_dims, max_dims);
-        for (const auto& function : functions)
+        math::run_all_test_functions<scalar_t>(min_dims, max_dims, [&] (const math::function_t<scalar_t>& function)
         {
-                check_function(*function, trials, iterations, gstats);
-        }
+                check_function(function, trials, iterations, gstats);
+        });
 
         // show global statistics
         benchmark::show_table(string_t(), gstats);

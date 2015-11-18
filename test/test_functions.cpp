@@ -4,7 +4,7 @@
 #include <boost/test/unit_test.hpp>
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
-#include "math/funcs/make_all.hpp"
+#include "math/funcs/run_all.hpp"
 
 namespace test
 {
@@ -42,11 +42,10 @@ namespace test
         template <typename tscalar>
         void test_functions()
         {
-                const auto functions = math::make_all_test_functions<tscalar>(1, 8);
-                for (const auto& function : functions)
+                math::run_all_test_functions<tscalar>(1, 8, [] (const math::function_t<tscalar>& function)
                 {
-                        test_function(*function);
-                }
+                        test_function(function);
+                });
         }                
 }
 
