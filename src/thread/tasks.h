@@ -18,10 +18,7 @@ namespace thread
                 ///
                 /// \brief constructor
                 ///
-                tasks_t() :     m_running(0),
-                                m_stop(false)
-                {
-                }
+                tasks_t();
 
                 ///
                 /// \brief enqueue a new task to execute
