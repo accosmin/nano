@@ -37,22 +37,12 @@ namespace math
 
                         const auto fn_fval = [=] (const tvector& x)
                         {
-                                tscalar u = 0;
-                                for (tsize i = 0; i < m_dims; i ++)
-                                {
-                                        u += math::quartic(x(i)) - 16 * math::square(x(i)) + 5 * x(i);
-                                }
-
-                                return tscalar(0.5) * u;
+                                return (x.array().square().square() - 16 * x.array().square() + 5 * x.array()).sum();
                         };
 
                         const auto fn_grad = [=] (const tvector& x, tvector& gx)
                         {
-                                gx.resize(m_dims);
-                                for (tsize i = 0; i < m_dims; i ++)
-                                {
-                                        gx(i) = 2 * math::cube(x(i)) - 16 * x(i) + tscalar(2.5);
-                                }
+                                gx = 4 * x.array().cube() - 32 * x.array() + 5;
 
                                 return fn_fval(x);
                         };

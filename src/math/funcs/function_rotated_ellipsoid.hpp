@@ -19,8 +19,13 @@ namespace math
                 using tproblem = typename function_t<tscalar>::tproblem;
 
                 explicit function_rotated_ellipsoid_t(const tsize dims)
-                        :       m_dims(dims)
+                        :       m_dims(dims),
+                                m_weights(dims)
                 {
+                        for (tsize i = 0; i < dims; i ++)
+                        {
+                                m_weights(i) = dims - i;
+                        }
                 }
 
                 virtual std::string name() const override
@@ -37,29 +42,12 @@ namespace math
 
                         const auto fn_fval = [=] (const tvector& x)
                         {
-                                tscalar fx = 0;
-                                for (tsize i = 0; i < m_dims; i ++)
-                                {
-                                        for (tsize j = 0; j <= i; j ++)
-                                        {
-                                                fx += x(j) * x(j);
-                                        }
-                                }
-
-                                return fx;
+                                return (m_weights.array() * x.array().square()).sum();
                         };
 
                         const auto fn_grad = [=] (const tvector& x, tvector& gx)
                         {
-                                gx.resize(m_dims);
-                                gx.setZero();
-                                for (tsize i = 0; i < m_dims; i ++)
-                                {
-                                        for (tsize j = 0; j <= i; j ++)
-                                        {
-                                                gx(j) += 2 * x(j);
-                                        }
-                                }
+                                gx = 2 * m_weights.array() * x.array();
 
                                 return fn_fval(x);
                         };
@@ -78,5 +66,6 @@ namespace math
                 }
 
                 tsize   m_dims;
+                tvector m_weights;
         };
 }

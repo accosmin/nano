@@ -19,8 +19,13 @@ namespace math
                 using tproblem = typename function_t<tscalar>::tproblem;
 
                 explicit function_sum_squares_t(const tsize dims)
-                        :       m_dims(dims)
+                        :       m_dims(dims),
+                                m_weights(dims)
                 {
+                        for (tsize i = 0; i < dims; i ++)
+                        {
+                                m_weights(i) = i + 1;
+                        }
                 }
 
                 virtual std::string name() const override
@@ -37,22 +42,12 @@ namespace math
 
                         const auto fn_fval = [=] (const tvector& x)
                         {
-                                tscalar fx = 0;
-                                for (tsize i = 0; i < m_dims; i ++)
-                                {
-                                        fx += tscalar(i + 1) * x(i) * x(i);
-                                }
-
-                                return fx;
+                                return (m_weights.array() * x.array().square()).sum();
                         };
 
                         const auto fn_grad = [=] (const tvector& x, tvector& gx)
                         {
-                                gx.resize(m_dims);
-                                for (tsize i = 0; i < m_dims; i ++)
-                                {
-                                        gx(i) = 2 * tscalar(i + 1) * x(i);
-                                }
+                                gx = 2 * m_weights.array() * x.array();
 
                                 return fn_fval(x);
                         };
@@ -71,5 +66,6 @@ namespace math
                 }
 
                 tsize   m_dims;
+                tvector m_weights;
         };
 }

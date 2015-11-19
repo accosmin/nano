@@ -37,11 +37,7 @@ namespace math
 
                         const auto fn_fval = [=] (const tvector& x)
                         {
-                                tscalar fx = 0;
-                                for (tsize i = 0; i < m_dims; i ++)
-                                {
-                                        fx += math::square(x(i) - 1);
-                                }
+                                tscalar fx = (x.array() - 1).square().sum();
                                 for (tsize i = 1; i < m_dims; i ++)
                                 {
                                         fx -= x(i) * x(i - 1);
@@ -52,12 +48,7 @@ namespace math
 
                         const auto fn_grad = [=] (const tvector& x, tvector& gx)
                         {
-                                gx.resize(m_dims);
-                                gx.setZero();
-                                for (tsize i = 0; i < m_dims; i ++)
-                                {
-                                        gx(i) += 2 * (x(i) - 1);
-                                }
+                                gx = 2 * (x.array() - 1);
                                 for (tsize i = 1; i < m_dims; i ++)
                                 {
                                         gx(i) -= x(i - 1);

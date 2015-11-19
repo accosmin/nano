@@ -19,8 +19,13 @@ namespace math
                 using tproblem = typename function_t<tscalar>::tproblem;
 
                 explicit function_zakharov_t(const tsize dims)
-                        :       m_dims(dims)
+                        :       m_dims(dims),
+                                m_weights(dims)
                 {
+                        for (tsize i = 0; i < dims; i ++)
+                        {
+                                m_weights(i) = tscalar(0.5) * i;
+                        }
                 }
 
                 virtual std::string name() const override
@@ -37,30 +42,18 @@ namespace math
 
                         const auto fn_fval = [=] (const tvector& x)
                         {
-                                tscalar u = 0, v = 0;
-                                for (tsize i = 0; i < m_dims; i ++)
-                                {
-                                        u += math::square(x(i));
-                                        v += tscalar(0.5) * tscalar(i) * x(i);
-                                }
+                                const tscalar u = x.array().square().sum();
+                                const tscalar v = (m_weights.array() * x.array()).sum();
 
                                 return u + math::square(v) + math::quartic(v);
                         };
 
                         const auto fn_grad = [=] (const tvector& x, tvector& gx)
                         {
-                                tscalar u = 0, v = 0;
-                                for (tsize i = 0; i < m_dims; i ++)
-                                {
-                                        u += math::square(x(i));
-                                        v += tscalar(0.5) * tscalar(i) * x(i);
-                                }
+                                const tscalar u = x.array().square().sum();
+                                const tscalar v = (m_weights.array() * x.array()).sum();
 
-                                gx.resize(m_dims);
-                                for (tsize i = 0; i < m_dims; i ++)
-                                {
-                                        gx(i) = 2 * x(i) + (2 * v + 4 * math::cube(v)) * tscalar(0.5) * tscalar(i);
-                                }
+                                gx = 2 * x + (2 * v + 4 * math::cube(v)) * m_weights;
 
                                 return u + math::square(v) + math::quartic(v);
                         };
@@ -79,5 +72,6 @@ namespace math
                 }
 
                 tsize   m_dims;
+                tvector m_weights;
         };  
 }
