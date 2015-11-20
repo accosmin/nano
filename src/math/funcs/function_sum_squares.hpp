@@ -24,7 +24,7 @@ namespace math
                 {
                         for (tsize i = 0; i < dims; i ++)
                         {
-                                m_weights(i) = i + 1;
+                                m_weights(i) = static_cast<tscalar>(i + 1);
                         }
                 }
 
