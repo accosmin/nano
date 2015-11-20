@@ -16,6 +16,11 @@ set(libtext_sources
 
 add_library(text INTERFACE)
 
+add_library(text_dummy STATIC
+        ${libtext_sources}
+        ${CMAKE_CURRENT_SOURCE_DIR}/_dummy.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/_dummy.cpp)
+
 # install library
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         DESTINATION include
