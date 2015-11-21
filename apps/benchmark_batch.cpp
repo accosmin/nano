@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
 
         std::map<string_t, benchmark::optimizer_stat_t> gstats;
 
-        math::run_all_test_functions<scalar_t>(min_dims, max_dims, [&] (const math::function_t<scalar_t>& function)
+        math::run_all_test_functions<scalar_t, math::test_type::all>(min_dims, max_dims, [&] (const auto& function)
         {
                 check_function(function, trials, iterations, gstats);
         });

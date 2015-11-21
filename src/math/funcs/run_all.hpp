@@ -22,12 +22,19 @@
 
 namespace math
 {        
+        enum class test_type
+        {
+                easy,           ///< easy test functions even for GD  (e.g. convex) - mostly useful for unit testing
+                all
+        };
+
         ///
         /// \brief run the given operator on all all test functions up to the given dimension
         ///
         template
         <
                 typename tscalar,
+                test_type type,
                 typename toperator
         >
         void run_all_test_functions(
@@ -37,32 +44,51 @@ namespace math
         {
                 if (min_dims <= 1)
                 {
-                        op(function_beale_t<tscalar>());
-                        op(function_booth_t<tscalar>());
-                        op(function_matyas_t<tscalar>());
-                        op(function_colville_t<tscalar>());
-                        op(function_mccormick_t<tscalar>());
-                        op(function_himmelblau_t<tscalar>());
-                        op(function_rosenbrock_t<tscalar>(2));
-                        op(function_rosenbrock_t<tscalar>(3));
-                        op(function_3hump_camel_t<tscalar>());
-                        op(function_goldstein_price_t<tscalar>());
-                        op(function_bohachevsky_t<tscalar>(btype::one));
-                        op(function_bohachevsky_t<tscalar>(btype::two));
-                        op(function_bohachevsky_t<tscalar>(btype::three));
+                        switch (type)
+                        {
+                        case test_type::all:
+                                op(function_beale_t<tscalar>());
+                                op(function_booth_t<tscalar>());
+                                op(function_matyas_t<tscalar>());
+                                op(function_colville_t<tscalar>());
+                                op(function_mccormick_t<tscalar>());
+                                op(function_rosenbrock_t<tscalar>(2));
+                                op(function_rosenbrock_t<tscalar>(3));
+                                op(function_3hump_camel_t<tscalar>());
+                                op(function_goldstein_price_t<tscalar>());
+                                // NB: fallthrough!
+
+                        case test_type::easy:
+                        default:
+                                op(function_himmelblau_t<tscalar>());
+                                op(function_bohachevsky_t<tscalar>(btype::one));
+                                op(function_bohachevsky_t<tscalar>(btype::two));
+                                op(function_bohachevsky_t<tscalar>(btype::three));
+                                break;
+                        }
                 }
                 
                 for (typename math::problem_t<tscalar>::tsize dims = min_dims; dims <= max_dims; dims *= 2)
                 {
-                        op(function_trid_t<tscalar>(dims));
-                        op(function_cauchy_t<tscalar>(dims));
-                        op(function_sphere_t<tscalar>(dims));
-                        op(function_powell_t<tscalar>(dims));
-                        op(function_zakharov_t<tscalar>(dims));
-                        op(function_dixon_price_t<tscalar>(dims));
-                        op(function_sum_squares_t<tscalar>(dims));
-                        op(function_styblinski_tang_t<tscalar>(dims));
-                        op(function_rotated_ellipsoid_t<tscalar>(dims));
+                        switch (type)
+                        {
+                        case test_type::all:
+                                op(function_trid_t<tscalar>(dims));
+                                op(function_powell_t<tscalar>(dims));
+                                op(function_zakharov_t<tscalar>(dims));
+                                op(function_dixon_price_t<tscalar>(dims));
+                                op(function_styblinski_tang_t<tscalar>(dims));
+                                // NB: fallthrough!
+
+                        case test_type::easy:
+                        default:
+
+                                op(function_cauchy_t<tscalar>(dims));
+                                op(function_sphere_t<tscalar>(dims));
+                                op(function_sum_squares_t<tscalar>(dims));
+                                op(function_rotated_ellipsoid_t<tscalar>(dims));
+                                break;
+                        }
                 }
         }
 }

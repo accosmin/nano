@@ -37,21 +37,14 @@ namespace test
                                 "invalid gradient for [" << function.name() <<
                                 "] & [scalar "  << typeid(tscalar).name() << "]!");
                 }
-        }
-
-        template <typename tscalar>
-        void test_functions()
-        {
-                math::run_all_test_functions<tscalar>(1, 8, [] (const math::function_t<tscalar>& function)
-                {
-                        test_function(function);
-                });
-        }                
+        }              
 }
 
 BOOST_AUTO_TEST_CASE(test_functions)
 {
-        test::test_functions<double>();
-        test::test_functions<long double>();
+        math::run_all_test_functions<double, math::test_type::all>(1, 8, [] (const auto& function)
+        {
+                test::test_function(function);
+        });
 }
 

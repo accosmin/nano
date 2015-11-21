@@ -22,8 +22,8 @@ namespace test
         >
         static void check_function(const math::function_t<tscalar>& function)
         {
-                const auto iterations = size_t(8 * 1024);
-                const auto trials = size_t(32);
+                const auto iterations = size_t(1024);
+                const auto trials = size_t(1024);
 
                 const auto dims = function.problem().size();
 
@@ -37,30 +37,27 @@ namespace test
                         rgen(x0.data(), x0.data() + x0.size());
                 }
 
-                // {optimizers, slack ~ expected convergence rate} to try
-                const std::map<math::batch_optimizer, tscalar> optimizers =
+                // optimizers to try
+                const auto optimizers =
                 {
-                        { math::batch_optimizer::GD, 1e+3 },             // ok, but potentially very slow!
+                        math::batch_optimizer::GD,
 
-                        { math::batch_optimizer::CGD, 1e+0 },
-                        { math::batch_optimizer::CGD_CD, 1e+0 },
-                        { math::batch_optimizer::CGD_DY, 1e+10 },        // bad!
-                        { math::batch_optimizer::CGD_FR, 1e+10 },        // bad!
-                        { math::batch_optimizer::CGD_HS, 1e+10 },        // bad!
-                        { math::batch_optimizer::CGD_LS, 1e+0 },
-                        { math::batch_optimizer::CGD_N, 1e+0 },
-                        { math::batch_optimizer::CGD_PRP, 1e+0 },
-                        { math::batch_optimizer::CGD_DYCD, 1e+0 },
-                        { math::batch_optimizer::CGD_DYHS, 1e+0 },
+                        math::batch_optimizer::CGD,
+//                        math::batch_optimizer::CGD_CD,
+//                        math::batch_optimizer::CGD_DY,
+//                        math::batch_optimizer::CGD_FR,
+//                        math::batch_optimizer::CGD_HS,
+//                        math::batch_optimizer::CGD_LS,
+//                        math::batch_optimizer::CGD_N,
+//                        math::batch_optimizer::CGD_PRP,
+//                        math::batch_optimizer::CGD_DYCD,
+//                        math::batch_optimizer::CGD_DYHS,
 
-                        { math::batch_optimizer::LBFGS, 1e+0 }
+                        math::batch_optimizer::LBFGS,
                 };
 
-                for (const auto& optslack : optimizers)
+                for (const auto& optimizer : optimizers)
                 {
-                        const auto optimizer = optslack.first;
-                        const auto slack = optslack.second;
-
                         size_t out_of_domain = 0;
 
                         for (size_t t = 0; t < trials; ++ t)
@@ -79,8 +76,8 @@ namespace test
                                 const auto g = state.convergence_criteria();
 
                                 const auto f_thres = math::epsilon0<tscalar>();
-                                const auto g_thres = math::epsilon3<tscalar>() * slack;
-                                const auto x_thres = math::epsilon3<tscalar>() * slack * 1e+3;
+                                const auto g_thres = math::epsilon3<tscalar>();
+                                const auto x_thres = math::epsilon3<tscalar>() * 1e+3;
 
                                 // ignore out-of-domain solutions
                                 if (!function.is_valid(x))
@@ -116,7 +113,7 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_batch_optimizers)
 {
-        math::run_all_test_functions<double>(1, 8, [] (const math::function_t<double>& function)
+        math::run_all_test_functions<double, math::test_type::easy>(1, 8, [] (const auto& function)
         {
                 test::check_function(function);
         });

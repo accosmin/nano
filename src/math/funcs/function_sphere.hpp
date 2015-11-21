@@ -37,12 +37,12 @@ namespace math
 
                         const auto fn_fval = [=] (const tvector& x)
                         {
-                                return 0.5 * x.dot(x);
+                                return x.array().square().sum();
                         };
 
                         const auto fn_grad = [=] (const tvector& x, tvector& gx)
                         {
-                                gx = x;
+                                gx = 2 * x;
 
                                 return fn_fval(x);
                         };
