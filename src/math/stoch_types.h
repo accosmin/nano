@@ -11,7 +11,8 @@ namespace math
                 SGA,                            ///< stochastic gradient averaging
                 SIA,                            ///< stochastic iterate averaging
                 AG,                             ///< Nesterov's accelerated gradient
-                AGGR,                           ///< Nesterov's accelerated gradient (with gradient check-based restarts)
+                AGFR,                           ///< Nesterov's accelerated gradient (with function value-based restarts)
+                AGGR,                           ///< Nesterov's accelerated gradient (with gradient-based restarts)
                 ADAGRAD,                        ///< AdaGrad
                 ADADELTA                        ///< AdaDelta
         };

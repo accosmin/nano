@@ -40,6 +40,7 @@ namespace math
                 switch (optimizer)
                 {
                 case math::stoch_optimizer::AG:
+                case math::stoch_optimizer::AGFR:
                 case math::stoch_optimizer::AGGR:
                 case math::stoch_optimizer::ADAGRAD:
                 case math::stoch_optimizer::ADADELTA:

@@ -108,6 +108,7 @@ namespace
                         math::stoch_optimizer::SGA,
                         math::stoch_optimizer::SIA,
                         math::stoch_optimizer::AG,
+                        math::stoch_optimizer::AGFR,
                         math::stoch_optimizer::AGGR,
                         math::stoch_optimizer::ADAGRAD,
                         math::stoch_optimizer::ADADELTA

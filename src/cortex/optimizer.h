@@ -31,6 +31,7 @@ namespace text
                         { math::stoch_optimizer::SGA,          "sga" },
                         { math::stoch_optimizer::SIA,          "sia" },
                         { math::stoch_optimizer::AG,           "ag" },
+                        { math::stoch_optimizer::AGFR,         "agfr" },
                         { math::stoch_optimizer::AGGR,         "aggr" },
                         { math::stoch_optimizer::ADAGRAD,      "adagrad" },
                         { math::stoch_optimizer::ADADELTA,     "adadelta" }

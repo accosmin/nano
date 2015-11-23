@@ -66,9 +66,12 @@ namespace math
                         best_state_t<tstate> bstate(cstate);
 
                         // current & previous iterations
-                        tvector cx = x0;
-                        tvector x1 = x0;
-                        tvector x2 = x0;
+                        tvector cx = cstate.x;
+                        tvector x1 = cstate.x;
+                        tvector x2 = cstate.x;
+
+                        tscalar fx = cstate.f;
+                        tscalar f1 = cstate.f;
 
                         for (std::size_t e = 0, k = 1; e < m_param.m_epochs; e ++)
                         {
@@ -82,15 +85,17 @@ namespace math
 
                                         // update solution
                                         cx = x1 + m * (x1 - x2);
-
                                         cstate.update(problem, cx);
-                                        k = restart(cstate.g, cx, x1, k);
+                                        fx = cstate.f;
+
+                                        k = restart(cstate.g, cx, fx, x1, f1, k);
 
                                         cx -= alpha * cstate.g;
 
                                         // next iteration
                                         x2 = x1;
                                         x1 = cx;
+                                        f1 = fx;
                                 }
 
                                 cstate.update(problem, cx);
@@ -109,10 +114,14 @@ namespace math
         // create various AG implementations
         template <typename tproblem>
         using stoch_ag_t =
-        stoch_ag_base_t<tproblem, ag_no_restart_t<typename tproblem::tvector, std::size_t>>;
+        stoch_ag_base_t<tproblem, ag_no_restart_t<typename tproblem::tvector, typename tproblem::tscalar, std::size_t>>;
+
+        template <typename tproblem>
+        using stoch_agfr_t =
+        stoch_ag_base_t<tproblem, ag_func_restart_t<typename tproblem::tvector, typename tproblem::tscalar, std::size_t>>;
 
         template <typename tproblem>
         using stoch_aggr_t =
-        stoch_ag_base_t<tproblem, ag_grad_restart_t<typename tproblem::tvector, std::size_t>>;
+        stoch_ag_base_t<tproblem, ag_grad_restart_t<typename tproblem::tvector, typename tproblem::tscalar, std::size_t>>;
 }
 

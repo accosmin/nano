@@ -48,6 +48,11 @@ namespace math
                                 (epochs, epoch_size, alpha0, decay, fn_ulog)
                                 (problem, x0);
 
+                case stoch_optimizer::AGFR:
+                        return  stoch_agfr_t<tproblem>
+                                (epochs, epoch_size, alpha0, decay, fn_ulog)
+                                (problem, x0);
+
                 case stoch_optimizer::AGGR:
                         return  stoch_aggr_t<tproblem>
                                 (epochs, epoch_size, alpha0, decay, fn_ulog)
