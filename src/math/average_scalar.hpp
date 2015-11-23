@@ -1,5 +1,7 @@
 #pragma once
 
+#include "average.hpp"
+
 namespace math
 {
         ///
@@ -44,5 +46,14 @@ namespace math
                 tscalar         m_weights;      ///< cumulated weights
                 tscalar         m_average;      ///< average
         };
+
+//        template <typename tscalar>
+//        using average_scalar_t = xaverage_scalar_t<average::vanilla, tscalar>;
+
+//        template <typename tscalar>
+//        using waverage_scalar_t = xaverage_scalar_t<average::weighted, tscalar>;
+
+//        template <typename tscalar>
+//        using gaverage_scalar_t = xaverage_scalar_t<average::geometric, tscalar>;
 }
 

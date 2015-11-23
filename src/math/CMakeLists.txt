@@ -1,6 +1,7 @@
 # build library
 set(libmath_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/abs.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/average.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/average_scalar.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/average_vector.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cast.hpp
