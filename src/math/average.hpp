@@ -67,7 +67,7 @@ namespace math
                 >
                 explicit average_vector_t(const tsize dimensions)
                         :       m_count(0),
-                                m_value(tvector::template Zero(dimensions))
+                                m_value(tvector::Zero(dimensions))
                 {
                 }
 
