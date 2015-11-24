@@ -2,7 +2,7 @@
 
 #include "params.hpp"
 #include "best_state.hpp"
-#include "math/average_vector.hpp"
+#include "math/momentum.hpp"
 
 namespace math
 {
@@ -48,23 +48,23 @@ namespace math
                         best_state_t<tstate> bstate(cstate);
 
                         // running-weighted-averaged-per-dimension-squared gradient
-                        average_vector_t<tscalar, tvector> gavg(x0.size());
+                        momentum_vector_t<tvector> gavg(tscalar(0.95), tvector::Zero(x0.size()));
 
                         // running-weighted-averaged-per-dimension-squared step updates
-                        average_vector_t<tscalar, tvector> davg(x0.size());
+                        momentum_vector_t<tvector> davg(tscalar(0.95), tvector::Zero(x0.size()));
 
                         for (std::size_t e = 0, k = 1; e < m_param.m_epochs; e ++)
                         {
                                 for (std::size_t i = 0; i < m_param.m_epoch_size; i ++, k ++)
                                 {
                                         // descent direction
-                                        gavg.update(cstate.g.array().square(), m_param.weight(k));
+                                        gavg.update(cstate.g.array().square());
 
                                         cstate.d = -cstate.g.array() *
                                                    (m_param.m_epsilon + davg.value().array()).sqrt() /
                                                    (m_param.m_epsilon + gavg.value().array()).sqrt();
 
-                                        davg.update(cstate.d.array().square(), m_param.weight(k));
+                                        davg.update(cstate.d.array().square());
 
                                         // update solution
                                         cstate.update(problem, tscalar(1));

@@ -2,7 +2,7 @@
 
 #include "params.hpp"
 #include "best_state.hpp"
-#include "math/average_vector.hpp"
+#include "math/average.hpp"
 
 namespace math
 {
@@ -51,7 +51,7 @@ namespace math
                         best_state_t<tstate> bstate(cstate);
 
                         // running-weighted-averaged-per-dimension-squared gradient
-                        average_vector_t<tscalar, tvector> gavg(x0.size());
+                        average_vector_t<tvector> gavg(x0.size());
 
                         for (std::size_t e = 0, k = 1; e < m_param.m_epochs; e ++)
                         {
@@ -61,7 +61,7 @@ namespace math
                                         const tscalar alpha = m_param.m_alpha0;
 
                                         // descent direction
-                                        gavg.update(cstate.g.array().square(), m_param.weight(k));
+                                        gavg.update(cstate.g.array().square());
 
                                         cstate.d = -cstate.g.array() /
                                                    (m_param.m_epsilon + gavg.value().array()).sqrt();

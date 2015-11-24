@@ -2,7 +2,7 @@
 
 #include "params.hpp"
 #include "best_state.hpp"
-#include "math/average_vector.hpp"
+#include "math/average.hpp"
 
 namespace math
 {
@@ -49,7 +49,7 @@ namespace math
                         best_state_t<tstate> bstate(cstate);
 
                         // running-weighted-averaged parameters
-                        average_vector_t<tscalar, tvector> xavg(x0.size());
+                        average_vector_t<tvector> xavg(x0.size());
 
                         for (std::size_t e = 0, k = 1; e < m_param.m_epochs; e ++)
                         {
@@ -64,7 +64,7 @@ namespace math
                                         // update solution
                                         cstate.update(problem, alpha);
 
-                                        xavg.update(cstate.x, m_param.weight(k));
+                                        xavg.update(cstate.x);
                                 }
 
                                 const tvector cx = cstate.x;

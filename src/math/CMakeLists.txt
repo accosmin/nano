@@ -2,14 +2,13 @@
 set(libmath_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/abs.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/average.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/average_scalar.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/average_vector.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cast.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/clamp.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/close.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cubic.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/epsilon.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/gauss.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/momentum.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/numeric.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/quadratic.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/random.hpp

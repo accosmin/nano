@@ -3,21 +3,39 @@
 
 #include <boost/test/unit_test.hpp>
 #include "math/abs.hpp"
+#include "math/average.hpp"
 #include "math/epsilon.hpp"
-#include "math/average_scalar.hpp"
-#include "math/average_vector.hpp"
 #include <eigen3/Eigen/Core>
 
 namespace test
 {
         template
         <
+                typename tsize
+        >
+        tsize sign(const tsize index)
+        {
+                return (index % 2 == 0) ? tsize(+1) : tsize(-1);
+        }
+
+        template
+        <
                 typename tscalar,
                 typename tsize
         >
-        tscalar average(const tsize range)
+        tscalar average1(const tsize range)
         {
-                return static_cast<tscalar>(range) / static_cast<tscalar>(2);
+                return static_cast<tscalar>(range + 1) / static_cast<tscalar>(2);
+        }
+
+        template
+        <
+                typename tscalar,
+                typename tsize
+        >
+        tscalar average2(const tsize range)
+        {
+                return static_cast<tscalar>((range + 1) * sign(range + 1)) / static_cast<tscalar>(2);
         }
 
         template
@@ -27,16 +45,19 @@ namespace test
         >
         void check_average(const tsize range)
         {
-                math::average_scalar_t<tscalar> runavg;
-                for (tsize i = 0; i <= range; ++ i)
+                math::average_scalar_t<tscalar> avg1, avg2;
+                for (tsize i = 1; i <= range; ++ i)
                 {
-                        runavg.update(static_cast<tscalar>(i), tscalar(1));
+                        avg1.update(tscalar(i));
+                        avg2.update(tscalar(sign(i + 1) * i) * tscalar(i));
                 }
 
-                const auto avg = average<tscalar>(range);
+                const auto epsilon = math::epsilon1<tscalar>();
+                const auto base1 = average1<tscalar>(range);
+                const auto base2 = average2<tscalar>(range);
 
-                BOOST_CHECK_LE(math::abs(runavg.value() - avg),
-                               math::epsilon1<tscalar>());
+                BOOST_CHECK_LE(math::abs(avg1.value() - base1), epsilon);
+                BOOST_CHECK_LE(math::abs(avg2.value() - base2), epsilon);
         }
 
         template
@@ -47,16 +68,19 @@ namespace test
         >
         void check_average(const tsize dims, const tsize range)
         {
-                math::average_vector_t<tscalar, tvector> runavg(dims);
-                for (tsize i = 0; i <= range; ++ i)
+                math::average_vector_t<tvector> avg1(dims), avg2(dims);
+                for (tsize i = 1; i <= range; ++ i)
                 {
-                        runavg.update(tvector::Constant(dims, tscalar(i)), tscalar(1));
+                        avg1.update(tvector::Constant(dims, tscalar(i)));
+                        avg2.update(tvector::Constant(dims, tscalar(sign(i + 1) * i) * tscalar(i)));
                 }
 
-                const auto avg = average<tscalar>(range);
+                const auto epsilon = math::epsilon1<tscalar>();
+                const auto base1 = tvector::Constant(dims, average1<tscalar>(range));
+                const auto base2 = tvector::Constant(dims, average2<tscalar>(range));
 
-                BOOST_CHECK_LE((runavg.value() - tvector::Constant(dims, avg)).template lpNorm<Eigen::Infinity>(),
-                               math::epsilon1<tscalar>());
+                BOOST_CHECK_LE((avg1.value() - base1).template lpNorm<Eigen::Infinity>(), epsilon);
+                BOOST_CHECK_LE((avg2.value() - base2).template lpNorm<Eigen::Infinity>(), epsilon);
         }
 }
 

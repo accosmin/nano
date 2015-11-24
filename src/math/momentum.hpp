@@ -1,35 +1,38 @@
 #pragma once
 
+#include <cassert>
+
 namespace math
 {
         ///
-        /// \brief running average for scalars
+        /// \brief running geometric average for scalars using a fixed momentum
         ///
         template
         <
                 typename tscalar
         >
-        class average_scalar_t
+        class momentum_scalar_t
         {
         public:
 
                 ///
                 /// \brief constructor
                 ///
-                average_scalar_t()
-                        :       m_count(0),
-                                m_value(0)
+		momentum_scalar_t(const tscalar momentum, const tscalar initial)
+                        :       m_momentum(momentum),
+				m_value(initial)
                 {
+			assert(momentum > 0);
+			assert(momentum < 1);
                 }
 
                 ///
-                /// \brief update the running average with a new value
+                /// \brief update the running geometric average with a new value
                 ///
                 void update(const tscalar value)
                 {
 			constexpr tscalar one = 1;
-                        m_value = (m_value * m_count + value) / (m_count + one);
-                        m_count = m_count + one;
+                        m_value = m_value * m_momentum + value * (one - m_momentum);
                 }
 
                 ///
@@ -42,33 +45,31 @@ namespace math
 
         private:
 
-                tscalar         m_count;
+                tscalar         m_momentum;
                 tscalar         m_value;
         };
 
 	///
-        /// \brief running average for Eigen vectors
+        /// \brief running geometric average for Eigen vectors using a fixed momentum
         ///
         template
         <
                 typename tvector,
 		typename tscalar = typename tvector::Scalar
         >
-        class average_vector_t
+        class momentum_vector_t
         {
         public:
 
                 ///
                 /// \brief constructor
                 ///
-                template
-                <
-                        typename tsize
-                >
-                explicit average_vector_t(const tsize dimensions)
-                        :       m_count(0),
-                                m_value(tvector::template Zero(dimensions))
+                momentum_vector_t(const tscalar momentum, const tvector& initial)
+                        :       m_momentum(momentum),
+                                m_value(initial)
                 {
+			assert(momentum > 0);
+			assert(momentum < 1);
                 }
 
                 ///
@@ -77,8 +78,7 @@ namespace math
                 void update(const tvector& value)
                 {
 			constexpr tscalar one = 1;
-                        m_value.noalias() = (m_value * m_count + value) / (m_count + one);
-			m_count = m_count + one;
+                        m_value.noalias() = m_value * m_momentum + value * (one - m_momentum);
                 }
 
                 ///
@@ -91,7 +91,7 @@ namespace math
 
         private:
 
-                tscalar         m_count;
+                tscalar         m_momentum;
                 tvector         m_value;
         };
 }

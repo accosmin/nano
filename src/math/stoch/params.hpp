@@ -52,16 +52,8 @@ namespace math
                         return math::decay(m_alpha0, iter, m_decay);
                 }
 
-                ///
-                /// \brief running-average weight
-                ///
-                tscalar weight(std::size_t k) const
-                {
-                        return static_cast<tscalar>(k) / static_cast<tscalar>(m_epochs * m_epoch_size);
-                }
-
                 // attributes
-                topulog         m_ulog;         ///< update log: (the current_state_after_each_epoch)
+                topulog         m_ulog;                 ///< update log: (the current_state_after_each_epoch)
                 std::size_t     m_epochs;               ///< number of epochs
                 std::size_t     m_epoch_size;           ///< epoch size in number of iterations
                 tscalar         m_alpha0;               ///< initial learning rate
