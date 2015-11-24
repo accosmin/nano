@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(test_conv2d)
         const int min_isize = 4;
         const int max_isize = 48;
         const int min_ksize = 1;
-        const int n_tests = 16;
+        const int n_tests = 5;
 
         for (int isize = min_isize; isize <= max_isize; isize += 4)
         {

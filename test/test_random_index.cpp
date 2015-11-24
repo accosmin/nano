@@ -6,8 +6,8 @@
 
 BOOST_AUTO_TEST_CASE(test_random)
 {
-        const size_t tests = 1024;
-        const size_t test_size = 1024;
+        const size_t tests = 54;
+        const size_t test_size = 87;
 
         for (size_t t = 0; t < tests; ++ t)
         {

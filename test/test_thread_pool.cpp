@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
                 {
                         pool.enqueue([=, &mutex, &tasks_done]()
                         {
-                                const size_t sleep1 = math::random_t<size_t>(5, 20)();
+                                const size_t sleep1 = math::random_t<size_t>(5, 10)();
                                 std::this_thread::sleep_for(std::chrono::milliseconds(sleep1));
 
                                 {
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(test_thread_pool)
                                                   << (t + 1) << "/" << n_tests << "] started ...\n";
                                 }
 
-                                const size_t sleep2 = math::random_t<size_t>(5, 50)();
+                                const size_t sleep2 = math::random_t<size_t>(5, 20)();
                                 std::this_thread::sleep_for(std::chrono::milliseconds(sleep2));
 
                                 {
