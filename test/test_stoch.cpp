@@ -23,7 +23,7 @@ namespace test
         {
                 const auto epochs = size_t(32);
                 const auto epoch_size = size_t(32);
-                const auto trials = size_t(128);
+                const auto trials = size_t(32);
 
                 const auto dims = function.problem().size();
 
@@ -41,13 +41,13 @@ namespace test
                 const auto optimizers =
                 {
                         math::stoch_optimizer::SG,
-                        math::stoch_optimizer::SGA,
-                        math::stoch_optimizer::SIA,
+//                        math::stoch_optimizer::SGA,
+//                        math::stoch_optimizer::SIA,
                         math::stoch_optimizer::AG,
                         math::stoch_optimizer::AGFR,
                         math::stoch_optimizer::AGGR,
-                        math::stoch_optimizer::ADAGRAD,
-                        math::stoch_optimizer::ADADELTA
+//                        math::stoch_optimizer::ADAGRAD,
+//                        math::stoch_optimizer::ADADELTA
                 };
 
                 for (const auto optimizer : optimizers)
@@ -103,14 +103,14 @@ namespace test
                         }
 
                         std::cout << function.name() << ", " << text::to_string(optimizer)
-                                  << ": out of domain " << out_of_domain << "/" << trials << "." << std::endl;
+                                  << ": out of domain " << out_of_domain << "/" << trials << ".\n";
                 }
         }
 }
 
 BOOST_AUTO_TEST_CASE(test_stoch_optimizers)
 {
-        math::run_all_test_functions<double, math::test_type::easy>(1, 8, [] (const auto& function)
+        math::run_all_test_functions<double, math::test_type::easy>(1, 4, [] (const auto& function)
         {
                 test::check_function(function);
         });

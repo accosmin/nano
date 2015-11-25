@@ -15,7 +15,7 @@ namespace test
         >
         void test_function(const math::function_t<tscalar>& function)
         {
-                const size_t trials = 1024;
+                const size_t trials = 135;
 
                 const auto epsilon = math::epsilon2<tscalar>();
 

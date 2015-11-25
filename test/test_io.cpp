@@ -20,10 +20,7 @@ BOOST_AUTO_TEST_CASE(test_mstream)
         const auto op_check_buffers = [] (const buffer_t& ref_buffer, const buffer_t& buffer)
         {
                 BOOST_REQUIRE_EQUAL(buffer.size(), ref_buffer.size());
-                for (size_t i = 0; i < ref_buffer.size(); ++ i)
-                {
-                        BOOST_CHECK_EQUAL(buffer[i], ref_buffer[i]);
-                }
+                BOOST_CHECK(std::equal(buffer.begin(), buffer.end(), ref_buffer.begin()));
         };
 
         for (size_t size = min_size; size <= max_size; size *= 2)

@@ -23,7 +23,7 @@ namespace test
         static void check_function(const math::function_t<tscalar>& function)
         {
                 const auto iterations = size_t(1024);
-                const auto trials = size_t(1024);
+                const auto trials = size_t(32);
 
                 const auto dims = function.problem().size();
 
@@ -106,14 +106,14 @@ namespace test
                         }
 
                         std::cout << function.name() << ", " << text::to_string(optimizer)
-                                  << ": out of domain " << out_of_domain << "/" << trials << "." << std::endl;
+                                  << ": out of domain " << out_of_domain << "/" << trials << ".\n";
                 }
         }
 }
 
 BOOST_AUTO_TEST_CASE(test_batch_optimizers)
 {
-        math::run_all_test_functions<double, math::test_type::easy>(1, 8, [] (const auto& function)
+        math::run_all_test_functions<double, math::test_type::easy>(1, 4, [] (const auto& function)
         {
                 test::check_function(function);
         });

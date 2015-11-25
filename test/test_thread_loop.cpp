@@ -6,7 +6,6 @@
 #include "thread/thread.h"
 #include "thread/loopi.hpp"
 #include "math/epsilon.hpp"
-#include <cmath>
 #include <numeric>
 
 namespace
@@ -65,8 +64,8 @@ namespace
 
 BOOST_AUTO_TEST_CASE(test_thread_loop)
 {
-        const size_t min_size = 37;
-        const size_t max_size = 1023;
+        const size_t min_size = 7;
+        const size_t max_size = 3 * 3 * 7;
 
         typedef double scalar_t;
 
@@ -74,15 +73,7 @@ BOOST_AUTO_TEST_CASE(test_thread_loop)
         const auto op = [](size_t i)
         {
                 const auto ii = static_cast<scalar_t>(i);
-                const auto vi = std::cos(ii) + std::sin(ii);
-
-                auto temp = scalar_t(0);
-                for (int j = 0; j < 16; ++ j)
-                {
-                        temp += j * std::tan(-ii + j);
-                }
-
-                return vi * temp / 32;
+                return ii * ii + 1 - ii;
         };
 
         // test for different problems size

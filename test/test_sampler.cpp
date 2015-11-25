@@ -23,10 +23,10 @@ BOOST_AUTO_TEST_CASE(test_sampler)
 {
         using namespace cortex;
 
-        const size_t n_samples = 1000;
+        const size_t n_samples = 100;
         const size_t n_rand_samples = n_samples / 4;
 
-        charset_task_t task(charset::numeric, 28, 28, color_mode::luma, n_samples);
+        charset_task_t task(charset::numeric, 16, 16, color_mode::luma, n_samples);
         BOOST_CHECK_EQUAL(task.load(""), true);
 
         for (size_t f = 0; f < task.fsize(); ++ f)

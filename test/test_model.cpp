@@ -17,10 +17,10 @@ BOOST_AUTO_TEST_CASE(test_model)
 
         using namespace cortex;
 
-        charset_task_t task(charset::numeric, 28, 28, color_mode::luma, 1024);
+        charset_task_t task(charset::numeric, 16, 16, color_mode::luma, 128);
         BOOST_CHECK_EQUAL(task.load(""), true);
 
-        const size_t n_tests = 8;
+        const size_t n_tests = 5;
 
         const string_t lmodel0;
         const string_t lmodel1 = lmodel0 + "linear:dims=10;act-snorm;";
@@ -30,9 +30,8 @@ BOOST_AUTO_TEST_CASE(test_model)
         const string_t lmodel5 = lmodel4 + "linear:dims=10;act-snorm;";
         
         string_t cmodel;
-        cmodel = cmodel + "conv:dims=8,rows=9,cols=9;pool-max;act-snorm;";
-        cmodel = cmodel + "conv:dims=8,rows=5,cols=5;pool-max;act-snorm;";
-        cmodel = cmodel + "conv:dims=8,rows=3,cols=3;act-snorm;";
+        cmodel = cmodel + "conv:dims=8,rows=7,cols=7;pool-max;act-snorm;";
+        cmodel = cmodel + "conv:dims=8,rows=5,cols=5;act-snorm;";
 
         const string_t outlayer = "linear:dims=" + text::to_string(task.osize()) + ";";
 

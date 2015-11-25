@@ -9,7 +9,7 @@
 
 BOOST_AUTO_TEST_CASE(test_cubic)
 {
-        const size_t tests = 1327;
+        const size_t tests = 127;
 
         for (size_t t = 0; t < tests; ++ t)
         {
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(test_cubic)
                 BOOST_CHECK_LE(math::abs(iq.gradient(extremum1)), math::epsilon1<double>());
                 BOOST_CHECK_LE(math::abs(iq.gradient(extremum2)), math::epsilon1<double>());
 
-                const size_t etests = 1843;
+                const size_t etests = 143;
                 for (size_t e = 0; e < etests; ++ e)
                 {
                         BOOST_CHECK_GE(math::abs(iq.gradient(rnd())),

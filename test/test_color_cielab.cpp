@@ -9,7 +9,7 @@ BOOST_AUTO_TEST_CASE(test_color_cielab)
 {
         using namespace cortex;
 
-        const size_t tests = 256 * 1024;
+        const size_t tests = 1023;
 
         math::random_t<rgba_t> rgen(0, 255);
         math::random_t<rgba_t> ggen(0, 255);

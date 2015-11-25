@@ -36,7 +36,7 @@ namespace test
                 const size_t cmd_irows = 8;
                 const size_t cmd_icols = 8;
                 const size_t cmd_outputs = 2;
-                const size_t cmd_max_layers = 2;
+                const size_t cmd_max_layers = 1;
 
                 string_t make_model_description(
                         size_t n_layers,
@@ -140,7 +140,7 @@ namespace test
         void test_grad_params(const string_t& header, const string_t& loss_id, const model_t& model,
                 accumulator_t& acc_params)
         {
-                math::random_t<size_t> rand(2, 5);
+                math::random_t<size_t> rand(1, 3);
 
                 const size_t n_tests = 4;
                 const size_t n_samples = rand();

@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
 
         cortex::init();
 
-        const size_t cmd_samples = 256;
+        const size_t cmd_samples = 64;
         const scalar_t cmd_epsilon = math::epsilon1<scalar_t>();
 
         charset_task_t task(charset::numeric, 16, 16, color_mode::luma, cmd_samples);
@@ -39,12 +39,12 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
         BOOST_CHECK_EQUAL(samples.size(), cmd_samples);
 
         const string_t lmodel0;
-        const string_t lmodel1 = lmodel0 + "linear:dims=32;act-snorm;";
-        const string_t lmodel2 = lmodel1 + "linear:dims=32;act-snorm;";
+        const string_t lmodel1 = lmodel0 + "linear:dims=4;act-snorm;";
+        const string_t lmodel2 = lmodel1 + "linear:dims=4;act-snorm;";
 
         string_t cmodel;
-        cmodel = cmodel + "conv:dims=3,rows=5,cols=5;pool-max;act-snorm;";
-        cmodel = cmodel + "conv:dims=5,rows=3,cols=3;pool-max;act-snorm;";
+        cmodel = cmodel + "conv:dims=2,rows=7,cols=7;pool-max;act-snorm;";
+        cmodel = cmodel + "conv:dims=4,rows=5,cols=5;act-snorm;";
 
         const string_t outlayer = "linear:dims=" + text::to_string(task.osize()) + ";";
 
