@@ -35,7 +35,7 @@ namespace test
                 const color_mode cmd_color = color_mode::luma;
                 const size_t cmd_irows = 8;
                 const size_t cmd_icols = 8;
-                const size_t cmd_outputs = 4;
+                const size_t cmd_outputs = 2;
                 const size_t cmd_max_layers = 2;
 
                 string_t make_model_description(
@@ -67,7 +67,7 @@ namespace test
                         // fully-connected part
                         for (size_t l = 0; l < n_layers && !full_layer_id.empty(); ++ l)
                         {
-                                math::random_t<size_t> rgen(1, 5);
+                                math::random_t<size_t> rgen(2, 3);
 
                                 string_t params;
                                 params += "dims=" + text::to_string(rgen());
@@ -140,9 +140,9 @@ namespace test
         void test_grad_params(const string_t& header, const string_t& loss_id, const model_t& model,
                 accumulator_t& acc_params)
         {
-                math::random_t<size_t> rand(3, 7);
+                math::random_t<size_t> rand(2, 5);
 
-                const size_t n_tests = 16;
+                const size_t n_tests = 4;
                 const size_t n_samples = rand();
 
                 const rloss_t rloss = cortex::get_losses().get(loss_id);
@@ -242,7 +242,7 @@ namespace test
         {
                 const rmodel_t rmodel_inputs = model.clone();
 
-                const size_t n_tests = 16;
+                const size_t n_tests = 4;
 
                 const rloss_t rloss = cortex::get_losses().get(loss_id);
                 const loss_t& loss = *rloss;
