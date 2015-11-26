@@ -1,7 +1,7 @@
 #!/bin/bash
 
 compiler=$CXX
-build_sys=ninja
+generator=ninja
 
 build_dir="`pwd`/build-release"
 build_type=Release
@@ -16,8 +16,8 @@ fi
 function usage
 {
 	echo "Usage: "
-	echo -e "\t--build-sys          <build system [ninja/make]>	default=${build_sys}"
-	echo -e "\t--compiler           <c++ compiler (g++, clang++)>	optional"
+	echo -e "\t--generator          <build system [codelite-][ninja/make]>	default=${generator}"
+	echo -e "\t--compiler           <c++ compiler (g++, clang++)>		optional"
 	echo
 }
 
@@ -25,8 +25,8 @@ function usage
 while [ "$1" != "" ]
 do
 	case $1 in
-                --build-sys)	shift
-                                build_sys=$1
+                --generator)	shift
+                                generator=$1
                                 ;;
         	--compiler)	shift
 			        compiler=$1
@@ -46,7 +46,7 @@ bash build.sh \
 	--compiler ${compiler} \
 	--build-dir ${build_dir} \
 	--build-type ${build_type} \
-	--build-sys ${build_sys} \
+	--generator ${generator} \
 	--install-dir ${install_dir} \
 	--install OFF \
 	--asan OFF --tsan OFF

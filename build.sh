@@ -3,7 +3,7 @@
 compiler=$CXX
 build_dir=""
 build_type="Release"
-build_sys="ninja"
+generator="ninja"
 install_dir="/usr/local/"
 install="OFF"
 
@@ -18,14 +18,14 @@ try() { "$@" || die "cannot $*"; }
 function usage
 {
 	echo "Usage: "
-	echo -e "\t--build-dir          <build directory>               required" 
-	echo -e "\t--build-type         <build type [Release/Debug]>    default=${build_type}"
-	echo -e "\t--build-sys          <build system [ninja/make]>	default=${build_sys}"
-	echo -e "\t--install-dir        <installation directory>        default=${install_dir}" 
-	echo -e "\t--install            <install [ON/OFF] Release only> default=${install}" 
-	echo -e "\t--asan               <address sanitizer [ON/OFF]>    default=${asan_flag}"
-	echo -e "\t--tsan               <thread sanitizer [ON/OFF]>     default=${tsan_flag}"
-	echo -e "\t--compiler           <c++ compiler (g++, clang++)>	optional"
+	echo -e "\t--build-dir		<build directory>               	required" 
+	echo -e "\t--build-type         <build type [Release/Debug]>    	default=${build_type}"
+	echo -e "\t--generator          <build system [codelite-][ninja/make]>	default=${generator}"
+	echo -e "\t--install-dir        <installation directory>        	default=${install_dir}" 
+	echo -e "\t--install            <install [ON/OFF] Release only> 	default=${install}" 
+	echo -e "\t--asan               <address sanitizer [ON/OFF]>    	default=${asan_flag}"
+	echo -e "\t--tsan               <thread sanitizer [ON/OFF]>     	default=${tsan_flag}"
+	echo -e "\t--compiler           <c++ compiler (g++, clang++)>		optional"
 	echo
 }
 
@@ -39,8 +39,8 @@ do
         	--build-type)	shift
                                 build_type=$1
                                 ;;
-        	--build-sys)	shift
-                                build_sys=$1
+        	--generator)	shift
+                                generator=$1
                                 ;;
         	--install-dir)	shift
                                 install_dir=$1
@@ -85,20 +85,33 @@ cd ${build_dir}
 rm -rf *
 
 # setup build systemr
-if [ "${build_sys}" == "ninja" ]
+if [ "${generator}" == "ninja" ]
 then
 	generator="Ninja"
 	maker="ninja"
 	installer="ninja install"
 
-elif [ "${build_sys}" == "make" ]
+elif [ "${generator}" == "codelite-ninja" ]
+then
+	generator="CodeLite - Ninja"
+	maker="ninja"
+	installer="ninja install"
+
+elif [ "${generator}" == "make" ]
 then
 	generator="Unix Makefiles"
 	maker="make -j"
 	installer="make install"
 
+elif [ "${generator}" == "codelite-make" ]
+then
+	generator="CodeLite - Unix Makefiles"
+	maker="make -j"
+	installer="make install"
+
 else
-	echo "Please use either ninja or make as the build system!"
+	echo "Please use a valid generator!"
+	usage
 	echo
 	exit 1
 fi
