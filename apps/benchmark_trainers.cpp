@@ -1,8 +1,8 @@
+#include "text/table.h"
 #include "cortex/batch.h"
 #include "cortex/cortex.h"
 #include "thread/thread.h"
 #include "cortex/minibatch.h"
-#include "cortex/util/table.h"
 #include "cortex/stochastic.h"
 #include "cortex/util/logger.h"
 #include "cortex/accumulator.h"
@@ -28,7 +28,7 @@ namespace
         <
                 typename ttrainer
         >
-        void test_optimizer(model_t& model, const string_t& name, table_t& table, const vectors_t& x0s,
+        void test_optimizer(model_t& model, const string_t& name, text::table_t& table, const vectors_t& x0s,
                 const ttrainer& trainer)
         {
                 math::stats_t<scalar_t> terrors;
@@ -67,7 +67,7 @@ namespace
         void test_optimizers(
                 const task_t& task, model_t& model, const sampler_t& tsampler, const sampler_t& vsampler,
                 const loss_t& loss, const string_t& criterion,
-                const size_t trials, const size_t iterations, table_t& table)
+                const size_t trials, const size_t iterations, text::table_t& table)
         {
                 const size_t batch_iterations = iterations;
                 const size_t minibatch_epochs = iterations;
@@ -264,7 +264,7 @@ int main(int argc, char* argv[])
                         const rloss_t loss = cortex::get_losses().get(iloss);
                         assert(loss);
 
-                        table_t table("optimizer");
+                        text::table_t table("optimizer");
                         table.header() << "train error"
                                        << "valid error"
                                        << "time [sec]";

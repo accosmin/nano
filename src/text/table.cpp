@@ -1,12 +1,12 @@
 #include "table.h"
-#include "text/align.hpp"
+#include "align.hpp"
 #include <cassert>
 #include <numeric>
 #include <ostream>
 
-namespace cortex
+namespace text
 {
-        table_t::table_t(const string_t& title)
+        table_t::table_t(const std::string& title)
                 :       m_title(title)
         {
         }
@@ -22,7 +22,7 @@ namespace cortex
                 m_rows.clear();
         }
 
-        table_row_t& table_t::append(const string_t& name)
+        table_row_t& table_t::append(const std::string& name)
         {
                 m_rows.emplace_back(name);
                 return *m_rows.rbegin();
@@ -75,14 +75,14 @@ namespace cortex
                 const auto namesize = name_colsize();
                 const auto colsizes = value_colsizes();
 
-                os << "|" << string_t(namesize + 2, '-');
+                os << "|" << std::string(namesize + 2, '-');
                 for (size_t c = 0; c < cols(); ++ c)
                 {
-                        os << "+" << string_t(colsizes[c] + 2, '-');
+                        os << "+" << std::string(colsizes[c] + 2, '-');
                 }
                 os << "|" << std::endl;
 
-//                os << "|" + string_t(rowsize, '-') << "|" << std::endl;
+//                os << "|" + std::string(rowsize, '-') << "|" << std::endl;
         }
 
         void table_t::print(std::ostream& os, const bool use_row_delim) const
@@ -115,7 +115,7 @@ namespace cortex
 
                         if (r > 0 && r < m_rows.size() && use_row_delim)
                         {
-                                os << string_t(rowsize, '-') << std::endl;
+                                os << std::string(rowsize, '-') << std::endl;
                         }
 
                         os << text::align("| " + row.name(), namesize + 3);

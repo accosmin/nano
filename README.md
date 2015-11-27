@@ -7,21 +7,16 @@ This small (nano) library is used for training and testing models, such as neura
 
 The core modules are independent of each other and are designed to be as generic as possible.
 
-##### Header only modules
-
 * **math** - numerical utilities, batch and stochastic numerical optimization and line-search methods. `Dependencies: Eigen3.`
 * **text** - string processing utilities. `No dependencies.`
 * **tensor** - vector, matrix and tensor utilities, 2D/3D convolution and correlations. `Dependencies: Eigen3.`
+* **io** - I/O utilities, wrappers over LibArchive and std::streams. `Dependencies: LibArchive, Zlib and BZip2.`
+* **thread** - thread pool, loop processing in parallel. `No dependencies.`
 
 Most notably the **math** module implements the following: 
 * batch optimization methods: `gradient descent`, various `non-linear conjugate gradient descent`, `L-BFGS`.
 * stochastic optimization methods: `accelerated gradient`, `stochastic (averaging) gradient`, `ADADELTA`, `ADAGRAD`.
 * line-search methods: `backtracking`, `More & Thuente`, `CG_DESCENT`.
-
-##### Libraries
-
-* **io** - I/O utilities, wrappers over LibArchive and std::streams. `Dependencies: LibArchive, Zlib and BZip2.`
-* **thread** - thread pool, loop processing in parallel. `No dependencies.`
 
 
 #### Cortex module

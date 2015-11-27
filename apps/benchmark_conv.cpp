@@ -1,3 +1,4 @@
+#include "text/table.h"
 #include "cortex/tensor.h"
 #include "math/random.hpp"
 #include "tensor/conv3d.hpp"
@@ -9,9 +10,8 @@
 #include "tensor/corr2d_dyn.hpp"
 #include "tensor/corr2d_egb.hpp"
 #include "tensor/corr2d_egr.hpp"
-#include "cortex/util/table.h"
+#include "text/table_row_mark.h"
 #include "cortex/util/measure.hpp"
-#include "cortex/util/row_mark.h"
 #include <iostream>
 #include <boost/program_options.hpp>
 
@@ -19,7 +19,7 @@ namespace
 {
         using namespace cortex;
 
-        string_t make_header(const int idims, const int isize, const int ksize, const int odims)
+        std::string make_header(const int idims, const int isize, const int ksize, const int odims)
         {
                 const int osize = isize - ksize + 1;
 
@@ -109,7 +109,7 @@ namespace
                 typename ttensor
         >
         void test_config_output(const int isize, const int idims, const int ksize, const int odims,
-                table_row_t& row, const size_t trials = 16)
+                text::table_row_t& row, const size_t trials = 16)
         {
                 ttensor idata, kdata, odata;
                 make_tensors(isize, idims, ksize, odims, idata, kdata, odata);
@@ -128,7 +128,7 @@ namespace
                 typename ttensor
         >
         void test_config_ginput(const int isize, const int idims, const int ksize, const int odims,
-                table_row_t& row, const size_t trials = 16)
+                text::table_row_t& row, const size_t trials = 16)
         {
                 ttensor idata, kdata, odata;
                 make_tensors(isize, idims, ksize, odims, idata, kdata, odata);
@@ -148,7 +148,7 @@ namespace
                 typename ttensor
         >
         void test_config_gparam(const int isize, const int idims, const int ksize, const int odims,
-                table_row_t& row, const size_t trials = 16)
+                text::table_row_t& row, const size_t trials = 16)
         {
                 ttensor idata, kdata, odata;
                 make_tensors(isize, idims, ksize, odims, idata, kdata, odata);
@@ -204,7 +204,7 @@ int main(int argc, char* argv[])
         // output
         if (has_output)
         {
-                table_t table("size\\output [us]");
+                text::table_t table("size\\output [us]");
                 table.header()
                         << "2D (eig)"
                         << "2D (cpp)"
@@ -216,19 +216,19 @@ int main(int argc, char* argv[])
                 {
                         for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ksize += 2)
                         {
-                                const string_t header = make_header(idims, isize, ksize, odims);
+                                const auto header = make_header(idims, isize, ksize, odims);
                                 test_config_output<tensor_t>(isize, idims, ksize, odims, table.append(header));
                         }
                 }
 
-                table.mark(cortex::make_table_row_minimum_mark<size_t>());
+                table.mark(text::make_table_row_minimum_mark<size_t>());
                 table.print(std::cout);
         }
 
         // gradient wrt parameters
         if (has_gparam)
         {
-                table_t table("size\\gparam [us]");
+                text::table_t table("size\\gparam [us]");
                 table.header()
                         << "2D (eig)"
                         << "2D (cpp)"
@@ -240,19 +240,19 @@ int main(int argc, char* argv[])
                 {
                         for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ksize += 2)
                         {
-                                const string_t header = make_header(idims, isize, ksize, odims);
+                                const auto header = make_header(idims, isize, ksize, odims);
                                 test_config_gparam<tensor_t>(isize, idims, ksize, odims, table.append(header));
                         }
                 }
 
-                table.mark(cortex::make_table_row_minimum_mark<size_t>());
+                table.mark(text::make_table_row_minimum_mark<size_t>());
                 table.print(std::cout);
         }
 
         // gradient wrt inputs
         if (has_ginput)
         {
-                table_t table("size\\ginput [us]");
+                text::table_t table("size\\ginput [us]");
                 table.header()
                         << "2D (egb)"
                         << "2D (egr)"
@@ -265,12 +265,12 @@ int main(int argc, char* argv[])
                 {
                         for (int ksize = min_ksize; ksize <= std::min(isize, max_ksize); ksize += 2)
                         {
-                                const string_t header = make_header(idims, isize, ksize, odims);
+                                const auto header = make_header(idims, isize, ksize, odims);
                                 test_config_ginput<tensor_t>(isize, idims, ksize, odims, table.append(header));
                         }
                 }
 
-                table.mark(cortex::make_table_row_minimum_mark<size_t>());
+                table.mark(text::make_table_row_minimum_mark<size_t>());
                 table.print(std::cout);
         }
 

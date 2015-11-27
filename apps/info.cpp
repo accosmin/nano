@@ -1,5 +1,5 @@
+#include "text/table.h"
 #include "cortex/cortex.h"
-#include "cortex/util/table.h"
 #include <iostream>
 #include <boost/program_options.hpp>
 
@@ -16,7 +16,7 @@ namespace
                 const strings_t ids = manager.ids();
                 const strings_t descriptions = manager.descriptions();
 
-                table_t table(name);
+                text::table_t table(name);
                 table.header() << "description";
 
                 for (size_t i = 0; i < ids.size(); ++ i)

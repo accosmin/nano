@@ -1,10 +1,10 @@
 #pragma once
 
-#include "row.h"
-#include "text/from_string.hpp"
+#include "table_row.h"
+#include "from_string.hpp"
 #include <algorithm>
 
-namespace cortex
+namespace text
 {
         ///
         /// \brief select the column with the minimum value

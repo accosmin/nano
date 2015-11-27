@@ -1,10 +1,10 @@
 #include "math/abs.hpp"
+#include "text/table.h"
 #include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/tune_stoch.hpp"
 #include "cortex/optimizer.h"
-#include "cortex/util/table.h"
 #include "cortex/util/logger.h"
 #include "text/from_string.hpp"
 #include "math/funcs/run_all.hpp"
@@ -70,7 +70,7 @@ namespace
                                         problem, nullptr, x0, optimizer, epochs, epoch_size, alpha, decay);
                         };
 
-                        const string_t name =
+                        const auto name =
                                 text::to_string(optimizer);
 
                         benchmark::benchmark_function(function, x0s, op, name, { 1e-5, 1e-4, 1e-3, 1e-2 }, stats, gstats);
@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
         const auto epochs = po_vm["epochs"].as<size_t>();
         const auto epoch_size = po_vm["epoch-size"].as<size_t>();
 
-        std::map<string_t, benchmark::optimizer_stat_t> gstats;
+        std::map<std::string, benchmark::optimizer_stat_t> gstats;
 
         math::run_all_test_functions<scalar_t, math::test_type::all>(min_dims, max_dims, [&] (const auto& function)
         {
@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
         });
 
         // show global statistics
-        benchmark::show_table(string_t(), gstats);
+        benchmark::show_table(std::string(), gstats);
 
         // OK
         log_info() << done;

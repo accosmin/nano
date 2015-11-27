@@ -1,8 +1,8 @@
+#include "text/table.h"
 #include "cortex/cortex.h"
 #include "thread/thread.h"
 #include "thread/loopi.hpp"
 #include "cortex/sampler.h"
-#include "cortex/util/table.h"
 #include "cortex/util/measure.hpp"
 #include "cortex/tasks/task_charset.h"
 #include "cortex/util/measure_and_log.hpp"
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
         vectors_t targets(cmd_max_samples);
 
         // construct tables to compare sampling
-        table_t table("sampling\\threads");
+        text::table_t table("sampling\\threads");
 
         for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
         {
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
         {
                 const string_t cmd_name = "sample size " + text::to_string(is);
 
-                table_row_t& row = table.append(cmd_name);
+                text::table_row_t& row = table.append(cmd_name);
 
                 log_info() << "<<< running test [" << cmd_name << "] ...";
 

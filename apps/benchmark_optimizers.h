@@ -1,11 +1,11 @@
 #include "math/abs.hpp"
+#include "text/table.h"
 #include "text/align.hpp"
 #include "math/clamp.hpp"
 #include "math/stats.hpp"
 #include "cortex/tensor.h"
 #include "thread/loopi.hpp"
-#include "cortex/util/table.h"
-#include "cortex/util/row_comp.h"
+#include "text/table_row_comp.h"
 
 namespace benchmark
 {
@@ -46,14 +46,14 @@ namespace benchmark
                 return stats;
         }
 
-        void show_table(const string_t& name, const std::map<string_t, optimizer_stat_t>& ostats)
+        void show_table(const std::string& name, const std::map<std::string, optimizer_stat_t>& ostats)
         {
                 assert(!ostats.empty());
 
                 const auto gthres = ostats.begin()->second.m_gthres;
 
                 // show global statistics
-                table_t table(text::align(name.empty() ? "optimizer" : name, 16));
+                text::table_t table(text::align(name.empty() ? "optimizer" : name, 16));
                 table.header() << "cost"
                                << "|grad|/|fval|"
                                << ("#>1e-" + text::to_string(static_cast<size_t>(-std::log10(gthres[3]))))
@@ -82,7 +82,7 @@ namespace benchmark
                                            << stat.m_speeds.avg();
                 }
 
-                table.sort(cortex::make_table_row_ascending_comp<scalar_t>(indices_t({2, 3, 4, 5, 0})));
+                table.sort(text::make_table_row_ascending_comp<scalar_t>(indices_t({2, 3, 4, 5, 0})));
                 table.print(std::cout);
         }
 
@@ -95,7 +95,7 @@ namespace benchmark
         >
         void benchmark_function(
                 const math::function_t<tscalar>& func, const std::vector<tvector>& x0s,
-                const toptimizer& op, const string_t& name,
+                const toptimizer& op, const std::string& name,
                 const scalars_t& gthres,
                 tostats& stats, tostats& gstats)
         {

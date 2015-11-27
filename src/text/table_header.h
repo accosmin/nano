@@ -1,9 +1,9 @@
 #pragma once
 
-#include "string.h"
-#include "text/to_string.hpp"
+#include "to_string.hpp"
+#include <vector>
 
-namespace cortex
+namespace text
 {
         ///
         /// \brief a header in the table
@@ -28,8 +28,8 @@ namespace cortex
                 ///
                 /// \brief retrieve the column values
                 ///
-                const strings_t& values() const { return m_values; }
-                const string_t& operator[](size_t i) const { return m_values[i]; }
+                const auto& values() const { return m_values; }
+                const auto& operator[](size_t i) const { return m_values[i]; }
 
                 ///
                 /// \brief retrieve the number of columns
@@ -39,7 +39,7 @@ namespace cortex
         private:
 
                 // attributes
-                strings_t       m_values;       ///< column values
+                std::vector<std::string>        m_values;       ///< column values
         };
 }
 

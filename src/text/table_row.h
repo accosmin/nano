@@ -1,9 +1,9 @@
 #pragma once
 
-#include "cortex/string.h"
-#include "text/to_string.hpp"
+#include "to_string.hpp"
+#include <vector>
 
-namespace cortex
+namespace text
 {
         ///
         /// \brief a row in the table.
@@ -15,7 +15,7 @@ namespace cortex
                 ///
                 /// \brief constructor
                 ///
-                explicit table_row_t(const string_t& name)
+                explicit table_row_t(const std::string& name)
                         :       m_name(name)
                 {
                 }
@@ -36,13 +36,13 @@ namespace cortex
                 ///
                 /// \brief retrieve the row name
                 ///
-                const string_t& name() const { return m_name; }
+                const auto& name() const { return m_name; }
 
                 ///
                 /// \brief retrieve the column values
                 ///
-                const string_t& operator[](size_t i) const { return m_values[i]; }
-                string_t& operator[](size_t i) { return m_values[i]; }
+                const auto& operator[](size_t i) const { return m_values[i]; }
+                auto& operator[](size_t i) { return m_values[i]; }
 
                 ///
                 /// \brief retrieve the column value range
@@ -58,8 +58,8 @@ namespace cortex
         private:
 
                 // attributes
-                string_t        m_name;         ///< row name
-                strings_t       m_values;       ///< column values
+                std::string                     m_name;         ///< row name
+                std::vector<std::string>        m_values;       ///< column values
         };
 }
 

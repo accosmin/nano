@@ -1,10 +1,10 @@
 #pragma once
 
-#include "row.h"
-#include "text/from_string.hpp"
+#include "table_row.h"
+#include "from_string.hpp"
 #include <cassert>
 
-namespace cortex
+namespace text
 {
         ///
         /// \brief operator to compare two rows

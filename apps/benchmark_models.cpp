@@ -1,10 +1,10 @@
+#include "text/table.h"
 #include "cortex/class.h"
 #include "cortex/cortex.h"
 #include "math/random.hpp"
 #include "thread/thread.h"
 #include "cortex/sampler.h"
 #include "tensor/random.hpp"
-#include "cortex/util/table.h"
 #include "cortex/accumulator.h"
 #include "cortex/util/measure.hpp"
 #include "cortex/tasks/task_charset.h"
@@ -148,11 +148,11 @@ int main(int argc, char *argv[])
         assert(loss);
 
         // construct tables to compare models
-        table_t ftable_rand("model-forward");
-        table_t ftable_task("model-forward");
+        text::table_t ftable_rand("model-forward");
+        text::table_t ftable_task("model-forward");
 
-        table_t btable_rand("model-backward");
-        table_t btable_task("model-backward");
+        text::table_t btable_rand("model-backward");
+        text::table_t btable_task("model-backward");
 
         for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
         {
@@ -169,11 +169,11 @@ int main(int argc, char *argv[])
                 const string_t cmd_network = cmd_networks[im];
                 const string_t cmd_name = cmd_names[im];
 
-                table_row_t& frow_rand = ftable_rand.append(cmd_name + " (rand)");
-                table_row_t& frow_task = ftable_task.append(cmd_name + " (task)");
+                text::table_row_t& frow_rand = ftable_rand.append(cmd_name + " (rand)");
+                text::table_row_t& frow_task = ftable_task.append(cmd_name + " (task)");
 
-                table_row_t& brow_rand = btable_rand.append(cmd_name + " (rand)");
-                table_row_t& brow_task = btable_task.append(cmd_name + " (task)");
+                text::table_row_t& brow_rand = btable_rand.append(cmd_name + " (rand)");
+                text::table_row_t& brow_task = btable_task.append(cmd_name + " (task)");
 
                 log_info() << "<<< running network [" << cmd_network << "] ...";
 

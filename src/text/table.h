@@ -1,12 +1,12 @@
 #pragma once
 
-#include "row.h"
 #include "arch.h"
-#include "header.h"
+#include "table_row.h"
+#include "table_header.h"
 #include <cassert>
 #include <algorithm>
 
-namespace cortex
+namespace text
 {
         ///
         /// \brief collects & formats for ASCII display tabular data
@@ -18,7 +18,7 @@ namespace cortex
                 ///
                 /// \brief constructor
                 ///
-                explicit table_t(const string_t& title);
+                explicit table_t(const std::string& title);
 
                 ///
                 /// \brief remove all rows, but keeps the header
@@ -33,7 +33,7 @@ namespace cortex
                 ///
                 /// \brief append a new row
                 ///
-                table_row_t& append(const string_t& name);
+                table_row_t& append(const std::string& name);
 
                 ///
                 /// \brief sort the table using the given row comparison
@@ -99,7 +99,7 @@ namespace cortex
         private:
 
                 // attributes
-                string_t                        m_title;        ///<
+                std::string                     m_title;        ///<
                 table_header_t                  m_header;       ///<
                 std::vector<table_row_t>        m_rows;         ///<
         };
