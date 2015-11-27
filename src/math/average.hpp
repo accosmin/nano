@@ -2,23 +2,46 @@
 
 namespace math
 {
+        template
+        <
+                typename tscalar
+        >
+        struct average_t
+        {
+                average_t() : m_count(0)
+                {
+                }
+
+                template
+                <
+                        typename tvalue
+                >
+                auto update(const tvalue& avg_value, const tvalue& value)
+                {
+                        constexpr tscalar one = 1;
+                        m_count += one;
+                        return (avg_value * (m_count - one) + value) / m_count;
+                }
+
+                tscalar         m_count;
+        };
+
         ///
         /// \brief running average for scalars
         ///
         template
         <
-                typename tscalar
+                typename tscalar,
+                typename tbase = average_t<tscalar>
         >
-        class average_scalar_t
+        class average_scalar_t : private tbase
         {
         public:
 
                 ///
                 /// \brief constructor
                 ///
-                average_scalar_t()
-                        :       m_count(0),
-                                m_value(0)
+                average_scalar_t() : m_value(0)
                 {
                 }
 
@@ -27,9 +50,7 @@ namespace math
                 ///
                 void update(const tscalar value)
                 {
-			constexpr tscalar one = 1;
-                        m_value = (m_value * m_count + value) / (m_count + one);
-                        m_count = m_count + one;
+                        m_value = tbase::update(m_value, value);
                 }
 
                 ///
@@ -42,7 +63,6 @@ namespace math
 
         private:
 
-                tscalar         m_count;
                 tscalar         m_value;
         };
 
@@ -52,9 +72,10 @@ namespace math
         template
         <
                 typename tvector,
-		typename tscalar = typename tvector::Scalar
+                typename tscalar = typename tvector::Scalar,
+                typename tbase = average_t<tscalar>
         >
-        class average_vector_t
+        class average_vector_t : private tbase
         {
         public:
 
@@ -66,8 +87,7 @@ namespace math
                         typename tsize
                 >
                 explicit average_vector_t(const tsize dimensions)
-                        :       m_count(0),
-                                m_value(tvector::Zero(dimensions))
+                        :       m_value(tvector::Zero(dimensions))
                 {
                 }
 
@@ -76,9 +96,7 @@ namespace math
                 ///
                 void update(const tvector& value)
                 {
-			constexpr tscalar one = 1;
-                        m_value.noalias() = (m_value * m_count + value) / (m_count + one);
-			m_count = m_count + one;
+                        m_value.noalias() = tbase::update(m_value, value);
                 }
 
                 ///
@@ -91,7 +109,6 @@ namespace math
 
         private:
 
-                tscalar         m_count;
                 tvector         m_value;
         };
 }
