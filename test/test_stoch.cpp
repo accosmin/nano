@@ -9,7 +9,7 @@
 #include "math/tune_stoch.hpp"
 #include "text/to_string.hpp"
 #include "cortex/optimizer.h"
-#include "math/funcs/run_all.hpp"
+#include "math/funcs/foreach.hpp"
 #include <iostream>
 
 namespace test
@@ -110,7 +110,7 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_stoch_optimizers)
 {
-        math::run_all_test_functions<double, math::test_type::easy>(1, 4, [] (const auto& function)
+        math::foreach_test_function<double, math::test_type::easy>(1, 4, [] (const auto& function)
         {
                 test::check_function(function);
         });

@@ -29,7 +29,7 @@ namespace math
         };
 
         ///
-        /// \brief run the given operator on all all test functions up to the given dimension
+        /// \brief run the given operator for each test function having the number of dimensions within the given range
         ///
         template
         <
@@ -37,7 +37,7 @@ namespace math
                 test_type type,
                 typename toperator
         >
-        void run_all_test_functions(
+        void foreach_test_function(
                 const typename problem_t<tscalar>::tsize min_dims,
                 const typename problem_t<tscalar>::tsize max_dims,
                 const toperator& op)

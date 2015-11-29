@@ -4,7 +4,7 @@
 #include <boost/test/unit_test.hpp>
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
-#include "math/funcs/run_all.hpp"
+#include "math/funcs/foreach.hpp"
 
 namespace test
 {
@@ -42,7 +42,7 @@ namespace test
 
 BOOST_AUTO_TEST_CASE(test_functions)
 {
-        math::run_all_test_functions<double, math::test_type::all>(1, 8, [] (const auto& function)
+        math::foreach_test_function<double, math::test_type::all>(1, 8, [] (const auto& function)
         {
                 test::test_function(function);
         });

@@ -7,7 +7,7 @@
 #include "cortex/optimizer.h"
 #include "cortex/util/logger.h"
 #include "text/from_string.hpp"
-#include "math/funcs/run_all.hpp"
+#include "math/funcs/foreach.hpp"
 #include "benchmark_optimizers.h"
 #include <map>
 #include <tuple>
@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
 
         std::map<std::string, benchmark::optimizer_stat_t> gstats;
 
-        math::run_all_test_functions<scalar_t, math::test_type::all>(min_dims, max_dims, [&] (const auto& function)
+        math::foreach_test_function<scalar_t, math::test_type::all>(min_dims, max_dims, [&] (const auto& function)
         {
                 check_function(function, trials, epochs, epoch_size, gstats);
         });
