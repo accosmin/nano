@@ -8,6 +8,7 @@
 #include "cortex/cortex.h"
 #include "math/random.hpp"
 #include "math/epsilon.hpp"
+#include "tensor/random.hpp"
 #include "text/to_string.hpp"
 #include "cortex/optimizer.h"
 #include "cortex/util/logger.h"
@@ -30,9 +31,11 @@ namespace
         const size_t cmd_max_layers = 2;
         const size_t cmd_tests = 4;
         const size_t cmd_threads = 1;
-        const size_t cmd_samples = 3;
 
-        math::random_t<size_t> ugen; // unbounded random number generator
+        math::random_t<size_t> urgen;                           // unbounded rng
+        math::random_t<scalar_t> prgen(-1.0, +1.0);             // rng for parameters
+        math::random_t<scalar_t> irgen(-0.1, +0.1);             // rng for inputs
+        math::random_t<tensor_size_t> trgen(0, cmd_outputs - 1);// rng for targets
 
         string_t make_model_description(
                 size_t n_layers,
@@ -110,14 +113,13 @@ namespace
                         }
                 }
 
-                const strings_t loss_ids = cortex::get_losses().ids();
-
                 // create the <model description, loss id> configuration
                 std::vector<std::pair<cortex::string_t, cortex::string_t> > result;
                 for (const auto& desc : descs)
                 {
-                        // pick a random loss (enough, because all the loss functions are tested separately)
-                        const string_t loss_id = loss_ids[ugen() % loss_ids.size()];
+                        const strings_t loss_ids = cortex::get_losses().ids();
+                        const string_t loss_id = loss_ids[urgen() % loss_ids.size()];
+
                         result.emplace_back(desc, loss_id);
                 }
 
@@ -164,12 +166,11 @@ namespace test
                 const loss_t& loss = *rloss;
 
                 const tensor_size_t psize = model.psize();
-                const tensor_size_t isize = model.isize();
                 const tensor_size_t osize = model.osize();
 
                 vector_t params(psize);
-                vectors_t targets(cmd_samples, vector_t(osize));
-                tensors_t inputs(cmd_samples, tensor_t(model.idims(), model.irows(), model.icols()));
+                vector_t target(osize);
+                tensor_t input(model.idims(), model.irows(), model.icols());
 
                 // optimization problem (wrt parameters & inputs): size
                 auto fn_params_size = [&] ()
@@ -181,7 +182,7 @@ namespace test
                 auto fn_params_fval = [&] (const vector_t& x)
                 {
                         acc_params.set_params(x);
-                        acc_params.update(inputs, targets, loss);
+                        acc_params.update(input, target, loss);
 
                         return acc_params.value();
                 };
@@ -190,7 +191,7 @@ namespace test
                 auto fn_params_grad = [&] (const vector_t& x, vector_t& gx)
                 {
                         acc_params.set_params(x);
-                        acc_params.update(inputs, targets, loss);
+                        acc_params.update(input, target, loss);
 
                         gx = acc_params.vgrad();
                         return acc_params.value();
@@ -201,19 +202,9 @@ namespace test
 
                 for (size_t t = 0; t < cmd_tests; ++ t)
                 {
-                        math::random_t<scalar_t> prgen(-0.1, +0.1);
-                        math::random_t<scalar_t> irgen(-0.1, +0.1);
-                        math::random_t<tensor_size_t> trgen(0, osize - 1);
-
-                        prgen(params.data(), params.data() + psize);
-                        for (vector_t& target : targets)
-                        {
-                                target = cortex::class_target(trgen(), osize);
-                        }
-                        for (tensor_t& input : inputs)
-                        {
-                                irgen(input.data(), input.data() + isize);
-                        }
+                        tensor::set_random(params, prgen);
+                        tensor::set_random(input, irgen);
+                        target = cortex::class_target(trgen(), osize);
 
                         const scalar_t delta = problem.grad_accuracy(params);
 
@@ -226,9 +217,8 @@ namespace test
 
         void test_grad_params(const string_t& header, const string_t& loss_id, const model_t& model)
         {
-                // pick a random criterion (enough, because all criteria are tested separately)
                 const strings_t criteria = cortex::get_criteria().ids();
-                const string_t criterion = criteria[ugen() % criteria.size()];
+                const string_t criterion = criteria[urgen() % criteria.size()];
 
                 accumulator_t acc_params(model, cmd_threads, criterion, criterion_t::type::vgrad, 0.1);
                 test_grad_params(header + "[criterion = " + criterion + "]", loss_id, model, acc_params);
@@ -282,13 +272,9 @@ namespace test
 
                 for (size_t t = 0; t < cmd_tests; ++ t)
                 {
-                        math::random_t<scalar_t> prgen(-1.0, +1.0);
-                        math::random_t<scalar_t> irgen(-0.1, +0.1);
-                        math::random_t<tensor_size_t> trgen(0, osize - 1);
-
-                        prgen(params.data(), params.data() + psize);
+                        tensor::set_random(params, prgen);
+                        tensor::set_random(input, irgen);
                         target = cortex::class_target(trgen(), osize);
-                        irgen(input.data(), input.data() + isize);
 
                         vector_t analytic_inputs_grad, aproxdif_inputs_grad;
 
@@ -315,7 +301,7 @@ BOOST_AUTO_TEST_CASE(test_gradient)
 
         // test each configuration
         thread::pool_t pool;
-        for (auto config : configs)
+        for (const auto& config : configs)
         {
                 pool.enqueue([=] ()
                 {
