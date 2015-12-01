@@ -32,6 +32,8 @@ namespace
         const size_t cmd_threads = 1;
         const size_t cmd_samples = 3;
 
+        math::random_t<size_t> ugen; // unbounded random number generator
+
         string_t make_model_description(
                 size_t n_layers,
                 const string_t& actv_layer_id,
@@ -115,9 +117,7 @@ namespace
                 for (const auto& desc : descs)
                 {
                         // pick a random loss (enough, because all the loss functions are tested separately)
-                        math::random_t<size_t> rng(0, loss_ids.size());
-
-                        const string_t loss_id = loss_ids[rng() % loss_ids.size()];
+                        const string_t loss_id = loss_ids[ugen() % loss_ids.size()];
                         result.emplace_back(desc, loss_id);
                 }
 
@@ -226,13 +226,12 @@ namespace test
 
         void test_grad_params(const string_t& header, const string_t& loss_id, const model_t& model)
         {
-                // check all criteria
+                // pick a random criterion (enough, because all criteria are tested separately)
                 const strings_t criteria = cortex::get_criteria().ids();
-                for (const string_t& criterion : criteria)
-                {
-                        accumulator_t acc_params(model, cmd_threads, criterion, criterion_t::type::vgrad, 0.1);
-                        test_grad_params(header + "[criterion = " + criterion + "]", loss_id, model, acc_params);
-                }
+                const string_t criterion = criteria[ugen() % criteria.size()];
+
+                accumulator_t acc_params(model, cmd_threads, criterion, criterion_t::type::vgrad, 0.1);
+                test_grad_params(header + "[criterion = " + criterion + "]", loss_id, model, acc_params);
         }
 
         void test_grad_inputs(const string_t& header, const string_t& loss_id, const model_t& model)
