@@ -2,7 +2,7 @@
 
 #include "params.hpp"
 #include "best_state.hpp"
-#include "math/average.hpp"
+#include "math/momentum.hpp"
 
 namespace math
 {
@@ -49,7 +49,7 @@ namespace math
                         best_state_t<tstate> bstate(cstate);
 
                         // running-weighted-averaged gradient
-                        average_vector_t<tvector> gavg(x0.size());
+                        momentum_vector_t<tvector> gavg(tscalar(0.95), x0);
 
                         for (std::size_t e = 0, k = 1; e < m_param.m_epochs; e ++)
                         {
