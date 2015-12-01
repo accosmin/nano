@@ -28,6 +28,9 @@ namespace
         const size_t cmd_icols = 8;
         const size_t cmd_outputs = 2;
         const size_t cmd_max_layers = 2;
+        const size_t cmd_tests = 4;
+        const size_t cmd_threads = 1;
+        const size_t cmd_samples = 3;
 
         string_t make_model_description(
                 size_t n_layers,
@@ -83,15 +86,15 @@ namespace
                 std::set<string_t> descs;
                 for (size_t n_layers = 0; n_layers <= cmd_max_layers; ++ n_layers)
                 {
-                        for (const string_t& actv_layer_id : actv_layer_ids)
+                        for (const auto& actv_layer_id : actv_layer_ids)
                         {
-                                for (const string_t& pool_layer_id : pool_layer_ids)
+                                for (const auto& pool_layer_id : pool_layer_ids)
                                 {
-                                        for (const string_t& conv_layer_id : conv_layer_ids)
+                                        for (const auto& conv_layer_id : conv_layer_ids)
                                         {
-                                                for (const string_t& full_layer_id : full_layer_ids)
+                                                for (const auto& full_layer_id : full_layer_ids)
                                                 {
-                                                        const string_t desc = make_model_description(
+                                                        const auto desc = make_model_description(
                                                                 n_layers,
                                                                 actv_layer_id,
                                                                 pool_layer_id,
@@ -109,7 +112,7 @@ namespace
 
                 // create the <model description, loss id> configuration
                 std::vector<std::pair<cortex::string_t, cortex::string_t> > result;
-                for (const string_t& desc : descs)
+                for (const auto& desc : descs)
                 {
                         // pick a random loss (enough, because all the loss functions are tested separately)
                         math::random_t<size_t> rng(0, loss_ids.size());
@@ -121,6 +124,26 @@ namespace
                 // OK
                 return result;
         }
+
+        void update_fails(const string_t& header, const scalar_t delta,
+                size_t& n_checks, size_t& n_fails1, size_t& n_fails2, size_t& n_fails3)
+        {
+                n_checks ++;
+                if (!math::close(delta, scalar_t(0), math::epsilon1<scalar_t>()))
+                {
+                        n_fails1 ++;
+                }
+                if (!math::close(delta, scalar_t(0), math::epsilon2<scalar_t>()))
+                {
+                        n_fails2 ++;
+                }
+                if (!math::close(delta, scalar_t(0), math::epsilon3<scalar_t>()))
+                {
+                        n_fails3 ++;
+                        BOOST_CHECK_LE(delta, math::epsilon3<scalar_t>());
+                        log_error() << header << ": error = " << delta << "/" << math::epsilon3<scalar_t>() << "!";
+                }
+        }
 }
 
 namespace test
@@ -130,18 +153,13 @@ namespace test
         std::mutex mutex;
 
         size_t n_checks = 0;
-        size_t n_failures1 = 0;
-        size_t n_failures2 = 0;
-        size_t n_failures3 = 0;
+        size_t n_fails1 = 0;
+        size_t n_fails2 = 0;
+        size_t n_fails3 = 0;
 
         void test_grad_params(const string_t& header, const string_t& loss_id, const model_t& model,
                 accumulator_t& acc_params)
         {
-                math::random_t<size_t> rand(1, 3);
-
-                const size_t n_tests = 4;
-                const size_t n_samples = rand();
-
                 const rloss_t rloss = cortex::get_losses().get(loss_id);
                 const loss_t& loss = *rloss;
 
@@ -150,8 +168,8 @@ namespace test
                 const tensor_size_t osize = model.osize();
 
                 vector_t params(psize);
-                vectors_t targets(n_samples, vector_t(osize));
-                tensors_t inputs(n_samples, tensor_t(model.idims(), model.irows(), model.icols()));
+                vectors_t targets(cmd_samples, vector_t(osize));
+                tensors_t inputs(cmd_samples, tensor_t(model.idims(), model.irows(), model.icols()));
 
                 // optimization problem (wrt parameters & inputs): size
                 auto fn_params_size = [&] ()
@@ -181,7 +199,7 @@ namespace test
                 // construct optimization problem: analytic gradient and finite difference approximation
                 const opt_problem_t problem(fn_params_size, fn_params_fval, fn_params_grad);
 
-                for (size_t t = 0; t < n_tests; ++ t)
+                for (size_t t = 0; t < cmd_tests; ++ t)
                 {
                         math::random_t<scalar_t> prgen(-0.1, +0.1);
                         math::random_t<scalar_t> irgen(-0.1, +0.1);
@@ -202,23 +220,7 @@ namespace test
                         // update statistics
                         const std::lock_guard<std::mutex> lock(test::mutex);
 
-                        n_checks ++;
-                        if (!math::close(delta, scalar_t(0), math::epsilon1<scalar_t>()))
-                        {
-                                n_failures1 ++;
-                        }
-                        if (!math::close(delta, scalar_t(0), math::epsilon2<scalar_t>()))
-                        {
-                                n_failures2 ++;
-                        }
-                        if (!math::close(delta, scalar_t(0), math::epsilon3<scalar_t>()))
-                        {
-                                n_failures3 ++;
-
-                                BOOST_CHECK_LE(delta, math::epsilon3<scalar_t>());
-
-                                log_error() << header << ": error = " << delta << "/" << math::epsilon3<scalar_t>() << "!";
-                        }
+                        update_fails(header, delta, n_checks, n_fails1, n_fails2, n_fails3);
                 }
         }
 
@@ -228,9 +230,7 @@ namespace test
                 const strings_t criteria = cortex::get_criteria().ids();
                 for (const string_t& criterion : criteria)
                 {
-                        const size_t n_threads = 1;
-
-                        accumulator_t acc_params(model, n_threads, criterion, criterion_t::type::vgrad, 0.1);
+                        accumulator_t acc_params(model, cmd_threads, criterion, criterion_t::type::vgrad, 0.1);
                         test_grad_params(header + "[criterion = " + criterion + "]", loss_id, model, acc_params);
                 }
         }
@@ -238,8 +238,6 @@ namespace test
         void test_grad_inputs(const string_t& header, const string_t& loss_id, const model_t& model)
         {
                 const rmodel_t rmodel_inputs = model.clone();
-
-                const size_t n_tests = 4;
 
                 const rloss_t rloss = cortex::get_losses().get(loss_id);
                 const loss_t& loss = *rloss;
@@ -283,7 +281,7 @@ namespace test
                 const opt_problem_t problem_analytic_inputs(fn_inputs_size, fn_inputs_fval, fn_inputs_grad);
                 const opt_problem_t problem_aproxdif_inputs(fn_inputs_size, fn_inputs_fval);
 
-                for (size_t t = 0; t < n_tests; ++ t)
+                for (size_t t = 0; t < cmd_tests; ++ t)
                 {
                         math::random_t<scalar_t> prgen(-1.0, +1.0);
                         math::random_t<scalar_t> irgen(-0.1, +0.1);
@@ -303,23 +301,7 @@ namespace test
                         // update statistics
                         const std::lock_guard<std::mutex> lock(test::mutex);
 
-                        n_checks ++;
-                        if (!math::close(delta, scalar_t(0), math::epsilon1<scalar_t>()))
-                        {
-                                n_failures1 ++;
-                        }
-                        if (!math::close(delta, scalar_t(0), math::epsilon2<scalar_t>()))
-                        {
-                                n_failures2 ++;
-                        }
-                        if (!math::close(delta, scalar_t(0), math::epsilon3<scalar_t>()))
-                        {
-                                n_failures3 ++;
-
-                                BOOST_CHECK_LE(delta, math::epsilon3<scalar_t>());
-
-                                log_error() << header << ": error = " << delta << "/" << math::epsilon3<scalar_t>() << "!";
-                        }
+                        update_fails(header, delta, n_checks, n_fails1, n_fails2, n_fails3);
                 }
         }
 }
@@ -367,16 +349,16 @@ BOOST_AUTO_TEST_CASE(test_gradient)
 
         pool.wait();
 
-        // print statistics
+        // check global results
         const scalar_t eps1 = math::epsilon1<scalar_t>();
         const scalar_t eps2 = math::epsilon2<scalar_t>();
         const scalar_t eps3 = math::epsilon3<scalar_t>();
 
-        log_info() << "failures: level1 = " << test::n_failures1 << "/" << test::n_checks << ", epsilon = " << eps1;
-        log_info() << "failures: level2 = " << test::n_failures2 << "/" << test::n_checks << ", epsilon = " << eps2;
-        log_info() << "failures: level3 = " << test::n_failures3 << "/" << test::n_checks << ", epsilon = " << eps3;
+        log_info() << "failures: level1 = " << test::n_fails1 << "/" << test::n_checks << ", epsilon = " << eps1;
+        log_info() << "failures: level2 = " << test::n_fails2 << "/" << test::n_checks << ", epsilon = " << eps2;
+        log_info() << "failures: level3 = " << test::n_fails3 << "/" << test::n_checks << ", epsilon = " << eps3;
 
-        BOOST_CHECK_LE(test::n_failures1 * 100, 100 * test::n_checks);
-        BOOST_CHECK_LE(test::n_failures2 * 100, 5 * test::n_checks);
-        BOOST_CHECK_LE(test::n_failures3 * 100, 0 * test::n_checks);
+        BOOST_CHECK_LE(test::n_fails1 * 100, 100 * test::n_checks);
+        BOOST_CHECK_LE(test::n_fails2 * 100, 5 * test::n_checks);
+        BOOST_CHECK_LE(test::n_fails3 * 100, 0 * test::n_checks);
 }
