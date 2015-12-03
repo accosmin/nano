@@ -26,12 +26,14 @@ namespace math
                                 tscalar epsilon,
                                 ls_initializer lsinit,
                                 ls_strategy lsstrat,
+                                std::size_t hsize,
                                 const topulog& ulog = topulog())
                         :       m_ulog(ulog),
                                 m_max_iterations(max_iterations),
                                 m_epsilon(epsilon),
                                 m_ls_initializer(lsinit),
-                                m_ls_strategy(lsstrat)
+                                m_ls_strategy(lsstrat),
+                                m_hsize(hsize)
                 {
                 }
 
@@ -49,6 +51,7 @@ namespace math
                 tscalar         m_epsilon;              ///< convergence precision
                 ls_initializer  m_ls_initializer;       ///< line-search step length initialization strategy
                 ls_strategy     m_ls_strategy;          ///< line-search step length selection strategy
+                std::size_t     m_hsize;                ///< number of previous iterations to use (if applicable)
         };
 }
 

@@ -26,12 +26,7 @@ namespace math
                 ///
                 /// \brief constructor
                 ///
-                batch_cgd_t(    std::size_t max_iterations,
-                                tscalar epsilon,
-                                ls_initializer lsinit,
-                                ls_strategy lsstrat,
-                                const topulog& ulog = topulog())
-                        :       m_param(max_iterations, epsilon, lsinit, lsstrat, ulog)
+                explicit batch_cgd_t(const param_t& param) : m_param(param)
                 {
                 }
 

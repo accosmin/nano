@@ -25,14 +25,7 @@ namespace math
                 ///
                 /// \brief constructor
                 ///
-                batch_lbfgs_t(  std::size_t max_iterations,
-                                tscalar epsilon,
-                                ls_initializer lsinit,
-                                ls_strategy lsstrat,
-                                std::size_t history_size,
-                                const topulog& ulog = topulog())
-                        :       m_param(max_iterations, epsilon, lsinit, lsstrat, ulog),
-                                m_hsize(history_size)
+                explicit batch_lbfgs_t(const param_t& param) : m_param(param)
                 {
                 }
 
@@ -71,7 +64,7 @@ namespace math
                                 typename std::deque<tvector>::const_reverse_iterator itr_s = ss.rbegin();
                                 typename std::deque<tvector>::const_reverse_iterator itr_y = ys.rbegin();
                                 std::vector<tscalar> alphas;
-                                for (std::size_t j = 1; j <= m_hsize && i >= j; j ++)
+                                for (std::size_t j = 1; j <= m_param.m_hsize && i >= j; j ++)
                                 {
                                         const tvector& s = (*itr_s ++);
                                         const tvector& y = (*itr_y ++);
@@ -95,7 +88,7 @@ namespace math
                                 typename std::deque<tvector>::const_iterator it_s = ss.begin();
                                 typename std::deque<tvector>::const_iterator it_y = ys.begin();
                                 typename std::vector<tscalar>::const_reverse_iterator itr_alpha = alphas.rbegin();
-                                for (std::size_t j = 1; j <= m_hsize && i >= j; j ++)
+                                for (std::size_t j = 1; j <= m_param.m_hsize && i >= j; j ++)
                                 {
                                         const tvector& s = (*it_s ++);
                                         const tvector& y = (*it_y ++);
@@ -118,7 +111,7 @@ namespace math
 
                                 ss.push_back(cstate.x - pstate.x);
                                 ys.push_back(cstate.g - pstate.g);
-                                if (ss.size() > m_hsize)
+                                if (ss.size() > m_param.m_hsize)
                                 {
                                         ss.pop_front();
                                         ys.pop_front();
@@ -131,7 +124,6 @@ namespace math
 
                 // attributes
                 param_t         m_param;
-                std::size_t     m_hsize;        ///< number of previous iterations to approximate Hessian's inverse
         };
 }
 
