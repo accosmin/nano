@@ -53,7 +53,7 @@ namespace math
                                 for (std::size_t i = 0; i < m_param.m_epoch_size; ++ i, ++ k)
                                 {
                                         // learning rate
-                                        const tscalar alpha = m_param.m_alpha0;
+                                        const tscalar alpha = m_param.alpha(0);
 
                                         // descent direction
                                         gavg.update(cstate.g.array().square());

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "decay.hpp"
+#include "lrate.hpp"
 #include <limits>
 
 namespace math
@@ -31,8 +31,7 @@ namespace math
                         :       m_ulog(ulog),
                                 m_epochs(epochs),
                                 m_epoch_size(epoch_size),
-                                m_alpha0(alpha0),
-                                m_decay(decay),
+                                m_decay(alpha0, decay),
                                 m_momentum(momentum),
                                 m_epsilon(std::sqrt(std::numeric_limits<tscalar>::epsilon()))
                 {
@@ -49,18 +48,17 @@ namespace math
                 ///
                 /// \brief current learning rate (following the decay rate)
                 ///
-                tscalar alpha(std::size_t iter) const
+                tscalar alpha(const std::size_t iter) const
                 {
-                        return math::decay(m_alpha0, iter, m_decay);
+                        return m_decay.get(iter);
                 }
 
                 // attributes
-                topulog         m_ulog;                 ///< update log: (the current_state_after_each_epoch)
-                std::size_t     m_epochs;               ///< number of epochs
-                std::size_t     m_epoch_size;           ///< epoch size in number of iterations
-                tscalar         m_alpha0;               ///< initial learning rate (if applicable)
-                tscalar         m_decay;                ///< learning rate's decay rate (if applicable)
-                tscalar         m_momentum;             ///< exponential running average (if applicable)
-                tscalar         m_epsilon;              ///< constant (e.g. to prevent divide-by-zero, if applicable)
+                topulog                 m_ulog;         ///< update log: (the current_state_after_each_epoch)
+                std::size_t             m_epochs;       ///< number of epochs
+                std::size_t             m_epoch_size;   ///< epoch size in number of iterations
+                mutable lrate_t<tscalar>m_decay;        ///< learning rate decay (if applicable)
+                tscalar                 m_momentum;     ///< exponential running average (if applicable)
+                tscalar                 m_epsilon;      ///< constant (e.g. to prevent divide-by-zero, if applicable)
         };
 }
