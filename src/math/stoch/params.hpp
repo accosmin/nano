@@ -26,12 +26,14 @@ namespace math
                                 std::size_t epoch_size,
                                 tscalar alpha0,
                                 tscalar decay,
+                                tscalar momentum,
                                 const topulog& ulog = topulog())
                         :       m_ulog(ulog),
                                 m_epochs(epochs),
                                 m_epoch_size(epoch_size),
                                 m_alpha0(alpha0),
                                 m_decay(decay),
+                                m_momentum(momentum),
                                 m_epsilon(std::sqrt(std::numeric_limits<tscalar>::epsilon()))
                 {
                 }
@@ -56,8 +58,9 @@ namespace math
                 topulog         m_ulog;                 ///< update log: (the current_state_after_each_epoch)
                 std::size_t     m_epochs;               ///< number of epochs
                 std::size_t     m_epoch_size;           ///< epoch size in number of iterations
-                tscalar         m_alpha0;               ///< initial learning rate
-                tscalar         m_decay;                ///< learning rate's decay rate
-                tscalar         m_epsilon;              ///< constant
+                tscalar         m_alpha0;               ///< initial learning rate (if applicable)
+                tscalar         m_decay;                ///< learning rate's decay rate (if applicable)
+                tscalar         m_momentum;             ///< exponential running average (if applicable)
+                tscalar         m_epsilon;              ///< constant (e.g. to prevent divide-by-zero, if applicable)
         };
 }

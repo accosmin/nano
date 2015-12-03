@@ -26,12 +26,7 @@ namespace math
                 ///
                 /// \brief constructor
                 ///
-                stoch_sga_t(    std::size_t epochs,
-                                std::size_t epoch_size,
-                                tscalar alpha0,
-                                tscalar decay,
-                                const topulog& ulog = topulog())
-                        :       m_param(epochs, epoch_size, alpha0, decay, ulog)
+                explicit stoch_sga_t(const param_t& param) : m_param(param)
                 {
                 }
 
@@ -49,11 +44,11 @@ namespace math
                         best_state_t<tstate> bstate(cstate);
 
                         // running-weighted-averaged gradient
-                        momentum_vector_t<tvector> gavg(tscalar(0.95), x0);
+                        momentum_vector_t<tvector> gavg(m_param.m_momentum, x0);
 
-                        for (std::size_t e = 0, k = 1; e < m_param.m_epochs; e ++)
+                        for (std::size_t e = 0, k = 1; e < m_param.m_epochs; ++ e)
                         {
-                                for (std::size_t i = 0; i < m_param.m_epoch_size; i ++, k ++)
+                                for (std::size_t i = 0; i < m_param.m_epoch_size; ++ i, ++ k)
                                 {
                                         // learning rate
                                         const tscalar alpha = m_param.alpha(k);

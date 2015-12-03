@@ -98,4 +98,47 @@ namespace math
 
                 return history.empty() ? trecord() : *history.begin();
         }
+
+        ///
+        /// \brief search for a 4D parameter that minimizes a given operator, using a fixed set of values to try.
+        ///
+        /// \returns { the result associated to the optimum parameter, the optimum parameters }.
+        ///
+        template
+        <
+                typename toperator,     ///< toperator(tvalue1, tvalue2, tvalue3, tvalue4) evaluates the parameters
+                typename tvalues1,
+                typename tvalues2,
+                typename tvalues3,
+                typename tvalues4
+        >
+        auto tune_fixed(const toperator& op,
+                const tvalues1& values1, const tvalues2& values2, const tvalues3& values3, const tvalues4& values4)
+        {
+                using tvalue1 = typename std::remove_reference<decltype(*values1.begin())>::type;
+                using tvalue2 = typename std::remove_reference<decltype(*values2.begin())>::type;
+                using tvalue3 = typename std::remove_reference<decltype(*values3.begin())>::type;
+                using tvalue4 = typename std::remove_reference<decltype(*values4.begin())>::type;
+                using tresult = decltype(op(tvalue1(0), tvalue2(0), tvalue3(0), tvalue4(0)));
+                using trecord = std::tuple<tresult, tvalue1, tvalue2, tvalue3, tvalue4>;
+
+                std::set<trecord> history;
+                for (auto param1 : values1)
+                {
+                        for (auto param2 : values2)
+                        {
+                                for (auto param3 : values3)
+                                {
+                                        for (auto param4 : values4)
+                                        {
+                                                history.emplace(
+                                                        op(param1, param2, param3, param4), 
+                                                        param1, param2, param3, param4);
+                                        }
+                                }
+                        }
+                }
+
+                return history.empty() ? trecord() : *history.begin();
+        }
 }

@@ -25,12 +25,7 @@ namespace math
                 ///
                 /// \brief constructor
                 ///
-                stoch_adadelta_t(std::size_t epochs,
-                                std::size_t epoch_size,
-                                tscalar alpha0,
-                                tscalar decay,
-                                const topulog& ulog = topulog())
-                        :       m_param(epochs, epoch_size, alpha0, decay, ulog)
+                explicit stoch_adadelta_t(const param_t& param) : m_param(param)
                 {
                 }
 
@@ -48,14 +43,14 @@ namespace math
                         best_state_t<tstate> bstate(cstate);
 
                         // running-weighted-averaged-per-dimension-squared gradient
-                        momentum_vector_t<tvector> gavg(tscalar(0.95), tvector::Zero(x0.size()));
+                        momentum_vector_t<tvector> gavg(m_param.m_momentum, tvector::Zero(x0.size()));
 
                         // running-weighted-averaged-per-dimension-squared step updates
-                        momentum_vector_t<tvector> davg(tscalar(0.95), tvector::Zero(x0.size()));
+                        momentum_vector_t<tvector> davg(m_param.m_momentum, tvector::Zero(x0.size()));
 
-                        for (std::size_t e = 0, k = 1; e < m_param.m_epochs; e ++)
+                        for (std::size_t e = 0, k = 1; e < m_param.m_epochs; ++ e)
                         {
-                                for (std::size_t i = 0; i < m_param.m_epoch_size; i ++, k ++)
+                                for (std::size_t i = 0; i < m_param.m_epoch_size; ++ i, ++ k) 
                                 {
                                         // descent direction
                                         gavg.update(cstate.g.array().square());

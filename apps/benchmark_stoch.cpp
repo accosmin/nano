@@ -62,12 +62,12 @@ namespace
                 {
                         const auto op = [&] (const tproblem& problem, const tvector& x0)
                         {
-                                tscalar alpha, decay;
+                                tscalar alpha, decay, momentum;
                                 math::tune_stochastic(
-                                        problem, x0, optimizer, epoch_size, alpha, decay);
+                                        problem, x0, optimizer, epoch_size, alpha, decay, momentum);
 
                                 return  math::minimize(
-                                        problem, nullptr, x0, optimizer, epochs, epoch_size, alpha, decay);
+                                        problem, nullptr, x0, optimizer, epochs, epoch_size, alpha, decay, momentum);
                         };
 
                         const auto name =

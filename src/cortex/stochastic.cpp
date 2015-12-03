@@ -12,8 +12,8 @@ namespace cortex
         namespace
         {
                 trainer_result_t train(
-                        trainer_data_t& data,
-                        math::stoch_optimizer optimizer, size_t epochs, size_t batch, scalar_t alpha0, scalar_t decay,
+                        trainer_data_t& data, math::stoch_optimizer optimizer, 
+                        size_t epochs, size_t batch, scalar_t alpha0, scalar_t decay, scalar_t momentum,
                         bool verbose)
                 {
                         trainer_result_t result;
@@ -57,6 +57,7 @@ namespace cortex
                                         epoch, scalars_t({ static_cast<scalar_t>(batch),
                                                            alpha0,
                                                            decay,
+                                                           momentum,
                                                            data.lambda() }));
 
                                 if (verbose)
@@ -68,6 +69,7 @@ namespace cortex
                                         << ", batch = " << batch
                                         << ", alpha = " << alpha0
                                         << ", decay = " << decay
+                                        << ", momentum = " << momentum
                                         << ", lambda = " << data.lambda()
                                         << "] done in " << timer.elapsed() << ".";
 
@@ -76,7 +78,7 @@ namespace cortex
 
                         // Optimize the model
                         math::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
-                                      data.m_x0, optimizer, epochs, epoch_size, alpha0, decay);
+                                      data.m_x0, optimizer, epochs, epoch_size, alpha0, decay, momentum);
 
                         // revert to the original sampler
                         data.m_tsampler.pop();
@@ -84,15 +86,15 @@ namespace cortex
                         return result;
                 }
 
-                // <result, batch size, decay rate, learning rate>
+                // <result, batch size, decay rate, learning rate, momentum>
                 auto tune_batch_decay_lrate(trainer_data_t& data, math::stoch_optimizer optimizer, bool verbose)
                 {
-                        const auto op = [&] (size_t batch, scalar_t decay, scalar_t alpha)
+                        const auto op = [&] (size_t batch, scalar_t decay, scalar_t alpha, scalar_t momentum)
                         {
                                 const cortex::timer_t timer;
 
                                 const size_t epochs = 1;
-                                const auto result = train(data, optimizer, epochs, batch, alpha, decay, false);
+                                const auto result = train(data, optimizer, epochs, batch, alpha, decay, momentum, false);
                                 const auto state = result.optimum_state();
 
                                 if (verbose)
@@ -102,6 +104,7 @@ namespace cortex
                                         << ", batch = " << batch
                                         << ", alpha = " << alpha
                                         << ", decay = " << decay
+                                        << ", momentum = " << momentum
                                         << ", lambda = " << data.lambda()
                                         << "] done in " << timer.elapsed() << ".";
 
@@ -111,8 +114,9 @@ namespace cortex
                         const auto batches = cortex::tunable_batches();
                         const auto decays = math::tunable_decays<scalar_t>(optimizer);
                         const auto alphas = math::tunable_alphas<scalar_t>(optimizer);
+                        const auto moments = math::tunable_moments<scalar_t>(optimizer);
 
-                        return math::tune_fixed(op, batches, decays, alphas);
+                        return math::tune_fixed(op, batches, decays, alphas, moments);
                 }
         }
 
@@ -140,8 +144,9 @@ namespace cortex
                         const auto opt_batch = std::get<1>(ret);
                         const auto opt_decay = std::get<2>(ret);
                         const auto opt_alpha = std::get<3>(ret);
+                        const auto opt_momentum = std::get<4>(ret);
 
-                        return train(data, optimizer, epochs, opt_batch, opt_alpha, opt_decay, verbose);
+                        return train(data, optimizer, epochs, opt_batch, opt_alpha, opt_decay, opt_momentum, verbose);
                 };
 
                 if (data.m_lacc.can_regularize())

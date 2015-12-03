@@ -62,11 +62,11 @@ namespace test
                                 const auto f0 = problem(x0);
 
                                 // optimize
-                                tscalar alpha, decay;
-                                math::tune_stochastic(problem, x0, optimizer, epoch_size, alpha, decay);
+                                tscalar alpha, decay, momentum;
+                                math::tune_stochastic(problem, x0, optimizer, epoch_size, alpha, decay, momentum);
 
                                 const auto state = math::minimize(
-                                        problem, nullptr, x0, optimizer, epochs, epoch_size, alpha, decay);
+                                        problem, nullptr, x0, optimizer, epochs, epoch_size, alpha, decay, momentum);
 
                                 const auto x = state.x;
                                 const auto f = state.f;

@@ -40,12 +40,7 @@ namespace math
                 ///
                 /// \brief constructor
                 ///
-                stoch_ag_base_t(std::size_t epochs,
-                                std::size_t epoch_size,
-                                tscalar alpha0,
-                                tscalar decay,
-                                const topulog& ulog = topulog())
-                        :       m_param(epochs, epoch_size, alpha0, decay, ulog)
+                explicit stoch_ag_base_t(const param_t& param) : m_param(param)
                 {
                 }
 
@@ -73,9 +68,9 @@ namespace math
                         tscalar fx = cstate.f;
                         tscalar f1 = cstate.f;
 
-                        for (std::size_t e = 0, k = 1; e < m_param.m_epochs; e ++)
+                        for (std::size_t e = 0, k = 1; e < m_param.m_epochs; ++ e)
                         {
-                                for (std::size_t i = 0; i < m_param.m_epoch_size; i ++, k ++)
+                                for (std::size_t i = 0; i < m_param.m_epoch_size; ++ i, ++ k)
                                 {
                                         // learning rate
                                         const tscalar alpha = m_param.m_alpha0;
