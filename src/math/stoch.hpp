@@ -5,6 +5,7 @@
 #include "stoch_types.h"
 #include "stoch/ag.hpp"
 #include "stoch/sg.hpp"
+#include "stoch/sgm.hpp"
 #include "stoch/sga.hpp"
 #include "stoch/sia.hpp"
 #include "stoch/adagrad.hpp"
@@ -35,6 +36,9 @@ namespace math
 
                 switch (optimizer)
                 {
+                case stoch_optimizer::SGM:
+                        return stoch_sgm_t<tproblem>(param)(problem, x0);
+
                 case stoch_optimizer::SGA:
                         return stoch_sga_t<tproblem>(param)(problem, x0);
 

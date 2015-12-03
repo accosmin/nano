@@ -8,6 +8,7 @@ namespace math
         enum class stoch_optimizer
         {
                 SG,                             ///< stochastic gradient
+                SGM,                            ///< stochastic gradient with momentum
                 SGA,                            ///< stochastic gradient averaging
                 SIA,                            ///< stochastic iterate averaging
                 AG,                             ///< Nesterov's accelerated gradient
