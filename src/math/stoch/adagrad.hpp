@@ -45,7 +45,7 @@ namespace math
                         // best state
                         best_state_t<tstate> bstate(cstate);
 
-                        // running-weighted-averaged-per-dimension-squared gradient
+                        // running-averaged-per-dimension-squared gradient
                         average_vector_t<tvector> gavg(x0.size());
 
                         for (std::size_t e = 0, k = 1; e < m_param.m_epochs; ++ e)

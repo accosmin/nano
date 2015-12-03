@@ -2,7 +2,7 @@
 
 #include "params.hpp"
 #include "best_state.hpp"
-#include "math/momentum.hpp"
+#include "math/average.hpp"
 
 namespace math
 {
@@ -43,8 +43,8 @@ namespace math
                         // best state
                         best_state_t<tstate> bstate(cstate);
 
-                        // running-weighted-averaged parameters
-                        momentum_vector_t<tvector> xavg(m_param.m_momentum, x0);
+                        // running-averaged parameters
+                        average_vector_t<tvector> xavg(x0.size());
 
                         for (std::size_t e = 0, k = 1; e < m_param.m_epochs; ++ e)
                         {

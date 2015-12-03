@@ -41,7 +41,7 @@ namespace math
                         // best state
                         best_state_t<tstate> bstate(cstate);
 
-                        // running-weighted-averaged-per-dimension step updates
+                        // running-averaged-per-dimension step updates
                         momentum_vector_t<tvector> davg(m_param.m_momentum, tvector::Zero(x0.size()));
 
                         for (std::size_t e = 0, k = 1; e < m_param.m_epochs; ++ e)
