@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(test_thread_loop)
                 const scalar_t mt = test_mt<scalar_t>(size, op);
                 BOOST_CHECK_LE(math::abs(st - mt), math::epsilon1<scalar_t>());
 
-                for (size_t nthreads = thread::n_threads(); nthreads <= thread::max_n_threads(); ++ nthreads)
+                for (size_t nthreads = 1; nthreads <= thread::max_n_threads(); nthreads += 2)
                 {
                         const scalar_t mtx = test_mt<scalar_t>(size, nthreads, op);
                         BOOST_CHECK_LE(math::abs(st - mtx), math::epsilon1<scalar_t>());
