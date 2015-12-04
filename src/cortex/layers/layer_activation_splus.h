@@ -3,7 +3,7 @@
 #include "layer_activation.h"
 
 namespace cortex
-{        
+{
         namespace detail
         {
                 struct softplus_activation_layer_eval_t
