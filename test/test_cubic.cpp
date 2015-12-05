@@ -13,7 +13,7 @@ BOOST_AUTO_TEST_CASE(test_cubic)
 
         for (size_t t = 0; t < tests; ++ t)
         {
-                math::random_t<double> rnd(-1.0, +1.0);
+                auto rnd = math::make_rng<double>(-1.0, +1.0);
 
                 // build random cubic
                 const double a = rnd();

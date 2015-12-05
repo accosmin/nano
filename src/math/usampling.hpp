@@ -15,7 +15,7 @@ namespace math
         >
         std::vector<tsize> uindices(tsize capacity, tsize size)
         {
-                random_t<tsize> rng(tsize(1), capacity);
+                auto rng = make_rng(tsize(1), capacity);
 
                 std::vector<tsize> indices(size);
                 for (tsize i = 0; i < size; i ++)
@@ -85,7 +85,7 @@ namespace math
         void usplit(const std::vector<tsample>& samples, std::size_t percentage1,
                 std::vector<tsample>& usamples1, std::vector<tsample>& usamples2)
         {
-                random_t<std::size_t> rng(0, 99);
+                auto rng = math::make_rng<std::size_t>(0, 99);
 
                 usamples1.clear();
                 usamples2.clear();

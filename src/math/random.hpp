@@ -2,6 +2,7 @@
 
 #include <random>
 #include <limits>
+#include <cassert>
 #include <type_traits>
 
 namespace math
@@ -11,7 +12,8 @@ namespace math
         ///
         template
         <
-                typename tscalar
+                typename tscalar,
+                typename tvalid = typename std::is_arithmetic<tscalar>::type
         >
         class random_t
         {
@@ -48,7 +50,7 @@ namespace math
                 {
                         for (; begin != end; ++ begin)
                         {
-                                *begin = operator()();
+                                *begin = this->operator ()();
                         }
                 }
 
@@ -78,26 +80,33 @@ namespace math
                 gen_t           m_gen;
                 die_t           m_die;
         };
-
+        
         ///
-        /// \brief generate random indices (e.g. for std::random_shuffle)
+        /// \brief create a random number generator in the given [min, max] range
         ///
         template
         <
-                typename tsize
+                typename tscalar,
+                typename tvalid = typename std::is_arithmetic<tscalar>::type
         >
-        struct random_index_t
+        random_t<tscalar> make_rng(
+                const tscalar min = std::numeric_limits<tscalar>::lowest(),
+                const tscalar max = std::numeric_limits<tscalar>::max())
         {
-                random_index_t(random_t<tsize>& gen)
-                        :       m_gen(gen)
-                {
-                }
-
-                tsize operator()(tsize size)
-                {
-                        return m_gen() % size;
-                }
-
-                random_t<tsize>&  m_gen;
-        };
+                return random_t<tscalar>(min, max);
+        }
+        
+        ///
+        /// \brief create a random index generator in the given [0, size) range
+        ///
+        template
+        <
+                typename tsize,
+                typename tvalid = typename std::is_unsigned<tsize>::type
+        >
+        random_t<tsize> make_index_rng(const tsize size)
+        {
+                assert(size > 0);
+                return random_t<tsize>(0, size - 1);
+        }
 }

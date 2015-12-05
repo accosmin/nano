@@ -53,8 +53,8 @@ namespace cortex
                 {
                         matrix_t fieldx(rows, cols), fieldy(rows, cols);
 
-                        tensor::set_random(fieldx, math::random_t<scalar_t>(-noise, +noise));
-                        tensor::set_random(fieldy, math::random_t<scalar_t>(-noise, +noise));
+                        tensor::set_random(fieldx, math::make_rng<scalar_t>(-noise, +noise));
+                        tensor::set_random(fieldy, math::make_rng<scalar_t>(-noise, +noise));
 
                         smooth_field(fieldx, sigma);
                         smooth_field(fieldy, sigma);
@@ -68,8 +68,8 @@ namespace cortex
                 {
                         matrix_t fieldx(rows, cols), fieldy(rows, cols);
 
-                        tensor::set_random(fieldx, math::random_t<scalar_t>(delta - noise, delta + noise));
-                        tensor::set_random(fieldy, math::random_t<scalar_t>(delta - noise, delta + noise));
+                        tensor::set_random(fieldx, math::make_rng<scalar_t>(delta - noise, delta + noise));
+                        tensor::set_random(fieldy, math::make_rng<scalar_t>(delta - noise, delta + noise));
 
                         smooth_field(fieldx, sigma);
                         smooth_field(fieldy, sigma);
@@ -87,7 +87,7 @@ namespace cortex
                         const scalar_t cy = 0.5 * static_cast<scalar_t>(rows);
                         const scalar_t id = 1.0 / (math::square(cx) + math::square(cy));
 
-                        math::random_t<scalar_t> rng(-noise, +noise);
+                        auto rng = math::make_rng<scalar_t>(-noise, +noise);
 
                         for (tensor_size_t r = 0; r < rows; ++ r)
                         {
@@ -159,8 +159,8 @@ namespace cortex
                 // generate random fields
                 const scalar_t pi = std::atan2(0.0, -0.0);
 
-                math::random_t<scalar_t> rng_theta(-pi / 8.0, +pi / 8.0);
-                math::random_t<scalar_t> rng_delta(-1.0, +1.0);
+                auto random_theta = math::make_rng<scalar_t>(-pi / 8.0, +pi / 8.0);
+                auto rng_delta = math::make_rng<scalar_t>(-1.0, +1.0);
 
                 matrix_t fieldx, fieldy;
                 switch (params.m_ftype)
@@ -172,7 +172,7 @@ namespace cortex
 
                 case field_type::rotation:
                         std::tie(fieldx, fieldy) =
-                        make_rotation_fields(patch.rows(), patch.cols(), rng_theta(), params.m_noise, params.m_sigma);
+                        make_rotation_fields(patch.rows(), patch.cols(), random_theta(), params.m_noise, params.m_sigma);
                         break;
 
                 case field_type::random:
