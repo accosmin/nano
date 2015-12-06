@@ -159,6 +159,8 @@ int main(int argc, char* argv[])
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
         po_desc.add_options()("help,h", "benchmark trainers");
+        po_desc.add_options()("l2n-reg", "also evaluate the l2-norm-based regularizer");
+        po_desc.add_options()("var-reg", "also evaluate the variance-based regularizer");
         po_desc.add_options()("mlp0", "MLP with 0 hidden layers");
         po_desc.add_options()("mlp1", "MLP with 1 hidden layers");
         po_desc.add_options()("mlp2", "MLP with 2 hidden layers");
@@ -186,6 +188,8 @@ int main(int argc, char* argv[])
                 return EXIT_FAILURE;
         }
 
+        const bool use_reg_l2n = po_vm.count("l2n-reg");
+        const bool use_reg_var = po_vm.count("var-reg");
         const bool use_mlp0 = po_vm.count("mlp0");
         const bool use_mlp1 = po_vm.count("mlp1");
         const bool use_mlp2 = po_vm.count("mlp2");
@@ -246,7 +250,11 @@ int main(int argc, char* argv[])
         if (use_conv2) { networks.push_back(cmodel2 + outlayer); }
 
         const strings_t losses = { "classnll" }; //cortex::get_losses().ids();
-        const strings_t criteria = cortex::get_criteria().ids();
+
+        strings_t criteria;
+        criteria.push_back("avg"); //cortex::get_criteria().ids();
+        if (use_reg_l2n) { criteria.push_back("l2n-reg"); }
+        if (use_reg_var) { criteria.push_back("var-reg"); }
 
         // vary the model
         for (const string_t& network : networks)
