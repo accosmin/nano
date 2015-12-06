@@ -19,7 +19,7 @@ namespace math
                 switch (optimizer)
                 {
                 case math::stoch_optimizer::ADADELTA:
-                        return { tscalar(0.0) };
+                        return { tscalar(1.0) };
 
                 default:
                         return { tscalar(1e-6), tscalar(1e-5), tscalar(1e-4),

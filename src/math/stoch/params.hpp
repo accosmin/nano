@@ -1,7 +1,6 @@
 #pragma once
 
 #include "lrate.hpp"
-#include <limits>
 
 namespace math
 {
@@ -33,7 +32,7 @@ namespace math
                                 m_epoch_size(epoch_size),
                                 m_decay(alpha0, decay),
                                 m_momentum(momentum),
-                                m_epsilon(std::sqrt(std::numeric_limits<tscalar>::epsilon()))
+                                m_epsilon(tscalar(1e-6))
                 {
                 }
 
