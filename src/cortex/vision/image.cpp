@@ -64,13 +64,13 @@ namespace cortex
                 return  load_luma_image(path, m_luma) &&
                         setup_luma();
         }
-        
+
         bool image_t::load_rgba(const string_t& name, const char* buffer, size_t buffer_size)
         {
                 return  load_rgba_image(name, buffer, buffer_size, m_rgba) &&
                         setup_rgba();
         }
-        
+
         bool image_t::load_luma(const string_t& name, const char* buffer, size_t buffer_size)
         {
                 return  load_luma_image(name, buffer, buffer_size, m_luma) &&

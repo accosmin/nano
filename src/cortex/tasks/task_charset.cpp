@@ -9,6 +9,7 @@
 #include "text/from_params.hpp"
 #include "tensor/transform.hpp"
 #include "cortex/vision/warp.h"
+#include "cortex/vision/image_io.h"
 #include "cortex/vision/convolve.hpp"
 #include "cortex/vision/bilinear.hpp"
 
@@ -144,21 +145,27 @@ namespace cortex
 
                 const size_t n_chars = characters.size();
 
-                const rgba_matrix_t char_patches[] =
-                {
-                        cortex::get_synth_bitstream_vera_sans_mono_bold(),
-                        cortex::get_synth_bitstream_vera_sans_mono(),
-                        cortex::get_synth_dejavu_sans_mono_bold(),
-                        cortex::get_synth_dejavu_sans_mono(),
-                        cortex::get_synth_droid_sans_mono(),
-                        cortex::get_synth_liberation_mono_bold(),
-                        cortex::get_synth_liberation_mono(),
-                        cortex::get_synth_nimbus_mono_bold(),
-                        cortex::get_synth_nimbus_mono(),
-                        cortex::get_synth_oxygen_mono()
-                };
+                std::vector<rgba_matrix_t> char_patches;
+                rgba_matrix_t char_patch;
+#define INSERT_IMAGE(name) \
+                if (!cortex::load_rgba_image(get_ ##name ##_name(), get_ ##name ##_data(), get_ ##name ##_size(), char_patch)) \
+                { \
+                        return false; \
+                } \
+                char_patches.push_back(char_patch);
+                INSERT_IMAGE(synth_bitstream_vera_sans_mono_bold)
+                INSERT_IMAGE(synth_bitstream_vera_sans_mono)
+                INSERT_IMAGE(synth_dejavu_sans_mono_bold)
+                INSERT_IMAGE(synth_dejavu_sans_mono)
+                INSERT_IMAGE(synth_droid_sans_mono)
+                INSERT_IMAGE(synth_liberation_mono_bold)
+                INSERT_IMAGE(synth_liberation_mono)
+                INSERT_IMAGE(synth_nimbus_mono_bold)
+                INSERT_IMAGE(synth_nimbus_mono)
+                INSERT_IMAGE(synth_oxygen_mono)
+#undef INSERT_IMAGE
 
-                const size_t n_fonts = sizeof(char_patches) / sizeof(rgba_matrix_t);
+                const size_t n_fonts = char_patches.size();
 
                 math::random_t<size_t> rng_protocol(1, 10);
                 math::random_t<tensor_size_t> rng_output(obegin(), oend() - 1);

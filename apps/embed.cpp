@@ -1,8 +1,8 @@
+#include "io/buffer.h"
 #include "text/lower.hpp"
 #include "cortex/string.h"
 #include "text/replace.hpp"
 #include "cortex/util/logger.h"
-#include "cortex/vision/image.h"
 #include <fstream>
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
@@ -10,29 +10,25 @@
 int main(int argc, char *argv[])
 {
         using namespace cortex;
-        
+
         // parse the command line
         boost::program_options::options_description po_desc("", 160);
-        po_desc.add_options()("help,h", "test program");
+        po_desc.add_options()("help,h", "embed binary file into the library");
         po_desc.add_options()("input,i",
                 boost::program_options::value<cortex::string_t>(),
-                "input image path");
-        po_desc.add_options()("luma",
-                "load the image as luma (grayscale)");
-        po_desc.add_options()("rgba",
-                "load the image as RGBA (color)");
+                "input path");
         po_desc.add_options()("output,o",
                 boost::program_options::value<cortex::string_t>(),
                 "output base file name (to generate .h & .cpp)");
-	
+
         boost::program_options::variables_map po_vm;
         boost::program_options::store(
                 boost::program_options::command_line_parser(argc, argv).options(po_desc).run(),
                 po_vm);
         boost::program_options::notify(po_vm);
-        		
+
         // check arguments and options
-        if (	po_vm.empty() ||
+        if (po_vm.empty() ||
                 !po_vm.count("input") ||
                 !po_vm.count("output") ||
                 po_vm.count("help"))
@@ -44,31 +40,19 @@ int main(int argc, char *argv[])
         const string_t cmd_input = po_vm["input"].as<string_t>();
         const string_t cmd_output = po_vm["output"].as<string_t>();
 
-        const bool cmd_luma = po_vm.count("luma");
-        const bool cmd_rgba = po_vm.count("rgba");        
-
-        if (    (!cmd_luma && !cmd_rgba) ||
-                (cmd_luma && cmd_rgba))
+        // load input file
+        io::buffer_t data;
+        if (!io::load_buffer(cmd_input, data))
         {
-                std::cout << po_desc;
+                log_error() << "failed to load input file from <" << cmd_input << ">!";
                 return EXIT_FAILURE;
         }
 
-        // load input image
-        image_t image;
-        if (!(cmd_luma ? image.load_luma(cmd_input) : image.load_rgba(cmd_input)))
-        {
-                log_error() << "failed to load image from <" << cmd_input << ">!";
-                return EXIT_FAILURE;
-        }
+        log_info () << "input: " << data.size() << " bytes.";
 
-        log_info () << "image: " << image.cols() << "x" << image.rows() << " pixels, "
-                    << (image.is_luma() ? "[luma]" : "[rgba]") << ".";
-
-        const string_t funcname = "get_" + text::lower(text::replace(boost::filesystem::basename(cmd_input), '-', '_'));
-        const string_t pixname = (cmd_luma ? "luma_t" : "rgba_t");
-        const string_t retname = (cmd_luma ? "luma_matrix_t" : "rgba_matrix_t");
+        const string_t name = text::lower(text::replace(boost::filesystem::basename(cmd_input), '-', '_'));
         const string_t tab(8, ' ');
+        const size_t rowsize = 32;
 
         const string_t path_header = text::lower(text::replace(cmd_output, '-', '_')) + ".h";
         const string_t path_source = text::lower(text::replace(cmd_output, '-', '_')) + ".cpp";
@@ -83,11 +67,13 @@ int main(int argc, char *argv[])
 
         os_header << "#pragma once\n";
         os_header << "\n";
-        os_header << "#include \"cortex/vision/color.h\"\n";
+        os_header << "#include <cstddef>\n";
         os_header << "\n";
         os_header << "namespace cortex\n";
         os_header << "{\n";
-        os_header << tab << retname << " " << funcname << "();\n";
+        os_header << tab << "const char* get_" << name << "_data();\n";
+        os_header << tab << "std::size_t get_" << name << "_size();\n";
+        os_header << tab << "const char* get_" << name << "_name();\n";
         os_header << "}\n";
         os_header << "\n";
 
@@ -108,41 +94,40 @@ int main(int argc, char *argv[])
 
         os_source << "#include " << boost::filesystem::path(path_header).filename() << "\n";
         os_source << "\n";
-        os_source << "cortex::" << retname << " cortex::" << funcname << "()\n";
+        os_source << "namespace\n";
         os_source << "{\n";
+        os_source << tab << "constexpr char name[] = \"" << name << "\";\n\n";
+        os_source << tab << "constexpr unsigned char data[] = \n";
+        os_source << tab << "{\n" << tab << tab;
+        for (size_t i = 0; i < data.size(); i ++)
         {
-                const auto op = [&] (const auto& buff)
+                os_source << (data[i] & 0xFF);
+                if (i + 1 < data.size())
                 {
-                        os_source << tab << "constexpr " << pixname << " data[] = \n";
-                        os_source << tab << "{\n";
-                        for (coord_t r = 0; r < buff.rows(); ++ r)
+                        os_source << ",";
+                        if (i && i % rowsize == 0)
                         {
-                                os_source << tab << tab;
-                                for (coord_t c = 0; c < buff.cols(); ++ c)
-                                {
-                                        os_source << std::to_string(static_cast<unsigned int>(buff(r, c)));
-                                        if ((c + 1 < buff.cols()) || (r + 1 < buff.rows()))
-                                        {
-                                                os_source << ", ";
-                                        }
-                                }
-                                os_source << "\n";
+                                os_source << "\n" << tab << tab;
                         }
-                        os_source << tab << "};\n\n";
-                        os_source << tab << "return tensor::map_matrix(data, " << buff.rows() << ", " << buff.cols() << ");\n";
-                };
-
-                if (cmd_luma)
-                {
-                        op(image.luma());
-                }
-                else
-                {
-                        op(image.rgba());
                 }
         }
-        os_source << "}\n";
-        os_source << "\n";
+        os_source << "\n" << tab << "};\n";
+        os_source << "}\n\n";
+
+        os_source << "const char* cortex::get_" << name << "_data()\n";
+        os_source << "{\n";
+        os_source << tab << "return (const char*)data;\n";
+        os_source << "}\n\n";
+
+        os_source << "std::size_t cortex::get_" << name << "_size()\n";
+        os_source << "{\n";
+        os_source << tab << "return sizeof(data) / sizeof(unsigned char);\n";
+        os_source << "}\n\n";
+
+        os_source << "const char* cortex::get_" << name << "_name()\n";
+        os_source << "{\n";
+        os_source << tab << "return name;\n";
+        os_source << "}\n\n";
 
         if (!os_source.good())
         {

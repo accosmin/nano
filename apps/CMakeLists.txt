@@ -8,7 +8,7 @@ set(nanocv_apps
         benchmark_trainers.cpp
         evaluate.cpp
         generate.cpp
-        image2cpp.cpp
+        embed.cpp
         info_archive.cpp
         info.cpp
         info_task.cpp
@@ -34,13 +34,12 @@ set(nanocv_programs
         info_task
         train
         evaluate
-        generate
-        image2cpp)
+        generate)
 
 install(TARGETS
         ${nanocv_programs}
         DESTINATION bin)
-                
+
 #set_target_properties(
 #        ${nanocv_programs}
 #        PROPERTIES INSTALL_RPATH "../lib:./:./lib")

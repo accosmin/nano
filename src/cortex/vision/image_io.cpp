@@ -41,30 +41,30 @@ namespace cortex
                                 }
                                 break;
                         }
-                        
+
                         ret = true;
                 }
-                
+
                 return ret;
         }
-        
+
         static bool load_image(const string_t& path, 
                 color_mode mode, rgba_matrix_t& rgba, luma_matrix_t& luma)
         {
                 ilInit();
-                
+
                 const ILuint id = ilGenImage();
                 ilBindImage(id);
-                
+
                 const bool ret = 
                         ilLoadImage((const ILstring)path.c_str()) &&
                         load_image(mode, rgba, luma);
-                
+
                 ilDeleteImage(id);
-                
+
                 return ret;
         }
-        
+
         static bool load_image(const string_t& name, const char* buffer, size_t buffer_size,
                 color_mode mode, rgba_matrix_t& rgba, luma_matrix_t& luma)
         {
@@ -72,7 +72,7 @@ namespace cortex
 
                 const ILuint id = ilGenImage();
                 ilBindImage(id);
-                
+
                 const std::map<string_t, ILenum> extensions = 
                 {
                         { ".pgm",       IL_PNM },
@@ -83,8 +83,8 @@ namespace cortex
                         { ".jpeg",      IL_JPG },
                         { ".jpg",       IL_JPG },
                         { ".bmp",       IL_BMP },
-                };                
-                
+                };
+
                 ILenum type = IL_TYPE_UNKNOWN;
                 for (const auto& extension : extensions)
                 {

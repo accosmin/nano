@@ -31,7 +31,7 @@ namespace cortex
                 ///
                 bool load_rgba(const std::string& path);
                 bool load_luma(const std::string& path);
-                
+
                 ///
                 /// \brief load image from encoded buffer, using the filename's extension as a hint to the image type
                 ///
