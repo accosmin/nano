@@ -51,6 +51,6 @@ namespace cortex
                         measurements(measure_usec(op, count));
                 }
 
-                return (measurements.min() + count / 2) / count;
+                return (measurements.min() + count - 1) / count;
         }
 }
