@@ -16,8 +16,8 @@ BOOST_AUTO_TEST_CASE(test_criteria)
 
         cortex::init();
 
-        const size_t cmd_samples = 64;
-        const size_t cmd_tests = 7;
+        const size_t cmd_samples = 16;
+        const size_t cmd_tests = 3;
         const scalar_t cmd_epsilon = math::epsilon1<scalar_t>();
 
         charset_task_t task(charset::numeric, 16, 16, color_mode::luma, cmd_samples);
@@ -26,8 +26,7 @@ BOOST_AUTO_TEST_CASE(test_criteria)
         const samples_t samples = task.samples();
         BOOST_CHECK_EQUAL(samples.size(), cmd_samples);
 
-        const string_t cmd_model =
-                "linear:dims=4;act-snorm;linear:dims=" + text::to_string(task.osize()) + ";";
+        const string_t cmd_model = "linear:dims=4;act-snorm;linear:dims=" + text::to_string(task.osize()) + ";";
 
         const rloss_t loss = cortex::get_losses().get("logistic");
         BOOST_CHECK_EQUAL(loss.operator bool(), true);
