@@ -12,17 +12,6 @@
 #include "cortex/accumulator.h"
 #include "cortex/tasks/task_charset.h"
 
-namespace test
-{
-        using namespace cortex;
-
-        bool check_fold(const samples_t& samples, cortex::fold_t fold)
-        {
-                return std::find_if(samples.begin(), samples.end(),
-                       [&] (const sample_t& sample) { return sample.m_fold != fold; }) == samples.end();
-        }
-}
-
 BOOST_AUTO_TEST_CASE(test_accumulator)
 {
         using namespace cortex;
