@@ -46,14 +46,14 @@ namespace benchmark
                 return stats;
         }
 
-        void show_table(const std::string& name, const std::map<std::string, optimizer_stat_t>& ostats)
+        void show_table(const std::string& table_name, const std::map<std::string, optimizer_stat_t>& ostats)
         {
                 assert(!ostats.empty());
 
                 const auto gthres = ostats.begin()->second.m_gthres;
 
                 // show global statistics
-                text::table_t table(text::align(name.empty() ? "optimizer" : name, 16));
+                text::table_t table(text::align(table_name.empty() ? "optimizer" : table_name, 16));
                 table.header() << "cost"
                                << "|grad|/|fval|"
                                << ("#>1e-" + text::to_string(static_cast<size_t>(-std::log10(gthres[3]))))
