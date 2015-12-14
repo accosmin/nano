@@ -3,13 +3,9 @@
 
 #include <boost/test/unit_test.hpp>
 #include "text/align.hpp"
-#include "text/lower.hpp"
-#include "text/upper.hpp"
-#include "text/replace.hpp"
-#include "text/ends_with.hpp"
+#include "text/algorithm.h"
 #include "text/from_params.hpp"
 #include "text/concatenate.hpp"
-#include "text/starts_with.hpp"
 #include <list>
 #include <set>
 

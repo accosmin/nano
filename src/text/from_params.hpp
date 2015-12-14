@@ -1,6 +1,6 @@
 #pragma once
 
-#include "split.hpp"
+#include "algorithm.h"
 #include "from_string.hpp"
 
 namespace text

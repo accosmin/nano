@@ -15,7 +15,6 @@ BOOST_AUTO_TEST_CASE(test_color_cielab)
         math::random_t<rgba_t> ggen(0, 255);
         math::random_t<rgba_t> bgen(0, 255);
 
-        // test CIELab transform
         for (size_t t = 0; t < tests; ++ t)
         {
                 const rgba_t r = rgen();

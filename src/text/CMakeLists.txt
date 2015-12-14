@@ -1,18 +1,13 @@
 # build library
 set(libtext_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/align.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/algorithm.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/algorithm.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/concatenate.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/ends_with.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/enum_string.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/equals.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/from_params.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/from_string.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/lower.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/replace.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/split.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/starts_with.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/to_string.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/upper.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/table.h
         ${CMAKE_CURRENT_SOURCE_DIR}/table.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/table_header.h

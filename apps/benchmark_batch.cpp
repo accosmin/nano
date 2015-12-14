@@ -5,10 +5,10 @@
 #include "math/random.hpp"
 #include "math/numeric.hpp"
 #include "math/epsilon.hpp"
+#include "text/algorithm.h"
 #include "cortex/optimizer.h"
 #include "cortex/util/logger.h"
 #include "text/from_string.hpp"
-#include "text/starts_with.hpp"
 #include "math/funcs/foreach.hpp"
 #include "benchmark_optimizers.h"
 #include <map>

@@ -2,7 +2,7 @@
 
 #include <typeinfo>
 #include <stdexcept>
-#include "equals.hpp"
+#include "algorithm.h"
 #include "enum_string.hpp"
 
 namespace text

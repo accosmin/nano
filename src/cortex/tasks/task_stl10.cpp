@@ -4,8 +4,7 @@
 #include "math/cast.hpp"
 #include "io/imstream.h"
 #include "cortex/class.h"
-#include "text/split.hpp"
-#include "text/ends_with.hpp"
+#include "text/algorithm.h"
 #include "cortex/util/logger.h"
 #include "text/from_string.hpp"
 

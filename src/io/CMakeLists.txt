@@ -21,7 +21,8 @@ add_library(io SHARED ${libio_sources})
 target_link_libraries(io
         ${ZLIB_LIBRARIES}
         ${BZIP2_LIBRARIES}
-        ${LibArchive_LIBRARIES})
+        ${LibArchive_LIBRARIES}
+        text)
 
 # install library
 install(TARGETS io

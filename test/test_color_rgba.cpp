@@ -17,7 +17,6 @@ BOOST_AUTO_TEST_CASE(test_color_rgba_transform)
         math::random_t<rgba_t> bgen(0, 255);
         math::random_t<rgba_t> agen(0, 255);
 
-        // test RGBA transform
         for (size_t t = 0; t < tests; ++ t)
         {
                 const rgba_t r = rgen();

@@ -4,7 +4,7 @@
 #include "io/imstream.h"
 #include "math/cast.hpp"
 #include "cortex/class.h"
-#include "text/ends_with.hpp"
+#include "text/algorithm.h"
 #include "cortex/util/logger.h"
 
 namespace cortex

@@ -1,5 +1,5 @@
 #include "image_io.h"
-#include "text/ends_with.hpp"
+#include "text/algorithm.h"
 #include <map>
 #include <IL/il.h>
 

@@ -1,7 +1,6 @@
 #include "io/buffer.h"
-#include "text/lower.hpp"
 #include "cortex/string.h"
-#include "text/replace.hpp"
+#include "text/algorithm.h"
 #include "cortex/util/logger.h"
 #include <fstream>
 #include <boost/filesystem.hpp>

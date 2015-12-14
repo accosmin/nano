@@ -1,6 +1,6 @@
 #include "forward_network.h"
 #include "math/cast.hpp"
-#include "text/split.hpp"
+#include "text/algorithm.h"
 #include "math/numeric.hpp"
 #include "text/to_string.hpp"
 #include "cortex/util/logger.h"

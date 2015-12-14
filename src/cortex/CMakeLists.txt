@@ -60,7 +60,6 @@ target_link_libraries(cortex
         ${IL_LIBRARIES}
         math
         tensor
-        text
         io
         thread)
 
