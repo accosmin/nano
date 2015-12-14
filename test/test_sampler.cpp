@@ -4,8 +4,6 @@
 #include <boost/test/unit_test.hpp>
 #include "cortex/sampler.h"
 #include "text/to_string.hpp"
-#include "cortex/util/timer.h"
-#include "cortex/util/logger.h"
 #include "cortex/tasks/task_charset.h"
 
 namespace test
@@ -38,8 +36,6 @@ BOOST_AUTO_TEST_CASE(test_sampler)
                 const string_t train_header = header + " protocol [" + text::to_string(protocol::train) + "]";
                 const string_t test_header = header + " protocol [" + text::to_string(protocol::test) + "]";
 
-                const cortex::timer_t timer;
-
                 // batch training samples
                 const auto train_batch_samples =
                         sampler_t(task.samples()).push(train_fold).get();
@@ -55,8 +51,6 @@ BOOST_AUTO_TEST_CASE(test_sampler)
                 // random uniform testing samples
                 const auto test_urand_samples =
                         sampler_t(task.samples()).push(test_fold).push(n_rand_samples).get();
-
-                log_info() << "fold [" << (f + 1) << "/" << task.fsize() << "]: sampled in " << timer.elapsed() << ".";
 
                 // check training & testing split
                 BOOST_CHECK_EQUAL(train_batch_samples.size() + test_batch_samples.size(), n_samples);

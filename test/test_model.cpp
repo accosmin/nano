@@ -7,7 +7,6 @@
 #include "math/epsilon.hpp"
 #include "cortex/evaluate.h"
 #include "text/to_string.hpp"
-#include "cortex/util/logger.h"
 #include "cortex/tasks/task_charset.h"
 #include <cstdio>
 
@@ -52,8 +51,6 @@ BOOST_AUTO_TEST_CASE(test_model)
 
         for (const string_t& cmd_network : cmd_networks)
         {
-                log_info() << "<<< running network [" << cmd_network << "] ...";
-
                 // create feed-forward network
                 const rmodel_t model = cortex::get_models().get("forward-network", cmd_network);
                 BOOST_CHECK_EQUAL(model.operator bool(), true);

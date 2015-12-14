@@ -29,7 +29,6 @@ namespace test
                         tvector x0(dims);
                         rgen(x0.data(), x0.data() + x0.size());
 
-                        // check gradient
                         const auto problem = function.problem();
                         BOOST_CHECK_EQUAL(problem.size(), dims);
                         BOOST_CHECK_LE(problem.grad_accuracy(x0), epsilon);
