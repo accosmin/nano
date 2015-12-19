@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 
         for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
         {
-                table.header() << (text::to_string(nthreads) + "xCPU [mu]");
+                table.header() << (text::to_string(nthreads) + "xCPU [us]");
         }
 
         // evaluate sampling
