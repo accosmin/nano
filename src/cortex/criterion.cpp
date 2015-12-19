@@ -77,26 +77,6 @@ namespace cortex
 
                 accumulate(output, target, loss);
         }
-        
-        void criterion_t::update(const tensor_t& input, const vector_t& target, const loss_t& loss)
-        {
-                const vector_t& output = m_model->output(input).vector();
-
-                assert(output.size() == m_model->osize());
-                assert(target.size() == m_model->osize());
-                
-                accumulate(output, target, loss);
-        }
-        
-        void criterion_t::update(const vector_t& input, const vector_t& target, const loss_t& loss)
-        {
-                const vector_t& output = m_model->output(input).vector();
-
-                assert(output.size() == m_model->osize());
-                assert(target.size() == m_model->osize());
-                
-                accumulate(output, target, loss);
-        }
 
         void criterion_t::accumulate(const vector_t& output, const vector_t& target, const loss_t& loss)
         {

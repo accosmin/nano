@@ -47,7 +47,7 @@ namespace cortex
         void accumulator_t::reset()
         {
                 m_impl->m_cache->reset();
-                for (const rcriterion_t& cache : m_impl->m_caches)
+                for (const auto& cache : m_impl->m_caches)
                 {
                         cache->reset();
                 }
@@ -58,7 +58,7 @@ namespace cortex
                 lambda = math::clamp(lambda, 0.0, 1.0);
 
                 m_impl->m_cache->reset(lambda);
-                for (const rcriterion_t& cache : m_impl->m_caches)
+                for (const auto& cache : m_impl->m_caches)
                 {
                         cache->reset(lambda);
                 }
@@ -67,25 +67,10 @@ namespace cortex
         void accumulator_t::set_params(const vector_t& params)
         {
                 m_impl->m_cache->reset(params);
-                for (const rcriterion_t& cache : m_impl->m_caches)
+                for (const auto& cache : m_impl->m_caches)
                 {
                         cache->reset(params);
                 }
-        }
-
-        void accumulator_t::update(const task_t& task, const sample_t& sample, const loss_t& loss)
-        {
-                m_impl->m_cache->update(task, sample, loss);
-        }
-
-        void accumulator_t::update(const tensor_t& input, const vector_t& target, const loss_t& loss)
-        {
-                m_impl->m_cache->update(input, target, loss);
-        }
-
-        void accumulator_t::update(const vector_t& input, const vector_t& target, const loss_t& loss)
-        {
-                m_impl->m_cache->update(input, target, loss);
         }
 
         void accumulator_t::update(const task_t& task, const samples_t& samples, const loss_t& loss)
@@ -94,7 +79,7 @@ namespace cortex
                 {
                         for (size_t i = 0; i < samples.size(); ++ i)
                         {
-                                update(task, samples[i], loss);
+                                m_impl->m_cache->update(task, samples[i], loss);
                         }
                 }
 
@@ -104,58 +89,11 @@ namespace cortex
                         {
                                 m_impl->m_caches[th]->update(task, samples[i], loss);
                         });
-                        
-                        sumup();
-                }
-        }
 
-        void accumulator_t::update(const tensors_t& inputs, const vectors_t& targets, const loss_t& loss)
-        {
-                if (m_impl->m_pool.n_workers() == 1)
-                {
-                        for (size_t i = 0; i < inputs.size(); ++ i)
+                        for (const auto& cache : m_impl->m_caches)
                         {
-                                update(inputs[i], targets[i], loss);
+                                (*m_impl->m_cache) += (*cache);
                         }
-                }
-
-                else
-                {
-                        thread::loopit(inputs.size(), m_impl->m_pool, [&] (size_t i, size_t th)
-                        {
-                                m_impl->m_caches[th]->update(inputs[i], targets[i], loss);
-                        });
-                        
-                        sumup();
-                }
-        }
-
-        void accumulator_t::update(const vectors_t& inputs, const vectors_t& targets, const loss_t& loss)
-        {
-                if (m_impl->m_pool.n_workers() == 1)
-                {
-                        for (size_t i = 0; i < inputs.size(); ++ i)
-                        {
-                                update(inputs[i], targets[i], loss);
-                        }
-                }
-
-                else
-                {
-                        thread::loopit(inputs.size(), m_impl->m_pool, [&] (size_t i, size_t th)
-                        {
-                                m_impl->m_caches[th]->update(inputs[i], targets[i], loss);
-                        });
-
-                        sumup();
-                }
-        }
-
-        void accumulator_t::sumup() const
-        {
-                for (const rcriterion_t& cache : m_impl->m_caches)
-                {
-                        (*m_impl->m_cache) += (*cache);
                 }
         }
         

@@ -59,8 +59,6 @@ namespace cortex
                 /// \brief update statistics with a new sample
                 ///
                 void update(const task_t& task, const sample_t& sample, const loss_t& loss);
-                void update(const tensor_t& input, const vector_t& target, const loss_t& loss);
-                void update(const vector_t& input, const vector_t& target, const loss_t& loss);
 
                 ///
                 /// \brief cumulate statistics

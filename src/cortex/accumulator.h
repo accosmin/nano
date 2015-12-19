@@ -44,18 +44,9 @@ namespace cortex
                 void set_lambda(scalar_t lambda);
 
                 ///
-                /// \brief update statistics with a new sample
-                ///
-                void update(const task_t& task, const sample_t& sample, const loss_t& loss);
-                void update(const tensor_t& input, const vector_t& target, const loss_t& loss);
-                void update(const vector_t& input, const vector_t& target, const loss_t& loss);
-
-                ///
-                /// \brief update statistics for a set of samples
+                /// \brief cumulate statistics with a set of samples
                 ///
                 void update(const task_t& task, const samples_t& samples, const loss_t& loss);
-                void update(const tensors_t& inputs, const vectors_t& targets, const loss_t& loss);
-                void update(const vectors_t& inputs, const vectors_t& targets, const loss_t& loss);
 
                 ///
                 /// \brief cumulated loss value
@@ -97,13 +88,6 @@ namespace cortex
                 ///
                 static bool can_regularize(const string_t& criterion);
                 bool can_regularize() const;
-
-        private:
-
-                ///
-                /// \brief accumulate partial results
-                ///
-                void sumup() const;
 
         private:
 

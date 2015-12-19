@@ -11,32 +11,6 @@
 #include "cortex/util/measure_and_log.hpp"
 #include <boost/program_options.hpp>
 
-namespace
-{
-        using namespace cortex;
-
-        void make_random_samples(
-                size_t cmd_samples,
-                tensor_size_t cmd_rows, tensor_size_t cmd_cols, tensor_size_t cmd_outputs, color_mode cmd_color,
-                tensors_t& inputs, vectors_t& targets)
-        {
-                inputs.resize(cmd_samples);
-                for (auto& input : inputs)
-                {
-                        input.resize(cmd_color == color_mode::luma ? 1 : 3, cmd_rows, cmd_cols);
-                        tensor::set_random(input, math::random_t<scalar_t>(0.0, 1.0));
-                }
-
-                math::random_t<tensor_index_t> trgen(0, cmd_outputs);
-
-                targets.resize(cmd_samples);
-                for (auto& target : targets)
-                {
-                        target = cortex::class_target(trgen() % cmd_outputs, cmd_outputs);
-                }
-        }
-}
-
 int main(int argc, char *argv[])
 {
         cortex::init();
@@ -88,11 +62,6 @@ int main(int argc, char *argv[])
         // generate synthetic task
         charset_task_t task(charset::numeric, cmd_rows, cmd_cols, cmd_color, cmd_samples);
         task.load("");
-
-        // generate random samples
-        tensors_t inputs;
-        vectors_t targets;
-        make_random_samples(cmd_samples, cmd_rows, cmd_cols, task.osize(), cmd_color, inputs, targets);
 
         // construct models
         const string_t lmodel0;
@@ -148,19 +117,13 @@ int main(int argc, char *argv[])
         assert(loss);
 
         // construct tables to compare models
-        text::table_t ftable_rand("model-forward");
-        text::table_t ftable_task("model-forward");
-
-        text::table_t btable_rand("model-backward");
-        text::table_t btable_task("model-backward");
+        text::table_t ftable("model-forward");
+        text::table_t btable("model-backward");
 
         for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
         {
-                ftable_rand.header() << (text::to_string(nthreads) + "xCPU [ms]");
-                ftable_task.header() << (text::to_string(nthreads) + "xCPU [ms]");
-
-                btable_rand.header() << (text::to_string(nthreads) + "xCPU [ms]");
-                btable_task.header() << (text::to_string(nthreads) + "xCPU [ms]");
+                ftable.header() << (text::to_string(nthreads) + "xCPU [ms]");
+                btable.header() << (text::to_string(nthreads) + "xCPU [ms]");
         }
 
         // evaluate models
@@ -169,11 +132,8 @@ int main(int argc, char *argv[])
                 const string_t cmd_network = cmd_networks[im];
                 const string_t cmd_name = cmd_names[im];
 
-                text::table_row_t& frow_rand = ftable_rand.append(cmd_name + " (rand)");
-                text::table_row_t& frow_task = ftable_task.append(cmd_name + " (task)");
-
-                text::table_row_t& brow_rand = btable_rand.append(cmd_name + " (rand)");
-                text::table_row_t& brow_task = btable_task.append(cmd_name + " (task)");
+                text::table_row_t& frow = ftable.append(cmd_name + " (task)");
+                text::table_row_t& brow = btable.append(cmd_name + " (task)");
 
                 log_info() << "<<< running network [" << cmd_network << "] ...";
 
@@ -197,46 +157,32 @@ int main(int argc, char *argv[])
                         {
                                 accumulator_t ldata(*model, nthreads, "l2n-reg", criterion_t::type::value, 0.1);
 
-                                const auto milis_rand = cortex::measure_robustly_usec([&] ()
-                                {
-                                        ldata.reset();
-                                        ldata.update(inputs, targets, *loss);
-                                }, 1) / 1000;
-
-                                const auto milis_task = cortex::measure_robustly_usec([&] ()
+                                const auto milis = cortex::measure_robustly_usec([&] ()
                                 {
                                         ldata.reset();
                                         ldata.update(task, samples, *loss);
                                 }, 1) / 1000;
 
                                 log_info() << "<<< processed [" << ldata.count()
-                                           << "] forward samples in " << milis_rand << "/" << milis_task << " ms.";
+                                           << "] forward samples in " << milis << " ms.";
 
-                                frow_rand << milis_rand;
-                                frow_task << milis_task;
+                                frow << milis;
                         }
 
                         if (cmd_backward)
                         {
                                 accumulator_t gdata(*model, nthreads, "l2n-reg", criterion_t::type::vgrad, 0.1);
 
-                                const auto milis_rand = cortex::measure_robustly_usec([&] ()
-                                {
-                                        gdata.reset();
-                                        gdata.update(inputs, targets, *loss);
-                                }, 1) / 1000;
-
-                                const auto milis_task = cortex::measure_robustly_usec([&] ()
+                                const auto milis = cortex::measure_robustly_usec([&] ()
                                 {
                                         gdata.reset();
                                         gdata.update(task, samples, *loss);
                                 }, 1) / 1000;
 
                                 log_info() << "<<< processed [" << gdata.count()
-                                           << "] backward samples in " << milis_rand << "/" << milis_task << " ms.";
+                                           << "] backward samples in " << milis << " ms.";
 
-                                brow_rand << milis_rand;
-                                brow_task << milis_task;
+                                brow << milis;
                         }
                 }
 
@@ -246,14 +192,12 @@ int main(int argc, char *argv[])
         // print results
         if (cmd_forward)
         {
-                ftable_rand.print(std::cout);
-                ftable_task.print(std::cout);
+                ftable.print(std::cout);
         }
         log_info();
         if (cmd_backward)
         {
-                btable_rand.print(std::cout);
-                btable_task.print(std::cout);
+                btable.print(std::cout);
         }
 
         // OK
