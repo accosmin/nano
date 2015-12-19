@@ -8,7 +8,6 @@
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
 #include "cortex/accumulator.h"
-#include "cortex/tasks/task_charset.h"
 
 BOOST_AUTO_TEST_CASE(test_accumulator)
 {
@@ -16,16 +15,12 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
 
         cortex::init();
 
-        const size_t cmd_samples = 64;
-        const scalar_t cmd_epsilon = math::epsilon1<scalar_t>();
+        const rtask_t task = cortex::get_tasks().get("random", "dims=2,rows=8,cols=8,color=luma,size=64");
+        BOOST_REQUIRE_EQUAL(task.operator bool(), true);
+        BOOST_CHECK_EQUAL(task->load(""), true);
 
-        charset_task_t task(charset::numeric, 16, 16, color_mode::luma, cmd_samples);
-        BOOST_CHECK_EQUAL(task.load(""), true);
-
-        const samples_t samples = task.samples();
-        BOOST_CHECK_EQUAL(samples.size(), cmd_samples);
-
-        const string_t cmd_model = "linear:dims=4;act-snorm;linear:dims=" + text::to_string(task.osize()) + ";";
+        const samples_t samples = task->samples();
+        const string_t cmd_model = "linear:dims=4;act-snorm;linear:dims=" + text::to_string(task->osize()) + ";";
 
         const rloss_t loss = cortex::get_losses().get("logistic");
         BOOST_CHECK_EQUAL(loss.operator bool(), true);
@@ -36,7 +31,7 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
         // create model
         const rmodel_t model = cortex::get_models().get("forward-network", cmd_model);
         BOOST_CHECK_EQUAL(model.operator bool(), true);
-        BOOST_CHECK_EQUAL(model->resize(task, true), true);
+        BOOST_CHECK_EQUAL(model->resize(*task, true), true);
 
         model->random_params();
 
@@ -53,18 +48,18 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
         BOOST_CHECK_EQUAL(lacc.lambda(), lambda);
         BOOST_CHECK_EQUAL(gacc.lambda(), lambda);
 
-        lacc.update(task, samples, *loss);
+        lacc.update(*task, samples, *loss);
         const scalar_t value1 = lacc.value();
 
-        BOOST_CHECK_EQUAL(lacc.count(), cmd_samples);
+        BOOST_CHECK_EQUAL(lacc.count(), samples.size());
 
-        gacc.update(task, samples, *loss);
+        gacc.update(*task, samples, *loss);
         const scalar_t vgrad1 = gacc.value();
         const vector_t pgrad1 = gacc.vgrad();
 
-        BOOST_CHECK_EQUAL(gacc.count(), cmd_samples);
+        BOOST_CHECK_EQUAL(gacc.count(), samples.size());
         BOOST_CHECK(std::isfinite(vgrad1));
-        BOOST_CHECK_LE(math::abs(vgrad1 - value1), cmd_epsilon);
+        BOOST_CHECK_LE(math::abs(vgrad1 - value1), math::epsilon1<scalar_t>());
 
         // check results with multiple threads
         for (size_t nthreads = 2; nthreads < 3 * thread::n_threads(); ++ nthreads)
@@ -81,15 +76,15 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
                 BOOST_CHECK_EQUAL(laccx.lambda(), lambda);
                 BOOST_CHECK_EQUAL(gaccx.lambda(), lambda);
 
-                laccx.update(task, samples, *loss);
+                laccx.update(*task, samples, *loss);
 
-                BOOST_CHECK_EQUAL(laccx.count(), cmd_samples);
-                BOOST_CHECK_LE(math::abs(laccx.value() - value1), cmd_epsilon);
+                BOOST_CHECK_EQUAL(laccx.count(), samples.size());
+                BOOST_CHECK_LE(math::abs(laccx.value() - value1), math::epsilon1<scalar_t>());
 
-                gaccx.update(task, samples, *loss);
+                gaccx.update(*task, samples, *loss);
 
-                BOOST_CHECK_EQUAL(gaccx.count(), cmd_samples);
-                BOOST_CHECK_LE(math::abs(gaccx.value() - vgrad1), cmd_epsilon);
-                BOOST_CHECK_LE((gaccx.vgrad() - pgrad1).lpNorm<Eigen::Infinity>(), cmd_epsilon);
+                BOOST_CHECK_EQUAL(gaccx.count(), samples.size());
+                BOOST_CHECK_LE(math::abs(gaccx.value() - vgrad1), math::epsilon1<scalar_t>());
+                BOOST_CHECK_LE((gaccx.vgrad() - pgrad1).lpNorm<Eigen::Infinity>(), math::epsilon1<scalar_t>());
         }
 }

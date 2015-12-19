@@ -12,6 +12,7 @@
 #include "tasks/task_svhn.h"
 #include "tasks/task_norb.h"
 #include "tasks/task_charset.h"
+#include "tasks/task_random.h"
 
 #include "layers/layer_activation_unit.h"
 #include "layers/layer_activation_tanh.h"
@@ -58,6 +59,7 @@ namespace cortex
                 cortex::get_tasks().add("svhn", svhn_task_t());
                 cortex::get_tasks().add("norb", norb_task_t());
                 cortex::get_tasks().add("charset", charset_task_t());
+                cortex::get_tasks().add("random", random_task_t());
 
                 // register layers
                 cortex::get_layers().add("act-unit", unit_activation_layer_t());
