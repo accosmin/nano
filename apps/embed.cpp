@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 
         const string_t name = text::lower(text::replace(boost::filesystem::basename(cmd_input), '-', '_'));
         const string_t tab(8, ' ');
-        const size_t rowsize = 32;
+        const size_t rowsize = 128;
 
         const string_t path_header = text::lower(text::replace(cmd_output, '-', '_')) + ".h";
         const string_t path_source = text::lower(text::replace(cmd_output, '-', '_')) + ".cpp";
