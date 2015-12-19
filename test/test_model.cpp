@@ -44,13 +44,13 @@ BOOST_AUTO_TEST_CASE(test_model)
         };
 
         const rloss_t loss = cortex::get_losses().get("logistic");
-        BOOST_CHECK_EQUAL(loss.operator bool(), true);
+        BOOST_REQUIRE_EQUAL(loss.operator bool(), true);
 
         for (const string_t& cmd_network : cmd_networks)
         {
                 // create feed-forward network
                 const rmodel_t model = cortex::get_models().get("forward-network", cmd_network);
-                BOOST_CHECK_EQUAL(model.operator bool(), true);
+                BOOST_REQUIRE_EQUAL(model.operator bool(), true);
                 BOOST_CHECK_EQUAL(model->resize(*task, false), true);
                 BOOST_CHECK_EQUAL(model->irows(), task->irows());
                 BOOST_CHECK_EQUAL(model->icols(), task->icols());

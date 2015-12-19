@@ -23,11 +23,11 @@ BOOST_AUTO_TEST_CASE(test_criteria)
         const string_t cmd_model = "linear:dims=4;act-snorm;linear:dims=" + text::to_string(task->osize()) + ";";
 
         const rloss_t loss = cortex::get_losses().get("logistic");
-        BOOST_CHECK_EQUAL(loss.operator bool(), true);
+        BOOST_REQUIRE_EQUAL(loss.operator bool(), true);
 
         // create model
         const rmodel_t model = cortex::get_models().get("forward-network", cmd_model);
-        BOOST_CHECK_EQUAL(model.operator bool(), true);
+        BOOST_REQUIRE_EQUAL(model.operator bool(), true);
         BOOST_CHECK_EQUAL(model->resize(*task, true), true);
 
         // vary criteria

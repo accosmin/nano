@@ -42,7 +42,7 @@ namespace
         rmodel_t get_model(const string_t& description)
         {
                 const rmodel_t rmodel = cortex::get_models().get("forward-network", description + cmd_layer_delim + cmd_layer_output);
-                BOOST_CHECK_EQUAL(rmodel.operator bool(), true);
+                BOOST_REQUIRE_EQUAL(rmodel.operator bool(), true);
                 rmodel->resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color, false);
                 BOOST_CHECK_EQUAL(rmodel->irows(), cmd_irows);
                 BOOST_CHECK_EQUAL(rmodel->icols(), cmd_icols);
