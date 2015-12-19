@@ -38,8 +38,8 @@ namespace math
                 typename toperator
         >
         void foreach_test_function(
-                const typename problem_t<tscalar>::tsize min_dims,
-                const typename problem_t<tscalar>::tsize max_dims,
+                const typename problem_t<tscalar>::tsize& min_dims,
+                const typename problem_t<tscalar>::tsize& max_dims,
                 const toperator& op)
         {
                 if (min_dims <= 1)

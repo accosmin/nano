@@ -20,7 +20,7 @@ namespace cortex
                                      "parameters: opt=lbfgs[,cgd,gd],iters=1024[4,4096],eps=1e-4[1e-8,1e-3]")
 
                 // constructor
-                batch_trainer_t(const string_t& parameters = string_t());
+                explicit batch_trainer_t(const string_t& parameters = string_t());
 
                 // train the model
                 virtual trainer_result_t train(

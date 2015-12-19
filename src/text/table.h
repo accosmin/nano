@@ -69,8 +69,6 @@ namespace text
                 ///
                 void print(std::ostream& os, const bool use_row_delim = false) const;
 
-        private:
-
                 ///
                 /// \brief retrieve the number of columns
                 ///
@@ -80,6 +78,8 @@ namespace text
                 /// \brief retrieve the (current) number of rows
                 ///
                 std::size_t rows() const;
+
+        private:
 
                 ///
                 /// \brief compute the size of each value column

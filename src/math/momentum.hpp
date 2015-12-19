@@ -10,7 +10,7 @@ namespace math
         >
         struct momentum_t
         {
-                momentum_t(const tscalar momentum) : m_momentum(momentum)
+                explicit momentum_t(const tscalar momentum) : m_momentum(momentum)
                 {
                         assert(momentum > 0);
                         assert(momentum < 1);

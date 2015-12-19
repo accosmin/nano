@@ -26,7 +26,7 @@ namespace cortex
                 ///
                 /// \brief constructor
                 ///
-                clonable_t(const tstring& configuration)
+                explicit clonable_t(const tstring& configuration)
                         :       m_configuration(configuration)
                 {
                 }

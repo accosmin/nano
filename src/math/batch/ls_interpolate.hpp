@@ -82,10 +82,10 @@ namespace math
                 /// \brief zoom-in in the bracketed interval,
                 ///     see "Numerical optimization", Nocedal & Wright, 2nd edition, p.60
                 ///
-                tstep zoom(
+                static tstep zoom(
                         const ls_strategy, const tscalar c1, const tscalar c2,
                         const tstep& step0, tstep steplo, tstep stephi,
-                        const tsize max_iters = 64) const
+                        const tsize max_iters = 64)
                 {
                         tstep stept(step0);
                         tscalar t;

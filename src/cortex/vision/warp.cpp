@@ -16,7 +16,7 @@ namespace cortex
                         assert(fieldx.rows() == fieldy.rows());
                         assert(fieldx.cols() == fieldy.cols());
 
-                        const scalar_t pi = std::atan2(0.0, -0.0);
+                        const scalar_t pi = 4.0 * std::atan(1.0);
                         const scalar_t ipi = 1.0 / pi;
 
                         tensor_t image(4, fieldx.rows(), fieldx.cols());
@@ -157,7 +157,7 @@ namespace cortex
                 }
 
                 // generate random fields
-                const scalar_t pi = std::atan2(0.0, -0.0);
+                const scalar_t pi = 4 * std::atan(1.0);
 
                 auto random_theta = math::make_rng<scalar_t>(-pi / 8.0, +pi / 8.0);
                 auto rng_delta = math::make_rng<scalar_t>(-1.0, +1.0);

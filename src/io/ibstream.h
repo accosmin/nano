@@ -18,7 +18,7 @@ namespace io
                 ///
                 /// \brief constructor
                 ///
-                ibstream_t(std::istream& os);
+                explicit ibstream_t(std::istream& os);
 
                 ///
                 /// \brief read a POD structure

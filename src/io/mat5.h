@@ -98,7 +98,7 @@ namespace io
                 ///
                 /// \brief load header section from the input stream
                 ///
-                bool load_header(imstream_t& istream);
+                static bool load_header(imstream_t& istream);
 
                 ///
                 /// \brief load body sections from the input stream

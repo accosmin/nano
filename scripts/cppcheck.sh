@@ -2,23 +2,27 @@
 
 idirs=$@
 
-dirs=""
+sources=""
+includes=""
 for idir in ${idirs}
 do
-	dirs=${dirs}" "`find ${idir} -type d`
+	dirs=`find ${idir} -type d`
+	for dir in ${dirs}
+	do 
+		sources=${sources}" "${dir}
+		includes=${includes}" -I "${dir}
+	done
 done
 
-log="cppcheck.log"
+echo "sources:"
+echo ${sources}
+echo 
 
-echo "includes: "
-echo ${dirs//src/ -I src}
-
-echo "sources: "
-echo ${dirs// /\*.cpp }
-echo ${dirs// /\*.hpp }
-echo ${dirs// /\*.h }
-echo ${dirs// /\*.cu }
+echo "includes:"
+echo ${includes}
+echo
 
 echo "checking ..."
-cppcheck --enable=all --force ${dirs//src/ -I src} ${dirs// /\*.cpp /\*.cu /\*.h /\*.hpp} > ${log} 2>&1
+log="cppcheck.log"
+cppcheck -j 4 --enable=all --inconclusive --force --template '{file}:{line},{severity},{id},{message}' ${includes} ${sources} > ${log} 2>&1 
 echo ">>> done, results in ${log}."

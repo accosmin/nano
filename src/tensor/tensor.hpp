@@ -1,7 +1,6 @@
 #pragma once
 
 #include "tensor_map.hpp"
-#include <boost/serialization/access.hpp>
 
 namespace tensor
 {
@@ -27,7 +26,7 @@ namespace tensor
                 ///
                 /// \brief constructor
                 ///
-                tensor_t(tsize dims = 0, tsize rows = 0, tsize cols = 0)
+                explicit tensor_t(tsize dims = 0, tsize rows = 0, tsize cols = 0)
                         :       tbase(dims, rows, cols)
                 {
                         resize(dims, rows, cols);
@@ -71,24 +70,6 @@ namespace tensor
                         tensor_t<tscalar_> copy(this->dims(), this->rows(), this->cols());
                         copy.vector() = this->vector().template cast<tscalar_>();
                         return copy;
-                }
-
-        private:
-
-                ///
-                /// \brief serialize
-                ///
-                friend class boost::serialization::access;
-                template
-                <
-                        class tarchive
-                >
-                void serialize(tarchive & ar, const unsigned int)
-                {
-                        ar & this->m_dims;
-                        ar & this->m_rows;
-                        ar & this->m_cols;
-                        ar & this->m_data;
                 }
         };
 }

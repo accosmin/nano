@@ -22,7 +22,7 @@ namespace cortex
                                      "parameters: opt=sg[,sga,sgm,sia,ag,agfr,aggr,adagrad,adadelta],epoch=16[1,1024]")
 
                 // constructor
-                stochastic_trainer_t(const string_t& parameters = string_t());
+                explicit stochastic_trainer_t(const string_t& parameters = string_t());
 
                 // train the model
                 virtual trainer_result_t train(

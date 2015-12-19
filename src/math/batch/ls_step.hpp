@@ -76,7 +76,7 @@ namespace math
                 ///
                 /// \brief check if the current step satisfies the Wolfe condition (sufficient curvature)
                 ///
-                bool has_wolfe(const tscalar c2)
+                bool has_wolfe(const tscalar c2) const
                 {
                         return gphi() >= +c2 * gphi0();
                 }
@@ -84,7 +84,7 @@ namespace math
                 ///
                 /// \brief check if the current step satisfies the strong Wolfe condition (sufficient curvature)
                 ///
-                bool has_strong_wolfe(const tscalar c2)
+                bool has_strong_wolfe(const tscalar c2) const
                 {
                         return  gphi() >= +c2 * gphi0() &&
                                 gphi() <= -c2 * gphi0();
@@ -94,7 +94,7 @@ namespace math
                 /// \brief check if the current step satisfies the approximate Wolfe condition (sufficient curvature)
                 ///     see CG_DESCENT
                 ///
-                bool has_approx_wolfe(const tscalar c1, const tscalar c2, const tscalar epsilon)
+                bool has_approx_wolfe(const tscalar c1, const tscalar c2, const tscalar epsilon) const
                 {
                         return  (2 * c1 - 1) * gphi0() >= gphi() &&
                                 gphi() >= +c2 * gphi0() &&

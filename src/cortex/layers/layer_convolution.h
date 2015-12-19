@@ -58,10 +58,8 @@ namespace cortex
 
         private:
 
-                tensor_size_t kdims() const { return m_kdata.dims(); }
                 tensor_size_t krows() const { return m_kdata.rows(); }
                 tensor_size_t kcols() const { return m_kdata.cols(); }
-                tensor_size_t ksize() const { return m_kdata.size(); }
 
                 tensor_size_t oppsize() const { return m_odata.planeSize(); }
                 tensor_size_t ippsize() const { return m_idata.planeSize(); }

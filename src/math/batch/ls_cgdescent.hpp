@@ -115,11 +115,11 @@ namespace math
                 ///
                 /// \brief bracket the initial line-search step length (see CG_DESCENT)
                 ///
-                std::pair<tstep, tstep> bracket(const tstep& step0, tstep c,
+                static std::pair<tstep, tstep> bracket(const tstep& step0, tstep c,
                         const tscalar epsilon,
                         const tscalar theta,
                         const tscalar ro,
-                        const tsize max_iters = 32) const
+                        const tsize max_iters = 32)
                 {
                         std::vector<tstep> steps;
                         for (tsize i = 0; i <= max_iters && c; i ++)
@@ -156,7 +156,7 @@ namespace math
                 ///
                 /// \brief [a, b] line-search interval secant interpolation (see CG_DESCENT)
                 ///
-                tstep secant(const tstep& a, const tstep& b) const
+                static tstep secant(const tstep& a, const tstep& b)
                 {
                         const auto t = (a.alpha() * b.gphi() - b.alpha() * a.gphi()) /
                                        (b.gphi() - a.gphi());
@@ -175,9 +175,9 @@ namespace math
                 ///
                 /// \brief [a, b] line-search interval double secant update (see CG_DESCENT)
                 ///
-                std::pair<tstep, tstep> secant2(const tstep& a, const tstep& b,
+                static std::pair<tstep, tstep> secant2(const tstep& a, const tstep& b,
                         const tscalar epsilon,
-                        const tscalar theta) const
+                        const tscalar theta)
                 {
                         const tstep c = secant(a, b);
 
@@ -203,9 +203,9 @@ namespace math
                 ///
                 /// \brief [a, b] line-search interval update (see CG_DESCENT)
                 ///
-                std::pair<tstep, tstep> update(const tstep& a, const tstep& b, tstep c,
+                static std::pair<tstep, tstep> update(const tstep& a, const tstep& b, tstep c,
                         const tscalar epsilon,
-                        const tscalar theta) const
+                        const tscalar theta)
                 {
                         if (!c || c.alpha() <= a.alpha() || c.alpha() >= b.alpha())
                         {
@@ -231,10 +231,10 @@ namespace math
                 ///
                 /// \brief [a, b] line-search interval update (see CG_DESCENT)
                 ///
-                std::pair<tstep, tstep> updateU(tstep a, tstep b,
+                static std::pair<tstep, tstep> updateU(tstep a, tstep b,
                         const tscalar epsilon,
                         const tscalar theta,
-                        const tsize max_iters = 128) const
+                        const tsize max_iters = 128)
                 {
                         tstep c(a);
                         for (tsize i = 0; i < max_iters && (b.alpha() - a.alpha()) > a.minimum(); i ++)

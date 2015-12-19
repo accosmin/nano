@@ -19,7 +19,7 @@ namespace io
                 ///
                 /// \brief constructor
                 ///
-                obstream_t(std::ostream& os);
+                explicit obstream_t(std::ostream& os);
 
                 ///
                 /// \brief write a POD structure
