@@ -9,6 +9,8 @@ namespace cortex
 {
         trainer_state_t::trainer_state_t()
                 :       trainer_state_t(
+                        size_t(0),
+                        size_t(0),
                         std::numeric_limits<scalar_t>::max(),
                         std::numeric_limits<scalar_t>::max(),
                         std::numeric_limits<scalar_t>::max(),
@@ -19,13 +21,17 @@ namespace cortex
         }
 
         trainer_state_t::trainer_state_t(
+                        size_t milis,
+                        size_t epoch,
                         scalar_t tvalue,
                         scalar_t terror_avg,
                         scalar_t terror_var,
                         scalar_t vvalue,
                         scalar_t verror_avg,
                         scalar_t verror_var)
-                :       m_tvalue(tvalue),
+                :       m_milis(milis),
+                        m_epoch(epoch),
+                        m_tvalue(tvalue),
                         m_terror_avg(terror_avg),
                         m_terror_var(terror_var),
                         m_vvalue(vvalue),

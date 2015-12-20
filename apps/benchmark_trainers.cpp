@@ -43,18 +43,20 @@ namespace
 
                         model.load_params(x0);
 
-                        const trainer_result_t result = trainer();
-                        const trainer_state_t state = result.optimum_state();
+                        const auto result = trainer();
+                        const auto opt_state = result.optimum_state();
+                        const auto opt_speed = result.optimum_speed();
 
-                        terrors(state.m_terror_avg);
-                        verrors(state.m_verror_avg);
+                        terrors(opt_state.m_terror_avg);
+                        verrors(opt_state.m_verror_avg);
                         timings(timer.seconds());
 
                         log_info() << "<<< " << name
                                    << ", optimum = {" << text::concatenate(result.optimum_config())
                                    << "}/" << result.optimum_epoch()
-                                   << ", train = " << state.m_terror_avg
-                                   << ", valid = " << state.m_verror_avg
+                                   << ", train = " << opt_state.m_terror_avg
+                                   << ", valid = " << opt_state.m_verror_avg
+                                   << ", speed = " << opt_speed
                                    << " done in " << timer.elapsed() << ".";
                 }
 

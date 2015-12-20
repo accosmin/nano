@@ -86,11 +86,10 @@ namespace cortex
                                 const scalar_t verror_var = data.m_lacc.var_error();
 
                                 // update the optimum state
-                                const auto ret = result.update(
-                                        x, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var,
-                                        epoch, scalars_t({ static_cast<scalar_t>(batch),
-                                                           static_cast<scalar_t>(iterations),
-                                                           data.lambda() }));
+                                const auto milis = timer.miliseconds();
+                                const auto ret = result.update(x,
+                                        {milis, epoch, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var},
+                                        {static_cast<scalar_t>(batch), static_cast<scalar_t>(iterations), data.lambda()});
 
                                 if (verbose)
                                 log_info()

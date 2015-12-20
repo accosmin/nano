@@ -1,23 +1,21 @@
 #include "trainer_result.h"
+#include "math/stats.hpp"
+#include "math/epsilon.hpp"
 #include "text/concatenate.hpp"
 
 namespace cortex
 {
         trainer_result_t::trainer_result_t()
-                :       m_opt_epoch(0)
         {
         }
 
         trainer_result_return_t trainer_result_t::update(const vector_t& params,
-                scalar_t tvalue, scalar_t terror_avg, scalar_t terror_var,
-                scalar_t vvalue, scalar_t verror_avg, scalar_t verror_var,
-                size_t epoch, const scalars_t& config)
+                const trainer_state_t& state, const scalars_t& config)
         {
-                const trainer_state_t state(tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var);
                 m_history[config].push_back(state);
 
                 const scalar_t beste = m_opt_state.m_verror_avg;
-                const scalar_t curre = verror_avg;
+                const scalar_t curre = state.m_verror_avg;
 
                 const size_t max_epochs_without_improvement = 32;
 
@@ -26,7 +24,6 @@ namespace cortex
                 {
                         m_opt_params = params;
                         m_opt_state = state;
-                        m_opt_epoch = epoch;
                         m_opt_config = config;
 
                         return trainer_result_return_t::solved;
@@ -37,7 +34,6 @@ namespace cortex
                 {
                         m_opt_params = params;
                         m_opt_state = state;
-                        m_opt_epoch = epoch;
                         m_opt_config = config;
 
                         return trainer_result_return_t::better;
@@ -47,7 +43,7 @@ namespace cortex
                 else
                 {
                         // not enough epochs, keep training
-                        if (epoch < max_epochs_without_improvement)
+                        if (state.m_epoch < max_epochs_without_improvement)
                         {
                                 return trainer_result_return_t::worse;
                         }
@@ -55,7 +51,7 @@ namespace cortex
                         else
                         {
                                 // last improvement not far in the past, keep training
-                                if (epoch < m_opt_epoch + max_epochs_without_improvement)
+                                if (state.m_epoch < m_opt_state.m_epoch + max_epochs_without_improvement)
                                 {
                                         return trainer_result_return_t::worse;
                                 }
@@ -115,7 +111,33 @@ namespace cortex
 
         size_t trainer_result_t::optimum_epoch() const
         {
-                return m_opt_epoch;
+                return optimum_state().m_epoch;
+        }
+
+        scalar_t trainer_result_t::optimum_speed() const
+        {
+                const auto op = [](const trainer_state_t& prv_state, const trainer_state_t& crt_state)
+                {
+                        assert(crt_state.m_tvalue >= scalar_t(0));
+                        assert(prv_state.m_tvalue >= scalar_t(0));
+                        assert(crt_state.m_milis >= prv_state.m_milis);
+
+                        const scalar_t epsilon = math::epsilon0<scalar_t>();
+                        const auto ratio = (epsilon + crt_state.m_tvalue) / (epsilon + prv_state.m_tvalue);
+                        const auto delta = size_t(1) + crt_state.m_milis - prv_state.m_milis;
+
+                        return (ratio * scalar_t(1000.0)) / static_cast<scalar_t>(delta);
+                };
+
+                math::stats_t<scalar_t> speeds;
+
+                const auto states = optimum_states();
+                for (size_t i = 0; i + 1 < states.size(); ++ i)
+                {
+                        speeds(op(states[i], states[i + 1]));
+                }
+
+                return speeds.avg();
         }
 
         bool operator<(const trainer_result_t& one, const trainer_result_t& other)

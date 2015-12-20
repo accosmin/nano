@@ -9,115 +9,107 @@
 
 namespace cortex
 {
-        namespace
+        static trainer_result_t train(
+                trainer_data_t& data, math::stoch_optimizer optimizer,
+                size_t epochs, size_t batch, scalar_t alpha0, scalar_t decay, scalar_t momentum,
+                bool verbose)
         {
-                trainer_result_t train(
-                        trainer_data_t& data, math::stoch_optimizer optimizer, 
-                        size_t epochs, size_t batch, scalar_t alpha0, scalar_t decay, scalar_t momentum,
-                        bool verbose)
-                {
-                        trainer_result_t result;
+                trainer_result_t result;
 
+                const cortex::timer_t timer;
+
+                // set the sampling size
+                data.m_tsampler.push(batch);
+
+                // construct the optimization problem
+                size_t epoch = 0;
+                const size_t epoch_size = data.epoch_size(batch);
+
+                auto fn_size = cortex::make_opsize(data);
+                auto fn_fval = cortex::make_opfval(data);
+                auto fn_grad = cortex::make_opgrad(data);
+
+                auto fn_ulog = [&] (const opt_state_t& state)
+                {
+                        // evaluate training samples
+                        data.m_lacc.set_params(state.x);
+                        data.m_tsampler.pop();                  //
+                        data.m_lacc.update(data.m_task, data.m_tsampler.get(), data.m_loss);
+                        data.m_tsampler.push(batch);            //
+                        const scalar_t tvalue = data.m_lacc.value();
+                        const scalar_t terror_avg = data.m_lacc.avg_error();
+                        const scalar_t terror_var = data.m_lacc.var_error();
+
+                        // evaluate validation samples
+                        data.m_lacc.set_params(state.x);
+                        data.m_lacc.update(data.m_task, data.m_vsampler.get(), data.m_loss);
+                        const scalar_t vvalue = data.m_lacc.value();
+                        const scalar_t verror_avg = data.m_lacc.avg_error();
+                        const scalar_t verror_var = data.m_lacc.var_error();
+
+                        // OK, update the optimum solution
+                        const auto milis = timer.miliseconds();
+                        const auto ret = result.update(state.x,
+                                {milis, ++ epoch, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var},
+                                {static_cast<scalar_t>(batch), alpha0, decay, momentum, data.lambda()});
+
+                        if (verbose)
+                        log_info()
+                                << "[train = " << tvalue << "/" << terror_avg
+                                << ", valid = " << vvalue << "/" << verror_avg
+                                << " (" << text::to_string(ret) << ")"
+                                << ", epoch = " << epoch << "/" << epochs
+                                << ", batch = " << batch
+                                << ", alpha = " << alpha0
+                                << ", decay = " << decay
+                                << ", momentum = " << momentum
+                                << ", lambda = " << data.lambda()
+                                << "] done in " << timer.elapsed() << ".";
+
+                        return !cortex::is_done(ret);
+                };
+
+                // Optimize the model
+                math::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
+                              data.m_x0, optimizer, epochs, epoch_size, alpha0, decay, momentum);
+
+                // revert to the original sampler
+                data.m_tsampler.pop();
+
+                return result;
+        }
+
+        // <result, batch size, decay rate, learning rate, momentum>
+        static auto tune_batch_decay_lrate(trainer_data_t& data, math::stoch_optimizer optimizer, bool verbose)
+        {
+                const auto op = [&] (size_t batch, scalar_t decay, scalar_t alpha, scalar_t momentum)
+                {
                         const cortex::timer_t timer;
 
-                        // set the sampling size
-                        data.m_tsampler.push(batch);
+                        const size_t epochs = 1;
+                        const auto result = train(data, optimizer, epochs, batch, alpha, decay, momentum, false);
+                        const auto state = result.optimum_state();
 
-                        // construct the optimization problem
-                        size_t epoch = 0;
-                        const size_t epoch_size = data.epoch_size(batch);
-
-                        auto fn_size = cortex::make_opsize(data);
-                        auto fn_fval = cortex::make_opfval(data);
-                        auto fn_grad = cortex::make_opgrad(data);
-
-                        auto fn_ulog = [&] (const opt_state_t& state)
-                        {
-                                // evaluate training samples
-                                data.m_lacc.set_params(state.x);
-                                data.m_tsampler.pop();                  //
-                                data.m_lacc.update(data.m_task, data.m_tsampler.get(), data.m_loss);
-                                data.m_tsampler.push(batch);            //
-                                const scalar_t tvalue = data.m_lacc.value();
-                                const scalar_t terror_avg = data.m_lacc.avg_error();
-                                const scalar_t terror_var = data.m_lacc.var_error();
-
-                                // evaluate validation samples
-                                data.m_lacc.set_params(state.x);
-                                data.m_lacc.update(data.m_task, data.m_vsampler.get(), data.m_loss);
-                                const scalar_t vvalue = data.m_lacc.value();
-                                const scalar_t verror_avg = data.m_lacc.avg_error();
-                                const scalar_t verror_var = data.m_lacc.var_error();
-
-                                epoch ++;
-
-                                // OK, update the optimum solution
-                                const auto ret = result.update(
-                                        state.x, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var,
-                                        epoch, scalars_t({ static_cast<scalar_t>(batch),
-                                                           alpha0,
-                                                           decay,
-                                                           momentum,
-                                                           data.lambda() }));
-
-                                if (verbose)
-                                log_info()
-                                        << "[train = " << tvalue << "/" << terror_avg
-                                        << ", valid = " << vvalue << "/" << verror_avg
-                                        << " (" << text::to_string(ret) << ")"
-                                        << ", epoch = " << epoch << "/" << epochs
-                                        << ", batch = " << batch
-                                        << ", alpha = " << alpha0
-                                        << ", decay = " << decay
-                                        << ", momentum = " << momentum
-                                        << ", lambda = " << data.lambda()
-                                        << "] done in " << timer.elapsed() << ".";
-
-                                return !cortex::is_done(ret);
-                        };
-
-                        // Optimize the model
-                        math::minimize(opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
-                                      data.m_x0, optimizer, epochs, epoch_size, alpha0, decay, momentum);
-
-                        // revert to the original sampler
-                        data.m_tsampler.pop();
+                        if (verbose)
+                        log_info()
+                                << "[tuning: train = " << state.m_tvalue << "/" << state.m_terror_avg
+                                << ", valid = " << state.m_vvalue << "/" << state.m_verror_avg
+                                << ", batch = " << batch
+                                << ", alpha = " << alpha
+                                << ", decay = " << decay
+                                << ", momentum = " << momentum
+                                << ", lambda = " << data.lambda()
+                                << "] done in " << timer.elapsed() << ".";
 
                         return result;
-                }
+                };
 
-                // <result, batch size, decay rate, learning rate, momentum>
-                auto tune_batch_decay_lrate(trainer_data_t& data, math::stoch_optimizer optimizer, bool verbose)
-                {
-                        const auto op = [&] (size_t batch, scalar_t decay, scalar_t alpha, scalar_t momentum)
-                        {
-                                const cortex::timer_t timer;
+                const auto batches = cortex::tunable_batches();
+                const auto decays = math::tunable_decays<scalar_t>(optimizer);
+                const auto alphas = math::tunable_alphas<scalar_t>(optimizer);
+                const auto moments = math::tunable_moments<scalar_t>(optimizer);
 
-                                const size_t epochs = 1;
-                                const auto result = train(data, optimizer, epochs, batch, alpha, decay, momentum, false);
-                                const auto state = result.optimum_state();
-
-                                if (verbose)
-                                log_info()
-                                        << "[tuning: train = " << state.m_tvalue << "/" << state.m_terror_avg
-                                        << ", valid = " << state.m_vvalue << "/" << state.m_verror_avg
-                                        << ", batch = " << batch
-                                        << ", alpha = " << alpha
-                                        << ", decay = " << decay
-                                        << ", momentum = " << momentum
-                                        << ", lambda = " << data.lambda()
-                                        << "] done in " << timer.elapsed() << ".";
-
-                                return result;
-                        };
-
-                        const auto batches = cortex::tunable_batches();
-                        const auto decays = math::tunable_decays<scalar_t>(optimizer);
-                        const auto alphas = math::tunable_alphas<scalar_t>(optimizer);
-                        const auto moments = math::tunable_moments<scalar_t>(optimizer);
-
-                        return math::tune_fixed(op, batches, decays, alphas, moments);
-                }
+                return math::tune_fixed(op, batches, decays, alphas, moments);
         }
 
         trainer_result_t stochastic_train(

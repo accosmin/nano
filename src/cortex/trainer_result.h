@@ -1,6 +1,5 @@
 #pragma once
 
-#include <map>
 #include "tensor.h"
 #include "trainer_state.h"
 #include "text/enum_string.hpp"
@@ -52,10 +51,7 @@ namespace cortex
                 ///
                 /// \brief update the current/optimum state with a possible better state
                 ///
-                trainer_result_return_t update(const vector_t& params,
-                        scalar_t tvalue, scalar_t terror_avg, scalar_t terror_var,
-                        scalar_t vvalue, scalar_t verror_avg, scalar_t verror_var,
-                        size_t epoch, const scalars_t& config);
+                trainer_result_return_t update(const vector_t& params, const trainer_state_t&, const scalars_t& config);
 
                 ///
                 /// \brief update the current/optimum state with a possible better state
@@ -95,13 +91,17 @@ namespace cortex
                 ///
                 size_t optimum_epoch() const;
 
+                ///
+                /// \brief loss decrease speed for the optimum configuration
+                ///
+                scalar_t optimum_speed() const;
+
         private:
 
                 // attributes
                 vector_t                m_opt_params;           ///< optimum model parameters
                 trainer_state_t         m_opt_state;            ///< optimum training state
                 trainer_config_t        m_opt_config;           ///< optimum configuration
-                size_t                  m_opt_epoch;            ///< optimum epoch
                 trainer_history_t       m_history;              ///< optimization history
         };
 
