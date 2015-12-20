@@ -15,10 +15,14 @@ namespace
 {
         using namespace cortex;
 
-        string_t stats_to_string(const math::stats_t<scalar_t>& stats)
+        template
+        <
+                typename tvalue
+        >
+        string_t stats_to_string(const math::stats_t<tvalue>& stats)
         {
-                return  text::to_string(stats.avg())
-                        + "+/-" + text::to_string(stats.stdev())
+                return  text::to_string(static_cast<tvalue>(stats.avg()))
+                        + "+/-" + text::to_string(static_cast<tvalue>(stats.stdev()))
                         + " [" + text::to_string(stats.min())
                         + ", " + text::to_string(stats.max())
                         + "]";
@@ -33,6 +37,7 @@ namespace
         {
                 math::stats_t<scalar_t> terrors;
                 math::stats_t<scalar_t> verrors;
+                math::stats_t<scalar_t> speeds;
                 math::stats_t<size_t> timings;
 
                 log_info() << "<<< running " << name << " ...";
@@ -49,6 +54,7 @@ namespace
 
                         terrors(opt_state.m_terror_avg);
                         verrors(opt_state.m_verror_avg);
+                        speeds(opt_speed);
                         timings(timer.seconds());
 
                         log_info() << "<<< " << name
@@ -63,7 +69,8 @@ namespace
                 table.append(name)
                         << stats_to_string(terrors)
                         << stats_to_string(verrors)
-                        << static_cast<size_t>(timings.avg());
+                        << stats_to_string(speeds)
+                        << stats_to_string(timings);
         }
 
         void test_optimizers(
@@ -278,6 +285,7 @@ int main(int argc, char* argv[])
                         text::table_t table("optimizer");
                         table.header() << "train error"
                                        << "valid error"
+                                       << "convergence speed"
                                        << "time [sec]";
 
                         // vary the criteria
