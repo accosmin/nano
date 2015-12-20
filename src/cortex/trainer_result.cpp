@@ -126,7 +126,8 @@ namespace cortex
                         const auto ratio = (epsilon + crt_state.m_tvalue) / (epsilon + prv_state.m_tvalue);
                         const auto delta = size_t(1) + crt_state.m_milis - prv_state.m_milis;
 
-                        return (ratio * scalar_t(1000.0)) / static_cast<scalar_t>(delta);
+                        // convergence speed ~ loss decrease ratio / second
+                        return std::pow(ratio, scalar_t(1000) / static_cast<scalar_t>(delta));
                 };
 
                 math::stats_t<scalar_t> speeds;

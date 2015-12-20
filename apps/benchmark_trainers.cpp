@@ -56,7 +56,7 @@ namespace
                                    << "}/" << result.optimum_epoch()
                                    << ", train = " << opt_state.m_terror_avg
                                    << ", valid = " << opt_state.m_verror_avg
-                                   << ", speed = " << opt_speed
+                                   << ", speed = " << opt_speed << "/s"
                                    << " done in " << timer.elapsed() << ".";
                 }
 

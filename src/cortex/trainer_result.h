@@ -92,7 +92,7 @@ namespace cortex
                 size_t optimum_epoch() const;
 
                 ///
-                /// \brief loss decrease speed for the optimum configuration
+                /// \brief convergence speed of the training loss for the optimum configuration
                 ///
                 scalar_t optimum_speed() const;
 
