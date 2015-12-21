@@ -91,11 +91,6 @@ namespace cortex
                 ///
                 size_t optimum_epoch() const;
 
-                ///
-                /// \brief convergence speed of the training loss for the optimum configuration
-                ///
-                scalar_t optimum_speed() const;
-
         private:
 
                 // attributes

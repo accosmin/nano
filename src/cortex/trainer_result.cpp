@@ -1,6 +1,4 @@
 #include "trainer_result.h"
-#include "math/stats.hpp"
-#include "math/epsilon.hpp"
 #include "text/concatenate.hpp"
 
 namespace cortex
@@ -112,33 +110,6 @@ namespace cortex
         size_t trainer_result_t::optimum_epoch() const
         {
                 return optimum_state().m_epoch;
-        }
-
-        scalar_t trainer_result_t::optimum_speed() const
-        {
-                const auto op = [](const trainer_state_t& prv_state, const trainer_state_t& crt_state)
-                {
-                        assert(crt_state.m_tvalue >= scalar_t(0));
-                        assert(prv_state.m_tvalue >= scalar_t(0));
-                        assert(crt_state.m_milis >= prv_state.m_milis);
-
-                        const scalar_t epsilon = math::epsilon0<scalar_t>();
-                        const auto ratio = (epsilon + crt_state.m_tvalue) / (epsilon + prv_state.m_tvalue);
-                        const auto delta = size_t(1) + crt_state.m_milis - prv_state.m_milis;
-
-                        // convergence speed ~ loss decrease ratio / second
-                        return std::pow(ratio, scalar_t(1000) / static_cast<scalar_t>(delta));
-                };
-
-                math::stats_t<scalar_t> speeds;
-
-                const auto states = optimum_states();
-                for (size_t i = 0; i + 1 < states.size(); ++ i)
-                {
-                        speeds(op(states[i], states[i + 1]));
-                }
-
-                return speeds.avg();
         }
 
         bool operator<(const trainer_result_t& one, const trainer_result_t& other)

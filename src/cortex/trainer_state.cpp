@@ -1,5 +1,7 @@
 #include "trainer_state.h"
+#include "math/stats.hpp"
 #include "text/align.hpp"
+#include "math/epsilon.hpp"
 #include "text/to_string.hpp"
 #include <fstream>
 #include <limits>
@@ -38,6 +40,31 @@ namespace cortex
                         m_verror_avg(verror_avg),
                         m_verror_var(verror_var)
         {
+        }
+
+        scalar_t convergence_speed(const trainer_states_t& states)
+        {
+                const auto op = [](const trainer_state_t& prv_state, const trainer_state_t& crt_state)
+                {
+                        assert(crt_state.m_tvalue >= scalar_t(0));
+                        assert(prv_state.m_tvalue >= scalar_t(0));
+                        assert(crt_state.m_milis >= prv_state.m_milis);
+
+                        const scalar_t epsilon = math::epsilon0<scalar_t>();
+                        const auto ratio = (epsilon + crt_state.m_tvalue) / (epsilon + prv_state.m_tvalue);
+                        const auto delta = size_t(1) + crt_state.m_milis - prv_state.m_milis;
+
+                        // convergence speed ~ loss decrease ratio / second
+                        return std::pow(ratio, scalar_t(1000) / static_cast<scalar_t>(delta));
+                };
+
+                math::stats_t<scalar_t> speeds;
+                for (size_t i = 0; i + 1 < states.size(); ++ i)
+                {
+                        speeds(op(states[i], states[i + 1]));
+                }
+
+                return speeds.avg();
         }
 
         bool operator<(const trainer_state_t& one, const trainer_state_t& two)

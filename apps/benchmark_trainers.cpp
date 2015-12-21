@@ -50,7 +50,7 @@ namespace
 
                         const auto result = trainer();
                         const auto opt_state = result.optimum_state();
-                        const auto opt_speed = result.optimum_speed();
+                        const auto opt_speed = cortex::convergence_speed(result.optimum_states());
 
                         terrors(opt_state.m_terror_avg);
                         verrors(opt_state.m_verror_avg);

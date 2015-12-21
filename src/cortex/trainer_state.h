@@ -37,6 +37,11 @@ namespace cortex
         using trainer_states_t = std::vector<trainer_state_t>;
 
         ///
+        /// \brief compute the average convergence speed of the training loss for a given set of states
+        ///
+        NANOCV_PUBLIC scalar_t convergence_speed(const trainer_states_t& states);
+
+        ///
         /// \brief compare two training states
         ///
         NANOCV_PUBLIC bool operator<(const trainer_state_t& one, const trainer_state_t& two);
