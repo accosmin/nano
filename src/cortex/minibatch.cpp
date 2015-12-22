@@ -12,11 +12,6 @@ namespace cortex
 {
         namespace
         {
-                sizes_t tunable_iterations()
-                {
-                        return { 4, 8 };
-                }
-
                 template
                 <
                         typename toperator
@@ -39,8 +34,7 @@ namespace cortex
 
                 trainer_result_t train(
                         trainer_data_t& data,
-                        math::batch_optimizer optimizer,
-                        size_t epochs, size_t batch, size_t iterations, scalar_t epsilon,
+                        math::batch_optimizer optimizer, size_t epochs, size_t batch, scalar_t epsilon,
                         bool verbose)
                 {
                         const cortex::timer_t timer;
@@ -48,7 +42,8 @@ namespace cortex
                         trainer_result_t result;
 
                         const auto epoch_size = data.epoch_size(batch);
-                        const auto history_size = std::max(iterations / 2, size_t(4));
+                        const auto epoch_iterations = size_t(4);
+                        const auto history_size = epoch_iterations;
 
                         // construct the optimization problem
                         const auto fn_size = cortex::make_opsize(data);
@@ -66,7 +61,7 @@ namespace cortex
                                 {
                                         const opt_state_t state = math::minimize(
                                                 opt_problem_t(fn_size, fn_fval, fn_grad), fn_ulog,
-                                                x, optimizer, iterations, epsilon, history_size);
+                                                x, optimizer, epoch_iterations, epsilon, history_size);
 
                                         x = state.x;
                                 });
@@ -89,7 +84,7 @@ namespace cortex
                                 const auto milis = timer.miliseconds();
                                 const auto ret = result.update(x,
                                         {milis, epoch, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var},
-                                        {static_cast<scalar_t>(batch), static_cast<scalar_t>(iterations), data.lambda()});
+                                        {static_cast<scalar_t>(batch), data.lambda()});
 
                                 if (verbose)
                                 log_info()
@@ -98,7 +93,6 @@ namespace cortex
                                         << " (" << text::to_string(ret) << ")"
                                         << ", epoch = " << epoch << "/" << epochs
                                         << ", batch = " << batch
-                                        << ", iters = " << iterations
                                         << ", lambda = " << data.lambda()
                                         << "] done in " << timer.elapsed() << ".";
 
@@ -111,17 +105,17 @@ namespace cortex
                         return result;
                 }
 
-                // <result, batch size, iterations per batch>
-                std::tuple<trainer_result_t, size_t, size_t> tune_minibatch(
+                // <result, batch size>
+                std::tuple<trainer_result_t, size_t> tune_minibatch(
                         trainer_data_t& data, math::batch_optimizer optimizer, scalar_t epsilon,
                         bool verbose)
                 {
-                        const auto op = [&] (size_t batch, size_t iterations)
+                        const auto op = [&] (size_t batch)
                         {
                                 const cortex::timer_t timer;
 
                                 const auto epochs = size_t(1);
-                                const auto result = train(data, optimizer, epochs, batch, iterations, epsilon, false);
+                                const auto result = train(data, optimizer, epochs, batch, epsilon, false);
                                 const auto state = result.optimum_state();
 
                                 if (verbose)
@@ -129,7 +123,6 @@ namespace cortex
                                         << "[tuning: train = " << state.m_tvalue << "/" << state.m_terror_avg
                                         << ", valid = " << state.m_vvalue << "/" << state.m_verror_avg
                                         << ", batch = " << batch
-                                        << ", iters = " << iterations
                                         << ", lambda = " << data.lambda()
                                         << "] done in " << timer.elapsed() << ".";
 
@@ -137,9 +130,8 @@ namespace cortex
                         };
 
                         const auto batches = cortex::tunable_batches();
-                        const auto iterations = tunable_iterations();
 
-                        return math::tune_fixed(op, batches, iterations);
+                        return math::tune_fixed(op, batches);
                 }
         }
 
@@ -165,9 +157,8 @@ namespace cortex
 
                         const auto ret = tune_minibatch(data, optimizer, epsilon, verbose);
                         const auto opt_batch = std::get<1>(ret);
-                        const auto opt_iterations = std::get<2>(ret);
 
-                        return train(data, optimizer, epochs, opt_batch, opt_iterations, epsilon, verbose);
+                        return train(data, optimizer, epochs, opt_batch, epsilon, verbose);
                 };
 
                 if (data.m_lacc.can_regularize())
