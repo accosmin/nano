@@ -47,7 +47,7 @@ namespace math
                         return { tscalar(1.00) };
 
                 default:
-                        return { tscalar(0.50), tscalar(0.75) };
+                        return { tscalar(0.50), tscalar(0.75), tscalar(1.00) };
                 }
         }
 
