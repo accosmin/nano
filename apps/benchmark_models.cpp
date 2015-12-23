@@ -149,10 +149,26 @@ int main(int argc, char *argv[])
                 sampler.push(cmd_samples);
 
                 const samples_t samples = sampler.get();
+                size_t milis1_forward = 0;
+                size_t milis1_backward = 0;
 
                 // process the samples
                 for (size_t nthreads = cmd_min_nthreads; nthreads <= cmd_max_nthreads; ++ nthreads)
                 {
+                        const auto op_store = [=] (auto& row, const size_t milis, size_t& milis1)
+                        {
+                                if (nthreads == cmd_min_nthreads)
+                                {
+                                        milis1 = milis;
+                                        row << milis;
+                                }
+                                else
+                                {
+                                        const auto ratio = (1 + milis1) * 100 / (1 + milis);
+                                        row << (text::to_string(milis) + " / " + text::to_string(ratio) + "%");
+                                }
+                        };
+
                         if (cmd_forward)
                         {
                                 accumulator_t ldata(*model, nthreads, "l2n-reg", criterion_t::type::value, 0.1);
@@ -166,7 +182,7 @@ int main(int argc, char *argv[])
                                 log_info() << "<<< processed [" << ldata.count()
                                            << "] forward samples in " << milis << " ms.";
 
-                                frow << milis;
+                                op_store(frow, milis, milis1_forward);
                         }
 
                         if (cmd_backward)
@@ -182,7 +198,7 @@ int main(int argc, char *argv[])
                                 log_info() << "<<< processed [" << gdata.count()
                                            << "] backward samples in " << milis << " ms.";
 
-                                brow << milis;
+                                op_store(brow, milis, milis1_backward);
                         }
                 }
 

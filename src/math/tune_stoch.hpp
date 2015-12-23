@@ -51,7 +51,7 @@ namespace math
                 }
         }
 
-         ///
+        ///
         /// \brief fixed list of momentum rates to tune for the given stochastic method
         ///
         template
