@@ -10,7 +10,11 @@ BOOST_AUTO_TEST_CASE(test_thread_pool_empty)
 {
         thread::pool_t pool;
 
-        BOOST_CHECK_EQUAL(pool.n_workers(), thread::n_threads());
+        const size_t n_threads = thread::n_threads();
+        const size_t n_active_workers = n_threads;
+
+        BOOST_CHECK_EQUAL(pool.n_workers(), n_threads);
+        BOOST_CHECK_EQUAL(pool.n_active_workers(), n_active_workers);
         BOOST_CHECK_EQUAL(pool.n_tasks(), 0);
 }
 
@@ -18,11 +22,17 @@ BOOST_AUTO_TEST_CASE(test_thread_pool_enqueue)
 {
         thread::pool_t pool;
 
-        const size_t n_tests = 7;
-        const size_t n_max_jobs = pool.n_workers() * 16;
+        const size_t n_threads = thread::n_threads();
+        const size_t n_max_jobs = n_threads * 16;
 
-        for (size_t t = 0; t < n_tests; ++ t)
+        for (size_t n_active_workers = 1; n_active_workers <= n_threads; ++ n_active_workers)
         {
+                pool.activate(n_active_workers);
+
+                BOOST_CHECK_EQUAL(pool.n_workers(), n_threads);
+                BOOST_CHECK_EQUAL(pool.n_active_workers(), n_active_workers);
+                BOOST_CHECK_EQUAL(pool.n_tasks(), 0);
+
                 math::random_t<size_t> rnd(1, n_max_jobs);
                 const size_t n_tasks = rnd();
 
@@ -47,7 +57,8 @@ BOOST_AUTO_TEST_CASE(test_thread_pool_enqueue)
 
                 pool.wait();
 
-                BOOST_CHECK_EQUAL(pool.n_workers(), thread::n_threads());
+                BOOST_CHECK_EQUAL(pool.n_workers(), n_threads);
+                BOOST_CHECK_EQUAL(pool.n_active_workers(), n_active_workers);
                 BOOST_CHECK_EQUAL(pool.n_tasks(), 0);
 
                 BOOST_CHECK_EQUAL(tasks_done.size(), n_tasks);

@@ -1,12 +1,43 @@
 #include "worker.h"
 #include "tasks.h"
 
-thread::pool_worker_t::pool_worker_t(tasks_t& queue)
-        :       m_queue(queue)
+namespace
+{
+        bool toggle(bool& value, const bool flag)
+        {
+                const bool changed = value == !flag;
+                value = flag;
+                return changed;
+        }
+}
+
+thread::worker_config_t::worker_config_t(const bool active)
+        :       m_active(active)
 {
 }
 
-void thread::pool_worker_t::operator()()
+bool thread::worker_config_t::activate()
+{
+        return toggle(m_active, true);
+}
+
+bool thread::worker_config_t::deactivate()
+{
+        return toggle(m_active, false);
+}
+
+bool thread::worker_config_t::active() const
+{
+        return m_active;
+}
+
+thread::worker_t::worker_t(tasks_t& queue, worker_config_t& config) :
+        m_queue(queue),
+        m_config(config)
+{
+}
+
+void thread::worker_t::operator()()
 {
         while (true)
         {
@@ -16,7 +47,10 @@ void thread::pool_worker_t::operator()()
                 {
                         std::unique_lock<std::mutex> lock(m_queue.m_mutex);
 
-                        m_queue.m_condition.wait(lock, [&] { return m_queue.m_stop || !m_queue.m_tasks.empty(); });
+                        m_queue.m_condition.wait(lock, [&]
+                        {
+                                return m_queue.m_stop || (m_config.active() && !m_queue.m_tasks.empty());
+                        });
 
                         if (m_queue.m_stop)
                         {

@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
         po_desc.add_options()("help,h", "benchmark models");
         po_desc.add_options()("samples,s",
                 boost::program_options::value<size_t>()->default_value(10000),
-                "number of samples to use [1000, 100000]");
+                "number of samples to use [100, 100000]");
         po_desc.add_options()("forward",
                 "evaluate the \'forward\' pass (output)");
         po_desc.add_options()("backward",
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
                 return EXIT_FAILURE;
         }
 
-        const size_t cmd_samples = math::clamp(po_vm["samples"].as<size_t>(), 1000, 100 * 1000);
+        const size_t cmd_samples = math::clamp(po_vm["samples"].as<size_t>(), 100, 100 * 1000);
         const bool cmd_forward = po_vm.count("forward");
         const bool cmd_backward = po_vm.count("backward");
 

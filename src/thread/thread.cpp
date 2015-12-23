@@ -7,9 +7,4 @@ namespace thread
         {
                 return std::thread::hardware_concurrency();
         }
-
-        unsigned int max_n_threads()
-        {
-                return n_threads() * 8;
-        }
 }

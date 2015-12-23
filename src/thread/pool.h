@@ -17,9 +17,14 @@ namespace thread
         public:
 
                 ///
-                /// \brief constructor
+                /// \brief constructor (all available threads are active by default)
                 ///
-                explicit pool_t(std::size_t nthreads = 0);
+                pool_t();
+
+                ///
+                /// \brief constructor (specify the number of threads to activate by default)
+                ///
+                explicit pool_t(std::size_t active_threads);
 
                 ///
                 /// \brief disable copying
@@ -43,6 +48,11 @@ namespace thread
                 pool_t& operator=(pool_t&&) = default;
 
                 ///
+                /// \brief set the given number of active workers [1, n_workers]
+                ///
+                void activate(std::size_t count);
+
+                ///
                 /// \brief enqueue a new task to execute
                 ///
                 template<class F>
@@ -62,6 +72,11 @@ namespace thread
                 std::size_t n_workers() const;
 
                 ///
+                /// \brief number of active worker threads
+                ///
+                std::size_t n_active_workers() const;
+
+                ///
                 /// \brief number of tasks to run
                 ///
                 std::size_t n_tasks() const;
@@ -70,6 +85,7 @@ namespace thread
 
                 // attributes
                 std::vector<std::thread>        m_workers;      ///< worker threads
+                std::vector<worker_config_t>    m_configs;      ///< settings for each worker thread
                 tasks_t                         m_tasks;        ///< tasks to execute + synchronization
         };
 }
