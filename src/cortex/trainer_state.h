@@ -3,6 +3,7 @@
 #include "arch.h"
 #include "scalar.h"
 #include "string.h"
+#include <chrono>
 
 namespace cortex
 {
@@ -19,12 +20,12 @@ namespace cortex
                 ///
                 /// \brief constructor
                 ///
-                trainer_state_t(size_t milis, size_t epoch,
+                trainer_state_t(std::chrono::milliseconds milis, size_t epoch,
                                 scalar_t tvalue, scalar_t terror_avg, scalar_t terror_var,
                                 scalar_t vvalue, scalar_t verror_avg, scalar_t verror_var);
 
                 // attributes
-                size_t          m_milis;        ///< (cumulated) elapsed miliseconds since the optimization started
+                std::chrono::milliseconds       m_milis;///< (cumulated) elapsed time since the optimization started
                 size_t          m_epoch;        ///<
                 scalar_t        m_tvalue;       ///< train loss value
                 scalar_t        m_terror_avg;   ///< train error (average)

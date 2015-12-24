@@ -95,9 +95,9 @@ int main(int argc, char *argv[])
                                 });
                         }, 1);
 
-                        log_info() << "<<< processed [" << samples.size() << "] samples in " << micros << " us.";
+                        log_info() << "<<< processed [" << samples.size() << "] samples in " << micros.count() << " us.";
 
-                        row << micros;
+                        row << micros.count();
                 }
 
                 log_info();

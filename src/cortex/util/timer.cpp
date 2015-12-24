@@ -6,10 +6,6 @@
 
 namespace cortex
 {
-        using seconds_t = std::chrono::duration<std::size_t>;
-        using milliseconds_t = std::chrono::duration<std::size_t, std::milli>;
-        using microseconds_t = std::chrono::duration<std::size_t, std::micro>;
-
         namespace
         {
                 auto now()
@@ -17,18 +13,17 @@ namespace cortex
                         return std::chrono::high_resolution_clock::now();
                 }
 
-                std::string miliseconds_to_string(std::size_t count)
+                std::string miliseconds_to_string(std::size_t miliseconds)
                 {
                         static const std::size_t size_second = 1000;
                         static const std::size_t size_minute = 60 * size_second;
                         static const std::size_t size_hour = 60 * size_minute;
                         static const std::size_t size_day = 24 * size_hour;
 
-                        const std::size_t days = count / size_day; count -= days * size_day;
-                        const std::size_t hours = count / size_hour; count -= hours * size_hour;
-                        const std::size_t minutes = count / size_minute; count -= minutes * size_minute;
-                        const std::size_t seconds = count / size_second; count -= seconds * size_second;
-                        const std::size_t miliseconds = count;
+                        const std::size_t days = miliseconds / size_day; miliseconds -= days * size_day;
+                        const std::size_t hours = miliseconds / size_hour; miliseconds -= hours * size_hour;
+                        const std::size_t minutes = miliseconds / size_minute; miliseconds -= minutes * size_minute;
+                        const std::size_t seconds = miliseconds / size_second; miliseconds -= seconds * size_second;
 
                         std::stringstream stream;
                         if (days > 0)
@@ -65,24 +60,21 @@ namespace cortex
 
         std::string timer_t::elapsed() const
         {
-                return miliseconds_to_string(miliseconds());
+                return miliseconds_to_string(static_cast<std::size_t>(milliseconds().count()));
         }
 
-        std::size_t timer_t::seconds() const
+        seconds_t timer_t::seconds() const
         {
-                const auto duration = std::chrono::duration_cast<seconds_t>(now() - m_start);
-                return duration.count();
+                return std::chrono::duration_cast<seconds_t>(now() - m_start);
         }
 
-        std::size_t timer_t::miliseconds() const
+        milliseconds_t timer_t::milliseconds() const
         {
-                const auto duration = std::chrono::duration_cast<milliseconds_t>(now() - m_start);
-                return duration.count();
+                return std::chrono::duration_cast<milliseconds_t>(now() - m_start);
         }
 
-        std::size_t timer_t::microseconds() const
+        microseconds_t timer_t::microseconds() const
         {
-                const auto duration = std::chrono::duration_cast<microseconds_t>(now() - m_start);
-                return duration.count();
+                return std::chrono::duration_cast<microseconds_t>(now() - m_start);
         }
 }

@@ -63,7 +63,7 @@ namespace
                 typename ttensork,
                 typename ttensoro
         >
-        size_t measure_output(const top& op,
+        auto measure_output(const top& op,
                 const ttensori& idata, const ttensork& kdata, ttensoro&& odata, const size_t trials = 16)
         {
                 return cortex::measure_robustly_usec([&] ()
@@ -79,7 +79,7 @@ namespace
                 typename ttensork,
                 typename ttensoro
         >
-        size_t measure_ginput(const top& op,
+        auto measure_ginput(const top& op,
                 ttensori&& idata, const ttensork& kdata, const ttensoro& odata, const size_t trials = 16)
         {
                 return cortex::measure_robustly_usec([&] ()
@@ -95,7 +95,7 @@ namespace
                 typename ttensork,
                 typename ttensoro
         >
-        size_t measure_gparam(const top& op,
+        auto measure_gparam(const top& op,
                 const ttensori& idata, ttensork&& kdata, const ttensoro& odata, const size_t trials = 16)
         {
                 return cortex::measure_robustly_usec([&] ()
@@ -116,11 +116,11 @@ namespace
 
                 ttensor odata_ret = odata;
 
-                row << measure_output(tensor::conv2d_eig_t(), idata, kdata, odata_ret, trials);
-                row << measure_output(tensor::conv2d_cpp_t(), idata, kdata, odata_ret, trials);
-                row << measure_output(tensor::conv2d_dot_t(), idata, kdata, odata_ret, trials);
-                row << measure_output(tensor::conv2d_mad_t(), idata, kdata, odata_ret, trials);
-                row << measure_output(tensor::conv2d_dyn_t(), idata, kdata, odata_ret, trials);
+                row << measure_output(tensor::conv2d_eig_t(), idata, kdata, odata_ret, trials).count();
+                row << measure_output(tensor::conv2d_cpp_t(), idata, kdata, odata_ret, trials).count();
+                row << measure_output(tensor::conv2d_dot_t(), idata, kdata, odata_ret, trials).count();
+                row << measure_output(tensor::conv2d_mad_t(), idata, kdata, odata_ret, trials).count();
+                row << measure_output(tensor::conv2d_dyn_t(), idata, kdata, odata_ret, trials).count();
         }
 
         template
@@ -135,12 +135,12 @@ namespace
 
                 ttensor idata_ret = idata;
 
-                row << measure_ginput(tensor::corr2d_egb_t(), idata_ret, kdata, odata, trials);
-                row << measure_ginput(tensor::corr2d_egr_t(), idata_ret, kdata, odata, trials);
-                row << measure_ginput(tensor::corr2d_cpp_t(), idata_ret, kdata, odata, trials);
-                row << measure_ginput(tensor::corr2d_mdk_t(), idata_ret, kdata, odata, trials);
-                row << measure_ginput(tensor::corr2d_mdo_t(), idata_ret, kdata, odata, trials);
-                row << measure_ginput(tensor::corr2d_dyn_t(), idata_ret, kdata, odata, trials);
+                row << measure_ginput(tensor::corr2d_egb_t(), idata_ret, kdata, odata, trials).count();
+                row << measure_ginput(tensor::corr2d_egr_t(), idata_ret, kdata, odata, trials).count();
+                row << measure_ginput(tensor::corr2d_cpp_t(), idata_ret, kdata, odata, trials).count();
+                row << measure_ginput(tensor::corr2d_mdk_t(), idata_ret, kdata, odata, trials).count();
+                row << measure_ginput(tensor::corr2d_mdo_t(), idata_ret, kdata, odata, trials).count();
+                row << measure_ginput(tensor::corr2d_dyn_t(), idata_ret, kdata, odata, trials).count();
         }
 
         template
@@ -155,11 +155,11 @@ namespace
 
                 ttensor kdata_ret = kdata;
 
-                row << measure_gparam(tensor::conv2d_eig_t(), idata, kdata_ret, odata, trials);
-                row << measure_gparam(tensor::conv2d_cpp_t(), idata, kdata_ret, odata, trials);
-                row << measure_gparam(tensor::conv2d_dot_t(), idata, kdata_ret, odata, trials);
-                row << measure_gparam(tensor::conv2d_mad_t(), idata, kdata_ret, odata, trials);
-                row << measure_gparam(tensor::conv2d_dyn_t(), idata, kdata_ret, odata, trials);
+                row << measure_gparam(tensor::conv2d_eig_t(), idata, kdata_ret, odata, trials).count();
+                row << measure_gparam(tensor::conv2d_cpp_t(), idata, kdata_ret, odata, trials).count();
+                row << measure_gparam(tensor::conv2d_dot_t(), idata, kdata_ret, odata, trials).count();
+                row << measure_gparam(tensor::conv2d_mad_t(), idata, kdata_ret, odata, trials).count();
+                row << measure_gparam(tensor::conv2d_dyn_t(), idata, kdata_ret, odata, trials).count();
         }
 }
 

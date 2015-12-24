@@ -11,7 +11,7 @@ namespace cortex
 {
         trainer_state_t::trainer_state_t()
                 :       trainer_state_t(
-                        size_t(0),
+                        std::chrono::milliseconds(0),
                         size_t(0),
                         std::numeric_limits<scalar_t>::max(),
                         std::numeric_limits<scalar_t>::max(),
@@ -23,7 +23,7 @@ namespace cortex
         }
 
         trainer_state_t::trainer_state_t(
-                        size_t milis,
+                        std::chrono::milliseconds milis,
                         size_t epoch,
                         scalar_t tvalue,
                         scalar_t terror_avg,
@@ -52,7 +52,7 @@ namespace cortex
 
                         const scalar_t epsilon = math::epsilon0<scalar_t>();
                         const auto ratio = (epsilon + crt_state.m_tvalue) / (epsilon + prv_state.m_tvalue);
-                        const auto delta = size_t(1) + crt_state.m_milis - prv_state.m_milis;
+                        const auto delta = 1 + crt_state.m_milis.count() - prv_state.m_milis.count();
 
                         // convergence speed ~ loss decrease ratio / second
                         return std::pow(ratio, scalar_t(1000) / static_cast<scalar_t>(delta));

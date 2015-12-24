@@ -35,7 +35,7 @@ namespace cortex
                         const scalar_t verror_var = data.m_lacc.var_error();
 
                         // update the optimum state
-                        const auto milis = timer.miliseconds();
+                        const auto milis = timer.milliseconds();
                         const auto ret = result.update(state.x,
                                 {milis, ++ iteration, tvalue, terror_avg, terror_var, vvalue, verror_avg, verror_var},
                                 {data.lambda()});

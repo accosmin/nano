@@ -38,7 +38,7 @@ namespace
                 math::stats_t<scalar_t> terrors;
                 math::stats_t<scalar_t> verrors;
                 math::stats_t<scalar_t> speeds;
-                math::stats_t<size_t> timings;
+                math::stats_t<scalar_t> timings;
 
                 log_info() << "<<< running " << name << " ...";
 
@@ -55,7 +55,7 @@ namespace
                         terrors(opt_state.m_terror_avg);
                         verrors(opt_state.m_verror_avg);
                         speeds(opt_speed);
-                        timings(timer.seconds());
+                        timings(timer.seconds().count());
 
                         log_info() << "<<< " << name
                                    << ", optimum = {" << text::concatenate(result.optimum_config())

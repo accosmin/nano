@@ -6,6 +6,12 @@
 
 namespace cortex
 {
+        using seconds_t = std::chrono::seconds;
+        using milliseconds_t = std::chrono::milliseconds;
+        using microseconds_t = std::chrono::microseconds;
+
+        using timepoint_t = std::chrono::high_resolution_clock::time_point;
+
         class NANOCV_PUBLIC timer_t
         {
         public:
@@ -28,25 +34,21 @@ namespace cortex
                 ///
                 /// \brief retrieve the elapsed time in seconds
                 ///
-                std::size_t seconds() const;
+                seconds_t seconds() const;
 
                 ///
                 /// \brief retrieve the elapsed time in miliseconds
                 ///
-                std::size_t miliseconds() const;
+                milliseconds_t milliseconds() const;
 
                 ///
                 /// \brief retrieve the elapsed time in microseconds
                 ///
-                std::size_t microseconds() const;
-
-        private:
-
-                using time_t = std::chrono::high_resolution_clock::time_point;
+                microseconds_t microseconds() const;
 
         private:
 
                 // attributes
-                time_t          m_start;        ///< starting time point
+                timepoint_t     m_start;        ///< starting time point
         };
 }
