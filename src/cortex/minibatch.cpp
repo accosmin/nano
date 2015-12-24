@@ -138,7 +138,7 @@ namespace cortex
         trainer_result_t minibatch_train(
                 const model_t& model,
                 const task_t& task, const sampler_t& tsampler, const sampler_t& vsampler, size_t nthreads,
-                const loss_t& loss, const string_t& criterion,
+                const loss_t& loss, const criterion_t& criterion,
                 math::batch_optimizer optimizer, size_t epochs, scalar_t epsilon, bool verbose)
         {
                 vector_t x0;

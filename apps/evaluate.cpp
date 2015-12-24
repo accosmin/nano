@@ -91,6 +91,9 @@ int main(int argc, char *argv[])
         // create loss
         const rloss_t rloss = cortex::get_losses().get(cmd_loss);
 
+        // create criterion
+        const rcriterion_t rcriterion = cortex::get_criteria().get("avg");
+
         // create model
         const rmodel_t rmodel = cortex::get_models().get(cmd_model);
 
@@ -108,7 +111,7 @@ int main(int argc, char *argv[])
 		// error rate
                 const cortex::timer_t timer;
                 scalar_t lvalue, lerror;
-                cortex::evaluate(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror);
+                cortex::evaluate(*rtask, test_fold, *rloss, *rcriterion, *rmodel, lvalue, lerror);
                 log_info() << "<<< test error: [" << lvalue << "/" << lerror << "] in " << timer.elapsed() << ".";
 
                 lstats(lvalue);

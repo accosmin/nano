@@ -31,14 +31,17 @@ BOOST_AUTO_TEST_CASE(test_criteria)
         BOOST_CHECK_EQUAL(model->resize(*task, true), true);
 
         // vary criteria
-        const strings_t criteria = cortex::get_criteria().ids();
-        for (const string_t& criterion : criteria)
+        const strings_t ids = cortex::get_criteria().ids();
+        for (const string_t& id : ids)
         {
+                const rcriterion_t criterion = cortex::get_criteria().get(id);
+                BOOST_REQUIRE_EQUAL(criterion.operator bool(), true);
+
                 const scalar_t lambda = 0.1;
                 const size_t nthreads = 1;
 
-                accumulator_t lacc(*model, nthreads, criterion, criterion_t::type::value, lambda);
-                accumulator_t gacc(*model, nthreads, criterion, criterion_t::type::vgrad, lambda);
+                accumulator_t lacc(*model, nthreads, *criterion, criterion_t::type::value, lambda);
+                accumulator_t gacc(*model, nthreads, *criterion, criterion_t::type::vgrad, lambda);
 
                 // optimization problem: size
                 auto opt_fn_size = [&] ()

@@ -15,7 +15,7 @@ namespace cortex
         }
 
         trainer_result_t minibatch_trainer_t::train(
-                const task_t& task, const fold_t& fold, const loss_t& loss, size_t nthreads, const string_t& criterion,
+                const task_t& task, const fold_t& fold, const loss_t& loss, size_t nthreads, const criterion_t& criterion,
                 model_t& model) const
         {                
                 if (fold.second != protocol::train)

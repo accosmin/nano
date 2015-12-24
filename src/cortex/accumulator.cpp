@@ -1,5 +1,4 @@
 #include "accumulator.h"
-#include "criterion.h"
 #include "thread/loopit.hpp"
 #include <cassert>
 
@@ -8,10 +7,10 @@ namespace cortex
         struct accumulator_t::impl_t
         {
                 // constructor
-                impl_t(const model_t& model, size_t nthreads, const string_t& criterion_name,
+                impl_t(const model_t& model, size_t nthreads, const criterion_t& criterion,
                                 criterion_t::type type, scalar_t lambda)
                         :       m_pool(nthreads),
-                                m_cache(cortex::get_criteria().get(criterion_name))
+                                m_cache(criterion.clone())
                 {
                         m_cache->reset(model);
                         m_cache->reset(lambda);
@@ -21,7 +20,7 @@ namespace cortex
                         {
                                 for (size_t i = 0; i < m_pool.n_workers(); ++ i)
                                 {
-                                        const rcriterion_t cache = cortex::get_criteria().get(criterion_name);
+                                        const rcriterion_t cache = criterion.clone();
                                         cache->reset(model);
                                         cache->reset(lambda);
                                         cache->reset(type);
@@ -37,8 +36,8 @@ namespace cortex
         };        
 
         accumulator_t::accumulator_t(const model_t& model, size_t nthreads,
-                                     const string_t& criterion_name, criterion_t::type type, scalar_t lambda)
-                :       m_impl(std::make_unique<impl_t>(model, nthreads, criterion_name, type, lambda))
+                                     const criterion_t& criterion, criterion_t::type type, scalar_t lambda)
+                :       m_impl(std::make_unique<impl_t>(model, nthreads, criterion, type, lambda))
         {
         }
 

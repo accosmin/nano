@@ -133,6 +133,9 @@ int main(int argc, char *argv[])
         // create loss
         const rloss_t rloss = cortex::get_losses().get(cmd_loss);
 
+        // create criterion
+        const rcriterion_t rcriterion = cortex::get_criteria().get(cmd_criterion);
+
         // create model
         const rmodel_t rmodel = cortex::get_models().get(cmd_model, cmd_model_params);
 
@@ -154,7 +157,7 @@ int main(int argc, char *argv[])
                         trainer_result_t result;
                         cortex::measure_critical_and_log([&] ()
                         {
-                                result = rtrainer->train(*rtask, train_fold, *rloss, cmd_threads, cmd_criterion, *rmodel);
+                                result = rtrainer->train(*rtask, train_fold, *rloss, cmd_threads, *rcriterion, *rmodel);
                                 return result.valid();
                         },
                         "train model");
@@ -162,7 +165,7 @@ int main(int argc, char *argv[])
                         // test
                         scalar_t lvalue, lerror;
                         cortex::measure_and_log(
-                                [&] () { cortex::evaluate(*rtask, test_fold, *rloss, *rmodel, lvalue, lerror); },
+                                [&] () { cortex::evaluate(*rtask, test_fold, *rloss, *rcriterion, *rmodel, lvalue, lerror); },
                                 "test model");
                         log_info() << "<<< test error: [" << lvalue << "/" << lerror << "].";
 

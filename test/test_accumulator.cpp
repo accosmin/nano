@@ -25,7 +25,6 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
         const rloss_t loss = cortex::get_losses().get("logistic");
         BOOST_REQUIRE_EQUAL(loss.operator bool(), true);
 
-        const string_t criterion = "avg";
         const scalar_t lambda = 0.1;
 
         // create model
@@ -36,8 +35,11 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
         model->random_params();
 
         // accumulators using 1 thread
-        accumulator_t lacc(*model, 1, criterion, criterion_t::type::value, lambda);
-        accumulator_t gacc(*model, 1, criterion, criterion_t::type::vgrad, lambda);
+        const rcriterion_t criterion = cortex::get_criteria().get("avg");
+        BOOST_REQUIRE_EQUAL(criterion.operator bool(), true);
+
+        accumulator_t lacc(*model, 1, *criterion, criterion_t::type::value, lambda);
+        accumulator_t gacc(*model, 1, *criterion, criterion_t::type::vgrad, lambda);
 
         BOOST_CHECK_EQUAL(lacc.lambda(), lambda);
         BOOST_CHECK_EQUAL(gacc.lambda(), lambda);
@@ -62,10 +64,10 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
         BOOST_CHECK_LE(math::abs(vgrad1 - value1), math::epsilon1<scalar_t>());
 
         // check results with multiple threads
-        for (size_t nthreads = 2; nthreads < 3 * thread::n_threads(); ++ nthreads)
+        for (size_t nthreads = 2; nthreads <= thread::n_threads(); ++ nthreads)
         {
-                accumulator_t laccx(*model, nthreads, criterion, criterion_t::type::value, lambda);
-                accumulator_t gaccx(*model, nthreads, criterion, criterion_t::type::vgrad, lambda);
+                accumulator_t laccx(*model, nthreads, *criterion, criterion_t::type::value, lambda);
+                accumulator_t gaccx(*model, nthreads, *criterion, criterion_t::type::vgrad, lambda);
 
                 BOOST_CHECK_EQUAL(laccx.lambda(), lambda);
                 BOOST_CHECK_EQUAL(gaccx.lambda(), lambda);

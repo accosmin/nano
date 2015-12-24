@@ -24,7 +24,7 @@ namespace cortex
 
                 // train the model
                 virtual trainer_result_t train(
-                        const task_t&, const fold_t&, const loss_t&, size_t nthreads, const string_t& criterion, 
+                        const task_t&, const fold_t&, const loss_t&, size_t nthreads, const criterion_t&,
                         model_t&) const override;
         };
 }

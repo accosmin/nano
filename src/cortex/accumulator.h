@@ -14,8 +14,8 @@ namespace cortex
                 ///
                 /// \brief constructor
                 ///
-                accumulator_t(const model_t&, size_t nthreads, 
-                              const string_t& criterion_name, criterion_t::type, scalar_t lambda = 0.0);
+                accumulator_t(const model_t&, size_t nthreads,
+                              const criterion_t& criterion, criterion_t::type, scalar_t lambda = 0.0);
 
                 ///
                 /// \brief disable copying

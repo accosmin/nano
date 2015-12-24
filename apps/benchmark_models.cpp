@@ -116,6 +116,9 @@ int main(int argc, char *argv[])
         const rloss_t loss = cortex::get_losses().get("logistic");
         assert(loss);
 
+        const rcriterion_t criterion = cortex::get_criteria().get("l2n-reg");
+        assert(criterion);
+
         // construct tables to compare models
         text::table_t ftable("model-forward");
         text::table_t btable("model-backward");
@@ -171,7 +174,7 @@ int main(int argc, char *argv[])
 
                         if (cmd_forward)
                         {
-                                accumulator_t ldata(*model, nthreads, "l2n-reg", criterion_t::type::value, 0.1);
+                                accumulator_t ldata(*model, nthreads, *criterion, criterion_t::type::value, 0.1);
 
                                 const auto milis = cortex::measure_robustly_usec([&] ()
                                 {
@@ -187,7 +190,7 @@ int main(int argc, char *argv[])
 
                         if (cmd_backward)
                         {
-                                accumulator_t gdata(*model, nthreads, "l2n-reg", criterion_t::type::vgrad, 0.1);
+                                accumulator_t gdata(*model, nthreads, *criterion, criterion_t::type::vgrad, 0.1);
 
                                 const auto milis = cortex::measure_robustly_usec([&] ()
                                 {

@@ -75,7 +75,7 @@ namespace
 
         void test_optimizers(
                 const task_t& task, model_t& model, const sampler_t& tsampler, const sampler_t& vsampler,
-                const loss_t& loss, const string_t& criterion,
+                const loss_t& loss, const criterion_t& criterion,
                 const size_t trials, const size_t iterations, text::table_t& table)
         {
                 const size_t batch_iterations = iterations;
@@ -124,7 +124,7 @@ namespace
                         math::stoch_optimizer::ADADELTA
                 };
 
-                const string_t basename = "[" + text::to_string(criterion) + "] ";
+                const string_t basename = "[" + text::to_string(criterion.description()) + "] ";
 
                 // run optimizers and collect results
                 for (math::batch_optimizer optimizer : batch_optimizers)
@@ -289,9 +289,12 @@ int main(int argc, char* argv[])
                                        << "time [sec]";
 
                         // vary the criteria
-                        for (const string_t& criterion : criteria)
+                        for (const string_t& icriterion : criteria)
                         {
-                                test_optimizers(task, *model, tsampler, vsampler, *loss, criterion,
+                                const rcriterion_t criterion = cortex::get_criteria().get(icriterion);
+                                assert(criterion);
+
+                                test_optimizers(task, *model, tsampler, vsampler, *loss, *criterion,
                                                 trials, iterations, table);
                         }
 

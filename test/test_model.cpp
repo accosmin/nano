@@ -46,6 +46,9 @@ BOOST_AUTO_TEST_CASE(test_model)
         const rloss_t loss = cortex::get_losses().get("logistic");
         BOOST_REQUIRE_EQUAL(loss.operator bool(), true);
 
+        const rcriterion_t criterion = cortex::get_criteria().get("avg");
+        BOOST_REQUIRE_EQUAL(criterion.operator bool(), true);
+
         for (const string_t& cmd_network : cmd_networks)
         {
                 // create feed-forward network
@@ -68,7 +71,8 @@ BOOST_AUTO_TEST_CASE(test_model)
 
                         // test error & parameters before saving
                         scalar_t lvalue_before, lerror_before;
-                        const size_t lcount_before = cortex::evaluate(*task, fold, *loss, *model, lvalue_before, lerror_before);
+                        const size_t lcount_before = cortex::evaluate(*task, fold, *loss, *criterion, *model,
+                                                                      lvalue_before, lerror_before);
 
                         vector_t params(model->psize());
                         BOOST_CHECK(model->save_params(params));
@@ -81,7 +85,8 @@ BOOST_AUTO_TEST_CASE(test_model)
 
                         // test error & parameters after loading
                         scalar_t lvalue_after, lerror_after;
-                        const size_t lcount_after = cortex::evaluate(*task, fold, *loss, *model, lvalue_after, lerror_after);
+                        const size_t lcount_after = cortex::evaluate(*task, fold, *loss, *criterion, *model,
+                                                                     lvalue_after, lerror_after);
 
                         vector_t xparams(model->psize());
                         BOOST_CHECK(model->save_params(xparams));
