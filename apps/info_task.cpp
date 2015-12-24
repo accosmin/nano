@@ -57,20 +57,20 @@ int main(int argc, char *argv[])
         const coord_t cmd_save_group_cols = math::clamp(po_vm["save-group-cols"].as<coord_t>(), 1, 128);
 
         // create task
-        const rtask_t rtask = cortex::get_tasks().get(cmd_task, cmd_task_params);
+        const auto task = cortex::get_tasks().get(cmd_task, cmd_task_params);
 
         // load task data
         cortex::measure_critical_and_log(
-                [&] () { return rtask->load(cmd_task_dir); },
+                [&] () { return task->load(cmd_task_dir); },
                 "load task <" + cmd_task + "> from <" + cmd_task_dir + ">");
 
         // describe task
-        rtask->describe();
+        task->describe();
 
         // save samples as images
         if (!cmd_save_dir.empty())
         {
-                for (size_t f = 0; f < rtask->fsize(); ++ f)
+                for (size_t f = 0; f < task->fsize(); ++ f)
                 {
                         const fold_t train_fold = std::make_pair(f, protocol::train);
                         const fold_t test_fold = std::make_pair(f, protocol::test);
@@ -78,8 +78,8 @@ int main(int argc, char *argv[])
                         const string_t train_path = cmd_save_dir + "/" + cmd_task + "_train_fold" + text::to_string(f + 1);
                         const string_t test_path = cmd_save_dir + "/" + cmd_task + "_test_fold" + text::to_string(f + 1);
 
-                        rtask->save_as_images(train_fold, train_path, cmd_save_group_rows, cmd_save_group_cols);
-                        rtask->save_as_images(test_fold, test_path, cmd_save_group_rows, cmd_save_group_cols);
+                        task->save_as_images(train_fold, train_path, cmd_save_group_rows, cmd_save_group_cols);
+                        task->save_as_images(test_fold, test_path, cmd_save_group_rows, cmd_save_group_cols);
                 }
         }
 		

@@ -15,27 +15,23 @@ BOOST_AUTO_TEST_CASE(test_criteria)
 
         cortex::init();
 
-        const rtask_t task = cortex::get_tasks().get("random", "dims=2,rows=8,cols=8,color=luma,size=16");
-        BOOST_REQUIRE_EQUAL(task.operator bool(), true);
+        const auto task = cortex::get_tasks().get("random", "dims=2,rows=8,cols=8,color=luma,size=16");
         BOOST_CHECK_EQUAL(task->load(""), true);
 
         const samples_t samples = task->samples();
         const string_t cmd_model = "linear:dims=4;act-snorm;linear:dims=" + text::to_string(task->osize()) + ";";
 
-        const rloss_t loss = cortex::get_losses().get("logistic");
-        BOOST_REQUIRE_EQUAL(loss.operator bool(), true);
+        const auto loss = cortex::get_losses().get("logistic");
 
         // create model
-        const rmodel_t model = cortex::get_models().get("forward-network", cmd_model);
-        BOOST_REQUIRE_EQUAL(model.operator bool(), true);
+        const auto model = cortex::get_models().get("forward-network", cmd_model);
         BOOST_CHECK_EQUAL(model->resize(*task, true), true);
 
         // vary criteria
         const strings_t ids = cortex::get_criteria().ids();
         for (const string_t& id : ids)
         {
-                const rcriterion_t criterion = cortex::get_criteria().get(id);
-                BOOST_REQUIRE_EQUAL(criterion.operator bool(), true);
+                const auto criterion = cortex::get_criteria().get(id);
 
                 const scalar_t lambda = 0.1;
                 const size_t nthreads = 1;

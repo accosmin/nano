@@ -41,14 +41,13 @@ namespace
 
         rmodel_t get_model(const string_t& description)
         {
-                const rmodel_t rmodel = cortex::get_models().get("forward-network", description + cmd_layer_delim + cmd_layer_output);
-                BOOST_REQUIRE_EQUAL(rmodel.operator bool(), true);
-                rmodel->resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color, false);
-                BOOST_CHECK_EQUAL(rmodel->irows(), cmd_irows);
-                BOOST_CHECK_EQUAL(rmodel->icols(), cmd_icols);
-                BOOST_CHECK_EQUAL(rmodel->osize(), cmd_outputs);
-                BOOST_CHECK_EQUAL(static_cast<int>(rmodel->color()), static_cast<int>(cmd_color));
-                return rmodel;
+                const auto model = cortex::get_models().get("forward-network", description + cmd_layer_delim + cmd_layer_output);
+                model->resize(cmd_irows, cmd_icols, cmd_outputs, cmd_color, false);
+                BOOST_CHECK_EQUAL(model->irows(), cmd_irows);
+                BOOST_CHECK_EQUAL(model->icols(), cmd_icols);
+                BOOST_CHECK_EQUAL(model->osize(), cmd_outputs);
+                BOOST_CHECK_EQUAL(static_cast<int>(model->color()), static_cast<int>(cmd_color));
+                return model;
         }
 
         void make_random_config(tensor_t& inputs, vector_t& params, vector_t& target)
@@ -62,65 +61,63 @@ namespace
                 target = cortex::class_target(trgen(), target.size());
         }
 
-        void test_model(const rmodel_t& rmodel, const scalar_t epsilon = math::epsilon2<scalar_t>())
+        void test_model(const string_t& model_description, const scalar_t epsilon = math::epsilon2<scalar_t>())
         {
-                const auto rloss = get_loss();
-                const auto& loss = *rloss;
+                const auto model = get_model(model_description);
+                const auto loss = get_loss();
 
-                auto& model = *rmodel;
-
-                vector_t params(model.psize());
-                vector_t target(model.osize());
-                tensor_t inputs(model.idims(), model.irows(), model.icols());
+                vector_t params(model->psize());
+                vector_t target(model->osize());
+                tensor_t inputs(model->idims(), model->irows(), model->icols());
 
                 // optimization problem (wrt parameters & inputs): size
                 auto fn_params_size = [&] ()
                 {
-                        return model.psize();
+                        return model->psize();
                 };
 
                 // optimization problem (wrt parameters & inputs): function value
                 auto fn_params_fval = [&] (const vector_t& x)
                 {
-                        model.load_params(x);
-                        const vector_t output = model.output(inputs).vector();
+                        model->load_params(x);
+                        const vector_t output = model->output(inputs).vector();
 
-                        return loss.value(target, output);
+                        return loss->value(target, output);
                 };
 
                 // optimization problem (wrt parameters & inputs): function value & gradient
                 auto fn_params_grad = [&] (const vector_t& x, vector_t& gx)
                 {
-                        model.load_params(x);
-                        const vector_t output = model.output(inputs).vector();
+                        model->load_params(x);
+                        const vector_t output = model->output(inputs).vector();
 
-                        gx = model.gparam(loss.vgrad(target, output));
-                        return loss.value(target, output);
+                        gx = model->gparam(loss->vgrad(target, output));
+                        return loss->value(target, output);
                 };
 
                 // optimization problem (wrt parameters & inputs): size
                 auto fn_inputs_size = [&] ()
                 {
-                        return model.isize();
+                        return model->isize();
                 };
 
                 // optimization problem (wrt parameters & inputs): function value
                 auto fn_inputs_fval = [&] (const vector_t& x)
                 {
-                        model.load_params(params);
-                        const vector_t output = model.output(x).vector();
+                        model->load_params(params);
+                        const vector_t output = model->output(x).vector();
 
-                        return loss.value(target, output);
+                        return loss->value(target, output);
                 };
 
                 // optimization problem (wrt parameters & inputs): function value & gradient
                 auto fn_inputs_grad = [&] (const vector_t& x, vector_t& gx)
                 {
-                        model.load_params(params);
-                        const vector_t output = model.output(x).vector();
+                        model->load_params(params);
+                        const vector_t output = model->output(x).vector();
 
-                        gx = model.ginput(loss.vgrad(target, output)).vector();
-                        return loss.value(target, output);
+                        gx = model->ginput(loss->vgrad(target, output)).vector();
+                        return loss->value(target, output);
                 };
 
                 // construct optimization problem: analytic gradient vs finite difference approximation
@@ -148,8 +145,7 @@ BOOST_AUTO_TEST_CASE(test_activation)
         {
                 const string_t description = layer_id;
 
-                const auto rmodel = get_model(description);
-                test_model(rmodel);
+                test_model(description);
         }
 }
 
@@ -161,8 +157,7 @@ BOOST_AUTO_TEST_CASE(test_linear)
         {
                 const string_t description = layer_id + string_t(":dims=8");
 
-                const auto rmodel = get_model(description);
-                test_model(rmodel);
+                test_model(description);
         }
 }
 
@@ -178,13 +173,12 @@ BOOST_AUTO_TEST_CASE(test_conv)
                                 layer_conv_id + string_t(":dims=4,rows=3,cols=3") + cmd_layer_delim + 
                                 layer_pool_id;
 
-                        const auto rmodel = get_model(description);
-                        test_model(rmodel);
+                        test_model(description);
                 }
         }
 }
 
-BOOST_AUTO_TEST_CASE(test_models)
+BOOST_AUTO_TEST_CASE(test_multi_layer_models)
 {
         cortex::init();
 
@@ -196,7 +190,6 @@ BOOST_AUTO_TEST_CASE(test_models)
         };
         for (const auto& description : descriptions)
         {
-                const auto rmodel = get_model(description);
-                test_model(rmodel);
+                test_model(description);
         }
 }

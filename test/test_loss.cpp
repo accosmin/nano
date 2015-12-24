@@ -14,7 +14,7 @@ namespace test
 
         void check_grad(const string_t& loss_id, tensor_size_t n_dims, size_t n_tests)
         {
-                const rloss_t loss = cortex::get_losses().get(loss_id);
+                const auto loss = cortex::get_losses().get(loss_id);
 
                 const vector_t target = cortex::class_target(n_dims / 2, n_dims);
 

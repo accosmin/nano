@@ -270,8 +270,7 @@ int main(int argc, char* argv[])
         {
                 log_info() << "<<< running network [" << network << "] ...";
 
-                const rmodel_t model = cortex::get_models().get("forward-network", network);
-                assert(model);
+                const auto model = cortex::get_models().get("forward-network", network);
                 model->resize(task, true);
 
                 // vary the loss
@@ -279,8 +278,7 @@ int main(int argc, char* argv[])
                 {
                         log_info() << "<<< running loss [" << iloss << "] ...";
 
-                        const rloss_t loss = cortex::get_losses().get(iloss);
-                        assert(loss);
+                        const auto loss = cortex::get_losses().get(iloss);
 
                         text::table_t table("optimizer");
                         table.header() << "train error"
@@ -291,8 +289,7 @@ int main(int argc, char* argv[])
                         // vary the criteria
                         for (const string_t& icriterion : criteria)
                         {
-                                const rcriterion_t criterion = cortex::get_criteria().get(icriterion);
-                                assert(criterion);
+                                const auto criterion = cortex::get_criteria().get(icriterion);
 
                                 test_optimizers(task, *model, tsampler, vsampler, *loss, *criterion,
                                                 trials, iterations, table);

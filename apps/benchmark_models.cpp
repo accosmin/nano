@@ -113,11 +113,8 @@ int main(int argc, char *argv[])
                 "cmodel3"
         };
 
-        const rloss_t loss = cortex::get_losses().get("logistic");
-        assert(loss);
-
-        const rcriterion_t criterion = cortex::get_criteria().get("l2n-reg");
-        assert(criterion);
+        const auto loss = cortex::get_losses().get("logistic");
+        const auto criterion = cortex::get_criteria().get("l2n-reg");
 
         // construct tables to compare models
         text::table_t ftable("model-forward");
@@ -141,8 +138,7 @@ int main(int argc, char *argv[])
                 log_info() << "<<< running network [" << cmd_network << "] ...";
 
                 // create feed-forward network
-                const rmodel_t model = cortex::get_models().get("forward-network", cmd_network);
-                assert(model);
+                const auto model = cortex::get_models().get("forward-network", cmd_network);
                 model->resize(cmd_rows, cmd_cols, task.osize(), cmd_color, true);
                 model->random_params();
 

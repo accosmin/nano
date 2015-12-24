@@ -120,27 +120,27 @@ int main(int argc, char *argv[])
         const string_t cmd_output = po_vm["output"].as<string_t>();
 
         // create task
-        const rtask_t rtask = cortex::get_tasks().get(cmd_task, cmd_task_params);
+        const auto task = cortex::get_tasks().get(cmd_task, cmd_task_params);
 
         // load task data
         cortex::measure_critical_and_log(
-                [&] () { return rtask->load(cmd_task_dir); },
+                [&] () { return task->load(cmd_task_dir); },
                 "load task <" + cmd_task + "> from <" + cmd_task_dir + ">");
 
         // describe task
-        rtask->describe();
+        task->describe();
 
         // create loss
-        const rloss_t rloss = cortex::get_losses().get(cmd_loss);
+        const auto loss = cortex::get_losses().get(cmd_loss);
 
         // create criterion
-        const rcriterion_t rcriterion = cortex::get_criteria().get(cmd_criterion);
+        const auto criterion = cortex::get_criteria().get(cmd_criterion);
 
         // create model
-        const rmodel_t rmodel = cortex::get_models().get(cmd_model, cmd_model_params);
+        const auto rmodel = cortex::get_models().get(cmd_model, cmd_model_params);
 
         // create trainer
-        const rtrainer_t rtrainer = cortex::get_trainers().get(cmd_trainer, cmd_trainer_params);
+        const auto trainer = cortex::get_trainers().get(cmd_trainer, cmd_trainer_params);
 
         // train & test models
         std::map<scalar_t, std::tuple<rmodel_t, trainer_states_t>> models;
@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
         math::stats_t<scalar_t> lstats, estats;
         for (size_t t = 0; t < cmd_trials; ++ t)
         {
-                for (size_t f = 0; f < rtask->fsize(); ++ f)
+                for (size_t f = 0; f < task->fsize(); ++ f)
                 {
                         const fold_t train_fold = std::make_pair(f, protocol::train);
                         const fold_t test_fold = std::make_pair(f, protocol::test);
@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
                         trainer_result_t result;
                         cortex::measure_critical_and_log([&] ()
                         {
-                                result = rtrainer->train(*rtask, train_fold, *rloss, cmd_threads, *rcriterion, *rmodel);
+                                result = trainer->train(*task, train_fold, *loss, cmd_threads, *criterion, *rmodel);
                                 return result.valid();
                         },
                         "train model");
@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
                         // test
                         scalar_t lvalue, lerror;
                         cortex::measure_and_log(
-                                [&] () { cortex::evaluate(*rtask, test_fold, *rloss, *rcriterion, *rmodel, lvalue, lerror); },
+                                [&] () { cortex::evaluate(*task, test_fold, *loss, *criterion, *rmodel, lvalue, lerror); },
                                 "test model");
                         log_info() << "<<< test error: [" << lvalue << "/" << lerror << "].";
 
@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
         // save the best model & optimization history (if any trained)
         if (!models.empty() && !cmd_output.empty())
         {
-                const rmodel_t& opt_model = std::get<0>(models.begin()->second);
+                const auto& opt_model = std::get<0>(models.begin()->second);
                 const trainer_states_t& opt_states = std::get<1>(models.begin()->second);
                 
                 cortex::measure_critical_and_log(

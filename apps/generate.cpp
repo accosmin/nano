@@ -58,25 +58,25 @@ int main(int argc, char *argv[])
         const coord_t cmd_save_group_cols = math::clamp(po_vm["save-group-cols"].as<coord_t>(), 1, 128);
 
         // create model
-        const rmodel_t rmodel = cortex::get_models().get(cmd_model);
+        const auto model = cortex::get_models().get(cmd_model);
 
         // load model
         cortex::measure_critical_and_log(
-                [&] () { return rmodel->load(cmd_input); },
+                [&] () { return model->load(cmd_input); },
                 "load model from <" + cmd_input + ">");
 
         // generate samples for each output class label
-        const tensor_size_t labels = rmodel->osize();
+        const tensor_size_t labels = model->osize();
         for (tensor_size_t l = 0; l < labels; ++ l)
         {
-                image_grid_t grid_image(rmodel->irows(), rmodel->icols(), cmd_save_group_rows, cmd_save_group_cols);
+                image_grid_t grid_image(model->irows(), model->icols(), cmd_save_group_rows, cmd_save_group_cols);
 
                 const vector_t target = cortex::class_target(l, labels);
                 for (coord_t r = 0; r < cmd_save_group_rows; ++ r)
                 {
                         for (coord_t c = 0; c < cmd_save_group_cols; ++ c)
                         {
-                                const auto data = cortex::generate_match_target(*rmodel, target);
+                                const auto data = cortex::generate_match_target(*model, target);
                                 const auto rgba = color::from_rgba_tensor(data);
 
                                 image_t image;

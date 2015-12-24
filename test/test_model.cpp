@@ -15,7 +15,7 @@ BOOST_AUTO_TEST_CASE(test_model)
 
         using namespace cortex;
 
-        const rtask_t task = cortex::get_tasks().get("random", "dims=2,rows=16,cols=16,color=luma,size=128");
+        const auto task = cortex::get_tasks().get("random", "dims=2,rows=16,cols=16,color=luma,size=128");
         BOOST_CHECK_EQUAL(task->load(""), true);
 
         const string_t lmodel0;
@@ -43,17 +43,13 @@ BOOST_AUTO_TEST_CASE(test_model)
                 cmodel + outlayer
         };
 
-        const rloss_t loss = cortex::get_losses().get("logistic");
-        BOOST_REQUIRE_EQUAL(loss.operator bool(), true);
-
-        const rcriterion_t criterion = cortex::get_criteria().get("avg");
-        BOOST_REQUIRE_EQUAL(criterion.operator bool(), true);
+        const auto loss = cortex::get_losses().get("logistic");
+        const auto criterion = cortex::get_criteria().get("avg");
 
         for (const string_t& cmd_network : cmd_networks)
         {
                 // create feed-forward network
-                const rmodel_t model = cortex::get_models().get("forward-network", cmd_network);
-                BOOST_REQUIRE_EQUAL(model.operator bool(), true);
+                const auto model = cortex::get_models().get("forward-network", cmd_network);
                 BOOST_CHECK_EQUAL(model->resize(*task, false), true);
                 BOOST_CHECK_EQUAL(model->irows(), task->irows());
                 BOOST_CHECK_EQUAL(model->icols(), task->icols());

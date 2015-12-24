@@ -78,47 +78,47 @@ int main(int argc, char *argv[])
         const coord_t cmd_save_group_cols = math::clamp(po_vm["save-group-cols"].as<coord_t>(), 1, 128);
 
         // create task
-        const rtask_t rtask = cortex::get_tasks().get(cmd_task, cmd_task_params);
+        const auto task = cortex::get_tasks().get(cmd_task, cmd_task_params);
 
         // load task data
         cortex::measure_critical_and_log(
-                [&] () { return rtask->load(cmd_task_dir); },
+                [&] () { return task->load(cmd_task_dir); },
                 "load task <" + cmd_task + "> from <" + cmd_task_dir + ">");
 
         // describe task
-        rtask->describe();
+        task->describe();
 
         // create loss
-        const rloss_t rloss = cortex::get_losses().get(cmd_loss);
+        const auto loss = cortex::get_losses().get(cmd_loss);
 
         // create criterion
-        const rcriterion_t rcriterion = cortex::get_criteria().get("avg");
+        const auto criterion = cortex::get_criteria().get("avg");
 
         // create model
-        const rmodel_t rmodel = cortex::get_models().get(cmd_model);
+        const auto model = cortex::get_models().get(cmd_model);
 
         // load model
         cortex::measure_critical_and_log(
-                [&] () { return rmodel->load(cmd_input); },
+                [&] () { return model->load(cmd_input); },
                 "load model from <" + cmd_input + ">");
 
         // test model
         math::stats_t<scalar_t> lstats, estats;
-        for (size_t f = 0; f < rtask->fsize(); ++ f)
+        for (size_t f = 0; f < task->fsize(); ++ f)
         {
                 const fold_t test_fold = std::make_pair(f, protocol::test);
 
 		// error rate
                 const cortex::timer_t timer;
                 scalar_t lvalue, lerror;
-                cortex::evaluate(*rtask, test_fold, *rloss, *rcriterion, *rmodel, lvalue, lerror);
+                cortex::evaluate(*task, test_fold, *loss, *criterion, *model, lvalue, lerror);
                 log_info() << "<<< test error: [" << lvalue << "/" << lerror << "] in " << timer.elapsed() << ".";
 
                 lstats(lvalue);
                 estats(lerror);
 
 		// per-label error rates
-                sampler_t sampler(rtask->samples());
+                sampler_t sampler(task->samples());
                 sampler.push(test_fold);
                 sampler.push(annotation::annotated);
 
@@ -131,13 +131,13 @@ int main(int argc, char *argv[])
                 for (size_t s = 0; s < samples.size(); ++ s)
                 {
                         const sample_t& sample = samples[s];
-                        const image_t& image = rtask->image(sample.m_index);
+                        const image_t& image = task->image(sample.m_index);
 
                         const vector_t target = sample.m_target;
-                        const vector_t output = rmodel->output(image, sample.m_region).vector();
+                        const vector_t output = model->output(image, sample.m_region).vector();
 
-                        const indices_t tclasses = rloss->labels(target);
-                        const indices_t oclasses = rloss->labels(output);
+                        const indices_t tclasses = loss->labels(target);
+                        const indices_t oclasses = loss->labels(output);
 
                         const bool ok = tclasses.size() == oclasses.size() &&
                                         std::mismatch(tclasses.begin(), tclasses.end(),
@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
                         const rgba_t nk_bkcolor = color::make_rgba(225, 0, 0);
 
                         // further split them by label
-                        const strings_t labels = rtask->labels();
+                        const strings_t labels = task->labels();
                         for (const string_t& label : labels)
                         {
                                 const string_t lbasepath = basepath + "_" + label;
@@ -176,8 +176,8 @@ int main(int argc, char *argv[])
                                                static_cast<scalar_t>(label_ll_samples.size()))
                                            << " [" << label << "] samples.";
 
-                                rtask->save_as_images(label_ok_samples, lbasepath + "_ok", grows, gcols, 8, ok_bkcolor);
-                                rtask->save_as_images(label_nk_samples, lbasepath + "_nk", grows, gcols, 8, nk_bkcolor);
+                                task->save_as_images(label_ok_samples, lbasepath + "_ok", grows, gcols, 8, ok_bkcolor);
+                                task->save_as_images(label_nk_samples, lbasepath + "_nk", grows, gcols, 8, nk_bkcolor);
                         }
                 }
         }            
