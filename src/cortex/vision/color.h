@@ -14,10 +14,6 @@ namespace cortex
         using rgba_t = uint32_t;
         using rgba_matrix_t = tensor::matrix_t<rgba_t>;
 
-        /// CIELab
-        using cielab_t = tensor::fixed_size_vector_t<scalar_t, 4>;
-        using cielab_matrix_t = tensor::matrix_t<cielab_t>;
-
         /// grayscale
         using luma_t = uint8_t;
         using luma_matrix_t = tensor::matrix_t<luma_t>;
@@ -33,9 +29,6 @@ namespace cortex
                 luma,                   // Y/L
                 rgba,                   // RGBA
                 alpha,                  // transparency
-                cielab_l,               // CIELab L
-                cielab_a,               // CIELab a
-                cielab_b                // CIELab b
         };
 
         ///
@@ -43,7 +36,7 @@ namespace cortex
         ///
         enum class color_mode
         {
-                luma,                   ///< process only grayscale color channel
+                luma,                   ///< process grayscale color channel
                 rgba                    ///< process red, green & blue color channels
         };
 
@@ -52,7 +45,7 @@ namespace cortex
         // manipulate colors
         namespace color
         {
-                // RGBA decoding (R, G, B, A, L(uma), CIELab)
+                // RGBA decoding (R, G, B, A, L(uma))
                 inline rgba_t get_red(rgba_t rgba)                      { return (rgba >> 24) & 0xFF; }
                 inline rgba_t get_green(rgba_t rgba)                    { return (rgba >> 16) & 0xFF; }
                 inline rgba_t get_blue(rgba_t rgba)                     { return (rgba >>  8) & 0xFF; }
@@ -72,9 +65,7 @@ namespace cortex
                         return make_luma(get_red(rgba), get_green(rgba), get_blue(rgba));
                 }
 
-                NANOCV_PUBLIC cielab_t make_cielab(rgba_t rgba);
-
-                // RGBA encoding (R, G, B, A, CIELab)
+                // RGBA encoding (R, G, B, A)
                 inline rgba_t make_rgba(rgba_t r, rgba_t g, rgba_t b, rgba_t a = 255)
                 {
                         return (r << 24) | (g << 16) | (b << 8) | a;
@@ -83,8 +74,6 @@ namespace cortex
                 {
                         return make_rgba(l, l, l, a);
                 }
-
-                NANOCV_PUBLIC rgba_t make_rgba(const cielab_t& cielab);
 
                 ///
                 /// \brief minimum color range
@@ -160,10 +149,7 @@ namespace text
                         { cortex::color_channel::blue,          "blue" },
                         { cortex::color_channel::luma,          "luma" },
                         { cortex::color_channel::rgba,          "rgba" },
-                        { cortex::color_channel::alpha,         "alpha" },
-                        { cortex::color_channel::cielab_l,      "cielab_l" },
-                        { cortex::color_channel::cielab_a,      "cielab_a" },
-                        { cortex::color_channel::cielab_b,      "cielab_b" }
+                        { cortex::color_channel::alpha,         "alpha" }
                 };
         }
 }
