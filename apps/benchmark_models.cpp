@@ -170,15 +170,16 @@ int main(int argc, char *argv[])
 
                         if (cmd_forward)
                         {
-                                accumulator_t ldata(*model, nthreads, *criterion, criterion_t::type::value, 0.1);
+                                accumulator_t lacc(*model, *criterion, criterion_t::type::value, 0.1);
+                                lacc.set_threads(nthreads);
 
                                 const auto milis = cortex::measure_robustly_usec([&] ()
                                 {
-                                        ldata.reset();
-                                        ldata.update(task, samples, *loss);
+                                        lacc.reset();
+                                        lacc.update(task, samples, *loss);
                                 }, 1) / 1000;
 
-                                log_info() << "<<< processed [" << ldata.count()
+                                log_info() << "<<< processed [" << lacc.count()
                                            << "] forward samples in " << milis << " ms.";
 
                                 op_store(frow, milis, milis1_forward);
@@ -186,15 +187,16 @@ int main(int argc, char *argv[])
 
                         if (cmd_backward)
                         {
-                                accumulator_t gdata(*model, nthreads, *criterion, criterion_t::type::vgrad, 0.1);
+                                accumulator_t gacc(*model, *criterion, criterion_t::type::vgrad, 0.1);
+                                gacc.set_threads(nthreads);
 
                                 const auto milis = cortex::measure_robustly_usec([&] ()
                                 {
-                                        gdata.reset();
-                                        gdata.update(task, samples, *loss);
+                                        gacc.reset();
+                                        gacc.update(task, samples, *loss);
                                 }, 1) / 1000;
 
-                                log_info() << "<<< processed [" << gdata.count()
+                                log_info() << "<<< processed [" << gacc.count()
                                            << "] backward samples in " << milis << " ms.";
 
                                 op_store(brow, milis, milis1_backward);

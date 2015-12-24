@@ -34,10 +34,9 @@ BOOST_AUTO_TEST_CASE(test_criteria)
                 const auto criterion = cortex::get_criteria().get(id);
 
                 const scalar_t lambda = 0.1;
-                const size_t nthreads = 1;
 
-                accumulator_t lacc(*model, nthreads, *criterion, criterion_t::type::value, lambda);
-                accumulator_t gacc(*model, nthreads, *criterion, criterion_t::type::vgrad, lambda);
+                accumulator_t lacc(*model, *criterion, criterion_t::type::value, lambda);
+                accumulator_t gacc(*model, *criterion, criterion_t::type::vgrad, lambda);
 
                 // optimization problem: size
                 auto opt_fn_size = [&] ()

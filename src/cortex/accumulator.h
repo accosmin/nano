@@ -14,8 +14,8 @@ namespace cortex
                 ///
                 /// \brief constructor
                 ///
-                accumulator_t(const model_t&, size_t nthreads,
-                              const criterion_t& criterion, criterion_t::type, scalar_t lambda = 0.0);
+                accumulator_t(const model_t&, const criterion_t&, criterion_t::type,
+                              scalar_t lambda = 0.0);
 
                 ///
                 /// \brief disable copying
@@ -29,12 +29,12 @@ namespace cortex
                 ~accumulator_t();
 
                 ///
-                /// \brief reset statistics (keeps parameters)
+                /// \brief reset accumulator (keeps parameters)
                 ///
                 void reset();
 
                 ///
-                /// \brief change parameters (and resets statistics)
+                /// \brief change the model's parameters (and resets statistics)
                 ///
                 void set_params(const vector_t& params);
 
@@ -42,6 +42,11 @@ namespace cortex
                 /// \brief change the regularization weight (keeps parameters)
                 ///
                 void set_lambda(scalar_t lambda);
+
+                ///
+                /// \brief change the number of active threads
+                ///
+                void set_threads(size_t nthreads);
 
                 ///
                 /// \brief cumulate statistics with a set of samples
@@ -86,7 +91,6 @@ namespace cortex
                 ///
                 /// \brief check if the criterion has a regularization term to tune
                 ///
-                static bool can_regularize(const string_t& criterion);
                 bool can_regularize() const;
 
         private:

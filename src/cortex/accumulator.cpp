@@ -7,10 +7,8 @@ namespace cortex
         struct accumulator_t::impl_t
         {
                 // constructor
-                impl_t(const model_t& model, size_t nthreads, const criterion_t& criterion,
-                                criterion_t::type type, scalar_t lambda)
-                        :       m_pool(nthreads),
-                                m_cache(criterion.clone())
+                impl_t(const model_t& model, const criterion_t& criterion, criterion_t::type type, scalar_t lambda)
+                        :       m_cache(criterion.clone())
                 {
                         m_cache->reset(model);
                         m_cache->reset(lambda);
@@ -35,9 +33,9 @@ namespace cortex
                 std::vector<rcriterion_t>       m_caches;       ///< cached criterion / thread
         };        
 
-        accumulator_t::accumulator_t(const model_t& model, size_t nthreads,
-                                     const criterion_t& criterion, criterion_t::type type, scalar_t lambda)
-                :       m_impl(std::make_unique<impl_t>(model, nthreads, criterion, type, lambda))
+        accumulator_t::accumulator_t(
+                const model_t& model, const criterion_t& criterion, criterion_t::type type, scalar_t lambda) :
+                m_impl(std::make_unique<impl_t>(model, criterion, type, lambda))
         {
         }
 
@@ -70,6 +68,11 @@ namespace cortex
                 {
                         cache->reset(params);
                 }
+        }
+
+        void accumulator_t::set_threads(size_t nthreads)
+        {
+                m_impl->m_pool.activate(nthreads);
         }
 
         void accumulator_t::update(const task_t& task, const samples_t& samples, const loss_t& loss)
@@ -129,11 +132,6 @@ namespace cortex
         scalar_t accumulator_t::lambda() const
         {
                 return m_impl->m_cache->lambda();
-        }
-
-        bool accumulator_t::can_regularize(const string_t& criterion)
-        {
-                return cortex::get_criteria().get(criterion)->can_regularize();
         }
 
         bool accumulator_t::can_regularize() const

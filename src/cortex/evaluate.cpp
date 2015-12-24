@@ -12,7 +12,7 @@ namespace cortex
                 sampler_t sampler(task.samples());
                 sampler.push(fold).push(annotation::annotated);
 
-                accumulator_t accumulator(model, 0, criterion, criterion_t::type::value, 0.0);
+                accumulator_t accumulator(model, criterion, criterion_t::type::value, 0.0);
                 accumulator.update(task, sampler.get(), loss);
 
                 lvalue = accumulator.value();

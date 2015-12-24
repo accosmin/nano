@@ -34,8 +34,8 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
         // accumulators using 1 thread
         const auto criterion = cortex::get_criteria().get("avg");
 
-        accumulator_t lacc(*model, 1, *criterion, criterion_t::type::value, lambda);
-        accumulator_t gacc(*model, 1, *criterion, criterion_t::type::vgrad, lambda);
+        accumulator_t lacc(*model, *criterion, criterion_t::type::value, lambda); lacc.set_threads(1);
+        accumulator_t gacc(*model, *criterion, criterion_t::type::vgrad, lambda); gacc.set_threads(1);
 
         BOOST_CHECK_EQUAL(lacc.lambda(), lambda);
         BOOST_CHECK_EQUAL(gacc.lambda(), lambda);
@@ -62,8 +62,8 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
         // check results with multiple threads
         for (size_t nthreads = 2; nthreads <= thread::n_threads(); ++ nthreads)
         {
-                accumulator_t laccx(*model, nthreads, *criterion, criterion_t::type::value, lambda);
-                accumulator_t gaccx(*model, nthreads, *criterion, criterion_t::type::vgrad, lambda);
+                accumulator_t laccx(*model, *criterion, criterion_t::type::value, lambda); laccx.set_threads(nthreads);
+                accumulator_t gaccx(*model, *criterion, criterion_t::type::vgrad, lambda); gaccx.set_threads(nthreads);
 
                 BOOST_CHECK_EQUAL(laccx.lambda(), lambda);
                 BOOST_CHECK_EQUAL(gaccx.lambda(), lambda);

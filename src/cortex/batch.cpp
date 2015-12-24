@@ -68,8 +68,8 @@ namespace cortex
                 model.save_params(x0);
 
                 // setup acumulators
-                accumulator_t lacc(model, nthreads, criterion, criterion_t::type::value);
-                accumulator_t gacc(model, nthreads, criterion, criterion_t::type::vgrad);
+                accumulator_t lacc(model, criterion, criterion_t::type::value); lacc.set_threads(nthreads);
+                accumulator_t gacc(model, criterion, criterion_t::type::vgrad); gacc.set_threads(nthreads);
 
                 trainer_data_t data(task, tsampler, vsampler, loss, x0, lacc, gacc);
 
