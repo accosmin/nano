@@ -1,9 +1,8 @@
 #include "layer_affine.h"
-#include "affine.hpp"
-#include "text/from_params.hpp"
 #include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "tensor/random.hpp"
+#include "text/from_params.hpp"
 #include "tensor/serialize.hpp"
 
 namespace cortex
@@ -62,7 +61,7 @@ namespace cortex
 
                 m_idata = input;
 
-                affine::output(m_idata, m_wdata, m_bdata, m_odata);
+                m_odata.vector() = m_wdata * m_idata.vector() + m_bdata;
 
                 return m_odata;
         }
@@ -75,7 +74,7 @@ namespace cortex
 
                 m_odata = output;
 
-                affine::ginput(m_idata, m_wdata, m_bdata, m_odata);
+                m_idata.vector() = m_wdata.transpose() * m_odata.vector();
 
                 return m_idata;
         }
@@ -88,10 +87,11 @@ namespace cortex
 
                 m_odata = output;
 
-                affine::gparam(m_idata,
-                               tensor::map_matrix(gradient, m_wdata.rows(), m_wdata.cols()),
-                               tensor::map_vector(gradient + m_wdata.size(), m_bdata.rows()),
-                               m_odata);
+                auto gwdata = tensor::map_matrix(gradient, m_wdata.rows(), m_wdata.cols());
+                auto gbdata = tensor::map_vector(gradient + m_wdata.size(), m_bdata.rows());
+
+                gbdata = m_odata.vector();
+                gwdata = m_odata.vector() * m_idata.vector().transpose();
         }
 }
 

@@ -5,7 +5,7 @@
 namespace cortex
 {
         ///
-        /// \brief convolution layer
+        /// \brief fully-connected convolution layer
         ///
         /// parameters:
         ///     dims=16[1,256]          - number of convolutions (output dimension)
@@ -16,9 +16,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(conv_layer_t,
-                                     "convolution layer, "\
-                                     "parameters: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
+                NANOCV_MAKE_CLONABLE(conv_layer_t, "convolution layer: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
 
                 // constructor
                 explicit conv_layer_t(const string_t& parameters = string_t());

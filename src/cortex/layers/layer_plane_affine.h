@@ -5,19 +5,19 @@
 namespace cortex
 {
         ///
-        /// \brief fully-connected affine layer (as in MLP models)
+        /// \brief fully-connected per-plane affine layer (as in MLP models)
         ///
         /// parameters:
         ///     dims=10[1,4096]          - number of output dimensions
         ///
-        class affine_layer_t : public layer_t
+        class plane_affine_layer_t : public layer_t
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(affine_layer_t, "fully-connected affine layer: dims=10[1,4096]")
+                NANOCV_MAKE_CLONABLE(plane_affine_layer_t, "fully-connected per-plane affine layer: dims=10[1,4096]")
 
                 // constructor
-                explicit affine_layer_t(const string_t& parameters = string_t());
+                explicit plane_affine_layer_t(const string_t& parameters = string_t());
 
                 // resize to process new tensors of the given type
                 virtual tensor_size_t resize(const tensor_t& tensor) override;
@@ -57,8 +57,8 @@ namespace cortex
         private:
 
                 // attributes
-                tensor_t                m_idata;        ///< input buffer:      isize x 1 x 1
-                tensor_t                m_odata;        ///< output buffer:     osize x 1 x 1
+                tensor_t                m_idata;        ///< input buffer:      isize x irows x icols
+                tensor_t                m_odata;        ///< output buffer:     osize x irows x icols
 
                 matrix_t                m_wdata;        ///< weights:           osize x isize
                 vector_t                m_bdata;        ///< bias:              osize

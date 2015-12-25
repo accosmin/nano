@@ -19,7 +19,7 @@ namespace cortex
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(pool_layer_t, "pooling layer, parameters: alpha=[-100.0,+100.0]")
+                NANOCV_MAKE_CLONABLE(pool_layer_t, "pooling layer: alpha=[-100.0,+100.0]")
 
                 // constructor
                 explicit pool_layer_t(const string_t& parameters = string_t());
