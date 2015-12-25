@@ -65,11 +65,11 @@ int main(int argc, char *argv[])
 
         // construct models
         const string_t lmodel0;
-        const string_t lmodel1 = lmodel0 + "linear:dims=100;act-snorm;";
-        const string_t lmodel2 = lmodel1 + "linear:dims=100;act-snorm;";
-        const string_t lmodel3 = lmodel2 + "linear:dims=100;act-snorm;";
-        const string_t lmodel4 = lmodel3 + "linear:dims=100;act-snorm;";
-        const string_t lmodel5 = lmodel4 + "linear:dims=100;act-snorm;";
+        const string_t lmodel1 = lmodel0 + "affine:dims=100;act-snorm;";
+        const string_t lmodel2 = lmodel1 + "affine:dims=100;act-snorm;";
+        const string_t lmodel3 = lmodel2 + "affine:dims=100;act-snorm;";
+        const string_t lmodel4 = lmodel3 + "affine:dims=100;act-snorm;";
+        const string_t lmodel5 = lmodel4 + "affine:dims=100;act-snorm;";
 
         string_t cmodel1;
         cmodel1 = cmodel1 + "conv:dims=16,rows=9,cols=9;act-snorm;";
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
         cmodel3 = cmodel3 + "conv:dims=32,rows=5,cols=5;pool-max;act-snorm;";
         cmodel3 = cmodel3 + "conv:dims=64,rows=3,cols=3;act-snorm;";
 
-        const string_t outlayer = "linear:dims=" + text::to_string(task.osize()) + ";";
+        const string_t outlayer = "affine:dims=" + text::to_string(task.osize()) + ";";
 
         strings_t cmd_networks =
         {

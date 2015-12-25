@@ -19,17 +19,17 @@ BOOST_AUTO_TEST_CASE(test_model)
         BOOST_CHECK_EQUAL(task->load(""), true);
 
         const string_t lmodel0;
-        const string_t lmodel1 = lmodel0 + "linear:dims=10;act-snorm;";
-        const string_t lmodel2 = lmodel1 + "linear:dims=10;act-snorm;";
-        const string_t lmodel3 = lmodel2 + "linear:dims=10;act-snorm;";
-        const string_t lmodel4 = lmodel3 + "linear:dims=10;act-snorm;";
-        const string_t lmodel5 = lmodel4 + "linear:dims=10;act-snorm;";
+        const string_t lmodel1 = lmodel0 + "affine:dims=10;act-snorm;";
+        const string_t lmodel2 = lmodel1 + "affine:dims=10;act-snorm;";
+        const string_t lmodel3 = lmodel2 + "affine:dims=10;act-snorm;";
+        const string_t lmodel4 = lmodel3 + "affine:dims=10;act-snorm;";
+        const string_t lmodel5 = lmodel4 + "affine:dims=10;act-snorm;";
         
         string_t cmodel;
         cmodel = cmodel + "conv:dims=8,rows=7,cols=7;pool-max;act-snorm;";
         cmodel = cmodel + "conv:dims=8,rows=5,cols=5;act-snorm;";
 
-        const string_t outlayer = "linear:dims=" + text::to_string(task->osize()) + ";";
+        const string_t outlayer = "affine:dims=" + text::to_string(task->osize()) + ";";
 
         strings_t cmd_networks =
         {

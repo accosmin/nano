@@ -2,10 +2,10 @@
 
 namespace cortex
 {
-        namespace linear
+        namespace affine
         {
                 ///
-                /// \brief linear output
+                /// \brief affine output
                 ///
                 template
                 <

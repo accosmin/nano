@@ -14,11 +14,11 @@ conv=${conv}"conv:dims=32,rows=5,cols=5;pool-max;act-snorm;"
 conv=${conv}"conv:dims=64,rows=3,cols=3;act-snorm;"
 
 mlp0="--model forward-network --model-params "
-mlp1=${mlp0}"linear:dims=128;act-snorm;"
-mlp2=${mlp1}"linear:dims=64;act-snorm;"
-mlp3=${mlp2}"linear:dims=32;act-snorm;"
+mlp1=${mlp0}"affine:dims=128;act-snorm;"
+mlp2=${mlp1}"affine:dims=64;act-snorm;"
+mlp3=${mlp2}"affine:dims=32;act-snorm;"
 
-outlayer="linear:dims=10;"
+outlayer="affine:dims=10;"
 
 # trainers
 epochs=64

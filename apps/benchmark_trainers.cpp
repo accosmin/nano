@@ -240,15 +240,15 @@ int main(int argc, char* argv[])
 
         // construct models
         const string_t lmodel0;
-        const string_t lmodel1 = lmodel0 + "linear:dims=16;act-snorm;";
-        const string_t lmodel2 = lmodel1 + "linear:dims=16;act-snorm;";
-        const string_t lmodel3 = lmodel2 + "linear:dims=16;act-snorm;";
+        const string_t lmodel1 = lmodel0 + "affine:dims=16;act-snorm;";
+        const string_t lmodel2 = lmodel1 + "affine:dims=16;act-snorm;";
+        const string_t lmodel3 = lmodel2 + "affine:dims=16;act-snorm;";
 
         const string_t cmodel0;
         const string_t cmodel1 = cmodel0 + "conv:dims=16,rows=7,cols=7;pool-max;act-snorm;";
         const string_t cmodel2 = cmodel1 + "conv:dims=16,rows=5,cols=5;act-snorm;";
 
-        const string_t outlayer = "linear:dims=" + text::to_string(outputs) + ";";
+        const string_t outlayer = "affine:dims=" + text::to_string(outputs) + ";";
 
         strings_t networks;
         if (use_mlp0) { networks.push_back(lmodel0 + outlayer); }

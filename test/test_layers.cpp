@@ -27,7 +27,7 @@ namespace
         const size_t cmd_tests = 7;
 
         const string_t cmd_layer_delim = ";";
-        const string_t cmd_layer_output = "linear:dims=" + text::to_string(cmd_outputs) + ";";
+        const string_t cmd_layer_output = "affine:dims=" + text::to_string(cmd_outputs) + ";";
 
         rloss_t get_loss() 
         {
@@ -149,11 +149,11 @@ BOOST_AUTO_TEST_CASE(test_activation)
         }
 }
 
-BOOST_AUTO_TEST_CASE(test_linear)
+BOOST_AUTO_TEST_CASE(test_affine)
 {
         cortex::init();
 
-        for (const auto& layer_id : { "linear" })
+        for (const auto& layer_id : { "affine" })
         {
                 const string_t description = layer_id + string_t(":dims=8");
 
@@ -184,9 +184,9 @@ BOOST_AUTO_TEST_CASE(test_multi_layer_models)
 
         const auto descriptions = 
         { 
-                "linear:dims=9;act-snorm;linear:dims=7;act-splus",
+                "affine:dims=9;act-snorm;affine:dims=7;act-splus",
                 "conv:dims=11,rows=3,cols=3;pool-max;act-snorm;conv:dims=7,rows=3,cols=3;act-splus",
-                "conv:dims=11,rows=3,cols=3;pool-max;act-snorm;conv:dims=7,rows=3,cols=3;act-splus;linear:dims=13;act-splus"
+                "conv:dims=11,rows=3,cols=3;pool-max;act-snorm;conv:dims=7,rows=3,cols=3;act-splus;affine:dims=13;act-splus"
         };
         for (const auto& description : descriptions)
         {
