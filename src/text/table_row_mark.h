@@ -13,7 +13,7 @@ namespace text
         <
                 typename tscalar
         >
-        auto make_table_row_minimum_mark()
+        auto make_table_mark_minimum_col()
         {
                 const auto op = text::make_less_from_string<tscalar>();
 
@@ -30,7 +30,7 @@ namespace text
         <
                 typename tscalar
         >
-        auto make_table_row_maximum_mark()
+        auto make_table_mark_maximum_col()
         {
                 const auto op = text::make_less_from_string<tscalar>();
 

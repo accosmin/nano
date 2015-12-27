@@ -159,7 +159,7 @@ int main(int argc, char* argv[])
                         }
                 }
 
-                table.mark(text::make_table_row_minimum_mark<size_t>());
+                table.mark(text::make_table_mark_minimum_col<size_t>());
                 table.print(std::cout);
         }
 
@@ -184,7 +184,7 @@ int main(int argc, char* argv[])
                         }
                 }
 
-                table.mark(text::make_table_row_minimum_mark<size_t>());
+                table.mark(text::make_table_mark_minimum_col<size_t>());
                 table.print(std::cout);
         }
 
