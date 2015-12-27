@@ -65,64 +65,35 @@ int main(int argc, char *argv[])
 
         // construct models
         const string_t mlp0;
-        const string_t mlp1 = mlp0 + "affine:dims=100;act-snorm;";
-        const string_t mlp2 = mlp1 + "affine:dims=100;act-snorm;";
-        const string_t mlp3 = mlp2 + "affine:dims=100;act-snorm;";
-        const string_t mlp4 = mlp3 + "affine:dims=100;act-snorm;";
-        const string_t mlp5 = mlp4 + "affine:dims=100;act-snorm;";
+        const string_t mlp1 = mlp0 + "affine1D:dims=100;act-snorm;";
+        const string_t mlp2 = mlp1 + "affine1D:dims=100;act-snorm;";
+        const string_t mlp3 = mlp2 + "affine1D:dims=100;act-snorm;";
+        const string_t mlp4 = mlp3 + "affine1D:dims=100;act-snorm;";
+        const string_t mlp5 = mlp4 + "affine1D:dims=100;act-snorm;";
 
-        string_t cmodel1;
-        cmodel1 = cmodel1 + "conv:dims=16,rows=9,cols=9;act-snorm;";
+        const string_t convnet =
+                "conv:dims=16,rows=9,cols=9;pool-max;act-snorm;" \
+                "conv:dims=16,rows=5,cols=5;pool-max;act-snorm;" \
+                "conv:dims=16,rows=3,cols=3;act-snorm;";
 
-        string_t cmodel2;
-        cmodel2 = cmodel2 + "conv:dims=16,rows=9,cols=9;pool-max;act-snorm;";
-        cmodel2 = cmodel2 + "conv:dims=32,rows=5,cols=5;act-snorm;";
+        const string_t pconvnet =
+                "plane-conv:dims=16,rows=9,cols=9;pool-max;affine3D:dims=16;act-snorm;" \
+                "plane-conv:dims=16,rows=5,cols=5;pool-max;affine3D:dims=16;act-snorm;" \
+                "plane-conv:dims=16,rows=3,cols=3;affine3D:dims=16;act-snorm;";
 
-        string_t cmodel3;
-        cmodel3 = cmodel3 + "conv:dims=16,rows=9,cols=9;pool-max;act-snorm;";
-        cmodel3 = cmodel3 + "conv:dims=32,rows=5,cols=5;pool-max;act-snorm;";
-        cmodel3 = cmodel3 + "conv:dims=64,rows=3,cols=3;act-snorm;";
+        const string_t outlayer = "affine1D:dims=" + text::to_string(task.osize()) + ";";
 
-        string_t pmodel1;
-        pmodel1 = pmodel1 + "plane-conv:dims=16,rows=9,cols=9;pool-max;";
-        pmodel1 = pmodel1 + "plane-affine:dims=16;act-snorm;";
-        pmodel1 = pmodel1 + "plane-conv:dims=16,rows=5,cols=5;pool-max;";
-        pmodel1 = pmodel1 + "plane-affine:dims=16;act-snorm;";
-        pmodel1 = pmodel1 + "plane-conv:dims=16,rows=3,cols=3;pool-max;";
-        pmodel1 = pmodel1 + "plane-affine:dims=16;act-snorm;";
-
-        const string_t outlayer = "affine:dims=" + text::to_string(task.osize()) + ";";
-
-        strings_t cmd_networks =
+        const std::vector<std::pair<string_t, string_t>> configs =
         {
-                mlp0 + outlayer,
-                mlp1 + outlayer,
-                mlp2 + outlayer,
-                mlp3 + outlayer,
-                mlp4 + outlayer,
-                mlp5 + outlayer,
+                { mlp0 + outlayer, "mlp0" },
+                { mlp1 + outlayer, "mlp1" },
+                { mlp2 + outlayer, "mlp2" },
+                { mlp3 + outlayer, "mlp3" },
+                { mlp4 + outlayer, "mlp4" },
+                { mlp5 + outlayer, "mlp5" },
 
-                cmodel1 + outlayer,
-                cmodel2 + outlayer,
-                cmodel3 + outlayer,
-
-                pmodel1 + outlayer
-        };
-
-        strings_t cmd_names =
-        {
-                "mlp0",
-                "mlp1",
-                "mlp2",
-                "mlp3",
-                "mlp4",
-                "mlp5",
-
-                "cmodel1",
-                "cmodel2",
-                "cmodel3",
-
-                "pmodel"
+                { convnet + outlayer, "convnet" },
+                { pconvnet + outlayer, "pconvnet" }
         };
 
         const auto loss = cortex::get_losses().get("logistic");
@@ -139,10 +110,10 @@ int main(int argc, char *argv[])
         }
 
         // evaluate models
-        for (size_t im = 0; im < cmd_networks.size(); ++ im)
+        for (const auto& config : configs)
         {
-                const string_t cmd_network = cmd_networks[im];
-                const string_t cmd_name = cmd_names[im];
+                const string_t cmd_network = config.first;
+                const string_t cmd_name = config.second;
 
                 text::table_row_t& frow = ftable.append(cmd_name + " (task)");
                 text::table_row_t& brow = btable.append(cmd_name + " (task)");

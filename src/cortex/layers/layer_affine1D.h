@@ -5,19 +5,19 @@
 namespace cortex
 {
         ///
-        /// \brief fully-connected affine layer (as in MLP models)
+        /// \brief fully-connected affine layer that works with 1D tensors (as in MLP models)
         ///
         /// parameters:
         ///     dims    - number of output dimensions
         ///
-        class affine_layer_t : public layer_t
+        class affine1D_layer_t : public layer_t
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(affine_layer_t, "fully-connected affine layer: dims=10[1,4096]")
+                NANOCV_MAKE_CLONABLE(affine1D_layer_t, "fully-connected 1D affine layer: dims=10[1,4096]")
 
                 // constructor
-                explicit affine_layer_t(const string_t& parameters = string_t());
+                explicit affine1D_layer_t(const string_t& parameters = string_t());
 
                 // resize to process new tensors of the given type
                 virtual tensor_size_t resize(const tensor_t& tensor) override;

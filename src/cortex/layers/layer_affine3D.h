@@ -5,19 +5,19 @@
 namespace cortex
 {
         ///
-        /// \brief fully-connected per-plane affine layer (as in MLP models)
+        /// \brief fully-connected affine layer that keeps the 3D structure of the input tensor
         ///
         /// parameters:
-        ///     dims=10[1,4096]          - number of output dimensions
+        ///     dims    - number of output dimensions
         ///
-        class plane_affine_layer_t : public layer_t
+        class affine3D_layer_t : public layer_t
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(plane_affine_layer_t, "fully-connected per-plane affine layer: dims=10[1,4096]")
+                NANOCV_MAKE_CLONABLE(affine3D_layer_t, "fully-connected 3D affine layer: dims=10[1,4096]")
 
                 // constructor
-                explicit plane_affine_layer_t(const string_t& parameters = string_t());
+                explicit affine3D_layer_t(const string_t& parameters = string_t());
 
                 // resize to process new tensors of the given type
                 virtual tensor_size_t resize(const tensor_t& tensor) override;

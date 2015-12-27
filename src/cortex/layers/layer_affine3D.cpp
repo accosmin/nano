@@ -1,4 +1,4 @@
-#include "layer_plane_affine.h"
+#include "layer_affine3D.h"
 #include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "tensor/random.hpp"
@@ -7,12 +7,12 @@
 
 namespace cortex
 {
-        plane_affine_layer_t::plane_affine_layer_t(const string_t& parameters)
+        affine3D_layer_t::affine3D_layer_t(const string_t& parameters)
                 :       layer_t(parameters)
         {
         }
 
-        tensor_size_t plane_affine_layer_t::resize(const tensor_t& tensor)
+        tensor_size_t affine3D_layer_t::resize(const tensor_t& tensor)
         {
                 const auto idims = tensor.dims();
                 const auto odims = math::clamp(text::from_params<tensor_size_t>(configuration(), "dims", 10), 1, 4096);
@@ -27,33 +27,33 @@ namespace cortex
                 return psize();
         }
 
-        void plane_affine_layer_t::zero_params()
+        void affine3D_layer_t::zero_params()
         {
                 m_wdata.setZero();
                 m_bdata.setZero();
         }
 
-        void plane_affine_layer_t::random_params(scalar_t min, scalar_t max)
+        void affine3D_layer_t::random_params(scalar_t min, scalar_t max)
         {
                 tensor::set_random(m_wdata, math::random_t<scalar_t>(min, max));
                 tensor::set_random(m_bdata, math::random_t<scalar_t>(min, max));
         }
 
-        scalar_t* plane_affine_layer_t::save_params(scalar_t* params) const
+        scalar_t* affine3D_layer_t::save_params(scalar_t* params) const
         {
                 params = tensor::to_array(m_wdata, params);
                 params = tensor::to_array(m_bdata, params);
                 return params;
         }
 
-        const scalar_t* plane_affine_layer_t::load_params(const scalar_t* params)
+        const scalar_t* affine3D_layer_t::load_params(const scalar_t* params)
         {
                 params = tensor::from_array(m_wdata, params);
                 params = tensor::from_array(m_bdata, params);
                 return params;
         }
 
-        const tensor_t& plane_affine_layer_t::output(const tensor_t& input)
+        const tensor_t& affine3D_layer_t::output(const tensor_t& input)
         {
                 assert(idims() == input.dims());
                 assert(irows() == input.rows());
@@ -75,7 +75,7 @@ namespace cortex
                 return m_odata;
         }
 
-        const tensor_t& plane_affine_layer_t::ginput(const tensor_t& output)
+        const tensor_t& affine3D_layer_t::ginput(const tensor_t& output)
         {
                 assert(output.dims() == odims());
                 assert(output.rows() == orows());
@@ -97,7 +97,7 @@ namespace cortex
                 return m_idata;
         }
 
-        void plane_affine_layer_t::gparam(const tensor_t& output, scalar_t* gradient)
+        void affine3D_layer_t::gparam(const tensor_t& output, scalar_t* gradient)
         {
                 assert(output.dims() == odims());
                 assert(output.rows() == orows());

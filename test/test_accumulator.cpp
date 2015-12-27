@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
         BOOST_CHECK_EQUAL(task->load(""), true);
 
         const samples_t samples = task->samples();
-        const string_t cmd_model = "affine:dims=4;act-snorm;affine:dims=" + text::to_string(task->osize()) + ";";
+        const string_t cmd_model = "affine1D:dims=4;act-snorm;affine1D:dims=" + text::to_string(task->osize()) + ";";
 
         const auto loss = cortex::get_losses().get("logistic");
 

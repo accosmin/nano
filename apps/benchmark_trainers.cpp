@@ -174,8 +174,8 @@ int main(int argc, char* argv[])
         po_desc.add_options()("mlp1", "MLP with 1 hidden layers");
         po_desc.add_options()("mlp2", "MLP with 2 hidden layers");
         po_desc.add_options()("mlp3", "MLP with 3 hidden layers");
-        po_desc.add_options()("conv1", "convolution network with 1 convolution layers");
-        po_desc.add_options()("conv2", "convolution network with 2 convolution layers");
+        po_desc.add_options()("convnet", "fully-connected convolution network");
+        po_desc.add_options()("pconvnet", "plane-connected convolution network");
         po_desc.add_options()("trials",
                 boost::program_options::value<size_t>()->default_value(10),
                 "number of models to train & evaluate");
@@ -203,8 +203,8 @@ int main(int argc, char* argv[])
         const bool use_mlp1 = po_vm.count("mlp1");
         const bool use_mlp2 = po_vm.count("mlp2");
         const bool use_mlp3 = po_vm.count("mlp3");
-        const bool use_conv1 = po_vm.count("conv1");
-        const bool use_conv2 = po_vm.count("conv2");
+        const bool use_convnet = po_vm.count("convnet");
+        const bool use_pconvnet = po_vm.count("pconvnet");
         const auto trials = po_vm["trials"].as<size_t>();
         const auto iterations = po_vm["iterations"].as<size_t>();
 
@@ -212,8 +212,8 @@ int main(int argc, char* argv[])
                 !use_mlp1 &&
                 !use_mlp2 &&
                 !use_mlp3 &&
-                !use_conv1 &&
-                !use_conv2)
+                !use_convnet &&
+                !use_pconvnet)
         {
                 std::cout << po_desc;
                 return EXIT_FAILURE;
@@ -239,24 +239,28 @@ int main(int argc, char* argv[])
         tsampler.split(80, vsampler);
 
         // construct models
-        const string_t lmodel0;
-        const string_t lmodel1 = lmodel0 + "affine:dims=16;act-snorm;";
-        const string_t lmodel2 = lmodel1 + "affine:dims=16;act-snorm;";
-        const string_t lmodel3 = lmodel2 + "affine:dims=16;act-snorm;";
+        const string_t mlp0;
+        const string_t mlp1 = mlp0 + "affine1D:dims=16;act-snorm;";
+        const string_t mlp2 = mlp1 + "affine1D:dims=16;act-snorm;";
+        const string_t mlp3 = mlp2 + "affine1D:dims=16;act-snorm;";
 
-        const string_t cmodel0;
-        const string_t cmodel1 = cmodel0 + "conv:dims=16,rows=7,cols=7;pool-max;act-snorm;";
-        const string_t cmodel2 = cmodel1 + "conv:dims=16,rows=5,cols=5;act-snorm;";
+        const string_t convnet =
+                "conv:dims=16,rows=7,cols=7;pool-max;act-snorm;"\
+                "conv:dims=16,rows=5,cols=5;act-snorm;";
 
-        const string_t outlayer = "affine:dims=" + text::to_string(outputs) + ";";
+        const string_t pconvnet =
+                "plane-conv:dims=16,rows=7,cols=7;pool-max;affine3D:dims=16;act-snorm;"\
+                "plane-conv:dims=16,rows=5,cols=5;affine3D:dims=16;act-snorm;";
+
+        const string_t outlayer = "affine1D:dims=" + text::to_string(outputs) + ";";
 
         strings_t networks;
-        if (use_mlp0) { networks.push_back(lmodel0 + outlayer); }
-        if (use_mlp1) { networks.push_back(lmodel1 + outlayer); }
-        if (use_mlp2) { networks.push_back(lmodel2 + outlayer); }
-        if (use_mlp3) { networks.push_back(lmodel3 + outlayer); }
-        if (use_conv1) { networks.push_back(cmodel1 + outlayer); }
-        if (use_conv2) { networks.push_back(cmodel2 + outlayer); }
+        if (use_mlp0) { networks.push_back(mlp0 + outlayer); }
+        if (use_mlp1) { networks.push_back(mlp1 + outlayer); }
+        if (use_mlp2) { networks.push_back(mlp2 + outlayer); }
+        if (use_mlp3) { networks.push_back(mlp3 + outlayer); }
+        if (use_convnet) { networks.push_back(convnet + outlayer); }
+        if (use_pconvnet) { networks.push_back(pconvnet + outlayer); }
 
         const strings_t losses = { "classnll" }; //cortex::get_losses().ids();
 

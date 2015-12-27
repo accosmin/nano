@@ -27,7 +27,7 @@ namespace
         const size_t cmd_tests = 7;
 
         const string_t cmd_layer_delim = ";";
-        const string_t cmd_layer_output = "affine:dims=" + text::to_string(cmd_outputs) + ";";
+        const string_t cmd_layer_output = "affine1D:dims=" + text::to_string(cmd_outputs) + ";";
 
         rloss_t get_loss() 
         {
@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE(test_affine)
 {
         cortex::init();
 
-        for (const auto& layer_id : { "affine", "plane-affine" })
+        for (const auto& layer_id : { "affine1D", "affine3D" })
         {
                 const string_t description = layer_id + string_t(":dims=8");
 
@@ -184,9 +184,10 @@ BOOST_AUTO_TEST_CASE(test_multi_layer_models)
 
         const auto descriptions = 
         { 
-                "affine:dims=9;act-snorm;affine:dims=7;act-splus",
+                "affine1D:dims=9;act-snorm;affine1D:dims=7;act-splus",
                 "conv:dims=11,rows=3,cols=3;pool-max;act-snorm;conv:dims=7,rows=3,cols=3;act-splus",
-                "conv:dims=11,rows=3,cols=3;pool-max;act-snorm;conv:dims=7,rows=3,cols=3;act-splus;affine:dims=13;act-splus"
+                "conv:dims=11,rows=3,cols=3;pool-max;act-snorm;conv:dims=7,rows=3,cols=3;act-splus;affine1D:dims=13;act-splus",
+                "plane-conv:dims=11,rows=3,cols=3;pool-max;affine3D:dims=5;act-snorm;plane-conv:dims=7,rows=3,cols=3;act-splus;affine1D:dims=13;act-splus"
         };
         for (const auto& description : descriptions)
         {
