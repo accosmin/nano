@@ -5,12 +5,12 @@
 namespace cortex
 {
         ///
-        /// \brief fully-connected convolution layer
+        /// \brief fully-connected convolution layer: output(o) = sum(i, conv(input(i), conv(k = (o, i)))) + bias(o)
         ///
         /// parameters:
-        ///     dims=16[1,256]          - number of convolutions (output dimension)
-        ///     rows=8[1,32]            - convolution size
-        ///     cols=8[1,32]            - convolution size
+        ///     dims    - number of output planes
+        ///     rows    - convolution size
+        ///     cols    - convolution size
         ///
         class conv_layer_t : public layer_t
         {
@@ -47,12 +47,7 @@ namespace cortex
                 virtual tensor_size_t odims() const override { return m_odata.dims(); }
                 virtual tensor_size_t orows() const override { return m_odata.rows(); }
                 virtual tensor_size_t ocols() const override { return m_odata.cols(); }
-                virtual tensor_size_t psize() const override;
-
-                // flops
-                virtual tensor_size_t output_flops() const override { return odims() * idims() * oppsize() * kppsize(); }
-                virtual tensor_size_t ginput_flops() const override { return odims() * orows() * oppsize() * kppsize(); }
-                virtual tensor_size_t gparam_flops() const override { return odims() * orows() * ippsize() * oppsize(); }
+                virtual tensor_size_t psize() const override { return m_kdata.size() + m_bdata.size(); }
 
         private:
 
@@ -60,16 +55,12 @@ namespace cortex
                 tensor_size_t krows() const { return m_kdata.rows(); }
                 tensor_size_t kcols() const { return m_kdata.cols(); }
 
-                tensor_size_t oppsize() const { return m_odata.planeSize(); }
-                tensor_size_t ippsize() const { return m_idata.planeSize(); }
-                tensor_size_t kppsize() const { return m_kdata.planeSize(); }
-
         private:
 
                 // attributes
-                tensor_t                m_idata;        ///< input buffer:              idims x irows x icols
-                tensor_t                m_odata;        ///< output buffer:             odims x orows x ocols
-                tensor_t                m_kdata;        ///< convolution kernels:       idims x odims x krows x kcols
-                tensor_t                m_bdata;        ///< convolution bias:          odims x 1 x 1
+                tensor_t        m_idata;        ///< input buffer:              idims x irows x icols
+                tensor_t        m_odata;        ///< output buffer:             odims x orows x ocols
+                tensor_t        m_kdata;        ///< convolution kernels:       idims x odims x krows x kcols
+                tensor_t        m_bdata;        ///< convolution bias:          odims x 1 x 1
         };
 }

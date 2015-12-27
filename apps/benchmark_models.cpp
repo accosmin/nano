@@ -84,11 +84,11 @@ int main(int argc, char *argv[])
         cmodel3 = cmodel3 + "conv:dims=64,rows=3,cols=3;act-snorm;";
 
         string_t pmodel1;
-        pmodel1 = pmodel1 + "plane-conv:dims=16,rows=9,cols=9;pool-max;act-snorm;";
+        pmodel1 = pmodel1 + "plane-conv:dims=16,rows=9,cols=9;pool-max;";
         pmodel1 = pmodel1 + "plane-affine:dims=16;act-snorm;";
-        pmodel1 = pmodel1 + "plane-conv:dims=16,rows=5,cols=5;pool-max;act-snorm;";
+        pmodel1 = pmodel1 + "plane-conv:dims=16,rows=5,cols=5;pool-max;";
         pmodel1 = pmodel1 + "plane-affine:dims=16;act-snorm;";
-        pmodel1 = pmodel1 + "plane-conv:dims=16,rows=3,cols=3;pool-max;act-snorm;";
+        pmodel1 = pmodel1 + "plane-conv:dims=16,rows=3,cols=3;pool-max;";
         pmodel1 = pmodel1 + "plane-affine:dims=16;act-snorm;";
 
         const string_t outlayer = "affine:dims=" + text::to_string(task.osize()) + ";";

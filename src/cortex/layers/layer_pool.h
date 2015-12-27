@@ -49,21 +49,15 @@ namespace cortex
                 virtual tensor_size_t ocols() const override { return m_odata.cols(); }
                 virtual tensor_size_t psize() const override { return 0; }
 
-                // flops
-                virtual tensor_size_t output_flops() const override { return idims() * irows() * icols() * 16; }
-                virtual tensor_size_t ginput_flops() const override { return idims() * irows() * icols(); }
-                virtual tensor_size_t gparam_flops() const override { return 0; }
-
         private:
 
                 // attributes
-                scalar_t                m_alpha;        ///< scaling factor (controls the min/max/avg-like effect)
-                tensor_t                m_idata;        ///< input buffer
-                tensor_t                m_odata;        ///< output buffer
-
-                tensor_t                m_wdata;       	///< weights buffer: exp(input)
-                tensor_t                m_sdata;    	///< sum buffer: cumulated exponents / output pixel    		
-		tensor_t		m_cdata;	///< counts buffer: #hits / output pixel
+                scalar_t        m_alpha;        ///< scaling factor (controls the min/max/avg-like effect)
+                tensor_t        m_idata;        ///< input buffer
+                tensor_t        m_odata;        ///< output buffer
+                tensor_t        m_wdata;       	///< weights buffer: exp(input)
+                tensor_t        m_sdata;    	///< sum buffer: cumulated exponents / output pixel
+                tensor_t	m_cdata;	///< counts buffer: #hits / output pixel
         };
 
         class pool_max_layer_t : public pool_layer_t

@@ -2,7 +2,6 @@
 #include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "tensor/random.hpp"
-#include "tensor/conv3d.hpp"
 #include "text/to_string.hpp"
 #include "cortex/util/logger.h"
 #include "text/from_params.hpp"
@@ -84,11 +83,6 @@ namespace cortex
                 return params;
         }
 
-        tensor_size_t conv_layer_t::psize() const
-        {
-                return m_kdata.size() + m_bdata.size();
-        }
-
         const tensor_t& conv_layer_t::output(const tensor_t& input)
         {
                 assert(idims() == input.dims());
@@ -98,7 +92,16 @@ namespace cortex
                 m_idata = input;
 
                 // convolution
-                tensor::conv3d_output(tensor::conv2d_dyn_t(), m_idata, m_kdata, m_odata);
+                m_odata.setZero();
+
+                tensor::conv2d_dyn_t op;
+                for (tensor_size_t i = 0, k = 0; i < idims(); ++ i)
+                {
+                        for (tensor_size_t o = 0; o < odims(); ++ o, ++ k)
+                        {
+                                op(m_idata.matrix(i), m_kdata.matrix(k), m_odata.matrix(o));
+                        }
+                }
 
                 // +bias
                 for (tensor_size_t o = 0; o < odims(); ++ o)
@@ -117,7 +120,16 @@ namespace cortex
 
                 m_odata = output;
 
-                tensor::conv3d_ginput(tensor::corr2d_dyn_t(), m_idata, m_kdata, m_odata);
+                m_idata.setZero();
+
+                tensor::corr2d_dyn_t op;
+                for (tensor_size_t i = 0, k = 0; i < idims(); ++ i)
+                {
+                        for (tensor_size_t o = 0; o < odims(); ++ o, ++ k)
+                        {
+                                op(m_odata.matrix(o), m_kdata.matrix(k), m_idata.matrix(i));
+                        }
+                }
 
                 return m_idata;
         }
@@ -131,8 +143,17 @@ namespace cortex
                 m_odata = output;
                 
                 // wrt convolution
-                auto kdata = tensor::map_tensor(gradient, kdims(), krows(), kcols());
-                tensor::conv3d_gparam(tensor::conv2d_dyn_t(), m_idata, kdata, m_odata);
+                auto gkdata = tensor::map_tensor(gradient, kdims(), krows(), kcols());
+                gkdata.setZero();
+
+                tensor::conv2d_dyn_t op;
+                for (tensor_size_t i = 0, k = 0; i < idims(); ++ i)
+                {
+                        for (tensor_size_t o = 0; o < odims(); ++ o, ++ k)
+                        {
+                                op(m_idata.matrix(i), m_odata.matrix(o), gkdata.matrix(k));
+                        }
+                }
 
                 // wrt bias
                 for (tensor_size_t o = 0; o < odims(); ++ o)

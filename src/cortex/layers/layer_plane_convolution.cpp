@@ -2,7 +2,6 @@
 #include "math/clamp.hpp"
 #include "math/random.hpp"
 #include "tensor/random.hpp"
-#include "tensor/conv3d.hpp"
 #include "text/to_string.hpp"
 #include "cortex/util/logger.h"
 #include "text/from_params.hpp"
@@ -76,11 +75,6 @@ namespace cortex
                 params = tensor::from_array(m_kdata, params);
 
                 return params;
-        }
-
-        tensor_size_t plane_conv_layer_t::psize() const
-        {
-                return m_kdata.size();
         }
 
         const tensor_t& plane_conv_layer_t::output(const tensor_t& input)

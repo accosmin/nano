@@ -89,21 +89,6 @@ namespace cortex
                 /// \brief returns the number of (optimization) parameters
                 ///
                 virtual tensor_size_t psize() const = 0;
-
-                ///
-                /// \brief returns the approximate number of FLOPs to compute the output
-                ///
-                virtual tensor_size_t output_flops() const = 0;
-
-                ///
-                /// \brief returns the approximate number of FLOPs to compute the gradient wrt the inputs
-                ///
-                virtual tensor_size_t ginput_flops() const = 0;
-
-                ///
-                /// \brief returns the approximate number of FLOPs to compute the gradient wrt the outputs
-                ///
-                virtual tensor_size_t gparam_flops() const = 0;
         };
 }
 

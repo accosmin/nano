@@ -44,11 +44,6 @@ namespace cortex
                 virtual tensor_size_t ocols() const override { return m_odata.cols(); }
                 virtual tensor_size_t psize() const override { return m_wdata.size() + m_bdata.size(); }
 
-                // flops
-                virtual tensor_size_t output_flops() const override { return osize() + osize() * isize(); }
-                virtual tensor_size_t ginput_flops() const override { return osize() * isize(); }
-                virtual tensor_size_t gparam_flops() const override { return osize() * isize() + osize(); }
-
         private:
 
                 tensor_size_t isize() const { return m_idata.size(); }
@@ -57,10 +52,9 @@ namespace cortex
         private:
 
                 // attributes
-                tensor_t                m_idata;        ///< input buffer:      isize x irows x icols
-                tensor_t                m_odata;        ///< output buffer:     osize x irows x icols
-
-                matrix_t                m_wdata;        ///< weights:           osize x isize
-                vector_t                m_bdata;        ///< bias:              osize
+                tensor_t        m_idata;        ///< input buffer:      isize x irows x icols
+                tensor_t        m_odata;        ///< output buffer:     osize x irows x icols
+                matrix_t        m_wdata;        ///< weights:           osize x isize
+                vector_t        m_bdata;        ///< bias:              osize
         };
 }

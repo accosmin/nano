@@ -239,12 +239,6 @@ namespace cortex
         {
                 assert(n_layers() == layer_ids.size());
 
-                const scalar_t mflops_inv = 1.0 / (1024.0 * 1024.0);
-
-                scalar_t model_output_mflops = 0.0;
-                scalar_t model_ginput_mflops = 0.0;
-                scalar_t model_gparam_mflops = 0.0;
-
                 for (size_t l = 0; l < n_layers(); ++ l)
                 {
                         const rlayer_t& layer = m_layers[l];
@@ -253,20 +247,7 @@ namespace cortex
                                    << "[" << layer_ids[l] << "] "
                                    << "(" << layer->idims() << "x" << layer->irows() << "x" << layer->icols() << ") -> "
                                    << "(" << layer->odims() << "x" << layer->orows() << "x" << layer->ocols() << ").";
-
-                        const scalar_t output_mflops = mflops_inv * static_cast<scalar_t>(layer->output_flops());
-                        const scalar_t ginput_mflops = mflops_inv * static_cast<scalar_t>(layer->ginput_flops());
-                        const scalar_t gparam_mflops = mflops_inv * static_cast<scalar_t>(layer->gparam_flops());
-
-                        model_output_mflops += output_mflops;
-                        model_ginput_mflops += ginput_mflops;
-                        model_gparam_mflops += gparam_mflops;
                 }
-
-                log_info() << "forward network [MFLOPs]"
-                           << ": output = " << std::setprecision(3) << model_output_mflops
-                           << ", ginput = " << std::setprecision(3) << model_ginput_mflops
-                           << ", gparam = " << std::setprecision(3) << model_gparam_mflops;
         }
 
         tensor_size_t forward_network_t::psize() const

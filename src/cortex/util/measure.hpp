@@ -50,7 +50,7 @@ namespace cortex
                         usec = std::min(usec, measure_usec(op, count));
                 }
 
-                return (usec + microseconds_t(count - 1)) / count;
+                return (usec + microseconds_t(count / 2)) / count;
         }
 
         ///
@@ -63,6 +63,6 @@ namespace cortex
         milliseconds_t measure_robustly_msec(const toperator& op, const std::size_t trials)
         {
                 const auto usec = measure_robustly_usec(op, trials);
-                return milliseconds_t((usec.count() + 999) / 1000);
+                return milliseconds_t((usec.count() + 500) / 1000);
         }
 }

@@ -58,11 +58,6 @@ namespace cortex
                 virtual tensor_size_t ocols() const override { return m_data.cols(); }
                 virtual tensor_size_t psize() const override { return 0; }
 
-                // flops
-                virtual tensor_size_t output_flops() const override { return m_data.size(); }
-                virtual tensor_size_t ginput_flops() const override { return m_data.size(); }
-                virtual tensor_size_t gparam_flops() const override { return 0; }
-
         private:
 
                 // resize to process new inputs, returns the number of parameters
@@ -112,7 +107,7 @@ namespace cortex
         private:
 
                 // attributes
-                tensor_t                m_data;         ///< input-output buffer
+                tensor_t        m_data;         ///< input-output buffer
         };
 }
 
