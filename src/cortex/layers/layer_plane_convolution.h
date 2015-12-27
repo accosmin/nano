@@ -5,24 +5,24 @@
 namespace cortex
 {
         ///
-        /// \brief fully-connected convolution layer
+        /// \brief fully-connected plane-based convolution layer
         ///
         /// parameters:
-        ///     dims=16[1,256]          - number of convolutions (output dimension)
+        ///     dims=16[1,256]          - number of convolutions
         ///     rows=8[1,32]            - convolution size
         ///     cols=8[1,32]            - convolution size
         ///
-        class conv_layer_t : public layer_t
+        class plane_conv_layer_t : public layer_t
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(conv_layer_t, "convolution layer: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
+                NANOCV_MAKE_CLONABLE(plane_conv_layer_t, "plane-based convolution layer: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
 
                 // constructor
-                explicit conv_layer_t(const string_t& parameters = string_t());
+                explicit plane_conv_layer_t(const string_t& parameters = string_t());
 
                 // destructor
-                virtual ~conv_layer_t();
+                virtual ~plane_conv_layer_t();
 
                 // resize to process new tensors of the given type
                 virtual tensor_size_t resize(const tensor_t& tensor) override;
@@ -68,8 +68,7 @@ namespace cortex
 
                 // attributes
                 tensor_t                m_idata;        ///< input buffer:              idims x irows x icols
-                tensor_t                m_odata;        ///< output buffer:             odims x orows x ocols
-                tensor_t                m_kdata;        ///< convolution kernels:       idims x odims x krows x kcols
-                tensor_t                m_bdata;        ///< convolution bias:          odims x 1 x 1
+                tensor_t                m_odata;        ///< output buffer:             odims x idims x orows x ocols
+                tensor_t                m_kdata;        ///< convolution kernels:       odims x krows x kcols
         };
 }

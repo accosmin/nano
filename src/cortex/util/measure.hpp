@@ -52,4 +52,17 @@ namespace cortex
 
                 return (usec + microseconds_t(count - 1)) / count;
         }
+
+        ///
+        /// \brief robustly measure a function call (in miliseconds)
+        ///
+        template
+        <
+                typename toperator
+        >
+        milliseconds_t measure_robustly_msec(const toperator& op, const std::size_t trials)
+        {
+                const auto usec = measure_robustly_usec(op, trials);
+                return milliseconds_t((usec.count() + 999) / 1000);
+        }
 }

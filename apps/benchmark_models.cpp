@@ -64,12 +64,12 @@ int main(int argc, char *argv[])
         task.load("");
 
         // construct models
-        const string_t lmodel0;
-        const string_t lmodel1 = lmodel0 + "affine:dims=100;act-snorm;";
-        const string_t lmodel2 = lmodel1 + "affine:dims=100;act-snorm;";
-        const string_t lmodel3 = lmodel2 + "affine:dims=100;act-snorm;";
-        const string_t lmodel4 = lmodel3 + "affine:dims=100;act-snorm;";
-        const string_t lmodel5 = lmodel4 + "affine:dims=100;act-snorm;";
+        const string_t mlp0;
+        const string_t mlp1 = mlp0 + "affine:dims=100;act-snorm;";
+        const string_t mlp2 = mlp1 + "affine:dims=100;act-snorm;";
+        const string_t mlp3 = mlp2 + "affine:dims=100;act-snorm;";
+        const string_t mlp4 = mlp3 + "affine:dims=100;act-snorm;";
+        const string_t mlp5 = mlp4 + "affine:dims=100;act-snorm;";
 
         string_t cmodel1;
         cmodel1 = cmodel1 + "conv:dims=16,rows=9,cols=9;act-snorm;";
@@ -83,34 +83,46 @@ int main(int argc, char *argv[])
         cmodel3 = cmodel3 + "conv:dims=32,rows=5,cols=5;pool-max;act-snorm;";
         cmodel3 = cmodel3 + "conv:dims=64,rows=3,cols=3;act-snorm;";
 
+        string_t pmodel1;
+        pmodel1 = pmodel1 + "plane-conv:dims=16,rows=9,cols=9;pool-max;act-snorm;";
+        pmodel1 = pmodel1 + "plane-affine:dims=16;act-snorm;";
+        pmodel1 = pmodel1 + "plane-conv:dims=16,rows=5,cols=5;pool-max;act-snorm;";
+        pmodel1 = pmodel1 + "plane-affine:dims=16;act-snorm;";
+        pmodel1 = pmodel1 + "plane-conv:dims=16,rows=3,cols=3;pool-max;act-snorm;";
+        pmodel1 = pmodel1 + "plane-affine:dims=16;act-snorm;";
+
         const string_t outlayer = "affine:dims=" + text::to_string(task.osize()) + ";";
 
         strings_t cmd_networks =
         {
-                lmodel0 + outlayer,
-                lmodel1 + outlayer,
-                lmodel2 + outlayer,
-                lmodel3 + outlayer,
-                lmodel4 + outlayer,
-                lmodel5 + outlayer,
+                mlp0 + outlayer,
+                mlp1 + outlayer,
+                mlp2 + outlayer,
+                mlp3 + outlayer,
+                mlp4 + outlayer,
+                mlp5 + outlayer,
 
                 cmodel1 + outlayer,
                 cmodel2 + outlayer,
                 cmodel3 + outlayer,
+
+                pmodel1 + outlayer
         };
 
         strings_t cmd_names =
         {
-                "lmodel0",
-                "lmodel1",
-                "lmodel2",
-                "lmodel3",
-                "lmodel4",
-                "lmodel5",
+                "mlp0",
+                "mlp1",
+                "mlp2",
+                "mlp3",
+                "mlp4",
+                "mlp5",
 
                 "cmodel1",
                 "cmodel2",
-                "cmodel3"
+                "cmodel3",
+
+                "pmodel"
         };
 
         const auto loss = cortex::get_losses().get("logistic");
@@ -157,11 +169,11 @@ int main(int argc, char *argv[])
                                 accumulator_t lacc(*model, *criterion, criterion_t::type::value, 0.1);
                                 lacc.set_threads(nthreads);
 
-                                const auto milis = cortex::measure_robustly_usec([&] ()
+                                const auto milis = cortex::measure_robustly_msec([&] ()
                                 {
                                         lacc.reset();
                                         lacc.update(task, samples, *loss);
-                                }, 1) / 1000;
+                                }, 1);
 
                                 log_info() << "<<< processed [" << lacc.count()
                                            << "] forward samples in " << milis.count() << " ms.";
@@ -174,11 +186,11 @@ int main(int argc, char *argv[])
                                 accumulator_t gacc(*model, *criterion, criterion_t::type::vgrad, 0.1);
                                 gacc.set_threads(nthreads);
 
-                                const auto milis = cortex::measure_robustly_usec([&] ()
+                                const auto milis = cortex::measure_robustly_msec([&] ()
                                 {
                                         gacc.reset();
                                         gacc.update(task, samples, *loss);
-                                }, 1) / 1000;
+                                }, 1);
 
                                 log_info() << "<<< processed [" << gacc.count()
                                            << "] backward samples in " << milis.count() << " ms.";

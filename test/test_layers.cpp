@@ -153,19 +153,7 @@ BOOST_AUTO_TEST_CASE(test_affine)
 {
         cortex::init();
 
-        for (const auto& layer_id : { "affine" })
-        {
-                const string_t description = layer_id + string_t(":dims=8");
-
-                test_model(description);
-        }
-}
-
-BOOST_AUTO_TEST_CASE(test_plane_affine)
-{
-        cortex::init();
-
-        for (const auto& layer_id : { "plane-affine" })
+        for (const auto& layer_id : { "affine", "plane-affine" })
         {
                 const string_t description = layer_id + string_t(":dims=8");
 
@@ -177,7 +165,7 @@ BOOST_AUTO_TEST_CASE(test_conv)
 {
         cortex::init();
 
-        for (const auto& layer_conv_id : { "conv" })
+        for (const auto& layer_conv_id : { "conv", "plane-conv" })
         {
                 for (const auto& layer_pool_id : { "pool-max", "pool-min", "pool-avg" })
                 {

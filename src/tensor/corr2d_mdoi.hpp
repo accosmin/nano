@@ -16,11 +16,11 @@ namespace tensor
                 template
                 <
                         typename tmatrixo,
-                        typename tmatrixk = tmatrixo,
-                        typename tmatrixi = tmatrixo,
+                        typename tmatrixk,
+                        typename tmatrixi,
                         typename tscalar = typename tmatrixi::Scalar
                 >
-                void operator()(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi& idata) const
+                void operator()(const tmatrixo& odata, const tmatrixk& kdata, tmatrixi&& idata) const
                 {
                         assert(idata.rows() + 1 == kdata.rows() + odata.rows());
                         assert(idata.cols() + 1 == kdata.cols() + odata.cols());

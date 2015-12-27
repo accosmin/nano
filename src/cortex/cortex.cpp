@@ -22,6 +22,7 @@
 #include "layers/layer_affine.h"
 #include "layers/layer_pool.h"
 #include "layers/layer_plane_affine.h"
+#include "layers/layer_plane_convolution.h"
 
 #include "models/forward_network.h"
 
@@ -70,6 +71,7 @@ namespace cortex
                 cortex::get_layers().add("affine", affine_layer_t());
                 cortex::get_layers().add("plane-affine", plane_affine_layer_t());
                 cortex::get_layers().add("conv", conv_layer_t());
+                cortex::get_layers().add("plane-conv", plane_conv_layer_t());
                 cortex::get_layers().add("pool-max", pool_max_layer_t());
                 cortex::get_layers().add("pool-min", pool_min_layer_t());
                 cortex::get_layers().add("pool-avg", pool_avg_layer_t());
