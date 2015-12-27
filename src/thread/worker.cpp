@@ -1,5 +1,6 @@
 #include "worker.h"
 #include "tasks.h"
+#include <cassert>
 
 namespace
 {
@@ -56,6 +57,7 @@ void thread::worker_t::operator()()
                         {
                                 m_queue.m_running = 0;
                                 m_queue.m_tasks.clear();
+                                lock.unlock();
                                 m_queue.m_condition.notify_all();
                                 break;
                         }
@@ -72,8 +74,9 @@ void thread::worker_t::operator()()
                 {
                         const std::lock_guard<std::mutex> lock(m_queue.m_mutex);
 
+                        assert(m_queue.m_running > 0);
                         m_queue.m_running --;
-                        m_queue.m_condition.notify_all();
                 }
+                m_queue.m_condition.notify_all();
         }
 }

@@ -38,12 +38,15 @@ thread::pool_t::~pool_t()
                 const std::lock_guard<std::mutex> lock(m_tasks.m_mutex);
 
                 m_tasks.m_stop = true;
-                m_tasks.m_condition.notify_all();
         }
+        m_tasks.m_condition.notify_all();
 
         for (size_t i = 0; i < m_workers.size(); ++ i)
         {
-                m_workers[i].join();
+                if (m_workers[i].joinable())
+                {
+                        m_workers[i].join();
+                }
         }
 }
 
@@ -57,31 +60,33 @@ void thread::pool_t::wait()
 
 void thread::pool_t::activate(std::size_t count)
 {
-        const std::lock_guard<std::mutex> lock(m_tasks.m_mutex);
-
-        count = std::max(std::size_t(1), std::min(count, n_workers()));
-
-        std::size_t crt_count = thread::n_active_workers(m_configs);
-        for (auto& config :  m_configs)
         {
-                if (crt_count == count)
-                {
-                        break;
-                }
+                const std::lock_guard<std::mutex> lock(m_tasks.m_mutex);
 
-                else if (crt_count > count)
+                count = std::max(std::size_t(1), std::min(count, n_workers()));
+
+                std::size_t crt_count = thread::n_active_workers(m_configs);
+                for (auto& config :  m_configs)
                 {
-                        if (config.deactivate())
+                        if (crt_count == count)
                         {
-                                -- crt_count;
+                                break;
                         }
-                }
 
-                else if (crt_count < count)
-                {
-                        if (config.activate())
+                        else if (crt_count > count)
                         {
-                                ++ crt_count;
+                                if (config.deactivate())
+                                {
+                                        -- crt_count;
+                                }
+                        }
+
+                        else if (crt_count < count)
+                        {
+                                if (config.activate())
+                                {
+                                        ++ crt_count;
+                                }
                         }
                 }
         }
