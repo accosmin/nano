@@ -69,7 +69,7 @@ CHECK_CXX_SOURCE_COMPILES("${NANOCV_TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_UN
 set(CMAKE_REQUIRED_FLAGS "-fsanitize=leak")
 CHECK_CXX_SOURCE_COMPILES("${NANOCV_TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_LEAK)
 
-set(CMAKE_REQUIRED_FLAGS "-fsanitize=thread -fPIE -pie")
+set(CMAKE_REQUIRED_FLAGS "-fsanitize=thread")
 CHECK_CXX_SOURCE_COMPILES("${NANOCV_TEST_PROGRAM}" COMPILER_SUPPORTS_SANITIZE_THREAD)
 
 ######################################################################
@@ -123,8 +123,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
         # set thread sanitizer
 	elseif(NANOCV_WITH_TSAN)
                 if(COMPILER_SUPPORTS_SANITIZE_THREAD)
-                        set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=thread -fPIE")
-                        set(CMAKE_EXE_LINKER_FLAGS      "${CMAKE_EXE_LINKER_FLAGS} -pie")
+                        set(CMAKE_CXX_FLAGS_DEBUG       "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=thread")
+                        set(CMAKE_EXE_LINKER_FLAGS      "${CMAKE_EXE_LINKER_FLAGS}")
                 else()
                         message(WARNING "The compiler has no thread sanitizer support. Ignoring...")
                 endif()
