@@ -26,13 +26,10 @@ namespace thread
                 template<class F>
                 void enqueue(F f)
                 {
-                        {
-                                const std::lock_guard<std::mutex> lock(m_mutex);
-                                m_tasks.push_back(task_t(f));
-                        }
-                        {
-                                m_condition.notify_one();
-                        }
+                        const std::lock_guard<std::mutex> lock(m_mutex);
+
+                        m_tasks.push_back(task_t(f));
+                        m_condition.notify_one();
                 }
 
                 // attributes
