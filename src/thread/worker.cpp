@@ -57,7 +57,6 @@ void thread::worker_t::operator()()
                         {
                                 m_queue.m_running = 0;
                                 m_queue.m_tasks.clear();
-                                lock.unlock();
                                 m_queue.m_condition.notify_all();
                                 break;
                         }
@@ -76,7 +75,7 @@ void thread::worker_t::operator()()
 
                         assert(m_queue.m_running > 0);
                         m_queue.m_running --;
+                        m_queue.m_condition.notify_all();
                 }
-                m_queue.m_condition.notify_all();
         }
 }
