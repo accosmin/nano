@@ -32,7 +32,7 @@ bool thread::worker_config_t::active() const
         return m_active;
 }
 
-thread::worker_t::worker_t(tasks_t& queue, worker_config_t& config) :
+thread::worker_t::worker_t(tasks_t& queue, const worker_config_t& config) :
         m_queue(queue),
         m_config(config)
 {

@@ -45,7 +45,7 @@ namespace thread
                 ///
                 /// \brief constructor
                 ///
-                explicit worker_t(tasks_t& queue, worker_config_t& config);
+                explicit worker_t(tasks_t& queue, const worker_config_t& config);
 
                 ///
                 /// \brief execute tasks when available
@@ -56,6 +56,6 @@ namespace thread
 
                 // attributes
                 tasks_t&                m_queue;        ///< task queue to process
-                worker_config_t&        m_config;       ///<
+                const worker_config_t&  m_config;       ///<
         };
 }
