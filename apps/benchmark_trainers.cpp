@@ -55,7 +55,7 @@ namespace
                         terrors(opt_state.m_terror_avg);
                         verrors(opt_state.m_verror_avg);
                         speeds(opt_speed);
-                        timings(timer.seconds().count());
+                        timings(static_cast<scalar_t>(timer.seconds().count()));
 
                         log_info() << "<<< " << name
                                    << ", optimum = {" << text::concatenate(result.optimum_config())
