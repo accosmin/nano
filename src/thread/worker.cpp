@@ -12,33 +12,13 @@ namespace
         }
 }
 
-thread::worker_config_t::worker_config_t(const bool active)
-        :       m_active(active)
-{
-}
-
-bool thread::worker_config_t::activate()
-{
-        return toggle(m_active, true);
-}
-
-bool thread::worker_config_t::deactivate()
-{
-        return toggle(m_active, false);
-}
-
-bool thread::worker_config_t::active() const
-{
-        return m_active;
-}
-
-thread::worker_t::worker_t(tasks_t& queue, const worker_config_t& config) :
+thread::worker_t::worker_t(tasks_t& queue, const bool active) :
         m_queue(queue),
-        m_config(config)
+        m_active(active)
 {
 }
 
-void thread::worker_t::operator()()
+void thread::worker_t::operator()() const
 {
         while (true)
         {
@@ -50,7 +30,7 @@ void thread::worker_t::operator()()
 
                         m_queue.m_condition.wait(lock, [&]
                         {
-                                return m_queue.m_stop || (m_config.active() && !m_queue.m_tasks.empty());
+                                return m_queue.m_stop || (active() && !m_queue.m_tasks.empty());
                         });
 
                         if (m_queue.m_stop)
@@ -78,4 +58,19 @@ void thread::worker_t::operator()()
                         m_queue.m_condition.notify_all();
                 }
         }
+}
+
+bool thread::worker_t::activate()
+{
+        return toggle(m_active, true);
+}
+
+bool thread::worker_t::deactivate()
+{
+        return toggle(m_active, false);
+}
+
+bool thread::worker_t::active() const
+{
+        return m_active;
 }

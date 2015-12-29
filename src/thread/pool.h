@@ -84,8 +84,8 @@ namespace thread
         private:
 
                 // attributes
-                std::vector<std::thread>        m_workers;      ///< worker threads
-                std::vector<worker_config_t>    m_configs;      ///< settings for each worker thread
+                std::vector<std::thread>        m_threads;      ///<
+                std::vector<worker_t>           m_workers;      ///<
                 tasks_t                         m_tasks;        ///< tasks to execute + synchronization
         };
 }

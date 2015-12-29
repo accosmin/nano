@@ -7,15 +7,21 @@ namespace thread
         struct tasks_t;
 
         ///
-        /// \brief configure & manipulate a worker thread
+        /// \brief worker to process tasks en-queued in a thread pool
         ///
-        class NANOCV_PUBLIC worker_config_t
+        class NANOCV_PUBLIC worker_t
         {
         public:
+
                 ///
                 /// \brief constructor
                 ///
-                explicit worker_config_t(bool active = true);
+                explicit worker_t(tasks_t& queue, const bool active = true);
+
+                ///
+                /// \brief execute tasks when available
+                ///
+                void operator()() const;
 
                 ///
                 /// \brief toggle the worker's activation state
@@ -32,30 +38,7 @@ namespace thread
         private:
 
                 // attributes
+                tasks_t&        m_queue;        ///< task queue to process
                 bool            m_active;       ///< is worker active for processing tasks?
-        };
-
-        ///
-        /// \brief worker to process tasks en-queued in a thread pool
-        ///
-        class NANOCV_PUBLIC worker_t
-        {
-        public:
-
-                ///
-                /// \brief constructor
-                ///
-                explicit worker_t(tasks_t& queue, const worker_config_t& config);
-
-                ///
-                /// \brief execute tasks when available
-                ///
-                void operator()();
-
-        private:
-
-                // attributes
-                tasks_t&                m_queue;        ///< task queue to process
-                const worker_config_t&  m_config;       ///<
         };
 }
