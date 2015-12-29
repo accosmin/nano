@@ -46,11 +46,6 @@ namespace cortex
 
         private:
 
-                tensor_size_t isize() const { return m_idata.size(); }
-                tensor_size_t osize() const { return m_odata.size(); }
-
-        private:
-
                 // attributes
                 tensor_t        m_idata;        ///< input buffer:      isize x 1 x 1
                 tensor_t        m_odata;        ///< output buffer:     osize x 1 x 1
