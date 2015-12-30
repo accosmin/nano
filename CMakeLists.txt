@@ -88,6 +88,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES GNU OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
 
         # set flags
         set(CMAKE_CXX_FLAGS			"-std=c++14 -pedantic -march=native -mtune=native")
+	if(CMAKE_CXX_COMPILER_ID MATCHES GNU)
+		set(CMAKE_CXX_FLAGS		"${CMAKE_CXX_FLAGS} -pthread")
+	endif()
         set(CMAKE_CXX_FLAGS			"${CMAKE_CXX_FLAGS} -Wall -Wextra -Wconversion")
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -Woverloaded-virtual")
         set(CMAKE_CXX_FLAGS                     "${CMAKE_CXX_FLAGS} -Wreorder")
