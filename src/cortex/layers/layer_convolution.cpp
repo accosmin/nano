@@ -71,7 +71,6 @@ namespace cortex
         {
                 params = tensor::to_array(m_kdata, params);
                 params = tensor::to_array(m_bdata, params);
-
                 return params;
         }
 
@@ -79,7 +78,6 @@ namespace cortex
         {
                 params = tensor::from_array(m_kdata, params);
                 params = tensor::from_array(m_bdata, params);
-
                 return params;
         }
 

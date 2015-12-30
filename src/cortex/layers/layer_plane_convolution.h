@@ -47,7 +47,7 @@ namespace cortex
                 virtual tensor_size_t odims() const override { return m_odata.dims(); }
                 virtual tensor_size_t orows() const override { return m_odata.rows(); }
                 virtual tensor_size_t ocols() const override { return m_odata.cols(); }
-                virtual tensor_size_t psize() const override { return m_kdata.size(); }
+                virtual tensor_size_t psize() const override { return m_kdata.size() + m_bdata.size(); }
 
         private:
 
@@ -59,7 +59,8 @@ namespace cortex
 
                 // attributes
                 tensor_t        m_idata;        ///< input buffer:              idims x irows x icols
-                tensor_t        m_odata;        ///< output buffer:             odims x idims x orows x ocols
+                tensor_t        m_odata;        ///< output buffer:             (odims x idims) x orows x ocols
                 tensor_t        m_kdata;        ///< convolution kernels:       odims x krows x kcols
+                tensor_t        m_bdata;        ///< convolution bias:          (odims x idims) x 1 x 1
         };
 }

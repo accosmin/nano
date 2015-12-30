@@ -50,6 +50,7 @@ namespace cortex
                 m_idata.resize(idims, irows, icols);
                 m_odata.resize(odims, orows, ocols);
                 m_kdata.resize(kdims, krows, kcols);
+                m_bdata.resize(odims, 1, 1);
 
                 return psize();
         }
@@ -57,23 +58,26 @@ namespace cortex
         void plane_conv_layer_t::zero_params()
         {
                 m_kdata.setZero();
+                m_bdata.setZero();
         }
 
         void plane_conv_layer_t::random_params(scalar_t min, scalar_t max)
         {
                 tensor::set_random(m_kdata, math::random_t<scalar_t>(min, max));
+                tensor::set_random(m_bdata, math::random_t<scalar_t>(min, max));
         }
 
         scalar_t* plane_conv_layer_t::save_params(scalar_t* params) const
         {
                 params = tensor::to_array(m_kdata, params);
+                params = tensor::to_array(m_bdata, params);
                 return params;
         }
 
         const scalar_t* plane_conv_layer_t::load_params(const scalar_t* params)
         {
                 params = tensor::from_array(m_kdata, params);
-
+                params = tensor::from_array(m_bdata, params);
                 return params;
         }
 
@@ -85,6 +89,7 @@ namespace cortex
 
                 m_idata = input;
 
+                // convolution
                 m_odata.setZero();
 
                 tensor::conv2d_dyn_t op;
@@ -94,6 +99,12 @@ namespace cortex
                         {
                                 op(m_idata.matrix(i), m_kdata.matrix(k), m_odata.matrix(o));
                         }
+                }
+
+                // +bias
+                for (tensor_size_t o = 0; o < odims(); ++ o)
+                {
+                        m_odata.vector(o).array() += m_bdata(o);
                 }
 
                 return m_odata;
@@ -129,6 +140,7 @@ namespace cortex
 
                 m_odata = output;
                 
+                // wrt to convolution
                 auto gkdata = tensor::map_tensor(gradient, kdims(), krows(), kcols());
                 gkdata.setZero();
 
@@ -139,6 +151,12 @@ namespace cortex
                         {
                                 op(m_idata.matrix(i), m_odata.matrix(o), gkdata.matrix(k));
                         }
+                }
+
+                // wrt bias
+                for (tensor_size_t o = 0; o < odims(); ++ o)
+                {
+                        gradient[m_kdata.size() + o] = m_odata.vector(o).sum();
                 }
         }
 }
