@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
 
         std::map<std::string, benchmark::optimizer_stat_t> gstats;
 
-        math::foreach_test_function<scalar_t, math::test_type::all>(min_dims, max_dims, [&] (const auto& function)
+        math::foreach_test_function<scalar_t, math::test_type::all>(min_dims, max_dims, [&] (const math::function_t<scalar_t>& function)
         {
                 check_function(function, trials, epochs, epoch_size, gstats);
         });
