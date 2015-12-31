@@ -12,152 +12,149 @@
 #include "cortex/layers/make_layers.h"
 #include <boost/program_options.hpp>
 
-namespace
+using namespace cortex;
+
+template
+<
+        typename tvalue
+>
+static string_t stats_to_string(const math::stats_t<tvalue>& stats)
 {
-        using namespace cortex;
+        return  text::to_string(static_cast<tvalue>(stats.avg()))
+                + "+/-" + text::to_string(static_cast<tvalue>(stats.stdev()))
+                + " [" + text::to_string(stats.min())
+                + ", " + text::to_string(stats.max())
+                + "]";
+}
 
-        template
-        <
-                typename tvalue
-        >
-        string_t stats_to_string(const math::stats_t<tvalue>& stats)
+template
+<
+        typename ttrainer
+>
+static void test_optimizer(model_t& model, const string_t& name, text::table_t& table, const vectors_t& x0s,
+        const ttrainer& trainer)
+{
+        math::stats_t<scalar_t> terrors;
+        math::stats_t<scalar_t> verrors;
+        math::stats_t<scalar_t> speeds;
+        math::stats_t<scalar_t> timings;
+
+        log_info() << "<<< running " << name << " ...";
+
+        for (const vector_t& x0 : x0s)
         {
-                return  text::to_string(static_cast<tvalue>(stats.avg()))
-                        + "+/-" + text::to_string(static_cast<tvalue>(stats.stdev()))
-                        + " [" + text::to_string(stats.min())
-                        + ", " + text::to_string(stats.max())
-                        + "]";
+                const cortex::timer_t timer;
+
+                model.load_params(x0);
+
+                const auto result = trainer();
+                const auto opt_state = result.optimum_state();
+                const auto opt_speed = cortex::convergence_speed(result.optimum_states());
+
+                terrors(opt_state.m_terror_avg);
+                verrors(opt_state.m_verror_avg);
+                speeds(opt_speed);
+                timings(static_cast<scalar_t>(timer.seconds().count()));
+
+                log_info() << "<<< " << name
+                           << ", optimum = {" << text::concatenate(result.optimum_config())
+                           << "}/" << result.optimum_epoch()
+                           << ", train = " << opt_state.m_terror_avg
+                           << ", valid = " << opt_state.m_verror_avg
+                           << ", speed = " << opt_speed << "/s"
+                           << " done in " << timer.elapsed() << ".";
         }
 
-        template
-        <
-                typename ttrainer
-        >
-        void test_optimizer(model_t& model, const string_t& name, text::table_t& table, const vectors_t& x0s,
-                const ttrainer& trainer)
+        table.append(name)
+                << stats_to_string(terrors)
+                << stats_to_string(verrors)
+                << stats_to_string(speeds)
+                << stats_to_string(timings);
+}
+
+static void test_optimizers(
+        const task_t& task, model_t& model, const sampler_t& tsampler, const sampler_t& vsampler,
+        const loss_t& loss, const criterion_t& criterion,
+        const size_t trials, const size_t iterations, text::table_t& table)
+{
+        const size_t batch_iterations = iterations;
+        const size_t minibatch_epochs = iterations;
+        const size_t stochastic_epochs = iterations;
+        const scalar_t epsilon = 1e-4;
+
+        const size_t n_threads = thread::n_threads();
+        const bool verbose = true;
+
+        // generate fixed random starting points
+        vectors_t x0s(trials);
+        for (vector_t& x0 : x0s)
         {
-                math::stats_t<scalar_t> terrors;
-                math::stats_t<scalar_t> verrors;
-                math::stats_t<scalar_t> speeds;
-                math::stats_t<scalar_t> timings;
-
-                log_info() << "<<< running " << name << " ...";
-
-                for (const vector_t& x0 : x0s)
-                {
-                        const cortex::timer_t timer;
-
-                        model.load_params(x0);
-
-                        const auto result = trainer();
-                        const auto opt_state = result.optimum_state();
-                        const auto opt_speed = cortex::convergence_speed(result.optimum_states());
-
-                        terrors(opt_state.m_terror_avg);
-                        verrors(opt_state.m_verror_avg);
-                        speeds(opt_speed);
-                        timings(static_cast<scalar_t>(timer.seconds().count()));
-
-                        log_info() << "<<< " << name
-                                   << ", optimum = {" << text::concatenate(result.optimum_config())
-                                   << "}/" << result.optimum_epoch()
-                                   << ", train = " << opt_state.m_terror_avg
-                                   << ", valid = " << opt_state.m_verror_avg
-                                   << ", speed = " << opt_speed << "/s"
-                                   << " done in " << timer.elapsed() << ".";
-                }
-
-                table.append(name)
-                        << stats_to_string(terrors)
-                        << stats_to_string(verrors)
-                        << stats_to_string(speeds)
-                        << stats_to_string(timings);
+                model.random_params();
+                model.save_params(x0);
         }
 
-        void test_optimizers(
-                const task_t& task, model_t& model, const sampler_t& tsampler, const sampler_t& vsampler,
-                const loss_t& loss, const criterion_t& criterion,
-                const size_t trials, const size_t iterations, text::table_t& table)
+        // batch optimizers
+        const auto batch_optimizers =
         {
-                const size_t batch_iterations = iterations;
-                const size_t minibatch_epochs = iterations;
-                const size_t stochastic_epochs = iterations;
-                const scalar_t epsilon = 1e-4;
+//                math::batch_optimizer::GD,
+//                math::batch_optimizer::CGD,
+                math::batch_optimizer::LBFGS
+        };
 
-                const size_t n_threads = thread::n_threads();
-                const bool verbose = true;
+//        // minibatch optimizers
+//        const auto minibatch_optimizers =
+//        {
+//                math::batch_optimizer::GD,
+//                math::batch_optimizer::CGD,
+//                math::batch_optimizer::LBFGS
+//        };
 
-                // generate fixed random starting points
-                vectors_t x0s(trials);
-                for (vector_t& x0 : x0s)
+//        // stochastic optimizers
+//        const auto stoch_optimizers =
+//        {
+//                math::stoch_optimizer::SG,
+//                math::stoch_optimizer::SGA,
+//                math::stoch_optimizer::SIA,
+//                math::stoch_optimizer::SGM,
+//                math::stoch_optimizer::AG,
+//                math::stoch_optimizer::AGFR,
+//                math::stoch_optimizer::AGGR,
+//                math::stoch_optimizer::ADAGRAD,
+//                math::stoch_optimizer::ADADELTA
+//        };
+
+        const string_t basename = "[" + text::to_string(criterion.description()) + "] ";
+
+        // run optimizers and collect results
+        for (math::batch_optimizer optimizer : batch_optimizers)
+        {
+                test_optimizer(model, basename + "batch-" + text::to_string(optimizer), table, x0s, [&] ()
                 {
-                        model.random_params();
-                        model.save_params(x0);
-                }
-
-                // batch optimizers
-                const auto batch_optimizers =
-                {
-                        math::batch_optimizer::GD,
-                        math::batch_optimizer::CGD,
-                        math::batch_optimizer::LBFGS
-                };
-
-                // minibatch optimizers
-                const auto minibatch_optimizers =
-                {
-                        math::batch_optimizer::GD,
-                        math::batch_optimizer::CGD,
-                        math::batch_optimizer::LBFGS
-                };
-
-                // stochastic optimizers
-                const auto stoch_optimizers =
-                {
-                        math::stoch_optimizer::SG,
-                        math::stoch_optimizer::SGA,
-                        math::stoch_optimizer::SIA,
-                        math::stoch_optimizer::SGM,
-                        math::stoch_optimizer::AG,
-                        math::stoch_optimizer::AGFR,
-                        math::stoch_optimizer::AGGR,
-                        math::stoch_optimizer::ADAGRAD,
-                        math::stoch_optimizer::ADADELTA
-                };
-
-                const string_t basename = "[" + text::to_string(criterion.description()) + "] ";
-
-                // run optimizers and collect results
-                for (math::batch_optimizer optimizer : batch_optimizers)
-                {
-                        test_optimizer(model, basename + "batch-" + text::to_string(optimizer), table, x0s, [&] ()
-                        {
-                                return cortex::batch_train(
-                                        model, task, tsampler, vsampler, n_threads,
-                                        loss, criterion, optimizer, batch_iterations, epsilon, verbose);
-                        });
-                }
-
-                for (math::batch_optimizer optimizer : minibatch_optimizers)
-                {
-                        test_optimizer(model, basename + "minibatch-" + text::to_string(optimizer), table, x0s, [&] ()
-                        {
-                                return cortex::minibatch_train(
-                                        model, task, tsampler, vsampler, n_threads,
-                                        loss, criterion, optimizer, minibatch_epochs, epsilon, verbose);
-                        });
-                }
-
-                for (math::stoch_optimizer optimizer : stoch_optimizers)
-                {
-                        test_optimizer(model, basename + "stochastic-" + text::to_string(optimizer), table, x0s, [&] ()
-                        {
-                                return cortex::stochastic_train(
-                                        model, task, tsampler, vsampler, n_threads,
-                                        loss, criterion, optimizer, stochastic_epochs, verbose);
-                        });
-                }
+                        return cortex::batch_train(
+                                model, task, tsampler, vsampler, n_threads,
+                                loss, criterion, optimizer, batch_iterations, epsilon, verbose);
+                });
         }
+
+//        for (math::batch_optimizer optimizer : minibatch_optimizers)
+//        {
+//                test_optimizer(model, basename + "minibatch-" + text::to_string(optimizer), table, x0s, [&] ()
+//                {
+//                        return cortex::minibatch_train(
+//                                model, task, tsampler, vsampler, n_threads,
+//                                loss, criterion, optimizer, minibatch_epochs, epsilon, verbose);
+//                });
+//        }
+
+//        for (math::stoch_optimizer optimizer : stoch_optimizers)
+//        {
+//                test_optimizer(model, basename + "stochastic-" + text::to_string(optimizer), table, x0s, [&] ()
+//                {
+//                        return cortex::stochastic_train(
+//                                model, task, tsampler, vsampler, n_threads,
+//                                loss, criterion, optimizer, stochastic_epochs, verbose);
+//                });
+//        }
 }
 
 int main(int argc, char* argv[])
