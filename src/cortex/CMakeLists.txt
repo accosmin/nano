@@ -12,8 +12,6 @@ set(libcortex_sources
         criterion.h
         evaluate.cpp
         evaluate.h
-        generate.cpp
-        generate.h
         layer.cpp
         layer.h
         loss.cpp

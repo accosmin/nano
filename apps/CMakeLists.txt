@@ -7,7 +7,6 @@ set(nanocv_apps
         benchmark_stoch.cpp
         benchmark_trainers.cpp
         evaluate.cpp
-        generate.cpp
         embed.cpp
         info_archive.cpp
         info.cpp
@@ -35,7 +34,6 @@ set(nanocv_programs
         info_task
         train
         evaluate
-        generate
         generate_convnets)
 
 install(TARGETS
