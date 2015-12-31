@@ -7,6 +7,7 @@
 #include "tensor/random.hpp"
 #include "cortex/accumulator.h"
 #include "cortex/util/measure.hpp"
+#include "cortex/layers/make_layers.h"
 #include "cortex/tasks/task_charset.h"
 #include "cortex/util/measure_and_log.hpp"
 #include <boost/program_options.hpp>
@@ -64,121 +65,88 @@ int main(int argc, char *argv[])
         task.load("");
 
         // construct models
-        const auto make_affine1d = [] (const auto dims)
-        {
-                return  "affine1D:dims=" + text::to_string(dims) +
-                        ";act-snorm;";
-        };
-
-        const auto make_conv = [] (const auto dims, const auto rows, const auto cols)
-        {
-                using text::to_string;
-                return  "conv:dims=" + to_string(dims) + ",rows=" + to_string(rows) + ",cols=" + to_string(cols) +
-                        ";act-snorm;";
-        };
-
-        const auto make_conv_pool = [&] (const auto dims, const auto rows, const auto cols)
-        {
-                return  make_conv(dims, rows, cols) +
-                        ";pool-max;";
-        };
-
-        const auto make_plane_conv = [&] (const auto dims, const auto rows, const auto cols)
-        {
-                using text::to_string;
-                return  "plane-" + make_conv(dims, rows, cols) +
-                        ";affine3D:dims=" + to_string(dims) +
-                        ";act-snorm;";
-        };
-
-        const auto make_plane_conv_pool = [&] (const auto dims, const auto rows, const auto cols)
-        {
-                return  make_plane_conv(dims, rows, cols) +
-                        ";pool-max;";
-        };
-
         const string_t mlp0;
-        const string_t mlp1 = mlp0 + make_affine1d(100);
-        const string_t mlp2 = mlp1 + make_affine1d(100);
-        const string_t mlp3 = mlp2 + make_affine1d(100);
-        const string_t mlp4 = mlp3 + make_affine1d(100);
-        const string_t mlp5 = mlp4 + make_affine1d(100);
+        const string_t mlp1 = mlp0 + make_affine1d_layer(100);
+        const string_t mlp2 = mlp1 + make_affine1d_layer(100);
+        const string_t mlp3 = mlp2 + make_affine1d_layer(100);
+        const string_t mlp4 = mlp3 + make_affine1d_layer(100);
+        const string_t mlp5 = mlp4 + make_affine1d_layer(100);
 
         const string_t convnet_9x9p_5x5p_3x3 =
-                make_conv_pool(16, 9, 9) +
-                make_conv_pool(16, 5, 5) +
-                make_conv(16, 3, 3);
+                make_conv_pool_layer(16, 9, 9) +
+                make_conv_pool_layer(16, 5, 5) +
+                make_conv_layer(16, 3, 3);
 
         const string_t convnet_7x7p_5x5p_3x3 =
-                make_conv_pool(16, 7, 7) +
-                make_conv_pool(16, 5, 5) +
-                make_conv(16, 3, 3);
+                make_conv_pool_layer(16, 7, 7) +
+                make_conv_pool_layer(16, 5, 5) +
+                make_conv_layer(16, 3, 3);
 
         const string_t convnet_11x11_9x9_7x7_3x3 =
-                make_conv(16, 11, 11) +
-                make_conv(16, 9, 9) +
-                make_conv(16, 7, 7) +
-                make_conv(16, 3, 3);
+                make_conv_layer(16, 11, 11) +
+                make_conv_layer(16, 9, 9) +
+                make_conv_layer(16, 7, 7) +
+                make_conv_layer(16, 3, 3);
 
         const string_t convnet_11x11_9x9_5x5_5x5 =
-                make_conv(16, 11, 11) +
-                make_conv(16, 9, 9) +
-                make_conv(16, 5, 5) +
-                make_conv(16, 5, 5);
+                make_conv_layer(16, 11, 11) +
+                make_conv_layer(16, 9, 9) +
+                make_conv_layer(16, 5, 5) +
+                make_conv_layer(16, 5, 5);
 
         const string_t convnet_9x9_7x7_7x7_5x5_3x3 =
-                make_conv(16, 9, 9) +
-                make_conv(16, 7, 7) +
-                make_conv(16, 7, 7) +
-                make_conv(16, 5, 5) +
-                make_conv(16, 3, 3);
+                make_conv_layer(16, 9, 9) +
+                make_conv_layer(16, 7, 7) +
+                make_conv_layer(16, 7, 7) +
+                make_conv_layer(16, 5, 5) +
+                make_conv_layer(16, 3, 3);
 
         const string_t convnet_7x7_7x7_5x5_5x5_5x5_3x3 =
-                make_conv(16, 7, 7) +
-                make_conv(16, 7, 7) +
-                make_conv(16, 5, 5) +
-                make_conv(16, 5, 5) +
-                make_conv(16, 5, 5) +
-                make_conv(16, 3, 3);
+                make_conv_layer(16, 7, 7) +
+                make_conv_layer(16, 7, 7) +
+                make_conv_layer(16, 5, 5) +
+                make_conv_layer(16, 5, 5) +
+                make_conv_layer(16, 5, 5) +
+                make_conv_layer(16, 3, 3);
 
         const string_t pconvnet_9x9p_5x5p_3x3 =
-                make_plane_conv_pool(16, 9, 9) +
-                make_plane_conv_pool(16, 5, 5) +
-                make_plane_conv(16, 3, 3);
+                make_plane_conv_pool_layer(16, 9, 9) +
+                make_plane_conv_pool_layer(16, 5, 5) +
+                make_plane_conv_layer(16, 3, 3);
 
         const string_t pconvnet_7x7p_5x5p_3x3 =
-                make_plane_conv_pool(16, 7, 7) +
-                make_plane_conv_pool(16, 5, 5) +
-                make_plane_conv(16, 3, 3);
+                make_plane_conv_pool_layer(16, 7, 7) +
+                make_plane_conv_pool_layer(16, 5, 5) +
+                make_plane_conv_layer(16, 3, 3);
 
         const string_t pconvnet_11x11_9x9_7x7_3x3 =
-                make_plane_conv(16, 11, 11) +
-                make_plane_conv(16, 9, 9) +
-                make_plane_conv(16, 7, 7) +
-                make_plane_conv(16, 3, 3);
+                make_plane_conv_layer(16, 11, 11) +
+                make_plane_conv_layer(16, 9, 9) +
+                make_plane_conv_layer(16, 7, 7) +
+                make_plane_conv_layer(16, 3, 3);
 
         const string_t pconvnet_11x11_9x9_5x5_5x5 =
-                make_plane_conv(16, 11, 11) +
-                make_plane_conv(16, 9, 9) +
-                make_plane_conv(16, 5, 5) +
-                make_plane_conv(16, 5, 5);
+                make_plane_conv_layer(16, 11, 11) +
+                make_plane_conv_layer(16, 9, 9) +
+                make_plane_conv_layer(16, 5, 5) +
+                make_plane_conv_layer(16, 5, 5);
 
         const string_t pconvnet_9x9_7x7_7x7_5x5_3x3 =
-                make_plane_conv(16, 9, 9) +
-                make_plane_conv(16, 7, 7) +
-                make_plane_conv(16, 7, 7) +
-                make_plane_conv(16, 5, 5) +
-                make_plane_conv(16, 3, 3);
+                make_plane_conv_layer(16, 9, 9) +
+                make_plane_conv_layer(16, 7, 7) +
+                make_plane_conv_layer(16, 7, 7) +
+                make_plane_conv_layer(16, 5, 5) +
+                make_plane_conv_layer(16, 3, 3);
 
         const string_t pconvnet_7x7_7x7_5x5_5x5_5x5_3x3 =
-                make_plane_conv(16, 7, 7) +
-                make_plane_conv(16, 7, 7) +
-                make_plane_conv(16, 5, 5) +
-                make_plane_conv(16, 5, 5) +
-                make_plane_conv(16, 5, 5) +
-                make_plane_conv(16, 3, 3);
+                make_plane_conv_layer(16, 7, 7) +
+                make_plane_conv_layer(16, 7, 7) +
+                make_plane_conv_layer(16, 5, 5) +
+                make_plane_conv_layer(16, 5, 5) +
+                make_plane_conv_layer(16, 5, 5) +
+                make_plane_conv_layer(16, 3, 3);
 
-        const string_t outlayer = "affine1D:dims=" + text::to_string(task.osize()) + ";";
+        const string_t outlayer = make_output_layer(task.osize());
 
         const std::vector<std::pair<string_t, string_t>> configs =
         {

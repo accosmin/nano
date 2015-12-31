@@ -9,6 +9,7 @@
 #include "text/concatenate.hpp"
 #include "cortex/util/measure.hpp"
 #include "cortex/tasks/task_charset.h"
+#include "cortex/layers/make_layers.h"
 #include <boost/program_options.hpp>
 
 namespace
@@ -240,19 +241,19 @@ int main(int argc, char* argv[])
 
         // construct models
         const string_t mlp0;
-        const string_t mlp1 = mlp0 + "affine1D:dims=16;act-snorm;";
-        const string_t mlp2 = mlp1 + "affine1D:dims=16;act-snorm;";
-        const string_t mlp3 = mlp2 + "affine1D:dims=16;act-snorm;";
+        const string_t mlp1 = mlp0 + make_affine1d_layer(16);
+        const string_t mlp2 = mlp1 + make_affine1d_layer(16);
+        const string_t mlp3 = mlp2 + make_affine1d_layer(16);
 
         const string_t convnet =
-                "conv:dims=16,rows=7,cols=7;pool-max;act-snorm;"\
-                "conv:dims=16,rows=5,cols=5;act-snorm;";
+                make_conv_pool_layer(16, 7, 7) +
+                make_conv_layer(16, 5, 5);
 
         const string_t pconvnet =
-                "plane-conv:dims=16,rows=7,cols=7;pool-max;affine3D:dims=16;act-snorm;"\
-                "plane-conv:dims=16,rows=5,cols=5;affine3D:dims=16;act-snorm;";
+                make_plane_conv_pool_layer(16, 7, 7) +
+                make_plane_conv_layer(16, 5, 5);
 
-        const string_t outlayer = "affine1D:dims=" + text::to_string(outputs) + ";";
+        const string_t outlayer = make_output_layer(outputs);
 
         strings_t networks;
         if (use_mlp0) { networks.push_back(mlp0 + outlayer); }

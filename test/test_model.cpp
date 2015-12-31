@@ -7,6 +7,7 @@
 #include "math/epsilon.hpp"
 #include "cortex/evaluate.h"
 #include "text/to_string.hpp"
+#include "cortex/layers/make_layers.h"
 #include <cstdio>
 
 BOOST_AUTO_TEST_CASE(test_model)
@@ -18,29 +19,29 @@ BOOST_AUTO_TEST_CASE(test_model)
         const auto task = cortex::get_tasks().get("random", "dims=2,rows=16,cols=16,color=luma,size=128");
         BOOST_CHECK_EQUAL(task->load(""), true);
 
-        const string_t lmodel0;
-        const string_t lmodel1 = lmodel0 + "affine1D:dims=10;act-snorm;";
-        const string_t lmodel2 = lmodel1 + "affine1D:dims=10;act-snorm;";
-        const string_t lmodel3 = lmodel2 + "affine1D:dims=10;act-snorm;";
-        const string_t lmodel4 = lmodel3 + "affine1D:dims=10;act-snorm;";
-        const string_t lmodel5 = lmodel4 + "affine1D:dims=10;act-snorm;";
+        const string_t mlp0;
+        const string_t mlp1 = mlp0 + make_affine1d_layer(10);
+        const string_t mlp2 = mlp1 + make_affine1d_layer(10);
+        const string_t mlp3 = mlp2 + make_affine1d_layer(10);
+        const string_t mlp4 = mlp3 + make_affine1d_layer(10);
+        const string_t mlp5 = mlp4 + make_affine1d_layer(10);
         
-        string_t cmodel;
-        cmodel = cmodel + "conv:dims=8,rows=7,cols=7;pool-max;act-snorm;";
-        cmodel = cmodel + "conv:dims=8,rows=5,cols=5;act-snorm;";
+        const string_t convnet =
+                make_conv_pool_layer(8, 7, 7) +
+                make_conv_layer(8, 5, 5);
 
-        const string_t outlayer = "affine1D:dims=" + text::to_string(task->osize()) + ";";
+        const string_t outlayer = make_output_layer(task->osize());
 
         strings_t cmd_networks =
         {
-                lmodel0 + outlayer,
-                lmodel1 + outlayer,
-                lmodel2 + outlayer,
-                lmodel3 + outlayer,
-                lmodel4 + outlayer,
-                lmodel5 + outlayer,
+                mlp0 + outlayer,
+                mlp1 + outlayer,
+                mlp2 + outlayer,
+                mlp3 + outlayer,
+                mlp4 + outlayer,
+                mlp5 + outlayer,
 
-                cmodel + outlayer
+                convnet + outlayer
         };
 
         const auto loss = cortex::get_losses().get("logistic");

@@ -8,6 +8,7 @@
 #include "math/epsilon.hpp"
 #include "text/to_string.hpp"
 #include "cortex/accumulator.h"
+#include "cortex/layers/make_layers.h"
 
 BOOST_AUTO_TEST_CASE(test_accumulator)
 {
@@ -19,7 +20,7 @@ BOOST_AUTO_TEST_CASE(test_accumulator)
         BOOST_CHECK_EQUAL(task->load(""), true);
 
         const samples_t samples = task->samples();
-        const string_t cmd_model = "affine1D:dims=4;act-snorm;affine1D:dims=" + text::to_string(task->osize()) + ";";
+        const string_t cmd_model = make_affine1d_layer(4) + make_output_layer(task->osize());
 
         const auto loss = cortex::get_losses().get("logistic");
 
