@@ -19,10 +19,8 @@
 #include "layers/layer_activation_snorm.h"
 #include "layers/layer_activation_splus.h"
 #include "layers/layer_convolution.h"
-#include "layers/layer_affine1D.h"
-#include "layers/layer_affine3D.h"
+#include "layers/layer_affine.h"
 #include "layers/layer_pool.h"
-#include "layers/layer_plane_convolution.h"
 
 #include "models/forward_network.h"
 
@@ -68,10 +66,8 @@ namespace cortex
                 cortex::get_layers().add("act-tanh", tanh_activation_layer_t());
                 cortex::get_layers().add("act-snorm", snorm_activation_layer_t());
                 cortex::get_layers().add("act-splus", softplus_activation_layer_t());
-                cortex::get_layers().add("affine1D", affine1D_layer_t());
-                cortex::get_layers().add("affine3D", affine3D_layer_t());
+                cortex::get_layers().add("affine", affine_layer_t());
                 cortex::get_layers().add("conv", conv_layer_t());
-                cortex::get_layers().add("plane-conv", plane_conv_layer_t());
                 cortex::get_layers().add("pool-max", pool_max_layer_t());
                 cortex::get_layers().add("pool-min", pool_min_layer_t());
                 cortex::get_layers().add("pool-avg", pool_avg_layer_t());

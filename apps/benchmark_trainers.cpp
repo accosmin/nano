@@ -96,32 +96,32 @@ static void test_optimizers(
         // batch optimizers
         const auto batch_optimizers =
         {
-//                math::batch_optimizer::GD,
-//                math::batch_optimizer::CGD,
+                math::batch_optimizer::GD,
+                math::batch_optimizer::CGD,
                 math::batch_optimizer::LBFGS
         };
 
-//        // minibatch optimizers
-//        const auto minibatch_optimizers =
-//        {
-//                math::batch_optimizer::GD,
-//                math::batch_optimizer::CGD,
-//                math::batch_optimizer::LBFGS
-//        };
+        // minibatch optimizers
+        const auto minibatch_optimizers =
+        {
+                math::batch_optimizer::GD,
+                math::batch_optimizer::CGD,
+                math::batch_optimizer::LBFGS
+        };
 
-//        // stochastic optimizers
-//        const auto stoch_optimizers =
-//        {
-//                math::stoch_optimizer::SG,
-//                math::stoch_optimizer::SGA,
-//                math::stoch_optimizer::SIA,
-//                math::stoch_optimizer::SGM,
-//                math::stoch_optimizer::AG,
-//                math::stoch_optimizer::AGFR,
-//                math::stoch_optimizer::AGGR,
-//                math::stoch_optimizer::ADAGRAD,
-//                math::stoch_optimizer::ADADELTA
-//        };
+        // stochastic optimizers
+        const auto stoch_optimizers =
+        {
+                math::stoch_optimizer::SG,
+                math::stoch_optimizer::SGA,
+                math::stoch_optimizer::SIA,
+                math::stoch_optimizer::SGM,
+                math::stoch_optimizer::AG,
+                math::stoch_optimizer::AGFR,
+                math::stoch_optimizer::AGGR,
+                math::stoch_optimizer::ADAGRAD,
+                math::stoch_optimizer::ADADELTA
+        };
 
         const string_t basename = "[" + text::to_string(criterion.description()) + "] ";
 
@@ -136,25 +136,25 @@ static void test_optimizers(
                 });
         }
 
-//        for (math::batch_optimizer optimizer : minibatch_optimizers)
-//        {
-//                test_optimizer(model, basename + "minibatch-" + text::to_string(optimizer), table, x0s, [&] ()
-//                {
-//                        return cortex::minibatch_train(
-//                                model, task, tsampler, vsampler, n_threads,
-//                                loss, criterion, optimizer, minibatch_epochs, epsilon, verbose);
-//                });
-//        }
+        for (math::batch_optimizer optimizer : minibatch_optimizers)
+        {
+                test_optimizer(model, basename + "minibatch-" + text::to_string(optimizer), table, x0s, [&] ()
+                {
+                        return cortex::minibatch_train(
+                                model, task, tsampler, vsampler, n_threads,
+                                loss, criterion, optimizer, minibatch_epochs, epsilon, verbose);
+                });
+        }
 
-//        for (math::stoch_optimizer optimizer : stoch_optimizers)
-//        {
-//                test_optimizer(model, basename + "stochastic-" + text::to_string(optimizer), table, x0s, [&] ()
-//                {
-//                        return cortex::stochastic_train(
-//                                model, task, tsampler, vsampler, n_threads,
-//                                loss, criterion, optimizer, stochastic_epochs, verbose);
-//                });
-//        }
+        for (math::stoch_optimizer optimizer : stoch_optimizers)
+        {
+                test_optimizer(model, basename + "stochastic-" + text::to_string(optimizer), table, x0s, [&] ()
+                {
+                        return cortex::stochastic_train(
+                                model, task, tsampler, vsampler, n_threads,
+                                loss, criterion, optimizer, stochastic_epochs, verbose);
+                });
+        }
 }
 
 int main(int argc, char* argv[])
@@ -173,7 +173,6 @@ int main(int argc, char* argv[])
         po_desc.add_options()("mlp2", "MLP with 2 hidden layers");
         po_desc.add_options()("mlp3", "MLP with 3 hidden layers");
         po_desc.add_options()("convnet", "fully-connected convolution network");
-        po_desc.add_options()("pconvnet", "plane-connected convolution network");
         po_desc.add_options()("trials",
                 boost::program_options::value<size_t>()->default_value(10),
                 "number of models to train & evaluate");
@@ -202,7 +201,6 @@ int main(int argc, char* argv[])
         const bool use_mlp2 = po_vm.count("mlp2");
         const bool use_mlp3 = po_vm.count("mlp3");
         const bool use_convnet = po_vm.count("convnet");
-        const bool use_pconvnet = po_vm.count("pconvnet");
         const auto trials = po_vm["trials"].as<size_t>();
         const auto iterations = po_vm["iterations"].as<size_t>();
 
@@ -210,8 +208,7 @@ int main(int argc, char* argv[])
                 !use_mlp1 &&
                 !use_mlp2 &&
                 !use_mlp3 &&
-                !use_convnet &&
-                !use_pconvnet)
+                !use_convnet)
         {
                 std::cout << po_desc;
                 return EXIT_FAILURE;
@@ -238,17 +235,13 @@ int main(int argc, char* argv[])
 
         // construct models
         const string_t mlp0;
-        const string_t mlp1 = mlp0 + make_affine1d_layer(16);
-        const string_t mlp2 = mlp1 + make_affine1d_layer(16);
-        const string_t mlp3 = mlp2 + make_affine1d_layer(16);
+        const string_t mlp1 = mlp0 + make_affine_layer(16);
+        const string_t mlp2 = mlp1 + make_affine_layer(16);
+        const string_t mlp3 = mlp2 + make_affine_layer(16);
 
         const string_t convnet =
                 make_conv_pool_layer(16, 7, 7) +
                 make_conv_layer(16, 5, 5);
-
-        const string_t pconvnet =
-                make_plane_conv_pool_layer(16, 7, 7) +
-                make_plane_conv_layer(16, 5, 5);
 
         const string_t outlayer = make_output_layer(outputs);
 
@@ -258,7 +251,6 @@ int main(int argc, char* argv[])
         if (use_mlp2) { networks.push_back(mlp2 + outlayer); }
         if (use_mlp3) { networks.push_back(mlp3 + outlayer); }
         if (use_convnet) { networks.push_back(convnet + outlayer); }
-        if (use_pconvnet) { networks.push_back(pconvnet + outlayer); }
 
         const strings_t losses = { "classnll" }; //cortex::get_losses().ids();
 

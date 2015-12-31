@@ -5,24 +5,19 @@
 namespace cortex
 {
         ///
-        /// \brief fully-connected plane-based convolution layer: output(o = (k, i)) = conv(input(i), conv(k))
+        /// \brief fully-connected affine layer that works with 1D tensors (as in MLP models).
         ///
         /// parameters:
-        ///     dims    - number of convolutions
-        ///     rows    - convolution size
-        ///     cols    - convolution size
+        ///     dims    - number of output dimensions
         ///
-        class plane_conv_layer_t : public layer_t
+        class affine_layer_t : public layer_t
         {
         public:
 
-                NANOCV_MAKE_CLONABLE(plane_conv_layer_t, "plane-based convolution layer: dims=16[1,256],rows=8[1,32],cols=8[1,32]")
+                NANOCV_MAKE_CLONABLE(affine_layer_t, "fully-connected 1D affine layer: dims=10[1,4096]")
 
                 // constructor
-                explicit plane_conv_layer_t(const string_t& parameters = string_t());
-
-                // destructor
-                virtual ~plane_conv_layer_t();
+                explicit affine_layer_t(const string_t& parameters = string_t());
 
                 // resize to process new tensors of the given type
                 virtual tensor_size_t resize(const tensor_t& tensor) override;
@@ -47,20 +42,14 @@ namespace cortex
                 virtual tensor_size_t odims() const override { return m_odata.dims(); }
                 virtual tensor_size_t orows() const override { return m_odata.rows(); }
                 virtual tensor_size_t ocols() const override { return m_odata.cols(); }
-                virtual tensor_size_t psize() const override { return m_kdata.size() + m_bdata.size(); }
-
-        private:
-
-                tensor_size_t kdims() const { return m_kdata.dims(); }
-                tensor_size_t krows() const { return m_kdata.rows(); }
-                tensor_size_t kcols() const { return m_kdata.cols(); }
+                virtual tensor_size_t psize() const override { return m_wdata.size() + m_bdata.size(); }
 
         private:
 
                 // attributes
-                tensor_t        m_idata;        ///< input buffer:              idims x irows x icols
-                tensor_t        m_odata;        ///< output buffer:             (odims x idims) x orows x ocols
-                tensor_t        m_kdata;        ///< convolution kernels:       odims x krows x kcols
-                tensor_t        m_bdata;        ///< convolution bias:          (odims x idims) x 1 x 1
+                tensor_t        m_idata;        ///< input buffer:      isize x 1 x 1
+                tensor_t        m_odata;        ///< output buffer:     osize x 1 x 1
+                matrix_t        m_wdata;        ///< weights:           osize x isize
+                vector_t        m_bdata;        ///< bias:              osize
         };
 }

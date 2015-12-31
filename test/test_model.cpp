@@ -20,11 +20,11 @@ BOOST_AUTO_TEST_CASE(test_model)
         BOOST_CHECK_EQUAL(task->load(""), true);
 
         const string_t mlp0;
-        const string_t mlp1 = mlp0 + make_affine1d_layer(10);
-        const string_t mlp2 = mlp1 + make_affine1d_layer(10);
-        const string_t mlp3 = mlp2 + make_affine1d_layer(10);
-        const string_t mlp4 = mlp3 + make_affine1d_layer(10);
-        const string_t mlp5 = mlp4 + make_affine1d_layer(10);
+        const string_t mlp1 = mlp0 + make_affine_layer(10);
+        const string_t mlp2 = mlp1 + make_affine_layer(10);
+        const string_t mlp3 = mlp2 + make_affine_layer(10);
+        const string_t mlp4 = mlp3 + make_affine_layer(10);
+        const string_t mlp5 = mlp4 + make_affine_layer(10);
         
         const string_t convnet =
                 make_conv_pool_layer(8, 7, 7) +

@@ -147,19 +147,17 @@ BOOST_AUTO_TEST_CASE(test_affine)
 {
         cortex::init();
 
-        test_model(make_affine1d_layer(7));
-        test_model(make_affine3d_layer(5));
+        test_model(make_affine_layer(7));
 }
 
 BOOST_AUTO_TEST_CASE(test_conv)
 {
         cortex::init();
 
-        for (const auto& pooling_id : { "", "pool-max", "pool-min", "pool-avg" })
-        {
-                test_model(make_conv_pool_layer(3, 3, 3, "", pooling_id));
-                test_model(make_plane_conv_pool_layer(3, 3, 3, "", pooling_id));
-        }
+        test_model(make_conv_pool_layer(3, 3, 3, "", ""));
+        test_model(make_conv_pool_layer(3, 3, 3, "", "pool-max"));
+        test_model(make_conv_pool_layer(3, 3, 3, "", "pool-min"));
+        test_model(make_conv_pool_layer(3, 3, 3, "", "pool-avg"));
 }
 
 BOOST_AUTO_TEST_CASE(test_multi_layer_models)
@@ -168,19 +166,15 @@ BOOST_AUTO_TEST_CASE(test_multi_layer_models)
 
         const strings_t descriptions =
         { 
-                make_affine1d_layer(9, "act-snorm") +
-                make_affine1d_layer(7, "act-splus"),
+                make_affine_layer(9, "act-snorm") +
+                make_affine_layer(7, "act-splus"),
 
                 make_conv_pool_layer(11, 3, 3, "act-snorm", "pool-max") +
                 make_conv_layer(7, 3, 3, "act-splus"),
 
                 make_conv_pool_layer(11, 3, 3, "act-snorm", "pool-max") +
                 make_conv_layer(7, 3, 3, "act-splus") +
-                make_affine1d_layer(9, "act-splus"),
-
-                make_plane_conv_pool_layer(11, 3, 3, "act-snorm", "pool-max") +
-                make_plane_conv_layer(7, 3, 3, "act-splus") +
-                make_affine1d_layer(5, "act-tanh")
+                make_affine_layer(9, "act-splus")
         };
 
         for (const auto& description : descriptions)

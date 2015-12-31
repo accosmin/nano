@@ -5,7 +5,7 @@
 namespace cortex
 {
         ///
-        /// \brief fully-connected convolution layer: output(o) = sum(i, conv(input(i), conv(k = (o, i)))) + bias(o)
+        /// \brief fully-connected convolution layer as in convolution networks.
         ///
         /// parameters:
         ///     dims    - number of output planes
