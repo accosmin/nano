@@ -29,3 +29,6 @@
 #else
         #define NANOCV_UNUSED1_RELEASE(x) NANOCV_UNUSED1(x)
 #endif
+
+// string a given variable
+#define NANOCV_STRINGIFY(x) #x

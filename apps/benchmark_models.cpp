@@ -64,36 +64,148 @@ int main(int argc, char *argv[])
         task.load("");
 
         // construct models
+        const auto make_affine1d = [] (const auto dims)
+        {
+                return  "affine1D:dims=" + text::to_string(dims) +
+                        ";act-snorm;";
+        };
+
+        const auto make_conv = [] (const auto dims, const auto rows, const auto cols)
+        {
+                using text::to_string;
+                return  "conv:dims=" + to_string(dims) + ",rows=" + to_string(rows) + ",cols=" + to_string(cols) +
+                        ";act-snorm;";
+        };
+
+        const auto make_conv_pool = [&] (const auto dims, const auto rows, const auto cols)
+        {
+                return  make_conv(dims, rows, cols) +
+                        ";pool-max;";
+        };
+
+        const auto make_plane_conv = [&] (const auto dims, const auto rows, const auto cols)
+        {
+                using text::to_string;
+                return  "plane-" + make_conv(dims, rows, cols) +
+                        ";affine3D:dims=" + to_string(dims) +
+                        ";act-snorm;";
+        };
+
+        const auto make_plane_conv_pool = [&] (const auto dims, const auto rows, const auto cols)
+        {
+                return  make_plane_conv(dims, rows, cols) +
+                        ";pool-max;";
+        };
+
         const string_t mlp0;
-        const string_t mlp1 = mlp0 + "affine1D:dims=100;act-snorm;";
-        const string_t mlp2 = mlp1 + "affine1D:dims=100;act-snorm;";
-        const string_t mlp3 = mlp2 + "affine1D:dims=100;act-snorm;";
-        const string_t mlp4 = mlp3 + "affine1D:dims=100;act-snorm;";
-        const string_t mlp5 = mlp4 + "affine1D:dims=100;act-snorm;";
+        const string_t mlp1 = mlp0 + make_affine1d(100);
+        const string_t mlp2 = mlp1 + make_affine1d(100);
+        const string_t mlp3 = mlp2 + make_affine1d(100);
+        const string_t mlp4 = mlp3 + make_affine1d(100);
+        const string_t mlp5 = mlp4 + make_affine1d(100);
 
-        const string_t convnet =
-                "conv:dims=16,rows=9,cols=9;pool-max;act-snorm;" \
-                "conv:dims=16,rows=5,cols=5;pool-max;act-snorm;" \
-                "conv:dims=16,rows=3,cols=3;act-snorm;";
+        const string_t convnet_9x9p_5x5p_3x3 =
+                make_conv_pool(16, 9, 9) +
+                make_conv_pool(16, 5, 5) +
+                make_conv(16, 3, 3);
 
-        const string_t pconvnet =
-                "plane-conv:dims=16,rows=9,cols=9;pool-max;affine3D:dims=16;act-snorm;" \
-                "plane-conv:dims=16,rows=5,cols=5;pool-max;affine3D:dims=16;act-snorm;" \
-                "plane-conv:dims=16,rows=3,cols=3;affine3D:dims=16;act-snorm;";
+        const string_t convnet_7x7p_5x5p_3x3 =
+                make_conv_pool(16, 7, 7) +
+                make_conv_pool(16, 5, 5) +
+                make_conv(16, 3, 3);
+
+        const string_t convnet_11x11_9x9_7x7_3x3 =
+                make_conv(16, 11, 11) +
+                make_conv(16, 9, 9) +
+                make_conv(16, 7, 7) +
+                make_conv(16, 3, 3);
+
+        const string_t convnet_11x11_9x9_5x5_5x5 =
+                make_conv(16, 11, 11) +
+                make_conv(16, 9, 9) +
+                make_conv(16, 5, 5) +
+                make_conv(16, 5, 5);
+
+        const string_t convnet_9x9_7x7_7x7_5x5_3x3 =
+                make_conv(16, 9, 9) +
+                make_conv(16, 7, 7) +
+                make_conv(16, 7, 7) +
+                make_conv(16, 5, 5) +
+                make_conv(16, 3, 3);
+
+        const string_t convnet_7x7_7x7_5x5_5x5_5x5_3x3 =
+                make_conv(16, 7, 7) +
+                make_conv(16, 7, 7) +
+                make_conv(16, 5, 5) +
+                make_conv(16, 5, 5) +
+                make_conv(16, 5, 5) +
+                make_conv(16, 3, 3);
+
+        const string_t pconvnet_9x9p_5x5p_3x3 =
+                make_plane_conv_pool(16, 9, 9) +
+                make_plane_conv_pool(16, 5, 5) +
+                make_plane_conv(16, 3, 3);
+
+        const string_t pconvnet_7x7p_5x5p_3x3 =
+                make_plane_conv_pool(16, 7, 7) +
+                make_plane_conv_pool(16, 5, 5) +
+                make_plane_conv(16, 3, 3);
+
+        const string_t pconvnet_11x11_9x9_7x7_3x3 =
+                make_plane_conv(16, 11, 11) +
+                make_plane_conv(16, 9, 9) +
+                make_plane_conv(16, 7, 7) +
+                make_plane_conv(16, 3, 3);
+
+        const string_t pconvnet_11x11_9x9_5x5_5x5 =
+                make_plane_conv(16, 11, 11) +
+                make_plane_conv(16, 9, 9) +
+                make_plane_conv(16, 5, 5) +
+                make_plane_conv(16, 5, 5);
+
+        const string_t pconvnet_9x9_7x7_7x7_5x5_3x3 =
+                make_plane_conv(16, 9, 9) +
+                make_plane_conv(16, 7, 7) +
+                make_plane_conv(16, 7, 7) +
+                make_plane_conv(16, 5, 5) +
+                make_plane_conv(16, 3, 3);
+
+        const string_t pconvnet_7x7_7x7_5x5_5x5_5x5_3x3 =
+                make_plane_conv(16, 7, 7) +
+                make_plane_conv(16, 7, 7) +
+                make_plane_conv(16, 5, 5) +
+                make_plane_conv(16, 5, 5) +
+                make_plane_conv(16, 5, 5) +
+                make_plane_conv(16, 3, 3);
 
         const string_t outlayer = "affine1D:dims=" + text::to_string(task.osize()) + ";";
 
         const std::vector<std::pair<string_t, string_t>> configs =
         {
-                { mlp0 + outlayer, "mlp0" },
-                { mlp1 + outlayer, "mlp1" },
-                { mlp2 + outlayer, "mlp2" },
-                { mlp3 + outlayer, "mlp3" },
-                { mlp4 + outlayer, "mlp4" },
-                { mlp5 + outlayer, "mlp5" },
+        #define DEFINE(config) { config + outlayer, NANOCV_STRINGIFY(config) }
 
-                { convnet + outlayer, "convnet" },
-                { pconvnet + outlayer, "pconvnet" }
+                DEFINE(mlp0),
+                DEFINE(mlp1),
+                DEFINE(mlp2),
+                DEFINE(mlp3),
+                DEFINE(mlp4),
+                DEFINE(mlp5),
+
+                DEFINE(convnet_9x9p_5x5p_3x3),
+                DEFINE(convnet_7x7p_5x5p_3x3),
+                DEFINE(convnet_11x11_9x9_7x7_3x3),
+                DEFINE(convnet_11x11_9x9_5x5_5x5),
+                DEFINE(convnet_9x9_7x7_7x7_5x5_3x3),
+                DEFINE(convnet_7x7_7x7_5x5_5x5_5x5_3x3),
+
+                DEFINE(pconvnet_9x9p_5x5p_3x3),
+                DEFINE(pconvnet_7x7p_5x5p_3x3),
+                DEFINE(pconvnet_11x11_9x9_7x7_3x3),
+                DEFINE(pconvnet_11x11_9x9_5x5_5x5),
+                DEFINE(pconvnet_9x9_7x7_7x7_5x5_3x3),
+                DEFINE(pconvnet_7x7_7x7_5x5_5x5_5x5_3x3)
+
+        #undef DEFINE
         };
 
         const auto loss = cortex::get_losses().get("logistic");
@@ -115,15 +227,15 @@ int main(int argc, char *argv[])
                 const string_t cmd_network = config.first;
                 const string_t cmd_name = config.second;
 
-                text::table_row_t& frow = ftable.append(cmd_name + " (task)");
-                text::table_row_t& brow = btable.append(cmd_name + " (task)");
-
                 log_info() << "<<< running network [" << cmd_network << "] ...";
 
                 // create feed-forward network
                 const auto model = cortex::get_models().get("forward-network", cmd_network);
                 model->resize(cmd_rows, cmd_cols, task.osize(), cmd_color, true);
                 model->random_params();
+
+                text::table_row_t& frow = ftable.append(cmd_name + " (" + text::to_string(model->psize()) + ")");
+                text::table_row_t& brow = btable.append(cmd_name + " (" + text::to_string(model->psize()) + ")");
 
                 // select random samples
                 sampler_t sampler(task.samples());
