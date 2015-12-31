@@ -14,7 +14,8 @@ set(nanocv_apps
         info_task.cpp
         max_threads.cpp
         train.cpp
-        warp.cpp)
+        warp.cpp
+        generate_convnets.cpp)
 
 foreach(app ${nanocv_apps})
         get_filename_component(app_name ${app} NAME_WE)
@@ -34,7 +35,8 @@ set(nanocv_programs
         info_task
         train
         evaluate
-        generate)
+        generate
+        generate_convnets)
 
 install(TARGETS
         ${nanocv_programs}
