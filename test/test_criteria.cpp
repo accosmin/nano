@@ -16,11 +16,11 @@ BOOST_AUTO_TEST_CASE(test_criteria)
 
         cortex::init();
 
-        const auto task = cortex::get_tasks().get("random", "dims=2,rows=8,cols=8,color=luma,size=16");
+        const auto task = cortex::get_tasks().get("random", "dims=2,rows=5,cols=5,color=luma,size=16");
         BOOST_CHECK_EQUAL(task->load(""), true);
 
         const samples_t samples = task->samples();
-        const string_t cmd_model = make_affine_layer(4) + make_output_layer(task->osize());
+        const string_t cmd_model = make_affine_layer(3) + make_output_layer(task->osize());
 
         const auto loss = cortex::get_losses().get("logistic");
 
@@ -66,15 +66,11 @@ BOOST_AUTO_TEST_CASE(test_criteria)
                 const opt_problem_t problem(opt_fn_size, opt_fn_fval, opt_fn_grad);
 
                 // check the gradient using random parameters
-                for (size_t t = 0; t < 3; ++ t)
-                {
-                        vector_t x;
+                vector_t x;
+                model->random_params();
+                model->save_params(x);
 
-                        model->random_params();
-                        model->save_params(x);
-
-                        BOOST_CHECK_GE(problem(x), 0.0);
-                        BOOST_CHECK_LE(problem.grad_accuracy(x), math::epsilon1<scalar_t>());
-                }
+                BOOST_CHECK_GE(problem(x), 0.0);
+                BOOST_CHECK_LE(problem.grad_accuracy(x), math::epsilon1<scalar_t>());
         }
 }

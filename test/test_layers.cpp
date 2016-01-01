@@ -165,16 +165,16 @@ BOOST_AUTO_TEST_CASE(test_multi_layer_models)
         cortex::init();
 
         const strings_t descriptions =
-        { 
-                make_affine_layer(9, "act-snorm") +
-                make_affine_layer(7, "act-splus"),
+        {
+                make_affine_layer(7, "act-snorm") +
+                make_affine_layer(5, "act-splus"),
 
-                make_conv_pool_layer(11, 3, 3, "act-snorm", "pool-max") +
-                make_conv_layer(7, 3, 3, "act-splus"),
+                make_conv_pool_layer(7, 3, 3, "act-snorm", "pool-max") +
+                make_conv_layer(4, 3, 3, "act-splus"),
 
-                make_conv_pool_layer(11, 3, 3, "act-snorm", "pool-max") +
-                make_conv_layer(7, 3, 3, "act-splus") +
-                make_affine_layer(9, "act-splus")
+                make_conv_pool_layer(7, 3, 3, "act-snorm", "pool-max") +
+                make_conv_layer(5, 3, 3, "act-splus") +
+                make_affine_layer(5, "act-splus")
         };
 
         for (const auto& description : descriptions)
