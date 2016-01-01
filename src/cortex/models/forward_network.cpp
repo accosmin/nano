@@ -189,24 +189,15 @@ namespace cortex
                         const strings_t layer_tokens = text::split(net_params[l], ":");
                         if (layer_tokens.size() != 2 && layer_tokens.size() != 1)
                         {
-                                const string_t message = "invalid layer description <" +
-                                        net_params[l] + ">! expecting <layer_id[:layer_parameters]>!";
-
-                                log_error() << "forward network: " << message;
-                                throw std::runtime_error(message);
+                                log_error() << "forward network: invalid layer description <"
+                                            << net_params[l] << ">! expecting <layer_id[:layer_parameters]>!";
+                                throw std::invalid_argument("invalid layer description");
                         }
 
                         const string_t layer_id = layer_tokens[0];
                         const string_t layer_params = layer_tokens.size() == 2 ? layer_tokens[1] : string_t();
 
                         const rlayer_t layer = cortex::get_layers().get(layer_id, layer_params);
-                        if (!layer)
-                        {
-                                const string_t message = "invalid layer id <" + layer_id + ">!";
-
-                                log_error() << "forward network: " << message;
-                                throw std::runtime_error(message);
-                        }
 
                         n_params += layer->resize(input);
                         m_layers.push_back(layer);
@@ -220,11 +211,8 @@ namespace cortex
                         input.rows() != 1 ||
                         input.cols() != 1)
                 {
-                        const string_t message = "miss-matching output size! expecting " +
-                                text::to_string(osize()) + "!";
-
-                        log_error() << "forward network: " << message;
-                        throw std::runtime_error(message);
+                        log_error() << "forward network: miss-matching output size! expecting " << osize() << "!";
+                        throw std::invalid_argument("invalid output layer description");
                 }
 
                 if (verbose)

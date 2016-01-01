@@ -37,13 +37,9 @@ namespace cortex
                 // check convolution size
                 if (irows < krows || icols < kcols)
                 {
-                        const string_t message =
-                                "invalid size (" + text::to_string(idims) + "x" + text::to_string(irows) +
-                                 "x" + text::to_string(icols) + ") -> (" + text::to_string(odims) + "x" +
-                                 text::to_string(krows) + "x" + text::to_string(kcols) + ")";
-
-                        log_error() << "convolution layer: " << message;
-                        throw std::runtime_error("convolution layer: " + message);
+                        log_error() << "convolution layer: invalid size (" << idims << "x" << irows << "x" << icols
+                                    << ") -> (" << odims << "x" << krows << "x" << kcols << ")!";
+                        throw std::invalid_argument("invalid configuration for the convolution layer");
                 }
 
                 // resize buffers
