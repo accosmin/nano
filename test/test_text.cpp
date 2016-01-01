@@ -9,6 +9,14 @@
 #include <list>
 #include <set>
 
+BOOST_AUTO_TEST_CASE(test_text_contains)
+{
+        BOOST_CHECK_EQUAL(text::contains("", 't'), false);
+        BOOST_CHECK_EQUAL(text::contains("text", 't'), true);
+        BOOST_CHECK_EQUAL(text::contains("naNoCv", 't'), false);
+        BOOST_CHECK_EQUAL(text::contains("extension", 't'), true);
+}
+
 BOOST_AUTO_TEST_CASE(test_text_resize)
 {
         BOOST_CHECK_EQUAL(text::align("text", 10, text::alignment::left, '='),   "text======");

@@ -17,9 +17,14 @@ namespace text
         NANOCV_PUBLIC std::string upper(const std::string& str);
 
         ///
-        /// \brief replace a character with another one
+        /// \brief replace all occurencies of a character with another one
         ///
         NANOCV_PUBLIC std::string replace(const std::string& str, const char token, const char newtoken);
+
+        ///
+        /// \brief check if a string contains a given character
+        ///
+        NANOCV_PUBLIC bool contains(const std::string& str, const char token);
 
         ///
         /// \brief check if two strings are equal (case sensitive)
