@@ -3,6 +3,8 @@ set(libtext_sources
         ${CMAKE_CURRENT_SOURCE_DIR}/align.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/algorithm.h
         ${CMAKE_CURRENT_SOURCE_DIR}/algorithm.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/filesystem.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/filesystem.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.h
         ${CMAKE_CURRENT_SOURCE_DIR}/cmdline.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/concatenate.hpp

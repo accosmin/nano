@@ -15,8 +15,8 @@ int main(int argc, char *argv[])
         text::cmdline_t cmdline("describe a task");
         cmdline.add("", "task",                 ("tasks to choose from: " + text::concatenate(task_ids, ", ")).c_str());
         cmdline.add("", "task-dir",             "directory to load task data from");
-        cmdline.add("", "task-params",          "task parameters (if any)", "");
-        cmdline.add("", "save-dir",             "directory to save task samples to", "");
+        cmdline.add("", "task-params",          "task parameters (if any)", "<>");
+        cmdline.add("", "save-dir",             "directory to save task samples to", "./");
         cmdline.add("", "save-group-rows",      "number of task samples to group in a row", "32");
         cmdline.add("", "save-group-cols",      "number of task samples to group in a column", "32");
 	

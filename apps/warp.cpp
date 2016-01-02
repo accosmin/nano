@@ -1,10 +1,10 @@
 #include "text/cmdline.h"
 #include "cortex/string.h"
+#include "text/filesystem.h"
 #include "text/to_string.hpp"
 #include "cortex/vision/warp.h"
 #include "cortex/vision/image.h"
 #include "cortex/util/measure_and_log.hpp"
-#include <boost/filesystem.hpp>
 
 int main(int argc, char *argv[])
 {
@@ -71,11 +71,8 @@ int main(int argc, char *argv[])
                         "warped image");
 
                 // prepare output paths
-                const string_t basename =
-                        (boost::filesystem::path(cmd_output).parent_path() /
-                         boost::filesystem::path(cmd_output).stem()).string();
-                const string_t extension =
-                         boost::filesystem::path(cmd_output).extension().string();
+                const string_t basename = text::dirname(cmd_output) + text::stem(cmd_output);
+                const string_t extension = text::extension(cmd_output);
 
                 const string_t opath = basename + text::to_string(c + 1) + extension;
                 const string_t fpath = basename + text::to_string(c + 1) + "_field" + extension;

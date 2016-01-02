@@ -2,9 +2,9 @@
 #include "text/cmdline.h"
 #include "cortex/string.h"
 #include "text/algorithm.h"
+#include "text/filesystem.h"
 #include "cortex/util/logger.h"
 #include <fstream>
-#include <boost/filesystem.hpp>
 
 int main(int argc, char *argv[])
 {
@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 
         log_info () << "input: " << data.size() << " bytes.";
 
-        const string_t name = text::lower(text::replace(boost::filesystem::basename(cmd_input), '-', '_'));
+        const string_t name = text::lower(text::replace(text::stem(cmd_input), '-', '_'));
         const string_t tab(8, ' ');
         const size_t rowsize = 128;
 
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
                 return EXIT_FAILURE;
         }
 
-        os_source << "#include " << boost::filesystem::path(path_header).filename() << "\n";
+        os_source << "#include " << text::filename(path_header) << "\n";
         os_source << "\n";
         os_source << "namespace\n";
         os_source << "{\n";

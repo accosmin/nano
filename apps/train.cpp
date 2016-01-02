@@ -2,9 +2,9 @@
 #include "text/align.hpp"
 #include "cortex/cortex.h"
 #include "cortex/evaluate.h"
+#include "text/filesystem.h"
 #include "text/concatenate.hpp"
 #include "cortex/util/measure_and_log.hpp"
-#include <boost/filesystem.hpp>
 
 int main(int argc, char *argv[])
 {
@@ -124,8 +124,7 @@ int main(int argc, char *argv[])
                         [&] () { return opt_model->save(cmd_output); },
                         "save model to <" + cmd_output + ">");
                 
-                const string_t path = (boost::filesystem::path(cmd_output).parent_path() /
-                        boost::filesystem::path(cmd_output).stem()).string() + ".state";
+                const string_t path = text::dirname(cmd_output) + text::stem(cmd_output) + ".state";
                 
                 cortex::measure_critical_and_log(
                         [&] () { return cortex::save(path, opt_states); },

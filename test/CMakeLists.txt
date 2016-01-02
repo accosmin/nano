@@ -28,6 +28,7 @@ build_test_app(test_stats.cpp "")
 build_test_app(test_stoch.cpp "")
 build_test_app(test_tensor.cpp "")
 build_test_app(test_text.cpp text)
+build_test_app(test_filesystem.cpp text)
 
 build_test_app(test_io.cpp io)
 
